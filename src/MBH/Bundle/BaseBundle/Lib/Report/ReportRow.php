@@ -77,7 +77,7 @@ class ReportRow
     public function getClasses()
     {
         if (isset($this->callbacks['classes'])) {
-            $this->callbacks['classes']($this);
+            $this->classes = array_merge($this->callbacks['classes']($this), $this->classes);
         }
         return $this->classes;
     }
@@ -88,7 +88,7 @@ class ReportRow
     public function getAttributes()
     {
         if (isset($this->callbacks['attributes'])) {
-            $this->callbacks['attributes']($this);
+            $this->attributes = array_merge($this->callbacks['attributes']($this), $this->attributes);
         }
 
         return $this->attributes;

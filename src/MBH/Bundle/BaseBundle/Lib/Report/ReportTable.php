@@ -6,7 +6,7 @@ class ReportTable
 {
     /** @var  ReportRow[] */
     private $reportRows;
-    protected $defaultClasses = ['table', 'table-bordered', 'table-striped', 'table-hover', 'not-auto-datatable'];
+    protected $defaultClasses = ['table', 'table-bordered', 'table-striped', 'table-hover', 'not-auto-datatable', 'mbh-report-table'];
     protected $collectedData = [];
     protected $isForMail = false;
 

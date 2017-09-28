@@ -4,6 +4,8 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Report\Report;
+use MBH\Bundle\BaseBundle\Lib\Report\ReportCell;
+use MBH\Bundle\BaseBundle\Lib\Report\ReportRow;
 use MBH\Bundle\BaseBundle\Lib\Report\ReportTable;
 use MBH\Bundle\BaseBundle\Lib\Report\TotalDataHandler;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -15,7 +17,14 @@ class DistributionReportCompiler
     const DAYS_OF_WEEK_ABBREVIATIONS_OPTION = 'days-of-week-abbr';
     const SUM_OF_PACKAGES_OPTION = 'sum-of-packages';
     const NUMBER_OF_PACKAGES_OPTION = 'number-of-packages';
+    const RELATIVE_NUMBER_OF_PACKAGES_OPTION = 'relative-number-packages';
     const DAYS_OF_WEEK_ROW_OPTIONS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+    const COLUMNS = [
+        self::NUMBER_OF_PACKAGES_OPTION,
+        self::SUM_OF_PACKAGES_OPTION,
+        self::RELATIVE_NUMBER_OF_PACKAGES_OPTION
+    ];
 
     private $dm;
     private $report;
@@ -46,20 +55,29 @@ class DistributionReportCompiler
         $type,
         ?\DateTime $creationBegin = null,
         ?\DateTime $creationEnd = null
-    ) {
+    )
+    {
         $table = $this->report->addReportTable();
+        $table->addClass('text-center');
         $this->addTitleRow($table, $hotels);
         $hotelsIdsByRoomTypesIds = $this->getHotelsByRoomTypesIds($hotels);
+
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
 
         $distributionData = $this->dm
             ->getRepository('MBHPackageBundle:Package')
             ->getDistributionByDaysOfWeek($begin, $end, $groupType, $type, array_keys($hotelsIdsByRoomTypesIds),
                 $creationBegin, $creationEnd);
 
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+
         $groupedData = $this->getGroupedByHotelsData($distributionData, $hotels, $hotelsIdsByRoomTypesIds);
 
         $dataHandlers = [];
-
         $rowOptions = array_merge(self::DAYS_OF_WEEK_ROW_OPTIONS, ['total']);
         foreach (self::DAYS_OF_WEEK_ROW_OPTIONS as $dayOfWeekOption) {
             $dataHandlers[$dayOfWeekOption] = (new DistributionReportRowsDataHandler($this->translator))
@@ -69,22 +87,17 @@ class DistributionReportCompiler
         $columnOptionsByCalcType = [
             TotalDataHandler::TITLE_OPTION => [self::DAYS_OF_WEEK_ABBREVIATIONS_OPTION]
         ];
-
         $columnOptions = [self::DAYS_OF_WEEK_ABBREVIATIONS_OPTION];
-        if (count($hotels) > 0) {
-            foreach ($hotels as $hotel) {
-                $columnOptions[] = self::NUMBER_OF_PACKAGES_OPTION . $hotel->getId();
-                $columnOptions[] = self::SUM_OF_PACKAGES_OPTION . $hotel->getId();
-                $columnOptionsByCalcType[TotalDataHandler::SUM_OPTION][] = self::NUMBER_OF_PACKAGES_OPTION . $hotel->getId();
-                $columnOptionsByCalcType[TotalDataHandler::SUM_OPTION][] = self::SUM_OF_PACKAGES_OPTION . $hotel->getId();
+        foreach (self::COLUMNS as $column) {
+            if (count($hotels) > 0) {
+                foreach ($hotels as $hotel) {
+                    $columnOptions[] = $column . $hotel->getId();
+                    $columnOptionsByCalcType[TotalDataHandler::SUM_OPTION][] = $column . $hotel->getId();
+                }
+            } else {
+                $columnOptions[] = $column;
+                $columnOptionsByCalcType[TotalDataHandler::SUM_OPTION][] = $column;
             }
-        } else {
-            $columnOptions[] = self::NUMBER_OF_PACKAGES_OPTION;
-            $columnOptions[] = self::SUM_OF_PACKAGES_OPTION;
-            $columnOptionsByCalcType[TotalDataHandler::SUM_OPTION] = [
-                self::NUMBER_OF_PACKAGES_OPTION,
-                self::SUM_OF_PACKAGES_OPTION
-            ];
         }
 
         $dataHandlers['total'] = (new TotalDataHandler())
@@ -92,7 +105,31 @@ class DistributionReportCompiler
                 $columnOptionsByCalcType,
                 $this->translator->trans('distribution_by_days_report.total_row'));
 
-        $table->generateByRowHandlers($rowOptions, $columnOptions, $dataHandlers);
+        $rowsCallbacks = [
+            'classes' => function(ReportRow $row) {
+                if ($row->getRowOption() == 'total') {
+                    return ['total-row'];
+                }
+                return [];
+            }
+        ];
+        $cellsCallbacks = [
+            'value' => function(ReportCell $cell) {
+                if (strpos($cell->getColumnOption(), self::NUMBER_OF_PACKAGES_OPTION) !== false) {
+                    return number_format($cell->getValue());
+                }
+                if (strpos($cell->getColumnOption(), self::SUM_OF_PACKAGES_OPTION) !== false) {
+                    return number_format($cell->getValue(), 2);
+                }
+                if (strpos($cell->getColumnOption(), self::RELATIVE_NUMBER_OF_PACKAGES_OPTION) !== false) {
+                    return number_format($cell->getValue() * 100, 2) . '%';
+                }
+
+                return $cell->getValue();
+            }
+        ];
+
+        $table->generateByRowHandlers($rowOptions, $columnOptions, $dataHandlers, $cellsCallbacks, $rowsCallbacks);
 
         return $this->report;
     }
@@ -147,7 +184,7 @@ class DistributionReportCompiler
                 }
             }
         }
-        
+
         return $groupedData;
     }
 
@@ -162,12 +199,16 @@ class DistributionReportCompiler
             $hotelsByRoomTypesIds[] = $hotel->getId();
         }
 
-        $roomTypes = $this->dm
-            ->getRepository('MBHHotelBundle:RoomType')
-            ->createQueryBuilder()
-            ->field('hotel.id')->in($hotelsByRoomTypesIds)
-            ->getQuery()
-            ->execute();
+        $roomTypeRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
+        if (count($hotels) == 0) {
+            $roomTypes = $roomTypeRepository->findAll();
+        } else {
+            $roomTypes = $roomTypeRepository
+                ->createQueryBuilder()
+                ->field('hotel.id')->in($hotelsByRoomTypesIds)
+                ->getQuery()
+                ->execute();
+        }
 
         /** @var RoomType $roomType */
         foreach ($roomTypes as $roomType) {
@@ -185,14 +226,18 @@ class DistributionReportCompiler
     {
         $numberOfHotels = count($hotels);
         $titleRow = $table->addRow();
-        $titleRow->createAndAddCell('', 1, $numberOfHotels > 0 ? 2: 1);
-        $titleRow->createAndAddCell($this->translator->trans('distribution_by_days_report.title.number_of_packages'), $numberOfHotels);
-        $titleRow->createAndAddCell($this->translator->trans('distribution_by_days_report.title.sum'), $numberOfHotels);
-        $titleRow->createAndAddCell($this->translator->trans('distribution_by_days_report.title.relative_value'), $numberOfHotels);
+        $firstTitleCell = $titleRow->createAndAddCell('', 1, $numberOfHotels > 0 ? 2 : 1);
+        if ($numberOfHotels == 0) {
+            $firstTitleCell->addClass('info');
+        }
+        $titleRow->createAndAddCell($this->translator->trans('distribution_by_days_report.title.number_of_packages'), $numberOfHotels)->addClass('info');
+        $titleRow->createAndAddCell($this->translator->trans('distribution_by_days_report.title.sum'), $numberOfHotels)->addClass('info');
+        $titleRow->createAndAddCell($this->translator->trans('distribution_by_days_report.title.relative_value'), $numberOfHotels)->addClass('info');
 
         if ($numberOfHotels > 0) {
             $hotelsTitlesRow = $table->addRow();
             for ($i = 0; $i < 3; $i++) {
+                $hotelsTitlesRow->addClass('warning');
                 foreach ($hotels as $hotel) {
                     $hotelsTitlesRow->createAndAddCell($hotel->getName());
                 }

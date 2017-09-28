@@ -856,6 +856,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
     /**
      * @Template()
+     * @Security("is_granted('ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT')")
      * @Route("/distribution_by_days_of_the_week", name="distribution_by_days_of_the_week", options={"expose"=true})
      */
     public function packagesByDaysOfWeekAction()
@@ -868,6 +869,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * @Security("is_granted('ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT')")
      * @Route("/distribution_report_table", name="distribution_report_table", options={"expose"=true})
      * @param Request $request
      * @return Response

@@ -173,8 +173,10 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'menu.label.reports.polls'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['reports']->addChild('packages_daily_report', ['route' => 'packages_daily_report', 'label' => 'menu.label.reports.daily_report'])
-            ->setAttributes(['icon' => 'fa fa-money']);
+//        $menu['reports']->addChild('packages_daily_report', ['route' => 'packages_daily_report', 'label' => 'menu.label.reports.daily_report'])
+//            ->setAttributes(['icon' => 'fa fa-money']);
+        $menu['reports']->addChild('distribution_report', ['route' => 'distribution_by_days_of_the_week', 'label' => 'distribution_by_days_report.title'])
+            ->setAttributes(['icon' => 'fa fa-check-square-o']);
 
         if ($this->config && $this->config->getSearchWindows()) {
             $menu['reports']->addChild('report_windows', ['route' => 'report_windows', 'label' => 'menu.label.reports.windows'])

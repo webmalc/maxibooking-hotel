@@ -1,9 +1,14 @@
 {% extends 'MBHPackageBundle::layout.html.twig' %}
 
+{% set small_title = 'distribution_by_days_report.title'|trans %}
+{% set layout = 'box' %}
+
 {% block content %}
+    <input id="default-begin-date" type="hidden" value="{{ filter_begin_date()|date('d.m.Y') }}">
+    <input id="default-end-date" type="hidden" value="{{ filter_begin_date()|date_modify('+45 days')|date('d.m.Y') }}">
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'cash-filter-form-widget'} %}
         {% block content %}
-            <form class="form-inline filter-form remember" id="distribution-report-filter-form" role="form">
+            <form class="form-inline filter-form remember " id="distribution-report-filter-form" role="form">
                 <div class="input">
                     <select style="width: 180px !important;" id="distribution-report-filter-group-type"
                             class="distribution-report-filter form-control input-sm">

@@ -52,6 +52,13 @@ class DistributionReportRowsDataHandler extends ReportDataHandler
         return $this->groupedData[$hotelId]['price'];
     }
 
+    private function getRelativeNumberOfPackages($hotelId = null)
+    {
+        $sumOfPackages = $this->totalDataHandler->getValueByOption(DistributionReportCompiler::NUMBER_OF_PACKAGES_OPTION . $hotelId);
+
+        return $sumOfPackages > 0 ? $this->getNumberOfPackages($hotelId) / $sumOfPackages : 0;
+    }
+
     /**
      * @param $option
      * @return mixed
@@ -66,6 +73,8 @@ class DistributionReportRowsDataHandler extends ReportDataHandler
                 return $this->getNumberOfPackages();
             case DistributionReportCompiler::SUM_OF_PACKAGES_OPTION:
                 return $this->getSumOfPackages();
+            case DistributionReportCompiler::RELATIVE_NUMBER_OF_PACKAGES_OPTION:
+                return $this->getRelativeNumberOfPackages();
         }
 
         foreach ($this->hotels as $hotel) {
@@ -74,6 +83,8 @@ class DistributionReportRowsDataHandler extends ReportDataHandler
                     return $this->getNumberOfPackages($hotel->getId());
                 case DistributionReportCompiler::SUM_OF_PACKAGES_OPTION . $hotel->getId():
                     return $this->getSumOfPackages($hotel->getId());
+                case DistributionReportCompiler::RELATIVE_NUMBER_OF_PACKAGES_OPTION . $hotel->getId():
+                    return $this->getRelativeNumberOfPackages($hotel->getId());
             }
         }
 

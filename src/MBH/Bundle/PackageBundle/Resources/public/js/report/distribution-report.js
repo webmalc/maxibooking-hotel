@@ -4,6 +4,11 @@ $(document).ready(function ($) {
     $('#distribution-report-update-table-button').click(function() {
         updateDistributionReportTable();
     });
+    var $filterBegin = $('#distribution-report-filter-begin');
+    if (!$filterBegin.val()) {
+        $filterBegin.val($('#default-begin-date').val());
+        $('#distribution-report-filter-begin').val($('#default-end-date').val());
+    }
 });
 
 function updateDistributionReportTable() {

@@ -446,8 +446,8 @@ class PackageRepository extends DocumentRepository
             $qb->addOr($qb->expr()->field('deletedAt')->equals(null));
         }
         if ($type == 'deleted') {
-            $qb->addOr($qb->expr()->field('deletedAt')->exists(true));
-            $qb->addOr($qb->expr()->field('deletedAt')->notEqual(null));
+            $qb->addAnd($qb->expr()->field('deletedAt')->exists(true));
+            $qb->addAnd($qb->expr()->field('deletedAt')->notEqual(null));
         }
         if (!is_null($creationBegin)) {
             $qb->field('createdAt')->gte($creationBegin);
@@ -459,34 +459,49 @@ class PackageRepository extends DocumentRepository
         $distributionData = $qb
             ->map(
                 'function() {
-                    emit(this.begin.getDay(), this)
+                    emit(this.' . $filterField . '.getDay(), this)
                 }'
             )
             ->reduce(
                 'function(key, values) {
                     var byRoomTypes = {};
-                    values.forEach(function(elem) {
-                        var packagePrice;
-                        if(elem.totalOverwrite) {
-                            packagePrice = elem.totalOverwrite;
-                        } else {
-                            packagePrice = parseFloat(elem.price, 10);
-        
-                            if (elem.servicesPrice) {
-                                packagePrice += elem.servicesPrice
+                    values.forEach(function(elem, index) {
+                        if (elem._id) {
+                            var packagePrice;
+                            if(elem.totalOverwrite) {
+                                packagePrice = elem.totalOverwrite;
+                            } else {
+                                packagePrice = parseFloat(elem.price, 10);
+            
+                                if (elem.servicesPrice) {
+                                    packagePrice += elem.servicesPrice
+                                }
+                                if (elem.discount) {
+                                    var discount = elem.isPercentDiscount ? elem.price * elem.discount/100 : elem.discount;
+                                    packagePrice -= discount;
+                                }
                             }
-                            if (elem.discount) {
-                                var discount = elem.isPercentDiscount ? elem.price * elem.discount/100 : elem.discount;
-                                packagePrice -= discount;
+                            if (!elem.roomType) {
+                                throw JSON.stringify(values);
                             }
-                        }
-                        
-                        var roomTypeId = elem.roomType.$id.valueOf();
-                        if (byRoomTypes[roomTypeId]) {
-                            byRoomTypes[roomTypeId]["price"] += packagePrice;
-                            byRoomTypes[roomTypeId]["count"]++;
+                            
+                            var roomTypeId = elem.roomType.$id.valueOf();
+                            if (byRoomTypes[roomTypeId]) {
+                                byRoomTypes[roomTypeId]["price"] += packagePrice;
+                                byRoomTypes[roomTypeId]["count"]++;
+                            } else {
+                                byRoomTypes[roomTypeId] = {price: packagePrice, count: 1}
+                            } 
                         } else {
-                            byRoomTypes[roomTypeId] = {price: packagePrice, count: 1}
+                            for (var roomTypeId in elem) {
+                                if (byRoomTypes[roomTypeId]) {
+                                    byRoomTypes[roomTypeId]["price"] += elem[roomTypeId]["price"];
+                                    byRoomTypes[roomTypeId]["count"] += elem[roomTypeId]["count"];
+                                } else {
+                                    byRoomTypes[roomTypeId] =
+                                        {price: elem[roomTypeId]["price"], count: elem[roomTypeId]["count"]}; 
+                                }
+                            }
                         }
                     });
                     return byRoomTypes;
@@ -497,29 +512,30 @@ class PackageRepository extends DocumentRepository
             ->toArray();
 
         foreach ($distributionData as $dayOfWeekNumber => $dayOfWeekData) {
-            if (count($dayOfWeekData['value']) > 2) {
-                $packageData = $dayOfWeekData['value'];
-                if(isset($packageData['totalOverwrite'])) {
-                    $packagePrice = $packageData['totalOverwrite'];
-                } else {
-                    $packagePrice = floatval($packageData['price']);
+            foreach ($dayOfWeekData['value'] as $packageData) {
+                if (count($packageData) > 2) {
+                    if (isset($packageData['totalOverwrite'])) {
+                        $packagePrice = $packageData['totalOverwrite'];
+                    } else {
+                        $packagePrice = floatval($packageData['price']);
 
-                    if (isset($packageData['servicesPrice'])) {
-                        $packagePrice += $packageData['servicesPrice'];
+                        if (isset($packageData['servicesPrice'])) {
+                            $packagePrice += $packageData['servicesPrice'];
+                        }
+                        if (isset($packageData['discount'])) {
+                            $discount = isset($packageData['isPercentDiscount']) && $packageData['isPercentDiscount'] === true
+                                ? $packageData['price'] * $packageData['discount'] / 100 : $packageData['discount'];
+                            $packagePrice -= $discount;
+                        }
                     }
-                    if (isset($packageData['discount'])) {
-                        $discount = isset($packageData['isPercentDiscount']) && $packageData['isPercentDiscount'] === true
-                            ? $packageData['price'] * $packageData['discount'] / 100 : $packageData['discount'];
-                        $packagePrice -= $discount;
-                    }
+
+                    /** @var \MongoId $roomTypeMongoId */
+                    $roomTypeMongoId = $packageData['roomType']['$id'];
+                    $distributionData[$dayOfWeekNumber]['value'] = [$roomTypeMongoId->serialize() => [
+                        'count' => 1,
+                        'price' => $packagePrice
+                    ]];
                 }
-
-                /** @var \MongoId $roomTypeMongoId */
-                $roomTypeMongoId = $packageData['roomType']['$id'];
-                $distributionData[$dayOfWeekNumber]['value'] = [$roomTypeMongoId->serialize() => [
-                    'count' => 1,
-                    'price' => $packagePrice
-                ]];
             }
         }
 

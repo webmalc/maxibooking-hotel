@@ -15,7 +15,7 @@ class TotalDataHandler extends ReportDataHandler
     private $title;
 
     /**
-     * @param array $dataHandlers
+     * @param ReportDataHandler[] $dataHandlers
      * @param array $optionsByCalculationType
      * @param null $title
      * @return TotalDataHandler
@@ -23,6 +23,9 @@ class TotalDataHandler extends ReportDataHandler
     public function setInitData(array $dataHandlers, array $optionsByCalculationType, $title = null)
     {
         $this->dataHandlers = $dataHandlers;
+        foreach ($dataHandlers as $dataHandler) {
+            $dataHandler->setTotalDataHandler($this);
+        }
         $this->optionsByCalculationType = $optionsByCalculationType;
         $this->title = $title;
         
@@ -33,11 +36,7 @@ class TotalDataHandler extends ReportDataHandler
     {
         $sum = 0;
         foreach ($this->dataHandlers as $dataHandler) {
-            try {
-                $sum += $dataHandler->getValueByOption($rowOption);
-            } catch (\Throwable $exception) {
-                $val = $dataHandler->getValueByOption($rowOption);
-            }
+            $sum += $dataHandler->getValueByOption($rowOption);
         }
         
         return $sum;

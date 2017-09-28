@@ -5,6 +5,8 @@ namespace MBH\Bundle\BaseBundle\Lib\Report;
 abstract class ReportDataHandler
 {
     protected $numberPrecision = 2;
+    /** @var  TotalDataHandler */
+    protected $totalDataHandler;
 
     private $initializedData = [];
 
@@ -28,6 +30,17 @@ abstract class ReportDataHandler
     }
 
     /**
+     * @param TotalDataHandler $totalDataHandler
+     * @return ReportDataHandler
+     */
+    public function setTotalDataHandler(TotalDataHandler $totalDataHandler) : self
+    {
+        $this->totalDataHandler = $totalDataHandler;
+
+        return $this;
+    }
+
+    /**
      * @param $option
      * @return mixed
      */
@@ -40,10 +53,6 @@ abstract class ReportDataHandler
     public function getValueByOption($option)
     {
         $result = isset($this->initializedData[$option]) ? $this->initializedData[$option] : $this->initializeAndReturn($option);
-
-        if (is_numeric($result)) {
-            return number_format($result,$this->getNumberPrecision());
-        }
 
         return $result;
     }
