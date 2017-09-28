@@ -122,8 +122,10 @@ var docReadyServices = function() {
                     hide();
                 }
             };
+        timeInput.parent().addClass('bootstrap-timepicker');
         timeInput.timepicker({
-            showMeridian: false
+            showMeridian: false,
+            minuteStep: 5
         });
         nightsDiv.change(calc);
         personsDiv.change(calc);
@@ -171,6 +173,14 @@ var docReadyServices = function() {
         $serviceTable = $('#service-table'),
         processing = false;
     $serviceTable.dataTable({
+        dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
+                className: 'btn btn-default btn-sm'
+            }
+        ],
         "processing": true,
         "serverSide": true,
         "searching": false,

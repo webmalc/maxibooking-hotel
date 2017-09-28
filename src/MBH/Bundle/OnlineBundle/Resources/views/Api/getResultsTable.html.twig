@@ -135,12 +135,38 @@
                     </button>
                 </div>
             {% else %}
+
                 {% if tariffResults|length > 0 %}
                     {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
                 {% endif %}
-                <div class="mbh-results-error"><i
-                            class="fa fa-exclamation-circle"> </i> {{ 'views.api.getResultsTable.nothing_found_for_your_query'|trans({}, 'MBHOnlineBundle') }}
-                </div>
+
+                {% set tariffResultsNumber=1 %}
+
+                {% for tariffResult in tariffResults %}
+
+                  {% if tariffResultsNumber == 1 %}
+
+                   {% if tariffResult.hotel == "СПА отель Ливадийский" %}
+                      <div class="mbh-results-error"><i
+                                class="fa fa-exclamation-circle"> </i> {{ 'views.api.getResultsTable.nothing_found_for_your_query'|trans({}, 'MBHOnlineBundle') }}
+                      </div>
+
+                   {% else %}
+
+                     <div class="mbh-results-error">Дорогие друзья!</br></br>Пансионат Гринцовский и Арт-отель Азор не работают с 01 октября 2017 года по 30 мая 2018 года. Мы ждем гостей с 01 июня 2018 года.
+                                    </br></br>С 01 октября 2017 года по 30 мая 2018 года предлагаем вам отдохнуть в <a href="http://livadiahotel.ru/">СПА отеле Ливадийский</a> в 30 м от моря.
+
+                     </div>
+
+                   {% endif %}
+                 
+                 {% endif %}
+
+                 {% set tariffResultsNumber=tariffResultsNumber+1 %}
+
+                {% endfor %}
+
+
             {% endif %}
         </div>
     {% endif %}

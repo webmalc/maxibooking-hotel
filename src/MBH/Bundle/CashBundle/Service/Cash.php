@@ -83,17 +83,23 @@ class Cash
             ->setRecipients([$order->getMainTourist()])
             ->setFrom('system')
             ->setType('info')
+            ->setCategory('tourists')
             ->setLink('hide')
             ->setHotel($order->getFirstHotel())
             ->setOrder($order)
+            ->setHeaderText('mailer.order.header_text')
             ->setSubject('mailer.order.subject_text')
+            ->setTranslateParams([
+                '%hotelName%' => $order->getFirstHotel()->getName(),
+                '%sum%' => $sumString
+            ])
             ->setAdditionalData([
                 'prependText' => $prependText,
                 'currencyText' => $currencyText
             ])
             ->setTemplate('MBHBaseBundle:Mailer:cashDocConfirmation.html.twig')
             ->setEnd(new \DateTime('+1 minute'));
-
+        
         $notifier
             ->setMessage($message)
             ->notify();

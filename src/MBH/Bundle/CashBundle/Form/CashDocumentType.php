@@ -15,12 +15,20 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class CashDocumentType
  */
 class CashDocumentType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+    
     /**
      * @var DocumentManager
      */
@@ -39,7 +47,7 @@ class CashDocumentType extends AbstractType
             $text = $payer->getName();
             if ($payer instanceof Organization) {
                 $prefix = 'org';
-                $text .= ' (' . 'form.cashDocumentType.inn' . ' ' . $payer->getInn() . ') ' . $payer->getDirectorFio();
+                $text .= ' (' . $this->translator->trans('form.cashDocumentType.inn') . ' ' . $payer->getInn() . ') ' . $payer->getDirectorFio();
             } elseif ($payer instanceof Tourist) {
                 $prefix = 'tourist';
                 $text .= $payer->getBirthday() ? ' ' . $payer->getBirthday()->format('d.m.Y') : '';

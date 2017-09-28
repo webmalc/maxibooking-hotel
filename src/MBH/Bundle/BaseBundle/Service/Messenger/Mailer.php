@@ -91,7 +91,8 @@ class Mailer implements \SplObserver, MailerInterface
                 'linkText' => $message->getLinkText(),
                 'order' => $message->getOrder(),
                 'signature' => $message->getSignature(),
-                'transParams' => $message->getTranslateParams()
+                'transParams' => $message->getTranslateParams(),
+                'headerText' => $message->getHeaderText()
             ], $message->getAdditionalData()), $message->getTemplate());
         }
     }

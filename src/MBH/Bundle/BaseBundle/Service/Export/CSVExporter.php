@@ -46,7 +46,8 @@ class CSVExporter
             $rows[] = join(';', $handledEntityData);
         }
         $content = join("\n", $rows);
-        $content = iconv('UTF-8', 'windows-1251', $content);
+        $content =  mb_convert_encoding($content,'windows-1251', 'UTF-8');
+//        $content = iconv('UTF-8', 'windows-1251', $content);
         $response = new Response($content);
         $response->setStatusCode(200);
         $response->headers->set('Content-Type', 'text/csv');

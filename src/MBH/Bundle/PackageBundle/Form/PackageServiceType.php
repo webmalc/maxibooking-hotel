@@ -86,7 +86,7 @@ class PackageServiceType extends AbstractType
                 'label' => 'form.packageServiceType.time',
                 'required' => false,
                 'group' => 'form.packageServiceType.add_service',
-                'attr' => ['class' => 'sm'],
+                'attr' => ['class' => 'sm', 'style' => 'width: 60px'],
                 'widget' => 'single_text',
                 'html5' => false
             ])

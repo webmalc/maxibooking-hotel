@@ -94,6 +94,29 @@ class NotifierMessage
      * @var string
      */
     private $signature = null;
+    /**
+     * @var string
+     */
+    private $headerText = null;
+
+    /**
+     * @return string
+     */
+    public function getHeaderText(): ?string
+    {
+        return $this->headerText;
+    }
+
+    /**
+     * @param string $headerText
+     * @return NotifierMessage
+     */
+    public function setHeaderText(string $headerText): NotifierMessage
+    {
+        $this->headerText = $headerText;
+
+        return $this;
+    }
 
     /**
      * @return string

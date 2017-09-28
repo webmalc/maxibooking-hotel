@@ -274,6 +274,7 @@ class ChessBoardDataBuilder
                     ->fetchWithAccommodation(
                         $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
                     )->toArray();
+
                 $accommodationsIds = array_map(function (PackageAccommodation $accommodation) {
                     return $accommodation->getId();
                 }, $accommodations);
@@ -300,15 +301,20 @@ class ChessBoardDataBuilder
 
                 $packageAccommodationsData = [];
                 foreach ($accommodations as $accommodation) {
-                    $package = $packagesByAccommodationIds[$accommodation->getId()];
-                    $data = [
-                        'package' => $package,
-                        'accommodation' => $accommodation,
-                    ];
-                    $data['Early check-in'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Early check-in']);
-                    $data['Late check-out'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Late check-out']);
+                    if (!isset($packagesByAccommodationIds[$accommodation->getId()])) {
+                        $this->container->get('logger')->error('FOR ACCOMMODATION ' . $accommodation->getId() . ' NOT FOUND PACKAGE');
+                    } else {
+                        $package = $packagesByAccommodationIds[$accommodation->getId()];
 
-                    $packageAccommodationsData[] = $data;
+                        $data = [
+                            'package' => $package,
+                            'accommodation' => $accommodation,
+                        ];
+                        $data['Early check-in'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Early check-in']);
+                        $data['Late check-out'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Late check-out']);
+
+                        $packageAccommodationsData[] = $data;
+                    }
                 }
 
                 usort($packageAccommodationsData, function ($a, $b) {

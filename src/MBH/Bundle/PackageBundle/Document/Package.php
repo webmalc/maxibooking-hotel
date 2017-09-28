@@ -757,6 +757,7 @@ class Package extends Base implements \JsonSerializable
         $this->restarauntSeat = new ArrayCollection();
         $this->tourists = new ArrayCollection();
         $this->accommodations = new ArrayCollection();
+        $this->prices = new ArrayCollection();
     }
 
 
@@ -1558,6 +1559,17 @@ class Package extends Base implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @param PackagePrice $packagePrice
+     * @return Package
+     */
+    public function addPackagePrice(PackagePrice $packagePrice)
+    {
+        $this->prices->add($packagePrice);
+
+        return $this;
+    }
+    
     /**
      * @return boolean
      */

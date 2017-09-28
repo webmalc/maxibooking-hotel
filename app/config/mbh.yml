@@ -159,7 +159,7 @@ parameters:
 
     #mbhs
     mbh.mbhs:
-      mbhs: 'aHR0cDovL21iaHMubWF4aWJvb2tpbmcucnUv'
+      mbhs: 'aHR0cHM6Ly9tYmhzLm1heGlib29raW5nLnJ1Lw=='
       key: '%mbhs_key%'
 
     #mbh services

@@ -4,7 +4,7 @@
 
     <h3>{{ 'views.api.form.rooms_reservation'|trans({}, 'MBHOnlineBundle') }}</h3>
 
-    {% if hotels|length > 1 %}
+    {% if hotels|length > 2 %}
     <div class="mbh-form-row">
         <label for="mbh-form-hotel">{{ 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
         <select name="hotel" id="mbh-form-hotel">

@@ -86,7 +86,7 @@ class CashDocumentSubscriber implements EventSubscriber
 
         if ($cashDocument instanceof CashDocument) {
             /** @var CashDocument $cashDocument */
-            if ($args->hasChangedField('isPaid')) {
+            if ($args->hasChangedField('isConfirmed')) {
                 $this->trySendOnPaidNotification($cashDocument);
             }
         }
@@ -97,7 +97,7 @@ class CashDocumentSubscriber implements EventSubscriber
      */
     private function trySendOnPaidNotification(CashDocument $cashDocument)
     {
-        if ($cashDocument->getIsPaid() && $cashDocument->isSendMail()) {
+        if ($cashDocument->getIsConfirmed() && $cashDocument->isSendMail() && $cashDocument->getOperation() == 'in' && $cashDocument->getPayer()) {
             $this->container->get('mbh.cash')->sendMailAtCashDocumentConfirmation($cashDocument);
         }
     }

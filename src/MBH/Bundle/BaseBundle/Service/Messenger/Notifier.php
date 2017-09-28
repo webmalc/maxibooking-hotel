@@ -90,16 +90,15 @@ class Notifier implements \SplSubject
             $user = $st->getToken()->getUser();
         }
 
+
         $method = 'get' . ucfirst($this->message->getCategory()) . 's';
-
         if (!empty($this->message->getText()) || !empty($this->message->getOrder())) {
-
             if (!$user || !method_exists($user, $method)  || $user->$method()) {
-
                 foreach ($this->observers as $observer) {
                     try {
                         $observer->update($this);
                     } catch (\Exception $e) {
+                        $this->container->get('logger')->error($e->getMessage());
                         $env = $this->container->get('kernel')->getEnvironment();
                         if ($env == 'dev') {
                             dump($e->getMessage());

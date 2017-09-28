@@ -31,11 +31,9 @@ class ChessBoardMessageFormatter
         $this->errorMessages[] = $this->translator->trans($messageId, $params);
     }
 
-    public function addSuccessRemoveAccommodationMessage(PackageAccommodation $accommodation)
+    public function addSuccessRemoveAccommodationMessage(PackageAccommodation $accommodation, Package $package)
     {
         /** @var Package $package */
-        $package = $this->dm->getRepository('MBHPackageBundle:Package')
-            ->getPackageByPackageAccommodationId($accommodation->getId());
         $this->addSuccessfulMessage('controller.chessboard.accommodation_remove.success', [
             '%packageId%' => $package->getName(),
             '%payerInfo%' => $this->getPayerInfo($package),
