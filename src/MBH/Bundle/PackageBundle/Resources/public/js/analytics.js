@@ -1,4 +1,4 @@
-/*global document, window, $, Highcharts */
+/*global document, window, $, Highcharts, analytics_filter_content */
 $(document).ready(function () {
     'use strict';
 
@@ -6,7 +6,7 @@ $(document).ready(function () {
         return;
     }
 
-    Highcharts.setOptions({
+    var charts = Highcharts.setOptions({
         lang: {
             shortMonths: [
                 Translator.trans("analytics.months.jan_abbr"),
@@ -53,9 +53,19 @@ $(document).ready(function () {
             loading: Translator.trans("analytics.loading"),
             printChart: Translator.trans("analytics.printChart"),
             resetZoom: Translator.trans("analytics.resetZoom"),
-            resetZoomTitle: Translator.trans("analytics.resetZoomTitle")
+            resetZoomTitle: Translator.trans("analytics.resetZoomTitle"),
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                x: -90,
+                y: 250,
+                floating: false,
+                borderWidth: 1
+            }
         }
     });
+    
 
     var highchartsTooltip = function (name, x, y) {
         return '<span style="font-size:10px;">' + Highcharts.dateFormat('%A, %b. %d', x) + '</span><br/>' + name + ': <b>' + Highcharts.numberFormat(y, 2, '.', ',') + '</b>';
@@ -89,10 +99,24 @@ $(document).ready(function () {
                     data.html = data.html.replace(/"@/g, '').replace(/@"/g, '');
                     eval(data.html);
                     $('text:contains("Highcharts.com")').hide();
+
+                    $('.highcharts-line-series').dblclick(function (event) {
+                        event.preventDefault();
+                        var seriesClassNameBeginning = 'highcharts-series-';
+                        var seriesNumber = parseInt(this.classList[3].substring(seriesClassNameBeginning.length), 10);
+                        $(analytics_filter_content).highcharts().series[seriesNumber].hide();
+                        var series = $(analytics_filter_content).highcharts().series;
+                        series.forEach(function (elem, index) {
+                            if (index !== seriesNumber) {
+                                elem.hide();
+                            } else {
+                                elem.show();
+                            }
+                        })
+                    })
                 }
             }
         });
-
     };
     chartGet();
     $('.analytics-filter').on('change switchChange.bootstrapSwitch', function () {
