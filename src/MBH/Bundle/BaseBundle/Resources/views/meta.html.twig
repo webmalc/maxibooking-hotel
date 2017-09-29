@@ -57,7 +57,7 @@
             {#Client config set Date#}
             {% set dateDatepickers = 'midnight'|date('d.m.Y') %}
 
-            {% if client_config().beginDate is not empty and client_config().beginDate is defined and  date(dateDatepickers) < date(client_config().beginDate)  %}
+            {% if client_config().beginDate is not empty and client_config().beginDate is defined %}
                 {% set dateDatepickers = client_config().beginDate|date('d.m.Y')  %}
             {% endif %}
             <script>
