@@ -7,8 +7,8 @@ $(document).ready(function ($) {
     var $filterBegin = $('#distribution-report-filter-begin');
     if (!$filterBegin.val()) {
         var $rangePickerInput = $('.daterangepicker-input');
-        $rangePickerInput.data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-        $rangePickerInput.data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
+        $rangePickerInput.data('daterangepicker').setStartDate(new Date());
+        $rangePickerInput.data('daterangepicker').setEndDate(moment().add(45, 'days').toDate());
     }
 });
 
