@@ -565,7 +565,8 @@ class PackageRepository extends DocumentRepository
         $distributionData = $qb
             ->map(
                 'function() {
-                    emit(this.' . $filterField . '.getDay(), this)
+                    var dayOfWeek = (this.' . $filterField . '.getDay() + 6) % 7;
+                    emit(dayOfWeek, this)
                 }'
             )
             ->reduce(
