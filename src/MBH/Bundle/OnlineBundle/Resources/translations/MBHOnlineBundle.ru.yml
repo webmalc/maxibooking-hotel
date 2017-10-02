@@ -55,6 +55,7 @@ views.api.getUserForm.check_in_time: 'Время заезда'
 views.api.getUserForm.check_out_time: 'Время отъезда'
 views.api.getUserForm.comment: Комментарий
 views.api.getUserForm.required_fields: '- поля обязательные для заполнения'
+views.api.getUserForm.personal_data_policies: 'С <a target="_blank" href="url">Политикой обработки персональных данных</a> ознакомлен'
 views.api.getUserForm.choose_other_rooms: 'Выбрать другие номера'
 views.api.getUserForm.continue: Продолжить
 views.api.getUserForm.reservation_error: 'Произошла ошибка во время бронирования.'
