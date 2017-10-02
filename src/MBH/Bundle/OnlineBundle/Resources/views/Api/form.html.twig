@@ -15,12 +15,22 @@
                 display: inline-block;
                 margin-left: 5px;
             }
+            @-moz-document url-prefix() {
+                #mbh-form-adults-children-wrapper {
+                    display:ruby-text;
+                    padding-bottom: 5px;
+                }
+                .children-ages {
+                    display: inline-table;
+                }
+            }
             #mbh-form-adults-children-wrapper div.mbh-form-row {
                 float:none;
             }
             #mbh-form-wrapper {
                 text-align: center;
             }
+
         </style>
     {% endif %}
 
