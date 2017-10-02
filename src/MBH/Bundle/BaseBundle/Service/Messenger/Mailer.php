@@ -139,7 +139,7 @@ class Mailer implements \SplObserver, MailerInterface
                 $data['messageType'] ?? null
             );
         } elseif (!$this->canISentToClient($data['messageType'])) {
-            throw new MailerNotificationException("There is no recipient client according mailer restrictions");
+//            throw new MailerNotificationException("There is no recipient client according mailer restrictions");
         }
 
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];

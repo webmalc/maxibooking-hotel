@@ -470,24 +470,12 @@ class ApiController extends Controller
             $hotels[$data->hotel->id] = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneById($data->hotel->id);
         }
 
-        $departureTime = Hotel::DEFAULT_DEPARTURE_TIME;
-        $arrivalTime = Hotel::DEFAULT_ARRIVAL_TIME;
-
         /** @var Hotel $hotel */
         foreach ($hotels as $hotel) {
-            if (!empty($hotel->getPackageDepartureTime()) && $hotel->getPackageDepartureTime() != Hotel::DEFAULT_DEPARTURE_TIME) {
-                $departureTime = $hotel->getPackageDepartureTime();
-            }
-            if (!empty($hotel->getPackageArrivalTime()) && $hotel->getPackageArrivalTime() != Hotel::DEFAULT_ARRIVAL_TIME) {
-                $departureTime = $hotel->getPackageArrivalTime();
-            }
-
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
         return [
-            'arrival' => $arrivalTime,
-            'departure' => $departureTime,
             'request' => $requestJson,
             'services' => $services,
             'hotels' => $hotels,
@@ -549,7 +537,7 @@ class ApiController extends Controller
             );
         }
         $packages = iterator_to_array($order->getPackages());
-        $this->sendNotifications($order, $requestJson->arrival.':00', $requestJson->departure.':00');
+        $this->sendNotifications($order);
 
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
@@ -600,11 +588,9 @@ class ApiController extends Controller
 
     /**
      * @param Order $order
-     * @param string $arrival
-     * @param string $departure
      * @return bool
      */
-    private function sendNotifications(Order $order, $arrival = null, $departure = null)
+    private function sendNotifications(Order $order)
     {
         try {
             //backend
@@ -620,12 +606,6 @@ class ApiController extends Controller
                 ->setType('info')
                 ->setCategory('notification')
                 ->setOrder($order)
-                ->setAdditionalData(
-                    [
-                        'arrivalTime' => $arrival,
-                        'departureTime' => $departure,
-                    ]
-                )
                 ->setHotel($hotel)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
@@ -651,8 +631,6 @@ class ApiController extends Controller
                             'prependText' => 'mailer.online.user.prepend',
                             'appendText' => 'mailer.online.user.append',
                             'fromText' => $hotel->getName(),
-                            'arrivalTime' => $arrival,
-                            'departureTime' => $departure,
                         ]
                     )
                     ->setHotel($hotel)
