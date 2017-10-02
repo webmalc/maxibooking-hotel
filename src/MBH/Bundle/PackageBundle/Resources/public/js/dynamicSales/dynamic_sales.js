@@ -38,8 +38,10 @@ $(document).ready(function ($) {
                     },
                     success: function (data) {
                         wrapper.html(data);
-                        onTableScroll();
-                        updateTables();
+                        if ($('.dynamic-sales-table').length > 0) {
+                            onTableScroll();
+                            updateTables();
+                        }
                         pricesProcessing = false;
                     },
                     dataType: 'html'
@@ -48,6 +50,7 @@ $(document).ready(function ($) {
         };
 
     var updateTables = function () {
+
         var headerTable = document.getElementById('headerTable');
         var headerTableHeight = parseInt(getComputedStyle(headerTable).height, 10);
         $('.dynamic-sales-table:lt(1)').css('margin-top', headerTableHeight);
@@ -127,6 +130,7 @@ $(document).ready(function ($) {
 
     var onTableScroll = function () {
         var tableWrapper = document.getElementById('dynamic-sales-table-wrapper');
+        tableWrapper.onscroll = null;
         tableWrapper.onscroll = function () {
             $('.table-title').css('left', tableWrapper.scrollLeft);
             $('#headerTable').css('top', tableWrapper.scrollTop);

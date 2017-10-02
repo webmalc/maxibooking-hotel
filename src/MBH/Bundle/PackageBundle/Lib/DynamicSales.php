@@ -19,7 +19,7 @@ class DynamicSales
     const PRICE_OF_CANCELLED_OPTION = 'price-of-cancelled';
     const PRICE_OF_PAID_CANCELLED_OPTION = 'price-of-paid-cancelled';
     const PRICE_OF_CANCELLED_FOR_PERIOD_OPTION = 'price-of-cancelled-for-period';
-    const NUMBER_OF_PAID_OPTION = 'number-of-paid';
+    const SUM_OF_PAID = 'number-of-paid';
     const NUMBER_OF_PAID_FOR_PERIOD_OPTION = 'number-of-paid-for-period';
     const SUM_OF_PAID_MINUS_CANCELLED_OPTION = 'sum-of-paid-minus-cancelled';
     const SUM_OF_PAID_FOR_CANCELLED_FOR_PERIOD_OPTION = 'sum-of-paid-for-cancelled-for-period';
@@ -38,7 +38,7 @@ class DynamicSales
         self::PRICE_OF_CANCELLED_OPTION,
         self::PRICE_OF_PAID_CANCELLED_OPTION,
         self::PRICE_OF_CANCELLED_FOR_PERIOD_OPTION,
-        self::NUMBER_OF_PAID_OPTION,
+        self::SUM_OF_PAID,
         self::SUM_OF_PAID_MINUS_CANCELLED_OPTION,
         self::SUM_OF_PAID_FOR_CANCELLED_FOR_PERIOD_OPTION,
         self::SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION
@@ -63,7 +63,7 @@ class DynamicSales
         self::NUMBER_OF_CANCELLED_OPTION,
         self::PRICE_OF_CANCELLED_OPTION,
         self::PRICE_OF_PAID_CANCELLED_OPTION,
-        self::NUMBER_OF_PAID_OPTION,
+        self::SUM_OF_PAID,
         self::SUM_OF_PAID_MINUS_CANCELLED_OPTION
     ];
 
@@ -76,7 +76,6 @@ class DynamicSales
      * @var DynamicSalesPeriod[]
      */
     protected $periods = [];
-
     private $comparisonData = [];
     private $relativeComparisonData = [];
 

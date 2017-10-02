@@ -11,3 +11,9 @@ services:
     mbh.cash:
         class: MBH\Bundle\CashBundle\Service\Cash
         arguments: ['@service_container']
+
+    mbh.cash_document_type:
+        class: MBH\Bundle\CashBundle\Form\CashDocumentType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}

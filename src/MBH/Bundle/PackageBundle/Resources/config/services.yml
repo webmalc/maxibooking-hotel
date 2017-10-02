@@ -20,9 +20,10 @@ services:
     mbh.tourists.messenger:
             class: MBH\Bundle\PackageBundle\Services\TouristsMessenger
             arguments: ['@service_container']
-        
+
     mbh.calculation:
             class: MBH\Bundle\PackageBundle\Services\Calculation
+            factory: ['MBH\Bundle\PackageBundle\Services\CalculationFactory', createCalculation]
             arguments: ['@service_container']
 
     mbh.order_manager:
@@ -156,7 +157,7 @@ services:
 
     mbh.chess_board.message_formatter:
         class: MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter
-        arguments: ['@translator']
+        arguments: ['@translator', '@doctrine.odm.mongodb.document_manager']
 
     mbh.chess_board_unit:
         class: MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit
@@ -164,10 +165,30 @@ services:
         shared: false
 
     task_notice_unpaid_order:
-        class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
-        arguments:  ["@mbh.notice.unpaid"]
+      class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
+      arguments:  ["@mbh.notice.unpaid"]
+
+    mbh.tourist_manager:
+        class: MBH\Bundle\PackageBundle\Services\TouristManager
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@form.factory'
+
+    mbh.notice_stay_place_xls_type:
+      class: MBH\Bundle\PackageBundle\DocumentGenerator\Xls\Type\NoticeStayPlaceXlsType
+      arguments:
+          - '@doctrine_mongodb.odm.document_manager'
+          - '@translator'
+      tags:
+          - {name: form.type}
+
+    mbh.organization_type:
+      class: MBH\Bundle\PackageBundle\Form\OrganizationType
+      arguments: ['@translator', '@doctrine.odm.mongodb.document_manager']
+      tags:
+          - {name: form.type}
 
     mbh.dynamic_sales_report.dynamic_sales_day:
-        class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
-        arguments: ['@doctrine.odm.mongodb.document_manager']
-        shared: false
+      class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
+      arguments: ['@doctrine.odm.mongodb.document_manager']
+      shared: false

@@ -2,6 +2,9 @@
 
 namespace MBH\Bundle\PackageBundle\Command;
 
+use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,7 +32,6 @@ class MailerCommand extends ContainerAwareCommand
         $helper = $this->getContainer()->get('mbh.helper');
         $notifier = $this->getContainer()->get('mbh.notifier.mailer');
         $router = $this->getContainer()->get('router');
-        $linksParams = $this->getContainer()->getParameter('mailer_user_arrival_links');
 
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -40,17 +42,22 @@ class MailerCommand extends ContainerAwareCommand
         $tomorrow = new \DateTime('midnight + 1 day');
         $dayAfterTomorrow =  new \DateTime('midnight + 2 days');
 
+        /** @var PackageRepository $repo */
         $repo = $this->dm->getRepository('MBHPackageBundle:Package');
 
         //begin tomorrow report
-        $packages = $repo->createQueryBuilder('p')
+        $packages = $repo->createQueryBuilder()
             ->field('begin')->gte($tomorrow)
             ->field('begin')->lt($dayAfterTomorrow)
             ->getQuery()
             ->execute();
         ;
+
+        $translatedTransferCategory = $this->getContainer()->get('translator')
+            ->trans('price.datafixtures.mongodb.servicedata.transfer');
+
         $transferCategories = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->findBy([
-           '$or' => [['fullTitle' => 'Трансфер'], ['title' => 'Трансфер']],
+           '$or' => [['fullTitle' => $translatedTransferCategory], ['title' => $translatedTransferCategory]],
            'isEnabled' => true
         ]);
         $transferServices = $this->dm->getRepository('MBHPriceBundle:Service')->findBy([
@@ -83,6 +90,7 @@ class MailerCommand extends ContainerAwareCommand
                 ->setTemplate('MBHBaseBundle:Mailer:reportArrival.html.twig')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'))
+                ->setMessageType(NotificationType::ARRIVAL_TYPE)
             ;
             $notifier
                 ->setMessage($message)
@@ -110,7 +118,6 @@ class MailerCommand extends ContainerAwareCommand
                     ->setOrder($package->getOrder())
                     ->setAdditionalData([
                         'package' => $package,
-                        'links' => $this->getContainer()->getParameter('mailer_user_arrival_links'),
                         'fromText' => $package->getRoomType()->getHotel()
                     ])
                     ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
@@ -119,23 +126,24 @@ class MailerCommand extends ContainerAwareCommand
                     ->addRecipient($payer)
                     ->setLink('hide')
                     ->setSignature('mailer.online.user.signature')
+                    ->setMessageType(NotificationType::ARRIVAL_TYPE)
                 ;
                 $notifier
                     ->setMessage($message)
                     ->notify()
                 ;
-
             }
         }
 
         //user polls
-        $packages = $repo->createQueryBuilder('p')
+        $packages = $repo->createQueryBuilder()
             ->field('end')->gte($yesterday)
             ->field('end')->lt($now)
             ->getQuery()
             ->execute();
         ;
         if (count($packages)) {
+            /** @var Package $package */
             foreach ($packages as $package) {
                 $order = $package->getOrder();
                 $payer = $order->getPayer();
@@ -149,10 +157,10 @@ class MailerCommand extends ContainerAwareCommand
                 $link = $router->generate('online_poll_list', [
                     'id' => $order->getId(),
                     'payerId' => $order->getPayer()->getId()
-                ], true);
+                ], $router::ABSOLUTE_URL);
 
-                if (!empty($linksParams['poll'])) {
-                    $link = $linksParams['poll'] . '?link=' . $link;
+                if (!empty($hotel->getPollLink())) {
+                    $link = $hotel->getPollLink() . '?link=' . $link;
                 }
 
                 $message
@@ -176,6 +184,7 @@ class MailerCommand extends ContainerAwareCommand
                     ->setLink($link)
                     ->setLinkText('mailer.online.user.poll.link')
                     ->setSignature('mailer.online.user.signature')
+                    ->setMessageType(NotificationType::FEEDBACK_TYPE)
                 ;
                 $notifier
                     ->setMessage($message)

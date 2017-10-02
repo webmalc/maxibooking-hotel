@@ -93,7 +93,9 @@ class PackageAccommodationManipulator
         is_null($endDate) ?: $accommodation->setEnd($endDate);
         is_null($room) ?: $accommodation->setAccommodation($room);
 
-        $errorMessage = $this->checkErrors($accommodation, $accommodation->getPackage());
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->getPackageByPackageAccommodationId($accommodation->getId());
+        $errorMessage = $this->checkErrors($accommodation, $package);
         if ($errorMessage != '') {
             return $errorMessage;
         }
@@ -188,14 +190,16 @@ class PackageAccommodationManipulator
         return new ArrayCollection($packageAccommodations);
     }
 
-    private function checkErrors(PackageAccommodation $accommodation, Package $package)
+    public function checkErrors(PackageAccommodation $accommodation, Package $package)
     {
         if ($accommodation->getBegin() < $package->getBegin() || $accommodation->getEnd() > $package->getEnd()) {
             return $this->translator->trans('accommodation_manipulator.error.incorrect_acc_to_package_dates');
         }
+
         if ($accommodation->getBegin() >= $accommodation->getEnd()) {
             return $this->translator->trans('controller.packageController.accommodation_add.begin_equal_or_later_end_error');
         }
+
         foreach ($package->getAccommodations() as $iteratedAccommodation) {
             /** @var PackageAccommodation $accommodation */
             if ($accommodation->getId() != $iteratedAccommodation->getId()) {
@@ -205,6 +209,7 @@ class PackageAccommodationManipulator
                 }
             }
         }
+
         $existedAccommodations = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')
             ->fetchWithAccommodation(
                 (clone $accommodation->getBegin())->add(new \DateInterval('P1D')),
@@ -213,8 +218,11 @@ class PackageAccommodationManipulator
                 $package);
 
         if (count($existedAccommodations) > 0) {
-            return $this->translator->trans('accommodation_manipulator.error.room_busy',
-                ['%roomName%' => $accommodation->getAccommodation()->getName()]);
+            $errorMessageId = empty($accommodation->getId())
+                ? 'accommodation_manipulator.error.room_busy'
+                : 'accommodation_manipulator.error.edited_room_busy';
+
+            return $this->translator->trans($errorMessageId, ['%roomName%' => $accommodation->getAccommodation()->getName()]);
         }
 
         return '';

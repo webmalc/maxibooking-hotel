@@ -13,9 +13,13 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\RestaurantBundle\Document\IngredientCategory;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class IngredientsCategoryData extends AbstractFixture implements OrderedFixtureInterface
+class IngredientsCategoryData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function load(ObjectManager $manager)
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
@@ -23,7 +27,8 @@ class IngredientsCategoryData extends AbstractFixture implements OrderedFixtureI
         if ($hotels) {
             foreach ($hotels as $hotel) {
 
-                foreach ($this->getCategories() as $categoryFullTitle) {
+                foreach ($this->getCategories() as $categoryFullTitleId) {
+                    $categoryFullTitle = $this->container->get('translator')->trans($categoryFullTitleId);
                     if ($manager->getRepository('MBHRestaurantBundle:IngredientCategory')->findOneBy(['fullTitle'=>$categoryFullTitle])) {
                         continue;
                     }
@@ -43,9 +48,9 @@ class IngredientsCategoryData extends AbstractFixture implements OrderedFixtureI
     private function getCategories(): array
     {
         return [
-            'Овощи',
-            'Фрукты',
-            'Напитки',
+            'fixtures.ingredients_category_data.categories.vegetables',
+            'fixtures.ingredients_category_data.categories.fruit',
+            'fixtures.ingredients_category_data.categories.beverages',
         ];
     }
 

@@ -24,7 +24,7 @@
         {% endif %}
 
         {% for group, items in groups %}
-
+            {% if group != 'no-group' %}
             <div class="box box-default box-solid">
 
                 <div class="box-header with-border">
@@ -37,16 +37,23 @@
                 </div>
 
                 <div class="box-body">
-                    {% for item in items %}
-                        {{ form_row(form[item]) }}
-                    {% endfor %}
+                    {{ block('drawForm') }}
                 </div>
             </div>
+            {% else %}
+                {{ block('drawForm') }}
+            {% endif %}
         {% endfor %}
 
         {{ form_rest(form) }}
     </div>
 {% endblock form_widget_compound %}
+
+{% block drawForm %}
+    {% for item in items %}
+        {{ form_row(form[item]) }}
+    {% endfor %}
+{% endblock %}
 
 {% block form_row %}
     {% spaceless %}

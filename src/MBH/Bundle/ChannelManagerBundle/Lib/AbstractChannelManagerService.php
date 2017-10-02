@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -11,11 +13,18 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Doctrine\ODM\MongoDB\Query\Builder;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
 use Doctrine\MongoDB\CursorInterface;
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
 {
+
+    const COMMAND_UPDATE = 'update';
+
+    const COMMAND_UPDATE_PRICES = 'updatePrices';
+
+    const COMMAND_UPDATE_ROOMS = 'updateRooms';
+
+    const COMMAND_UPDATE_RESTRICTIONS = 'updateRestrictions';
 
     /**
      * Test mode on/off
@@ -42,7 +51,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     protected $dm;
 
     /**
-     * @var \Symfony\Bundle\TwigBundle\Debug\TimedTwigEngine
+     * @var TwigEngine
      *
      */
     protected $templating;
@@ -87,6 +96,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->request = $container->get('request_stack')->getCurrentRequest();
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
+        $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->currency = $container->get('mbh.currency');
         $this->roomManager = $container->get('mbh.hotel.room_type_manager');
     }
@@ -109,12 +119,17 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         if (!$config && !$config->getIsEnabled()) {
             return null;
         }
+
         $trans = $this->container->get('translator');
         $overview = new ChannelManagerOverview();
-        $overview->setBegin($begin)->setEnd($end);
+        $overview->setBegin($begin)
+            ->setName(static::class)
+            ->setEnd($end);
 
         $getError = function (array $types, string $prefix, ChannelManagerOverview &$overview, string $method) use ($config, $trans, $begin, $end) {
-            
+            if (empty($types)) {
+                return null;
+            }
             $getMethod = 'get' . ucfirst($method);
             foreach ($this->$getMethod($config, $begin, $end, $types) as $val) {
                 $message = $val->getDate()->format('d.m.Y') . ': ' . $val->getTariff();
@@ -125,7 +140,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                         return $trans->trans($prefix . '.type.' . $element);
                     }
                 }, array_keys($types))));
-            
+
                 $addMethod = 'add' . ucfirst($method);
                 $overview->$addMethod($val, $message);
             }
@@ -133,6 +148,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
         $getError(static::UNAVAIBLE_PRICES, 'channelmanager.notifications.prices', $overview, 'prices');
         $getError(static::UNAVAIBLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $overview, 'restrictions');
+
         return $overview;
     }
 
@@ -147,7 +163,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
         $trans = $this->container->get('translator');
         $getError = function (array $types, string $message, array &$errors, string $method) use ($config, $trans) {
-            
+            if (empty($types)) {
+                return $errors;
+            }
             if (count($types) && $this->$method($config, $types)) {
                 $error = $trans->trans($message) . ': ';
                 $error .= implode(', ', array_map(function ($element) use ($trans, $message) {
@@ -205,13 +223,11 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function closeAll()
     {
-        $this->log('Abstract closeAll function start');
         $result = true;
         foreach ($this->getConfig() as $config) {
             $check = $this->closeForConfig($config);
             $result ? $result = $check : $result;
         }
-        $this->log('Abstract closeAll function end.');
 
         return $result;
     }
@@ -254,7 +270,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $result ? $result = $check : $result;
 
         $this->log('ChannelManager update function end.');
-
 
         return $result;
     }
@@ -632,31 +647,44 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param array $data
      * @param array $headers
      * @param bool $error
-     * @param $post $error
+     * @param string $method
      * @return mixed
      */
-    public function send($url, $data = [], $headers = null, $error = false, $post = true)
+    public function send($url, $data = [], $headers = null, $error = false, $method = 'POST')
     {
-        $ch = curl_init($url);
+        $ch = curl_init();
 
-        if ($post) {
+        if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
         }
+        if ($method == 'PUT') {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        }
+        if (static::TEST) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+        //TODO: ИСПРАВИТЬ ДЛЯ ПРОДА!!!
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
-        if ($post && !empty($data)) {
-            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+        if (!empty($data)) {
+            if ($method == 'POST' || $method == 'PUT') {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            } elseif ($method == 'GET') {
+                $url = $url . '?' . http_build_query($data);
+            }
         }
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
 
-        if (static::TEST) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        }
         $output = curl_exec($ch);
 
         if (!$output && $error) {
@@ -692,7 +720,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     /**
      * @param $service
      * @param null $info
-     * @return bool
+     * @return bool|\MBH\Bundle\BaseBundle\Service\Messenger\Notifier
      */
     public function notifyError($service, $info = null)
     {
@@ -714,11 +742,13 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setType('danger')
                 ->setCategory('notification')
                 ->setAutohide(false)
-                ->setEnd(new \DateTime('+10 minute'));
+                ->setEnd(new \DateTime('+10 minute'))
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
+            ;
 
             return $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
-            return false;
+            $this->logger->addAlert('Error notification Error ChannelManager'.$e->getMessage());
         }
     }
 
@@ -760,11 +790,12 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setOrder($order)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
             ;
 
             $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
-            return false;
+            $this->logger->addAlert('Notification channelManager ERROR'.$e->getMessage());
         }
     }
 
@@ -804,5 +835,22 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         } catch (Exception $e) {
             return $amount / $config->getCurrencyDefaultRatio();
         }
+    }
+
+    /**
+     * @param Order $order
+     * @param $isModified
+     * @return string
+     */
+    public function getUnexpectedOrderError(Order $order, $isModified)
+    {
+        $errorMessageId = $isModified
+            ? 'services.channel_manager.error.unexpected_modified_order'
+            : 'services.channel_manager.error.unexpected_removed_order';
+
+        return $this->container->get('translator')->trans($errorMessageId, [
+            '%orderId%' => $order->getChannelManagerId(),
+            '%service_name%' => $order->getChannelManagerType()
+        ], 'MBHChannelManagerBundle');
     }
 }

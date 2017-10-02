@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
+use Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,10 +25,14 @@ class Notifier implements \SplSubject
      */
     private $message;
 
-    public function __construct(ContainerInterface $container)
+    /** @var  Logger */
+    private $logger;
+
+    public function __construct(ContainerInterface $container, Logger $logger)
     {
         $this->container = $container;
         $this->observers = new \SplObjectStorage();
+        $this->logger = $logger;
     }
 
     /**
@@ -79,37 +84,25 @@ class Notifier implements \SplSubject
         return $this;
     }
 
-    /**
-     * @return $this
-     */
+
     public function notify()
     {
-        $user = null;
-        $st = $this->container->get('security.token_storage');
-        if ($st->getToken()) {
-            $user = $st->getToken()->getUser();
-        }
-
-        $method = 'get' . ucfirst($this->message->getCategory()) . 's';
-
-        if (!empty($this->message->getText()) || !empty($this->message->getOrder())) {
-
-            if (!$user || !method_exists($user, $method)  || $user->$method()) {
-
-                foreach ($this->observers as $observer) {
-                    try {
-                        $observer->update($this);
-                    } catch (\Exception $e) {
-                        $env = $this->container->get('kernel')->getEnvironment();
-                        if ($env == 'dev') {
-                            dump($e->getMessage());
-                        }elseif($env == 'test' && php_sapi_name() == 'cli') {
-                            echo $e;
-                        }
-                    }
+        foreach ($this->observers as $observer) {
+            try {
+                $this->logger->addInfo('Try to update '.get_class($observer).' message observer');
+                $observer->update($this);
+            } catch (\Throwable $e) {
+                $this->logger->addCritical($e->getMessage());
+                $env = $this->container->get('kernel')->getEnvironment();
+                if ($env == 'dev') {
+                    dump($e->getMessage());
+                } elseif ($env == 'test' && php_sapi_name() == 'cli') {
+                    echo $e;
                 }
+                throw $e;
             }
         }
+
         $this->setMessage(null);
 
         return $this;

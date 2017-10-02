@@ -40,6 +40,10 @@ class FormConfig extends Base
         "yeti" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css",
         "bootstrap" => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
     ];
+
+    const CSS_LIBRARIES = [
+        "font_awesome" => "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    ];
     
     /**
      * Hook timestampable behavior
@@ -64,6 +68,12 @@ class FormConfig extends Base
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
      */
     protected $hotels;
+
+    /**
+     * @var array
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
+     */
+    protected $roomTypeChoices;
 
     /**
      * @var boolean
@@ -129,6 +139,13 @@ class FormConfig extends Base
 
     /**
      * @var string
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="string")
+     */
+    protected $js;
+
+    /**
+     * @var string
      * @Gedmo\Versioned
      * @Assert\NotNull()
      * @Assert\Url()
@@ -143,10 +160,189 @@ class FormConfig extends Base
      * @Assert\Choice(callback = "getThemes")
      */
     protected $theme;
+    
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1, max = 20
+     * )
+     */
+    private $maxPackages = 5;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int")
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     */
+    private $frameWidth = 300;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int")
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     */
+    private $frameHeight = 400;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\Type(type="bool")
+     */
+    private $isFullWidth = false;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Type(type="string")
+     * @Assert\Length(
+     *     max=65536
+     * )
+     */
+    private $formTemplate;
+
+    /**
+     * @var array
+     * @Gedmo\Versioned
+     * @ODM\Collection
+          * @Assert\Choice(callback = "getCssLibrariesList", multiple = true)
+     */
+    private $cssLibraries;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="boolean")
+     */
+    private $isHorizontal = false;
+
+    /**
+     * @return bool
+     */
+    public function isHorizontal(): ?bool
+    {
+        return $this->isHorizontal;
+    }
+
+    /**
+     * @param bool $isHorizontal
+     * @return FormConfig
+     */
+    public function setIsHorizontal(bool $isHorizontal): FormConfig
+    {
+        $this->isHorizontal = $isHorizontal;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJs(): ?string
+    {
+        return $this->js;
+    }
+
+    /**
+     * @param string $js
+     * @return FormConfig
+     */
+    public function setJs(string $js = null): FormConfig
+    {
+        $this->js = $js;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFullWidth(): bool
+    {
+        return $this->isFullWidth;
+    }
+
+    /**
+     * @param bool $isFullWidth
+     * @return FormConfig
+     */
+    public function setIsFullWidth(bool $isFullWidth): FormConfig
+    {
+        $this->isFullWidth = $isFullWidth;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFrameWidth(): int
+    {
+        return $this->frameWidth;
+    }
+
+    /**
+     * @param int $frameWidth
+     * @return FormConfig
+     */
+    public function setFrameWidth(int $frameWidth): FormConfig
+    {
+        $this->frameWidth = $frameWidth;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFrameHeight(): int
+    {
+        return $this->frameHeight;
+    }
+
+    /**
+     * @param int $frameHeight
+     * @return FormConfig
+     */
+    public function setFrameHeight(int $frameHeight): FormConfig
+    {
+        $this->frameHeight = $frameHeight;
+
+        return $this;
+    }
 
     public function __construct()
     {
         $this->hotels = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * maxPackages set
+     *
+     * @param int $maxPackages
+     * @return self
+     */
+    public function setMaxPackages(int $maxPackages): self
+    {
+        $this->maxPackages = $maxPackages;
+
+        return $this;
+    }
+
+    /**
+     * maxPackages get
+     *
+     * @return int
+     */
+    public function getMaxPackages(): int
+    {
+        return $this->maxPackages;
     }
 
     /**
@@ -182,6 +378,11 @@ class FormConfig extends Base
     public static function getThemes()
     {
         return self::THEMES;
+    }
+
+    public static function getCssLibrariesList()
+    {
+        return self::CSS_LIBRARIES;
     }
 
     /**
@@ -318,6 +519,24 @@ class FormConfig extends Base
     }
     
     /**
+     * @return array
+     */
+    public function getRoomTypeChoices()
+    {
+        return $this->roomTypeChoices;
+    }
+
+    /**
+     * @param array $roomTypeChoices
+     * @return FormConfig
+     */
+    public function setRoomTypeChoices($roomTypeChoices)
+    {
+        $this->roomTypeChoices = $roomTypeChoices;
+        return $this;
+    }
+    
+    /**
      * @return string
      */
     public function getCss(): ?string
@@ -370,4 +589,46 @@ class FormConfig extends Base
         $this->resultsUrl = $resultsUrl;
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getFormTemplate(): ?string
+    {
+        return $this->formTemplate;
+    }
+
+    /**
+     * @param string $formTemplate
+     * @return FormConfig
+     */
+    public function setFormTemplate(string $formTemplate = null): FormConfig
+    {
+        $this->formTemplate = $formTemplate;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCssLibraries()
+    {
+        return $this->cssLibraries;
+    }
+
+    /**
+     * @param array $cssLibraries
+     * @return FormConfig
+     */
+    public function setCssLibraries(array $cssLibraries = null): FormConfig
+    {
+        $this->cssLibraries = $cssLibraries;
+
+        return $this;
+    }
+
+
+
+
 }

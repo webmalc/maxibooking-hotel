@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener;
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
@@ -10,7 +11,7 @@ class OnRequest
 {
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
@@ -18,14 +19,10 @@ class OnRequest
     {
         $this->container = $container;
     }
-    
+
     public function onKernelRequest(GetResponseEvent $event)
     {
-        //set default timezone
-        $tz = $this->container->getParameter('mbh.timezone');
-        if (!empty($tz) && $tz != 'default') {
-            $this->container->get('twig')->getExtension('core')->setTimezone($tz);
-        }
-
+        $timeZone = $this->container->get('mbh.helper')->getTimeZone();
+        $this->container->get('twig')->getExtension('Twig_Extension_Core')->setTimezone($timeZone);
     }
 }

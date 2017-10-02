@@ -4,6 +4,7 @@ namespace MBH\Bundle\CashBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
@@ -14,13 +15,20 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class CashDocumentType
-
  */
 class CashDocumentType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * @var DocumentManager
      */
@@ -30,11 +38,16 @@ class CashDocumentType extends AbstractType
     {
         $payers = [];
         $this->documentManager = $options['dm'];
+
+        $clientConfig = $this->documentManager->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        /** @var CashDocument $cashDocument */
+        $cashDocument = $builder->getData();
+
         foreach ($options['payers'] as $payer) {
             $text = $payer->getName();
             if ($payer instanceof Organization) {
                 $prefix = 'org';
-                $text .= ' (' . 'form.cashDocumentType.inn' . ' ' . $payer->getInn() . ') ' . $payer->getDirectorFio();
+                $text .= ' (' . $this->translator->trans('form.cashDocumentType.inn') . ' ' . $payer->getInn() . ') ' . $payer->getDirectorFio();
             } elseif ($payer instanceof Tourist) {
                 $prefix = 'tourist';
                 $text .= $payer->getBirthday() ? ' ' . $payer->getBirthday()->format('d.m.Y') : '';
@@ -99,6 +112,16 @@ class CashDocumentType extends AbstractType
                 'label' => 'form.cashDocumentType.is_paid',
                 'required' => false,
                 'group' => $options['groupName'],
+            ])
+            ->add(
+                'isSendMail', CheckboxType::class, [
+                'label' => 'form.cashDocumentType.is_send_mail.label',
+                'help' => 'form.cashDocumentType.is_send_mail.help',
+                'required' => false,
+                'group' => $options['groupName'],
+                'data' => !is_null($cashDocument) && !is_null($cashDocument->isSendMail())
+                    ? $cashDocument->isSendMail()
+                    : $clientConfig->isSendMailAtPaymentConfirmation()
             ])
             ->add('paid_date', DateType::class, [
                 'label' => 'form.cashDocumentType.paid_date',

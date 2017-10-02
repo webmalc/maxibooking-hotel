@@ -22,10 +22,12 @@ function priceSeparator(amount) {
 
 jQuery(document).ready(function() {
     var resize = function() {
+        // console.log(document.body.scrollHeight);
+        // console.log($( 'body' ).height());
         window.parent.postMessage({
             type: 'mbh',
                 action: 'resize',
-                height: document.body.scrollHeight
+                height: $('body').height()
             }, "*");
         };
         resize();
@@ -39,8 +41,7 @@ jQuery(document).ready(function() {
                 return jQuery('#mbh-form-locale').val();
             },
             waiting = function() {
-                var locale = getLocale();
-                var text = !locale || locale == 'ru' ?'Подождите...' : 'Please wait...';
+                var text = '{{ "package.processing"|trans({}, 'front_messages')}}';
                 wrapper.html('<div class="mbh-results-info alert alert-info"><i class="fa fa-spinner fa-spin"></i> ' + text + '</div>');
             },
             getUrlVars = function() {
@@ -63,7 +64,6 @@ jQuery(document).ready(function() {
                 });
             },
             query = getUrlVars();
-        //var errorHtml = '<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>';
         var errorHtml = jQuery('#mbh-date-error').clone().removeClass('hide').attr('id', '');
         if (!query.begin || !query.end) {
             wrapper.html(errorHtml);
@@ -138,7 +138,7 @@ jQuery(document).ready(function() {
                         if (parseInt(per_person.attr('data-change'), 10)) {
                             var touriststHash = touristVal.split('_'),
                                 totalTourists = parseInt(touriststHash[0], 10) + parseInt(touriststHash[1], 10);
-                            var touristsPhrase = (totalTourists === 1) ? ' человека' : ' человек';;
+                            var touristsPhrase = (totalTourists === 1) ? ' человека' : ' человек';
 
                             per_person.html('цена за ' + totalTourists + touristsPhrase);
                         }
@@ -154,7 +154,7 @@ jQuery(document).ready(function() {
                 //colorize tr
                 (function() {
                     var show = function() {
-                        var selected = jQuery('select.mbh-results-packages-count').filter(function() {
+                        var selected = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked').filter(function() {
                             return parseInt(jQuery(this).val(), 10) > 0;
                         });
                         jQuery('#mbh-results-table').find('tr').removeClass('mbh-result-selected-tr warning');
@@ -166,7 +166,7 @@ jQuery(document).ready(function() {
                         }
                     };
                     show();
-                    jQuery('select.mbh-results-packages-count').change(function() {
+                    jQuery('.mbh-results-packages-count').change(function() {
                         show();
                     });
                 }());
@@ -175,7 +175,7 @@ jQuery(document).ready(function() {
                 (function() {
                     var servicesWrapper = jQuery('#mbh-results-services-wrapper'),
                         show = function() {
-                            var selected = jQuery('select.mbh-results-packages-count').filter(function() {
+                            var selected = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked').filter(function() {
                                 return parseInt(jQuery(this).val(), 10) > 0;
                             });
                             servicesWrapper.hide();
@@ -206,7 +206,7 @@ jQuery(document).ready(function() {
 
                     if (jQuery('#mbh-results-table-services-th-hotel').length) {
                         show();
-                        jQuery('select.mbh-results-packages-count').change(function() {
+                        jQuery('.mbh-results-packages-count').change(function() {
                             show();
                         });
                     }
@@ -219,7 +219,7 @@ jQuery(document).ready(function() {
                             totalServices = 0,
                             total = 0,
                             nextButton = jQuery('#mbh-results-next'),
-                            roomCount = jQuery('select.mbh-results-packages-count'),
+                            roomCount = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked'),
                             servicesCount = jQuery('select.mbh-results-services-count');
                         nextButton.prop('disabled', true);
                         roomCount.each(function() {
@@ -260,19 +260,19 @@ jQuery(document).ready(function() {
                 (function() {
                     jQuery('#mbh-results-next').click(function() {
                         var urlParams = getUrlVars(),
-                            roomCount = jQuery('select.mbh-results-packages-count'),
+                            roomCount = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked'),
                             servicesCount = jQuery('select.mbh-results-services-count');
-                        requestParams.begin = jQuery('#mbh-results-duration-begin').text();
-                        requestParams.end = jQuery('#mbh-results-duration-end').text();
-                        requestParams.days = jQuery('#mbh-results-duration-days').text();
-                        requestParams.nights = jQuery('#mbh-results-duration-nights').text();
-                        requestParams.total = jQuery('#mbh-results-total-sum').text();
-                        requestParams.totalPackages = jQuery('#mbh-results-total-packages-sum').text();
-                        requestParams.totalServices = jQuery('#mbh-results-total-services-sum').text();
-                        requestParams.packages = [];
-                        requestParams.services = [];
-                        requestParams.locale = getLocale();
-                        roomCount.each(function() {
+                            requestParams.begin = jQuery('#mbh-results-duration-begin').text();
+                            requestParams.end = jQuery('#mbh-results-duration-end').text();
+                            requestParams.days = jQuery('#mbh-results-duration-days').text();
+                            requestParams.nights = jQuery('#mbh-results-duration-nights').text();
+                            requestParams.total = jQuery('#mbh-results-total-sum').text();
+                            requestParams.totalPackages = jQuery('#mbh-results-total-packages-sum').text();
+                            requestParams.totalServices = jQuery('#mbh-results-total-services-sum').text();
+                            requestParams.packages = [];
+                            requestParams.services = [];
+                            requestParams.locale = getLocale();
+                            roomCount.each(function() {
                             if (jQuery(this).val() > 0) {
                                 var tr = jQuery(this).closest('tr'),
                                     pricesLi = tr.find('ul.mbh-results-prices li:visible'),

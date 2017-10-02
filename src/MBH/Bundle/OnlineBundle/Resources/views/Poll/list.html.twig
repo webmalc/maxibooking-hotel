@@ -5,14 +5,14 @@
 
 {% if hotel is defined and hotel %}
     {% set hotelName = hotel.name %}
-    {% if hotel.file %}
-        {% set logo = hotel.logoUrl %}
+    {% if hotel.logoImage %}
+        {% set logo = asset(vich_uploader_asset(hotel.logoImage, 'imageFile')) %}
     {% endif %}
     {% if hotel.organization %}
         {% set organization = hotel.organization.name %}
     {% endif %}
 {% else %}
-    {% set organization = 'Система управления отелем' %}
+    {% set organization = 'views.list.hotel_management_system'|trans %}
 {% endif %}
 
 <!DOCTYPE html>
@@ -58,7 +58,7 @@
         <div id="messages" style="margin-left: 20px; margin-right: 20px;">
             {% if app.session.flashbag.keys()|length == 0 and complete %}
                 <div class="alert alert-danger">
-                    Отзыв по этому заказу уже оставлен!
+                    {{ 'views.list.review_comiled'|trans}}
                 </div>
             {% endif %}
 
@@ -77,10 +77,9 @@
         {% if complete is empty %}
 
         <div style="padding:25px 25px 50px;min-height:300px;">
-            <p>Мы были рады принимать вас и надеемся, что ваше пребывание в нашем отеле было комфортным и приятным.</p>
+            <p>{{ 'views.list.we_were_glad_to_recieve_you'|trans}}.</p>
 
-            <p>Пожалуйста, заполните небольшую анкету гостя, ваша оценка поможет нам развиваться и улучшать наш сервис.
-                Мы будем рады видеть Вас снова!</p>
+            <p>{{ 'views.list.please_fill_questionnaire'|trans}}</p>
 
             <form action="{{ path('online_poll_list', {'id': order.id, 'payerId': order.payer.id}) }}" id="mb-rank-form" method="POST">
 
@@ -90,7 +89,7 @@
 
                     {% if not cat or cat != question.category %}
                         {% set cat = question.category %}
-                        <h4 class="header_thin">Пожалуйста, оцените {{ question.category|trans() }}</h4>
+                        <h4 class="header_thin">{{ 'views.list.rate_please'|trans}} {{ question.category|trans() }}</h4>
                     {% endif %}
 
                     <div class="row">
@@ -107,12 +106,12 @@
                     <hr>
                 {% endfor %}
 
-                <h4 class="header_thin">Ваш отзыв или пожелание</h4>
+                <h4 class="header_thin">{{ 'views.list.your_review_wishes'|trans}}</h4>
 
                 <div class="row">
                     <div class="col-sm-4">
-                        Ваш отзыв, предложения или пожелания<br><br>
-                        <small>(необязательно)</small>
+                        {{ 'views.list.your_review_sentences_or_wishes'|trans}}<br><br>
+                        <small>({{ 'views.list.not_necessary'|trans}})</small>
                     </div>
                     <div class="col-sm-8">
                         <textarea class="mb-textarea mb-rank-result" id="mb-rank-result-note"
@@ -123,7 +122,7 @@
                 <br>
 
                 <div class="mb-pp-button-overlay" align="center">
-                    <button type="button" class="btn btn-lg btn-success btn-block mb-rank-submit">ОТПРАВИТЬ</button>
+                    <button type="button" class="btn btn-lg btn-success btn-block mb-rank-submit">{{ 'views.list.send'|trans}}</button>
                 </div>
             </form>
 
@@ -132,8 +131,8 @@
     </div>
     <div class="mb-pp-mline mb-pp-mlinebottom"></div>
     <div style="text-align:right;min-width:400px;clear:both;margin:20px 25px 40px;">
-        <small>Основано на технологиях MAXIBOOKING LLC</small>
-        <a href="http://maxi-booking.ru/" title="Основано на технологиях MaxiBooking" target="_blank"><img
+        <small>{{ 'views.list.based_on_technologies_mb'|trans}}</small>
+        <a href="http://maxi-booking.ru/" title="{{ 'views.list.based_on_technologies_mb'|trans}}" target="_blank"><img
                     src="{{ asset('/bundles/mbhbase/images/maxibooking.png') }}" alt="MaxiBooking" width="105px"
                     height="23px" align="absmiddle"
                     style="margin-left:12px;"></a></div>

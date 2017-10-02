@@ -26,9 +26,6 @@ class HundredOneHotelType extends AbstractType
                 'hotelId', TextType::class, [
                     'label' => 'form.hundredOneHotels.hotel_id',
                     'required' => true,
-                    'attr' => [
-                        'placeholder' => 'hotel id'
-                    ],
                     'help' => 'form.hundredOneHotels.hotel_id_in_101_hotels'
                 ]
             )

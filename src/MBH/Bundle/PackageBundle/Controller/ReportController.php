@@ -138,14 +138,14 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ->addChild('arrivals', [
                 'route' => 'report_porter',
                 'routeParameters' => ['type' => 'arrivals'],
-                'label' => 'Заезд'
+                'label' => $this->get('translator')->trans('report.porter.menu.arrival')
             ]);
         $menuItem
             ->addChild('lives', ['route' => 'report_porter', 'routeParameters' => ['type' => 'lives']])
-            ->setLabel('Проживание');
+            ->setLabel($this->get('translator')->trans('report.porter.menu.accommodation'));
         $menuItem
             ->addChild('out', ['route' => 'report_porter', 'routeParameters' => ['type' => 'out']])
-            ->setLabel('Выезд');
+            ->setLabel($this->get('translator')->trans('report.porter.menu.departure'));
 
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
@@ -276,7 +276,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'paid' => 0,
         ];
 
-        $iteratedOrderIds = [];
         foreach ($packages as $package) {
             /** @var Package $package */
             if (empty($package->getOrder()->getChannelManagerType())
@@ -304,14 +303,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                     $dayTotal[$day] = $default;
                 }
                 $packageOrderId = $package->getOrder()->getId();
-                $add = function ($entry, Package $package) use ($packageOrderId, $iteratedOrderIds) {
+                $add = function ($entry, Package $package) use ($packageOrderId) {
                     $entry['sold']++;
                     $entry['packagePrice'] += $package->getPackagePrice();
                     $entry['price'] += $package->getPrice();
                     $entry['servicesPrice'] += $package->getServicesPrice();
-                    if (!in_array($packageOrderId, $iteratedOrderIds)) {
-                        $entry['paid'] += $package->getPaid();
-                    }
+                    $entry['paid'] += $package->getCalculatedPayment();
                     foreach ($package->getServices() as $packageService) {
                         $entry['services'] += $packageService->getTotalAmount();
                     }
@@ -322,7 +319,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 $data[$user][$day] = $add($data[$user][$day], $package);
                 $total[$user] = $add($total[$user], $package);
                 $dayTotal[$day] = $add($dayTotal[$day], $package);
-                $iteratedOrderIds[] = $packageOrderId;
             }
             $allTotal = $default;
             foreach ($total as $i => $tData) {
@@ -364,7 +360,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             }
 
             $end->modify('+ 23 hours  59 minutes');
-            $roomTypeIds = $helper->toIds($hotel->getRoomTypes());
 
             $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findBy([
                 'isCheckIn' => true,
@@ -380,7 +375,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
             if (!$zipFile) {
                 return [
-                    'message' => 'Нет данных для выгрузки'
+                    'message' => $this->get('translator')->trans('controller.report_controller.fms_report_error.no_data_for_upload')
                 ];
             }
 
@@ -578,7 +573,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\Response
      * @Route("/filling/table", name="report_filling_table", options={"expose"=true})
      * @Method({"GET"})
      * @Security("is_granted('ROLE_ROOMS_REPORT')")
@@ -606,7 +601,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         if ($begin->diff($end)->days > 90) {
             return $this->render('MBHPackageBundle:Report:reportFillingTableError.html.twig', [
-                'message' => 'Период не должен превышать 90 дней'
+                'message' => $this->get('translator')->trans('controller.report_controller.filling_table_error.period_can_not_be_more_than')
             ]);
         }
 

@@ -170,6 +170,32 @@ class CashDocument extends Base
     protected $article;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     */
+    protected $isSendMail;
+
+    /**
+     * @return bool
+     */
+    public function isSendMail(): ?bool
+    {
+        return $this->isSendMail;
+    }
+
+    /**
+     * @param bool $isSendMail
+     * @return CashDocument
+     */
+    public function setIsSendMail(bool $isSendMail): CashDocument
+    {
+        $this->isSendMail = $isSendMail;
+
+        return $this;
+    }
+
+    /**
      * Set method
      *
      * @param string $method

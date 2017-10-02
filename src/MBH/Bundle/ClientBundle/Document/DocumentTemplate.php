@@ -85,10 +85,13 @@ class DocumentTemplate extends Base
 
     /**
      * @param string $title
+     * @return DocumentTemplate
      */
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -101,10 +104,13 @@ class DocumentTemplate extends Base
 
     /**
      * @param string $content
+     * @return $this
      */
     public function setContent($content)
     {
         $this->content = $content;
+
+        return $this;
     }
 
     /**
