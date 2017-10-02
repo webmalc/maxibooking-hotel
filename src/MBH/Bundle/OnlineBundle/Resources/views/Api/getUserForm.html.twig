@@ -151,6 +151,16 @@
                         </div>
                     </div>
 
+                    {% if config.personalDataPolicies is not empty %}
+                        <div class="mbh-user-form-row form-group">
+                            <div class="col-sm-2 text-right">
+                                <input type="checkbox" id="mbh-form-personal-data" required>&nbsp;<sup>*</sup>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ 'views.api.getUserForm.personal_data_policies'|trans({url: config.personalDataPolicies}, 'MBHOnlineBundle')|raw}}
+                            </div>
+                        </div>
+                    {% endif %}
 
                     <div class="mbh-user-form-row form-group">
                         <div class="col-sm-8 col-sm-offset-2">
