@@ -356,7 +356,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             $chart->chart->type('column');
         }
         $chart->chart->renderTo('analytics_filter_content');
-        $chart->title->text($this->container->getParameter('mbh.analytics.types')[$request->get('type')]);
+        $chart->title->text($this->get('translator')->trans('mbh.analytics.types.' . $request->get('type')));
         $chart->yAxis->title(['text'  => $y]);
         $chart->xAxis->title(['text'  => $this->get('translator')->trans('controller.analyticsController.sale_date')]);
         $chart->xAxis->type('datetime');
@@ -519,10 +519,11 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $request = $this->getRequest();
         $cumulative = $request->get('cumulative');
         $months = $request->get('months');
-        $series = $all = $allValues = [];
+        $series = $totalValues = $allValues = [];
         $i = 0;
         foreach ($this->$categoryGetMethod() as $category) {
             $series[$i]['name'] = $this->getCategoryName($category);
+            /** @var \DateTime $date */
             foreach ($this->getInterval() as $date) {
                 $value = 0;
                 $prev = clone $date;
@@ -547,10 +548,17 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
                 $allValues[$category->getId()][$dayId] = $value;
 
-                if (!isset($all[$dayId]))  {
-                    $all[$dayId] = 0;
+                if (!isset($totalValues['byAll'][$dayId]))  {
+                    $totalValues['byAll'][$dayId] = 0;
                 }
-                $all[$dayId] = $all[$dayId] + $value;
+                if ($categoryGetMethod == 'getRoomTypes') {
+                    $hotelTotalValueTitle = 'total_' . $category->getHotel()->getId();
+                    $totalValues[$hotelTotalValueTitle][$dayId] = isset($totalValues[$hotelTotalValueTitle][$dayId])
+                        ? $totalValues[$hotelTotalValueTitle][$dayId] + $value
+                        : $value;
+                }
+
+                $totalValues['byAll'][$dayId] = $totalValues['byAll'][$dayId] + $value;
 
                 if ($months) {
                     if ($date->format('j') == 15) {
@@ -573,28 +581,42 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             return array_reverse($series);
         }
 
-        $series[$i]['name'] = $this->get('translator')->trans('controller.analyticsController.series_total_name');
-        foreach ($this->getInterval() as $date) {
-            $value = 0;
-            $dayId = $date->format('d.m.Y');
-
-            if ($months && $date->format('j') == 15) {
-                $dayId = $date->format('m.Y');
+        $totalOptions = [];
+        if ($categoryGetMethod == 'getRoomTypes') {
+            foreach ($this->$categoryGetMethod() as $category) {
+                $hotelTotalValueTitle = 'total_' . $category->getHotel()->getId();
+                if (!in_array($hotelTotalValueTitle, $totalOptions)) {
+                    $totalOptions[$hotelTotalValueTitle] =  'Итого ' . $category->getHotel()->getName();
+                }
             }
+        }
+        $totalOptions['byAll'] = $this->get('translator')->trans('controller.analyticsController.series_total_name');
 
-            if (isset($all[$dayId]))  {
-                $value = $all[$dayId];
-            }
+        foreach ($totalOptions as $totalOption => $totalOptionTitle) {
+            $series[$i]['name'] = $totalOptionTitle;
+            foreach ($this->getInterval() as $date) {
+                $value = 0;
+                $dayId = $date->format('d.m.Y');
 
-            if ($months) {
-                if ($date->format('j') == 15) {
-                    $javascriptDate = '@Date.UTC(' . $date->format('Y'). ', ' . ($date->format('n') - 1) . ', 15)@';
+                if ($months && $date->format('j') == 15) {
+                    $dayId = $date->format('m.Y');
+                }
+
+                if (isset($totalValues[$totalOption][$dayId])) {
+                    $value = $totalValues[$totalOption][$dayId];
+                }
+
+                if ($months) {
+                    if ($date->format('j') == 15) {
+                        $javascriptDate = '@Date.UTC(' . $date->format('Y') . ', ' . ($date->format('n') - 1) . ', 15)@';
+                        $series[$i]['data'][] = [$javascriptDate, $value];
+                    }
+                } else {
+                    $javascriptDate = '@Date.UTC(' . $date->format('Y') . ', ' . ($date->format('n') - 1) . ', ' . $date->format('j') . ')@';
                     $series[$i]['data'][] = [$javascriptDate, $value];
                 }
-            } else {
-                $javascriptDate = '@Date.UTC(' . $date->format('Y'). ', ' . ($date->format('n') - 1) . ', ' . $date->format('j'). ')@';
-                $series[$i]['data'][] = [$javascriptDate, $value];
             }
+            $i++;
         }
 
         return array_reverse($series);

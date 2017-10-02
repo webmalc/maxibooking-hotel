@@ -27,7 +27,7 @@
                         name="type"
                         class="analytics-filter form-control input-sm">
                     {% for key, type in types %}
-                        <option value="{{ key }}"{% if loop.index == 1 %} selected {% endif %}>{{ type }}</option>
+                        <option value="{{ key }}"{% if loop.index == 1 %} selected {% endif %}>{{('mbh.analytics.types.' ~ key)|trans }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -43,6 +43,7 @@
                             <optgroup label="{{ roomType.hotel }}">
                             <option value="allrooms_{{ roomType.hotel.id }}">{{ 'analytics.index.all_rooms'|trans({}, 'MBHPackageBundle') }}</option>
                             {% set hotel = roomType.hotel %}
+                            <option value="total_{{ hotel.id }}">Итого {{ hotel.name }}</option>
                         {% endif %}
 
                         <option value="{{ roomType.id }}">{{ roomType.name }}</option>
@@ -59,7 +60,7 @@
                         value="1"/>
             </div>
             <div class="input" id="analytics-filter-months-wrapper">
-                <i class="fa fa-calendar" title={{ 'analytics.index.monthly'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <input type="checkbox"
+                <i class="fa fa-calendar" title="{{ 'analytics.index.monthly'|trans({}, 'MBHPackageBundle') }}" data-toggle='tooltip'></i>&nbsp <input type="checkbox"
                                                                                                      name="months"
                                                                                                      id="analytics-filter-months"
                                                                                                      class="analytics-filter"

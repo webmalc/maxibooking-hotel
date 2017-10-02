@@ -6,7 +6,7 @@ $(document).ready(function () {
         return;
     }
 
-    var charts = Highcharts.setOptions({
+    Highcharts.setOptions({
         lang: {
             shortMonths: [
                 Translator.trans("analytics.months.jan_abbr"),
@@ -53,23 +53,14 @@ $(document).ready(function () {
             loading: Translator.trans("analytics.loading"),
             printChart: Translator.trans("analytics.printChart"),
             resetZoom: Translator.trans("analytics.resetZoom"),
-            resetZoomTitle: Translator.trans("analytics.resetZoomTitle"),
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'top',
-                x: -90,
-                y: 250,
-                floating: false,
-                borderWidth: 1
-            }
+            resetZoomTitle: Translator.trans("analytics.resetZoomTitle")
         }
     });
     
 
     var highchartsTooltip = function (name, x, y) {
         return '<span style="font-size:10px;">' + Highcharts.dateFormat('%A, %b. %d', x) + '</span><br/>' + name + ': <b>' + Highcharts.numberFormat(y, 2, '.', ',') + '</b>';
-    }
+    };
 
     var chartGet = function () {
         var wrapper = $('#analytics_filter_content')
@@ -80,8 +71,7 @@ $(document).ready(function () {
                     $('#analytics-filter-cumulative-wrapper, #analytics-filter-months-wrapper').show();
                 }
 
-            }
-            ;
+            };
 
         if (!wrapper.length) {
             return;
@@ -101,18 +91,19 @@ $(document).ready(function () {
                     $('text:contains("Highcharts.com")').hide();
 
                     $('.highcharts-line-series').dblclick(function (event) {
-                        event.preventDefault();
                         var seriesClassNameBeginning = 'highcharts-series-';
                         var seriesNumber = parseInt(this.classList[3].substring(seriesClassNameBeginning.length), 10);
                         $(analytics_filter_content).highcharts().series[seriesNumber].hide();
-                        var series = $(analytics_filter_content).highcharts().series;
+                        var $chart = $(analytics_filter_content).highcharts();
+                        var series = $chart.series;
                         series.forEach(function (elem, index) {
                             if (index !== seriesNumber) {
-                                elem.hide();
+                                elem.setVisible(false, false);
                             } else {
-                                elem.show();
+                                elem.setVisible(true, false);
                             }
-                        })
+                        });
+                        $chart.redraw();
                     })
                 }
             }
