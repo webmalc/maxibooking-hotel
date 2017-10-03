@@ -1,4 +1,4 @@
-<form class="payment-system-form" {{ data.formId is defined ? 'id="' ~ data.formId ~'"'}}method="post" action="{{ data.test is defined and data.test ? data.testAction|default('') : data.action|default('') }}">
+<form target="_top" class="payment-system-form" {{ data.formId is defined ? 'id="' ~ data.formId ~'"'}}method="post" action="{{ data.test is defined and data.test ? data.testAction|default('') : data.action|default('') }}">
     {% set currency_code = {'rub': 'RUB', 'usd': 'USD','eur': 'EUR'} %}
     {% set locale = {'ru': 'RU', 'en': 'US'} %}
     <input type="hidden" name="cmd" value="_xclick">

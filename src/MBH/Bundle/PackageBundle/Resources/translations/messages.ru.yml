@@ -1249,3 +1249,11 @@ distribution_by_days_report.days_of_week_abbr.fri: 'Пт'
 distribution_by_days_report.days_of_week_abbr.sat: 'Сб'
 distribution_by_days_report.days_of_week_abbr.sun: 'Вс'
 distribution_by_days_report.total_row: 'Итого'
+
+mbh.analytics.types.sales_packages: "Динамика продаж по количеству броней"
+mbh.analytics.types.sales_cash: "Динамика продаж по стоимости броней"
+mbh.analytics.types.sales_cash_documents: "Динамика продаж в полученных деньгах"
+mbh.analytics.types.sales_sources: "Источники продаж"
+mbh.analytics.types.hotel_occupancy: "Заполняемость отеля"
+mbh.analytics.types.sales_services: "Динамика реализации услуг"
+mbh.analytics.types.sales_managers: "Менеджеры и брони"
