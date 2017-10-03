@@ -181,8 +181,8 @@ jQuery(document).ready(function() {
 });
 
 function setChildAgeForms(childrenCount) {
+    var $childAgesBlock = jQuery('.children-ages');
     if (isDisplayChildAges) {
-        var $childAgesBlock = jQuery('.children-ages');
         if (childrenCount > 0) {
             $childAgesBlock.show();
         } else if ($childAgesBlock) {
@@ -203,5 +203,7 @@ function setChildAgeForms(childrenCount) {
                 selectFormCount--;
             }
         }
+    } else {
+        $childAgesBlock.hide();
     }
 }

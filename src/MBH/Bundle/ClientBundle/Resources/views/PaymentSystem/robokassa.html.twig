@@ -1,4 +1,4 @@
-<form method="post" target="_top" action="{{ data.test is defined and data.test ? data.testAction|default('') : data.action|default('') }}">
+<form target="_top" method="post" target="_top" action="{{ data.test is defined and data.test ? data.testAction|default('') : data.action|default('') }}">
     <input type="hidden" name="MrchLogin" value="{{ data.shopId|default('') }}">
     <input type="hidden" name="OutSum" value="{{ data.total|default('') }}">
     <input type="hidden" name="InvId" value="{{ data.orderId|default('') }}">
