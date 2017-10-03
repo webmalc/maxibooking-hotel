@@ -1,4 +1,4 @@
-/*global window, document, $, Routing, console, mbh, Highcharts, Translator */
+/*global window, document, $, Routing, mbh, Highcharts, Translator */
 
 $(document).ready(function ($) {
     'use strict';
@@ -204,8 +204,7 @@ var collectGraphData = function ($row, $dateRow, isFirstRow) {
             previousDate = date;
         } else {
             if (!lastDate) {
-                console.log(previousDate);
-                lastDate = moment(previousDate);
+                lastDate = moment(previousDate, "DD.MM.YY");
             }
             value = null;
             date = previousDate.add(1, 'days');
@@ -222,7 +221,7 @@ var collectGraphData = function ($row, $dateRow, isFirstRow) {
 
 var getDateByIndex = function ($dateElements, index) {
     var dateString = $dateElements.eq(index).find('.date-string').text();
-    return moment(dateString, "DD.MM");
+    return moment(dateString, "DD.MM.YY");
 };
 
 var showDynamicSalesGraph = function (data, optionData) {
@@ -230,16 +229,16 @@ var showDynamicSalesGraph = function (data, optionData) {
     var dates = [];
     data.forEach(function (rowData, index) {
         var values = rowData.values;
-        var Schedule = {};
+        var series = {};
 
         var periodBegin = values[0][0];
         var periodEnd = rowData.periodEnd;
-        Schedule.name = moment(periodBegin).format("DD.MM.YYYY") + ' - ' + periodEnd.format("DD.MM.YYYY");
+        series.name = moment(periodBegin).format("DD.MM.YYYY") + ' - ' + periodEnd.format("DD.MM.YYYY");
 
-        Schedule.data = values;
-        Schedule.xAxis = index;
-        Schedule.tickPosition = 'inside';
-        dates.push(Schedule);
+        series.data = values;
+        series.xAxis = index;
+        series.tickPosition = 'inside';
+        dates.push(series);
     });
 
     var graphName;
