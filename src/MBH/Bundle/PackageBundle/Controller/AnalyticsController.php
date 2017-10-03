@@ -2,10 +2,13 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\UserBundle\Document\User;
@@ -49,6 +52,8 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
      * @Route("/choose", name="analytics_choose", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_ANALYTICS')")
+     * @param Request $request
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function chooseAction(Request $request)
     {
@@ -441,21 +446,22 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     }
 
     /**
-     * @param boolean $array
+     * @param boolean $asIds
      * @return array
      */
-    private function getRoomTypes($array = false)
+    private function getRoomTypes($asIds = false)
     {
         $request = $this->getRequest();
-
+        $requestedRoomTypesIds = $this->helper->getDataFromMultipleSelectField($request->get('roomType'));
         $roomTypesIds = [];
-        if (!empty($request->get('roomType')) && is_array($request->get('roomType'))) {
-            foreach ($request->get('roomType') as $id) {
+        if (!empty($requestedRoomTypesIds)) {
+            foreach ($requestedRoomTypesIds as $id) {
                 if (mb_stripos($id, 'allrooms_') !== false || mb_stripos($id, 'total_') !== false) {
                     $hotelId = mb_stripos($id, 'allrooms_') !== false
                         ? str_replace('allrooms_', '', $id)
                         : str_replace('total_', '', $id);
 
+                    /** @var Hotel $hotel */
                     $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($hotelId);
 
                     if (!$hotel) {
@@ -471,7 +477,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             $roomTypesIds = array_unique($roomTypesIds);
         }
 
-        if ($array) {
+        if ($asIds) {
             return $roomTypesIds;
         }
         $qb = $this->dm->getRepository('MBHHotelBundle:RoomType')
@@ -640,7 +646,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     }
 
     /**
-     * @return array
+     * @return Package[]|Cursor
      */
     private function getPackages()
     {

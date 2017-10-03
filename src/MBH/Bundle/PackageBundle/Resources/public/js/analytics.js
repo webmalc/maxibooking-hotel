@@ -110,9 +110,19 @@ $(document).ready(function () {
         });
     };
     chartGet();
+
+    var numberOfRequests = 0;
+    var numberOfPendingRequests = 0;
     $('.analytics-filter').on('change switchChange.bootstrapSwitch', function () {
-        chartGet()
+        numberOfRequests++;
+        setTimeout(function () {
+            numberOfPendingRequests++;
+            if (numberOfRequests === numberOfPendingRequests) {
+                chartGet();
+            }
+        }, 500);
     });
+    
     $('#analytics-filter-cumulative').on('switchChange', function () {
         chartGet();
     });
