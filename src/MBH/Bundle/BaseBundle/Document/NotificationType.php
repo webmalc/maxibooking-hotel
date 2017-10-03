@@ -29,6 +29,8 @@ class NotificationType extends Base
     public const CONFIRM_ORDER_TYPE = 'confirm_order';
     public const TASK_TYPE = 'task';
 
+    public const AUTH_TYPE = 'auth';
+
     public const OWNER_STUFF = 'stuff';
     public const OWNER_CLIENT = 'client';
     public const OWNER_ALL = 'all';
