@@ -186,6 +186,8 @@ mailer.order.total_paid: Всего оплачено
 mailer.order.surcharges: 'Доплата составляет'
 mailer.order.phone: Телефон
 mailer.order.number: Номер
+mailer.order.arrival: 'Заезд'
+mailer.order.departure: 'Выезд'
 mailer.order.numbers: Номеров
 mailer.order.customer: Заказчик
 mailer.order.payment: Оплата
@@ -363,6 +365,7 @@ menu.label.reports.managers: Менеджеры
 menu.label.reports.invite: 'Визовые приглашения'
 menu.label.reports.analystics: Аналитика
 menu.label.reports.polls: Оценки
+menu.label.reports.daily_report: 'Денежные средства'
 menu.label.reports.windows: Окна
 menu.label.reports.work_shift: 'Рабочие смены'
 menu.label.reports.fms: 'Для ФМС'

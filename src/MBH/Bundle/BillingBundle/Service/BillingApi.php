@@ -3,7 +3,6 @@
 
 namespace MBH\Bundle\BillingBundle\Service;
 
-
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Uri;
 use Monolog\Logger;

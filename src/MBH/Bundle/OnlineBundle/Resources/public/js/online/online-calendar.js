@@ -74,6 +74,7 @@ $(document).ready(function () {
 
     jQuery.datepicker.setDefaults(datePickerDefaultOptions);
     $('#mbh-calendar-datepicker').datepicker({
+        minDate: new Date(),
         onSelect: function (date) {
             window.parent.postMessage({
                 type: 'mbh',

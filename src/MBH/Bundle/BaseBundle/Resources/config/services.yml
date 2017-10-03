@@ -336,4 +336,8 @@ services:
         arguments: ["@mbh.swiftmailer.array.logger"]
         tags:
             - { name: 'swiftmailer.default.plugin' }
-
+    mbh.report:
+        class: MBH\Bundle\BaseBundle\Lib\Report\Report
+        shared: false
+        arguments:
+            - '@templating'
