@@ -1,3 +1,8 @@
+2.4.0
+============
+* Bug fixes
+* dynamic sales report
+
 2.3.1
 ============
 * a7abb5c Merged in add_by_receipt_payment (pull request #115) add "by_receipt" payment type
