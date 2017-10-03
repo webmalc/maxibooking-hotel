@@ -34,8 +34,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Hotel extends Base implements \JsonSerializable, AddressInterface
 {
-    const DEFAULT_ARRIVAL_TIME = 12;
-    const DEFAULT_DEPARTURE_TIME = 14;
+    const DEFAULT_ARRIVAL_TIME = 14;
+    const DEFAULT_DEPARTURE_TIME = 12;
 
     /**
      * Hook timestampable behavior
@@ -1801,7 +1801,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param int $packageArrivalTime
      * @return Hotel
      */
-    public function setPackageArrivalTime(int $packageArrivalTime): Hotel
+    public function setPackageArrivalTime(?int $packageArrivalTime): Hotel
     {
         $this->packageArrivalTime = $packageArrivalTime;
 
@@ -1820,7 +1820,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param int $packageDepartureTime
      * @return Hotel
      */
-    public function setPackageDepartureTime(int $packageDepartureTime): Hotel
+    public function setPackageDepartureTime(?int $packageDepartureTime): Hotel
     {
         $this->packageDepartureTime = $packageDepartureTime;
 
