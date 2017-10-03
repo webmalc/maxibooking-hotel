@@ -139,6 +139,7 @@ controller.analyticsController.proceeds: 'Выручка'
 controller.analyticsController.percentage: 'Процент'
 controller.analyticsController.package_trips_amount: 'Количество путевок'
 controller.analyticsController.sale_date: 'Даты продажи'
+controller.analyticsController.series_total_name: 'Итог'
 controller.orderController.cash_register_paper_deleted_success: 'Кассовый документ успешно удален.'
 controller.orderController.add_cash_register_paper: 'Добавить кассовый документ'
 controller.orderController.cash_register_paper_added_success: 'Кассовый документ успешно добавлен.'
@@ -434,6 +435,13 @@ virtual_room_handler.package_virtual_room_changed: 'Брони %package_number% 
 virtual_room_handler.empty_interval_data: 'Виртуальная комната %roomName% имеющая тип номера с ID = "%roomTypeId%" содержит окно в промежутке %emptyIntervalDates%'
 windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'
 
+mbh.analytics.types.sales_packages: "Динамика продаж по количеству броней"
+mbh.analytics.types.sales_cash: "Динамика продаж по стоимости броней"
+mbh.analytics.types.sales_cash_documents: "Динамика продаж в полученных деньгах"
+mbh.analytics.types.sales_sources: "Источники продаж"
+mbh.analytics.types.hotel_occupancy: "Заполняемость отеля"
+mbh.analytics.types.sales_services: "Динамика реализации услуг"
+mbh.analytics.types.sales_managers: "Менеджеры и брони"
 special.virtualRoom: Виртуальная комната
 special.virtualRoom.help: Выбор виртуальной комнаты
 
