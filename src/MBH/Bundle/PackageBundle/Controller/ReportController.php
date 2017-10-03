@@ -876,8 +876,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function distributionReportTableAction(Request $request)
     {
-        //TODO: В другом pull request-е есть изменения для дат. Обновить!
-        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
+        $defaultBeginDate = $this->clientConfig->getActualBeginDate();
 
         $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
         $end = $this->helper->getDateFromString($request->query->get('end'))

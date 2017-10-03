@@ -66,7 +66,7 @@ class MailerCommand extends ContainerAwareCommand
             ]
         );
 
-        $this->sendDailyReportMail();
+//        $this->sendDailyReportMail();
 
         $packageTransfers = $this->dm->getRepository('MBHPackageBundle:PackageService')
             ->createQueryBuilder('s')
