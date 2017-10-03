@@ -18,8 +18,8 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SpecialsController extends BaseController
 {
-    const SPECIAL_MONTH_BEGIN = 6;
-    const SPECIAL_MONTH_END = 10;
+    const SPECIAL_MONTH_BEGIN = 7;
+    const SPECIAL_MONTH_END = 11;
     const SPECIAL_PER_PAGE = 4;
     const SPECIALS_SORT_BY_PRICE = 'mbh.online.special_data_preparer.price_sort';
     const SPECIALS_SORT_BY_DATE = 'mbh.online.special_data_preparer.date_sort';
@@ -52,7 +52,7 @@ class SpecialsController extends BaseController
             'data' => $preparedData,
             'monthList' => $this->getMonthList(),
             'hotels' => $hotels,
-            'multiHotel' => $hotel == false,
+            'multiHotel' => $hotel === null,
             'specialPerPage' => self::SPECIAL_PER_PAGE
 
         ];
