@@ -1,4 +1,4 @@
-/*global document, window, $, Highcharts */
+/*global document, window, $, Highcharts, analytics_filter_content */
 $(document).ready(function () {
     'use strict';
 
@@ -56,10 +56,11 @@ $(document).ready(function () {
             resetZoomTitle: Translator.trans("analytics.resetZoomTitle")
         }
     });
+    
 
     var highchartsTooltip = function (name, x, y) {
         return '<span style="font-size:10px;">' + Highcharts.dateFormat('%A, %b. %d', x) + '</span><br/>' + name + ': <b>' + Highcharts.numberFormat(y, 2, '.', ',') + '</b>';
-    }
+    };
 
     var chartGet = function () {
         var wrapper = $('#analytics_filter_content')
@@ -70,8 +71,7 @@ $(document).ready(function () {
                     $('#analytics-filter-cumulative-wrapper, #analytics-filter-months-wrapper').show();
                 }
 
-            }
-            ;
+            };
 
         if (!wrapper.length) {
             return;
@@ -89,15 +89,40 @@ $(document).ready(function () {
                     data.html = data.html.replace(/"@/g, '').replace(/@"/g, '');
                     eval(data.html);
                     $('text:contains("Highcharts.com")').hide();
+
+                    $('.highcharts-line-series').dblclick(function (event) {
+                        var seriesClassNameBeginning = 'highcharts-series-';
+                        var seriesNumber = parseInt(this.classList[3].substring(seriesClassNameBeginning.length), 10);
+                        $(analytics_filter_content).highcharts().series[seriesNumber].hide();
+                        var $chart = $(analytics_filter_content).highcharts();
+                        var series = $chart.series;
+                        series.forEach(function (elem, index) {
+                            if (index !== seriesNumber) {
+                                elem.setVisible(false, false);
+                            } else {
+                                elem.setVisible(true, false);
+                            }
+                        });
+                        $chart.redraw();
+                    })
                 }
             }
         });
-
     };
     chartGet();
+
+    var numberOfRequests = 0;
+    var numberOfPendingRequests = 0;
     $('.analytics-filter').on('change switchChange.bootstrapSwitch', function () {
-        chartGet()
+        numberOfRequests++;
+        setTimeout(function () {
+            numberOfPendingRequests++;
+            if (numberOfRequests === numberOfPendingRequests) {
+                chartGet();
+            }
+        }, 500);
     });
+    
     $('#analytics-filter-cumulative').on('switchChange', function () {
         chartGet();
     });

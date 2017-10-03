@@ -1214,3 +1214,11 @@ validator.form.image.type.error: Не корректное значение да
 mbh.package_bundle.fixtures.delete_reason_data.denial: Отказ
 mbh.package_bundle.fixtures.delete_reason_data.error: Ошибка
 mbh.package_bundle.fixtures.delete_reason_data.rebooking: Перебронирование
+
+mbh.analytics.types.sales_packages: "Динамика продаж по количеству броней"
+mbh.analytics.types.sales_cash: "Динамика продаж по стоимости броней"
+mbh.analytics.types.sales_cash_documents: "Динамика продаж в полученных деньгах"
+mbh.analytics.types.sales_sources: "Источники продаж"
+mbh.analytics.types.hotel_occupancy: "Заполняемость отеля"
+mbh.analytics.types.sales_services: "Динамика реализации услуг"
+mbh.analytics.types.sales_managers: "Менеджеры и брони"

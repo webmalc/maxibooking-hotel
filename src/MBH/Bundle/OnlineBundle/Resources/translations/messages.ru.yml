@@ -16,7 +16,7 @@ form.formType.hotels_desc: 'Отели используемые в онлайн 
 form.formType.hotels_placeholder: 'Все отели'
 form.formType.parameters: Параметры
 form.formType.use_online_form: 'Использовать ли онлайн форму?'
-form.formType.room_types: 'Show rooms?'
+form.formType.room_types: 'Показывать номера?'
 form.formType.should_we_use_room_type_field_in_online_form: 'Использовать ли поле "Тип номера" в онлайн форме?'
 form.formType.are_there_guests: 'Гости?'
 form.formType.should_we_use_guests_amount_field_in_online_form: 'Использовать ли поле "Количестов гостей" в онлайн форме?'
@@ -27,6 +27,8 @@ form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: 'Ис�
 form.formType.payment: Оплата
 form.formType.max_packages.help: 'Максимальное количество броней доступных для бронирования за раз'
 form.formType.max_packages.label: 'Максимальное количество броней'
+form.formType.pers_data_policies_url.label: 'Страница политики обработки персональных данных'
+form.formType.pers_data_policies_url.help: 'URL страницы с Политикой обработки персональных данных'
 form.formType.room_type_choices: 'Типы номеров'
 form.formType.room_type_choices_desc: 'Типы номеров доступные для бронирования'
 form.formType.payment_type: 'Типы оплаты'
@@ -102,4 +104,4 @@ payment_types.in_hotel: 'Оплата при заселении'
 payment_types.online_full: 'Онлайн оплата (100%)'
 payment_types.online_first_day: 'Онлайн оплата (одни сутки)'
 payment_types.online_half: 'Онлайн оплата (50%)'
-payment_types.by_receipt: 'Оплата в '
+payment_types.by_receipt: 'Оплата по счету через банк'

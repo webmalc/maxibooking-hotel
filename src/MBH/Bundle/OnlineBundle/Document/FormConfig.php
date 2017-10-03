@@ -174,6 +174,13 @@ class FormConfig extends Base
     private $maxPackages = 5;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    private $personalDataPolicies;
+
+    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="int")
@@ -221,6 +228,25 @@ class FormConfig extends Base
      * @ODM\Field(type="boolean")
      */
     private $isHorizontal = false;
+
+    /**
+     * @return string
+     */
+    public function getPersonalDataPolicies(): ?string
+    {
+        return $this->personalDataPolicies;
+    }
+
+    /**
+     * @param string $personalDataPolicies
+     * @return FormConfig
+     */
+    public function setPersonalDataPolicies(string $personalDataPolicies)
+    {
+        $this->personalDataPolicies = $personalDataPolicies;
+
+        return $this;
+    }
 
     /**
      * @return bool

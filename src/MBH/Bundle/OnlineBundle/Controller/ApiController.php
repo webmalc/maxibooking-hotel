@@ -475,10 +475,17 @@ class ApiController extends Controller
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
+        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($requestJson->configId);
+
+        if (!$formConfig || !$formConfig->getEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         return [
             'request' => $requestJson,
             'services' => $services,
             'hotels' => $hotels,
+            'config' => $formConfig
         ];
     }
 
@@ -524,7 +531,7 @@ class ApiController extends Controller
         $requestJson = json_decode($request->getContent());
 
         //Create packages
-        $order = $this->createPackages($requestJson, $requestJson->paymentType != 'in_hotel');
+        $order = $this->createPackages($requestJson, ($requestJson->paymentType != 'in_hotel' || $requestJson->paymentType != 'by_receipt'));
 
         if (empty($order)) {
             return new JsonResponse(
@@ -560,7 +567,7 @@ class ApiController extends Controller
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
+        if ($requestJson->paymentType == 'in_hotel' || $requestJson->paymentType == 'by_receipt' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
             $form = $this->container->get('twig')->render(
@@ -734,6 +741,7 @@ class ApiController extends Controller
 
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
+            'configId' => $id,
             'urls' => [
                 'table' => $this->generateUrl(
                     'online_form_results_table',

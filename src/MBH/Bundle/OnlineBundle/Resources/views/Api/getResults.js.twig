@@ -272,6 +272,7 @@ jQuery(document).ready(function() {
                             requestParams.packages = [];
                             requestParams.services = [];
                             requestParams.locale = getLocale();
+                            requestParams.configId = "{{ configId }}";
                             roomCount.each(function() {
                             if (jQuery(this).val() > 0) {
                                 var tr = jQuery(this).closest('tr'),
@@ -392,7 +393,7 @@ jQuery(document).ready(function() {
                                             var nextButton = jQuery('#mbh-user-form-next');
                                             nextButton.prop('disabled', false);
                                             inputs.each(function() {
-                                                if (!jQuery(this).val()) {
+                                                if (!jQuery(this).val() || (this.type == 'checkbox' && !$(this).is(':checked'))) {
                                                     nextButton.prop('disabled', true);
                                                     return false;
                                                 }
@@ -437,6 +438,10 @@ jQuery(document).ready(function() {
                                     total += totalServices;
                                     requestParams.total = String(total);
                                     requestParams.totalServices = String(totalServices);
+
+                                    var $personalDataCheckbox = $('#mbh-form-personal-data');
+                                    requestParams.isConfrmWithPersDataProcessing
+                                        = $personalDataCheckbox.length == 1 && $personalDataCheckbox.is(':checked');
                                     waiting();
 
                                     // ------------------------------ STEP 3: load payment type -------------------------
