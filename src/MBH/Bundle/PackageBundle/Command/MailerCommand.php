@@ -66,6 +66,8 @@ class MailerCommand extends ContainerAwareCommand
             ]
         );
 
+//        $this->sendDailyReportMail();
+
         $packageTransfers = $this->dm->getRepository('MBHPackageBundle:PackageService')
             ->createQueryBuilder('s')
             ->field('begin')->gte($tomorrow)
@@ -197,4 +199,34 @@ class MailerCommand extends ContainerAwareCommand
         $output->writeln('Installing complete. Elapsed time: ' . $time->format('%H:%I:%S'));
     }
 
+    private function sendDailyReportMail()
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        //TODO: Сменить
+        $begin = $clientConfig->getBeginDate() ?? new \DateTime('midnight');
+        $end = (clone $begin)->modify('+45 days');
+        $report = $this->getContainer()->get('mbh.packages_daily_report_compiler')
+            ->generate($begin, $end,  $hotels, true)
+            ->setTitle($this->getContainer()->get('translator')->trans('views.report.packages_daily_report.title'));
+
+        $notifier = $this->getContainer()->get('mbh.notifier.mailer');
+        $message = $notifier::createMessage();
+        $message
+            ->setFrom('report')
+            ->setSubject('views.report.packages_daily_report.mail_title')
+            ->setType('info')
+            ->setTemplate('MBHBaseBundle:Report:report_mail.html.twig')
+            ->setAdditionalData(['report' => $report])
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
+            ->setMessageType(NotificationType::DAILY_REPORT_TYPE)
+        ;
+
+        $notifier
+            ->setMessage($message)
+            ->notify()
+        ;
+    }
 }

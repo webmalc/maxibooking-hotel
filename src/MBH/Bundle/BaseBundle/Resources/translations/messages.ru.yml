@@ -365,6 +365,7 @@ menu.label.reports.managers: Менеджеры
 menu.label.reports.invite: 'Визовые приглашения'
 menu.label.reports.analystics: Аналитика
 menu.label.reports.polls: Оценки
+menu.label.reports.daily_report: 'Денежные средства'
 menu.label.reports.windows: Окна
 menu.label.reports.work_shift: 'Рабочие смены'
 menu.label.reports.fms: 'Для ФМС'

@@ -29,6 +29,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/report")
@@ -814,5 +815,86 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
+    }
+
+    /**
+     * @Route("/packages_daily_report", name="packages_daily_report" )
+     * @Template()
+     * @return array
+     */
+    public function packagesDailyReportAction()
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+
+        return [
+            'hotels' => $hotels,
+        ];
+    }
+
+    /**
+     * @Route("/packages_daily_report_table", name="packages_daily_report_table", options={"expose"=true} )
+     * @param Request $request
+     * @return Response
+     */
+    public function packagesDailyReportTableAction(Request $request)
+    {
+        //TODO: В другом pull request-е есть изменения для дат. Обновить!
+        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
+
+        $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
+        $end = $this->helper->getDateFromString($request->query->get('end'))
+            ?? (clone $defaultBeginDate)->modify('+45 days');
+        $hotels = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')));
+
+        $report = $this->get('mbh.packages_daily_report_compiler')
+            ->generate($begin, $end, $hotels->toArray());
+
+        return $report->generateReportTableResponse();
+    }
+
+    /**
+     * @Template()
+     * @Security("is_granted('ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT')")
+     * @Route("/distribution_by_days_of_the_week", name="distribution_by_days_of_the_week", options={"expose"=true})
+     */
+    public function packagesByDaysOfWeekAction()
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+
+        return [
+            'hotels' => $hotels,
+        ];
+    }
+
+    /**
+     * @Security("is_granted('ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT')")
+     * @Route("/distribution_report_table", name="distribution_report_table", options={"expose"=true})
+     * @param Request $request
+     * @return Response
+     */
+    public function distributionReportTableAction(Request $request)
+    {
+        $defaultBeginDate = $this->clientConfig->getActualBeginDate();
+
+        $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
+        $end = $this->helper->getDateFromString($request->query->get('end'))
+            ?? (clone $defaultBeginDate)->modify('+45 days');
+
+        $creationBegin = $this->helper->getDateFromString($request->query->get('creationBegin'));
+        $creationEnd = $this->helper->getDateFromString($request->query->get('creationEnd'));
+        $hotels = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')), false)
+            ->toArray();
+
+        $groupType = $request->query->get('group_type');
+        $type = $request->query->get('type');
+
+        $report = $this->get('mbh.distribution_report_compiler')
+            ->generate($begin, $end, $hotels, $groupType, $type, $creationBegin, $creationEnd);
+
+        return $report->generateReportTableResponse();
     }
 }

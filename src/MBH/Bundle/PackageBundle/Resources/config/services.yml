@@ -188,6 +188,21 @@ services:
       tags:
           - {name: form.type}
 
+    mbh.packages_daily_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\PackagesDailyReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+
+    mbh.distribution_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\DistributionReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+
+
     mbh.dynamic_sales_report.dynamic_sales_day:
       class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
       arguments: ['@doctrine.odm.mongodb.document_manager']
