@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use Gedmo\Loggable\Document\LogEntry;
+use Gedmo\Loggable\Document\Repository\LogEntryRepository;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -543,7 +545,7 @@ class Calculation
                         ? $debitNotPaid[$hotelId] += $packageHotelPrice
                         : $debitNotPaid[$hotelId] = $packageHotelPrice;
                 }
-            } elseif ($incomingSum ) {
+            } elseif ($incomingSum) {
 
             }
         }
@@ -554,5 +556,85 @@ class Calculation
             $debitNotPaid,
             $debitPartlyPaid
         ];
+    }
+
+    /**
+     * @param Package[] $packages
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param bool $asCalculatedPrice
+     * @return array
+     */
+    public function calcDailyPrices($packages, \DateTime $begin, \DateTime $end, $asCalculatedPrice  = true)
+    {
+        $earliestCreationDate = null;
+        foreach ($packages as $package) {
+            if (is_null($earliestCreationDate) || $package->getCreatedAt() < $earliestCreationDate) {
+                $earliestCreationDate = $package->getCreatedAt();
+            }
+        }
+        /** @var LogEntryRepository $logEntryRepo */
+        $logEntryRepo = $this->dm->getRepository('GedmoLoggable:LogEntry');
+        $packageIds = $this->helper->toIds($packages);
+        /** @var LogEntry[] $logs */
+        $logs = $logEntryRepo
+            ->createQueryBuilder()
+            ->field('objectId')->in($packageIds)
+            ->field('objectClass')->equals('MBH\Bundle\PackageBundle\Document\Package')
+            ->field('loggedAt')->gte($earliestCreationDate)
+            ->field('loggedAt')->lte($end)
+            ->sort('loggedAt')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $sortedLogData = [];
+        foreach ($logs as $log) {
+            $dateString = $log->getLoggedAt()->format('d.m.Y');
+            $logData = $log->getData();
+            !isset($logData['price']) ?: $sortedLogData[$log->getObjectId()][$dateString]['price'] = $logData['price'];
+            !isset($logData['totalOverwrite']) ?: $sortedLogData[$log->getObjectId()][$dateString]['totalOverwrite'] = $logData['totalOverwrite'];
+            !isset($logData['servicesPrice']) ?: $sortedLogData[$log->getObjectId()][$dateString]['servicesPrice'] = $logData['servicesPrice'];
+            !isset($logData['isPercentDiscount']) ?: $sortedLogData[$log->getObjectId()][$dateString]['isPercentDiscount'] = $logData['isPercentDiscount'];
+            !isset($logData['discount']) ?: $sortedLogData[$log->getObjectId()][$dateString]['discount'] = $logData['discount'];
+        }
+
+        $prices = [];
+        foreach ($packages as $package) {
+            $beginDate = $begin < $package->getCreatedAt() ? $package->getCreatedAt() : $begin;
+            /** @var \DateTime $date */
+            foreach (new \DatePeriod($beginDate, new \DateInterval('P1D'), $end) as $date) {
+                $dateString = $date->format('d.m.Y');
+                $packageId = $package->getId();
+                $price = isset($sortedLogData[$packageId][$dateString]['price'])
+                    ? $sortedLogData[$packageId][$dateString]['price']
+                    : $package->getPackagePrice();
+                $totalOverwrite = isset($sortedLogData[$packageId][$dateString]['totalOverwrite'])
+                    ? $sortedLogData[$packageId][$dateString]['totalOverwrite']
+                    : $package->getTotalOverwrite();
+                $servicesPrice = isset($sortedLogData[$packageId][$dateString]['servicesPrice'])
+                    ? $sortedLogData[$packageId][$dateString]['servicesPrice']
+                    : $package->getServicesPrice();
+                $isPercentDiscount = isset($sortedLogData[$packageId][$dateString]['isPercentDiscount'])
+                    ? $sortedLogData[$packageId][$dateString]['isPercentDiscount']
+                    : $package->getIsPercentDiscount();
+                $discount = isset($sortedLogData[$packageId][$dateString]['discount'])
+                    ? $sortedLogData[$packageId][$dateString]['discount']
+                    : $package->getDiscount();
+
+                if ($asCalculatedPrice) {
+                    $prices[$packageId][$dateString] =
+                }
+                $prices[$packageId][$dateString] = [
+                    'price' => $price,
+                    'totalOverWrite' => $totalOverwrite,
+                    'servicesPrice' => $servicesPrice,
+                    'isPercentDiscount' => $isPercentDiscount,
+                    'discount' => $discount
+                ];
+            }
+        }
+
+        return $prices;
     }
 }

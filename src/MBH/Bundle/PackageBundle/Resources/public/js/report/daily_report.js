@@ -1,9 +1,12 @@
 /*global window, document, $, Routing, console */
 $(document).ready(function ($) {
-    updateDailyReportTable();
-    $('#daily-report-update-table-button').click(function() {
+    var $updateButton = $('#daily-report-update-table-button');
+    if ($updateButton.length === 1) {
         updateDailyReportTable();
-    });
+        $updateButton.click(function() {
+            updateDailyReportTable();
+        });
+    }
 });
 
 function updateDailyReportTable() {
