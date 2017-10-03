@@ -958,10 +958,39 @@ function getExportButtonSettings(entityName, format, filterDataCallback) {
     }
 }
 
+function onHideCheckboxChange() {
+    var $boxHideableCheckbox = $('.box-full-visibility-checkbox, .box-specified-visibility-checkbox');
+
+    var setVisibility = function (checkbox) {
+        var $checkbox = $(checkbox);
+        var isAllFormGroups = $checkbox.hasClass('box-full-visibility-checkbox');
+        var $boxFormGroups;
+        if (isAllFormGroups) {
+            $boxFormGroups = $checkbox.closest('.box').find('.form-group');
+        } else {
+            $boxFormGroups = $checkbox.closest('.box').find('.visibility-changeable').closest('.form-group');
+        }
+
+        var $hideFormGroups =  $boxFormGroups.not($checkbox.closest('.form-group'));
+        var isOn = $checkbox.bootstrapSwitch('state');
+        isOn ? $hideFormGroups.show() : $hideFormGroups.hide();
+    };
+
+    $boxHideableCheckbox.each(function () {
+        setVisibility(this)
+    });
+
+    $boxHideableCheckbox.on('switchChange.bootstrapSwitch', function () {
+        setVisibility(this);
+    });
+}
+
+
 $(document).ready(function () {
     'use strict';
     docReadyForms();
 
     mbhStartDate();
+    onHideCheckboxChange();
     disableCheckboxListen();
 });

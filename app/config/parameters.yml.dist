@@ -63,3 +63,4 @@ parameters:
 
   #mongodb_ssl
   mongodb_ssl: false
+  mbh_dynamic_sale_period: 90

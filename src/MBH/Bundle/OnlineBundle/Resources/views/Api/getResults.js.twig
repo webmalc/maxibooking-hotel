@@ -346,8 +346,6 @@ jQuery(document).ready(function() {
 
                                 if (prevPackage) {
                                     prevPackage = JSON.parse(prevPackage);
-                                    jQuery('#mbh-user-form-arrival').val(prevPackage.arrival),
-                                        jQuery('#mbh-user-form-departure').val(prevPackage.departure),
                                         jQuery('#mbh-user-form-note').val(prevPackage.note)
                                 }
 
@@ -368,8 +366,6 @@ jQuery(document).ready(function() {
                                 };
                                 var getPackageInfo = function() {
                                     return {
-                                        'arrival': jQuery('#mbh-user-form-arrival').val(),
-                                        'departure': jQuery('#mbh-user-form-departure').val(),
                                         'note': jQuery('#mbh-user-form-note').val()
                                     };
                                 };

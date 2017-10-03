@@ -186,6 +186,8 @@ mailer.order.total_paid: Всего оплачено
 mailer.order.surcharges: 'Доплата составляет'
 mailer.order.phone: Телефон
 mailer.order.number: Номер
+mailer.order.arrival: 'Заезд'
+mailer.order.departure: 'Выезд'
 mailer.order.numbers: Номеров
 mailer.order.customer: Заказчик
 mailer.order.payment: Оплата
