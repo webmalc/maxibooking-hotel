@@ -271,7 +271,9 @@ MonthSwitcherContainer.prototype.showFirstEnabledSwitcher = function (defaultMon
     if(!this.defaultSwitcher) {
         this.defaultSwitcherDetermine(defaultMonth);
     }
-    this.defaultSwitcher.showClickedSpecials();
+    if(this.defaultSwitcher) {
+        this.defaultSwitcher.showClickedSpecials();
+    }
 };
 MonthSwitcherContainer.prototype.getActivePage = function() {
     if(!this.defaultSwitcher) {
