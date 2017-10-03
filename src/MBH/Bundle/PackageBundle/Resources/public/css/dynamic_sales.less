@@ -1,0 +1,77 @@
+body {
+  padding-bottom: 0;
+}
+
+#dynamic-sales-table-wrapper {
+  position: relative;
+  #left-top-scrollable {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    position: absolute;
+    width: 251px;
+    top: 0;
+    z-index: 200;
+    .first-cell {
+      width: 150px;
+    }
+    .second-cell {
+      text-align: center;
+      width: 95px;
+      font-weight: 600;
+    }
+    .first-cell, .second-cell {
+      display: inline-block;
+    }
+  }
+  .line-name {
+    min-width: 150px;
+    padding-bottom: 0;
+    padding-top:0;
+    font-weight: 600;
+  }
+  .periods-cell {
+    min-width: 100px;
+  }
+  .table-cell {
+    min-width: 48px;
+    height: 41px;
+  }
+  .rightTable {
+    position: absolute;
+    background-color: #fff;
+    width: 250px;
+    z-index: 130;
+  }
+  #headerTable {
+    position: absolute;
+    background-color: #fff;
+    z-index: 150;
+    margin-bottom: 0;
+    .left-offset-line {
+      min-width: 250px;
+    }
+    .date-td {
+      padding: 0 !important;
+    }
+  }
+  .dynamic-sales-table {
+    margin-bottom: 0 !important;
+    border-top: 1px solid #e0e0e0;
+    .left-offset-line {
+      min-width: 250px;
+    }
+    .table-title {
+      position: absolute;
+      padding-left: 5px;
+    }
+    tr.info {
+      td {
+        position: relative;
+        height: 31px;
+        strong {
+          top: 5px;
+        }
+      }
+    }
+  }
+}
