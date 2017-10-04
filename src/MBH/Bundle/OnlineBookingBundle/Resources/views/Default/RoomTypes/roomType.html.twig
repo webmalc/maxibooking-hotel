@@ -76,10 +76,14 @@
                         {% set prices = onlineResult.getPrices %}
                         <span class="noneprice">
                             {% block oldPrice %}
-                            {{ prices.old|number_format(0, thousandSep=' ') }}
+                                {% if prices.old %}
+                                    {{ prices.old|number_format(0, thousandSep=' ') }}
+                                {% endif %}
                             {% endblock %}
                         </span>
-                    &#8381;
+                    {% if prices.old %}
+                        &#8381;
+                    {% endif %}
                     {% block newPrice %}
                         <span class="newprice">{{ prices.new|number_format(0, thousandSep=' ') }}&#8381;</span></p>
                     {% endblock newPrice %}
