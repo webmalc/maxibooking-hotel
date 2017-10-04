@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/spec-slider.css')) }}">
 <div class="spec-wrap">
     <div class="month-spec">
-        <ul class="bxslider">
+        <ul class="bxslider_disable">
             {% for key, monthName in monthList %}
                 <li class="month-switcher"><a href="#" id="{{ key }}" {% if key not in data.byMonth|keys %}class="disable-month"{% endif %}>{{ monthName }}</a></li>
             {% endfor %}
