@@ -145,7 +145,7 @@ class WindowsReportGenerator
         }
 
         $this->roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
-            ->fetch($this->begin, $this->end, $this->hotel, $roomTypes?:[], null, true);
+            ->fetch($this->begin, $this->end, $this->hotel, $roomTypes ?: [], null, true);
 
         foreach ($rooms as $room) {
             $this->addRoomType($room->getRoomType());
@@ -158,35 +158,37 @@ class WindowsReportGenerator
         $this->countVirtualNumbers = self::countVirtualNumbers($to);
 
         //Specials
-        $specials = $this->getSpecials();
+        $specials = $this->getSpecials($roomTypes ?: []);
         $this->specials = $this->prepareSpecials($specials);
 
         return $this;
     }
 
-    public function getSpecialInDate(\DateTime $day, Room $room)
+    public function getSpecialInDate(\DateTime $date, Room $room)
     {
         $result = null;
         $roomTypeId = $room->getRoomType()->getId();
-        if (isset($this->specials[$roomTypeId][$day->format('d.m')][$room->getId()]['special'])) {
-            $result = $this->specials[$roomTypeId][$day->format('d.m')][$room->getId()]['special'];
+        if (isset($this->specials[$roomTypeId][$date->format('d.m.Y')][$room->getId()]['special'])) {
+            $result = $this->specials[$roomTypeId][$date->format('d.m.Y')][$room->getId()]['special'];
         }
 
         return $result;
 
     }
 
-    private function getSpecials()
+    private function getSpecials(array $roomTypes = [])
     {
-        $qb = $this->dm->getManager()->getRepository('MBHPriceBundle:Special')->createQueryBuilder();
+        $specials = $this->dm
+            ->getManager()
+            ->getRepository('MBHPriceBundle:Special')
+            ->fetchSpecialsByRoomTypeByDate(
+                $this->begin,
+                $this->end,
+                $roomTypes,
+                $this->hotel
+            );
 
-        $qb
-            ->field('isEnabled')->equals(true)
-            ->field('virtualRoom')->exists(true)
-            ->field('hotel')->references($this->hotel)
-        ;
-
-        return $qb->getQuery()->execute();
+        return $specials;
     }
 
     private function prepareSpecials($specials = null)
@@ -200,8 +202,13 @@ class WindowsReportGenerator
                         /** @var RoomType $roomType */
                         $sBegin = clone($special->getBegin());
                         $sEnd = clone($special->getEnd());
-                        foreach (new \DatePeriod($sBegin, \DateInterval::createFromDateString('1 day'), $sEnd->modify('+ 1 day')) as $day) {
-                            $result[$roomType->getId()][$day->format('d.m')][$special->getVirtualRoom()->getId()]['special'][] = $special;
+                        foreach (new \DatePeriod(
+                                     $sBegin,
+                                     \DateInterval::createFromDateString('1 day'),
+                                     $sEnd->modify('+ 1 day')
+                                 ) as $day) {
+                            $result[$roomType->getId()][$day->format('d.m.Y')][$special->getVirtualRoom()->getId(
+                            )]['special'][] = $special;
 
                         }
                     }
@@ -230,7 +237,7 @@ class WindowsReportGenerator
         $roomTypeId = $room->getRoomType()->getId();
         $dayAsString = $day->format('d.m.Y');
 
-        $this->countNumbers[$roomTypeId][$dayAsString] = $this->roomCaches[$roomTypeId][0][$dayAsString]??null;
+        $this->countNumbers[$roomTypeId][$dayAsString] = $this->roomCaches[$roomTypeId][0][$dayAsString] ?? null;
     }
 
     /**
@@ -362,15 +369,15 @@ class WindowsReportGenerator
                 if ($date >= $package->getBegin() && $date <= $package->getEnd()) {
                     $this->data[$date->format('d.m.Y')][$room->getId()][] = [
                         'package' => $package,
-                        'tooltip' => '# ' .
-                            $package->getNumberWithPrefix() . ' <br>' .
-                            $package->getBegin()->format('d.m.Y') . ' - ' .
-                            $package->getEnd()->format('d.m.Y') . '<br>' .
+                        'tooltip' => '# '.
+                            $package->getNumberWithPrefix().' <br>'.
+                            $package->getBegin()->format('d.m.Y').' - '.
+                            $package->getEnd()->format('d.m.Y').'<br>'.
                             $package->getOrder()->getPayer()
                         ,
                         'begin' => $date == $package->getBegin(),
                         'end' => $date == $package->getEnd(),
-                        'regular' => $date != $package->getBegin() && $date != $package->getEnd()
+                        'regular' => $date != $package->getBegin() && $date != $package->getEnd(),
                     ];
                 }
             }
@@ -429,10 +436,15 @@ class WindowsReportGenerator
                 $stat[$roomTypeId][self::REST_OF_VIRTUAL_ROOMS][$dayAsString] = abs($restVirtualRooms);
                 $stat[$roomTypeId][self::REST_OF_ROOMS_IN_SALE][$dayAsString] = abs($restRoomsForSale);
                 $stat[$roomTypeId][self::DIFFERENCE_IN_SALE][$dayAsString] = abs($roomsForSale - $amountVirtualRooms);
-                $stat[$roomTypeId][self::DIFFERENCE_ROOM_PLACED][$dayAsString] = abs($roomsBooked - $virtualRoomsBooked);
-                $stat[$roomTypeId][self::DIFFERENCE_IN_REST_ROOM][$dayAsString] = abs($restVirtualRooms - $restRoomsForSale);
+                $stat[$roomTypeId][self::DIFFERENCE_ROOM_PLACED][$dayAsString] = abs(
+                    $roomsBooked - $virtualRoomsBooked
+                );
+                $stat[$roomTypeId][self::DIFFERENCE_IN_REST_ROOM][$dayAsString] = abs(
+                    $restVirtualRooms - $restRoomsForSale
+                );
             }
         }
+
         return $stat;
     }
 
@@ -451,7 +463,7 @@ class WindowsReportGenerator
             self::REST_OF_ROOMS_IN_SALE,
             self::DIFFERENCE_IN_SALE,
             self::DIFFERENCE_ROOM_PLACED,
-            self::DIFFERENCE_IN_REST_ROOM
+            self::DIFFERENCE_IN_REST_ROOM,
         ];
     }
 
@@ -478,8 +490,8 @@ class WindowsReportGenerator
         $checkedStatKeys = [
             'package.window.difference.room.sale.package',
             'package.window.difference.room.placed',
-            'package.window.difference.room.rest'
-            ];
+            'package.window.difference.room.rest',
+        ];
 
         if (in_array($statKey, $checkedStatKeys)) {
             $statDays = $stat[$statKey];
@@ -505,7 +517,7 @@ class WindowsReportGenerator
     private function getPackagesCountByDay(RoomType $roomType, \DateTime $day, bool $isVirtualRoomCount = false)
     {
         $result = 0;
-        $packagesByRooms = $this->packages[$roomType->getId()]??[];
+        $packagesByRooms = $this->packages[$roomType->getId()] ?? [];
         foreach ($packagesByRooms as $packagesByRoom) {
             foreach ($packagesByRoom as $package) {
                 /** @var Package $package */

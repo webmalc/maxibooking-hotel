@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use  Doctrine\MongoDB\CursorInterface;
@@ -177,5 +178,27 @@ class SpecialRepository extends DocumentRepository
         }
 
         return $result;
+    }
+
+    public function fetchSpecialsByRoomTypeByDate(\DateTime $begin = null, \DateTime $end = null, array $roomTypes = [], Hotel $hotel)
+    {
+        $qb = $this->createQueryBuilder();
+
+        $qb
+            ->field('isEnabled')->equals(true)
+            ->field('virtualRoom')->exists(true)
+            ->field('hotel')->references($hotel)
+        ;
+        if (count($roomTypes)) {
+            $qb->field('roomTypes.id')->in($roomTypes);
+        }
+        if ($begin) {
+            $qb->field('end')->gte($begin);
+        }
+        if ($end) {
+            $qb->field('begin')->lte($end);
+        }
+
+        return $qb->getQuery()->execute();
     }
 }

@@ -1,15 +1,19 @@
 /*global window, document, $, Routing, console */
 $(document).ready(function ($) {
-    updateDistributionReportTable();
-    $('#distribution-report-update-table-button').click(function() {
+    var $updateButton = $("#distribution-report-update-table-button");
+    if($updateButton.length === 1) {
         updateDistributionReportTable();
-    });
-    var $filterBegin = $('#distribution-report-filter-begin');
-    if (!$filterBegin.val()) {
-        var $rangePickerInput = $('.daterangepicker-input');
-        $rangePickerInput.data('daterangepicker').setStartDate(new Date());
-        $rangePickerInput.data('daterangepicker').setEndDate(moment().add(45, 'days').toDate());
+        $updateButton.click(function() {
+            updateDistributionReportTable();
+        });
+        var $filterBegin = $('#distribution-report-filter-begin');
+        if (!$filterBegin.val()) {
+            var $rangePickerInput = $('.daterangepicker-input');
+            $rangePickerInput.data('daterangepicker').setStartDate(new Date());
+            $rangePickerInput.data('daterangepicker').setEndDate(moment().add(45, 'days').toDate());
+        }
     }
+
 });
 
 function updateDistributionReportTable() {

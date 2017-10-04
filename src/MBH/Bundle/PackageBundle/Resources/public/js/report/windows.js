@@ -67,13 +67,13 @@ $(document).ready(function ($) {
         };
 
     //пока в ящик откладываем
-    var Special = function($cell) {
+    var Special = function ($cell) {
         this.$cell = $cell;
         this.specialId = $cell.data('special');
         this.url = Routing.generate('special_edit', {id: this.specialId});
 
     };
-    Special.prototype.edit = function() {
+    Special.prototype.edit = function () {
 
     };
     Special.prototype.init = function () {
@@ -81,24 +81,24 @@ $(document).ready(function ($) {
     };
     Special.prototype.bindHandler = function () {
         var that = this;
-        this.$cell.click(function(e) {
+        this.$cell.click(function (e) {
             window.open(that.url);
         })
     };
     Special.prototype.show = function () {
-        if(this.$cell.hasClass('special-hidden')) {
+        if (this.$cell.hasClass('special-hidden')) {
             this.$cell.removeClass('special-hidden');
         }
     };
 
     Special.prototype.hide = function () {
-        if(!this.$cell.hasClass('special-hidden')) {
+        if (!this.$cell.hasClass('special-hidden')) {
             this.$cell.addClass('special-hidden');
         }
     };
 
     Special.prototype.checkVisible = function () {
-        isSpecials()?this.show():this.hide();
+        isSpecials() ? this.show() : this.hide();
     };
 
 
@@ -133,8 +133,6 @@ $(document).ready(function ($) {
             specContainer.checkVisible();
         });
     };
-
-
 
 
     var form = $('#windows-report-filter'),
@@ -198,7 +196,6 @@ $(document).ready(function ($) {
                     table.find("a.windows-package-info-link").on('click', function (event) {
                         processLinks(this, event);
                     });
-
 
                     $('.descr').readmore({
                         moreLink: '<div class="more-link"><a href="#">' + $('#expand-window').text() + ' <i class="fa fa-caret-right"></i></a></div>',
