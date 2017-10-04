@@ -2,19 +2,17 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use Doctrine\MongoDB\Query\Builder;
 use Gedmo\Loggable\Document\LogEntry;
 use Gedmo\Loggable\Document\Repository\LogEntryRepository;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -32,9 +30,6 @@ class Calculation
      */
     protected $container;
 
-    /**
-     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
-     */
     protected $dm;
 
     /**
@@ -50,7 +45,7 @@ class Calculation
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->dm = $container->get('doctrine_mongodb')->getManager();
+        $this->dm = $container->get('doctrine_mongodb.odm.default_document_manager');
         $this->manager = $container->get('mbh.hotel.room_type_manager');
         $this->mergingTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->getMergingTariffs();
         $this->helper = $container->get('mbh.helper');
@@ -445,33 +440,37 @@ class Calculation
 
     /**
      * @param \DateTime $begin
+     * @param \DateTime $end
      * @param Hotel[] $hotels
+     * @param $calculationBegin
+     * @param $calculationEnd
+     * @return array
      */
-    public function getDebts(\DateTime $begin, array $hotels = [])
-    {
-        /** @var OrderRepository $orderRepository */
-        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
-        $qb = $orderRepository->createQueryBuilder();
-        $qb
-            ->addOr($qb->expr()
-                ->field('updatedAt')->lt($begin)
-                ->where('function() {
-                return this.price != this.paid;
-            }'))
-            ->addOr($qb->expr()
-                ->field('updatedAt')->gte($begin)
-            );
-
-        /** @var Order[] $orders */
-        $orders = $qb
+    public function getDebtsByDays(
+        \DateTime $begin,
+        \DateTime $end,
+        array $hotels = [],
+        \DateTime $calculationBegin,
+        \DateTime $calculationEnd
+    ) {
+        /** @var Builder $packagesInCalcPeriodQB */
+        $packagesInCalcPeriodQB = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->createQueryBuilder();
+        $ordersIds = $packagesInCalcPeriodQB
+            ->addOr($packagesInCalcPeriodQB->expr()->field('begin')->gte($calculationBegin))
+            ->addOr($packagesInCalcPeriodQB->expr()->field('begin')->lte($calculationEnd))
+            ->distinct('order.$id')
             ->getQuery()
             ->execute()
             ->toArray();
-        $ordersByIds = [];
-        foreach ($orders as $order) {
-            $ordersByIds[$order->getId()] = $order;
-        }
 
+        $orders = $this->dm
+            ->getRepository('MBHPackageBundle:Order')
+            ->getUnpaidOnDate($begin, $ordersIds)
+            ->toArray();
+
+        $ordersByIds = $this->helper->sortByValue($orders);
         $ordersIds = array_keys($ordersByIds);
 
         /** @var CashDocument[] $cashDocs */
@@ -479,83 +478,157 @@ class Calculation
             ->getRepository('MBHCashBundle:CashDocument')
             ->createQueryBuilder()
             ->field('order.id')->in($ordersIds)
-//            ->field('paidDate')->g
             ->getQuery()
-            ->execute();
+            ->execute()
+            ->toArray();
 
-        $cashDocsByOrderId = [];
-        foreach ($cashDocs as $cashDoc) {
-            $cashDocsByOrderId[$cashDoc->getOrder()->getId()][] = $cashDoc;
-        }
+        /**
+         * @param CashDocument|Package $document
+         * @return mixed
+         */
+        $getOrderIdCallback = function ($document) {
+            return $document->getOrder()->getId();
+        };
+        $cashDocsByOrderId = $this->helper->sortByValueByCallback($cashDocs, $getOrderIdCallback, true);
 
         /** @var Package[] $packages */
-        $packages = $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->createQueryBuilder()
-            ->field('order.id')->in($ordersIds)
-            ->getQuery()
-            ->execute();
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->getByOrdersIds($ordersIds);
+        $packagesByOrderIds = $this->helper->sortByValueByCallback($packages, $getOrderIdCallback, true);
 
-        $packagesByOrderIds = [];
-        foreach ($packages as $package) {
-            $packagesByOrderIds[$package->getOrder()->getId()][] = $package;
+        $packagesPricesByDates = $this->calcDailyPackagePrices($packages, $begin, $end);
+
+        $periodEnd = (clone $end)->add(new \DateInterval('P1D'));
+        $period = new \DatePeriod($begin, new \DateInterval('P1D'), $periodEnd);
+
+        $initialHotelData = [];
+        /** @var \DateTime $date */
+        foreach ($period as $date) {
+            $dateString = $date->format('d.m.Y');
+            foreach ($hotels as $hotel) {
+                $initialHotelData[$dateString][$hotel->getId()] = 0;
+            }
         }
 
-        $kreditDebtCash = [];
-        $kreditDebtCashless = [];
-        $debitPartlyPaid = [];
-        $debitNotPaid = [];
-        foreach ($ordersByIds as $orderId => $order) {
-            /** @var CashDocument[] $cashDocuments */
-            $cashDocuments = isset($cashDocsByOrderId[$orderId]) ? $cashDocsByOrderId[$orderId] : [];
-            $packages = isset($packagesByOrderIds[$orderId]) ? $packagesByOrderIds[$orderId] : [];
+        $kreditDebtCash = $kreditDebtCashless = $debitPartlyPaid = $debitNotPaid = $initialHotelData;
 
-            $hotelsPriceFractions = [];
-            /** @var Package $package */
-            foreach ($packages as $package) {
-                if (empty($package->getDeletedAt()) || $package->getDeletedAt() > $begin) {
-                    $hotelId = $package->getHotel()->getId();
-                    $fraction = $package->getPrice() / $package->getOrder()->getPrice();
-                    isset($hotelsPriceFractions[$hotelId])
-                        ? $hotelsPriceFractions[$hotelId] += $fraction
-                        : $hotelsPriceFractions[$hotelId] = $fraction;
+        /** @var \DateTime $date */
+        foreach ($period as $date) {
+            $dateString = $date->format('d.m.Y');
+            foreach ($ordersByIds as $orderId => $order) {
+                /** @var CashDocument[] $cashDocuments */
+                $cashDocuments = isset($cashDocsByOrderId[$orderId]) ? $cashDocsByOrderId[$orderId] : [];
+                $packages = isset($packagesByOrderIds[$orderId]) ? $packagesByOrderIds[$orderId] : [];
+
+                $cashIncoming = 0;
+                $cashlessIncoming = 0;
+                $refunds = 0;
+                foreach ($cashDocuments as $cashDocument) {
+                    if ($cashDocument->getPaidDate() <= $date) {
+                        if ($cashDocument->getOperation() == 'in') {
+                            $cashDocument->getMethod() == 'cash'
+                                ? $cashIncoming += $cashDocument->getTotal()
+                                : $cashlessIncoming += $cashDocument->getTotal();
+                        } elseif ($cashDocument->getOperation() == 'out') {
+                            $refunds -= $cashDocument->getTotal();
+                        }
+                    }
                 }
-            }
 
-            $cashIncoming = 0;
-            $cashlessIncoming = 0;
-            $refunds = 0;
-            foreach ($cashDocuments as $cashDocument) {
-                if ($cashDocument->getOperation() == 'in' || $cashDocument->getOperation() == 'fee') {
-                    $cashDocument->getMethod() == 'cash'
-                        ? $cashIncoming += $cashDocument->getTotal()
-                        : $cashlessIncoming += $cashDocument->getTotal();
-                } elseif ($cashDocument->getOperation() == 'out') {
-                    $refunds -= $cashDocument->getTotal();
+                list($priceOfAllOrderPackages, $priceOfNotDeletedPackages)
+                    = $this->getOrderPackagesPrices($packages, $packagesPricesByDates, $dateString, $begin);
+                $priceFractionsByHotels
+                    = $this->getOrderPriceFractionsByHotels($packages, $hotels, $priceOfAllOrderPackages, $priceOfNotDeletedPackages);
+
+                $incomingSum = $cashIncoming + $cashlessIncoming;
+                $cashBalance = $incomingSum - $refunds;
+
+                $isOrderNotPaid = $incomingSum == 0;
+                $isOrderPartlyPaid = $cashBalance < $priceOfNotDeletedPackages;
+
+                if ($isOrderNotPaid || $isOrderPartlyPaid) {
+                    foreach ($hotels as $hotel) {
+                        $hotelId = $hotel->getId();
+                        $priceFraction = $priceFractionsByHotels[$hotelId]['all'];
+                        $packageHotelPrice = $incomingSum * $priceFraction;
+                        if ($isOrderNotPaid) {
+                            $debitNotPaid[$dateString][$hotelId] += $packageHotelPrice;
+                        } else {
+                            $debitPartlyPaid[$dateString][$hotelId] += $packageHotelPrice;
+                        }
+                    }
+                } elseif ($cashBalance > $priceOfNotDeletedPackages) {
+                    foreach ($hotels as $hotel) {
+                        $hotelId = $hotel->getId();
+                        $priceFraction = $priceFractionsByHotels[$hotelId]['notDeleted'];
+
+                        $kreditDebtCash[$dateString][$hotelId] += $cashIncoming * $priceFraction;
+                        $kreditDebtCashless[$dateString][$hotelId] += $cashlessIncoming * $priceFraction;
+                    }
                 }
-            }
-
-            $incomingSum = $cashIncoming + $cashlessIncoming;
-            $cashIncomingFraction = $cashIncoming / $incomingSum;
-
-            if ($incomingSum == 0) {
-                foreach ($hotelsPriceFractions as $hotelId => $priceFraction) {
-                    $packageHotelPrice = $incomingSum * $priceFraction;
-                    isset($debitNotPaid[$hotelId])
-                        ? $debitNotPaid[$hotelId] += $packageHotelPrice
-                        : $debitNotPaid[$hotelId] = $packageHotelPrice;
-                }
-            } elseif ($incomingSum) {
-
             }
         }
 
         return [
-            $kreditDebtCash,
-            $kreditDebtCashless,
-            $debitNotPaid,
-            $debitPartlyPaid
+            'kreditDebtCash' => $kreditDebtCash,
+            'kreditDebtCashless' => $kreditDebtCashless,
+            'debitNotPaid' => $debitNotPaid,
+            'debitPartlyPaid' => $debitPartlyPaid
         ];
+    }
+
+    /**
+     * @param Package[] $packages
+     * @param $packagePricesByDates
+     * @param $dateString
+     * @param $begin
+     * @return array
+     */
+    private function getOrderPackagesPrices($packages, $packagePricesByDates, $dateString, $begin)
+    {
+        $priceOfAllOrderPackages = 0;
+        $priceOfNotDeletedPackages = 0;
+        foreach ($packages as $package) {
+            if (isset($packagePricesByDates[$package->getId()][$dateString])) {
+                $datePackagePrice = $packagePricesByDates[$package->getId()][$dateString];
+                $priceOfAllOrderPackages += $datePackagePrice;
+                if (empty($package->getDeletedAt()) || $package->getDeletedAt() > $begin) {
+                    $priceOfNotDeletedPackages += $datePackagePrice;
+                }
+            }
+        }
+
+        return [$priceOfAllOrderPackages, $priceOfNotDeletedPackages];
+    }
+
+    /**
+     * @param Package[] $packages
+     * @param Hotel[] $hotels
+     * @param $priceOfNotDeletedPackages
+     * @param $priceOfAllOrderPackages
+     * @return array
+     */
+    private function getOrderPriceFractionsByHotels($packages, $hotels, $priceOfNotDeletedPackages, $priceOfAllOrderPackages)
+    {
+        $hotelsPriceFractions = [];
+        foreach ($hotels as $hotel) {
+            $hotelsPriceFractions[$hotel->getId()] = ['all' => 0, 'notDeleted' => 0];
+        }
+
+        /** @var Package $package */
+        foreach ($packages as $package) {
+            $hotelId = $package->getHotel()->getId();
+            $priceFractionFromNotDeleted = $priceOfNotDeletedPackages != 0
+                ? $package->getPrice() / $priceOfNotDeletedPackages
+                : 0;
+            $priceFractionFromAllPackagesPrice = $priceOfAllOrderPackages != 0
+                ? $package->getPrice() / $priceOfAllOrderPackages
+                : 0;
+
+            $hotelsPriceFractions[$hotelId]['all'] += $priceFractionFromAllPackagesPrice;
+            $hotelsPriceFractions[$hotelId]['notDeleted'] += $priceFractionFromNotDeleted;
+        }
+
+        return $hotelsPriceFractions;
     }
 
     /**
@@ -565,7 +638,7 @@ class Calculation
      * @param bool $asCalculatedPrice
      * @return array
      */
-    public function calcDailyPrices($packages, \DateTime $begin, \DateTime $end, $asCalculatedPrice  = true)
+    public function calcDailyPackagePrices($packages, \DateTime $begin, \DateTime $end, $asCalculatedPrice = true)
     {
         $earliestCreationDate = null;
         foreach ($packages as $package) {
@@ -573,11 +646,13 @@ class Calculation
                 $earliestCreationDate = $package->getCreatedAt();
             }
         }
+
         /** @var LogEntryRepository $logEntryRepo */
         $logEntryRepo = $this->dm->getRepository('GedmoLoggable:LogEntry');
         $packageIds = $this->helper->toIds($packages);
-        /** @var LogEntry[] $logs */
-        $logs = $logEntryRepo
+
+        /** @var LogEntry[] $packagesLogs */
+        $packagesLogs = $logEntryRepo
             ->createQueryBuilder()
             ->field('objectId')->in($packageIds)
             ->field('objectClass')->equals('MBH\Bundle\PackageBundle\Document\Package')
@@ -589,8 +664,9 @@ class Calculation
             ->toArray();
 
         $sortedLogData = [];
-        foreach ($logs as $log) {
-            $dateString = $log->getLoggedAt()->format('d.m.Y');
+        foreach ($packagesLogs as $log) {
+            $loggedDate = $log->getLoggedAt() < $begin ? $begin : $log->getLoggedAt();
+            $dateString = $loggedDate->format('d.m.Y');
             $logData = $log->getData();
             !isset($logData['price']) ?: $sortedLogData[$log->getObjectId()][$dateString]['price'] = $logData['price'];
             !isset($logData['totalOverwrite']) ?: $sortedLogData[$log->getObjectId()][$dateString]['totalOverwrite'] = $logData['totalOverwrite'];
@@ -599,42 +675,81 @@ class Calculation
             !isset($logData['discount']) ?: $sortedLogData[$log->getObjectId()][$dateString]['discount'] = $logData['discount'];
         }
 
+        $getDailyValue = function ($dataName, $packageId, $dateString, $previousValue) use ($sortedLogData) {
+            return isset($sortedLogData[$packageId][$dateString][$dataName])
+                ? $sortedLogData[$packageId][$dateString][$dataName]
+                : $previousValue[$dataName];
+        };
+
         $prices = [];
+        $currentDateString = (new \DateTime())->format('d.m.Y');
         foreach ($packages as $package) {
-            $beginDate = $begin < $package->getCreatedAt() ? $package->getCreatedAt() : $begin;
+            $periodBegin = $begin < $package->getCreatedAt() ? $package->getCreatedAt() : $begin;
+            $periodEnd = (clone $end)->add(new \DateInterval('P1D'));
+            $previousValue = null;
             /** @var \DateTime $date */
-            foreach (new \DatePeriod($beginDate, new \DateInterval('P1D'), $end) as $date) {
+            foreach (new \DatePeriod($periodBegin, new \DateInterval('P1D'), $periodEnd) as $date) {
                 $dateString = $date->format('d.m.Y');
                 $packageId = $package->getId();
-                $price = isset($sortedLogData[$packageId][$dateString]['price'])
-                    ? $sortedLogData[$packageId][$dateString]['price']
-                    : $package->getPackagePrice();
-                $totalOverwrite = isset($sortedLogData[$packageId][$dateString]['totalOverwrite'])
-                    ? $sortedLogData[$packageId][$dateString]['totalOverwrite']
-                    : $package->getTotalOverwrite();
-                $servicesPrice = isset($sortedLogData[$packageId][$dateString]['servicesPrice'])
-                    ? $sortedLogData[$packageId][$dateString]['servicesPrice']
-                    : $package->getServicesPrice();
-                $isPercentDiscount = isset($sortedLogData[$packageId][$dateString]['isPercentDiscount'])
-                    ? $sortedLogData[$packageId][$dateString]['isPercentDiscount']
-                    : $package->getIsPercentDiscount();
-                $discount = isset($sortedLogData[$packageId][$dateString]['discount'])
-                    ? $sortedLogData[$packageId][$dateString]['discount']
-                    : $package->getDiscount();
+                $isCurrentDate = $dateString === $currentDateString;
 
-                if ($asCalculatedPrice) {
-                    $prices[$packageId][$dateString] =
+                if ($isCurrentDate) {
+                    $price = $package->getPackagePrice();
+                    $totalOverWrite = $package->getTotalOverwrite();
+                    $servicesPrice = $package->getServicesPrice();
+                    $isPercentDiscount = $package->getIsPercentDiscount();
+                    $discount = $package->getDiscount();
+                } else {
+                    $price = $getDailyValue('price', $packageId, $dateString, $previousValue);
+                    $totalOverWrite = $getDailyValue('totalOverwrite', $packageId, $dateString, $previousValue);
+                    $servicesPrice = $getDailyValue('servicesPrice', $packageId, $dateString, $previousValue);
+                    $isPercentDiscount = $getDailyValue('isPercentDiscount', $packageId, $dateString, $previousValue);
+                    $discount = $getDailyValue('discount', $packageId, $dateString, $previousValue);
                 }
-                $prices[$packageId][$dateString] = [
+
+                $priceData = [
                     'price' => $price,
-                    'totalOverWrite' => $totalOverwrite,
+                    'totalOverwrite' => $totalOverWrite,
                     'servicesPrice' => $servicesPrice,
                     'isPercentDiscount' => $isPercentDiscount,
                     'discount' => $discount
                 ];
+                $prices[$packageId][$dateString] = $asCalculatedPrice
+                    ? $this->calcPackagePrice($price, $totalOverWrite, $servicesPrice, $discount, $isPercentDiscount)
+                    : $priceData;
+
+                $previousValue = $priceData;
             }
         }
 
         return $prices;
+    }
+
+    /**
+     * @param $price
+     * @param $totalOverwrite
+     * @param $servicesPrice
+     * @param $discount
+     * @param $isPercentDiscount
+     * @return float|int
+     */
+    public function calcPackagePrice($price, $totalOverwrite, $servicesPrice, $discount, $isPercentDiscount)
+    {
+        if (!empty($totalOverwrite)) {
+            $packagePrice = $totalOverwrite;
+        } else {
+            $packagePrice = $price;
+
+            if (!empty($servicesPrice)) {
+                $packagePrice += $servicesPrice;
+            }
+            if (!empty($discount)) {
+                $packageDiscount = $isPercentDiscount === true
+                    ? $price * $discount / 100 : $discount;
+                $packagePrice -= $packageDiscount;
+            }
+        }
+
+        return $packagePrice;
     }
 }
