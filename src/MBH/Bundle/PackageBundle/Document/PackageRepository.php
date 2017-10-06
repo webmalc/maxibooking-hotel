@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -663,6 +662,7 @@ class PackageRepository extends DocumentRepository
         $qb = $this->createQueryBuilder('s');
         $now = new \DateTime('midnight');
         $orderData = [];
+        $isShowDeleted = isset($data['deleted']) && $data['deleted'];
 
         //confirmed
         if (isset($data['confirmed']) && $data['confirmed'] != null) {
@@ -680,7 +680,15 @@ class PackageRepository extends DocumentRepository
             $orderData = array_merge($orderData, ['asIdsArray' => true, 'status' => $data['status']]);
         }
         if (!empty($orderData)) {
+            if ($isShowDeleted && $dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->disable('softdeleteable');
+            }
+
             $orders = $dm->getRepository('MBHPackageBundle:Order')->fetch($orderData);
+
+            if (!$dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->enable('softdeleteable');
+            }
             $qb->field('order.id')->in($orders);
         }
 
@@ -783,11 +791,8 @@ class PackageRepository extends DocumentRepository
 
         if (isset($data['createdBy']) && $data['createdBy'] != null) {
 //            $qb->field('createdBy')->equals($data['createdBy']);
-            $qb->addOr(
-                $qb->expr()
-                    ->field('createdBy')->equals($data['createdBy'])
-                    ->field('createdBy')->equals(null)
-            );
+            $qb->addOr($qb->expr()->field('createdBy')->equals($data['createdBy']));
+            $qb->addOr($qb->expr()->field('createdBy')->equals(null));
         }
 
         //query
