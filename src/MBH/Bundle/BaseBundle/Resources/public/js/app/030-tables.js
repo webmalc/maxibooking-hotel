@@ -90,3 +90,94 @@ $(document).ready(function () {
     'use strict';
     docReadyTables();
 });
+
+function setScrollable() {
+    var $verticalScrollable = $('.vertical-scrollable');
+    var $lineAfterLastScrollableLine = $verticalScrollable.first().parent().children().eq($verticalScrollable.length);
+    $lineAfterLastScrollableLine.children().each(function (index, elem) {
+        var $element = $(elem);
+        $element.css('min-width', $element.css('width'));
+        $element.css('max-width', $element.css('width'));
+        $element.css('width', $element.css('width'));
+    });
+
+    var $table = $lineAfterLastScrollableLine.parent().parent();
+    var scrollableLinesHeight = 0;
+    var vScrollableTable = getScrollableTableTemplate($table);
+    var tbodyElement = document.createElement('tbody');
+    vScrollableTable.appendChild(tbodyElement);
+    $verticalScrollable.each(function (index, trElement) {
+        scrollableLinesHeight += parseInt(getComputedStyle(trElement).height, 10);
+        $(trElement).children().each(function (index, tdElement) {
+            var $tdElement = $(tdElement);
+            $tdElement.css('min-width', $tdElement.css('width'));
+            $tdElement.css('max-width', $tdElement.css('width'));
+            if ($tdElement.css('background-color') === "rgba(0, 0, 0, 0)") {
+                $tdElement.css('background-color', 'white');
+            }
+        });
+    });
+    $verticalScrollable.each(function (index, trElement) {
+        tbodyElement.appendChild(trElement);
+    });
+    $table.css('margin-top', scrollableLinesHeight);
+
+    var dailyReport = document.getElementById('daily-report');
+    dailyReport.appendChild(vScrollableTable);
+
+    var $horizontalScrollable = $('.horizontal-scrollable');
+    var hScrollableTable = getScrollableTableTemplate($table);
+    hScrollableTable.style.top = scrollableLinesHeight + 'px';
+    hScrollableTable.style.minWidth = $horizontalScrollable.first().css('min-width');
+    hScrollableTable.style.maxWidth = $horizontalScrollable.first().css('max-width');
+    var hScrollableTableBody = document.createElement('tbody');
+    hScrollableTable.appendChild(hScrollableTableBody);
+    $horizontalScrollable.parent().each(function (index, trElement) {
+        if (!trElement.classList.contains('vertical-scrollable')) {
+            var hScrollableTableLine = document.createElement('tr');
+            $(trElement).find('.horizontal-scrollable').each(function (index, tdElem) {
+                var clonedTdElement = tdElem.cloneNode(true);
+                clonedTdElement.style.backgroundColor = 'white';
+                hScrollableTableLine.appendChild(clonedTdElement);
+            });
+            hScrollableTableBody.appendChild(hScrollableTableLine);
+        }
+    });
+    dailyReport.appendChild(hScrollableTable);
+
+    var $verticalAndHorizontalScrollable = $verticalScrollable.find('.horizontal-scrollable');
+    var bothSidesScrollable = [];
+    $verticalAndHorizontalScrollable.each(function (index, element) {
+        var bothSideScrollable = getScrollableTableTemplate($table);
+        var elementComputedStyles = getComputedStyle(element);
+        bothSideScrollable.style.width = elementComputedStyles.width;
+        bothSideScrollable.style.height = (parseInt(elementComputedStyles.height, 10) + 1) + 'px';
+        var bothSidesScrollableBody = document.createElement('tbody');
+        bothSideScrollable.appendChild(bothSidesScrollableBody);
+        var bothSidesScrollableLine = document.createElement('tr');
+        bothSidesScrollableBody.appendChild(bothSidesScrollableLine);
+        var clonedElement = element.cloneNode(true);
+        bothSidesScrollableLine.appendChild(clonedElement);
+        bothSideScrollable.style.zIndex = 111;
+        dailyReport.appendChild(bothSideScrollable);
+        bothSidesScrollable.push(bothSideScrollable);
+    });
+
+    var $bothSidesScrollable = $(bothSidesScrollable);
+
+    dailyReport.onscroll = function () {
+        vScrollableTable.style.top = dailyReport.scrollTop + 'px';
+        hScrollableTable.style.left = dailyReport.scrollLeft + 'px';
+        $bothSidesScrollable.css('left', dailyReport.scrollLeft);
+        $bothSidesScrollable.css('top', dailyReport.scrollTop);
+    };
+}
+
+function getScrollableTableTemplate($table) {
+    var templateTable = document.createElement('table');
+    templateTable.style.top = 0;
+    templateTable.classList = $table.get(0).classList;
+    templateTable.style.position = 'absolute';
+
+    return templateTable;
+}

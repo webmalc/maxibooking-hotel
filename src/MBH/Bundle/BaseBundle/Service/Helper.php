@@ -27,6 +27,49 @@ class Helper
     }
 
     /**
+     * @param array $collection
+     * @param bool $withMultipleValues
+     * @param string $method
+     * @return array
+     */
+    public function sortByValue($collection, $withMultipleValues = false, $method = 'getId')
+    {
+        $result = [];
+
+        foreach ($collection as $item) {
+            if ($withMultipleValues) {
+                $result[$item->$method()][] = $item;
+            } else {
+                $result[$item->$method()] = $item;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $collection
+     * @param $callback
+     * @param bool $withMultipleValues
+     * @return array
+     */
+    public function sortByValueByCallback($collection, $callback, $withMultipleValues = false)
+    {
+        $result = [];
+
+        foreach ($collection as $item) {
+            $key = $callback($item);
+            if ($withMultipleValues) {
+                $result[$key][] = $item;
+            } else {
+                $result[$key] = $item;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * @param string $interface
      * @return array
      */

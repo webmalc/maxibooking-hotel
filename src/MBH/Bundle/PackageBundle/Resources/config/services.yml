@@ -171,6 +171,7 @@ services:
             - '@mbh.report'
             - '@translator'
         shared: false
+            - '@mbh.calculation'
 
     mbh.distribution_report_compiler:
         class: MBH\Bundle\PackageBundle\Services\DistributionReportCompiler

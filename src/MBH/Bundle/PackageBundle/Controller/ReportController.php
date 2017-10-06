@@ -1031,6 +1031,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * @Security("is_granted('ROLE_DAILY_REPORT_BY_PACKAGES')")
      * @Route("/packages_daily_report", name="packages_daily_report" )
      * @Template()
      * @return array
@@ -1045,24 +1046,28 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * @Security("is_granted('ROLE_DAILY_REPORT_BY_PACKAGES')")
      * @Route("/packages_daily_report_table", name="packages_daily_report_table", options={"expose"=true} )
      * @param Request $request
      * @return Response
      */
     public function packagesDailyReportTableAction(Request $request)
     {
-        //TODO: В другом pull request-е есть изменения для дат. Обновить!
-        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
+        $defaultBeginDate = $this->clientConfig->getActualBeginDate();
 
         $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
         $end = $this->helper->getDateFromString($request->query->get('end'))
             ?? (clone $defaultBeginDate)->modify('+45 days');
+        $calculationBegin = $this->helper->getDateFromString($request->query->get('calcBegin'))
+            ?? new \DateTime('first day of January ' . date('Y'));
+        $calculationEnd = $this->helper->getDateFromString($request->query->get('calcEnd'))
+            ?? new \DateTime('1st January Next Year');
         $hotels = $this->dm
             ->getRepository('MBHHotelBundle:Hotel')
             ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')));
 
         $report = $this->get('mbh.packages_daily_report_compiler')
-            ->generate($begin, $end, $hotels->toArray());
+            ->generate($begin, $end, $hotels->toArray(), $calculationBegin, $calculationEnd);
 
         return $report->generateReportTableResponse();
     }
