@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class OrderRepository extends DocumentRepository
@@ -137,9 +138,60 @@ class OrderRepository extends DocumentRepository
      */
     public function getUnpaidOrders(\DateTime $deadlineDate)
     {
-
         return $this->createQueryBuilder()->field('createdAt')->lte($deadlineDate)->getQuery()->execute()->toArray();
-
     }
 
+    /**
+     * @param $ordersIds
+     * @return mixed
+     */
+    public function getByOrdersIds($ordersIds)
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('id')->in($ordersIds)
+            ->getQuery()
+            ->execute();
+    }
+    /**
+     * @param Package[] $packages
+     */
+    public function loadRelatedOrders(array $packages)
+    {
+        $orderIds = array_map(function(Package $package) {
+            return $package->getOrder()->getId();
+        }, $packages);
+
+        return $this->createQueryBuilder()
+            ->field('id')->in($orderIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
+
+    /**
+     * @param \DateTime $date
+     * @param null $ordersIds
+     * @return Cursor|Order[]
+     */
+    public function getUnpaidOrOverpaidOnDate(\DateTime $date, $ordersIds = null)
+    {
+        $qb = $this->createQueryBuilder();
+        if (!is_null($ordersIds)) {
+            $qb->field('id')->in($ordersIds);
+        }
+        $qb
+            ->addOr($qb->expr()
+                ->field('updatedAt')->lt($date)
+                ->where('function() {
+                return this.price != this.paid && this.price != this.paid;
+            }'))
+            ->addOr($qb->expr()
+                ->field('updatedAt')->gte($date)
+            );
+
+        return $qb
+            ->getQuery()
+            ->execute();
+    }
 }

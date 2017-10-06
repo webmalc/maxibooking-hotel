@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
