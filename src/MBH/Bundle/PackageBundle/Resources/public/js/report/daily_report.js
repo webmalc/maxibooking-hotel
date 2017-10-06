@@ -21,6 +21,8 @@ function updateDailyReportTable() {
         data: {
             begin: $('#daily-report-filter-begin').val(),
             end: $('#daily-report-filter-end').val(),
+            calcBegin: $('#daily-report-filter-calc-begin').val(),
+            calcEnd: $('#daily-report-filter-calc-end').val(),
             hotels: $('#daily-report-filter-hotels').val()
         }
     });

@@ -12,6 +12,7 @@ use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class PackagesDailyReportCompiler
@@ -26,8 +27,11 @@ class PackagesDailyReportCompiler
     const SUM_OF_CREATED_PACKAGES_BY_HOTEL = 'sum-of-created-packages-by-hotel';
     const NUMBER_OF_CREATED_PACKAGES_BY_HOTEL = 'number-of-created-packages-by-hotel';
     const SUM_OF_CREATED_PACKAGES = 'sum-of-created-packages';
+    const SUM_OF_CANCELLATION_OF_UNPAID_OPTION = 'sum-of-cancellation-of-unpaid-packages';
     const ACCOUNTS_PAYABLE_CASH = 'kreditorka-cash';
     const ACCOUNTS_PAYABLE_CASHLESS = 'kreditorka-cashles';
+    const NOT_PAID_RECEIVABLES_SUM_OPTION = 'debitNotPaid';
+    const PARTLY_PAID_RECEIVABLES_SUM_OPTION = 'debitPartlyPaid';
 
     const SORTED_COLUMN_OPTIONS_BY_HOTELS = [
         self::CASHLESS_RECEIPTS_SUM,
@@ -36,10 +40,13 @@ class PackagesDailyReportCompiler
         self::CASH_RECEIPTS_SUM,
         self::CASH_RECEIPTS_SUM_FOR_CANCELLED,
         self::CASH_RECEIPTS_SUM_OUT,
+        self::SUM_OF_CANCELLATION_OF_UNPAID_OPTION,
+        self::NOT_PAID_RECEIVABLES_SUM_OPTION,
+        self::PARTLY_PAID_RECEIVABLES_SUM_OPTION,
         self::ACCOUNTS_PAYABLE_CASH,
         self::ACCOUNTS_PAYABLE_CASHLESS,
         self::NUMBER_OF_CREATED_PACKAGES_BY_HOTEL,
-        self::SUM_OF_CREATED_PACKAGES_BY_HOTEL
+        self::SUM_OF_CREATED_PACKAGES_BY_HOTEL,
     ];
 
     /** @var  DocumentManager */
@@ -48,29 +55,44 @@ class PackagesDailyReportCompiler
     private $report;
     /** @var  TranslatorInterface */
     private $translator;
+    /** @var  Calculation */
+    private $calculator;
 
-    public function __construct(DocumentManager $dm, Report $report, TranslatorInterface $translator)
-    {
+    public function __construct(
+        DocumentManager $dm,
+        Report $report,
+        TranslatorInterface $translator,
+        Calculation $calculator
+    ) {
         $this->dm = $dm;
         $this->report = $report;
         $this->translator = $translator;
+        $this->calculator = $calculator;
     }
 
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel[] $hotels
+     * @param \DateTime $calculationBegin
+     * @param \DateTime $calculationEnd
      * @param bool $forEmail
      * @return Report
      */
-    public function generate(\DateTime $begin, \DateTime $end, array $hotels, $forEmail = false)
-    {
+    public function generate(
+        \DateTime $begin,
+        \DateTime $end,
+        array $hotels,
+        \DateTime $calculationBegin,
+        \DateTime $calculationEnd,
+        $forEmail = false
+    ) {
         $table = $this->report->addReportTable($forEmail);
         $table->addClass('daily-report-table');
         $this->addTitleRows($table, $hotels, $begin, $end);
 
         $cashDocCriteria = new CashDocumentQueryCriteria();
-        $cashDocCriteria->filterByRange = 'createdAt';
+        $cashDocCriteria->filterByRange = 'paidDate';
         $cashDocCriteria->begin = $begin;
         $cashDocCriteria->end = $end;
         $cashDocuments = $this->dm->getRepository('MBHCashBundle:CashDocument')->findByCriteria($cashDocCriteria);
@@ -88,29 +110,21 @@ class PackagesDailyReportCompiler
             $this->dm->getFilterCollection()->disable('softdeleteable');
         }
 
-        $relatedOrders = $this->dm
-            ->getRepository('MBHPackageBundle:Order')
-            ->getByOrdersIds($relatedOrdersIds);
-
-        $ordersByIds = [];
-        /** @var Order $order */
-        foreach ($relatedOrders as $order) {
-            $ordersByIds[$order->getId()] = $order;
-        }
-
         $relatedPackages = $this->dm
             ->getRepository('MBHPackageBundle:Package')
             ->getByOrdersIds($relatedOrdersIds);
 
-        $deletedPackagesByDates = [];
         $packagesByOrderIds = [];
+        /** @var Package $package */
         foreach ($relatedPackages as $package) {
             $packagesByOrderIds[$package->getOrder()->getId()][] = $package;
-            if (!empty($package->getDeletedAt())) {
-                $deletedPackagesByDates[$package->getDeletedAt()->format('d.m.Y')][] = $package;
-            }
         }
-        $packagesByCreationDates = $this->getPackagesByCreationDates($begin, $end);
+
+        $relatedRoomTypesIds = $this->getRelatedRoomTypesIds($hotels);
+        $packagesByCreationDates = $this->getPackagesByCreationDates($begin, $end, $relatedRoomTypesIds);
+        $packagesByRemoveDates = $this->getPackagesByRemovalDate($begin, $end, $relatedRoomTypesIds);
+        $cashDocumentsForRemovedPackages = $this->getCashDocumentsForRemovedPackages($packagesByRemoveDates);
+        $debtsData = $this->calculator->getDebtsByDays($begin, $end, $hotels, $calculationBegin, $calculationEnd);
 
         $rowOptions = [];
         $dataHandlers = [];
@@ -119,10 +133,21 @@ class PackagesDailyReportCompiler
             $rowOption = $day->format('d.m.Y');
             $rowOptions[] = $rowOption;
             $createdCashDocs = isset($cashDocumentsByCreationDate[$rowOption]) ? $cashDocumentsByCreationDate[$rowOption] : [];
-            $deletedPackages = isset($deletedPackagesByDates[$rowOption]) ? $deletedPackagesByDates[$rowOption] : [];
+            $deletedPackages = isset($packagesByRemoveDates[$rowOption]) ? $packagesByRemoveDates[$rowOption] : [];
             $createdPackages = isset($packagesByCreationDates[$rowOption]) ? $packagesByCreationDates[$rowOption] : [];
+            $cashDocumentsForRemovedPackagesForDay = isset($cashDocumentsForRemovedPackages[$rowOption])
+                ? $cashDocumentsForRemovedPackages[$rowOption] : [];
             $dataHandlers[$rowOption] = (new PackagesDailyReportRowsDataHandler())
-                ->setInitData($day, $hotels, $createdCashDocs, $deletedPackages, $createdPackages, $ordersByIds, $packagesByOrderIds);
+                ->setInitData(
+                    $day,
+                    $hotels,
+                    $createdCashDocs,
+                    $deletedPackages,
+                    $createdPackages,
+                    $packagesByOrderIds,
+                    $debtsData,
+                    $cashDocumentsForRemovedPackagesForDay
+                );
         }
 
         $cellsCallbacks = [
@@ -130,17 +155,33 @@ class PackagesDailyReportCompiler
                 if ($cell->getColumnOption() == self::ROW_TITLE_OPTION) {
                     return [Report::HORIZONTAL_SCROLLABLE_CLASS];
                 }
+
                 return [];
             },
             'styles' => function (ReportCell $cell) {
                 if ($cell->getColumnOption() == PackagesDailyReportCompiler::ROW_TITLE_OPTION && $cell->isForMail()) {
                     return ['min-width: 50px'];
                 }
+
                 return [];
-            }
+            },
+            'value' => function (ReportCell $cell) {
+                if ($cell->getColumnOption() == self::ROW_TITLE_OPTION) {
+                    return $cell->getValue();
+                }
+                $numberFormat =
+                    strpos($cell->getColumnOption(), self::NUMBER_OF_CREATED_PACKAGES_BY_HOTEL) !== false ? 0 : 2;
+
+                return number_format($cell->getValue(), $numberFormat);
+            },
         ];
 
-        $table->generateByRowHandlers($rowOptions, $this->getReportColumnsOptions($hotels), $dataHandlers, $cellsCallbacks);
+        $table->generateByRowHandlers(
+            $rowOptions,
+            $this->getReportColumnsOptions($hotels),
+            $dataHandlers,
+            $cellsCallbacks
+        );
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
         }
@@ -149,25 +190,92 @@ class PackagesDailyReportCompiler
     }
 
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
+     * @param Hotel[] $hotels
      * @return array
      */
-    private function getPackagesByCreationDates(\DateTime $begin, \DateTime $end)
+    private function getRelatedRoomTypesIds($hotels)
     {
-        $packageQueryCriteria = new PackageQueryCriteria();
-        $packageQueryCriteria->begin = $begin;
-        $packageQueryCriteria->end = $end;
+        $relatedRoomTypesIds = [];
+        foreach ($hotels as $hotel) {
+            foreach ($hotel->getRoomTypes() as $roomType) {
+                $relatedRoomTypesIds[] = $roomType->getId();
+            }
+        }
+
+        return $relatedRoomTypesIds;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param $roomTypesIds
+     * @return array
+     */
+    private function getPackagesByCreationDates(\DateTime $begin, \DateTime $end, $roomTypesIds)
+    {
+        /** @var Package[] $packages */
         $packages = $this->dm
             ->getRepository('MBHPackageBundle:Package')
-            ->findByQueryCriteria($packageQueryCriteria);
+            ->getPackagesByCreationDatesAndRoomTypeIds($begin, $end, $roomTypesIds, false);
 
         $packagesByCreationDates = [];
         foreach ($packages as $package) {
-            $packagesByCreationDates[$package->getCreatedAt()->format('d.m.Y')][] = $package;
+            $packagesByCreationDates[$package->getCreatedAt()->format('d.m.Y')][$package->getHotel()->getId()][] = $package;
         }
 
         return $packagesByCreationDates;
+    }
+
+    private function getPackagesByRemovalDate(\DateTime $begin, \DateTime $end, $roomTypeIds)
+    {
+        /** @var Package[] $removedPackages */
+        $removedPackages = $this->dm
+            ->createQueryBuilder('MBHPackageBundle:Package')
+            ->field('deletedAt')->lte($end)
+            ->field('deletedAt')->gte($begin)
+            ->field('roomType.id')->in($roomTypeIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $packagesByRemovalDate = [];
+        foreach ($removedPackages as $removedPackage) {
+            $packagesByRemovalDate[$removedPackage->getDeletedAt()->format('d.m.Y')][] = $removedPackage;
+        }
+
+        return $packagesByRemovalDate;
+    }
+
+
+    /**
+     * @param array $packagesByRemovalData
+     * @return array
+     */
+    private function getCashDocumentsForRemovedPackages($packagesByRemovalData)
+    {
+        $orderIds = [];
+        foreach ($packagesByRemovalData as $packagesByHotels) {
+            /** @var Package $package */
+            foreach ($packagesByHotels as $package) {
+                $orderIds[] = $package->getOrder()->getId();
+            }
+        }
+
+        /** @var CashDocument[] $cashDocuments */
+        $cashDocuments = $this->dm
+            ->getRepository('MBHCashBundle:CashDocument')
+            ->createQueryBuilder()
+            ->field('order.id')->in($orderIds)
+            ->getQuery()
+            ->execute();
+
+        $sortedCashDocuments = [];
+
+        foreach ($cashDocuments as $cashDocument) {
+            $sortedCashDocuments[$cashDocument->getOrder()->getId()][] = $cashDocument;
+        }
+
+        return $sortedCashDocuments;
     }
 
     /**
@@ -179,7 +287,7 @@ class PackagesDailyReportCompiler
         $columnOptions = [self::ROW_TITLE_OPTION];
         foreach (self::SORTED_COLUMN_OPTIONS_BY_HOTELS as $option) {
             foreach ($hotels as $hotel) {
-                $columnOptions[] = $option . $hotel->getId();
+                $columnOptions[] = $option.$hotel->getId();
             }
         }
 
@@ -198,13 +306,13 @@ class PackagesDailyReportCompiler
     {
         $titleRow = $table->addRow(null, true);
         $titleRow->addClass('title-cell');
-        $titleRow->addStyle('background-color: #d2d6de');
+        $titleRow->addClass('info');
 
         $beginYearString = $begin->format('Y');
         $endYearString = $end->format('Y');
         $yearsString = $beginYearString === $endYearString
             ? $beginYearString
-            : $beginYearString . ' - ' . $endYearString;
+            : $beginYearString.' - '.$endYearString;
         $titleRow->createAndAddCell($yearsString, 1, 3)->addClass(Report::HORIZONTAL_SCROLLABLE_CLASS);
 
         $numberOfHotels = count($hotels);
@@ -218,6 +326,10 @@ class PackagesDailyReportCompiler
         );
         $titleRow->createAndAddCell(
             $this->translator->trans('report.packages_daily_report_compiler.cancellation_of_unpaid_packages'),
+            $numberOfHotels
+        );
+        $titleRow->createAndAddCell(
+            $this->translator->trans('report.packages_daily_report_compiler.receivables_not_paid_vouchers'),
             $numberOfHotels
         );
         $titleRow->createAndAddCell(
@@ -247,7 +359,7 @@ class PackagesDailyReportCompiler
         );
 
         $secondTitleRow = $table->addRow(null, true);
-        $secondTitleRow->addStyle('background-color: #d2d6de');
+        $secondTitleRow->addClass('warning');
         $secondTitleRow->createAndAddCell(
             $this->translator->trans('report.packages_daily_report_compiler.sum_for_packages'),
             $numberOfHotels
@@ -273,7 +385,7 @@ class PackagesDailyReportCompiler
             $numberOfHotels
         );
 
-        $numberOfColumnsByHotels = 6;
+        $numberOfColumnsByHotels = 7;
         for ($i = 0; $i < $numberOfColumnsByHotels; $i++) {
             foreach ($hotels as $hotel) {
                 $cell = $secondTitleRow->createAndAddCell($hotel->getName(), 1, 2);
@@ -284,7 +396,7 @@ class PackagesDailyReportCompiler
         }
 
         $thirdTitleRow = $table->addRow(null, true);
-        $thirdTitleRow->addStyle('background-color: #d2d6de');
+        $thirdTitleRow->addClass('warning');
         for ($i = 0; $i < 6; $i++) {
             foreach ($hotels as $hotel) {
                 $thirdTitleRow->createAndAddCell($hotel->getName());

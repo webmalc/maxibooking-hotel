@@ -194,6 +194,7 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@mbh.report'
             - '@translator'
+            - '@mbh.calculation'
 
     mbh.distribution_report_compiler:
         class: MBH\Bundle\PackageBundle\Services\DistributionReportCompiler

@@ -174,7 +174,7 @@ class OrderRepository extends DocumentRepository
      * @param null $ordersIds
      * @return Cursor|Order[]
      */
-    public function getUnpaidOnDate(\DateTime $date, $ordersIds = null)
+    public function getUnpaidOrOverpaidOnDate(\DateTime $date, $ordersIds = null)
     {
         $qb = $this->createQueryBuilder();
         if (!is_null($ordersIds)) {

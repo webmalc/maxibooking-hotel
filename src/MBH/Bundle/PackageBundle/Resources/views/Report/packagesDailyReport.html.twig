@@ -20,11 +20,26 @@
                            class="datepicker daily-report-filter end-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
                            data-date-format="dd.mm.yyyy">
                 </div>
+                <div class="input">
+                    <i class="fa fa-calendar"
+                       title='{{ 'views.report.packages_daily_report.calculation_dates.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp
+                    <input type="text" id="daily-report-filter-calc-begin"
+                           class="datepicker daily-report-filter form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
+                </div>
+                <div class="input">
+                    - &nbsp
+                    <input type="text" id="daily-report-filter-calc-end"
+                           class="datepicker daily-report-filter form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
+                </div>
 
                 <div class="input">
                     <i class="fa fa-bed" title='{{ 'views.report.packages_daily_report.hotels.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
-                    <select multiple data-placeholder="{{ 'views.report.packages_daily_report.hotels.placeholder'|trans }}"
+                    <select multiple
+                            data-placeholder="{{ 'views.report.packages_daily_report.hotels.placeholder'|trans }}"
                             id="daily-report-filter-hotels" class="daily-report-filter form-control input-sm">
                         <option></option>
                         {% for hotel in hotels %}
@@ -34,7 +49,9 @@
                     </select>
                 </div>
                 <div class="input">
-                    <button type="button" id="daily-report-update-table-button" class="btn btn-primary">Выбрать</button>
+                    <button type="button" id="daily-report-update-table-button"
+                            class="btn btn-primary">{{ 'views.report.packages_daily_report.update_button'|trans }}
+                    </button>
                 </div>
             </form>
         {% endblock content %}
