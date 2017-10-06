@@ -1,7 +1,8 @@
 analytics.index.sales_date: 'Даты продажи'
 analytics.index.report_type: 'Тип отчета'
 analytics.index.room_type: 'Тип номера'
-analytics.index.all_rooms: Все номера
+analytics.index.all_rooms: 'Все номера'
+analytics.index.rooms_total: 'Итого'
 analytics.index.cumulative: 'Накопительный?'
 analytics.index.monthly: 'По месяцам?'
 analytics.layout.analytics: 'Аналитика'

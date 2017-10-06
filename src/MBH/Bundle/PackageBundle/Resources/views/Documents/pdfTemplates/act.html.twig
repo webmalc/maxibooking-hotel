@@ -92,7 +92,7 @@
                     <tr>
                         <td align="center">{{ counter }}</td>
                         <td>
-                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace('_', '.') }}
+                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace({'_': '.'}) }}
                             {% if package.roomType and package.roomType.fullTitle %}
                                 ({{ package.roomType.fullTitle }})
                             {% endif %}
