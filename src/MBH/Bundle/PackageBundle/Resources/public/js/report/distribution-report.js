@@ -20,7 +20,7 @@ function updateDistributionReportTable() {
     $distributionReportWrapper.html(mbh.loader.html);
     $.ajax({
         url: Routing.generate('distribution_report_table'),
-        success: function(response) {
+        success: function (response) {
             $distributionReportWrapper.html(response);
             // setScrollable();
         },
