@@ -1,9 +1,14 @@
 /*global window, document, $, Routing, console */
 $(document).ready(function ($) {
-    updateDistributionReportTable();
-    $('#distribution-report-update-table-button').click(function() {
+
+    var $updateButton = $('#daily-report-update-table-button');
+    if ($updateButton.length === 1) {
         updateDistributionReportTable();
-    });
+        $updateButton.click(function () {
+            updateDailyReportTable();
+        });
+    }
+
     var $filterBegin = $('#distribution-report-filter-begin');
     if (!$filterBegin.val()) {
         var $rangePickerInput = $('.daterangepicker-input');
@@ -17,7 +22,7 @@ function updateDistributionReportTable() {
     $distributionReportWrapper.html(mbh.loader.html);
     $.ajax({
         url: Routing.generate('distribution_report_table'),
-        success: function(response) {
+        success: function (response) {
             $distributionReportWrapper.html(response);
             // setScrollable();
         },
