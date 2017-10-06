@@ -28,17 +28,21 @@ class Calculation
     const ACCOUNTS_PAYABLE_CASHLESS_SUM = 'kreditDebtCashless';
     const NOT_PAID_RECEIVABLES_SUM = 'debitNotPaid';
     const PARTLY_PAID_RECEIVABLES_SUM = 'debitPartlyPaid';
+
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
+    /**
+     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
+     */
     protected $dm;
 
     /**
      * @var RoomTypeManager
      */
-    private $manager;
+    protected $manager;
 
     /**
      * @var \MBH\Bundle\BaseBundle\Service\Helper
@@ -48,7 +52,7 @@ class Calculation
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->dm = $container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->manager = $container->get('mbh.hotel.room_type_manager');
         $this->mergingTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->getMergingTariffs();
         $this->helper = $container->get('mbh.helper');
@@ -146,8 +150,7 @@ class Calculation
         $useCategories = false,
         Special $special = null,
         $useDuration = true
-    )
-    {
+    ) {
         $originTariff = $tariff;
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
@@ -171,23 +174,16 @@ class Calculation
         }
         $tariffId = $tariff->getId();
         $duration = $end->diff($begin)->format('%a') + 1;
-        $priceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $tariffId, $memcached) {
-            return $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
-        };
-
-        $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
+        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
+            ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
 
         if (!$tariff->getIsDefault()) {
             $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel, null, $memcached);
             if (!$defaultTariff) {
                 return false;
             }
-            $defaultPriceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                    ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories, $memcached);
-            };
-            $defaultPriceCaches = $this->helper->getFilteredResult($this->dm, $defaultPriceCachesCallback);
+            $defaultPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories, $memcached);
         } else {
             $defaultPriceCaches = $priceCaches;
             $defaultTariff = $tariff;
@@ -201,9 +197,8 @@ class Calculation
             } else {
                 $ids = [$mergingTariff->getId()];
             }
-
-            $mergingTariffCallback = function () use ($begin, $end, $hotel, $roomTypeId, $ids, $memcached) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+            $mergingTariff = $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch(
                     $begin,
                     $end,
                     $hotel,
@@ -213,8 +208,6 @@ class Calculation
                     $this->manager->useCategories,
                     $memcached
                 );
-            };
-            $mergingTariff = $this->helper->getFilteredResult($this->dm, $mergingTariffCallback);
 
             if ($mergingTariff) {
                 $mergingTariffsPrices += $mergingTariff;
