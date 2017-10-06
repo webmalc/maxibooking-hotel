@@ -25,6 +25,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Process;
 
 /**
@@ -1053,7 +1054,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function packagesDailyReportTableAction(Request $request)
     {
-        $defaultBeginDate = $this->clientConfig->getActualBeginDate();
+        $defaultBeginDate = new \DateTime('midnight');
 
         $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
         $end = $this->helper->getDateFromString($request->query->get('end'))

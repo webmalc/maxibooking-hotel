@@ -52,6 +52,9 @@ class Report
         return $this->twigEngine->render('@MBHBase/Report/report_table.html.twig', ['report' => $this]);
     }
 
+    /**
+     * @return Response
+     */
     public function generateReportTableResponse()
     {
         return (new Response())->setContent($this->generate());
