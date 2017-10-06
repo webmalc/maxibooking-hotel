@@ -364,6 +364,9 @@ menu.label.portie: Портье
 menu.label.portie.nomfond: Номерной фонд
 menu.label.portie.shah: Шахматка
 menu.label.portie.arrdep: Заезд/Выезд
+menu.label.reports.daily_report: 'Денежные средства'
+
+
 
 menu.label.nomandprice: Номера и цены
 menu.label.nomandprice.tariff: Тарифы

@@ -6,29 +6,50 @@ use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Отчет состоит из ReportTable. ReportTable состоят из ReportRow. ReportRow состоят из ReportCell.
- * Добавить методы генерирующие ряды по 1 или несколько из ReportColumnDataGenerator-ов. Добавить 2 стандартных data generator-а
- * Class AbstractReport
+ * Class Report
  * @package MBH\Bundle\BaseBundle\Lib\Report
  */
 class Report
 {
+    const VERTICAL_SCROLLABLE_CLASS = 'vertical-scrollable';
+    const HORIZONTAL_SCROLLABLE_CLASS = 'horizontal-scrollable';
+
     protected $isSuccess = true;
     protected $errors;
     protected $tables = [];
     /** @var TwigEngine */
     private $twigEngine;
+    protected $title;
 
     public function __construct(TwigEngine $twigEngine)
     {
         $this->twigEngine = $twigEngine;
     }
 
-    public static function createReportTable()
+    /**
+     * @return string
+     */
+    public function getTitle()
     {
-        return new ReportTable();
+        return $this->title;
     }
 
+    /**
+     * @param string $title
+     * @return Report
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @param $error
+     * @param bool $isReportSuccess
+     * @return Report
+     */
     public function addError($error, $isReportSuccess = false)
     {
         $this->errors[] = $error;
@@ -39,9 +60,13 @@ class Report
         return $this;
     }
 
-    public function addReportTable()
+    /**
+     * @param bool $forMail
+     * @return ReportTable
+     */
+    public function addReportTable($forMail = false)
     {
-        $reportTable = new ReportTable();
+        $reportTable = (new ReportTable())->setIsForMail($forMail);
         $this->tables[] = $reportTable;
 
         return $reportTable;

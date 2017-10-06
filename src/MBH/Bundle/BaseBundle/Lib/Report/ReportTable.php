@@ -2,23 +2,44 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Report;
 
-
 class ReportTable
 {
     /** @var  ReportRow[] */
     private $reportRows;
     protected $defaultClasses = ['table', 'table-bordered', 'table-striped', 'table-hover', 'not-auto-datatable', 'mbh-report-table'];
     protected $collectedData = [];
+    protected $isForMail = false;
 
     use HasClassesAndAttributesTrait;
 
+    public function setIsForMail($isForMail)
+    {
+        $this->isForMail = $isForMail;
+        $this->addStyle('border-collapse: collapse');
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForMail()
+    {
+        return $this->isForMail;
+    }
+
     /**
      * @param null $rowOption
+     * @param bool $isVerticalScrollable
      * @return ReportRow
      */
-    public function addRow($rowOption = null)
+    public function addRow($rowOption = null, $isVerticalScrollable = false)
     {
-        $newRow = new ReportRow();
+        $newRow = (new ReportRow())->setIsForMail($this->isForMail);
+        if ($isVerticalScrollable) {
+            $newRow->addClass(Report::VERTICAL_SCROLLABLE_CLASS);
+        }
+
         is_null($rowOption) ? $this->reportRows[] = $newRow : $this->reportRows[$rowOption] = $newRow;;
 
         return $newRow;
@@ -53,7 +74,7 @@ class ReportTable
         array $dataHandlers,
         $cellsCallbacks = [],
         $rowsCallbacks = [],
-        $withJsonData = false
+        $withJsonData = true
     ) {
         return $this->generateTable($rowOptions, $columnOptions, $dataHandlers, true, $cellsCallbacks, $rowsCallbacks, $withJsonData);
     }
@@ -73,7 +94,7 @@ class ReportTable
         array $dataHandlers,
         $cellsCallbacks = [],
         $rowsCallbacks = [],
-        $withJsonData = false
+        $withJsonData = true
     ) {
         return $this->generateTable($rowOptions, $columnOptions, $dataHandlers, false, $cellsCallbacks, $rowsCallbacks, $withJsonData);
     }
@@ -93,10 +114,10 @@ class ReportTable
         array $rowOptions,
         array $columnOptions,
         array $dataHandlers,
-        $byColumns = true,
-        $cellsCallbacks = [],
-        $rowsCallbacks = [],
-        $withJsonData = true
+        $byColumns,
+        $cellsCallbacks,
+        $rowsCallbacks,
+        $withJsonData
     ) {
         foreach ($rowOptions as $rowOption) {
             $newRow = $this->fetchRow($rowOption)
@@ -106,7 +127,7 @@ class ReportTable
             foreach ($columnOptions as $columnOption) {
                 $handlerCriteriaOption = $byColumns ? $columnOption : $rowOption;
                 if (!isset($dataHandlers[$handlerCriteriaOption])) {
-                    throw new \Exception('Not specified column data handler for option "'.$handlerCriteriaOption.'"!');
+                    throw new \Exception('Not specified data handler for option "'.$handlerCriteriaOption.'"!');
                 }
 
                 $valueCriteriaOption = $byColumns ? $rowOption : $columnOption;

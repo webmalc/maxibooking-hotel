@@ -8,7 +8,8 @@ trait HasClassesAndAttributesTrait
     private $classes = [];
     private $attributes = [];
     private $callbacks = [];
-    
+    private $styles = [];
+
     /**
      * @param string $class
      * @return static
@@ -57,6 +58,9 @@ trait HasClassesAndAttributesTrait
         if ($name === 'class') {
             throw new \Exception('To add the class, use method "addClass"');
         }
+        if ($name == 'style') {
+            throw new \Exception('To add the style, use method "addStyle"');
+        }
         $this->attributes[$name] = $value;
 
         return $this;
@@ -72,6 +76,31 @@ trait HasClassesAndAttributesTrait
             $attributesAsString .= $name . '="' . $value . '" ';
         }
 
+        $styles = $this->getStyles();
+        if (count($styles) > 0 || isset($this->callbacks['styles'])) {
+            $styles = isset($this->callbacks['styles']) ? array_merge($styles, $this->callbacks['styles']($this)): $styles;
+            $attributesAsString .= 'style="' . join(';', $styles) . '"';
+        }
+
         return $attributesAsString;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStyles(): array
+    {
+        return $this->styles;
+    }
+
+    /**
+     * @param string $style
+     * @return self
+     */
+    public function addStyle($style)
+    {
+        $this->styles[] = $style;
+
+        return $this;
     }
 }

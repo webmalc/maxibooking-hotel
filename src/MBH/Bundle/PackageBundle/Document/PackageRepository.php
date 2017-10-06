@@ -1194,4 +1194,17 @@ class PackageRepository extends DocumentRepository
 
         return $sortedPackages;
     }
+
+    /**
+     * @param $ordersIds
+     * @return Cursor|Package[]
+     */
+    public function getByOrdersIds($ordersIds)
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('order.id')->in($ordersIds)
+            ->getQuery()
+            ->execute();
+    }
 }

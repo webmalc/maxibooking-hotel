@@ -502,6 +502,7 @@ views.report.distribution_report.creation_date.title: 'Дата создания
 distribution_by_days_report.title.number_of_packages: 'Кол-во броней'
 distribution_by_days_report.title.sum: 'Сумма'
 distribution_by_days_report.title: 'Заезд/Выезд'
+
 distribution_by_days_report.title.relative_value: '% соотношение'
 distribution_by_days_report.days_of_week_abbr.mon: 'Пн'
 distribution_by_days_report.days_of_week_abbr.tue: 'Вт'

@@ -6,8 +6,24 @@ class ReportRow
 {
     private $cells = [];
     private $rowOption;
+    protected $isForMail = false;
 
     use HasClassesAndAttributesTrait;
+
+    public function setIsForMail($isForMail)
+    {
+        $this->isForMail = $isForMail;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForMail()
+    {
+        return $this->isForMail;
+    }
 
     /**
      * @return string
@@ -38,7 +54,10 @@ class ReportRow
      */
     public function createAndAddCell($value, $colSpan = 1, $rowSpan = 1, $classes = [], $attributes = [])
     {
-        $cell = (new ReportCell())->setInitData($value, $colSpan, $rowSpan, $classes, $attributes);
+        $cell = (new ReportCell())
+            ->setInitData($value, $colSpan, $rowSpan, $classes, $attributes)
+            ->setIsForMail($this->isForMail);
+
         $this->cells[] = $cell;
 
         return $cell;
