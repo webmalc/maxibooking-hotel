@@ -770,7 +770,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $hotel = null;
 
             foreach ($order->getPackages() as $package) {
-                if ($package->getDeletedAt()) {
+                if ($package->getDeletedAt() && $type != 'delete') {
                     continue;
                 }
                 $packages[] = $package->getNumberWithPrefix();

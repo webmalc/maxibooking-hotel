@@ -1,19 +1,17 @@
 /*global window, document, $, Routing, console */
 $(document).ready(function ($) {
-
-    var $updateButton = $('#daily-report-update-table-button');
+    var $updateButton = $('#distribution-report-update-table-button');
     if ($updateButton.length === 1) {
         updateDistributionReportTable();
-        $updateButton.click(function () {
-            updateDailyReportTable();
+        $updateButton.click(function() {
+            updateDistributionReportTable();
         });
-    }
-
-    var $filterBegin = $('#distribution-report-filter-begin');
-    if (!$filterBegin.val()) {
-        var $rangePickerInput = $('.daterangepicker-input');
-        $rangePickerInput.data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-        $rangePickerInput.data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
+        var $filterBegin = $('#distribution-report-filter-begin');
+        if (!$filterBegin.val()) {
+            var $rangePickerInput = $('.daterangepicker-input');
+            $rangePickerInput.data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+            $rangePickerInput.data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
+        }
     }
 });
 

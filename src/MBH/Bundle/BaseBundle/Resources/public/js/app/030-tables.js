@@ -98,6 +98,8 @@ function setScrollable() {
     $lineAfterLastScrollableLine.children().each(function (index, elem) {
         var $element = $(elem);
         $element.css('min-width', $element.css('width'));
+        $element.css('max-width', $element.css('width'));
+        $element.css('width', $element.css('width'));
     });
 
     var $table = $lineAfterLastScrollableLine.parent().parent();
@@ -110,6 +112,7 @@ function setScrollable() {
         $(trElement).children().each(function (index, tdElement) {
             var $tdElement = $(tdElement);
             $tdElement.css('min-width', $tdElement.css('width'));
+            $tdElement.css('max-width', $tdElement.css('width'));
             if ($tdElement.css('background-color') === "rgba(0, 0, 0, 0)") {
                 $tdElement.css('background-color', 'white');
             }
@@ -126,7 +129,8 @@ function setScrollable() {
     var $horizontalScrollable = $('.horizontal-scrollable');
     var hScrollableTable = getScrollableTableTemplate($table);
     hScrollableTable.style.top = scrollableLinesHeight + 'px';
-    hScrollableTable.style.width = $horizontalScrollable.first().css('min-width');
+    hScrollableTable.style.minWidth = $horizontalScrollable.first().css('min-width');
+    hScrollableTable.style.maxWidth = $horizontalScrollable.first().css('max-width');
     var hScrollableTableBody = document.createElement('tbody');
     hScrollableTable.appendChild(hScrollableTableBody);
     $horizontalScrollable.parent().each(function (index, trElement) {
