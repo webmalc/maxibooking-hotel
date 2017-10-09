@@ -11,8 +11,8 @@ parameters:
             eat: '/shvedskiy-stol/'
         show_specials: true
         show_special_restrict: 10
-        special_list_sort: byDate
-#        special_list_sort: byPrice
+#        special_list_sort: byDate
+        special_list_sort: byPrice
 
 
     online_reservation_manager_email: "mail@azovsky.ru"
