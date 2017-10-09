@@ -2,7 +2,6 @@
 $(document).ready(function ($) {
     var $updateButton = $('#daily-report-update-table-button');
     if ($updateButton.length === 1) {
-        updateDailyReportTable();
         $updateButton.click(function() {
             updateDailyReportTable();
         });
