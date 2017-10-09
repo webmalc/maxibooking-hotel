@@ -1040,7 +1040,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     public function packagesDailyReportAction()
     {
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
-        $defaultBeginDate = new \DateTime('midnight');
+        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
         $begin = $defaultBeginDate;
         $end = (clone $defaultBeginDate)->modify('+45 days');
         $calculationBegin = new \DateTime('first day of January ' . date('Y'));
@@ -1063,7 +1063,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function packagesDailyReportTableAction(Request $request)
     {
-        $defaultBeginDate = new \DateTime('midnight');
+        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
 
         $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
         $end = $this->helper->getDateFromString($request->query->get('end'))
