@@ -611,6 +611,10 @@ class Search implements SearchInterface
         $result->setRoomsCount($emptyRooms->count() + $preferredRooms->count());
 
         $collection = $preferredRooms->count() ? $preferredRooms :  $emptyRooms;
+        /** Специально для спецпредложений доступны все вирт комнаты */
+        if ($forcedVirtualRoom && $emptyRooms->count()) {
+            $collection->addAll($emptyRooms);
+        }
 
         if ($collection->count()) {
             if ($forcedVirtualRoom && $collection->contains($forcedVirtualRoom)) {
