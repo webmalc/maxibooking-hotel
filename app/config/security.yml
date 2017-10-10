@@ -36,11 +36,11 @@ security:
                 domain:   ~
 
     access_control:
-        - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
-        - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
-        - { path: ^/media/cache/resolve, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
-        - { path: ^/user/login$, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
-        - { path: ^/online_booking, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
-        - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
-        - { path: ^/_profiler, roles: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
-        - { path: ^/, role: ROLE_BASE_USER, requires_channel: https }
+        - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/media/cache/resolve, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/user/login$, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/online_booking, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/_profiler, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/, role: ROLE_BASE_USER }
