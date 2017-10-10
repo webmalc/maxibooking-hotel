@@ -27,6 +27,7 @@ parameters:
 
   #System
   locale: ru
+  country_type: ru
   locale.currency: rub
   debug_toolbar: true
   debug_redirects: false
@@ -60,7 +61,7 @@ parameters:
   #client name for env
   client: ''
 
-
   #mongodb_ssl
   mongodb_ssl: false
   mbh_dynamic_sale_period: 90
+
