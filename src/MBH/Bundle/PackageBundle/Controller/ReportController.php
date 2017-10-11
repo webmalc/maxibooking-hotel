@@ -1040,11 +1040,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     public function packagesDailyReportAction()
     {
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
-        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
-        $begin = $defaultBeginDate;
-        $end = (clone $defaultBeginDate)->modify('+45 days');
-        $calculationBegin = new \DateTime('first day of January ' . date('Y'));
-        $calculationEnd = new \DateTime('1st January Next Year');
+        $begin = new \DateTime('midnight - 30 days');
+        $end = new \DateTime('midnight');
+
+        list($calculationBegin, $calculationEnd) = $this->helper->getDefaultDatesOfSettlement();
 
         return [
             'begin' => $begin,
@@ -1068,10 +1067,13 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
         $end = $this->helper->getDateFromString($request->query->get('end'))
             ?? (clone $defaultBeginDate)->modify('+45 days');
+
+        list($defaultCalculationBegin, $defaultCalculationEnd) = $this->helper->getDefaultDatesOfSettlement();
         $calculationBegin = $this->helper->getDateFromString($request->query->get('calcBegin'))
-            ?? new \DateTime('first day of January ' . date('Y'));
+            ?? $defaultCalculationBegin;
         $calculationEnd = $this->helper->getDateFromString($request->query->get('calcEnd'))
-            ?? new \DateTime('1st January Next Year');
+            ?? $defaultCalculationEnd;
+
         $hotels = $this->dm
             ->getRepository('MBHHotelBundle:Hotel')
             ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')));

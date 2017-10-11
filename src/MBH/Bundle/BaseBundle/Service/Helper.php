@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -400,5 +401,22 @@ class Helper
         ];
 
         return str_replace($rus, $lat, $text);
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaultDatesOfSettlement()
+    {
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $this->container
+            ->get('doctrine_mongodb.odm.default_document_manager')
+            ->getRepository('MBHClientBundle:ClientConfig')
+            ->fetchConfig();
+
+        $calculationBegin = $clientConfig->getBeginDate() ?? new \DateTime('first day of January ' . date('Y'));
+        $calculationEnd = (clone $calculationBegin)->add(new \DateInterval('P6M'));
+
+        return [$calculationBegin, $calculationEnd];
     }
 }
