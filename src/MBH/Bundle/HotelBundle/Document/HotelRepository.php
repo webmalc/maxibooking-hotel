@@ -48,5 +48,4 @@ class HotelRepository extends DocumentRepository
 
         return $qb->getQuery()->execute();
     }
-
 }

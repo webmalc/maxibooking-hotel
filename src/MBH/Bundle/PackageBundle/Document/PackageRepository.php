@@ -783,7 +783,6 @@ class PackageRepository extends DocumentRepository
 
             // live_between
             if ($data['filter'] == 'live_between' && isset($data['live_begin']) && isset($data['live_end'])) {
-
                 $qb->field('begin')->lte($data['live_end']);
                 $qb->field('end')->gte($data['live_begin']);
             }

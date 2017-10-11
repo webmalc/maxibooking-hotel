@@ -427,8 +427,25 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
+        $availableHotels = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->findAll();
+        $availableHotelsIds = $this->helper->toIds($availableHotels);
 
-        return $dm->getRepository('MBHPriceBundle:Service')->createQueryBuilder('s')
+        $categories = $this->dm
+            ->getRepository('MBHPriceBundle:ServiceCategory')
+            ->createQueryBuilder()
+            ->field('hotel.id')->in($availableHotelsIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $categoriesIds = $this->helper->toIds($categories);
+
+        return $dm
+            ->getRepository('MBHPriceBundle:Service')
+            ->createQueryBuilder()
+            ->field('category.id')->in($categoriesIds)
             ->sort(['hotel.id' => 'asc', 'fullName' => 'desc'])
             ->getQuery()
             ->execute();
@@ -453,6 +470,12 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     {
         $request = $this->getRequest();
         $requestedRoomTypesIds = $this->helper->getDataFromMultipleSelectField($request->get('roomType'));
+        if (empty($requestedRoomTypesIds)) {
+            $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+            foreach ($hotels as $hotel) {
+                $requestedRoomTypesIds[] = 'total_' . $hotel->getId();
+            }
+        }
         $roomTypesIds = [];
         if (!empty($requestedRoomTypesIds)) {
             foreach ($requestedRoomTypesIds as $id) {
@@ -481,7 +504,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             return $roomTypesIds;
         }
         $qb = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->createQueryBuilder('q')
+            ->createQueryBuilder()
             ->sort(['hotel.id' => 'asc', 'fullName' => 'desc']);
 
         if (count($roomTypesIds)) {
@@ -525,6 +548,12 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $cumulative = $request->get('cumulative');
         $months = $request->get('months');
         $requestedRoomTypes = $this->helper->getDataFromMultipleSelectField($request->get('roomType'));
+        if (empty($requestedRoomTypes)) {
+            $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+            foreach ($hotels as $hotel) {
+                $requestedRoomTypes[] = 'total_' . $hotel->getId();
+            }
+        }
         $series = $totalValues = $allValues = [];
         $i = 0;
         foreach ($this->$categoryGetMethod() as $category) {

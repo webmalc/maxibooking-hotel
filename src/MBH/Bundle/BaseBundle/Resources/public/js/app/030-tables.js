@@ -91,9 +91,14 @@ $(document).ready(function () {
     docReadyTables();
 });
 
-function setScrollable() {
-    var $verticalScrollable = $('.vertical-scrollable');
-    var $lineAfterLastScrollableLine = $verticalScrollable.first().parent().children().eq($verticalScrollable.length);
+function setVerticalScrollable($scrollableElements, wrapper) {
+    var $table = $scrollableElements.parent().parent();
+    var tableOffset = getTableOffset($table, wrapper);
+
+    var $lineAfterLastScrollableLine = $scrollableElements.first().parent().children().eq($scrollableElements.length);
+    if ($lineAfterLastScrollableLine.length === 0) {
+        $lineAfterLastScrollableLine = $table.find('tbody').children().eq(0);
+    }
     $lineAfterLastScrollableLine.children().each(function (index, elem) {
         var $element = $(elem);
         $element.css('min-width', $element.css('width'));
@@ -101,12 +106,11 @@ function setScrollable() {
         $element.css('width', $element.css('width'));
     });
 
-    var $table = $lineAfterLastScrollableLine.parent().parent();
     var scrollableLinesHeight = 0;
-    var vScrollableTable = getScrollableTableTemplate($table);
+    var vScrollableTable = getScrollableTableTemplate($table, tableOffset);
     var tbodyElement = document.createElement('tbody');
     vScrollableTable.appendChild(tbodyElement);
-    $verticalScrollable.each(function (index, trElement) {
+    $scrollableElements.each(function (index, trElement) {
         scrollableLinesHeight += parseInt(getComputedStyle(trElement).height, 10);
         $(trElement).children().each(function (index, tdElement) {
             var $tdElement = $(tdElement);
@@ -117,16 +121,30 @@ function setScrollable() {
             }
         });
     });
-    $verticalScrollable.each(function (index, trElement) {
+
+    $scrollableElements.each(function (index, trElement) {
         tbodyElement.appendChild(trElement);
     });
+
     $table.css('margin-top', scrollableLinesHeight);
+    wrapper.appendChild(vScrollableTable);
+    wrapper.onscroll = function () {
+        vScrollableTable.style.top = tableOffset + wrapper.scrollTop + 'px';
+    };
 
-    var dailyReport = document.getElementById('daily-report');
-    dailyReport.appendChild(vScrollableTable);
+    return vScrollableTable;
+}
 
+function setScrollable(reportWrapperId) {
+    var $verticalScrollable = $('.vertical-scrollable');
+    var wrapper = document.getElementById(reportWrapperId);
     var $horizontalScrollable = $('.horizontal-scrollable');
-    var hScrollableTable = getScrollableTableTemplate($table);
+    var $table = $horizontalScrollable.parent().parent().parent();
+    var tableOffset = getTableOffset($table, wrapper);
+    var vScrollableTable = setVerticalScrollable($verticalScrollable, wrapper);
+    var scrollableLinesHeight = parseInt(getComputedStyle(vScrollableTable).height, 10);
+
+    var hScrollableTable = getScrollableTableTemplate($table, tableOffset);
     hScrollableTable.style.top = scrollableLinesHeight + 'px';
     hScrollableTable.style.minWidth = $horizontalScrollable.first().css('min-width');
     hScrollableTable.style.maxWidth = $horizontalScrollable.first().css('max-width');
@@ -143,12 +161,12 @@ function setScrollable() {
             hScrollableTableBody.appendChild(hScrollableTableLine);
         }
     });
-    dailyReport.appendChild(hScrollableTable);
+    wrapper.appendChild(hScrollableTable);
 
     var $verticalAndHorizontalScrollable = $verticalScrollable.find('.horizontal-scrollable');
     var bothSidesScrollable = [];
     $verticalAndHorizontalScrollable.each(function (index, element) {
-        var bothSideScrollable = getScrollableTableTemplate($table);
+        var bothSideScrollable = getScrollableTableTemplate($table, tableOffset);
         var elementComputedStyles = getComputedStyle(element);
         bothSideScrollable.style.width = elementComputedStyles.width;
         bothSideScrollable.style.height = (parseInt(elementComputedStyles.height, 10) + 1) + 'px';
@@ -159,23 +177,32 @@ function setScrollable() {
         var clonedElement = element.cloneNode(true);
         bothSidesScrollableLine.appendChild(clonedElement);
         bothSideScrollable.style.zIndex = 111;
-        dailyReport.appendChild(bothSideScrollable);
+        wrapper.appendChild(bothSideScrollable);
         bothSidesScrollable.push(bothSideScrollable);
     });
 
     var $bothSidesScrollable = $(bothSidesScrollable);
 
-    dailyReport.onscroll = function () {
-        vScrollableTable.style.top = dailyReport.scrollTop + 'px';
-        hScrollableTable.style.left = dailyReport.scrollLeft + 'px';
-        $bothSidesScrollable.css('left', dailyReport.scrollLeft);
-        $bothSidesScrollable.css('top', dailyReport.scrollTop);
+    wrapper.onscroll = function () {
+        vScrollableTable.style.top = tableOffset + wrapper.scrollTop + 'px';
+        hScrollableTable.style.left = wrapper.scrollLeft + 'px';
+        $bothSidesScrollable.css('left', wrapper.scrollLeft);
+        $bothSidesScrollable.css('top', tableOffset + wrapper.scrollTop);
     };
 }
 
-function getScrollableTableTemplate($table) {
+function getTableOffset($table, wrapper) {
+    var tableTopMargin = parseInt($table.css('margin-top'), 10) +
+        ($table.parent().id === wrapper.id ? 0 : parseInt($table.parent().css('margin-top'), 10));
+    var tableTopPadding = parseInt($table.css('padding-top'), 10) +
+        ($table.parent().id === wrapper.id ? 0 : parseInt($table.parent().css('padding-top'), 10));
+
+    return $table.offset().top - $(wrapper).offset().top - tableTopMargin - tableTopPadding;
+}
+
+function getScrollableTableTemplate($table, tableOffset) {
     var templateTable = document.createElement('table');
-    templateTable.style.top = 0;
+    templateTable.style.top = tableOffset + 'px';
     templateTable.classList = $table.get(0).classList;
     templateTable.style.position = 'absolute';
 

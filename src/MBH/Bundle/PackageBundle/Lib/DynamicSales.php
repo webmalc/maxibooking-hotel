@@ -52,7 +52,8 @@ class DynamicSales
         self::PRICE_OF_CANCELLED_FOR_PERIOD_OPTION,
         self::NUMBER_OF_PAID_FOR_PERIOD_OPTION,
         self::SUM_OF_PAID_FOR_CANCELLED_FOR_PERIOD_OPTION,
-        self::SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION
+        self::SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION,
+        self::SUM_OF_PAID_MINUS_CANCELLED_OPTION
     ];
 
     const SINGLE_DAY_OPTIONS = [
@@ -64,7 +65,6 @@ class DynamicSales
         self::PRICE_OF_CANCELLED_OPTION,
         self::PRICE_OF_PAID_CANCELLED_OPTION,
         self::SUM_OF_PAID,
-        self::SUM_OF_PAID_MINUS_CANCELLED_OPTION
     ];
 
     /**
