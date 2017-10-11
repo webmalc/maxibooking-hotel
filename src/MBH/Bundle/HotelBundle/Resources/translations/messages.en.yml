@@ -1,0 +1,22 @@
+parking_types.free_airport_shuttle: Free airport shuttle
+parking_types.free_parking: Free parking
+parking_types.indoor_parking: Indoor parking
+parking_types.off_site_parking: Off-site parking
+parking_types.outdoor_parking: Outdoor parking
+parking_types.parking: Parking
+parking_types.recreational_vehicle_parking: Recreational vehicle parking
+parking_types.truck_parking: Truck parking
+parking_types.valet_parking: Valet parking
+parking_types.accessible_parking: Accessible parking
+parking_types.parking_fee_managed_by_hotel: Parking fee managed by hotel
+parking_types.parking_lot: Parking lot
+parking_types.parking_deck: Parking deck
+parking_types.street_side_parking: Street side parking
+parking_types.motorcycle_parking: Motorcycle parking
+parking_types.bus_parking: Bus parking
+parking_types.long_term_parking: Long term parking
+parking_types.secured_parking: Secured parking
+parking_types.airport_shuttle_service: Airport shuttle service
+parking_types.shuttle_to_local_businesses: Shuttle to local businesses
+parking_types.shuttle_to_local_attractions: Shuttle to local attractions
+parking_types.no_parking_available: No parking available

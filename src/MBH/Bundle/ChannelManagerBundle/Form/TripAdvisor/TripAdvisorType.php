@@ -13,6 +13,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TripAdvisorType extends AbstractType
 {
+    private $parkingTypes;
+
+    public function __construct($parkingTypes) {
+        $this->parkingTypes = $parkingTypes;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -63,6 +69,10 @@ class TripAdvisorType extends AbstractType
             ->add('paymentType', InvertChoiceType::class, [
                 'label' => 'form.trip_advisor_type.payment_type.label',
                 'choices' => $options['payment_types']
+            ])
+            ->add('parkingTypes', InvertChoiceType::class, [
+                'choices' => $this->parkingTypes,
+                'multiple' => true
             ])
         ;
     }

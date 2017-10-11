@@ -360,6 +360,26 @@ parameters:
         268: form.hotelExtendedType.all_public_areas_non_smoking
         900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 
+    mbh.pariking_types:
+        41: parking_types.free_airport_shuttle
+        42: parking_types.free_parking
+        53: parking_types.indoor_parking
+        63: parking_types.off_site_parking
+        64: parking_types.outdoor_parking
+        68: parking_types.parking
+        75: parking_types.recreational_vehicle_parking
+        94: parking_types.truck_parking
+        97: parking_types.valet_parking
+        171: parking_types.parking_fee_managed_by_hotel
+        184: parking_types.parking_lot
+        189: parking_types.motorcycle_parking
+        192: parking_types.bus_parking
+        216: parking_types.long_term_parking
+        230: parking_types.secured_parking
+        282: parking_types.airport_shuttle_service
+        306: parking_types.shuttle_to_local_attractions
+        331: parking_types.no_parking_available
+
     full_locales:
         - ru_RU
         - en_US

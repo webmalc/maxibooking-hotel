@@ -36,6 +36,24 @@ form.hotelExtendedType.integration: Интеграция
 form.hotelExtendedType.hotel_type: Тип отеля
 form.hotelExtendedType.hotel_theme: Тема отеля
 form.hotelExtendedType.hotel_amenities: Удобства отеля
+parking_types.free_airport_shuttle: 'Бесплатный трансфер от/до аэропорта'
+parking_types.free_parking: 'Свободная парковка'
+parking_types.indoor_parking: 'Крытая парковка'
+parking_types.off_site_parking: 'Парковка снаружи'
+parking_types.outdoor_parking: 'Открытая парковка'
+parking_types.parking: 'Парковка'
+parking_types.recreational_vehicle_parking: 'Парковка для прогулочного транспорта'
+parking_types.truck_parking: 'Парковка для фургонов'
+parking_types.valet_parking: 'Парковщик машин'
+parking_types.parking_fee_managed_by_hotel: 'Парковку оплачивает отель'
+parking_types.parking_lot: 'Парковочное место'
+parking_types.motorcycle_parking: 'Парковка для мотоциклов'
+parking_types.bus_parking: 'Парковка для автобусов'
+parking_types.long_term_parking: 'Долгосрочная парковка'
+parking_types.secured_parking: 'Охраняемая парковка'
+parking_types.airport_shuttle_service: 'Трансфер от/да аэропорта'
+parking_types.shuttle_to_local_attractions: 'Трансфер до местных достопримечательностей'
+parking_types.no_parking_available: 'Парковка недоступна'
 form.hotelExtendedType.all_rooms_non_smoking: Все номера для некурящих
 form.hotelExtendedType.non_smoking_room: Общие комнаты для некурящих
 form.hotelExtendedType.all_public_areas_non_smoking: Во всех общественных местах запрещено курение

@@ -115,10 +115,35 @@ class TripAdvisorConfig extends Base
      */
     protected $childPolicy;
 
+    /**
+     * @var array
+     * @ODM\Collection()
+     */
+    protected $parkingTypes = [];
+
     public function __construct()
     {
         $this->tariffs = new ArrayCollection();
         $this->rooms = new ArrayCollection();
+    }
+
+    /**
+     * @return array
+     */
+    public function getParkingTypes(): array
+    {
+        return $this->parkingTypes;
+    }
+
+    /**
+     * @param array $parkingTypes
+     * @return TripAdvisorConfig
+     */
+    public function setParkingTypes(array $parkingTypes): TripAdvisorConfig
+    {
+        $this->parkingTypes = $parkingTypes;
+
+        return $this;
     }
 
     /**

@@ -174,3 +174,9 @@ services:
         arguments: ['@translator', '%trip_advisor_confirmation_url%', '@mbh.channel_manager.tripadvisor']
         tags:
             - { name: validator.constraint_validator }
+
+    mbh.tripadvisor_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorType
+        arguments: ['%mbh.pariking_types%']
+        tags:
+            - {name: form.type}
