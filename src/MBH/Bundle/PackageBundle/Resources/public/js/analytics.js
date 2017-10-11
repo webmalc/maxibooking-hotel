@@ -67,11 +67,12 @@ $(document).ready(function () {
                         var showAllSeries = numberOfVisibleSeries === 0 || numberOfVisibleSeries === 1;
                         series.forEach(function (elem, index) {
                             if (index === seriesNumber || showAllSeries) {
-                                elem.show();
+                                elem.setVisible(true, false);
                             } else {
-                                elem.hide();
+                                elem.setVisible(false, false);
                             }
-                        })
+                        });
+                        $chart.redraw();
                     })
                 }
             }
