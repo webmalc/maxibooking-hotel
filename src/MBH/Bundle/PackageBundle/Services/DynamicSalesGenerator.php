@@ -8,7 +8,9 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Lib\DynamicSales;
 use MBH\Bundle\PackageBundle\Lib\DynamicSalesPeriod;
 use MBH\Bundle\PackageBundle\Lib\DynamicSalesReportData;
@@ -60,7 +62,8 @@ class DynamicSalesGenerator
         TranslatorInterface $translator,
         $dynamicSalesReportMaxDayRange,
         ContainerInterface $container
-    ) {
+    )
+    {
         $this->dm = $dm;
         $this->helper = $helper;
         $this->translator = $translator;
@@ -103,11 +106,14 @@ class DynamicSalesGenerator
     {
         $roomTypesIds = $this->helper->toIds($roomTypes);
         $periods = [];
-        $packagesByPeriods = [];
+        $createdPackagesSortedByPeriods = [];
+        $cancelledPackagesSortedByPeriods = [];
         $dynamicSalesReportData = new DynamicSalesReportData();
 
-        for ($i = 0; $i < count($filterBeginDates); $i++) {
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
+        for ($i = 0; $i < count($filterBeginDates); $i++) {
             $periodBegin = \DateTime::createFromFormat('d.m.Y', $filterBeginDates[$i]);
             $periodEnd = \DateTime::createFromFormat('d.m.Y', $filterEndDates[$i]);
 
@@ -127,10 +133,21 @@ class DynamicSalesGenerator
             if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->disable('softdeleteable');
             }
-            $periodPackages = $this->dm->getRepository('MBHPackageBundle:Package')
+
+
+            $createdPackagesSortedByPeriods[$i] = $packageRepository
                 ->getPackagesByCreationDatesAndRoomTypeIds($periodBegin, $periodEnd, $roomTypesIds);
 
-            $packagesByPeriods[$i] = $periodPackages;
+            $packagesCriteria = new PackageQueryCriteria();
+            $packagesCriteria->dateFilterBy = 'deletedAt';
+            $packagesCriteria->begin = $periodBegin;
+            $packagesCriteria->end = $periodEnd;
+            $packagesCriteria->deleted = true;
+
+            $cancelledPackages = $packageRepository
+                ->findByQueryCriteria($packagesCriteria)
+                ->toArray();
+            $cancelledPackagesSortedByPeriods[$i] = $this->getPackagesByCancellationDate($cancelledPackages);
 
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -148,13 +165,15 @@ class DynamicSalesGenerator
             $dynamicSale->setRoomType($roomType);
 
             foreach ($periods as $periodNumber => $datePeriod) {
-                $packagesByCreationDates = isset($packagesByPeriods[$periodNumber][$roomType->getId()])
-                    ? $packagesByPeriods[$periodNumber][$roomType->getId()]
+                $packagesByCreationDates = isset($createdPackagesSortedByPeriods[$periodNumber][$roomType->getId()])
+                    ? $createdPackagesSortedByPeriods[$periodNumber][$roomType->getId()]
                     : [];
-
                 $allPackages = array_merge($allPackages, $packagesByCreationDates);
 
-                $packagesByCancellationDates = $this->getPackagesByCancellationDate($packagesByCreationDates);
+                $packagesByCancellationDates = isset($cancelledPackagesSortedByPeriods[$periodNumber][$roomType->getId()])
+                    ? $createdPackagesSortedByPeriods[$periodNumber][$roomType->getId()]
+                    : [];
+
                 $allPackages = array_merge($allPackages, $packagesByCancellationDates);
 
                 $dynamicSalesPeriod = new DynamicSalesPeriod();
@@ -216,7 +235,8 @@ class DynamicSalesGenerator
         DynamicSalesPeriod $salesPeriod,
         array $packagesByCreationDates,
         $packagesByCancellationDates
-    ) {
+    )
+    {
         $previousDayData = null;
 
         /** @var \DateTime $day */
@@ -241,23 +261,20 @@ class DynamicSalesGenerator
 
 
     /**
-     * @param $packagesByCreationDates
+     * @param Package[] $cancelledPackages
      * @return Package[]
      */
-    private function getPackagesByCancellationDate($packagesByCreationDates)
+    private function getPackagesByCancellationDate($cancelledPackages)
     {
-        $packagesByCancellationDate = [];
-        /** @var Package $package */
-        foreach ($packagesByCreationDates as $packagesByDate) {
-            foreach ($packagesByDate as $package) {
-                if (!empty($package->getDeletedAt())) {
-                    $cancellationDateString = $package->getDeletedAt()->format('d.m.Y');
-                    $packagesByCancellationDate[$cancellationDateString][] = $package;
-                }
-            }
+        $sortedPackages = [];
+        foreach ($cancelledPackages as $cancelledPackage) {
+            $deletedAtString = $cancelledPackage->getDeletedAt()->format('d.m.Y');
+            isset($sortedPackages[$cancelledPackage->getRoomType()->getId()][$deletedAtString])
+            ? $sortedPackages[$cancelledPackage->getRoomType()->getId()][$deletedAtString][] = $cancelledPackage
+            : $sortedPackages[$cancelledPackage->getRoomType()->getId()][$deletedAtString] = [$cancelledPackage];
         }
 
-        return $packagesByCancellationDate;
+        return $sortedPackages;
     }
 
     /**
