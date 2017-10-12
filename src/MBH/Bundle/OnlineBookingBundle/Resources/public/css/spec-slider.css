@@ -339,6 +339,7 @@
     .spec-info .food {
         display: block;
         font-size: 11px;
+        bottom: -15px;
     }
 
     .spec-info .hotel {

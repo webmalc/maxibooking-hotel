@@ -57,10 +57,10 @@
                 </p>
                 {% if hotelsLinks.eat is defined and hotelsLinks.eat is not empty %}
                     <a href="{{ hotelsLinks.eat }}" class="eat_link" target="_blank">
-                        <p class="eattype"><img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
+                        <p class="eattype"><img src="/images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
                     </a>
                 {% else %}
-                    <img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
+                    <img src="/images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
                 {% endif %}
                 <div class="iconstype">
                     {% for facility in (onlineResult.isCategory?onlineResult.roomType.types|first:onlineResult.roomType).facilities %}
