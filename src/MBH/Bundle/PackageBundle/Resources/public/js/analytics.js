@@ -62,13 +62,17 @@ $(document).ready(function () {
                         var seriesNumber = parseInt(this.classList[3].substring(seriesClassNameBeginning.length), 10);
                         $(analytics_filter_content).highcharts().series[seriesNumber].hide();
                         var series = $(analytics_filter_content).highcharts().series;
+
+                        var numberOfVisibleSeries = getNumberOfVisibleSeries(series);
+                        var showAllSeries = numberOfVisibleSeries === 0 || numberOfVisibleSeries === 1;
                         series.forEach(function (elem, index) {
-                            if (index !== seriesNumber) {
-                                elem.hide();
+                            if (index === seriesNumber || showAllSeries) {
+                                elem.setVisible(true, false);
                             } else {
-                                elem.show();
+                                elem.setVisible(false, false);
                             }
-                        })
+                        });
+                        $chart.redraw();
                     })
                 }
             }
@@ -95,3 +99,14 @@ $(document).ready(function () {
         chartGet();
     });
 });
+
+function getNumberOfVisibleSeries(series) {
+    var numberOfVisibleSeries = 0;
+    series.forEach(function (line) {
+        if (line.visible) {
+            numberOfVisibleSeries++;
+        }
+    });
+
+    return numberOfVisibleSeries;
+}

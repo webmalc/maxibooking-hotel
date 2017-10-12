@@ -157,7 +157,8 @@ $(document).ready(function ($) {
                 data: data,
                 success: function (response) {
                     table.html(response);
-
+                    setVerticalScrollable($('.vertical-scrollable').first(), document.getElementById('windows-report-content'));
+                    // Далее идет вызов демона, вероятнее всего. Не читайте следующий код, во избежание повреждения рассудка.
                     // $('tr').hover(function () {
                     //     $(this).children('td').each(function (index, elem) {
                     //
