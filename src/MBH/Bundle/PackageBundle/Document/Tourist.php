@@ -293,8 +293,11 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      *
      * @return string $firstName
      */
-    public function getFirstName()
+    public function getFirstName($isPlain = false)
     {
+        if ($isPlain) {
+            return $this->firstName;
+        }
         if ($this->firstName == 'н/д') {
             return '';
         }
@@ -306,11 +309,12 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      * Set firstName
      *
      * @param string $firstName
-     * @return self
+     * @param bool $isSetPlain
+     * @return Tourist
      */
-    public function setFirstName($firstName)
+    public function setFirstName($firstName, $isSetPlain = false)
     {
-        $this->firstName = mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE);
+        $this->firstName = $isSetPlain ? $firstName : mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE);
 
         if (empty($this->firstName)) {
             $this->firstName = null;
@@ -427,12 +431,22 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      * Set phone
      *
      * @param string $phone
-     * @return self
+     * @param bool $isPhoneFormat
+     * @return Tourist
      */
-    public function setPhone($phone)
+    public function setPhone($phone, $isPhoneFormat = true)
     {
-        $this->phone = self::cleanPhone($phone);
+        $this->phone = $isPhoneFormat ? self::cleanPhone($phone) : $phone;
+
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOriginalUncleanedPhone()
+    {
+        return $this->phone;
     }
 
     /**

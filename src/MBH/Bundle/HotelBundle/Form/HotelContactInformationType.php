@@ -94,8 +94,7 @@ class HotelContactInformationType extends AbstractType
                 'label' => 'form.contact_info_type.available_languages.label',
                 'group' => 'form.hotelType.general_info',
                 'required' => false
-            ])
-        ;
+            ]);
 
         $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }

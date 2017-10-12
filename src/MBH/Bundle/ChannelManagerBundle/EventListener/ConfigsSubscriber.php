@@ -3,6 +3,7 @@ namespace MBH\Bundle\ChannelManagerBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -31,9 +32,9 @@ class ConfigsSubscriber implements EventSubscriber
     }
 
     /**
-     * @param LifecycleEventArgs $args
+     * @param PreUpdateEventArgs $args
      */
-    public function preUpdate(LifecycleEventArgs $args)
+    public function preUpdate(PreUpdateEventArgs $args)
     {
         $doc = $args->getObject();
 
@@ -41,7 +42,7 @@ class ConfigsSubscriber implements EventSubscriber
             $this->container->get('mbh.channelmanager')->closeInBackground();
         }
         if ($doc instanceof TripAdvisorConfig) {
-            $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($doc);
+//            $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($doc);
         }
     }
 

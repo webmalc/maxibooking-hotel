@@ -156,7 +156,6 @@ class TripAdvisorDataFormatter
         $query->end = $endDate;
         $query->adults = 0;
         $query->children = 0;
-        $query->tariff = $tariff;
 
         /** @var TripAdvisorRoomType $room */
         foreach ($hotel->getTripAdvisorConfig()->getRooms() as $room) {
@@ -167,6 +166,12 @@ class TripAdvisorDataFormatter
             }
         }
 
-        return $this->search->setWithTariffs()->search($query);
+        if (is_null($tariff)) {
+            $this->search->setWithTariffs();
+        } else {
+            $query->tariff = $tariff;
+        }
+
+        return $this->search->search($query);
     }
 }

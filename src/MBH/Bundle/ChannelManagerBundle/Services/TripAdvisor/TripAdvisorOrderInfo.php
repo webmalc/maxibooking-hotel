@@ -85,6 +85,8 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
             $phoneNumber,
             $country
         );
+        $payer->setPhone($phoneNumber, false);
+        $this->dm->flush();
 
         return $payer;
     }

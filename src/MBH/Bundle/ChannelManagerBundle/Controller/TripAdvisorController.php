@@ -97,10 +97,12 @@ class TripAdvisorController extends BaseController
         }
 
         $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->findBy(['hotel.id' => $this->hotel->getId()]);
-        if (count($config->getTariffs()) == 0) {
+        if (count($config->getTariffs()) == 0 || count($tariffs) != $config->getTariffs()->count()) {
             foreach ($tariffs as $tariff) {
-                $tripAdvisorTariff = (new TripAdvisorTariff())->setTariff($tariff);
-                $config->addTariff($tripAdvisorTariff);
+                if (is_null($config->getTATariffByMBHTariffId($tariff->getId()))) {
+                    $tripAdvisorTariff = (new TripAdvisorTariff())->setTariff($tariff);
+                    $config->addTariff($tripAdvisorTariff);
+                }
             }
         }
 
@@ -210,7 +212,42 @@ class TripAdvisorController extends BaseController
 //            return new JsonResponse(['error' => 'not_authorized'], 403);
 //        }
 
-        $content = json_decode($request->getContent(), true);
+        $json = '{
+  "api_version": 8,
+  "start_date": "2017-10-12",
+  "end_date": "2017-10-14",
+  "party": [
+    {
+      "adults": 2,
+      "children": []
+    }
+  ],
+  "lang": "en_US",
+  "currency": "USD",
+  "user_country": "US",
+  "device_type": "Desktop",
+  "query_key": "TripAdvisorAPITest_564ec7cd-0ed2-4e9b-a83a-93ccdef21d08",
+  "availability_id": "TestAvailabilityId_f85fdd89-1975-4ffc-8a24-c6634d5adb51",
+  "requested_payload": {
+    "categories": {
+      "room_type_details": true,
+      "rate_plan_details": true,
+      "room_rate_details": true,
+      "hotel_details": false
+    },
+    "category_modifiers": {
+      "partner_booking_data": false,
+      "real_time_pricing": false,
+      "multiple_room_rates": true,
+      "photos": true,
+      "text": true
+    }
+  },
+  "hotels": [
+      "59428e3a2bf944480f704812"
+  ]
+}';
+        $content = json_decode($json, true);
 
         $startDate = $this->helper->getDateFromString($content['start_date'],
             TripAdvisorResponseCompiler::TRIP_ADVISOR_DATE_FORMAT);
