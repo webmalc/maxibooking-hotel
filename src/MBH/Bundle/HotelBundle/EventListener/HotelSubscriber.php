@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 29.06.17
- * Time: 13:58
- */
 
 namespace MBH\Bundle\HotelBundle\EventListener;
 
@@ -13,14 +7,16 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorHelper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HotelSubscriber implements EventSubscriber
 {
-    /** @var  TripAdvisorHelper */
-    private $tripAdvisorHelper;
+    /** @var  Container */
+    private $container;
 
-    public function __construct(TripAdvisorHelper $tripAdvisorHelper) {
-        $this->tripAdvisorHelper = $tripAdvisorHelper;
+    public function __construct(ContainerInterface $container) {
+        $this->container = $container;
     }
 
     /**
@@ -44,7 +40,7 @@ class HotelSubscriber implements EventSubscriber
                 ->getRepository('MBHChannelManagerBundle:TripAdvisorConfig')
                 ->findOneBy(['hotel' => $document]);
             if (!is_null($config)) {
-                $this->tripAdvisorHelper->sendUpdateDataToMBHs($config);
+                $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($config);
             }
         }
     }
@@ -58,7 +54,7 @@ class HotelSubscriber implements EventSubscriber
                 ->findOneBy(['hotel' => $document]);
             $config->setIsEnabled(false);
             if (!is_null($config)) {
-                $this->tripAdvisorHelper->sendUpdateDataToMBHs($config);
+                $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($config);
             }
         }
     }

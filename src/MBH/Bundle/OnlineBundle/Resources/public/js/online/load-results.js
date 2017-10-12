@@ -33,7 +33,7 @@ addLoadEvent(function() {
         if (e.data.type !== 'mbh') {
             return;
         }
-        if (e.data.action == 'resize') {
+        if (e.data.action === 'resize') {
             resultsIframe.style.height =  e.data.height > 300 ? e.data.height + 'px' : '300px';
         }
     };

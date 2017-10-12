@@ -6,6 +6,7 @@ use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\Response;
 use GuzzleHttp\Client;
 use MBH\Bundle\BaseBundle\Document\Message;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;

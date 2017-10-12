@@ -189,7 +189,7 @@ $(document).ready(function() {
             this.$searchRoomsSelect.find('option[value="' + roomID + '"]').attr('disabled', 'disabled');
         }
         this.$searchRoomsSelect.select2({
-            placeholder: 'при заезде',
+            placeholder: Translator.trans("search.upon_arrival"),
             allowClear: true,
             width: 'element'
         });
@@ -248,7 +248,7 @@ $(document).ready(function() {
             minimumResultsForSearch: -1
         });
         $searchRoomsSelect.select2({
-            placeholder: 'при заезде',
+            placeholder: Translator.trans("search.upon_arrival"),
             allowClear: true,
             templateResult: select2TemplateResult.appendIcon,
             width: 'element'
@@ -387,7 +387,7 @@ $(document).ready(function() {
                 }
                 //var wrapper = $('#package-search-results-wrapper');
                 window.location.hash = $packageSearchForm.serialize();
-                $wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+                $wrapper.html(mbh.loader.html);
                 send($packageSearchForm.serialize());
             }, 500);
     };

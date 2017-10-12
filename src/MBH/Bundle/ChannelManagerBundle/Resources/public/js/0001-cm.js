@@ -46,21 +46,5 @@ $(document).ready(function () {
         currencyInput.change(show);
     }());
 
-    var $date = $('[id$=_deadline_date]'),
-        $time = $('[id$=_deadline_time]'),
-        datePickerOptions = {
-            language: "ru",
-            autoclose: true,
-            format: 'dd.mm.yyyy'
-        };
-    $time.timepicker({showMeridian: false, defaultTime: ''});
-    $date.datepicker(datePickerOptions);
-
-    $date.on('change', function () {
-        if ($date.val() && !$time.val()) {
-            $time.val('0:00');
-        }
-    });
-
 });
 

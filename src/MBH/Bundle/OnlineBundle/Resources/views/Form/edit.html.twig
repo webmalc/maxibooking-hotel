@@ -1,5 +1,7 @@
 {% extends 'MBHOnlineBundle:Form:layout.html.twig' %}
-
+{% if form.formTemplate is defined %}
+    {% form_theme form.formTemplate '@MBHOnline/Form/Template/formTemplate.html.twig'  %}
+{% endif %}
 {% set small_title = 'views.form.index.edit'|trans({}, 'MBHOnlineBundle') %}
 {% set layout = "tabs" %}
 
@@ -9,6 +11,7 @@
 
         {% if entity %}
             <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
+            {#<li><a href="#online-form-tune" data-toggle="tab"><i class="fa fa-crosshairs"> </i> {{ 'views.form.index.edit_templates'|trans({}, 'MBHOnlineBundle') }}</a></li>#}
         {% else %}
             <li class="disabled"><a href="#" data-toggle="tooltip" title='{{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}'><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
         {%  endif %}
@@ -22,7 +25,6 @@
             {{ form_widget(form) }}
             {% include 'MBHBaseBundle:Actions:new.html.twig' %}
             {{ form_end(form) }}
-
             {%  if entity %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
             {%  endif %}
@@ -36,8 +38,8 @@
                 </div>
                 <div class="panel-body">
                     {% set code1  = '<div id="mbh-form-wrapper"><a href="http://maxi-booking.ru/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
-                    {% set code2  = '<script>var mbhForm = {form_url: "' ~ url('online_form_iframe', {formId: entity.id}) ~ '", calendar_url: "' ~ url('online_form_calendar') ~ '"};</script>' %}
-                    {% set code3  = '<script src="' ~ absolute_url(asset('/bundles/mbhonline/js/online/load-form.js')) ~'"></script>' %}
+                    {% set code2  = '<script>var mbhForm = {form_url: "' ~ url('online_form_iframe', {formId: entity.id}) ~ '", calendar_url: "' ~ url('online_form_calendar') ~ '"}; var frameWidth = "' ~ (entity.fullWidth ? '100%' : entity.frameWidth) ~ '"; var frameHeight = "' ~ entity.frameHeight ~ '"</script>' %}
+                    {% set code3  = '<script src="' ~ absolute_url('/bundles/mbhonline/js/online/load-form.js') ~'"></script>' %}
                     <div class="row spacer-bottom">
                         <div class="col-md-3"><small>{{ 'views.form.index.to_form_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
                         <div class="col-md-9"><span class="text-success">{{ code1 }}</span></div>
@@ -57,7 +59,7 @@
                     <div id="mbh-date-error" class="hide"><i class="fa fa-exclamation-circle"></i> {{ 'views.form.period_is_not_filled'|trans({}, 'MBHOnlineBundle') }}</div>
                     {% set code1  = '<div id="mbh-results-wrapper"><a href="http://maxi-booking.ru/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
                     {% set code2  = '<script>var mbhResults = {results_url: "' ~ url('online_form_results_iframe', {formId: entity.id}) ~ '"};</script>' %}
-                    {% set code3  = '<script src="' ~ absolute_url(asset('/bundles/mbhonline/js/online/load-results.js')) ~'"></script>' %}
+                    {% set code3  = '<script src="' ~ absolute_url('/bundles/mbhonline/js/online/load-results.js') ~'"></script>' %}
 
                     <div class="row spacer-bottom">
                         <div class="col-md-3"><small>{{ 'views.form.index.to_results_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
@@ -69,6 +71,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="tab-pane" id="online-form-tune">
+            Здесь настройка
         </div>
     </div>
 {% endblock %}

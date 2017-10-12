@@ -2,17 +2,22 @@
 
 namespace MBH\Bundle\BaseBundle\Controller;
 
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Query\Builder;
+use MBH\Bundle\BaseBundle\Form\ExportType;
+use MBH\Bundle\BaseBundle\Lib\Exportable;
+use MBH\Bundle\BaseBundle\Lib\Searchable;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 /**
  * Class ExportController
@@ -21,6 +26,17 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class ExportController extends BaseController
 {
+    const EXPORTABLE_CLASSES_DATA = [
+        'tourist' => [
+            'className' => Tourist::class,
+            'serviceName' => 'mbh.tourist_manager'
+        ],
+        'package' => [
+            'className' => Package::class,
+            'serviceName' => 'mbh.order_manager'
+        ]
+    ];
+
     /**
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/csv/{repositoryName}", name="export_csv")
@@ -70,6 +86,49 @@ class ExportController extends BaseController
     }
 
     /**
+     * @Route("/{entityName}/{format}", name="export_entities", options={"expose"=true})
+     * @param Request $request
+     * @param $entityName
+     * @param $format
+     * @Template()
+     * @return array|JsonResponse|Response
+     */
+    public function exportAction(Request $request, $entityName, $format)
+    {
+        $entityData = self::EXPORTABLE_CLASSES_DATA[$entityName];
+
+        /** @var Exportable $className */
+        $className = $entityData['className'];
+        $columnNames = array_keys($className::getExportableFieldsData());
+        $form = $this->createForm(ExportType::class, null, [
+            'fieldChoices' => array_combine($columnNames, $columnNames),
+            'method' => 'GET',
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            /** @var Searchable $entityService */
+            $entityService = $this->get($entityData['serviceName']);
+
+            $qb = $entityService->getQueryBuilderByRequestData($request,
+                $this->getUser(),
+                $this->get('mbh.hotel.selector')->getSelected());
+            if (!$qb instanceof Builder) {
+                return new JsonResponse(['error' => $qb]);
+            }
+            if ($format === 'csv') {
+                return $this->get('mbh.entities_exporter')
+                    ->exportToCSV($qb, $entityData['className'], $form->get('fields')->getData());
+            }
+        }
+
+        return [
+            'form' => $form->createView()
+        ];
+    }
+
+    /**
      * @param string $shortcut
      * @return string|null
      */
@@ -92,7 +151,8 @@ class ExportController extends BaseController
         } elseif($value instanceof \DateTime) {
             return $value->format('d.m.Y');
         } elseif(is_bool($value)) {
-            return $value ? 'Да' : 'Нет';
+            $unTranslatedValue = $value ? 'controllers.export_controller.yes' : 'controllers.export_controller.no';
+            return $this->get('translator')->trans($unTranslatedValue);
         } elseif(is_object($value)) {
             return $value->__toString();
         } else

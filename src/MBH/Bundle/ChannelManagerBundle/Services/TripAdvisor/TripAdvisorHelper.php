@@ -2,10 +2,12 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Client;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\ServiceData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffService;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -23,6 +25,8 @@ class TripAdvisorHelper
     private $validator;
     /** @var  TripAdvisorResponseCompiler $responseFormatter */
     private $responseFormatter;
+    private $mbhsKey;
+    private $dm;
 
     const TRIP_ADVISOR_CONFIRMATION_URL = 'http://example.com';
 
@@ -30,12 +34,16 @@ class TripAdvisorHelper
         SearchFactory $search,
         TranslatorInterface $translator,
         ValidatorInterface $validator,
-        TripAdvisorResponseCompiler $responseFormatter
+        TripAdvisorResponseCompiler $responseFormatter,
+        $mbhsKey,
+        DocumentManager $dm
     ) {
         $this->search = $search;
         $this->translator = $translator;
         $this->validator = $validator;
         $this->responseFormatter = $responseFormatter;
+        $this->mbhsKey = $mbhsKey;
+        $this->dm = $dm;
     }
 
     /**
@@ -94,11 +102,16 @@ class TripAdvisorHelper
     {
         $requiredTariffData = [];
         !empty($tariff->getDescription()) ?: $requiredTariffData[] = 'mbhpricebundle.form.tarifftype.opisaniye';
+
+        $mealServicesCodes = array_keys(ServiceData::SERVICES['price.datafixtures.mongodb.servicedata.eat']);
+        $firstMealCategoryService = $this->dm
+            ->getRepository('MBHPriceBundle:Service')
+            ->findOneBy(['code' => current($mealServicesCodes)]);
+
         $mealTypeCodes = [];
         /** @var TariffService $defaultService */
         foreach ($tariff->getDefaultServices() as $defaultService) {
-            $mealCategoryName = $this->translator->trans('price.datafixtures.mongodb.servicedata.eat');
-            if ($defaultService->getService()->getCategory()->getName() == $mealCategoryName) {
+            if ($defaultService->getService()->getCategory()->getId() === $firstMealCategoryService->getCategory()->getId()) {
                 $mealTypeCodes[] = $defaultService->getService()->getCode();
             }
         }
@@ -203,17 +216,15 @@ class TripAdvisorHelper
     public function sendUpdateDataToMBHs(TripAdvisorConfig $config)
     {
         $configData = $this->responseFormatter->formatHotelInventoryData($config);
-        $jsonData = json_encode($configData);
         $client = new Client();
-        //TODO: Сменить на URL mbhs
-        $url = 'localhost:8080/app_dev.php/client/tripadvisor/update_config/'
-            . $config->getHotel()->getId()
-            . '/'
-            . $config->getIsEnabled() ? 'true' : 'false';
+        $url = 'https://mbhs.maxibooking.ru/client/tripadvisor/update_config';
 
         $result = $client->post($url, [
             'json' => [
-                "configData" => $jsonData,
+                'configData' => $configData,
+                'hotelData' => $config->getHotel(),
+                'key' => $this->mbhsKey,
+                'isEnabled' => $config->getIsEnabled()
             ]
         ]);
     }

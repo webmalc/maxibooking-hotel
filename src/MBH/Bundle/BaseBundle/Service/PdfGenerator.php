@@ -48,7 +48,11 @@ class PdfGenerator implements ContainerAwareInterface
      */
     private function getDefaultPath()
     {
-        return $this->container->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'protectedUpload' . DIRECTORY_SEPARATOR . 'generateDocuments';
+        /** @var \AppKernel $kernel */
+        $kernel = $this->container->get('kernel');
+        $client = $kernel->getClient();
+
+        return $kernel->getRootDir().'/../protectedUpload'.($kernel->getClient() ? '/clients/' . $client: '').'/generateDocuments';
     }
 
     /**

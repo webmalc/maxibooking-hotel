@@ -41,6 +41,10 @@ services:
         class: MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper
         arguments: ['@mbh.notifier', '@translator', '@doctrine_mongodb.odm.document_manager']
 
+    mbh.channelmanager.order_handler:
+        class: MBH\Bundle\ChannelManagerBundle\Services\OrderHandler
+        arguments: ['@doctrine_mongodb.odm.document_manager']
+
     mbh.channelmanager.expedia_response_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler
         arguments: ['@service_container']
@@ -119,6 +123,8 @@ services:
               - '@translator'
               - '@validator'
               - '@mbh.channel_manager.trip_advisor_response_compiler'
+              - '%mbhs_key%'
+              - '@doctrine.odm.mongodb.document_manager'
 
     mbh.channel_manager.trip_advisor_response_compiler:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseCompiler

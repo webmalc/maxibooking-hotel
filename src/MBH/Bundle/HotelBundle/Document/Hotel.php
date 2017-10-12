@@ -300,6 +300,12 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     protected $zipCode;
 
     /**
+     * @var Image
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\Image", cascade={"persist"})
+     */
+    protected $logoImage;
+
+    /**
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\BaseBundle\Document\Image")
      */
     protected $images;
@@ -1605,6 +1611,27 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     {
         return $this->images;
     }
+
+    /**
+     * @return Image|null
+     */
+    public function getLogoImage(): ?Image
+    {
+        return $this->logoImage;
+    }
+
+    public function setLogoImage(Image $logoImage)
+    {
+        $this->logoImage = $logoImage;
+    }
+
+    public function removeLogoImage()
+    {
+        $this->logoImage = null;
+
+        return $this;
+    }
+
 
     /**
      * @return mixed

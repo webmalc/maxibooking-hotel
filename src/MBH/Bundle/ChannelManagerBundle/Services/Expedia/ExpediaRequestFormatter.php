@@ -40,9 +40,7 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
 
     public function formatGetHotelInfoRequest(ChannelManagerConfigInterface $config)
     {
-        $url = self::PRODUCT_API_URL;
-
-        return $this->getJsonRequestInfo($config, $url);
+        return $this->getJsonRequestInfo($config, self::PRODUCT_API_URL);
     }
 
     public function formatPullRoomsRequest(ChannelManagerConfigInterface $config)

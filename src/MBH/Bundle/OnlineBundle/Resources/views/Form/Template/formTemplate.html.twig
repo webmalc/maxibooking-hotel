@@ -1,0 +1,6 @@
+{% block _mbh_bundle_onlinebundle_form_type_formTemplate_widget %}
+    {{ form_widget(form) }}
+    {% if form.twig_samle is defined and form.twig_sample %}
+        {#TODO: button twig sample restore default#}
+    {% endif %}
+{% endblock %}

@@ -40,12 +40,6 @@ class TripAdvisorTariff
     protected $deadline;
 
     /**
-     * @var bool
-     * @ODM\Field(type="bool")
-     */
-    protected $isPenaltyExists = false;
-
-    /**
      * @var string
      * @ODM\Field(type="string")
      */
@@ -145,25 +139,6 @@ class TripAdvisorTariff
     public function setDeadline(int $deadline): TripAdvisorTariff
     {
         $this->deadline = $deadline;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getIsPenaltyExists(): bool
-    {
-        return $this->isPenaltyExists;
-    }
-
-    /**
-     * @param bool $isPenaltyExists
-     * @return TripAdvisorTariff
-     */
-    public function setIsPenaltyExists(bool $isPenaltyExists): TripAdvisorTariff
-    {
-        $this->isPenaltyExists = $isPenaltyExists;
 
         return $this;
     }

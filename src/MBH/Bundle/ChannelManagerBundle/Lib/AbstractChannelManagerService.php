@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -11,7 +12,6 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Doctrine\ODM\MongoDB\Query\Builder;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
 use Doctrine\MongoDB\CursorInterface;
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
@@ -750,7 +750,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setType('danger')
                 ->setCategory('notification')
                 ->setAutohide(false)
-                ->setEnd(new \DateTime('+10 minute'));
+                ->setEnd(new \DateTime('+10 minute'))
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
+            ;
 
             return $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
@@ -765,8 +767,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $tr = $this->container->get('translator');
             $message = $notifier::createMessage();
 
-            $text = 'channelManager.' . $service . '.notification.' . $type;
-            $subject = 'channelManager.' . $service . '.notification.subject.' . $type;
+            $text = 'channelManager.'.$service.'.notification.'.$type;
+            $subject = 'channelManager.'.$service.'.notification.subject.' . $type;
 
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -796,6 +798,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setOrder($order)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
+
             ;
 
             $notifier->setMessage($message)->notify();

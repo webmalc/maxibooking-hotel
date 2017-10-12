@@ -10,7 +10,6 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 class ConfigsSubscriber implements EventSubscriber
 {
     /**

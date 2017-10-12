@@ -58,9 +58,10 @@ class TouristsMessenger
     public function send(Tourist $tourist = null, $text = null, $sms = true, $smsText = null)
     {
         $isSend = false;
+        $translator = $this->container->get('translator');
 
         if (!$tourist) {
-            throw new Exception($this->container->get('translator')->trans('mbhpackagebundle.services.touristsmessenger.gost.ne.nayden'));
+            throw new Exception($translator->trans('mbh.package_bundle.tourist_messenger.guest_not_found'));
         }
 
         // send email
@@ -83,7 +84,7 @@ class TouristsMessenger
         }
 
         if (!$isSend) {
-            throw new Exception('Не удалось отправить e-mail/sms гостю.');
+            throw new Exception($translator->trans('mbh.package_bundle.tourist_messenger.failed_to_send'));
         }
 
         return true;

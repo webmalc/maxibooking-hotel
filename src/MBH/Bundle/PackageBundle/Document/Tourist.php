@@ -8,6 +8,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Lib\Exportable;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
@@ -21,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Tourist extends Base implements \JsonSerializable , PayerInterface, RecipientInterface
+class Tourist extends Base implements \JsonSerializable, PayerInterface, RecipientInterface, Exportable
 {
     /**
      * Hook timestampable behavior
@@ -192,7 +193,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
     protected $addressObjectDecomposed;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $addressObjectCombined;
     /**
@@ -483,7 +484,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      * @param boolean $original
      * @return string
      */
-    public function getMobilePhone($original=false)
+    public function getMobilePhone($original = false)
     {
         return self::formatPhone($this->mobilePhone, $original);
     }
@@ -952,6 +953,26 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
             'communicationLanguage' => $this->communicationLanguage,
             'citizenship' => $this->getCitizenship() ? $this->getCitizenship()->getName() : null,
             'documentRelation' => $this->getDocumentRelation() ? $this->getDocumentRelation() : null
+        ];
+    }
+
+    public static function getExportableFieldsData(): array
+    {
+        return [
+            'form.touristType.name' => ['field' => 'firstName'],
+            'form.touristType.surname' => ['field' => 'lastName'],
+            'form.touristType.second_name' => ['field' => 'patronymic'],
+            'form.organizationType.phone' => ['field' => 'phone'],
+            'form.touristType.mobile_phone' => ['field' => 'mobilePhone'],
+            'form.touristType.email' => ['field' => 'email'],
+            'exportable.tourist.fio' => [
+                'callback' => function ($entityData) {
+                    $fio = $entityData['lastName'] . ' ' . $entityData['firstName'];
+                    if (isset($entityData['patronymic']) && !empty($entityData['patronymic'])) {
+                        $fio .= ' ' . $entityData['patronymic'];
+                    }
+                    return $fio;
+                }]
         ];
     }
 }

@@ -60,27 +60,27 @@ class ServiceType extends AbstractType
                 'choices' => $options['calcTypes'],
             ])
             ->add('recalcWithPackage', CheckboxType::class, [
-                'label' => 'Смещаемая?',
+                'label' => 'mbhpricebundle.form.servicetype.is_displaceable',
                 'value' => true,
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'help' => 'Смещать ли даты услуги при изменении дат брони?',
+                'help' => 'mbhpricebundle.form.servicetype.is_displaceable.help',
                 'attr' => ['class' => 'toggle-date'],
             ])
             ->add('includeArrival', CheckboxType::class, [
-                'label' => 'Учитывать заезд?',
+                'label' => 'mbhpricebundle.form.servicetype.includeArrival',
                 'value' => true,
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'help' => 'Учитывать ли дату заезда брони?',
+                'help' => 'mbhpricebundle.form.servicetype.includeArrival.help',
                 'attr' => ['class' => 'toggle-date'],
             ])
             ->add('includeDeparture', CheckboxType::class, [
-                'label' => 'Учитывать выезд?',
+                'label' => 'mbhpricebundle.form.servicetype.includeDeparture',
                 'value' => true,
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'help' => 'Учитывать ли дату выезда брони?',
+                'help' => 'mbhpricebundle.form.servicetype.includeDeparture.help',
                 'attr' => ['class' => 'toggle-date'],
             ])
             ->add('price', TextType::class, [

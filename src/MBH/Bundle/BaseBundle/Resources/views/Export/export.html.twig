@@ -1,0 +1,19 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">{{ 'csv.form.modal_title'|trans }}</h4>
+        </div>
+        <div class="modal-body">
+            {{ form_start(form, {'action': path('export_entities', {entityName: 'tourist', format: 'csv'}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+            {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
+            {{ form_widget(form) }}
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'csv.form.modal_close'|trans }}</button>
+                <button type="button" id="export-send-button" class="btn btn-primary">{{ 'csv.form.modal_generate'|trans }}</button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+

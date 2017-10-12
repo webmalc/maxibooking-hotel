@@ -38,7 +38,7 @@ $(function () {
 
         select2Activate = function ($selectedField) {
             $selectedField.select2({
-                placeholder: "Сделайте выбор",
+                placeholder: Translator.trans("004-calculate-orderprice.make_a_choice"),
                 allowClear: false,
                 width: 'resolve'
             });
@@ -58,7 +58,6 @@ $(function () {
                 updateDishPrice(this);
             });
 
-            //Калькуляция
             $(document).on('keyup change', '.amount', function () {
                 showPrice(calculatePrice());
             });

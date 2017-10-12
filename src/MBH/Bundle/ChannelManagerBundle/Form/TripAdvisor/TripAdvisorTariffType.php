@@ -37,7 +37,10 @@ class TripAdvisorTariffType extends AbstractType
                 'help' => 'form.trip_advisor_tariff_type.isSynchronized.help',
                 'required' => false,
                 'group' => $tariff->getName(),
-                'disabled' => !empty($options['unfilledFieldErrors'][$builder->getName()])
+                'disabled' => !empty($options['unfilledFieldErrors'][$builder->getName()]),
+                'attr' => [
+                    'class' => 'box-full-visibility-checkbox'
+                ]
             ])
             ->add('refundableType', ChoiceType::class, [
                 'choices' => TripAdvisorTariff::getRefundableTypes(),
@@ -55,11 +58,6 @@ class TripAdvisorTariffType extends AbstractType
                 'attr' => [
                     'class' => 'days-spinner',
                 ],
-                'group' => $tariff->getName()
-            ])
-            ->add('isPenaltyExists', CheckboxType::class, [
-                'label' => 'form.trip_advisor_tariff_type.is_penalty_exists.label',
-                'help' => 'form.trip_advisor_tariff_type.is_penalty_exists.help',
                 'group' => $tariff->getName(),
                 'required' => false
             ])

@@ -1,0 +1,3 @@
+validator.field.short: 'Too short'
+validator.field.long: 'Too long'
+validator.image.max_size_exceeded: 'Maximum file size exceeded'

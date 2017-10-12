@@ -7,6 +7,7 @@ parameters:
       uah: {text: 'грн.', small: 'коп.', icon: 'fa fa-money'}
       kzt: {text: 'тенге', small: 'тиын', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
+      usd: {text: '$', small: '$', icon: 'fa fa-usd'}
 
     # ReCaptcha
     mbh.recaptcha:
@@ -19,7 +20,7 @@ parameters:
     mbh.weekdays: {1: 'Понедельник', 2: 'Вторник', 3: 'Среда', 4: 'Четверг', 5: 'Пятница', 6: 'Суббота', 0: 'Воскресенье'}
 
     mbh.mongodb:
-      url: "%mongodb_url%"
+      url: "mongodb://%mongodb_host%:%mongodb_port%/%mongodb_database%"
       db : "%mongodb_database%"
 
     mbh.environment: "%mbh_environment%"
@@ -177,7 +178,7 @@ parameters:
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
-    #параметры онлайн формы
+    #параметры онлайн формыw
     mbh.online.form:
           messages: true
           payment_types:
@@ -196,6 +197,22 @@ parameters:
       paypal: 'PayPal'
     mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: "%mbh_payment_systems_change%"
+
+    mbh.taxation:
+      rate_codes:
+        -1: не облагается НДС
+        0: облагается НДС по ставке 0%
+        10: облагается НДС по ставке 10%
+        18: облагается НДС по ставке 18%
+        110: облагается НДС по ставке 10/110
+        118: облагается НДС по ставке 18/118
+      system_codes:
+        0: Общая система налогообложения
+        1: Упрощенная система налогообложения (Доход)
+        2: Упрощенная СН (Доход минус Расход)
+        3: Единый налог на вмененный доход
+        4: Единый сельскохозяйственный налог
+        5: Патентная система налогообложения
 
     #параметры Channel manager
     mbh.channelmanager.services:
@@ -220,6 +237,10 @@ parameters:
           api_password: VCuMhanjdxiC
           vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
+        expedia:
+          title: 'Expedia'
+          service: 'mbh.channelmanager.expedia'
+
         hundred_one_hotels:
           title: '101 Отель'
           service: 'mbh.channelmanager.hundred_one_hotels'

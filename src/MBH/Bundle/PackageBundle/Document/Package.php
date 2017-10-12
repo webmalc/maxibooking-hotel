@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -84,7 +85,7 @@ class Package extends Base implements \JsonSerializable
 
     /**
      * @ODM\ReferenceMany(targetDocument="PackageAccommodation", inversedBy="package", cascade={"persist"})
-     *
+     * @ODM\Index()
      */
     protected $accommodations;
 
@@ -245,7 +246,7 @@ class Package extends Base implements \JsonSerializable
     protected $pricesByDate = [];
 
     /**
-     * @var PackagePrice
+     * @var PackagePrice[]
      * @ODM\EmbedMany(targetDocument="PackagePrice")
      */
     protected $prices;
@@ -261,7 +262,7 @@ class Package extends Base implements \JsonSerializable
      * )
      */
     protected $servicesPrice;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -319,7 +320,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * Assert\Range(
      *      min=1,
@@ -756,6 +757,7 @@ class Package extends Base implements \JsonSerializable
         $this->restarauntSeat = new ArrayCollection();
         $this->tourists = new ArrayCollection();
         $this->accommodations = new ArrayCollection();
+        $this->prices = new ArrayCollection();
     }
 
 
@@ -1527,11 +1529,24 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * @return PackagePrice
+     * @return PackagePrice[]|PersistentCollection
      */
     public function getPrices()
     {
         return $this->prices;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPricesByDateWithDiscount()
+    {
+        $prices = [];
+        foreach ($this->pricesByDate as $dateString => $price) {
+            $prices[$dateString] = $price - ($this->getDiscountMoney() / $this->getNights());
+        }
+
+        return $prices;
     }
 
     /**
@@ -1541,6 +1556,17 @@ class Package extends Base implements \JsonSerializable
     public function setPrices($prices)
     {
         $this->prices = $prices;
+        return $this;
+    }
+
+    /**
+     * @param PackagePrice $packagePrice
+     * @return Package
+     */
+    public function addPackagePrice(PackagePrice $packagePrice)
+    {
+        $this->prices->add($packagePrice);
+
         return $this;
     }
 
@@ -1588,12 +1614,13 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection|ArrayCollection
      */
     public function getAccommodations(): Collection
     {
         return $this->getSortedAccommodations();
     }
+
     /**
      * @return Special|null
      */
@@ -1646,7 +1673,6 @@ class Package extends Base implements \JsonSerializable
         usort($data, function ($a, $b) {
             /** @var PackageAccommodation $a*/
             /** @var PackageAccommodation $b*/
-            $c = 'd';
             return ($a->getBegin() < $b->getBegin())? -1 : 1;
         });
 
@@ -1682,9 +1708,19 @@ class Package extends Base implements \JsonSerializable
      * @param PackageAccommodation $accommodation
      * @return Package
      */
-    public function removeAccommodations(PackageAccommodation $accommodation)
+    public function removeAccommodation(PackageAccommodation $accommodation)
     {
         $this->accommodations->removeElement($accommodation);
+
+        return $this;
+    }
+
+    /**
+     * @return Package
+     */
+    public function removeAccommodations()
+    {
+        $this->accommodations = new ArrayCollection();
 
         return $this;
     }
@@ -1752,5 +1788,21 @@ class Package extends Base implements \JsonSerializable
     public static function getChannelManagerNames()
     {
         return AbstractChannelManagerService::CHANNEL_MANAGER_NAMES;
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return PackagePrice|null
+     */
+    public function getPackagePriceByDate(\DateTime $date)
+    {
+        /** @var PackagePrice $price */
+        foreach ($this->getPrices() as $price) {
+            if ($price->getDate() == $date) {
+                return $price;
+            }
+        }
+
+        return null;
     }
 }
