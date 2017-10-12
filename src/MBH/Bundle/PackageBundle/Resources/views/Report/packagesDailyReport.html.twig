@@ -8,7 +8,7 @@
         {% block content %}
             <form class="form-inline search-form filter-form remember" id="daily-report-filter-form" role="form">
                 <div class="input">
-                    <i class="fa fa-calendar" title='{{ 'views.report.packages_daily_report.dates_input.title'|trans }}'
+                    <i class="fa fa-money" title='{{ 'views.report.packages_daily_report.dates_input.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
                     <input type="text" id="daily-report-filter-begin"
                            class="datepicker daily-report-filter begin-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
@@ -21,7 +21,7 @@
                            data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
                 </div>
                 <div class="input">
-                    <i class="fa fa-calendar" title='{{ 'views.report.packages_daily_report.calculation_dates.title'|trans }}'
+                    <i class="fa fa-bed" title='{{ 'views.report.packages_daily_report.calculation_dates.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
                     <input type="text" id="daily-report-filter-calc-begin"
                            class="datepicker daily-report-filter form-control input-sm"
@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="input">
-                    <i class="fa fa-bed" title='{{ 'views.report.packages_daily_report.hotels.title'|trans }}'
+                    <i class="fa fa-home" title='{{ 'views.report.packages_daily_report.hotels.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
                     <select multiple data-placeholder="{{ 'views.report.packages_daily_report.hotels.placeholder'|trans }}"
                             id="daily-report-filter-hotels" class="daily-report-filter form-control input-sm">
