@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\CashBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\Extension\OrderedTrait;
@@ -23,34 +25,25 @@ class NewCashDocumentType extends CashDocumentType
         parent::buildForm($builder, $options);
 
         $builder
-            /*->add('organizationPayer', 'text', [
-                'label' => 'form.cashDocumentType.organization',
-                'required' => false
-            ])
-            ->add('touristPayer', 'text', [
-                'label' => 'form.cashDocumentType.tourist',
-                'required' => false
-            ])*/
             ->remove('payer_select')
             ->remove('method')
         ;
         $builder->get('organizationPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Organization::class));
         $builder->get('touristPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Tourist::class));
 
-        $builder->add('article', 'document', [
+        $builder->add('article', DocumentType::class, [
             'required' => false,
             'class' => CashDocumentArticle::class,
-            'empty_value' => '',
+            'placeholder' => '',
             'label' => 'form.cashDocumentType.article',
             'group_by' => 'parent',
-            'property' => function (CashDocumentArticle $article) {
+            'choice_label' => function (CashDocumentArticle $article) {
                 return $article->getCode() . ' ' . $article->getTitle();
             },
             //'attr' => ['class' => 'plain-html'],
             'query_builder' => function (DocumentRepository $repository) {
                 return $repository->createQueryBuilder()->field('parent')->exists(true)->sort(['code' => 1]);
             },
-            //'choices' => $list,
         ]);
     }
 

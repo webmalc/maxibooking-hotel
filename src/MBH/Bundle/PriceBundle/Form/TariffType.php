@@ -5,45 +5,54 @@ namespace MBH\Bundle\PriceBundle\Form;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class TariffType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
-        $conditions = PromotionConditionFactory::getAvailableConditions();
-
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'mbhpricebundle.form.tarifftype.nazvaniye',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => true,
                 'attr' => ['placeholder' => 'mbhpricebundle.form.tarifftype.osnovnoy']
             ])
-            ->add('title', 'text', [
-                'label' => 'mbhpricebundle.form.tarifftype.vnutrenneyenazvaniye',
-                'group' => 'Общая информация',
+            ->add('title', TextType::class, [
+                'label' => 'mbhpricebundle.form.tarifftype.vnutrenneye.nazvaniye',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'attr' => ['placeholder' => 'Основной - лето ' . date('Y')],
-                'help' => 'mbhpricebundle.form.tarifftype.nazvaniyedlyaispolʹzovaniyavnutriMaxiBooking'
+                'attr' => ['placeholder' => $this->translator->trans('price.form.public_summer') . ' ' . date('Y')],
+                'help' => 'price.form.nazvanie_dla_ispolzovania_vnutri'
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextareaType::class, [
                 'label' => 'mbhpricebundle.form.tarifftype.opisaniye',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'help' => 'mbhpricebundle.form.tarifftype.opisaniyetarifadlyaonlaynbronirovaniya'
+                'help' => 'mbhpricebundle.form.tarifftype.opisaniye.tarifa.dlya.onlayn.bronirovaniya'
             ])
             ->add(
                 'begin',
-                'date',
+                DateType::class,
                 array(
                     'label' => 'mbhpricebundle.form.tarifftype.nachalo',
-                    'group' => 'Условия и ограничения',
+                    'group' => 'form.tariffType.conditions_and_restrictions',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'help' => 'mbhpricebundle.form.tarifftype.skakogochislaispolʹzuyetsyatarif?',
+                    'help' => 'price.form.s_kakogo_chisla_ispolzuetsa_tarif',
                     'required' => false,
                     'attr' => array(
                         'class' => 'datepicker begin-datepicker input-small',
@@ -54,13 +63,13 @@ class TariffType extends AbstractType
             )
             ->add(
                 'end',
-                'date',
+                DateType::class,
                 array(
                     'label' => 'mbhpricebundle.form.tarifftype.konets',
-                    'group' => 'Условия и ограничения',
+                    'group' => 'form.tariffType.conditions_and_restrictions',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'help' => 'mbhpricebundle.form.tarifftype.pokakoyechisloispolʹzuyetsyatarif?',
+                    'help' => 'price.form.po_kakoe_chislo_ispolzuetsa_tarif',
                     'required' => false,
                     'attr' => array(
                         'class' => 'datepicker end-datepicker input-small',
@@ -71,102 +80,114 @@ class TariffType extends AbstractType
             );
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
-            ->add('condition', 'choice', [
+            ->add('condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
-                'group' => 'Условия и ограничения',
+                'group' => 'form.tariffType.conditions_and_restrictions',
                 'choices' => array_combine($conditions, $conditions),
                 'choice_label' => function ($value, $label) {
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
-            ->add('condition_quantity', 'number', [
+            ->add('condition_quantity', NumberType::class, [
                 'label' => 'form.promotionType.label.condition_quantity',
-                'group' => 'Условия и ограничения',
+                'group' => 'form.tariffType.conditions_and_restrictions',
                 'required' => false,
                 'error_bubbling' => false,
                 'attr' => [
                     'class' => 'spinner',
                 ],
             ])
-            ->add('additional_condition', 'choice', [
+            ->add('additional_condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.add_condition',
                 'required' => false,
-                'group' => 'Условия и ограничения',
+                'group' => 'form.tariffType.conditions_and_restrictions',
                 'choices' => array_combine($conditions, $conditions),
                 'choice_label' => function ($value, $label) {
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
-            ->add('additional_condition_quantity', 'number', [
+            ->add('additional_condition_quantity', NumberType::class, [
                 'label' => 'form.promotionType.label.condition_quantity',
-                'group' => 'Условия и ограничения',
+                'group' => 'form.tariffType.conditions_and_restrictions',
                 'required' => false,
                 'error_bubbling' => false,
                 'attr' => [
                     'class' => 'spinner',
                 ],
+            ])
+            ->add('minPerPrepay', TextType::class, [
+                'label' => 'form.tariffType.minPrepay',
+                'group' => 'form.tariffType.conditions_and_restrictions',
+                'required' => false,
+                'attr' => ['placeholder' => 'form.tariffType.minPerPrepay'],
+                'help' => 'form.tariffType.help'
             ]);
         $builder
-            ->add('isOnline', 'checkbox', [
-                'label' => 'mbhpricebundle.form.tarifftype.onlayn?',
-                'group' => 'Настройки',
+            ->add('isOnline', CheckboxType::class, [
+                'label' => 'price.form.online',
+                'group' => 'configuration',
                 'value' => true,
                 'required' => false,
-                'help' => 'mbhpricebundle.form.tarifftype.ispolʹzovatʹlitarifvonlaynbronirovanii?'
+                'help' => 'price.form.using_tariff_in_online_booking'
             ])
             ->add(
-                'childAge',
-                'choice',
+                'childAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
-                    'label' => 'mbhpricebundle.form.tarifftype.rebenokdo',
-                    'group' => 'Настройки',
+                    'label' => 'mbhpricebundle.form.tarifftype.rebenok.do',
+                    'group' => 'configuration',
                     'required' => false,
                     'multiple' => false,
                     'choices' => range(0, 18),
                     'attr' => array('class' => 'input-xxs plain-html'),
-                    'help' => 'mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyarebenkom?'
+                    'help' => 'price.form.what_age_is_client_considered_child'
                 ]
             )
             ->add(
-                'infantAge',
-                'choice',
+                'infantAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
-                    'label' => 'mbhpricebundle.form.tarifftype.infantdo',
-                    'group' => 'Настройки',
+                    'label' => 'mbhpricebundle.form.tarifftype.infant.do',
+                    'group' => 'configuration',
                     'required' => false,
                     'multiple' => false,
                     'choices' => range(0, 18),
                     'attr' => array('class' => 'input-xxs plain-html'),
-                    'help' => 'mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyainfantom?'
+                    'help' => 'price.form.what_age_is_client_considered_infant'
                 ]
             )
             ->add('defaultForMerging', CheckboxType::class, [
-                'label' => 'mbhpricebundle.form.tarifftype.ispolʹzovatʹdlyakombinirovaniya?',
-                'group' => 'Настройки',
+                'label' => 'price.form.use_combination',
+                'group' => 'configuration',
                 'value' => true,
                 'required' => false,
-                'help' =>
-                    'Использовать для комбинирования тарифов в переходных периодах?<br>
-                     По-молчанию спец. тарифы комбинируются с основным тарифом'
+                'help' => 'mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help'
             ])
-            ->add('isEnabled', 'checkbox', [
-                'label' => 'mbhpricebundle.form.tarifftype.vklyuchen?',
-                'group' => 'Настройки',
+            ->add('position', NumberType::class, [
+                'label' => 'position',
+                'help' => 'position.help',
+                'group' => 'configuration',
+                'required' => true,
+                'attr' => [
+                    'class' => 'spinner-0',
+                ],
+            ])
+            ->add('isEnabled', CheckboxType::class, [
+                'label' => 'price.form.on',
+                'group' => 'configuration',
                 'value' => true,
                 'required' => false,
-                'help' => 'mbhpricebundle.form.tarifftype.ispolʹzuyetsyalitarifvpoiske?'
+                'help' => 'price.form.tariff_used_search'
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff'
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_pricebundle_tariff_main_type';
     }

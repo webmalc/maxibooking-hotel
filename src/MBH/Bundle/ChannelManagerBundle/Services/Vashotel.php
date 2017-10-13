@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -19,10 +20,26 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- *  ChannelManager service
+ *  Vashotel service
  */
-class Vashotel extends Base
+class Vashotel extends Base implements ChannelManagerServiceInterface
 {
+    const UNAVAIBLE_PRICES = [
+        'additionalChildrenPrice' => null,
+    ];
+
+    const UNAVAIBLE_RESTRICTIONS = [
+        'minStay' => null,
+        'maxStay' => null,
+        'minStayArrival' => null,
+        'maxStayArrival' => null,
+        'maxGuest' => null,
+        'minGuest' => null,
+        'minBeforeArrival' => null,
+        'maxBeforeArrival' => null,
+        'closedOnArrival' => null,
+        'closedOnDeparture' => null,
+    ];
 
     /**
      * Config class
@@ -32,11 +49,14 @@ class Vashotel extends Base
     /**
      * Config class
      */
-    const CANCEL_CONDITIONS = [
-        1 => 'Первые сутки проживания в забронированных номерах',
-        2 => 'Процент от стоимости проживания',
-        3 => 'Фиксированная стоимость за каждый забронированный номер'
-    ];
+    private function cancelConditions()
+    {
+        return [
+            1 => $this->container->get('translator')->trans('package.services.first_day_live_in_booking_rooms'),
+            2 => $this->container->get('translator')->trans('package.services.percent_of_price_liveing'),
+            3 => $this->container->get('translator')->trans('package.services.fixed_price_for_all_booking_room')
+        ];
+    }
 
     const SERVICES = [
         'Завтрак "Шведский стол"' => 'Buffet breakfast',
@@ -94,15 +114,9 @@ class Vashotel extends Base
      */
     const PUSH_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:push.xml.twig';
 
-    /**
-     * @var array
-     */
-    private $params;
-
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
-        $this->params = $container->getParameter('mbh.channelmanager.services')['vashotel'];
     }
 
     /**
@@ -128,7 +142,7 @@ class Vashotel extends Base
             $sig = $this->getSignature(
                 $this->templating->render(static::NOTIFICATIONS_TEMPLATE, $data),
                 $script,
-                $this->params['password']
+                $config->getPassword()
             );
             $data['sig'] = md5($sig);
 
@@ -138,7 +152,7 @@ class Vashotel extends Base
             );
             $this->log($response->asXML());
 
-            if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+            if (!$this->checkResponse($response, ['script' => $script, 'key' => $config->getPassword()])) {
                 continue;
             }
 
@@ -235,7 +249,6 @@ class Vashotel extends Base
         ksort($fields, SORT_STRING);
 
         foreach ($fields as $key => $field) {
-
             if (is_array($field)) {
                 $fields[$key] = $this->sortXmlArray($field);
             }
@@ -358,7 +371,6 @@ class Vashotel extends Base
         $services = $this->getServices($config);
 
         foreach ($this->getReservations($serviceIds, $config) as $id => $reservation) {
-
             //check status
             if (!in_array($reservation->status, ['ok', 'preliminary'])) {
                 continue;
@@ -434,7 +446,7 @@ class Vashotel extends Base
                 $comment .= 'Время заезда: ' . (string) $reservation->time_arrival . ". \n";
             }
             $cancelConditions = $reservation->cancel_conditions;
-            $cancelTypes = static::CANCEL_CONDITIONS;
+            $cancelTypes = $this->cancelConditions();
             if (!empty($cancelConditions) && !empty($cancelConditions->fine_type)) {
                 $comment .= 'Тип штрафа при аннуляции: ' . $cancelTypes[(int)$cancelConditions->fine_type] . ". \n";
                 if (!empty($cancelConditions->fine_cost)) {
@@ -457,7 +469,6 @@ class Vashotel extends Base
 
             $card = $reservation->credit_card;
             if ($type == 'credit_card_secured' && !empty($card)) {
-
                 $card = new CreditCard();
                 $card->setType($card->type)
                     ->setNumber($card->number)
@@ -521,7 +532,6 @@ class Vashotel extends Base
 
             //packages
             foreach ($reservation->rooms->room as $room) {
-
                 $corrupted = $corruptedTariff;
                 $errorMessage = $errorTariffMessage;
                 $guests = [];
@@ -547,7 +557,6 @@ class Vashotel extends Base
 
                 //guests
                 foreach ($room->guests->guest as $guestInfo) {
-
                     $lastname = (string)$guestInfo['lastname'];
                     $firstname = (string) $guestInfo['firstname'];
 
@@ -579,7 +588,9 @@ class Vashotel extends Base
                     $date = $helper->getDateFromString((string)$price['date'], 'Y-m-d');
                     $pricesByDate[$date->format('d_m_Y')] = (float)$price->price;
                     $packagePrices[] =  $packagePrices[] = new PackagePrice(
-                        $date, (float)$price->price, $tariff
+                        $date,
+                        (float)$price->price,
+                        $tariff
                     );
 
                     if ((string) $price->breakfast_included == 'yes') {
@@ -697,7 +708,8 @@ class Vashotel extends Base
                             ->setPersons($package->getAdults())
                             ->setPrice(0)
                             ->setTotalOverwrite(0)
-                            ->setPackage($package);;
+                            ->setPackage($package);
+                        ;
                         $this->dm->persist($breakfast);
                         $package->addService($breakfast);
                     }
@@ -713,7 +725,6 @@ class Vashotel extends Base
             }
 
             $this->notify($order, 'vashotel', $orderType);
-
         }
         return true;
     }
@@ -732,12 +743,11 @@ class Vashotel extends Base
         $result = [];
 
         foreach (array_chunk($serviceIds, 20) as $ids) {
-
             $data = ['config' => $config, 'salt' => $salt, 'sig' => null, 'ids' => $ids];
             $sig = $this->getSignature(
                 $this->templating->render(static::ORDERS_TEMPLATE, $data),
                 $script,
-                $this->params['password']
+                $config->getPassword()
             );
 
             $data['sig'] = md5($sig);
@@ -749,7 +759,7 @@ class Vashotel extends Base
 
             //$this->log($response->asXML());
 
-            if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+            if (!$this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()])) {
                 continue;
             }
 
@@ -771,7 +781,6 @@ class Vashotel extends Base
         $result = true;
 
         foreach ($this->pullTariffs($config) as $tariffId => $tariff) {
-
             if (!$tariff['changeQuan'] || !$tariff['isActive']) {
                 continue;
             }
@@ -791,7 +800,7 @@ class Vashotel extends Base
             $sig = $this->getSignature(
                 $this->templating->render(static::CLOSE_TEMPLATE, $data),
                 $script,
-                $this->params['password']
+                $config->getPassword()
             );
 
             $data['sig'] = md5($sig);
@@ -804,7 +813,7 @@ class Vashotel extends Base
             $this->log($response->asXML());
 
             if ($result) {
-                $result = $this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']]);
+                $result = $this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()]);
             }
         }
 
@@ -823,7 +832,7 @@ class Vashotel extends Base
         $sig = $this->getSignature(
             $this->templating->render(static::GET_TEMPLATE, $data),
             $script,
-            $this->params['password']
+            $config->getPassword()
         );
         $data['sig'] = md5($sig);
 
@@ -831,9 +840,6 @@ class Vashotel extends Base
 
         //$this->log($response->asXML());
 
-        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
-            return [];
-        }
         $result = [
             0 => [
                 "title" => 'Standard rate',
@@ -843,7 +849,15 @@ class Vashotel extends Base
             ]
         ];
 
+        if (!$this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()])) {
+            return $result;
+        }
+
         foreach ($response->xpath('rate') as $rate) {
+            if (!(int)$rate->id) {
+                continue;
+            }
+
             $result[(int)$rate->id] = [
                 'title' => (string)$rate->name,
                 'changePrice' => !!(int)$rate->changePrice,
@@ -867,7 +881,7 @@ class Vashotel extends Base
         $sig = $this->getSignature(
             $this->templating->render(static::GET_TEMPLATE, $data),
             $script,
-            $this->params['password']
+            $config->getPassword()
         );
         $data['sig'] = md5($sig);
 
@@ -875,7 +889,7 @@ class Vashotel extends Base
 
         //$this->log($response->asXML());
 
-        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+        if (!$this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()])) {
             return [];
         }
         $result = [];
@@ -903,19 +917,21 @@ class Vashotel extends Base
             $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
             $roomTypes = $this->getRoomTypes($config);
             $configTariffs = $this->getTariffs($config, true);
-            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                $begin,
-                $end,
-                $config->getHotel(),
-                $this->getRoomTypeArray($filterRoomType),
-                [],
-                true,
-                $this->roomManager->useCategories
-            );
+            $priceCachesCallback = function () use ($begin, $end, $config, $filterRoomType) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                    $begin,
+                    $end,
+                    $config->getHotel(),
+                    $this->getRoomTypeArray($filterRoomType),
+                    [],
+                    true,
+                    $this->roomManager->useCategories
+                );
+            };
+            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             //iterate tariffs
             foreach ($this->pullTariffs($config) as $tariffId => $tariff) {
-
                 if (!$tariff['changePrice'] || !$tariff['isActive'] || !isset($configTariffs[$tariffId])) {
                     continue;
                 }
@@ -923,13 +939,11 @@ class Vashotel extends Base
                 $tariffDoc = $configTariffs[$tariffId]['doc'];
 
                 foreach ($roomTypes as $roomTypeId => $roomType) {
-
                     $roomTypeId = $this->getRoomTypeArray($roomType['doc'])[0];
 
                     $data['rate'] = $tariffId;
 
                     foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-
                         $info = false;
 
                         if (isset($priceCaches[$roomTypeId][$tariffDoc->getId()][$day->format('d.m.Y')])) {
@@ -951,7 +965,7 @@ class Vashotel extends Base
                 $sig = $this->getSignature(
                     $this->templating->render(static::UPDATE_PRICES_TEMPLATE, $data),
                     $script,
-                    $this->params['password']
+                    $config->getPassword()
                 );
                 $data['sig'] = md5($sig);
 
@@ -965,7 +979,7 @@ class Vashotel extends Base
                 if ($result) {
                     $result = $this->checkResponse(
                         $response,
-                        ['script' => $script, 'key' => $this->params['password']]
+                        ['script' => $script, 'key' =>  $config->getPassword()]
                     );
                 }
             }
@@ -1020,7 +1034,6 @@ class Vashotel extends Base
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
-
             $salt = $this->helper->getRandomString(20);
             $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
             $roomTypes = $this->getRoomTypes($config);
@@ -1045,7 +1058,6 @@ class Vashotel extends Base
 
             //iterate tariffs
             foreach ($this->pullTariffs($config) as $tariffId => $tariff) {
-
                 if (!$tariff['changeQuan'] || !$tariff['isActive'] || !isset($configTariffs[$tariffId])) {
                     continue;
                 }
@@ -1060,16 +1072,14 @@ class Vashotel extends Base
                 );
 
                 foreach ($roomTypes as $roomTypeId => $roomType) {
-
                     $data['rate'] = $tariffId;
 
                     foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-
                         $info = false;
                         $restriction = null;
 
                         if (isset($tariffRoomCaches[$roomTypeId][$configTariffs[$tariffId]['doc']->getId(
-                            )][$day->format('d.m.Y')])) {
+                        )][$day->format('d.m.Y')])) {
                             $info = $tariffRoomCaches[$roomTypeId][$configTariffs[$tariffId]['doc']->getId(
                             )][$day->format('d.m.Y')];
                         } elseif (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
@@ -1077,12 +1087,11 @@ class Vashotel extends Base
                         }
 
                         if (isset($restrictions[$roomTypeId][$configTariffs[$tariffId]['doc']->getId(
-                            )][$day->format('d.m.Y')])) {
+                        )][$day->format('d.m.Y')])) {
                             $restriction = $restrictions[$roomTypeId][$configTariffs[$tariffId]['doc']->getId()][$day->format('d.m.Y')];
                         }
 
                         if ($info) {
-
                             if ($restriction && $restriction->getClosed()) {
                                 if ($tariffId) {
                                     $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
@@ -1110,7 +1119,7 @@ class Vashotel extends Base
                 $sig = $this->getSignature(
                     $this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data),
                     $script,
-                    $this->params['password']
+                    $config->getPassword()
                 );
                 $data['sig'] = md5($sig);
 
@@ -1124,7 +1133,7 @@ class Vashotel extends Base
                 if ($result) {
                     $result = $this->checkResponse(
                         $response,
-                        ['script' => $script, 'key' => $this->params['password']]
+                        ['script' => $script, 'key' =>  $config->getPassword()]
                     );
                 }
             }
@@ -1158,7 +1167,7 @@ class Vashotel extends Base
         $sig = $this->getSignature(
             $this->templating->render(static::PUSH_TEMPLATE, $data),
             $script,
-            $this->params['password']
+            $config->getPassword()
         );
         $data['sig'] = md5($sig);
 

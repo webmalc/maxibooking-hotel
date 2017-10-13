@@ -4,11 +4,11 @@ namespace MBH\Bundle\PackageBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
-use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 
 class OrderSubscriber implements EventSubscriber
 {
@@ -37,9 +37,79 @@ class OrderSubscriber implements EventSubscriber
     {
         return array(
             'prePersist',
-            'preRemove',
             'onFlush',
+            'preRemove'
         );
+    }
+
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     */
+    private function _removeCache(\DateTime $begin = null, \DateTime $end = null)
+    {
+        $cache = $this->container->get('mbh.cache');
+        $cache->clear('accommodation_rooms', $begin, $end);
+        $cache->clear('room_cache', $begin, $end);
+        $cache->clear('packages', $begin, $end);
+    }
+
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $entity = $args->getDocument();
+
+        //Delete packages from order
+        if ($entity instanceof Order)
+        {
+            foreach($entity->getPackages() as $package) {
+
+                foreach ($package->getServices() as $packageService) {
+                    $packageService->setDeletedAt(new \DateTime());
+                    $dm->persist($packageService);
+                }
+                while ($lastAccommodation = $package->getLastAccommodation()) {
+                    $dm->remove($lastAccommodation);
+                }
+                $package->setServicesPrice(0);
+                $package->setDeletedAt(new \DateTime());
+                $dm->persist($package);
+                $end = clone $package->getEnd();
+                $this->container->get('mbh.room.cache')->recalculate(
+                    $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff(), false
+                );
+            }
+            $entity->setPrice(0);
+            $dm->persist($entity);
+            $dm->flush();
+
+            foreach($entity->getPackages() as $package) {
+                if ($package->getSpecial()) {
+                    $dm = $args->getDocumentManager();
+                    $dm->getRepository('MBHPriceBundle:Special')->recalculate($package->getSpecial(), $package);
+                }
+            }
+
+            $this->_removeCache();
+
+            $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
+        }
+
+        //Calc paid
+        if($entity instanceof CashDocument && $entity->getOrder()) {
+            $order = $entity->getOrder();
+            $this->container->get('mbh.calculation')->setPaid($order, null, $entity);
+            $dm->persist($order);
+            $dm->flush();
+        }
+
+        //Calc order price
+        if($entity instanceof Package) {
+            $order = $entity->getOrder()->calcPrice($entity);
+            $dm->persist($order);
+            $dm->flush();
+        }
     }
 
 
@@ -89,12 +159,14 @@ class OrderSubscriber implements EventSubscriber
                                 ->addRecipient($entity->getPayer())
                                 ->setLink('hide')
                                 ->setSignature('mailer.online.user.signature')
+                                ->setMessageType(NotificationType::CONFIRM_ORDER_TYPE)
                             ;
                             $notifier
                                 ->setMessage($message)
                                 ->notify()
                             ;
 
+                            //TODO: Must be logged
                         } catch (\Exception $e) {
                             return false;
                         }
@@ -119,70 +191,13 @@ class OrderSubscriber implements EventSubscriber
                 $dm->persist($order);
                 $meta = $dm->getClassMetadata(get_class($order));
                 $uow->recomputeSingleDocumentChangeSet($meta, $order);
-                
+
                 if (isset($uow->getDocumentChangeSet($entity)['accommodation'])) {
                     $this->container->get('mbh.cache')->clear('accommodation_rooms');
                 }
-                $this->container->get('mbh.cache')->clear('room_cache_fetch');
+                $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
             }
 
-        }
-    }
-
-    public function preRemove(LifecycleEventArgs $args)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-        $entity = $args->getEntity();
-
-        //Delete packages from order
-        if ($entity instanceof Order)
-        {
-            foreach($entity->getPackages() as $package) {
-
-                foreach ($package->getServices() as $packageService) {
-                    $packageService->setDeletedAt(new \DateTime());
-                    $dm->persist($packageService);
-                }
-
-                $package->setServicesPrice(0);
-                $package->setDeletedAt(new \DateTime());
-                $dm->persist($package);
-                $end = clone $package->getEnd();
-                $this->container->get('mbh.room.cache')->recalculate(
-                    $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff(), false
-                );
-                $this->container->get('mbh.cache')->clear('accommodation_rooms');
-                $this->container->get('mbh.cache')->clear('room_cache_fetch');
-            }
-            $entity->setPrice(0);
-            $dm->persist($entity);
-            $dm->flush();
-
-            $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
-        }
-
-        //Calc paid
-        if($entity instanceof CashDocument && $entity->getOrder()) {
-            try {
-                $order = $entity->getOrder();
-                $this->container->get('mbh.calculation')->setPaid($order, null, $entity);
-                $dm->persist($order);
-                $dm->flush();
-            } catch (\Exception $e) {
-
-            }
-        }
-
-        //Calc order price
-        if($entity instanceof Package) {
-            try {
-                $order = $entity->getOrder()->calcPrice($entity);
-                $dm->persist($order);
-                $dm->flush();
-            } catch (\Exception $e) {
-
-            }
         }
     }
 
@@ -199,5 +214,19 @@ class OrderSubscriber implements EventSubscriber
         if ($entity instanceof Package) {
             $entity->getOrder()->calcPrice();
         }
+
+        if ($entity instanceof Order) {
+
+            $code = $entity->getStatus() != 'channel_manager' ? $entity->getStatus() : $entity->getChannelManagerType();
+
+            if ($code) {
+                /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+                $dm = $this->container->get('doctrine_mongodb')->getManager();
+                $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(['code' => $code]);
+                $entity->setSource($source);
+            }
+
+        }
+
     }
 }

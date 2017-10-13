@@ -3,11 +3,16 @@
 namespace MBH\Bundle\BaseBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Gedmo\Tool\Wrapper\MongoDocumentWrapper;
+use Doctrine\ODM\MongoDB\Cursor;
 
 /**
  * Base Controller
@@ -30,6 +35,11 @@ class BaseController extends Controller
      */
     protected $helper;
 
+    /**
+     * @var ClientConfig
+     */
+    protected $clientConfig;
+
     public function setContainer(ContainerInterface $container = null)
     {
         parent::setContainer($container);
@@ -37,6 +47,7 @@ class BaseController extends Controller
         $this->dm = $this->get('doctrine_mongodb')->getManager();
         $this->hotel = $this->get('mbh.hotel.selector')->getSelected();
         $this->helper = $this->get('mbh.helper');
+        $this->clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
     /**
@@ -64,13 +75,26 @@ class BaseController extends Controller
             return null;
         }
 
-        $logs = $this->dm->getRepository('Gedmo\Loggable\Document\LogEntry')->getLogEntries($entity);
+        $repo = $this->dm->getRepository('Gedmo\Loggable\Document\LogEntry');
+
+        $wrapped = new MongoDocumentWrapper($entity, $this->dm);
+        $objectId = $wrapped->getIdentifier();
+        $qb = $repo->createQueryBuilder();
+        $qb->field('objectId')->equals($objectId);
+        $qb->field('objectClass')->equals($wrapped->getMetadata()->name);
+        $qb->limit($this->container->getParameter('mbh.logs.max'));
+        $qb->sort('version', 'DESC');
+        $q = $qb->getQuery();
+        $logs = $q->execute();
+        if ($logs instanceof Cursor) {
+            $logs = $logs->toArray();
+        }
 
         if (empty($logs)) {
             return null;
         }
 
-        return array_slice($logs, 0, $this->container->getParameter('mbh.logs.max'));
+        return $logs;
     }
 
     /**
@@ -132,7 +156,6 @@ class BaseController extends Controller
 
             $this->getRequest()->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.baseController.delete_record_success'));
-
         } catch (DeleteException $e) {
             $this->getRequest()->getSession()->getFlashBag()
                 ->set('danger', $this->get('translator')->trans($e->getMessage(), ['%total%' => $e->total]));
@@ -147,6 +170,8 @@ class BaseController extends Controller
         $locale = $request->get('locale');
         if ($locale) {
             $this->setLocale($locale);
+        } else {
+            $this->setLocale($this->getParameter('locale'));
         }
     }
 
@@ -155,5 +180,13 @@ class BaseController extends Controller
         $request = $this->get('request_stack')->getCurrentRequest();
         $request->setLocale($locale);
         $this->get('translator')->setLocale($request->getLocale());
+    }
+
+    /**
+     * @return null|\Symfony\Component\HttpFoundation\Request
+     */
+    protected function getRequest()
+    {
+        return $this->get('request_stack')->getCurrentRequest();
     }
 }

@@ -3,18 +3,18 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 
 /**
@@ -53,7 +53,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
                 $options['tourists'] = $this->dm->getRepository('MBHPackageBundle:Tourist')->getForeignTouristsByPackage($entity);
             }
             $form = $generatorFactory->createFormByType($type, $options);
-            $form->submit($request);
+            $form->handleRequest($request);
             if ($form->isValid()) {
                 $formData = $form->getData();
             } else {
@@ -85,7 +85,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
         if($type == XlsGeneratorFactory::TYPE_NOTICE) {
             $options['tourists'] = $this->dm->getRepository('MBHPackageBundle:Tourist')->getForeignTouristsByPackage($entity);
             if(empty($options['tourists'])) {
-                $error = 'В данной брони нет иностранных граждан';
+                $error = $this->get('translator')->trans('controller.generated_document_controller.document_modal_form.package_has_not_foreign');
             }
         }
 
@@ -123,11 +123,14 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
      */
     public function stampAction(Organization $entity)
     {
-        if (!$entity->getStamp()) {
+        /** @var string|null $client */
+        $client = $this->container->get('kernel')->getClient();
+
+        if (!$entity->getStamp($client)) {
             throw $this->createNotFoundException();
         }
 
-        $fp = fopen($entity->getStamp()->getPathname(), "rb");
+        $fp = fopen($entity->getStamp($client)->getPathname(), "rb");
         $str = stream_get_contents($fp);
         fclose($fp);
 
@@ -137,7 +140,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
         $str = $binary->getContent();*/
 
         $response = new Response($str, 200);
-        $response->headers->set('Content-Type', $entity->getStamp()->getMimeType());
+        $response->headers->set('Content-Type', $entity->getStamp($client)->getMimeType());
 
         return $response;
     }

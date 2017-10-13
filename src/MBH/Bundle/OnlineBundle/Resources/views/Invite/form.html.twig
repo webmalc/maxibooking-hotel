@@ -15,28 +15,28 @@
 
 {{ form_start(form, {'attr': {'id': 'mbvi-form-wrapper'}}) }}
 <div id="mbvi-navigation-wrapper">
-    <div class="mbvi-navigation-item active" data-step="1"><i class="fa fa-check-square-o"></i> {{ 'mbhonlinebundle.view.invite.form.informatsiyaogostyakhivize'|trans }} </div>
-    <div class="mbvi-navigation-item current" data-step="2"><i class="fa fa-edit"></i> {{ 'mbhonlinebundle.view.invite.form.mestaposeshcheniya'|trans }} </div>
-    <div class="mbvi-navigation-item disable" data-step="3"><i class="fa fa-square-o"></i> {{ 'mbhonlinebundle.view.invite.form.oplatazayavki'|trans }} </div>
-    <div class="mbvi-navigation-item disable" data-step="4"><i class="fa fa-square-o"></i> {{ 'mbhonlinebundle.view.invite.form.polucheniyepriglasheniya'|trans }} </div>
+    <div class="mbvi-navigation-item active" data-step="1"><i class="fa fa-check-square-o"></i> {{ 'invite.form.info_about_guests_and_visa'|trans}}</div>
+    <div class="mbvi-navigation-item current" data-step="2"><i class="fa fa-edit"></i> {{ 'invite.form.places_to_visit'|trans}}</div>
+    <div class="mbvi-navigation-item disable" data-step="3"><i class="fa fa-square-o"></i> {{ 'invite.form.payment'|trans}}</div>
+    <div class="mbvi-navigation-item disable" data-step="4"><i class="fa fa-square-o"></i> {{ 'invite.form.receiving_of_invitation'|trans}}</div>
 </div>
 
 
 
 <div class="step" id="step-1-content">
-    <h4><i class="fa fa-calendar fa-lg"></i>&nbsp; {{ 'mbhonlinebundle.view.invite.form.datypoyezdki'|trans }} <i class="fa fa-check-square-o fa-lg"
+    <h4><i class="fa fa-calendar fa-lg"></i>&nbsp; {{ 'invite.form.dates_of_trip'|trans}}<i class="fa fa-check-square-o fa-lg"
                                                                   style="margin-top:4px;float:right;"></i></h4>
     <div class="mbvi-form-block mbvi-form-block-odd">
 
         <div class="mbvi-form-group">
-            <label for="input1" class="mbvi-form-span3 control-label">{{ 'mbhonlinebundle.view.invite.form.datypoyezdki'|trans }} </label>
+            <label for="input1" class="mbvi-form-span3 control-label">{{ 'invite.form.dates_of_trip'|trans}}</label>
 
             <div class="mbvi-form-span4">
                 <div style="white-space:nowrap;">
                     {{ form_widget(form.arrival, {attr: {class: 'ib'}}) }}
                     <small class="help-block ib">&mdash;</small>
                 </div>
-                <small class="help-block"><i class="fa fa-suitcase"></i>&nbsp;  {{ 'mbhonlinebundle.view.invite.form.dney'|trans }} </small>
+                <small class="help-block"><i class="fa fa-suitcase"></i>&nbsp; {{ 'invite.form.number_of_days'|trans({"%number_of_days%" : 6})}}</small>
                 {{ form_errors(form.arrival) }}
             </div>
             <div class="mbvi-form-span4">
@@ -45,7 +45,7 @@
             {{ form_errors(form.departure) }}
         </div>
         <div class="mbvi-form-group">
-            <label for="" class="mbvi-form-span3 control-label">{{ 'mbhonlinebundle.view.invite.form.tipvizy'|trans }} </label>
+            <label for="" class="mbvi-form-span3 control-label">{{ 'invite.form.visa_type'|trans}}</label>
 
             <div class="mbvi-form-span9">
                 {{ form_widget(form.type) }}
@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <h4><i class="fa fa-group fa-lg"></i>&nbsp; {{ 'mbhonlinebundle.view.invite.form.svedeniyaopersonakh'|trans }} <i class="fa fa-square-o fa-lg"
+    <h4><i class="fa fa-group fa-lg"></i>&nbsp; {{ 'invite.form.persons_information'|trans}}<i class="fa fa-square-o fa-lg"
                                                                       style="margin-top:4px;float:right;"></i></h4>
 
     <div id="guests-field">
@@ -63,13 +63,13 @@
                     <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ loop.index }}">
                         <i class="glyphicon {% if guestForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
                         {#<i class="fa {% if guestForm.vars.errors %}errors{% endif %} fa-edit"></i>#}
-                        &nbsp; {{ loop.index }} {{ 'mbhonlinebundle.view.invite.form.persona'|trans }} 
+                        &nbsp; {{ 'invite.form.number_of_persons'|trans({"%number_of_persons%" : loop.index})}}
                     </a>
                 </li>
             {% endfor %}
             <li>
                 <a class="add-tab" href="#">
-                    <i class="fa fa-plus"></i> {{ 'mbhonlinebundle.view.invite.form.dobavitʹ'|trans }} 
+                    <i class="fa fa-plus"></i> {{ 'invite.form.add'|trans}}
                 </a>
             </li>
         </ul>
@@ -84,7 +84,7 @@
 </div>
 
 <div class="step" id="step-2-content">
-    <h4><i class="fa fa-calendar fa-lg"></i>&nbsp; {{ 'mbhonlinebundle.view.invite.form.marshrutpoyezdki'|trans }} <i class="fa fa-check-square-o fa-lg"
+    <h4><i class="fa fa-calendar fa-lg"></i>&nbsp; {{ 'invite.form.route_of_trip'|trans}}<i class="fa fa-check-square-o fa-lg"
                                                                      style="margin-top:4px;float:right;"></i></h4>
 
     <div id="city-field">
@@ -93,13 +93,13 @@
                 <li class="{% if loop.index == 1 %}active{% endif %}">
                     <a data-toggle="tab" class="{% if not routeForm.vars.valid %}errors{% endif %}" href="#city_{{ loop.index }}">
                         <i class="glyphicon {% if routeForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
-                        &nbsp; {{ loop.index }} {{ 'mbhonlinebundle.view.invite.form.gorod'|trans }} 
+                        &nbsp; {{ loop.index }} {{ 'invite.form.city'|trans}}
                     </a>
                 </li>
             {% endfor %}
             <li>
                 <a class="add-tab" href="#">
-                    <i class="fa fa-plus"></i> {{ 'mbhonlinebundle.view.invite.form.dobavitʹ'|trans }} 
+                    <i class="fa fa-plus"></i> {{ 'invite.form.add'|trans}}
                 </a>
             </li>
         </ul>
@@ -114,8 +114,8 @@
 </div>
 
 <div style="margin-top:20px;">
-    <button type="button" class="button back" style="display: inline-block; margin: 0 5px">{{ 'mbhonlinebundle.view.invite.form.nazad'|trans }} </button>
-    <button type="submit" class="button" style="display: inline-block">{{ 'mbhonlinebundle.view.invite.form.prodolzhitʹ'|trans }} </button>
+    <button type="button" class="button back" style="display: inline-block; margin: 0 5px">{{ 'invite.form.back'|trans}}</button>
+    <button type="submit" class="button" style="display: inline-block">{{ 'invite.form.continue'|trans}}</button>
 </div>
 {{ form_widget(form._token) }}
 {{ form_end(form, {render_rest: false}) }}
@@ -190,7 +190,7 @@
     var Tabs = function ($element, $prototypeTab) {
         this.$element = $element;
         this.$prototypeTab = $prototypeTab;
-        this.title = '{{ 'mbhonlinebundle.view.invite.form.vkladka'|trans }} ';
+        this.title = '{{ 'invite.form.tab'|trans }}';
 
         this.getElements = function() {
             return this.getLiElements().find('a[data-toggle=tab]')
@@ -302,7 +302,7 @@
         var $guestsNavTabs = $guestsField.find('.nav.nav-tabs');
 
         var guestTabs = new Tabs($guestsNavTabs, $guestsNavTabs.find('li:first').clone().removeClass("active"));
-        guestTabs.title = '{{ 'mbhonlinebundle.view.invite.form.persona'|trans }} ';
+        guestTabs.title = '{{ 'invite.form.person'|trans }}';
         var addGuestButton = new AddButton($guestsField.find('.add-tab'));
 
         var prototypeGuestForm = '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>';
@@ -319,7 +319,7 @@
 
         var $cityNavTabs = $cityField.find('.nav.nav-tabs');
         var cityTabs = new Tabs($cityNavTabs, $cityNavTabs.find('li:first').clone().removeClass("active"));
-        cityTabs.title = '{{ 'mbhonlinebundle.view.invite.form.gorod'|trans }} ';
+        cityTabs.title = '{{ 'invite.form.city'|trans }}';
         var addCityButton = new AddButton($cityField.find('.add-tab'));
 
         var prototypeCityForm = '<div class="tab-pane">{{ form_widget(form.tripRoutes.vars.prototype)|replace({"\n":''})|raw }}</div>';

@@ -2,24 +2,24 @@
 
 namespace MBH\Bundle\CashBundle\Controller;
 
+use GuzzleHttp\Client;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\CashBundle\DataFixtures\MongoDB\CashDocumentArticleData;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentArticle;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
+use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\CashBundle\Form\NewCashDocumentType;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
-use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -42,7 +42,7 @@ class CashController extends Controller
         $methods = $this->container->getParameter('mbh.cash.methods');
 
         $methods = array_slice($methods, 0, 2, true) +
-            ['cashless_electronic' => "Безнал (в т.ч. электронные)"] +
+            ['cashless_electronic' => $this->container->get('translator')->trans("controller.cashController.beznal.v.tom.chisle.electronnie")] +
             array_slice($methods, 2, count($methods) - 1, true);
 
         $queryCriteria = new CashDocumentQueryCriteria();
@@ -119,7 +119,9 @@ class CashController extends Controller
             $params['noConfirmedTotalOut'] = $repository->total('out', $queryCriteria);
         }
 
-        $this->dm->getFilterCollection()->enable('softdeleteable');
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
 
         if ($isByDay) {
             return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', $params + ['data' => $results]);
@@ -174,7 +176,8 @@ class CashController extends Controller
 
         $queryCriteria->filterByRange = empty($request->get('filter')) ? 'paidDate' : $request->get('filter');
 
-        $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
+        // TODO: Add acl
+        //$queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
 
         $queryCriteria->deleted = $request->get('deleted');
 
@@ -255,7 +258,7 @@ class CashController extends Controller
 
     /**
      * @Route("/new", name="cash_new")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_CASH_NEW')")
      * @Template()
      */
@@ -264,15 +267,16 @@ class CashController extends Controller
         $cashDocument = new CashDocument();
         $cashDocument->setMethod('cash');
 
-        $form = $this->createForm(new NewCashDocumentType($this->dm), $cashDocument, [
+        $form = $this->createForm(NewCashDocumentType::class, $cashDocument, [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
             'payers' => [],
-            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
+            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER'),
+            'dm' => $this->dm
         ]);
 
-        if ($request->isMethod("PUT")) {
-            $form->submit($request);
+        if ($request->isMethod("POST")) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($cashDocument);
@@ -309,7 +313,7 @@ class CashController extends Controller
 
     /**
      * @Route("/{id}/edit", name="cash_edit")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_CASH_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
@@ -326,12 +330,13 @@ class CashController extends Controller
 
         //$cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
-        $formType = $cashDocument->getOrder() ? new CashDocumentType($this->dm) : new NewCashDocumentType($this->dm);
+        $formType = $cashDocument->getOrder() ? CashDocumentType::class : NewCashDocumentType::class;
 
         $options = [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
+            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER'),
+            'dm' => $this->dm
         ];
         if($cashDocument->getOrder()) {
             $cashDocumentRepository = $this->dm->getRepository(CashDocument::class);
@@ -339,8 +344,8 @@ class CashController extends Controller
         }
         $form = $this->createForm($formType, $cashDocument, $options);
 
-        if ($request->isMethod("PUT")) {
-            $form->submit($request);
+        if ($request->isMethod("POST")) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($cashDocument);
@@ -432,15 +437,13 @@ class CashController extends Controller
         $uniteller = $clientConfig->getPaymentSystemDoc();
 
         try {
-            $request = $this->get('guzzle.client')
-                ->post(Uniteller::DO_CHECK_URL)
-                ->addPostFields($uniteller->getCheckPaymentData($entity))
-                ->send();
+
+            $client = new Client();
+            $client->post(Uniteller::DO_CHECK_URL, ['form_params' => $uniteller->getCheckPaymentData($entity)]);
 
         } catch (Exception $e) {
             throw $this->createNotFoundException();
         }
-        exit();
     }
 
     /**

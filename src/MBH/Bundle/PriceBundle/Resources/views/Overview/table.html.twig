@@ -28,10 +28,10 @@
                 </tr>
 
                 {% set categories = {
-                    'rooms': 'mbhpricebundle.view.overview.table.nomeravprodazhe'|trans,
-                    'tariff_rooms': 'mbhpricebundle.view.overview.table.kvotypotarifam'|trans,
-                    'prices': 'mbhpricebundle.view.overview.table.tseny'|trans,
-                    'restrictions': 'mbhpricebundle.view.overview.table.usloviyaiogranicheniya'|trans,
+                    'rooms': 'price.views.overview.tabla.rooms'|trans({},'MBHPriceBundle'),
+                    'tariff_rooms': 'price.views.overview.tabla.tariff_rooms'|trans({},'MBHPriceBundle'),
+                    'prices': 'price.views.overview.tabla.prices'|trans({},'MBHPriceBundle'),
+                    'restrictions': 'price.views.overview.tabla.restriction'|trans({},'MBHPriceBundle'),
                 }%}
 
                 {% for categoryId, category in categories %}
@@ -114,4 +114,39 @@
         {% endfor %}
         </tbody>
     </table>
+    
+    {% if channelManager|length %}
+    {% set categories = {
+        'prices': 'prices',
+        'restrictions': 'restrictions',
+    }%}
+    <table id="channelmanager-overview-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+        <tbody>
+        {% for service in channelManager %}
+        {% set period = service.period %}
+        <tr class="mbh-grid-header1 info">
+            <td colspan="{{ period|length + 1 }}"><strong>{{ service.name }}</strong></td>
+        </tr>
+        <tr class="header">
+            <td class="first-th"></td>
+            {% for date in period %}
+                <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+            {% endfor %}
+        </tr>
+
+        {% for category in categories %}
+        <tr>
+            <td class="first-td"><small>{{ category|trans }}</small></td>
+            {% for date in period %}
+                {% set error = attribute(service, category, [date])  %}
+                <td class="content {{ date|date('N') >= 6 ? 'weekend'}} {{ error ? 'alert'}}" data-id="{{ date|date('d.m.Y') }}">
+                    <small class="{{ error is empty ? 'opacity-md'}}"><i {% if error is not empty %}title="{% for e in error %}{{ e.message }}<br>{% endfor %}" data-toggle='tooltip' data-html="true" data-placement="top" {% endif %} class="fa {{ error is empty ? 'fa-check text-success' : 'fa-question text-danger fa-lg'}}"></i></small>
+                </td>
+            {% endfor %}
+        </tr> 
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 {% endif %}

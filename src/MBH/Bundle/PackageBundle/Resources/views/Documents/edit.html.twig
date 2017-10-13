@@ -9,7 +9,7 @@
 {% block content %}
 
         {% if entity.deletedAt is empty %}
-            {{ form_start(form, {'action': path('order_document_edit', {'id': entity.id, 'name': document.name, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+            {{ form_start(form, {'action': path('order_document_edit', {'id': entity.id, 'name': document.name, 'packageId': package.id}),  'attr': {'class': 'form-horizontal' }}) }}
             {{ form_widget(form) }}
             {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_DOCUMENTS'} %}
             {{ form_end(form) }}

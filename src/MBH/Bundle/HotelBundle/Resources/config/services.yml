@@ -1,12 +1,12 @@
 services:
     mbh.check_hotel.action_listener:
         class: MBH\Bundle\HotelBundle\EventListener\CheckHotelListener
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     mbh.hotel.task.subscriber:
         class: MBH\Bundle\HotelBundle\EventListener\TaskSubscriber
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
     mbh.hotel.facility.subscriber:
@@ -22,21 +22,21 @@ services:
 
     mbh.hotel.room.subscriber:
                 class: MBH\Bundle\HotelBundle\EventListener\RoomSubscriber
-                arguments: [@service_container]
+                arguments: ['@service_container']
                 tags:
                     - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.hotel.auto_task_creator:
             class: MBH\Bundle\HotelBundle\Service\AutoTaskCreator
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.hotel.room_type_manager:
                 class: MBH\Bundle\HotelBundle\Service\RoomTypeManager
-                arguments: [@service_container]
+                arguments: ['@service_container']
 
     mbh.hotel.console_auto_task_creator:
             class: MBH\Bundle\HotelBundle\Service\ConsoleAutoTaskCreator
-            arguments: [@service_container]
+            arguments: ['@service_container']
     mbh.facility_repository:
         class: MBH\Bundle\HotelBundle\Document\FacilityRepository
         calls:
@@ -44,8 +44,7 @@ services:
 
     mbh.hotel.task_repository:
         class: MBH\Bundle\HotelBundle\Document\TaskRepository
-        factory_service: doctrine_mongodb.odm.default_document_manager
-        factory_method: getRepository
+        factory: ['@doctrine_mongodb.odm.default_document_manager', getRepository]
         arguments:
             - MBH\Bundle\HotelBundle\Document\Task
         calls:
@@ -53,4 +52,46 @@ services:
 
     mbh.hotel.hotel_manager:
         class: MBH\Bundle\HotelBundle\Service\HotelManager
-        arguments: [@service_container]
+        arguments: ['@service_container']
+
+    mbh_bundle_hotel.form.search_task_type:
+        class: MBH\Bundle\HotelBundle\Form\SearchTaskType
+        arguments: ['@service_container']
+        tags:
+            - { name: form.type, alias: MBH\Bundle\HotelBundle\Form\SearchTaskType }
+
+    mbh.hotel_contact_information:
+        class: MBH\Bundle\HotelBundle\Form\HotelContactInformationType
+        arguments: ['@doctrine.odm.mongodb.document_manager']
+        tags:
+            - { name: form.type}
+
+    mbh.hotel.extended_type:
+        class: MBH\Bundle\HotelBundle\Form\HotelExtendedType
+        arguments: ['@doctrine_mongodb.odm.document_manager', '%mbh.smoking_policy%']
+        tags:
+            - { name: form.type}
+
+    mbh.room_form:
+        class: MBH\Bundle\HotelBundle\Form\RoomType
+        arguments: ['@translator.default']
+        tags:
+            - { name: form.type}
+
+    mbh.room_type_form:
+        class: MBH\Bundle\HotelBundle\Form\RoomTypeType
+        arguments: ['@translator.default']
+        tags:
+            - { name: form.type}
+
+    mbh.task_type:
+        class: MBH\Bundle\HotelBundle\Form\TaskType
+        arguments: ['@mbh.helper', '@doctrine_mongodb.odm.document_manager']
+        tags:
+            - {name: form.type}
+
+    mbh.daily_task_type:
+        class: MBH\Bundle\HotelBundle\Form\DailyTaskType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}

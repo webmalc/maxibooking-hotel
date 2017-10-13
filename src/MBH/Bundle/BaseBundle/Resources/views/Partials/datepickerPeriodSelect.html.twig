@@ -3,19 +3,19 @@
     <select class="datepicker-period-select" data-placeholder="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }} " placeholder="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }} ">
         <option></option>
         <option value="{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}-{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}">
-            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.vchera'|trans }} 
+            {{ 'mbhbasebundle.views.partials.yesterday'|trans }}
         </option>
         <option value="{{ 'now'|date('d.m.Y') }}-{{ 'now'|date('d.m.Y') }}">
-            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.segodnya'|trans }} 
+            {{ 'mbhbasebundle.views.partials.today'|trans }}
         </option>
         <option value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}-{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
-            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.zavtra'|trans }} 
+            {{ 'mbhbasebundle.views.partials.tomorrow'|trans }}
         </option>
         <option value="{{ 'now'|date_modify('-7 days')|date('d.m.Y') }}-{{ 'now'|date('d.m.Y') }}">
-            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.nedelya'|trans }} 
+            {{ 'mbhbasebundle.views.partials.week'|trans }}
         </option>
         <option value="{{ 'now'|date_modify('-1 month')|date('d.m.Y') }}-{{ 'now'|date('d.m.Y') }}">
-            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.mesyats'|trans }} 
+            {{ 'mbhbasebundle.views.partials.month'|trans }}
         </option>
     </select>
 </div>

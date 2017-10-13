@@ -4,8 +4,10 @@ namespace MBH\Bundle\PackageBundle\Document\Criteria;
 
 use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 
 /**
  * Class PackageQueryCriteria
@@ -66,9 +68,9 @@ class PackageQueryCriteria extends AbstractQueryCriteria
      */
     public $packageOrders;
     /**
-     * @var RoomType
+     * @var array
      */
-    public $roomType;
+    private $roomTypes;
     /**
      * @var bool
      */
@@ -103,4 +105,69 @@ class PackageQueryCriteria extends AbstractQueryCriteria
      * @var bool
      */
     public $deleted = false;
+
+    private $accommodations = [];
+
+    private $isWithoutAccommodation = false;
+
+    /**
+     * @param $roomTypeCriteria
+     * @return PackageQueryCriteria
+     */
+    public function addRoomTypeCriteria($roomTypeCriteria)
+    {
+        if ($roomTypeCriteria instanceof RoomType)
+        {
+            $this->roomTypes[] = $roomTypeCriteria->getId();
+        } else {
+            $this->roomTypes[] = $roomTypeCriteria;
+        }
+
+        return $this;
+    }
+
+    public function addAccommodation($accommodation)
+    {
+        if ($accommodation instanceof PackageAccommodation) {
+            $this->accommodations[] = $accommodation->getAccommodation()->getId();
+        } elseif ($accommodation instanceof Room) {
+            $this->accommodations[] = $accommodation->getId();
+        } elseif (is_string($accommodation)) {
+            $this->accommodations[] = $accommodation;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAccommodations()
+    {
+        return $this->accommodations;
+    }
+
+    public function getRoomTypeIds()
+    {
+        return $this->roomTypes;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isWithoutAccommodation() : bool
+    {
+        return $this->isWithoutAccommodation;
+    }
+
+    /**
+     * @param boolean $isWithoutAccommodation
+     * @return PackageQueryCriteria
+     */
+    public function setIsWithoutAccommodation(bool $isWithoutAccommodation) : PackageQueryCriteria
+    {
+        $this->isWithoutAccommodation = $isWithoutAccommodation;
+
+        return $this;
+    }
 }

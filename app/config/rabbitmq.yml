@@ -1,0 +1,36 @@
+#rabbitmq
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     "%rabbitmq_host%"
+            port:     "%rabbitmq_port%"
+            user:     "%rabbitmq_user%"
+            password: "%rabbitmq_password%"
+            vhost:    "%rabbitmq_vhost%"
+            lazy:     false
+            connection_timeout: 3
+            read_write_timeout: 3
+            keepalive: true
+            heartbeat: 0
+            use_socket: false
+    producers:
+      task_command_runner:
+        connection:       default
+        exchange_options: {name: 'task_command_runner', type: direct}
+      task_cache_recalculate:
+              connection:       default
+              exchange_options: {name: 'task_cache_recalculate', type: direct}
+
+    consumers:
+      task_command_runner:
+        connection:       default
+        exchange_options: {name: 'task_command_runner', type: direct}
+        queue_options:    {name: 'task_command_runner'}
+        callback:         task_command_runner
+        # idle_timeout:     10
+      task_cache_recalculate:
+              connection:       default
+              exchange_options: {name: 'task_cache_recalculate', type: direct}
+              queue_options:    {name: 'task_cache_recalculate'}
+              callback:         task_command_runner
+              # idle_timeout:     10

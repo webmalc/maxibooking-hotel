@@ -2,17 +2,19 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 
 /**
  * @ODM\Document(collection="PackageService")
  * @Gedmo\Loggable
+ * @MBHValidator\PackageService
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
@@ -66,13 +68,39 @@ class PackageService extends Base
     protected $price;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $recalcWithPackage = false;
+    
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $includeArrival;
+    
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $includeDeparture;
+
+    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      */
     protected $total;
-
 
     /**
      * @var int
@@ -170,13 +198,13 @@ class PackageService extends Base
     public function getActuallyAmount()
     {
         $type = $this->getService()->getCalcType();
-        if($type == 'per_stay') {
+        if ($type == 'per_stay') {
             return $this->getAmount() * $this->getPersons();
         }
-        if($type == 'per_night') {
+        if ($type == 'per_night') {
             return $this->getPersons() * $this->getNights() * $this->getAmount();
         }
-        if($type == 'not_applicable' or $type == 'day_percent') {
+        if ($type == 'not_applicable' or $type == 'day_percent') {
             return $this->getAmount();
         }
 
@@ -287,7 +315,6 @@ class PackageService extends Base
         }
 
         return $result;
-
     }
 
     public function getCalcType()
@@ -413,28 +440,77 @@ class PackageService extends Base
     public function setDefaults()
     {
         $service  = $this->getService();
-        if ($service->getCalcType() == 'per_stay') {
+        $calcType = $service->getCalcType();
+
+        if ($calcType == 'per_stay' || !$this->getNights()) {
             $this->setNights(1);
         }
-        if (in_array($service->getCalcType(),  ['not_applicable', 'day_percent'])) {
+
+        if (in_array($calcType, ['not_applicable', 'day_percent'])) {
             $this->setNights(1);
             $this->setPersons(1);
         }
-        if (!$this->getBegin() || !$service->getDate()) {
-            $this->setBegin($this->getPackage()->getBegin());
+
+        if (!$this->getPersons()) {
+            $this->setPersons(1);
         }
+        
         if (!$service->getTime()) {
             $this->setTime(null);
         }
-        $end = clone $this->getBegin();
-        if (!$service->getDate()) {
-            $end->modify('+' . $this->getNights() . ' days');
+
+        if ($calcType != 'per_stay') {
+            if (!$this->getBegin() || !$service->getDate()) {
+                $this->setBegin($this->getPackage()->getBegin());
+            }
+            $end = clone $this->getBegin();
+            if (!$service->getDate()) {
+                $end->modify('+' . $this->getNights() . ' days');
+            }
+            $this->setEnd($end);
+        } else {
+            if (!$this->getBegin()) {
+                $this->setBegin($this->calcBegin());
+            }
+            if (!$this->getEnd()) {
+                $this->setEnd($this->calcEnd());
+            }
+            if ($this->getBegin() > $this->getEnd()) {
+                $this->setBegin(null)->setEnd(null);
+            }
         }
-        $this->setEnd($end);
 
         $this->total = $this->calcTotal();
     }
+
+    /**
+     * calcEnd
+     *
+     * @return \DateTime
+     */
+    public function calcEnd(): \DateTime
+    {
+        $end = clone $this->getPackage()->getEnd();
+        if (!$this->isIncludeDeparture()) {
+            $end->modify('-1 day');
+        }
+        return $end;
+    }
     
+    /**
+     * calcBegin
+     *
+     * @return \DateTime
+     */
+    public function calcBegin(): \DateTime
+    {
+        $begin = clone $this->getPackage()->getBegin();
+        if (!$this->isIncludeArrival()) {
+            $begin->modify('+1 day');
+        }
+        return $begin;
+    }
+
     /**
      * @return \DateTime $begin
      */
@@ -542,4 +618,71 @@ class PackageService extends Base
         return $this->service->getName();
     }
 
+    /**
+     * Set recalcWithPackage
+     *
+     * @param bool $recalcWithPackage
+     * @return self
+     */
+    public function setRecalcWithPackage($recalcWithPackage): self
+    {
+        $this->recalcWithPackage = $recalcWithPackage;
+        return $this;
+    }
+
+    /**
+     * Get recalcWithPackage
+     *
+     * @return bool $recalcWithPackage
+     */
+    public function isRecalcWithPackage(): ?bool
+    {
+        return $this->recalcWithPackage;
+    }
+
+    /**
+     * includeDeparture set
+     *
+     * @param bool $includeDeparture
+     * @return self
+     */
+    public function setIncludeDeparture(?bool $includeDeparture): self
+    {
+        $this->includeDeparture = $includeDeparture;
+
+        return $this;
+    }
+
+    /**
+     * includeDeparture get
+     *
+     * @return bool
+     */
+    public function isIncludeDeparture(): ?bool
+    {
+        return $this->includeDeparture;
+    }
+    
+    /**
+     * includeArrival set
+     *
+     * @param bool $includeArrival
+     * @return self
+     */
+    public function setIncludeArrival(?bool $includeArrival): self
+    {
+        $this->includeArrival = $includeArrival;
+
+        return $this;
+    }
+
+    /**
+     * includeArrival get
+     *
+     * @return bool
+     */
+    public function isIncludeArrival(): ?bool
+    {
+        return $this->includeArrival;
+    }
 }

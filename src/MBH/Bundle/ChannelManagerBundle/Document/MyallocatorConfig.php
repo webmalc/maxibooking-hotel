@@ -2,17 +2,17 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
-use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
-use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 
@@ -53,6 +53,7 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="myallocatorConfig")
      * @Assert\NotNull(message="document.myallocatorConfig.no_hotel_selected")
+     * @ODM\Index()
      */
     protected $hotel;
 

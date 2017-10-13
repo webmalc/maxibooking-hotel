@@ -3,60 +3,77 @@ services:
     #begin: search
     mbh.package.search:
             class: MBH\Bundle\PackageBundle\Services\Search\SearchFactory
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.package.search_simple:
             class: MBH\Bundle\PackageBundle\Services\Search\Search
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.package.search_with_tariffs:
             class: MBH\Bundle\PackageBundle\Services\Search\SearchWithTariffs
 
     mbh.package.search_multiple_dates:
             class: MBH\Bundle\PackageBundle\Services\Search\SearchMultipleDates
-            arguments: [@service_container]
+            arguments: ['@service_container']
     #end: search
 
     mbh.tourists.messenger:
             class: MBH\Bundle\PackageBundle\Services\TouristsMessenger
-            arguments: [@service_container]
-        
+            arguments: ['@service_container']
+
     mbh.calculation:
             class: MBH\Bundle\PackageBundle\Services\Calculation
-            arguments: [@service_container]
+            factory: ['MBH\Bundle\PackageBundle\Services\CalculationFactory', createCalculation]
+            arguments: ['@service_container']
 
     mbh.order_manager:
             class: MBH\Bundle\PackageBundle\Services\OrderManager
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.package.permissions:
             class: MBH\Bundle\PackageBundle\Services\Permissions
-            arguments: [@service_container]
+            arguments: ['@service_container']
+
+    mbh.package.delete_reason.subscriber:
+            class: MBH\Bundle\PackageBundle\EventListener\DeleteReasonSubscriber
+            tags:
+                - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.package.subscriber:
             class: MBH\Bundle\PackageBundle\EventListener\PackageSubscriber
-            arguments: [@service_container]
+            arguments: ['@service_container']
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.package.order.subscriber:
             class: MBH\Bundle\PackageBundle\EventListener\OrderSubscriber
-            arguments: [@service_container]
+            arguments: ['@service_container']
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
+    mbh.package.package_accommodations.subscriber:
+                class: MBH\Bundle\PackageBundle\EventListener\PackageAccommodationSubscriber
+                tags:
+                    - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.package.subscriber.tourist:
             class: MBH\Bundle\PackageBundle\EventListener\TouristSubscriber
             calls:
-                - [setContainer, [@service_container]]
+                - [setContainer, ['@service_container']]
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.package.validator:
             class: MBH\Bundle\PackageBundle\Validator\Constraints\PackageValidator
-            arguments: [@service_container]
+            arguments: ['@service_container']
             tags:
                 - { name: validator.constraint_validator, alias: mbh.package.validator }
+
+    mbh.package.package_accommodation_validator:
+        class: MBH\Bundle\PackageBundle\Validator\Constraints\PackageAccommodationsValidator
+        arguments: ['@doctrine_mongodb.odm.document_manager']
+        tags:
+            - { name: validator.constraint_validator }
 
     mbh.package.form.type.birthplace:
             class: MBH\Bundle\PackageBundle\Form\BirthplaceType
@@ -71,34 +88,123 @@ services:
     mbh.package.form.type.document_relation:
             class: MBH\Bundle\PackageBundle\Form\DocumentRelationType
             calls:
-                   - [setDictionaryProvider, [@mbh.vega.dictionary_provider]]
-                   - [setManagerRegistry, [@doctrine_mongodb]]
+                   - [setDictionaryProvider, ['@mbh.vega.dictionary_provider']]
+                   - [setManagerRegistry, ['@doctrine_mongodb']]
             tags:
                 - { name: form.type, alias: mbh_document_relation }
     mbh.package.document_tempalte_factory:
             class: MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory
             calls:
-                   - [setContainer, [@service_container]]
+                   - [setContainer, ['@service_container']]
     mbh.package.document_xls_factory:
             class: MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory
             calls:
-                   - [setContainer, [@service_container]]
+                   - [setContainer, ['@service_container']]
     mbh.package.document_factory:
             class: MBH\Bundle\PackageBundle\DocumentGenerator\ChainGeneratorFactory
             calls:
-                   - [addFactory, [@mbh.package.document_tempalte_factory]]
-                   - [addFactory, [@mbh.package.document_xls_factory]]
-                   - [setContainer, [@service_container]]
+                   - [addFactory, ['@mbh.package.document_tempalte_factory']]
+                   - [addFactory, ['@mbh.package.document_xls_factory']]
+                   - [setContainer, ['@service_container']]
 
     mbh.package.unwelcome_repository:
             class: MBH\Bundle\PackageBundle\Document\UnwelcomeRepository
-            arguments: [@mbh.mbhs]
+            arguments: ['@mbh.mbhs']
 
     mbh.package.report.filling_report_generator:
             class: MBH\Bundle\PackageBundle\Component\FillingReportGenerator
             calls:
-                   - [setContainer, [@service_container]]
+                   - [setContainer, ['@service_container']]
     mbh.package.payer_repository:
             class: MBH\Bundle\PackageBundle\Document\PayerRepository
             calls:
-                   - [setContainer, [@service_container]]
+                   - [setContainer, ['@service_container']]
+
+    mbh.package.report_data_builder:
+        class: MBH\Bundle\PackageBundle\Services\ChessBoardDataBuilder
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper', '@mbh_bundle_package.services.package_accommodation_manipulator', '@translator', '@service_container']
+
+    mbh.package.windows.report.generator:
+      class: MBH\Bundle\PackageBundle\Services\WindowsReportGenerator
+      arguments: ['@mbh.helper', '@doctrine_mongodb']
+
+    mbh.package.csv.generator:
+          class: MBH\Bundle\PackageBundle\Services\CsvGenerate
+          arguments: ['@service_container']
+
+    mbh.package.dynamic.sales.generator:
+              class: MBH\Bundle\PackageBundle\Services\DynamicSalesGenerator
+              arguments:
+                  - '@doctrine.odm.mongodb.document_manager'
+                  - '@mbh.helper'
+                  - '@translator'
+                  - '%mbh_dynamic_sale_period%'
+                  - '@service_container'
+
+    mbh.acl_document_owner_maker:
+        class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
+        arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']
+
+    mbh_bundle_package.services.package_accommodation_manipulator:
+        class: MBH\Bundle\PackageBundle\Services\PackageAccommodationManipulator
+        arguments: ['@doctrine_mongodb.odm.document_manager', '@translator']
+
+    mbh_bundle_package.twig.package_extension:
+        class: MBH\Bundle\PackageBundle\Twig\PackageExtension
+        arguments: ['@mbh_bundle_package.services.package_accommodation_manipulator']
+        tags:
+            - { name: twig.extension }
+
+    mbh.chess_board.message_formatter:
+        class: MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter
+        arguments: ['@translator', '@doctrine.odm.mongodb.document_manager']
+
+    mbh.chess_board_unit:
+        class: MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit
+        arguments: ['@security.authorization_checker']
+        shared: false
+
+    task_notice_unpaid_order:
+      class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
+      arguments:  ["@mbh.notice.unpaid"]
+
+    mbh.tourist_manager:
+        class: MBH\Bundle\PackageBundle\Services\TouristManager
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@form.factory'
+
+    mbh.notice_stay_place_xls_type:
+      class: MBH\Bundle\PackageBundle\DocumentGenerator\Xls\Type\NoticeStayPlaceXlsType
+      arguments:
+          - '@doctrine_mongodb.odm.document_manager'
+          - '@translator'
+      tags:
+          - {name: form.type}
+
+    mbh.organization_type:
+      class: MBH\Bundle\PackageBundle\Form\OrganizationType
+      arguments: ['@translator', '@doctrine.odm.mongodb.document_manager']
+      tags:
+          - {name: form.type}
+
+    mbh.packages_daily_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\PackagesDailyReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+            - '@mbh.calculation'
+
+    mbh.distribution_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\DistributionReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+
+
+    mbh.dynamic_sales_report.dynamic_sales_day:
+      class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
+      arguments: ['@doctrine.odm.mongodb.document_manager']
+      shared: false

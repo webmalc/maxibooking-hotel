@@ -5,7 +5,7 @@
 
 {% block content %}
 
-    {{ form_start(form, {'action': path('tasktype_edit',  {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('tasktype_edit',  {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'delete_route': 'tasktype_delete'}%}
     {{ form_end(form) }}

@@ -3,8 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,32 +22,32 @@ class OrderDocument
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      * @Assert\NotNull(message="validator.document.OrderDocument.type")
      */
     protected $type;
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $scanType;
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $name;
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $originalName;
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $comment;
 
@@ -86,14 +86,14 @@ class OrderDocument
     /**
      * Client Original Extension
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $extension;
 
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $mimeType;
 
@@ -133,10 +133,10 @@ class OrderDocument
     /**
      * @return UploadedFile|null
      */
-    public function getFile()
+    public function getFile(string $client = null)
     {
-        if (!$this->file && $this->name && is_file($this->getPath())) {
-            $this->file = new UploadedFile($this->getPath(), $this->getName());
+        if (!$this->file && $this->name && is_file($this->getPath($client))) {
+            $this->file = new UploadedFile($this->getPath($client), $this->getName());
         }
 
         return $this->file;
@@ -167,36 +167,37 @@ class OrderDocument
     /**
      * The absolute directory path where uploaded
      * documents should be saved
+     * @param string|null $client
      * @return string
      */
-    public function getUploadRootDir()
+    public function getUploadRootDir(string $client = null)
     {
-        return __DIR__.'/../../../../../protectedUpload/orderDocuments';
+        return __DIR__.'/../../../../../protectedUpload'.($client ? '/clients/'.$client : '').'/orderDocuments';
     }
 
     /**
      * @return string
      */
-    public function getPath()
+    public function getPath(string $client = null)
     {
-        return $this->getUploadRootDir().DIRECTORY_SEPARATOR.$this->getName();
+        return $this->getUploadRootDir($client).DIRECTORY_SEPARATOR.$this->getName();
     }
 
-    public function upload()
+    public function upload(string $client = null)
     {
-        if (null === $this->getFile()) {
+        if (null === $this->getFile($client)) {
             return;
         }
 
-        $this->getFile()->move($this->getUploadRootDir(), $this->getName());
+        $this->getFile($client)->move($this->getUploadRootDir($client), $this->getName());
     }
 
     /**
      * @return bool
      */
-    public function isUploaded()
+    public function isUploaded(string $client = null)
     {
-        return is_file($this->getPath());
+        return is_file($this->getPath($client));
     }
 
     /**
@@ -234,10 +235,10 @@ class OrderDocument
     /**
      * @return bool
      */
-    public function deleteFile()
+    public function deleteFile(string $client = null)
     {
-        if ($this->getFile() && is_writable($this->getFile()->getPathname())) {
-            $result = unlink($this->getFile()->getPathname());
+        if ($this->getFile($client) && is_writable($this->getFile($client)->getPathname())) {
+            $result = unlink($this->getFile($client)->getPathname());
             if ($result) {
                 $this->file = null;
             }

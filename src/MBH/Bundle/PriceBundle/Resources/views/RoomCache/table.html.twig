@@ -10,11 +10,11 @@
 
             {% if tariff is null %}
                 <tr class="mbh-grid-header1 info">
-                    <td colspan="{{ period|length + 1 }}"><strong>{{ 'mbhpricebundle.view.roomcache.table.nomeravprodazhe'|trans }} </strong></td>
+                    <td colspan="{{ period|length + 1 }}"><strong>{{ 'price.resources.views.roomcache.number_on_sales'|trans }}</strong></td>
                 </tr>
             {% else %}
                 <tr class="mbh-grid-header1 info">
-                    <td colspan="{{ period|length + 1 }}"><strong>{{ 'mbhpricebundle.view.roomcache.table.kvotypotarifam'|trans }} - {{ tariff }}</strong></td>
+                    <td colspan="{{ period|length + 1 }}"><strong>{{ 'price.resources.views.quotas_for_tariffs'|trans }} - {{ tariff }}</strong></td>
                 </tr>
             {% endif %}
 
@@ -23,25 +23,29 @@
                 <input type="hidden" name="roomTypes[]" class="hidden" value="{{ roomType.id }}">
 
                 <tr class="mbh-grid-header2 warning">
-                    <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;
-                        <small>{{ tariff is null ? 'mbhpricebundle.view.roomcache.table.nomeravprodazhe'|trans : 'mbhpricebundle.view.roomcache.table.kvotypotarifam'|trans ~ ' - ' ~ tariff }}</small>
+                    <td colspan="{{ period|length + 1 }}"><strong {% if not roomType.isEnabled %} class="disabled-room-type"{% endif %} >{{ roomType }}</strong>&nbsp;-&nbsp;
+                        <small>{{ tariff is null ? 'mbhpricebundle.view.roomcache.layout.nomeravprodazhe'|trans : 'mbhpricebundle.view.roomcache.table.kvotypotarifam'|trans ~ ' - ' ~ tariff }}</small>
                     </td>
                 </tr>
 
-                <tr class="header">
+                <tr class="header" data-copy-row-id="{{ roomType.id }}">
                     <td class="first-th"></td>
                     {% for date in period %}
-                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+                        <td class="header-td {% if date|date('N') >= 6 %} text-danger{% endif %}">
+                            <span class="header-info">{{ date|mbh_format }}</span>
+                            <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.generator'|trans }}" href="#" class="header-action header-action-generator"><i class="fa fa fa-magic"></i></a>
+                            <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.copy'|trans }}" href="#" class="header-action header-action-copy"><i class="fa fa-copy"></i></a>
+                        </td>
                     {% endfor %}
                 </tr>
 
-                {% set cats = {'totalRooms': 'mbhpricebundle.view.roomcache.table.vprodazhe'|trans, 'packagesCount':  'mbhpricebundle.view.roomcache.table.zabronirovano'|trans, 'packagesCountPercent': 'mbhpricebundle.view.roomcache.table.zabronirovano'|trans ~ ' %', 'leftRooms': 'mbhpricebundle.view.roomcache.table.ostalosʹ'|trans } %}
+                {% set cats = {'totalRooms': 'price.resources.views.roomcache.in_sales'|trans, 'packagesCount': 'price.resources.views.booking'|trans, 'packagesCountPercent': 'price.resources.views.booking_in_percents'|trans, 'leftRooms': 'price.resources.views.left'|trans} %}
                 {% if tariff is null and false %}
-                    {% set cats = cats|merge({'isClosed': 'mbhpricebundle.view.roomcache.table.zakryto'|trans}) %}
+                    {% set cats = cats|merge({'isClosed': 'price.resources.views.closet'|trans}) %}
                 {% endif %}
 
                 {% for categoryId, category in cats %}
-                    <tr>
+                    <tr data-copy-row-id="{{ roomType.id }}">
                         <td class="first-td">
                             <small>{{ category }}</small>
                         </td>

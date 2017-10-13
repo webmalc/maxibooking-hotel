@@ -4,9 +4,9 @@ namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls;
 
 
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterface;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterface;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -300,9 +300,18 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
 
         if ($organization = $hotel->getOrganization()) {
-            $this->write($organization->getName(), 'AA51');
-            $this->write($organization->getInn(), 'S60');
+            $firstLineLength = 23;
+            $secondLineLength = 27;
 
+            $organizationName = strlen($organization->getName()) > ($firstLineLength + $secondLineLength)
+                ? $organization->getShortName()
+                : $organization->getName();
+
+            $this->write(substr($organizationName, 0, $firstLineLength), 'AA51');
+            if (strlen($organizationName) > $firstLineLength) {
+                $this->write(substr($organizationName, $firstLineLength), 'K54');
+            }
+            $this->write($organization->getInn(), 'S60');
         }
 
         if($hotel) {

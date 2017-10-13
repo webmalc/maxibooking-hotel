@@ -97,7 +97,7 @@
                                 {% if is_granted('ROLE_ORGANIZATION_PAYER') %}
                                 <a href="{{ path('organization_edit', {id: entity.organization.id }) }}"
                                    class="btn btn-success btn-sm" title="" data-toggle="tooltip"
-                                   data-original-title="{{ 'mbhpackagebundle.view.order.organizationedit.redaktirovaniyezapisi'|trans }} "><i class="fa fa-pencil-square-o"></i></a>
+                                   data-original-title="{{ 'order.organization_edit.edit_entry'|trans }}"><i class="fa fa-pencil-square-o"></i></a>
                                 {% endif %}
 
                                 {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
@@ -113,7 +113,7 @@
             {% endif %}
 
             {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'hidden-print form-horizontal'}}) }}
+                {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}),  'attr': {'class': 'hidden-print form-horizontal'}}) }}
                 {{ form_widget(form) }}
             {% endif %}
                 {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_PAYER'} %}

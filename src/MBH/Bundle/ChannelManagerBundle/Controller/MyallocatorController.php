@@ -2,19 +2,20 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
+use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
+use MBH\Bundle\ChannelManagerBundle\Form\MyallocatorType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
-use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/myallocator")
@@ -33,7 +34,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
         $config = $this->hotel->getMyallocatorConfig();
 
         $form = $this->createForm(
-            $this->get('mbh.channelmanager.myallocator_type'), $config, ['config' => $config]
+            MyallocatorType::class, $config, ['config' => $config]
         );
 
         return [
@@ -62,7 +63,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
         }
 
         $form = $this->createForm(
-            $this->get('mbh.channelmanager.myallocator_type'), $config, ['config' => $config]
+            MyallocatorType::class, $config, ['config' => $config]
         );
         $form->handleRequest($request);
 
@@ -136,7 +137,11 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     {
         $config = $this->hotel->getMyallocatorConfig();
 
-        $form = $this->createForm(new RoomsType(), $config->getRoomsAsArray(), [
+        if (!$config) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.myallocator')->roomList($config, true),
         ]);
@@ -184,7 +189,11 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     {
         $config = $this->hotel->getMyallocatorConfig();
 
-        $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
+        if (!$config) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.myallocator')->pullTariffs($config),
         ]);
@@ -224,14 +233,13 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
      * @Route("/service", name="channels_service")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_MYALLOCATOR')")
-     * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function serviceAction(Request $request)
     {
-
+        throw $this->createNotFoundException();
     }
 
     /**

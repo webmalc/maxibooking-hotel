@@ -2,17 +2,18 @@
 
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  *  Search with tariffs service
  */
 class SearchMultipleDates implements SearchInterface
 {
-    CONST MAX_RESULTS = 20;
+    const MAX_RESULTS = 100;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -30,6 +31,11 @@ class SearchMultipleDates implements SearchInterface
     protected $dm;
 
     /**
+     * @var \MBH\Bundle\BaseBundle\Service\Cache
+     */
+    private $memcached;
+
+    /**
      * @var RoomTypeManager
      */
     private $manager;
@@ -42,6 +48,7 @@ class SearchMultipleDates implements SearchInterface
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
         $this->manager = $container->get('mbh.hotel.room_type_manager');
+        $this->memcached = $this->container->get('mbh.cache');
     }
 
     /**
@@ -59,7 +66,6 @@ class SearchMultipleDates implements SearchInterface
      * @param SearchQuery $query
      * @return array
      * @throws Exception
-     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function search(SearchQuery $query)
     {
@@ -70,7 +76,8 @@ class SearchMultipleDates implements SearchInterface
         if (empty($roomTypes)) {
             foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
                 $roomTypes = array_merge(
-                    $this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()), $roomTypes
+                    $this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()),
+                    $roomTypes
                 );
             }
         } elseif ($this->manager->useCategories) {
@@ -86,7 +93,8 @@ class SearchMultipleDates implements SearchInterface
 
         $tariff = $query->tariff;
         if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
-            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($query->tariff);
+            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                ->fetchById($query->tariff, $this->memcached);
         }
         $results = [];
 
@@ -165,5 +173,14 @@ class SearchMultipleDates implements SearchInterface
     public function searchTariffs(SearchQuery $query)
     {
         return $this->search->searchTariffs($query);
+    }
+
+    /**
+     * @param SearchQuery $query
+     * @return array
+     */
+    public function searchSpecials(SearchQuery $query)
+    {
+        return $this->search->searchSpecials($query);
     }
 }

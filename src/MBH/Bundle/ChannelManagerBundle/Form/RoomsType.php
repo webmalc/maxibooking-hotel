@@ -2,11 +2,12 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -17,7 +18,7 @@ class RoomsType extends AbstractType
     {
         foreach ($options['booking'] as $name => $label) {
 
-            $builder->add($name, 'document', [
+            $builder->add($name, DocumentType::class, [
                 'label' => $label,
                 'class' => 'MBHHotelBundle:RoomType',
                 'query_builder' => function(DocumentRepository $er) use($options) {
@@ -27,18 +28,19 @@ class RoomsType extends AbstractType
                     }
                     return $qb;
                 },
-                'empty_value' => '',
+                'placeholder' => '',
                 'required' => false,
-                'attr' => ['placeholder' => 'roomtype.placeholder']
+                'attr' => ['placeholder' => 'roomtype.placeholder'],
+                'group' => isset($options['groupName']) ? $options['groupName'] : ''
             ]);
         }
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
             [
-                'constraints' => [new Callback(['methods' => [[$this,'check']]])],
+                'constraints' => [new Callback([$this, 'check'])],
                 'booking' => [],
                 'hotel' => null,
             ]
@@ -58,7 +60,7 @@ class RoomsType extends AbstractType
         };
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_channelmanagerbundle_booking_type';
     }

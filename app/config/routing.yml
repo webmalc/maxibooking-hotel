@@ -1,17 +1,13 @@
-mbhfms:
-    resource: "@MBHFMSBundle/Controller/"
-    type:     annotation
-    prefix:   /fms
+mbh_billing:
+    resource: "@MBHBillingBundle/Controller/"
+    type: annotation
+    prefix: /deploy
+    defaults: { _format: 'json' }
 
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"
     type:     annotation
     prefix:   /
-
-JMSTranslationBundle_ui:
-    resource: @JMSTranslationBundle/Controller/
-    type:     annotation
-    prefix:   /_trans
 
 mbh_client:
     resource: "@MBHClientBundle/Controller/"
@@ -34,7 +30,7 @@ mbh_cash:
     prefix:   /cash
 
 _welcome:
-    pattern:  /
+    path:  /
     defaults: { _controller: MBHBaseBundle:Welcome:index}
 
 mbh_package:
@@ -65,9 +61,17 @@ mbh_user:
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
     prefix: /user
-    
+
+fos_user_resetting:
+    resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
+    prefix: /resetting
+
+fos_user_profile:
+    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
+
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
+    prefix: /profile
 
 mbh_hotel:
     resource: "@MBHHotelBundle/Controller/"
@@ -90,3 +94,6 @@ mbh_restaurant:
     resource: "@MBHRestaurantBundle/Controller/"
     type:     annotation
     prefix:   /restaurant
+
+_bazinga_jstranslation:
+    resource: "@BazingaJsTranslationBundle/Resources/config/routing/routing.yml"

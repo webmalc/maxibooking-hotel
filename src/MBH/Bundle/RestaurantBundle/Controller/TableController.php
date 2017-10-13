@@ -11,8 +11,12 @@ namespace MBH\Bundle\RestaurantBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\RestaurantBundle\Document\Chair;
 use MBH\Bundle\RestaurantBundle\Document\Table;
+use MBH\Bundle\RestaurantBundle\Form\ChairType;
 use MBH\Bundle\RestaurantBundle\Form\TableType;
+use MBH\Bundle\RestaurantBundle\Form\TableTypeType;
+use MBH\Bundle\RestaurantBundle\Service\TableManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -21,18 +25,21 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-/** @Route("tables") */
 
+/** @Route("tables") */
 class TableController extends BaseController implements CheckHotelControllerInterface
 {
     /**
+     * List all TableTypes category
+     *
+     * @Route("/", name="restaurant_table_category")
      * @Route("/", name="restaurant_table")
      * @Security("is_granted('ROLE_RESTAURANT_TABLE_VIEW')")
      * @Template()
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHRestaurantBundle:Table')->createQueryBuilder()
+        $entities = $this->dm->getRepository('MBHRestaurantBundle:TableType')->createQueryBuilder()
             ->field('hotel.id')->equals($this->hotel->getId())
             ->sort('id', 'asc')
             ->getQuery()
@@ -40,91 +47,180 @@ class TableController extends BaseController implements CheckHotelControllerInte
         return [
             'entities' => $entities
         ];
+
     }
 
     /**
-     * @Route("/new", name="restaurant_table_new")
-     * @Security("is_granted('ROLE_RESTAURANT_TABLE_NEW')")
-     * @Template()
      * @param Request $request
-     * @return array|RedirectResponse
+     * Displays a form to create a new category
+     * @Route("/newcategory", name="restaurant_table_category_new")
+     * @Security("is_granted('ROLE_RESTAURANT_CATEGORY_NEW')")
+     * @Template()
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function newTableAction(Request $request)
+    public function newCategoryAction(Request $request)
     {
-        $table = new Table();
-        $table->setHotel($this->hotel);
+        $entity = new \MBH\Bundle\RestaurantBundle\Document\TableType();
+        $entity->setHotel($this->hotel);
 
-        $form = $this->createForm(new TableType(), $table);
+        $form = $this->createForm(TableTypeType::class, $entity);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
-            $this->dm->persist($table);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set(
-                'success',
-                'restaurant.table.common.addsuccess'
-            );
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
 
-            return $this->afterSaveRedirect('restaurant_table', $table->getId());
+            return $this->afterSaveRedirect('restaurant_table_category', $entity->getId());
         }
 
         return [
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ];
     }
 
     /**
-     * @Route("/{id}/edit", name="restaurant_table_edit")
-     * @Method({"GET","POST"})
-     * @Security("is_granted('ROLE_RESTAURANT_TABLE_EDIT')")
+     * @Route("/{id}/edit", name="restaurant_table_category_edit")
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_CATEGORY_EDIT')")
      * @Template()
-     * @ParamConverter(class="MBHRestaurantBundle:Table")
+     * @Method({"GET","POST"})
+     * @ParamConverter(class="MBHRestaurantBundle:TableType")
      * @param Request $request
-     * @param Table $table
-     * @return array|RedirectResponse
+     * @param \MBH\Bundle\RestaurantBundle\Document\TableType $category
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function editTableAction(Request $request, Table $table)
+    public function editCategoryAction(Request $request, \MBH\Bundle\RestaurantBundle\Document\TableType $category)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($table->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($category->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TableType(), $table);
+        $form = $this->createForm(TableTypeType::class, $category);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
-            $this->dm->persist($table);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dm->persist($category);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set(
-                'success',
-                'restaurant.table.common.editsuccess'
-            );
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
 
-            return $this->afterSaveRedirect('restaurant_table', $table->getId());
+            return $this->redirectToRoute('restaurant_table_category', ['tab' => $category->getId()]);
+
         }
 
         return [
-            'table' =>  $table,
+            'entity' => $category,
             'form' => $form->createView(),
-            'logs' => $this->logs($table)
+            'logs' => $this->logs($category)
         ];
     }
 
     /**
-     * @Route("/{id}/delete", name="restaurant_table_delete")
-     * @Security("is_granted('ROLE_RESTAURANT_TABLE_DELETE')")
+     * @Route("/{id}/delete", name="restaurant_table_category_delete")
      * @param $id
-     * @return RedirectResponse
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_CATEGORY_DELETE')")
      */
-    public function deleteTableAction($id)
+
+    public function deleteCategoryAction($id)
     {
-        return $this->deleteEntity($id, 'MBHRestaurantBundle:Table', 'restaurant_table');
+        return $this->deleteEntity($id, 'MBHRestaurantBundle:TableType', 'restaurant_table_category');
     }
 
     /**
-     * @Route("/quicksave", name="restaurant_table_save")
+     * @Route("/{id}/new/tabletype", name="restaurant_table_item_new")
+     * @Template()
+     * @ParamConverter("entity", class="MBHRestaurantBundle:TableType")
+     * @param Request $request
+     * @param \MBH\Bundle\RestaurantBundle\Document\TableType $category
+     * @return array
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_NEW')")
+     */
+    public function newTableAction(Request $request, \MBH\Bundle\RestaurantBundle\Document\TableType $category)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($category->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+
+        $table = new Table();
+        $table->setCategory($category);
+        $table->setHotel($this->hotel);
+        $form = $this->createForm(TableType::class, $table, ['dm' => $this->dm, 'container' => $this->container ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            $this->dm->persist($table);
+            $this->dm->flush();
+
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
+            return $this->afterSaveRedirect('restaurant_table', $table->getId(), ['tab' => $category->getId()]);
+        }
+        return array(
+            'entity' => $category,
+            'form' => $form->createView(),
+        );
+    }
+
+    /**
+     * Displays a form to edit a new entity.
+     *
+     * @Route("/{id}/edit/tabletype", name="restaurant_table_edit")
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_EDIT')")
+     * @Template()
+     * @ParamConverter(class="MBHRestaurantBundle:Table")
+     * @param Request $request
+     * @param Table $item
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function editTableAction(Request $request, Table $item)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($item->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(TableType::class, $item, ['dm' => $this->dm, 'container' => $this->container ]);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            $this->dm->flush();
+
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
+
+            if ($request->get('save') !== null) {
+                return $this->redirectToRoute('restaurant_table_edit', ['id' => $item->getId()]);
+            }
+
+            return $this->redirectToRoute('restaurant_table_category', ['tab' => $item->getCategory()->getId()]);
+        }
+
+        return [
+            'form' => $form->createView(),
+            'entry' => $item,
+            'entity' => $item->getCategory(),
+            'logs' => $this->logs($item),
+        ];
+    }
+
+    /**
+     * Delete entry.
+     * @Route("/{id}/delete/tabletype", name="restaurant_table_delete")
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_DELETE')")
+     * @ParamConverter(class="MBHRestaurantBundle:Table")
+     * @param Table $item
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function deleteItemAction(Table $item)
+    {
+        return $this->deleteEntity($item->getId(), 'MBHRestaurantBundle:Table', 'restaurant_table', ['tab' => $item->getCategory()->getId()]);
+    }
+
+    /**
+     * @Route("/quicksave/", name="restaurant_table_save")
      * @Method("GET")
      * @Security("is_granted('ROLE_RESTAURANT_TABLE_EDIT')")
      * @param Request $request
@@ -132,6 +228,8 @@ class TableController extends BaseController implements CheckHotelControllerInte
      */
     public function quickSaveAction(Request $request)
     {
+        $idCategory = substr($request->query->get('activetab'), 1);
+
         $entries = $request->get('entries');
 
         $tableRepository = $this->dm->getRepository('MBHRestaurantBundle:Table');
@@ -163,13 +261,71 @@ class TableController extends BaseController implements CheckHotelControllerInte
             $flashBag = $request->getSession()->getFlashBag();
 
             $success ?
-                $flashBag->set('success', 'Столики успешно отредактированы.'):
-                $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+                $flashBag->set('success', $this->get('translator')->trans('restaurant.exceptions.edittables')) :
+                $flashBag->set('danger', $this->get('translator')->trans('restaurant.exceptions.danger'));
         }
 
-
-        return $this->redirectToRoute('restaurant_table');
+        return $this->redirectToRoute('restaurant_table_category', ['tab' => $idCategory]);
     }
 
+
+    /**
+     * Displays a form to edit a new entity.
+     *
+     * @Route("/{id}/new/chair", name="restaurant_chair_new")
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_EDIT')")
+     * @Template()
+     * @ParamConverter(class="MBHRestaurantBundle:Table")
+     * @param Request $request
+     * @param Table $item
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function newChairAction(Request $request, Table $item)
+    {
+        $chairDescription = [
+            'amount' => '',
+            'type' => false,
+        ];
+
+        $form = $this->createForm(ChairType::class, $chairDescription);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $chairDescription = $form->getData();
+            /** @var TableManager $generator */
+            $generator = $this->get('mbh_table_manager');
+            $generator->generateChair($chairDescription['amount'], $chairDescription['type'], $item);
+
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
+
+            if ($request->get('save') !== null) {
+
+                return $this->redirectToRoute('restaurant_chair_new', ['id' => $item->getId()]);
+            }
+            return $this->redirectToRoute('restaurant_table_category', ['tab' => $item->getCategory()->getId()]);
+
+        }
+
+        return [
+            'entry' => $item,
+            'form' => $form->createView(),
+        ];
+
+    }
+
+    /**
+     * Delete entry.
+     * @Route("/{id}/delete/chair", name="restaurant_chair_delete")
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_DELETE')")
+     * @ParamConverter(class="MBHRestaurantBundle:Chair")
+     * @param Chair $item
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function deleteChairAction(Chair $item)
+    {
+        return $this->deleteEntity($item->getId(), 'MBHRestaurantBundle:Chair', 'restaurant_chair_new', ['id' => $item->getTable()->getId()]);
+    }
 
 }

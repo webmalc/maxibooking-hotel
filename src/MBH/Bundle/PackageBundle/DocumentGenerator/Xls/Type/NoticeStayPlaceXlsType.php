@@ -5,25 +5,26 @@ namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls\Type;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class NoticeStayPlaceXlsType
-
  */
 class NoticeStayPlaceXlsType extends AbstractType
 {
-    /**
-     * @var DocumentManager
-     */
     private $dm;
+    /** @var  TranslatorInterface */
+    private $translator;
 
-    public function __construct(DocumentManager $dm)
-    {
+    public function __construct(DocumentManager $dm, TranslatorInterface $translator) {
         $this->dm = $dm;
+        $this->translator = $translator;
     }
 
     /**
@@ -37,10 +38,11 @@ class NoticeStayPlaceXlsType extends AbstractType
         foreach($options['tourists'] as $tourist) {
             if($tourist) {
                 $citizenship = $tourist->getCitizenship();
-                $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . ($citizenship ? $citizenship->getName() : 'Не указано') . ')';
+                $citizenshipName = $citizenship ? $citizenship->getName() : $this->translator->trans('form.notice_stay_place_xls_type.not_specified');
+                $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . $citizenshipName . ')';
             }
         }
-        $builder->add('tourist', 'choice', [
+        $builder->add('tourist',  InvertChoiceType::class, [
             'required' => true,
             'label' => 'form.task.tourist',
             'choices' => $tourists,
@@ -49,7 +51,7 @@ class NoticeStayPlaceXlsType extends AbstractType
         ]);
         $builder->get('tourist')->addModelTransformer(new EntityToIdTransformer($this->dm, 'MBH\Bundle\PackageBundle\Document\Tourist'));
 
-        $builder->add('user', 'hidden');
+        $builder->add('user', HiddenType::class);
         $builder->get('user')->addModelTransformer(new EntityToIdTransformer($this->dm, 'MBH\Bundle\UserBundle\Document\User'));
     }
 
@@ -61,7 +63,7 @@ class NoticeStayPlaceXlsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'tourists' => []
+            'tourists' => [],
         ]);
     }
 
@@ -70,7 +72,7 @@ class NoticeStayPlaceXlsType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'notice_stay_place_xls';
     }

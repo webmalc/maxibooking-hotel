@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
 
-{% set small_title = 'mbhpackagebundle.view.tourist.editunwelcome.redaktirovaniyegostya'|trans ~ " #" ~ tourist.id %}
+{% set small_title = 'tourist.edit_unwelcome'|trans ~ ' ' ~ tourist.id %}
 {% set layout = 'tabs' %}
 
 {% block content %}
@@ -10,7 +10,7 @@
         {% if isTouristValid %}
             {% if unwelcome.isMy %}
                 <div class="bg-gray color-palette alert">
-                        <i class="fa fa-user-secret"></i> {{ 'mbhpackagebundle.view.tourist.editunwelcome.vyvneslikliyentavspisoknezhelatelʹnykhgostey'|trans }} .
+                        <i class="fa fa-user-secret"></i> {{ 'tourist.edit_unwelcome.added_client_to_black_list'|trans}}
                     <div class="pull-right">
                         <a class="btn btn-xs btn-danger delete-link" href="{{ path('tourist_delete_unwelcome', {'id': tourist.id}) }}" title="" data-toggle="tooltip" data-original-title="{{ 'unwelcome.actions.delete'|trans }}">
                             <i class="fa fa-trash-o"></i>
@@ -21,10 +21,10 @@
 
             <div class="bg-gray color-palette alert">
                 <i class="fa fa-exclamation"></i>
-                {{ 'mbhpackagebundle.view.tourist.editunwelcome.vneseniyeinformatsiivspisoknezhelatelʹnykhgosteydolzhno'|trans }}
+                {{ 'tourist.edit_unwelcome.attention'|trans}}
             </div>
 
-            {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}),  'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% if unwelcome.isMy %}
                 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
@@ -38,7 +38,7 @@
             {{ form_end(form) }}
         {% else %}
             <div class="alert alert-warning alert-dismissable">
-                {{ 'mbhpackagebundle.view.tourist.editunwelcome.ukazhiteosnovnoydokumentudostovereniyalichnosti'|trans }} 
+                {{ 'tourist.edit_unwelcome.specify_main_document'|trans}}
             </div>
         {% endif %}
 
@@ -46,7 +46,7 @@
 
             <div class="box box-default box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">{{ 'mbhpackagebundle.view.tourist.editunwelcome.zhalobydrugikhoteley'|trans }} </h3>
+                    <h3 class="box-title">{{ 'tourist.edit_unwelcome.complains_of_other_hotels'|trans}}</h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool form-group-collapse" data-widget="collapse" id="mbh_package_tourist_unwelcome_list">
                             <i class="fa fa-minus"></i>
@@ -57,11 +57,11 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>{{ 'mbhpackagebundle.view.tourist.editunwelcome.otelʹ'|trans }} </th>
-                        <th>{{ 'mbhpackagebundle.view.tourist.editunwelcome.periodprozhivaniya'|trans }} </th>
-                        <th>{{ 'mbhpackagebundle.view.tourist.editunwelcome.otsenki'|trans }} </th>
-                        <th>{{ 'mbhpackagebundle.view.tourist.editunwelcome.grazhdanstvogostya'|trans }} </th>
-                        <th>{{ 'mbhpackagebundle.view.tourist.editunwelcome.dobavleno'|trans }} </th>
+                        <th>{{ 'tourist.edit_unwelcome.hotel'|trans}}</th>
+                        <th>{{ 'tourist.edit_unwelcome.accommodation_period'|trans}}</th>
+                        <th>{{ 'tourist.edit_unwelcome.assessments'|trans}}</th>
+                        <th>{{ 'tourist.edit_unwelcome.citizenship'|trans}}</th>
+                        <th>{{ 'tourist.edit_unwelcome.added'|trans}}</th>
                     </tr>
                     </thead>
                     <tbody>

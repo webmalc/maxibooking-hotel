@@ -6,14 +6,13 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\HotelableControllerInterface;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
-use MBH\Bundle\HotelBundle\Form\TaskTypeCategoryType;
 use MBH\Bundle\HotelBundle\Form\TaskTypeType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 
 /**
@@ -25,7 +24,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
 {
     /**
      *
-     * @Route("/{category}", name="tasktype", defaults={"category"=null}, requirements={
+     * @Route("/info/{category}", name="tasktype", defaults={"category"=null}, requirements={
      *    "category": "\w*"
      * })
      * @Method({"GET", "POST"})
@@ -51,17 +50,19 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
 
         $entity = new TaskType();
 
-        $roles =array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+        $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
         $roles = array_combine($roles, $roles);
-        $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
-            'roles' => $roles
+        $form = $this->createForm(TaskTypeType::class, $entity, [
+            'roles' => $roles,
+            'dm' => $this->dm
         ]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
-            $form->submit($request);
+            $form->handleRequest($request);
 
             if($form->isValid()) {
                 $this->dm->persist($entity);
+                $entity->setHotel($this->hotel);
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()
@@ -81,7 +82,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
      * Displays a form to edit an existing entity.
      *
      * @Route("/{id}/edit", name="tasktype_edit")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TASK_TYPE_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:TaskType")
@@ -91,13 +92,14 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
         $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
         $roles = array_combine($roles, $roles);
 
-        $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
+        $form = $this->createForm(TaskTypeType::class, $entity, [
             'scenario' => TaskTypeType::SCENARIO_EDIT,
-            'roles' => $roles
+            'roles' => $roles,
+            'dm' => $this->dm
         ]);
 
-        if($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($entity);

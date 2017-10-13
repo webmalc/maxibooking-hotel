@@ -1,0 +1,77 @@
+#open travel code: title
+room_view_types:
+    1:
+        ru: Вид на аэропорт
+        en: Airport view
+    2:
+        ru: Вид на залив
+        en: Bay view
+    3:
+        ru: Вид на город
+        en: City view
+    4:
+        ru: Вид во двор
+        en: Courtyard view
+    5:
+        ru: Вид на поле
+        en: Golf view
+    6:
+        ru: Вид на гавань
+        en: Harbor view
+    7:
+        ru: Вид на побережье
+        en: Intercoastal view
+    8:
+        ru: Вид на озеро
+        en: Lake view
+    9:
+        ru: Вид на гавань
+        en: Marina view
+    10:
+        ru: Вид на горы
+        en: Mountain view
+    11:
+        ru: Вид на океан
+        en: Ocean view
+    12:
+        ru: Вид на бассейн
+        en: Pool view
+    13:
+        ru: Вид на реку
+        en: River view
+    14:
+        ru: Вид на воду
+        en: Water view
+    15:
+        ru: Вид на пляж
+        en: Beach view
+    16:
+        ru: Вид на сад
+        en: Garden view
+    17:
+        ru: Вид на парк
+        en: Park view
+    18:
+        ru: Вид на лес
+        en: Forest view
+    19:
+        ru: С видом на тропический лес
+        en: Rain forest view
+    20:
+        ru: Различные виды
+        en: Various views
+    21:
+        ru: Ограниченный просмотр
+        en: Limited view
+    22:
+        ru: Вид на склон
+        en: Slope view
+    23:
+        ru: Узкий вид
+        en: Strip view
+    24:
+        ru: Вид на сельскую местность
+        en: Countryside view
+    25:
+        ru: Вид на море
+        en: Sea view

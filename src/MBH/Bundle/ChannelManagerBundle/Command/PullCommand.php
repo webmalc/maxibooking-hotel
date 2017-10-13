@@ -13,6 +13,8 @@ class PullCommand extends ContainerAwareCommand
     {
         $this
             ->setName('mbh:channelmanager:pull')
+            ->addOption('service', null, InputOption::VALUE_OPTIONAL, 'Service name (booking, ostrovok, etc)')
+            ->addOption('old', true, InputOption::VALUE_NONE, 'Get old reservations?')
             ->setDescription('Pull orders from channel manager services')
         ;
     }
@@ -20,7 +22,10 @@ class PullCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = new \DateTime();
-        $this->getContainer()->get('mbh.channelmanager')->pullOrders();
+        $this->getContainer()->get('mbh.channelmanager')->pullOrders(
+            $input->getOption('service'),
+            $input->getOption('old')
+        );
 
         $time = $start->diff(new \DateTime());
         $output->writeln('Command complete. Elapsed time: ' . $time->format('%H:%I:%S'));

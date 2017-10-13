@@ -3,11 +3,11 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -38,9 +38,9 @@ class ChannelManagerController extends Controller
      *
      * @Route("/logs", name="channel_manager_logs")
      * @Method({"GET", "POST"})
-     * @return Response
+     * @return Response|array
      * @Template()
-     * @Security("is_granted('ROLE_LOGS')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function logsAction(Request $request)
     {
@@ -48,19 +48,18 @@ class ChannelManagerController extends Controller
 
         $root = $this->get('kernel')->getRootDir();
         $env = $this->get('kernel')->getEnvironment();
-        $file = $root.'/../var/logs/'.$env.'.channelmanager.log';
+        $file = $this->container->get('mbh.channelmanager.logger_handler')->getUrl();
+
         if (file_exists($file) && is_readable($file)) {
             if ($request->getMethod() == 'POST') {
                 file_put_contents($file, '');
 
-                $request->getSession()->getFlashBag()
-                    ->set(
+                $this->addFlash(
                         'success',
-                        $this->get('translator')->trans('Логи успешно очищены.')
+                        $this->get('translator')->trans('controller.channel_manager_controller.logs_clear_successful')
                     );
 
                 return $this->redirect($this->generateUrl('channel_manager_logs'));
-
             }
 
             ob_start();
@@ -69,7 +68,11 @@ class ChannelManagerController extends Controller
         }
 
         return [
-            'content' => str_replace(PHP_EOL, '<br><br>', htmlentities($content))
+            'content' => str_replace(
+                PHP_EOL,
+                '<br><br>',
+                htmlentities(implode("\n", array_reverse(explode("\n", $content))))
+            )
         ];
     }
 

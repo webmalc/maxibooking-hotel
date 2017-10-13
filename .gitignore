@@ -1,9 +1,21 @@
+index.html
+azovsky_remote/
+develop_folder/
+/web/test
+scripts/deploy_to_test.sh
 /scripts/upload
 /web/bundles/
 /app/config/parameters.yml
+/app/config/clients/
 /var/bootstrap.php.cache
 /var/cache/*
 /var/logs/*
+/var/clients/*
+!.gitkeep
+
+
+
+/src/MBH/Bundle/TestBundle
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 /build/
@@ -13,22 +25,104 @@
 !bin/symfony_requirements
 /composer.phar
 *.php~
+*.#*
 *.yml~
 nbproject/
 /web/css/
 /web/js/
 /web/upload/roomTypes/*
 /web/upload/hotelLogos/*
+/web/upload/images/*
 /web/media/cache/*
 !/web/upload/roomTypes/.gitkeep
 !/web/media/cache/.gitkeep
+!/web/media/images/.gitkeep
 /web/demo
 /web/index.html
 .idea/
-/parameters.yml
-parameters.yml
 /protectedUpload/1C/*
 /protectedUpload/orderDocuments/*
 /protectedUpload/vegaDocuments/*
+/protectedUpload/clients/*
+!/protectedUpload/clients/.gitkeep
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
+web/online
+app/supervisor
+docker_zalex
+web/clients/
+!web/clients/.gitkeep
+backup/
+src/MBH/Bundle/TestBundle/
+docker/php-fpm/keys/*
+!docker/php-fpm/keys/.gitkeep
+docker/nginx/fastcgi_param_client
+
+
+
+
+#Eclipse
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# Eclipse Core
+.project
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+.cproject
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# Java annotation processor (APT)
+.factorypath
+
+# PDT-specific (PHP Development Tools)
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# Tern plugin
+.tern-project
+
+# TeXlipse plugin
+.texlipse
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# Code Recommenders
+.recommenders/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
+docker_zalex/
+node_modules/
+tags
+
+GPATH
+GRTAGS
+GTAGS
+ctags
+env
+gtags
+

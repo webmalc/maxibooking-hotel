@@ -1,23 +1,22 @@
 {% extends 'MBHPriceBundle:Overview:layout.html.twig' %}
 
-{% set small_title = 'mbhpricebundle.view.overview.index.obzor'|trans %}
+{% set small_title = 'price.views.overview.index.small_title'|trans({},'MBHPriceBundle') %}
 {% set layout = 'box' %}
 
 {% block content %}
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'room-overview-filter-widget' } %}
-
-    <form id="room-overview-filter" class="form-inline filter-form remember" role="form">
+    <form id="room-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.overview.index.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp
-                <input type="text" id="room-overview-filter-begin" class="datepicker mbh-daterangepicker room-overview-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
+                <i class="fa fa-calendar" title='{{ 'price.views.overview.index.date'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp
+                <input type="text" id="room-overview-filter-begin" class="datepicker mbh-daterangepicker room-overview-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="">
             </div>
             <div class="input hidden">
                 - &nbsp
-                <input type="text" id="room-overview-filter-end" class="datepicker mbh-daterangepicker room-overview-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ? 'now'|date_modify("+45 days")|date('d.m.Y') : app.request.get('end') }}">
+                <input type="text" id="room-overview-filter-end" class="datepicker mbh-daterangepicker room-overview-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="">
             </div>
 
             <div class="input">
-                <i class="fa fa-bed" title='{{ 'mbhpricebundle.view.overview.index.tipnomera'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.overview.index.tipnomera'|trans }} " id="room-overview-filter-roomType" class="room-overview-filter form-control input-sm">
+                <i class="fa fa-bed" title='{{ 'price.views.overview.index.type'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'price.views.overview.index.type'|trans({},'MBHPriceBundle') }}" id="room-overview-filter-roomType" class="room-overview-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
@@ -26,13 +25,14 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-sliders" title='{{ 'mbhpricebundle.view.overview.index.tarif'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.overview.index.tarif'|trans }} " id="room-overview-filter-tariff" class="room-overview-filter form-control input-sm">
+                <i class="fa fa-sliders" title='{{ 'price.views.overview.index.rate'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'price.views.overview.index.rate'|trans({},'MBHPriceBundle') }}" id="room-overview-filter-tariff" class="room-overview-filter form-control input-sm">
                         <option></option>
                         {% for tariff in tariffs %}
                             <option value="{{ tariff.id }}" {% if (tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length) or (app.request.get('tariffs') is empty and tariff.isDefault) %}selected{% endif %}>{{ tariff.name }}</option>
                         {% endfor %}
                 </select>
             </div>
+        {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'room_overview'} %}
         </form>
     </div></div>
 

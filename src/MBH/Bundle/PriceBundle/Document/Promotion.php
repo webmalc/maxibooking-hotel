@@ -3,15 +3,14 @@
 namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
-use MBH\Bundle\PriceBundle\Document\Traits\ConditionsTrait;
-use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-
+use MBH\Bundle\PriceBundle\Document\Traits\ConditionsTrait;
+use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="promotions")
@@ -74,7 +73,8 @@ class Promotion extends Base implements ConditionsInterface
     /**
      * @ODM\Field(type="float")
      * @var int
-     * @Assert\Range(min=0)
+     * @Assert\Range(min=-100000000)
+     * @Assert\Type(type="numeric")
      */
     protected $discount;
 

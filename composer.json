@@ -3,83 +3,109 @@
   "license": "MIT",
   "type": "project",
   "description": "The \"Symfony Standard Edition\" distribution",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "autoload": {
-    "psr-4": { "": "src/" },
-    "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
+    "psr-4": {
+      "": "src/"
+    },
+    "classmap": [
+      "app/AppKernel.php",
+      "app/AppCache.php"
+    ]
   },
   "require": {
-    "php": ">=5.3.3",
-    "alcaeus/mongo-php-adapter": "*@dev",
-    "symfony/symfony": "2.8.*@stable",
+    "php": ">=7.1.0",
+    "alcaeus/mongo-php-adapter": "1.*@stable",
+    "symfony/symfony": "3.*@stable",
+    "twig/twig": "*@stable",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
+    "symfony/cache": "3.*@stable",
+    "predis/predis": "*@stable",
     "symfony/swiftmailer-bundle": "*@stable",
-    "symfony/monolog-bundle": "*@stable",
-    "sensio/distribution-bundle": "*@stable",
-    "sensio/framework-extra-bundle": "~3.0",
-    "incenteev/composer-parameter-handler": "*@stable",
+    "swiftmailer/swiftmailer": "@stable",
+    "symfony/monolog-bundle": "@stable",
+    "sensio/distribution-bundle": "@stable",
+    "symfony/polyfill-apcu": "^1.0",
+    "sensio/framework-extra-bundle": "*@stable",
+    "incenteev/composer-parameter-handler": "^2.0@stable",
     "doctrine/mongodb": "*@dev",
     "doctrine/mongodb-odm": "*@dev",
     "doctrine/mongodb-odm-bundle": "*@dev",
-    "gedmo/doctrine-extensions": "dev-master as 2.4.13",
+    "gedmo/doctrine-extensions": "2.*@stable",
     "stof/doctrine-extensions-bundle": "dev-master",
-    "friendsofsymfony/user-bundle": "*@dev",
+    "friendsofsymfony/user-bundle": "*@stable",
     "friendsofsymfony/jsrouting-bundle": "*@stable",
     "knplabs/knp-menu": "*@stable",
     "knplabs/knp-menu-bundle": "*@stable",
     "jms/security-extra-bundle": "*@stable",
     "ob/highcharts-bundle": "*@stable",
     "knplabs/knp-snappy-bundle": "*@stable",
-    "misd/guzzle-bundle": "*@stable",
-    "iampersistent/mongodb-acl-bundle": "*@stable",
     "liip/imagine-bundle": "*@stable",
-    "jms/translation-bundle": "*@stable",
     "jms/di-extra-bundle": "*@stable",
     "liuggio/excelbundle": "^2.0@dev",
     "ornicar/gravatar-bundle": "^1.1@dev",
     "doctrine/doctrine-fixtures-bundle": "^2.2@dev",
     "myallocator/myallocator-php-sdk": "dev-master",
     "leafo/scssphp": "^0.6.3",
-    "leaseweb/memcache-bundle": "^2.1"
+    "leaseweb/memcache-bundle": "^2.1",
+    "sonata-project/google-authenticator": "^1.0",
+    "google/recaptcha": "^1.1",
+    "dinhkhanh/mongodb-acl-bundle": "dev-master",
+    "guzzlehttp/guzzle": "^6.2",
+    "php-amqplib/rabbitmq-bundle": "^1.13",
+    "phobetor/rabbitmq-supervisor-bundle": "^1.5",
+    "lexik/translation-bundle": "dev-master",
+    "willdurand/js-translation-bundle": "^2.6",
+    "vich/uploader-bundle": "^1.4",
+    "theofidry/psysh-bundle": "3.0.0",
+    "mongodb/mongodb": "^1.1"
   },
   "require-dev": {
-    "sensio/generator-bundle": "~2.3"
+    "sensio/generator-bundle": "^3.0",
+    "symfony/phpunit-bridge": "*@stable",
+
+    "liip/functional-test-bundle": "*@stable",
+    "phpunit/phpunit": "^6.2"
   },
   "scripts": {
-    "post-root-package-install": [
-      "SymfonyStandard\\Composer::hookRootPackageInstall"
+    "symfony-scripts": [
+      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
     ],
     "post-install-cmd": [
-      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+      "@symfony-scripts"
     ],
     "post-update-cmd": [
-      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+      "@symfony-scripts"
     ]
   },
-  "config": {
-    "bin-dir": "bin"
-  },
+  "config": {},
   "extra": {
     "symfony-app-dir": "app",
     "symfony-bin-dir": "bin",
     "symfony-var-dir": "var",
     "symfony-web-dir": "web",
+    "symfony-tests-dir": "tests",
+    "symfony-assets-install": "relative",
     "incenteev-parameters": {
       "file": "app/config/parameters.yml"
     },
     "branch-alias": {
-      "*@stable": "2.7.*@stable"
+      "dev-master": "3.1-dev"
     }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/webmalc/MongoDBAclBundle"
+    }
+  ],
+  "provide": {
+    "ext-mongo": "*"
   }
 }

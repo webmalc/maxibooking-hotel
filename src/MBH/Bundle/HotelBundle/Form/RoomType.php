@@ -2,30 +2,41 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\FacilitiesType;
+use MBH\Bundle\HotelBundle\Document\RoomViewType;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Class RoomType
  */
 class RoomType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'form.roomType.name',
                 'required' => true,
                 'group' => 'form.roomType.general_info',
                 'attr' => ['placeholder' => '27']
             ])
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'form.roomType.inner_name',
                 'required' => false,
                 'group' => 'form.roomType.general_info',
@@ -47,13 +58,13 @@ class RoomType extends AbstractType
         }
 
         $builder
-            ->add('housing', 'document', $housingOptions)
-            ->add('floor', 'text', [
+            ->add('housing', DocumentType::class, $housingOptions)
+            ->add('floor', TextType::class, [
                 'label' => 'form.roomType.floor',
                 'group' => 'form.roomType.general_info',
                 'required' => false
             ])
-            ->add('isEnabled', 'checkbox', [
+            ->add('isEnabled', CheckboxType::class, [
                 'label' => 'form.roomType.is_included',
                 'group' => 'form.roomType.settings',
                 'value' => true,
@@ -62,7 +73,7 @@ class RoomType extends AbstractType
             ]);
 
         if (!$options['isNew']) {
-            $builder->add('roomType', 'document', [
+            $builder->add('roomType', DocumentType::class, [
                 'label' => 'form.roomType.room_type',
                 'group' => 'form.roomType.general_info',
                 'class' => 'MBHHotelBundle:RoomType',
@@ -76,12 +87,32 @@ class RoomType extends AbstractType
         }
 
         $builder
-            ->add('facilities', 'mbh_facilities', [
+            ->add('facilities', FacilitiesType::class, [
                 'label' => 'form.roomType.facilities',
                 'group' => 'form.roomType.general_info',
                 'required' => false
             ])
-            ->add('status', 'document', [
+            ->add('isSmoking', CheckboxType::class, [
+                'label' => 'form.roomType.is_smoking.label',
+                'help' => 'form.roomType.is_smoking.help',
+                'group' => 'form.roomType.general_info',
+                'required' => false,
+                'value' => false,
+            ])
+            ->add('roomViewsTypes', DocumentType::class, [
+                'choice_label' => function($value) {
+                    return $this->translator->trans($value);
+                },
+                'label' => 'form.roomType.room_view_types.label',
+                'group' => 'form.roomType.general_info',
+                'required' => false,
+                'query_builder' => function (DocumentRepository $documentRepository) {
+                    return $documentRepository->createQueryBuilder();
+                },
+                'class' => RoomViewType::class,
+                'multiple' => 'true',
+            ])
+            ->add('status', DocumentType::class, [
                 'label' => 'form.roomType.status',
                 'group' => 'form.roomType.settings',
                 'required' => false,
@@ -90,7 +121,9 @@ class RoomType extends AbstractType
                         ->field('hotel.id')->equals($options['hotelId']);
                 },
                 'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
-                'empty_value' => '',
+                'placeholder' => '',
+                'multiple' => 'true',
+
             ]);
     }
 
@@ -103,7 +136,7 @@ class RoomType extends AbstractType
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_room_type';
     }

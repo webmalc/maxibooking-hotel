@@ -19,161 +19,219 @@
         <div class="tab-pane active" id="home">
 
             {% if package.isForceBooking %}
-            <div class="alert alert-warning">
-                <i class="fa fa-exclamation-circle"></i> {{ 'mbhpackagebundle.view.package.edit.bronʹsozdanasignorirovaniyemusloviyiogranicheniy'|trans }} 
-            </div>
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-circle"></i> {{ 'package.edit.package_created_with_ignoring_conditions'|trans}}
+                </div>
             {% endif %}
 
             {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'package-edit-widget', 'header': 'info' } %}
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <table class="table not-auto-datatable table-striped">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'package.edit.tariff'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {{ package.tariff.name }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'package.edit.price'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {{ package.price|number_format(2) }}
-                                            &nbsp;
-                                            {% if package.isPaid %}
-                                                <small class="text-success"><i
-                                                            class="fa fa-check"> </i> {{ 'package.edit.paid'|trans({}, 'MBHPackageBundle') }}
-                                                </small>
-                                            {% else %}
-                                                <small class="text-danger"><i
-                                                            class="fa fa-times"> </i> {{ 'package.edit.not_paid'|trans({}, 'MBHPackageBundle') }}
-                                                </small>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table not-auto-datatable table-striped">
+                        <tbody>
+                        <tr>
+                            <td class="col-md-3">
+                                <strong>{{ 'package.edit.tariff'|trans({}, 'MBHPackageBundle') }}</strong>
+                            </td>
+                            <td>
+                                {{ package.tariff.name }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-3">
+                                <strong>{{ 'package.edit.price'|trans({}, 'MBHPackageBundle') }}</strong>
+                            </td>
+                            <td>
+                                {{ package.price|number_format(2) }}
+                                &nbsp;
+                                {% if package.isPaid %}
+                                    <small class="text-success"><i
+                                                class="fa fa-check"> </i> {{ 'package.edit.paid'|trans({}, 'MBHPackageBundle') }}
+                                    </small>
+                                {% else %}
+                                    <small class="text-danger"><i
+                                                class="fa fa-times"> </i> {{ 'package.edit.not_paid'|trans({}, 'MBHPackageBundle') }}
+                                    </small>
+                                {% endif %}
+                            </td>
+                        </tr>
 
-                                    {% if package.prices is not empty %}
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {% if package.prices|length > 5 %}
-                                            <p>
-                                                <small>
-                                                <a href="javascript: toggler('price-by-days')">{{ 'mbhpackagebundle.view.package.edit.pokazatʹ'|trans }}</a>
-                                                </small>
-                                            </p>
-                                            {% endif %}
-                                            <div id="price-by-days" {% if package.prices|length > 5 %}style="display: none;"{% endif %}>
-                                            {% for price in package.prices %}
-                                                <small>
-                                                    {{ price.date|date('d.m.Y') }} -
-                                                    <strong>{{ price.price|number_format(2) }}</strong> -
-                                                    <a data-toggle="tooltip" title="{{ 'mbhpackagebundle.view.package.edit.tarif'|trans }} " href="{{ path('tariff_edit', {id: price.tariff.id}) }}">
-                                                        <i class="fa fa-sliders"></i> {{ price.tariff }}
-                                                    </a>
-                                                    {% if price.promotion %}
-                                                    - <a data-toggle="tooltip" title="{{ 'mbhpackagebundle.view.package.edit.aktsiya'|trans }} " href="{{ path('promotion_edit', {id: price.promotion.id}) }}">
-                                                        <i class="fa fa-bookmark"></i> {{ price.promotion }}
-                                                    </a>
-                                                    {% endif %}
-                                                </small>
-                                                <br>
-                                            {% endfor %}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endif %}
-
-                                    {% if package.pricesByDate is not empty and package.prices is empty %}
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {% if package.pricesByDate|length > 5 %}
-                                            <p>
-                                                <small>
-                                                <a href="javascript: toggler('price-by-days')">{{ 'mbhpackagebundle.view.package.edit.pokazatʹ'|trans }}</a>
-                                                </small>
-                                            </p>
-                                            {% endif %}
-                                            <div id="price-by-days" {% if package.pricesByDate|length > 5 %}style="display: none;"{% endif %}>
-                                            {% for date, price in package.pricesByDate %}
-                                                <small>{{ date|replace({'_': '.'}) }} - <strong>{{ price|number_format(2) }}</strong></small><br>
-                                            {% endfor %}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endif %}
-                                    </div>
-
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="col-md-6">
-                                <table class="table not-auto-datatable table-striped">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'package.edit.service_price'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {{ package.servicesPrice|number_format(2) }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'package.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            <span
-                                        class="text-{{ statuses[status].class }}">{{ statuses[status].title }} {% if status == 'channel_manager' %}({{ package.channelManagerType }}){% endif %}</span>
-                                        {% if package.deletedAt %} &nbsp;
-                                            <small class="text-danger"><i
-                                                    class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}
+                        {% if package.prices is not empty %}
+                            <tr>
+                                <td class="col-md-3">
+                                    <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    {% if package.prices|length > 5 %}
+                                        <p>
+                                            <small>
+                                                <a href="javascript: toggler('price-by-days')">{{ 'package.edit.show_display'|trans}}</a>
                                             </small>
-                                         {% endif %}
-                                         </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'package.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {% if package.confirmed %}
-                                                <small class="text-success"><i
-                                                            class="fa fa-check"> </i> {{ 'package.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}
-                                                </small>
-                                            {% else %}
-                                                <small class="text-danger"><i
-                                                            class="fa fa-times"> </i> {{ 'package.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}
-                                                </small>
+                                        </p>
+                                    {% endif %}
+                                    <div id="price-by-days"
+                                         {% if package.prices|length > 5 %}style="display: none;"{% endif %}>
+                                        {% for price in package.prices %}
+                                            <small>
+                                                {{ price.date|date('d.m.Y') }} -
+                                                <strong>{{ price.price|number_format(2) }}</strong> -
+                                                <a data-toggle="tooltip" title="{{ 'package.edit.tariff'|trans }}"
+                                                   href="{{ path('tariff_edit', {id: price.tariff.id}) }}">
+                                                    <i class="fa fa-sliders"></i> {{ price.tariff }}
+                                                </a>
+                                                {% if price.promotion %}
+                                                    - <a data-toggle="tooltip" title="{{ 'package.edit.promotions'|trans }}"
+                                                         href="{{ path('promotion_edit', {id: price.promotion.id}) }}">
+                                                    <i class="fa fa-bookmark"></i> {{ price.promotion }}
+                                                </a>
+                                                {% endif %}
+                                                {% if price.special %}
+                                                    - <a data-toggle="tooltip" title="{{ 'package.edit.promotions'|trans }}"
+                                                         href="{{ path('special_edit', {id: price.special.id}) }}">
+                                                    <i class="fa fa-star"></i> {{ price.special }}
+                                                </a>
+                                                {% endif %}
+                                            </small>
+                                            <br>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if package.searchQuery is iterable %}
+                            {% for query in package.searchQuery %}
+                                <tr>
+                                <td class="col-md-3">
+                                    <strong>{{ 'package.edit.query'|trans({}, 'MBHPackageBundle') }} {{ loop.index }}</strong>
+                                </td>
+                                <td>
+                                    <p>
+                                        <small><a href="javascript: toggler('main-query{{ loop.index }}')">показать/скрыть</a></small>
+                                    </p>
+                                    <div id="main-query{{ loop.index }}" style="display: none;">
+                                        <small>
+                                            <p>
+                                                {{ query.createdAt|date('d.m.Y') }}
+                                            </p>
+                                            {% if query.adults %}
+                                                <p>
+                                                    Взрослых - <strong>{{ query.adults }} {{ 'adults.full'|transchoice(query.adults) }}</strong>
+                                                </p>
                                             {% endif %}
-                                         </td>
-                                    </tr>
+                                            {% if query.children %}
+                                                <p>
+                                                    Детей - <strong>{{ query.children }} {{ 'children.full'|transchoice(query.children) }}</strong>
+                                                </p>
+                                            {% endif %}
+                                            {% if query.childrenAges and query.childrenAges is iterable %}
+                                                <p>
+                                                    Возраста -
+                                                    <strong>
+                                                        {% for age in query.childrenAges %}
+                                                            {{ age }} {{ 'age.full'|transchoice(age) }}
+                                                        {% endfor %}
+                                                    </strong>
+                                                </p>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
 
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-
-                </div>
+                        {% if package.pricesByDate is not empty and package.prices is empty %}
+                            <tr>
+                                <td class="col-md-3">
+                                    <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    {% if package.pricesByDate|length > 5 %}
+                                        <p>
+                                            <small>
+                                                <a href="javascript: toggler('price-by-days')">{{ 'package.edit.show_display'|trans}}</a>
+                                            </small>
+                                        </p>
+                                    {% endif %}
+                                    <div id="price-by-days"
+                                         {% if package.pricesByDate|length > 5 %}style="display: none;"{% endif %}>
+                                        {% for date, price in package.pricesByDate %}
+                                            <small>{{ date|replace({'_': '.'}) }} -
+                                                <strong>{{ price|number_format(2) }}</strong></small><br>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
             </div>
+            <div class="col-md-6">
+                <table class="table not-auto-datatable table-striped">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <strong>{{ 'package.edit.service_price'|trans({}, 'MBHPackageBundle') }}</strong>
+                        </td>
+                        <td>
+                            {{ package.servicesPrice|number_format(2) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>{{ 'package.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong>
+                        </td>
+                        <td>
+                                            <span
+                                                    class="text-{{ statuses[status].class }}">{{ statuses[status].title }} {% if status == 'channel_manager' %}({{ package.channelManagerType }}){% endif %}</span>
+                            {% if package.deletedAt %} &nbsp;
+                                <small class="text-danger"><i
+                                            class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}
+                                </small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>{{ 'package.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong>
+                        </td>
+                        <td>
+                            {% if package.confirmed %}
+                                <small class="text-success"><i
+                                            class="fa fa-check"> </i> {{ 'package.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}
+                                </small>
+                            {% else %}
+                                <small class="text-danger"><i
+                                            class="fa fa-times"> </i> {{ 'package.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}
+                                </small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if package.virtualRoom %}
+                    <tr>
+                        <td>
+                            <strong>{{ 'package.edit.virtual_room'|trans({}, 'MBHPackageBundle') }}</strong>
+                        </td>
+                        <td>
+                            {{ package.virtualRoom }}
+                        </td>
+                    </tr>
+                    {% endif %}
 
-            {{ form_start(form, {'action': path('package_update', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-            {{ form_widget(form) }}
-            {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_EDIT'} %}
-            {{ form_end(form) }}
-
-            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs, 'delete_route': 'package_delete' } %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+    </div>
+    </div>
+
+    {{ form_start(form, {'action': path('package_update', {'id': package.id}),  'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_EDIT'} %}
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs, 'delete_route': 'package_delete' } %}
+    </div>
     </div>
 {% endblock %}

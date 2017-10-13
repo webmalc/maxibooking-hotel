@@ -2,9 +2,9 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
-use MBH\Bundle\FMSBundle\Service\FMSExport\AttachedFile;
-use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\BaseBundle\Lib\ChoicerInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Order;
 
 /**
  * NotifierMessage
@@ -32,14 +32,9 @@ class NotifierMessage
     private $from;
 
     /**
-     * @var RecipientInterface
+     * @var RecipientInterface[]
      */
     private $recipients = [];
-
-    /**
-     * @var array AttachedFile[]
-     */
-    private $attachedFiles = [];
 
     /**
      * @var bool
@@ -100,6 +95,34 @@ class NotifierMessage
      * @var string
      */
     private $signature = null;
+
+    /**
+     * @var string
+     */
+    private $headerText = null;
+
+    /** @var string */
+    private $messageType = null;
+
+
+    /**
+     * @return string
+     */
+    public function getHeaderText(): ?string
+    {
+        return $this->headerText;
+    }
+
+    /**
+     * @param string $headerText
+     * @return NotifierMessage
+     */
+    public function setHeaderText(string $headerText): NotifierMessage
+    {
+        $this->headerText = $headerText;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -311,6 +334,7 @@ class NotifierMessage
     }
 
     /**
+     * @deprecated Use setMessageType
      * @param $category
      * @return $this
      */
@@ -435,30 +459,26 @@ class NotifierMessage
         return $this;
     }
 
-    /**
-     * @return AttachedFile[]
-     */
-    public function getAttachedFiles(): array
-    {
-        return $this->attachedFiles;
-    }
 
     /**
-     * @param AttachedFile[] $attachedFiles
-     */
-    public function setAttachedFiles(array $attachedFiles)
-    {
-        $this->attachedFiles = $attachedFiles;
-    }
-
-    /**
-     * @param AttachedFile $file
+     * @param string $messageType
      * @return $this
      */
-    public function addAttachedFiles(AttachedFile $file)
+    public function setMessageType(string $messageType)
     {
-        $this->attachedFiles[] = $file;
+        $this->messageType = $messageType;
 
         return $this;
     }
+
+
+    /**
+     * @return null|string
+     */
+    public function getMessageType(): ?string
+    {
+        return $this->messageType;
+    }
+
+
 }

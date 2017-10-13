@@ -11,8 +11,8 @@ use MBH\Bundle\RestaurantBundle\Form\DishMenuCategoryType as DishMenuCategoryFor
 use MBH\Bundle\RestaurantBundle\Form\DishMenuItemType as DishMenuItemForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -26,7 +26,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
     /**
      * List all  category
      *
-     * @Route("/", name="restaurant_dishmenu_category")
+     * @Route("/", name="restaurant_dishmenu_category", options={"expose"=true})
      * @Route("/", name="restaurant_dishmenu_item")
      * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_VIEW')")
      * @Template()
@@ -57,14 +57,14 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         $entity = new DishMenuCategory();
         $entity->setHotel($this->hotel);
         
-        $form = $this->createForm(new DishMenuCategoryForm(), $entity);
+        $form = $this->createForm(DishMenuCategoryForm::class, $entity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', 'restaurantbundle.controller.entity_successful_created');
 
             return $this->afterSaveRedirect('restaurant_dishmenu_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -89,14 +89,14 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new DishMenuCategoryForm(), $category);
+        $form = $this->createForm(DishMenuCategoryForm::class, $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($category);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', 'restaurantbundle.controller.entry_successfully_edited');
 
             return $this->afterSaveRedirect('restaurant_dishmenu_category', $category->getId(), ['tab' => $category->getId()]);
         }
@@ -141,14 +141,14 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         $item = new DishMenuItem();
         $item->setCategory($category);
 
-        $form = $this->createForm(new DishMenuItemForm(), $item);
+        $form = $this->createForm(DishMenuItemForm::class, $item);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($item);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', 'restaurantbundle.controller.entity_successful_created');
 
             return $this->afterSaveRedirect('restaurant_dishmenu_item', $item->getId(), ['tab' => $category->getId()]);
         }
@@ -181,14 +181,14 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
 
         $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findByHotelByCategoryId($this->helper, $this->hotel);
 
-        $form = $this->createForm(new DishMenuItemForm(), $item);
+        $form = $this->createForm(DishMenuItemForm::class, $item);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             $this->dm->persist($item);
             $this->dm->flush();
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', 'restaurantbundle.controller.entry_successfully_edited');
 
             if ($request->get('save') !== null) {
                 return $this->redirectToRoute('restaurant_dishmenu_item_edit', ['id' =>$item->getId()]);
@@ -261,8 +261,8 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         $flashBag = $request->getSession()->getFlashBag();
 
         $success ?
-            $flashBag->set('success', 'Цены успешно сохранены.'):
-            $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+            $flashBag->set('success', 'restaurantbundle.controller.price_successfully_saved'):
+            $flashBag->set('danger', 'restaurantbundle.controller.attention_not_all_parameter_successful_saved');
 
         $activetab = $request->get('activetab')?:null;
         return $this->redirectToRoute('restaurant_dishmenu_category', ['tab' => substr($activetab,1)]);

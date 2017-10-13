@@ -1,13 +1,14 @@
 <?php
 namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomStatus;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
-use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -15,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  * Class TaskData
 
  */
-class TaskData implements FixtureInterface, ContainerAwareInterface
+class TaskData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
@@ -24,19 +25,19 @@ class TaskData implements FixtureInterface, ContainerAwareInterface
         return [
             [
                 'code' => 'repair',
-                'title' => 'Ремонт',
+                'title' => 'mbhhotelbundle.taskData.repair',
             ],
             [
                 'code' => 'cleaning',
-                'title' => 'Уборка',
+                'title' => 'mbhhotelbundle.taskData.cleaning',
             ],
             [
                 'code' => 'reserve',
-                'title' => 'Резерв',
+                'title' => 'mbhhotelbundle.taskData.reserve',
             ],
             [
                 'code' => 'other',
-                'title' => 'Другое',
+                'title' => 'mbhhotelbundle.taskData.other',
             ]
         ];
     }
@@ -55,14 +56,19 @@ class TaskData implements FixtureInterface, ContainerAwareInterface
 
     public function persistForHotel(ObjectManager $manager, Hotel $hotel)
     {
+        /** @var DocumentRepository $roomStatusRepository */
         $roomStatusRepository = $manager->getRepository('MBHHotelBundle:RoomStatus');
         $taskTypeCategoryRepository = $manager->getRepository('MBHHotelBundle:TaskTypeCategory');
         $taskTypeRepository = $manager->getRepository('MBHHotelBundle:TaskType');
+        $translator = $this->container->get('translator');
 
         $repairStatusList = [];
         foreach($this->getRoomStatuses() as $roomStatus) {
             $repairStatus = new RoomStatus();
-            $repairStatus->setCode($roomStatus['code'])->setTitle($roomStatus['title'])->setHotel($hotel);
+            $repairStatus
+                ->setCode($roomStatus['code'])
+                ->setTitle($this->container->get('translator')->trans($roomStatus['title']))
+                ->setHotel($hotel);
             $isNotExists = $roomStatusRepository->createQueryBuilder()
                     ->field('code')->equals($repairStatus->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
@@ -78,15 +84,15 @@ class TaskData implements FixtureInterface, ContainerAwareInterface
 
         $category->setIsSystem(true)
             ->setCode('clean')
-            ->setTitle('Уборка')
-            ->setFullTitle('Уборка помещений')
+            ->setTitle($translator->trans('mbhhotelbundle.taskData.cleaning'))
+            ->setFullTitle($translator->trans('mbhhotelbundle.taskData.place_cleaning'))
             ->setHotel($hotel);
 
         $taskType = new TaskType();
         $staff = $manager->getRepository('MBHUserBundle:Group')->findOneBy(['code' => 'staff']);
         $taskType->setIsSystem(true)
             ->setCode('clean_room')
-            ->setTitle('Убрать комнату')
+            ->setTitle($translator->trans('mbhhotelbundle.taskData.clean_room'))
             ->setCategory($category)
             ->setDefaultUserGroup($staff)
             ->setHotel($hotel);
@@ -109,5 +115,10 @@ class TaskData implements FixtureInterface, ContainerAwareInterface
             $manager->persist($taskType);
         }
         $manager->flush();
+    }
+
+    public function getOrder()
+    {
+        return 9999;
     }
 }

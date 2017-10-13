@@ -1,4 +1,4 @@
-<form method="post" action="{{ data.test is defined ? data.testAction|default('') : data.action|default('') }}">
+<form target="_top" method="post" action="{{ data.test is defined ? data.testAction|default('') : data.action|default('') }}">
     <input type="hidden" name="MNT_ID" value="{{ data.shopId|default('') }}">
     <input type="hidden" name="MNT_TRANSACTION_ID" value="{{ data.orderId|default('') }}">
     <input type="hidden" name="MNT_CURRENCY_CODE" value="RUB">

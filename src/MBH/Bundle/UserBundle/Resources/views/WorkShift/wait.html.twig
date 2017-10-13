@@ -6,13 +6,13 @@
 
         <div class="alert alert-primary text-center">
             <div>
-                <i class="fa fa-spinner fa-spin"></i> {{ 'mbhuserbundle.view.workshift.wait.vashasmenazablokirovanaiozhidayetsdachi'|trans }} .
+                <i class="fa fa-spinner fa-spin"></i> {{ 'view.wait.your_shift_is_blocked'|trans}}
             </div>
             <div>
-                {{ 'mbhuserbundle.view.workshift.wait.dlitelʹnostʹ'|trans }} : {{ workShift.duration.format('%h ч. %i мин.') }}
+                {{ 'view.wait.duration'|trans}}: {{ 'view.wait.time'|trans({"%hourst%": workShift.duration|date('H'), "%minutes%" : workShift.duration|date('i')}) }}
             </div>
             <div>
-                {{ 'mbhuserbundle.view.workshift.wait.kassa'|trans }} : {{ workShift.cashIncomeTotal|number_format(2) }} {{ 'mbhuserbundle.view.workshift.wait.rub'|trans }} .
+                {{ 'view.wait.cash'|trans}}: {{ workShift.cashIncomeTotal|number_format(2) }} руб.
             </div>
         </div>
 
@@ -26,8 +26,7 @@
 
             <div class="text-center">
                 <div class="btn-group">
-                    <a href="{{ path('work_shift_start', {id: workShift.id}) }}" class="btn btn-info btn-lg"><i class="fa fa-clock-o"> {{ 'mbhuserbundle.view.workshift.wait.vozobnovitʹ'|trans }} </i></a>
-                    <!--<a href="#" class="btn btn-info btn-lg"><i class="fa fa-report"> {{ 'mbhuserbundle.view.workshift.wait.otchet'|trans }} </i></a>-->
+                    <a href="{{ path('work_shift_start', {id: workShift.id}) }}" class="btn btn-info btn-lg"><i class="fa fa-clock-o"> {{ 'view.wait.resume'|trans}}</i></a>
                     <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-lg"><i class="fa fa-sign-out"></i> {{ 'mbhuserbundle.view.workshift.wait.vyyti'|trans }} </a>
                 </div>
             </div>

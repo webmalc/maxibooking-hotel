@@ -1,7 +1,8 @@
-/*global window, $, document, Routing*/
-/*jslint regexp: true */
+/*global window, $, document, Routing, mbhGridCopy*/
+
 $(document).ready(function () {
     'use strict';
+
     //Show table
     var pricesProcessing = false,
         showTable = function () {
@@ -42,7 +43,7 @@ $(document).ready(function () {
             if (wrapper.length === 0) {
                 return false;
             }
-            wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            wrapper.html(mbh.loader.html);
             if (!pricesProcessing) {
                 $.ajax({
                     url: Routing.generate('restriction_overview_table'),
@@ -54,6 +55,7 @@ $(document).ready(function () {
                         end.val($('#restriction-overview-end').val());
                         inputs();
                         pricesProcessing = false;
+                        mbhGridCopy();
                     },
                     dataType: 'html'
                 });
@@ -70,7 +72,7 @@ $(document).ready(function () {
         var prices = $('input.delete-prices'),
             showMessage = function () {
                 prices.each(function () {
-                    var text = parseInt($(this).val(), 10) === -1 ? 'Цена будет удалена' : '';
+                    var text = parseInt($(this).val(), 10) === -1 ? Translator.trans("060-restriction.price_will_be_removed") : '';
                     $(this).closest('.col-md-4').
                         next('.col-md-6').
                         html('<span class="text-danger text-left input-errors">' + text +  '</span>');

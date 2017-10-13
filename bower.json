@@ -41,6 +41,8 @@
     "select2": "~4.0.0",
     "bootstrap-daterangepicker": "^2.1.17",
     "codemirror": "^5.12.0",
-    "datatables-buttons": "^1.1.2"
+    "datatables-buttons": "^1.1.2",
+    "readmore-js": "readmore#^2.2.0",
+    "font-awesome-animation": "^0.0.10"
   }
 }

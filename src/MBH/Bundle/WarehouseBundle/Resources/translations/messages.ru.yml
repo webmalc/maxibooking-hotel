@@ -1,20 +1,6 @@
-mbhwarehousebundle.form.recordfiltertype.s: с
 mbhwarehousebundle.form.recordfiltertype.po: по
-mbhwarehousebundle.view.invoice.edit.redaktirovaniyenakladnoy: 'редактирование накладной '
-mbhwarehousebundle.view.invoice.index.spisoktovarnykhnakladnykh: 'Список товарных накладных'
-mbhwarehousebundle.view.invoice.index.operatsiya: Операция
-mbhwarehousebundle.view.invoice.index.amount: Amount
-mbhwarehousebundle.view.invoice.index.data: Дата
-mbhwarehousebundle.view.invoice.index.nomer: Номер
-mbhwarehousebundle.view.invoice.index.organizatsiya: Организация
-mbhwarehousebundle.view.invoice.index.otelʹ: Отель
-mbhwarehousebundle.view.invoice.invoicescripts.oshibka: 'Ошибка. Количество не может быть нулевым'
-mbhwarehousebundle.view.invoice.new.sozdaniyenovoytovarnoynakladnoy: 'создание новой товарной накладной'
-mbhwarehousebundle.view.invoice.new.dobavitʹ: Добавить
-mbhwarehousebundle.view.invoice.edit.dobavitʹ: Добавить
-mbhwarehousebundle.view.record.index.daty: Даты
 warehouse.common.title: Склад
-warehouse.common.subtitle: список
+warehouse.common.subtitle: Список
 warehouse.common.edit: Редактировать
 warehouse.common.del: Удалить
 warehouse.common.included: Включен
@@ -23,7 +9,7 @@ warehouse.common.info: 'Общая информация'
 warehouse.common.settings: Настройки
 warehouse.rec.edit: 'Редактирование записи'
 warehouse.rec.del: 'Удаление записи'
-warehouse.field.price: Цена
+warehouse.record.th.price: Цена
 warehouse.field.unit: 'Ед. изм.'
 warehouse.field.unitPlaceholder: 'шт., литр…'
 warehouse.cat.title: Категория
@@ -42,7 +28,6 @@ warehouse.items.new: 'создание товара в категории'
 warehouse.items.new1: 'Создать товар в категории'
 warehouse.items.add: 'Добавить товар'
 warehouse.items.notused: 'Товар не используется'
-warehouse.items.staple: 'Основные товары'
 warehouse.items.placeholder: 'Основные товары'
 warehouse.items.placeholderShort: Мыло
 warehouse.items.maxiTitle: 'Название для использования внутри MaxiBooking'
@@ -66,9 +51,29 @@ warehouse.record.hotels: Отели
 warehouse.record.goods: Товары
 warehouse.record.in: приход
 warehouse.record.out: расход
-warehouse.record.list: 'список приходов-расходов'
+warehouse.record.list: 'Список приходов-расходов'
 warehouse.record.inventory: остатки
 warehouse.record.tabs.list: Записи
 warehouse.record.tabs.inventory: Остатки
 warehouse.record.th.quantity: Кол-во
-warehouse.record.th.price: Цена
+warehouse.fixtures.mongodb.warehousedata.household_chemical: 'Бытовая химия'
+warehouse.fixtures.mongodb.warehousedata.food: Питание
+warehouse.fixtures.mongodb.warehousedata.underwear: Белье
+warehouse.eventlistener.warehousesubscriber.can_not_delete_product_category: 'Невозможно удалить категорию с товарами'
+warehouse.controller.invoicecontroller.new_consignment_note_has_been_created_successfully: 'Новая накладная успешно создана'
+warehouse.controller.invoicecontroller.consignment_saved: 'Накладная сохранена'
+warehouse.resources.view.record.dates: Даты
+warehouse.resources.view.invoice.add: Добавить
+warehouse.resources.view.inwoice.edit_consignment: 'редактирование накладной'
+warehouse.resources.view.invoice.new.add: Добавить
+warehouse.resources.view.creation_of_new_commodity_waybill: 'создание новой товарной накладной'
+warehouse.resources.view.error_the_number_can_not_be_zero: 'Ошибка. Количество не может быть нулевым!'
+warehouse.resources.view.operation: Операция
+warehouse.resources.view.date: Дата
+warehouse.resources.view.nubmer: Номер
+warehouse.resources.view.organization: Организация
+warehouse.resources.view.hotel: Отель
+warehouse.resources.view.lists: 'Список товарных накладных'
+warehouse.resources.form.recordfiltertype.with: с
+warehouse.field.price: Цена
+warehouse.items.staple: 'Основные товары'

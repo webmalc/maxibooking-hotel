@@ -3,27 +3,27 @@
 {% set layout = "box" %}
 
 {% block content %}
-    {% embed '@MBHBase/Partials/embed_filter.html.twig' with {'id': 'dishorder-table-filter-widget'}  %}
+    {% embed '@MBHBase/Partials/embed_filter.html.twig' with {'id': 'dishorder-table-filter-widget'} %}
         {% block content %}
             {% if form is defined %}
                 {{ form_start(form) }}
 
                 {% if form.begin is defined %}
                     <div class="form-group">
-                        <label><i class="fa fa-calendar" title='{{ 'mbhrestaurantbundle.view.dishorder.index.daty'|trans }} ' data-toggle='tooltip'></i></label>
+                        <label><i class="fa fa-calendar" title='{{ 'dish_order.index.dates_filter'|trans }}' data-toggle='tooltip'></i></label>
                         {{ form_widget(form.begin) }} —
                         {{ form_widget(form.end) }}
                     </div>
                 {% endif %}
                 {% if form.money_begin is defined %}
                     <div class="form-group">
-                        <label><i class="fa fa-money" title="{{ 'mbhrestaurantbundle.view.dishorder.index.tseny'|trans }} " data-toggle="tooltip"></i></label>
+                        <label><i class="fa fa-money" title="{{ 'dish_order.index.prices_filter'|trans }}" data-toggle="tooltip"></i></label>
                         {{ form_widget(form.money_begin) }}—
                         {{ form_widget(form.money_end) }}
                     </div>
                 {% endif %}
                 <div class="form-group">
-                    <label><i class="fa fa-money" title="{{ 'mbhrestaurantbundle.view.dishorder.index.oplachen'|trans }} " data-toggle="tooltip"></i></label>
+                    <label><i class="fa fa-money" title="{{ 'dish_order.index.paid'|trans }}" data-toggle="tooltip"></i></label>
                     &nbsp;{{ form_widget(form.is_freezed) }}
                     {{ form_widget(form._token) }}
                 </div>
@@ -36,7 +36,7 @@
 
     </div>
 
-        <div class="box-body">
+    <div class="box-body">
         <table id="dishorder-table"
                class="table table-actions not-auto-datatable table-striped table-hover table-condensed table-icons">
             <thead>
@@ -45,7 +45,8 @@
                 <th>{{ 'restaurant.dishorder.table.number'|trans }}</th>
                 <th class="td-md text-center">{{ 'restaurant.dishorder.table.table'|trans }}</th>
                 <th class="td-xs">{{ 'restaurant.dishorder.table.time'|trans }}</th>
-                <th class="td-sm text-right">{{ 'restaurant.dishorder.table.price'|trans }} <i class="fa {{ currency().icon }}"></i></th>
+                <th class="td-sm text-right">{{ 'restaurant.dishorder.table.price'|trans }} <i
+                            class="fa {{ currency().icon }}"></i></th>
                 <th class="td-md text-center">{{ 'restaurant.dishorder.table.freezed'|trans }}</th>
                 <th class="td-sm text-center">{{ 'restaurant.dishorder.table.doing'|trans }}</th>
             </tr>
@@ -56,8 +57,12 @@
 
             </tbody>
         </table>
-        </div> <!-- /.box-body -->
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'restaurant_dishorder_new', 'role': 'RESTAURANT_DISHORDER'} %}
+    </div> <!-- /.box-body -->
+    {% if isDishes %}
+        {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'restaurant_dishorder_new', 'role': 'RESTAURANT_DISHORDER'} %}
+    {% else %}
+        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'restaurant.dishorder.nodish'|trans|capitalize }}. <a href="{{ path('restaurant_dishmenu_item') }}">{{ 'restaurant.dishmenu.item.action.new'|trans|capitalize }}?</a></div>
+    {% endif %}
 {% endblock %}
 
 

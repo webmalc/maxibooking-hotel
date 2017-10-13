@@ -3,87 +3,123 @@
 namespace MBH\Bundle\PriceBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class ServiceType
  */
 class ServiceType extends AbstractType
 {
+    /** @var  TranslatorInterface $translator */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.nazvaniye',
                 'required' => true,
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'attr' => ['placeholder' => 'mbhpricebundle.form.servicetype.seyf']
             ])
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.vnutrenneyenazvaniye',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'attr' => ['placeholder' => 'Сейф - лето ' . date('Y')],
-                'help' => 'Название для использования внутри MaxiBooking'
+                'attr' => ['placeholder' => $this->translator->trans('price.form.save_summer') . ' ' . date('Y')],
+                'help' => 'price.form.name_for_using_inside_maxibooking'
             ])
-            ->add('international_title', 'text', [
+            ->add('international_title', TextType::class, [
                 'label' => 'form.roomTypeType.international_title',
                 'required' => false,
-                'group' => 'Общая информация',
-                //'help' => 'mbhpricebundle.form.servicetype.mezhdunarodnoyenazvaniye'
+                'group' => 'price.form.public_information',
+                //'help' => 'mbhpricebundle.form.servicetype.mezhdunarodnoye.nazvaniye'
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextareaType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.opisaniye',
                 'required' => false,
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'help' => 'mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya'
             ])
-            ->add('calcType', 'choice', [
+            ->add('calcType', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.tiprascheta',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => true,
-                'empty_value' => '',
+                'placeholder' => '',
                 'multiple' => false,
                 'choices' => $options['calcTypes'],
             ])
-            ->add('price', 'text', [
+            ->add('recalcWithPackage', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.is_displaceable',
+                'value' => true,
+                'group' => 'price.form.public_information',
+                'required' => false,
+                'help' => 'mbhpricebundle.form.servicetype.is_displaceable.help',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('includeArrival', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.includeArrival',
+                'value' => true,
+                'group' => 'price.form.public_information',
+                'required' => false,
+                'help' => 'mbhpricebundle.form.servicetype.includeArrival.help',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('includeDeparture', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.includeDeparture',
+                'value' => true,
+                'group' => 'price.form.public_information',
+                'required' => false,
+                'help' => 'mbhpricebundle.form.servicetype.includeDeparture.help',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('price', TextType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.tsena',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'attr' => ['placeholder' => 'mbhpricebundle.form.servicetype.usluganeispolʹzuyetsya', 'class' => 'spinner price-spinner'],
+                'attr' => ['placeholder' => 'price.form.service_not_use', 'class' => 'spinner price-spinner'],
             ])
-            ->add('date', 'checkbox', [
-                'label' => 'mbhpricebundle.form.servicetype.data?',
-                'group' => 'Настройки',
+            ->add('date', CheckboxType::class, [
+                'label' => 'price.form.date',
+                'group' => 'price.form.setting',
                 'value' => true,
                 'required' => false,
-                'help' => 'mbhpricebundle.form.servicetype.ispolʹzovatʹlidatupridobavleniiuslugikbroni?'
+                'help' => 'price.form.use_date_when_adding_service_reservation'
             ])
-            ->add('time', 'checkbox', [
-                'label' => 'mbhpricebundle.form.servicetype.vremya?',
-                'group' => 'Настройки',
+            ->add('time', CheckboxType::class, [
+                'label' => 'price.form.time',
+                'group' => 'price.form.setting',
                 'value' => true,
                 'required' => false,
-                'help' => 'mbhpricebundle.form.servicetype.ispolʹzovatʹlivremyapridobavleniiuslugikbroni?'
+                'help' => 'price.form.should_i_use_time_when_i_add_service_my_reservation'
             ])
-            ->add('isOnline', 'checkbox', [
-                'label' => 'mbhpricebundle.form.servicetype.onlayn?',
+            ->add('isOnline', CheckboxType::class, [
+                'label' => 'price.form.online',
                 'value' => true,
-                'group' => 'Настройки',
+                'group' => 'price.form.setting',
                 'required' => false,
-                'help' => 'mbhpricebundle.form.servicetype.ispolʹzovatʹliusluguvonlaynbronirovanii?'
+                'help' => 'price.form.should_i_use_service_online_booking'
             ])
-            ->add('isEnabled', 'checkbox', [
-                'label' => 'mbhpricebundle.form.servicetype.vklyuchena?',
-                'group' => 'Настройки',
+            ->add('isEnabled', CheckboxType::class, [
+                'label' => 'price.form.she_on',
+                'group' => 'price.form.setting',
                 'value' => true,
                 'required' => false,
-                'help' => 'mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi?'
+                'help' => 'price.form.is_service_available_sale'
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\PriceBundle\Document\Service',
@@ -91,9 +127,8 @@ class ServiceType extends AbstractType
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_pricebundle_service_type';
     }
-
 }

@@ -1,7 +1,41 @@
-/*global window, $, document, Routing*/
-/*jslint regexp: true */
+/*global window, $, document, Routing, mbhGridCopy */
+
 $(document).ready(function () {
     'use strict';
+    var $displayedDateInput = $('#displayed-prices-date').eq(0);
+    var $displayedTimeInput = $('#displayed-prices-time');
+    var $irrelevantPricesAlert = $('#irrelevant-prices-alert');
+    var $irrelevantPricesAlertDate = $('#irrelevant-prices-alert-date');
+    $displayedTimeInput.timepicker({
+        showMeridian: false,
+        minuteStep: 5
+    });
+    if ($displayedDateInput.val()) {
+        $irrelevantPricesAlert.show();
+        $irrelevantPricesAlertDate.text($displayedDateInput.val() + ' ' + $displayedTimeInput.val())
+    } else {
+        $displayedTimeInput.val('');
+        $displayedTimeInput.attr('disabled', true);
+    }
+
+    $displayedDateInput.change(function () {
+        if (!this.value) {
+            $irrelevantPricesAlert.hide();
+            $displayedTimeInput.val('');
+            $displayedTimeInput.attr('disabled', true);
+        } else {
+            $irrelevantPricesAlert.show();
+            $irrelevantPricesAlertDate.text(this.value + ' ' + $displayedTimeInput.val());
+            $displayedTimeInput.removeAttr('disabled');
+            if (!$displayedTimeInput.val()) {
+                $displayedTimeInput.val('00:00');
+            }
+        }
+    });
+    $irrelevantPricesAlert.find('.close').click(function () {
+        $displayedDateInput.val('').trigger("change");
+    });
+
     //Show table
     var pricesProcessing = false,
         showTable = function () {
@@ -12,37 +46,41 @@ $(document).ready(function () {
                     'begin': begin.val(),
                     'end': end.val(),
                     'roomTypes': $('#price-cache-overview-filter-roomType').val(),
-                    'tariffs': $('#price-cache-overview-filter-tariff').val()
+                    'tariffs': $('#price-cache-overview-filter-tariff').val(),
+                    'displayed-prices-date' : $displayedDateInput.val(),
+                    'displayed-prices-time' : $('#displayed-prices-time').val()
                 },
                 inputs = function () {
                     var input = $('input.mbh-grid-input, span.disabled-detector');
-                    input.closest('td').click(function () {
-                        var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
-                            field = $(this).children('span.input').children('input[disabled]');
+                    if (!$displayedDateInput.val()) {
+                        input.closest('td').click(function () {
+                            var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
+                                field = $(this).children('span.input').children('input[disabled]');
 
-                        td.children('span.input').children('input').removeAttr('disabled');
+                            td.children('span.input').children('input').removeAttr('disabled');
 
-                        if (field.prop('type') === 'checkbox') {
-                            field.prop('checked', !field.prop('checked')).css('checkbox-end');
-                        } else {
-                            field.focus();
-                        }
-                        td.children('span.input').children('span.disabled-detector').remove();
-                    });
-                    input.change(function () {
-                        if (this.value === '') {
-                            return;
-                        }
-                        var value = parseFloat(this.value);
-                        if (value < 0 || isNaN(value)) {
-                            this.value = 0;
-                        }
-                    });
+                            if (field.prop('type') === 'checkbox') {
+                                field.prop('checked', !field.prop('checked')).css('checkbox-end');
+                            } else {
+                                field.focus();
+                            }
+                            td.children('span.input').children('span.disabled-detector').remove();
+                        });
+                        input.change(function () {
+                            if (this.value === '') {
+                                return;
+                            }
+                            var value = parseFloat(this.value);
+                            if (value < 0 || isNaN(value)) {
+                                this.value = 0;
+                            }
+                        });
+                    }
                 };
             if (wrapper.length === 0) {
                 return false;
             }
-            wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            wrapper.html(mbh.loader.html);
             if (!pricesProcessing) {
                 $.ajax({
                     url: Routing.generate('price_cache_overview_table'),
@@ -56,6 +94,7 @@ $(document).ready(function () {
                         end.val($('#price-cache-overview-end').val());
                         inputs();
                         pricesProcessing = false;
+                        mbhGridCopy();
                     },
                     dataType: 'html'
                 });
@@ -66,13 +105,17 @@ $(document).ready(function () {
     $('.price-cache-overview-filter').change(function () {
         showTable();
     });
+    $displayedTimeInput.on('hide.timepicker', function() {
+        $irrelevantPricesAlertDate.text($displayedDateInput.val() + ' ' + $displayedTimeInput.val());
+        showTable();
+    });
 
     //generator
     (function () {
         var prices = $('input.delete-prices'),
             showMessage = function () {
                 prices.each(function () {
-                    var text = parseInt($(this).val(), 10) === -1 ? 'Цена будет удалена' : '';
+                    var text = parseInt($(this).val(), 10) === -1 ? Translator.trans("005-priceCache.price_will_be_removed") : '';
                     $(this).closest('.col-sm-6').
                         next('.col-sm-4').
                         html('<span class="text-danger text-left input-errors">' + text + '</span>');

@@ -5,13 +5,15 @@ namespace MBH\Bundle\CashBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\PdfGenerator;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\BaseBundle\Lib\Exception;
+use Doctrine\ODM\MongoDB\Events;
 
 /**
  * Class CashDocumentSubscriber
@@ -38,7 +40,9 @@ class CashDocumentSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            'postPersist'
+            'postPersist',
+            Events::prePersist => 'prePersist',
+            Events::preUpdate => 'preUpdate'
         ];
     }
 
@@ -56,8 +60,44 @@ class CashDocumentSubscriber implements EventSubscriber
                 $this->createPdfOrderDocument($document, $args->getDocumentManager());
             } catch (Exception $e) {
                 $session = $this->container->get('session');
-                $session->getFlashBag()->add('danger', 'Документ для печати не создан. ' . $e->getMessage());
+                $session->getFlashBag()->add('danger', $this->container->get('translator')->trans('cashDocumentSubscriber.document.dlia.pechati.ne.sozdan') . ' ' . $e->getMessage());
             }
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function prePersist(LifecycleEventArgs $args)
+    {
+        $cashDocument = $args->getDocument();
+        if ($cashDocument instanceof CashDocument) {
+            $this->trySendOnConfirmationNotification($cashDocument);
+        }
+    }
+
+    /**
+     * @param PreUpdateEventArgs $args
+     */
+    public function preUpdate(PreUpdateEventArgs $args)
+    {
+        $cashDocument = $args->getDocument();
+
+        if ($cashDocument instanceof CashDocument) {
+            /** @var CashDocument $cashDocument */
+            if ($args->hasChangedField('isConfirmed')) {
+                $this->trySendOnConfirmationNotification($cashDocument);
+            }
+        }
+    }
+
+    /**
+     * @param CashDocument $cashDocument
+     */
+    private function trySendOnConfirmationNotification(CashDocument $cashDocument)
+    {
+        if ($cashDocument->getIsConfirmed() && $cashDocument->isSendMail() && $cashDocument->getOperation() == 'in' && $cashDocument->getPayer()) {
+            $this->container->get('mbh.cash')->sendMailAtCashDocumentConfirmation($cashDocument);
         }
     }
 
@@ -71,14 +111,14 @@ class CashDocumentSubscriber implements EventSubscriber
     {
         $currency = $this->container->get('mbh.currency')->info();
         $orderDocument = new OrderDocument();
-        $orderDocument->setName('Счёт на оплату');
+        $orderDocument->setName($this->container->get('translator')->trans('cashDocumentSubscriber.schet.na.oplatu'));
         $orderDocument->setOriginalName('bill_'.$document->getNumber().'_'.$document->getDocumentDate()->format('d.m.Y').'.pdf');
         $id = uniqid();
         $orderDocument->setName($id.'.pdf');
         $orderDocument->setType('invoice_for_payment');
         $orderDocument->setMimeType('application/pdf');
         $orderDocument->setExtension('pdf');
-        $orderDocument->setComment('Счёт №'.$document->getNumber().' от '.$document->getDocumentDate()->format('d.m.Y').' ('.$document->getTotal().' ' . $currency['text'] . ')');
+        $orderDocument->setComment($this->container->get('translator')->trans('cashDocumentSubscriber.schet') . ' №'.$document->getNumber(). ' ' . $this->container->get('translator')->trans('cashDocumentSubscriber.ot') . ' '.$document->getDocumentDate()->format('d.m.Y').' ('.$document->getTotal().' ' . $currency['text'] . ')');
         $orderDocument->setTourist($document->getTouristPayer());
         $orderDocument->setOrganization($document->getOrganizationPayer());
 
@@ -94,33 +134,36 @@ class CashDocumentSubscriber implements EventSubscriber
         $myOrganization = $dm->getRepository('MBHPackageBundle:Organization')->getOrganizationByOrder($document->getOrder());
 
         if (!$myOrganization) {
-            throw new Exception('Не найдена организация для этого отеля из раздела "Мои организации".');
+            throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.naidena.organizacia.dlia.etogo.otela'));
         }
 
         if(!$myOrganization->getBank())
-            throw new Exception('Не установлен "Банк получателя".');
+            throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.ustanovlen.bank.polichatela'));
 
         if(!$myOrganization->getBankBik())
-            throw new Exception('Не установлен "Бик банка".');
+            throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.ustanovlen.bik.polichatela'));
 
         if(!$myOrganization->getCorrespondentAccount())
-            throw new Exception('Не установлен "Корр. счёт".');
+            throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.ustanovlen.kor.shet'));
 
         if(!$myOrganization->getInn())
-            throw new Exception('Не установлен "ИНН".');
+            throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.ustanovlen.inn'));
 
         if(!$myOrganization->getKpp())
-            throw new Exception('Не установлен "КПП".');
+            throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.ustanovlen.kpp'));
 
         if(!$myOrganization->getCheckingAccount())
-            throw new Exception('Не установлен "Расчётный счёт".');
+            throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.ustanovlen.raschetnii.shet'));
 
         if(!$myOrganization->getName())
-            throw new Exception('Не установлено "Название организации".');
+            throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.ustanovleno.nazvanie.organizacii'));
 
+        /** @var \AppKernel $kernel */
+        $kernel = $this->container->get('kernel');
+        $client = $kernel->getClient();
         /** @var PdfGenerator $generator */
         $generator = $this->container->get('mbh.pdf_generator');
-        $generator->setPath($orderDocument->getUploadRootDir());
+        $generator->setPath($orderDocument->getUploadRootDir($client));
         $generator->save($id, $template, ['cashDocument' => $document, 'myOrganization' => $myOrganization]);
 
         $orderDocument->setCashDocument($document);

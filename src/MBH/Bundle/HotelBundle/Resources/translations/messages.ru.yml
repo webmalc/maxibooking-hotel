@@ -1,44 +1,23 @@
-mbhhotelbundle.form.roomtypetaskstype.zadachi_sozdavayemyyeprizayezdegostya: 'Задачи, создаваемые при заезде гостя'
-mbhhotelbundle.form.roomtypetaskstype.privyyezdegostya: 'При выезде гостя'
-mbhhotelbundle.form.roomtypetype.nazvaniyedlyaispolʹzovaniyavnutri: 'Название для использования внутри '
 mbhhotelbundle.form.dailytasktype.dney: Дней
-mbhhotelbundle.form.dailytasktype.vyberiteuslugu: 'Выберите услугу'
-mbhhotelbundle.view.task.list.json.twig.vse: Все
-mbhhotelbundle.view.hotel.new.ozdaniye: создание
-mbhhotelbundle.view.hotel.index.spisok: список
-mbhhotelbundle.view.hotel.index.da: Да
-mbhhotelbundle.view.hotel.notfound.oshibka: ошибка
-mbhhotelbundle.view.roomtype.editimages.delatʹglavnoy: 'сделать главной'
-mbhhotelbundle.view.roomtype.editimages.glavnayafotografiya: 'Главная фотография'
-mbhhotelbundle.view.roomtype.editimages.udalitʹkartinku: 'Удалить картинку'
-mbhhotelbundle.view.roomtype.editautotasks.dobavitʹ: Добавить
-mbhhotelbundle.view.roomtype.new.obshchayainformatsiyainastroyki: 'Общая информация и настройки'
-mbhhotelbundle.view.roomtype.new.fotografii: Фотографии
-mbhhotelbundle.view.roomtype.index.spisok: список
-mbhhotelbundle.view.roomtype.index.gruppaneukazana: 'группа не указана'
-mbhhotelbundle.view.roomtype.edittabs.obshchayainformatsiyainastroyki: 'Общая информация и настройки'
-mbhhotelbundle.view.roomtype.edittabs.fotografii: Фотографии
-mbhhotelbundle.view.roomtype.edittabs.zadachi: Задачи
+mbhhotelbundle.form.dailytasktype.vyberite.uslugu: 'Выберите услугу'
+mbhhotelbundle.form.roomtypetaskstype.zadachi.sozdavayemyye.pri.zayezde.gostya: 'Задачи, создаваемые при заезде гостя'
+mbhhotelbundle.form.roomtypetaskstype.pri.vyyezde.gostya: 'При выезде гостя'
+mbhhotelbundle.view.roomtypecategory.index.da: Да
+mbhhotelbundle.view.roomtype.editimages.glavnaya.fotografiya: 'Главная фотография'
+form.roomTypeCategory.name: Название
 mbhhotelbundle.view.roomtypecategory.index.nazvaniye: Название
 mbhhotelbundle.view.roomtypecategory.index.vklyuchena: Включена
-mbhhotelbundle.view.roomtypecategory.index.tipynomerov: 'Типы номеров'
-mbhhotelbundle.view.roomtypecategory.index.da: Да
+mbhhotelbundle.view.roomtypecategory.index.tipy.nomerov: 'Типы номеров'
 mbhhotelbundle.view.roomtypecategory.index.net: нет
-mbhhotelbundle.view.tasktype.index.redaktirovatʹkategoriyutipovzadach: 'Редактировать категорию типов задач '
-mbhhotelbundle.view.tasktype.index.udalitʹkategoriyutipovzadach: 'Удалить категорию типов задач '
-mbhhotelbundle.view.task.list.json.twig.zapisʹudalena: 'Запись удалена'
-mbhhotelbundle.view.task.list.json.twig.nezadano: 'Не задано'
-mbhhotelbundle.view.task.list.json.twig.vrabote: 'В работе'
-mbhhotelbundle.view.task.list.json.twig.do: 'до '
-mbhhotelbundle.view.task.indexonlyowned.zapisʹudalena: 'Запись удалена'
-mbhhotelbundle.view.task.indexonlyowned.do: 'до '
-mbhhotelbundle.view.task.index.daty: Даты
 form.hotelExtendedType.city: Город
 form.hotelExtendedType.settlement: 'Населенный пункт'
 form.hotelExtendedType.street: Улица
+form.hotelExtendedType.international_street_name.label: 'Международное название'
+form.hotelExtendedType.international_street_name.help: 'Международное название улицы'
 form.hotelExtendedType.house: Дом
 form.hotelExtendedType.corpus: Корпус
 form.hotelExtendedType.flat: Квартира
+form.hotelExtendedType.zip_code: 'Почтовый индекс'
 form.hotelExtendedType.location: Местоположение
 form.hotelExtendedType.address: Адрес
 form.hotelExtendedType.placeholder_location: 'Москва, Московская обл., Щелково'
@@ -48,14 +27,47 @@ form.hotelExtendedType.latitude: Широта
 form.hotelExtendedType.gps_coordinates_latitude: 'GPS координата широты отеля.'
 form.hotelExtendedType.know_hotel_coordinates: 'Узнать координаты отеля.'
 form.hotelExtendedType.longitude: Долгота
-form.hotelExtendedType.how_many_stars_hotel: 'Звездность отеля'
+form.hotelExtendedType.how_many_stars_hotel: 'Звездность отеля (1-5)'
 form.hotelExtendedType.parameters: Параметры
 form.hotelExtendedType.integration: Интеграция
 form.hotelExtendedType.hotel_type: 'Тип отеля'
 form.hotelExtendedType.hotel_theme: 'Тема отеля'
 form.hotelExtendedType.hotel_amenities: 'Удобства отеля'
+form.hotelExtendedType.all_rooms_non_smoking: 'Все номера для некурящих'
+form.hotelExtendedType.non_smoking_room: 'Общие комнаты для некурящих'
+form.hotelExtendedType.all_public_areas_non_smoking: 'Во всех общественных местах запрещено курение'
+form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms: 'Курение разрешено в специально отведенных местах и номерах'
 form.hotelExtendedType.vega_address_id: 'ID адреса для ПК "Вега"'
 form.hotelExtendedType.vega_address_id_help: 'ID адреса для ПК "Вега"'
+form.hotelExtendedType.accepted_payment_types: 'Способы платежа'
+form.hotelExtendedType.accepted_card_type.label: 'Типы карт'
+form.hotelExtendedType.accepted_card_type.help: 'Принимаемые типы платежных карт'
+form.hotelExtendedType.is_invoice_accepted.label: Накладные
+form.hotelExtendedType.is_invoice_accepted.help: 'Принимаются ли для оплаты накладные'
+form.hotelExtendedType.check_in_out_policy.label: 'Правила въезда/выезда'
+form.hotelExtendedType.check_in_out_policy.help: 'Правила въезда/выезда, включая предметы необходимые при въезде'
+form.hotelExtendedType.smoking_policy.label: 'Правила курения'
+form.hotelExtendedType.check_in_out_policy.placeholder: 'При въезде необходимо предоставить валидную кредитную или дебетовую карту'
+form.hotelExtendedType.hotel_description_links.group: 'Url-адреса отеля в интернете'
+form.hotelExtendedType.hotel_description_links.about_link.label: 'Об отеле'
+form.hotelExtendedType.hotel_description_links.contacts_link.label: 'Контакты'
+form.hotelExtendedType.hotel_description_links.map_link.label: 'Схема проезда'
+form.hotelExtendedType.hotel_description_links.rooms_link.label: 'Номера и услуги'
+form.hotelExtendedType.hotel_description_links.poll_link.label: 'Опрос'
+form.contact_info_type.available_languages.label: 'Языки общения'
+form.contact_info_type.phone.label: Телефон
+form.contact_info_type.phone.help: 'Номер контактного телефона'
+form.contact_info_type.full_name.label: Имя
+form.contact_info_type.full_name.help: 'Полное имя контакта'
+form.contact_info_type.email.label: E-mail
+form.contact_info_type.email.help: 'Электронная почта контактного лица'
+form.hotel_contact_information.contact_info.group: 'Данные контактов поддержки клиента'
+form.hotel_images.image_file.label: Изображение
+form.hotel_images.image_file.help: 'Изображение отеля для онлайн бронирования.<br>Максимальный размер файла 2 Мб, 80x90 px, типы файлов: png, jpg, gif.'
+form.hotel_images.image_is_default.label: 'Основное?'
+form.hotel_images.image_is_default.help: 'Является ли изображение основным для отеля?'
+form.hotel_logo.image_file.help: Логотип отеля
+form.hotel_logo.group: Настройки логотипа
 form.hotelType.name: Название
 form.hotelType.general_info: 'Общая информация'
 form.taskType.general_info: 'Добавление типа'
@@ -72,7 +84,11 @@ form.hotelType.sale_days_amount: 'Количество дней продажи'
 form.hotelType.settings: Настройки
 form.hotelType.how_long_sale_opened_since_today: 'На сколько дней открыта продажа от текущего числа'
 form.hotelType.hostel: 'Хостел?'
-form.hotelType.hostel_hotel_or_not: 'Хостел или нет?'
+form.hotelType.package_arrival_time.label: Время заезда
+form.hotelType.package_departure_time.label: Время выезда
+form.hotelType.isSmoking.label: 'Разрешено курение?'
+form.hotelType.isSmoking.help: 'Разрешено ли курение в номере?'
+form.hotelType.hostel_hotel_or_not: 'Вы сдаёте койко-места, а не номера?'
 form.hotelType.is_default: 'Выбран по умолчанию?'
 form.hotelType.logo: Логотип
 form.hotelType.is_default_maxibooking: 'Выбран по умолчанию при входе в MaxiBooking'
@@ -89,6 +105,10 @@ form.roomType.status: Статус
 form.roomType.facilities: Удобства
 form.roomType.housing: Корпус
 form.roomType.floor: Этаж
+form.roomType.is_smoking.label: 'Разрешено курение?'
+form.roomType_generator.is_smoking.label: 'Курящий?'
+form.roomType.is_smoking.help: 'Разрешено ли в комнате курение?'
+form.roomType.room_view_types.label: 'Вид из окна'
 form.roomTypeGenerateRoomsType.first_bed_number: 'Номер первого койко-места'
 form.roomTypeGenerateRoomsType.first_room_number: С
 form.roomTypeGenerateRoomsType.field_must_be_number: 'Поле должно быть числом'
@@ -104,6 +124,7 @@ form.roomTypeType.name: Название
 form.roomTypeType.general_info: 'Общая информация'
 form.roomTypeType.comfort_plus: 'Комфорт плюс'
 form.roomTypeType.inner_name: 'Внутреннее название'
+form.roomTypeType.inner_name.help: 'Название для использования внутри MaxiBooking'
 form.roomTypeType.international_title: 'Международное название'
 form.roomTypeType.comport_plus_rooms_in_new_housing: 'Комфорт плюс - номера в новом корпусе'
 form.roomTypeType.description: Описание
@@ -111,12 +132,13 @@ form.roomTypeType.color: Цвет
 form.roomTypeType.online_reservation_room_description: 'Описание типа номера для онлайн бронирования'
 form.roomTypeType.chess_room_type_color: 'Цвет типа номера на шахматке'
 form.roomTypeType.image: Изображение
+form.roomTypeType.image.help: 'Изображение типа номера для онлайн бронирования'
 form.roomTypeType.main_places: 'Основные места'
 form.roomTypeType.settings: Настройки
 form.roomTypeType.places: Места
 form.roomTypeType.prices: Ценообразование
-form.roomTypeType.isChildPrices: 'Основные детские цены?'
-form.roomTypeType.isChildPricesDesc: 'Использовать ли основные детские цены для номера?'
+form.roomTypeType.isChildPrices: 'Цены для детей'
+form.roomTypeType.isChildPricesDesc: 'Использовать ли другие цены при размещении детей на основные места??'
 form.roomTypeType.isIndividualAdditionalPrices: 'Индивидуальные цены на доп. места?'
 form.roomTypeType.isIndividualAdditionalPricesDesc: 'Использовать ли разные цены для каждого дополнительнго места?'
 form.roomTypeType.room_main_places_amount: 'Количество основных мест в номере'
@@ -128,12 +150,26 @@ form.roomTypeType.facilities: Удобства
 form.roomTypeType.is_room_included_in_search: 'Используется ли тип номера в поиске?'
 form.roomTypeType.room_space: 'Площадь номера (м2)'
 form.roomTypeType.help.empty_facilities: 'Используются удобства из отеля'
-controller.hotelController.record_created_success: 'Запись успешно создана.'
+views.hotel.form.RoomTypeType.name_form_using_within: 'Название для использования внутри'
+views.hotel.form.RoomTypeType.image_type_number_for_online_booking: 'Изображние типа номера для онлайн бронирования'
+controller.hotelController.record_created_success: 'Запись успешно создана'
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
-controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
+controller.hotelController.success_delete_photo: 'Изображение успешно удалено'
+controller.hotelController.success_main_image_set: 'Изображение установлено как основное для данного отеля'
+hotel_images.set_image_main: 'Cделать изображение основным для данного отеля'
+hotel_images.main_image: 'Главная фотография'
+hotel_images.remove_image: 'Удалить картинку'
+controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы'
+controller.roomController.success_room_creation: 'Комната успешно добавлена'
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
-controller.TaskTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
+controller.TaskTypeController.rooms_generation_success: 'Номера успешно сгенерированы'
 controller.TaskTypeController.record_edited_success: 'Запись успешно отредактирована.'
+controller.roomTypeController.success_set_main_photo: 'Фотография успешно была сделана главной.'
+controller.roomTypeController.success_set_photo: 'Фотография успешно добавлена'
+controller.roomTypeController.success_delete_photo: 'Изображение успешно удалено'
+controller.roomTypeController.success_room_type_creation: 'Новый тип номера успешно создан'
+controller.hotelController.task_created_notall: 'Не все задачи созданы/отредактированы, сначала закройте открытые задачи для данного типа.'
+controller.hotelController.task_created_failed: 'Не удалось создать ни одной задачи.'
 form.taskType.title: Название
 form.taskType.category: Категория
 form.taskType.default_user_group: 'Исполнители по умолчанию'
@@ -154,12 +190,19 @@ form.task.creationalDate: Создано
 form.task.updatableDate: Обновлено
 form.task.description: Комментарий
 form.task.roomType: 'Тип номера'
+form.notice_stay_place_xls_type.not_specified: 'Не указано'
 form.task.group.general_add: 'Добавление задачи'
 form.task.group.general_edit: 'Редактирование задачи'
 form.task.group.assign: Назначить
 form.task.group.settings: Настройки
 form.userType.users: Исполнитель
 form.userType.date: Дата
+task.filter.prior.low: Низкий
+task.filter.prior.average: Средний
+task.filter.prior.high: Высокий
+task.filter.task.open: Открыта
+task.filter.task.process: 'В процессe'
+task.filter.task.closed: Закрыта
 views.form.corpus.group.main: 'Общая информация'
 views.form.corpus.group.address: Адрес
 views.form.corpus.group.config: Настройки
@@ -168,6 +211,11 @@ controller.corpus.created_success: 'Корпус успешно добавлен
 form.taskTypeCategory.general_info: 'Добавление категории задач'
 form.taskTypeCategory.title: 'Внутреннее Название'
 form.taskTypeCategory.fullTitle: Название
+views.task.index.creation: Создание
+views.task.index.performance: Исполнение
+views.task.index.dates: Даты
+form.searchTask.performance: Исполнение
+form.searchTask.creation: Создание
 building: Здание
 rules: 'Правила размещения'
 ability: Возможности
@@ -178,8 +226,52 @@ amenity: Удобства
 technical: Техника
 mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
-form.roomTypeCategory.name: Название
+mbhhotelbundle.hotelData.hotelOne: 'Мой отель #1'
+mbhhotelbundle.hotelData.hotelTwo: 'Мой отель #2'
+mbhhotelbundle.roomTypeData.two.place: Двухместный
+mbhhotelbundle.roomTypeData.three.place: Трехместный
+mbhhotelbundle.taskData.repair: Ремонт
+mbhhotelbundle.taskData.cleaning: Уборка
+mbhhotelbundle.taskData.reserve: Резерв
+mbhhotelbundle.taskData.other: Другое
+mbhhotelbundle.taskData.place_cleaning: 'Уборка помещений'
+mbhhotelbundle.taskData.clean_room: 'Убрать комнату'
+mbhhotelbundle.taskData.entity_was_cleaned: 'Запись успешно создана'
+mbhhotelbundle.roomTypeController.entity_was_created_successfully: 'Запись успешно создана'
+mbhhotelbundle.roomTypeController.image_was_deleded_successfully: 'Изображение успешно удалено'
+mbhhotelbundle.roomTypeController.photo_was_change_default_successfully: 'Фотография успешно была сделана главной.'
+mbhhotelbundle.roomTypeController.photo_was_created_successfully: 'Фотография успешно добавлена'
+views.task.index.ne_zadano: 'Не задано'
+views.task.index.entity_was_deleted: 'Запись удалена'
+views.task.index.vse: Все
+views.task.index.in_work: 'В работе'
+views.task.index.before: до
+views.task.index.delete_recording: 'Запись удалена'
+views.task.index.record_was_delete: 'Запись удалена'
+views.task.index.before_two: до
+views.hotel.notFound.error: ошибка
+views.hotel.new.creating: создание
+views.hotel.index.list: Список
+views.hotel.roomType.editAutoTasks.add: Добавить
+views.hotel.roomType.editTabs.public_information_and_setting: 'Общая информация и настройки'
+views.hotel.roomType.editTabs.photo: Фотографии
+views.hotel.roomType.editTabs.tasks: Задачи
+views.hotel.roomType.editImages.do_default: Задачи
+views.hotel.roomType.editImages.delete_picture: 'Удалить картинку'
+views.hotel.roomType.new.public_information_and_setting: 'Общая информация и настройки'
+views.hotel.roomType.new.photo: Фотографии
+views.hotel.roomType.index.list: Список
+views.hotel.roomType.index.group_not_change: 'группа не указана'
+views.hotel.TaskType.index.edit_category_types_task: 'Редактировать категорию типов задач'
+views.hotel.TaskType.index.delete_category_types_task: 'Удалить категорию типов задач'
+views.hotel.form.hotelType.upload_file: 'Максимальный размер файла 2 Мб, 80x90 px, типы файлов: png, jpg, gif.'
+views.hotel.form.hotelType.see_image: 'Просмотреть изображение'
+views.hotel.form.hotelType.delete: Удалить
+views.hotel.form.hotelType.delete_modal_text: Точно удалить это изображение?
 form.roomTypeCategory.inner_name: 'Внутреннее название'
 form.roomTypeCategory.is_enabled: 'Включен?'
 form.roomTypeCategory.desc: Описание
 form.roomTypeCategory.desc_help: 'Описание группы номеров для онлайн бронирования'
+views.hotel.roomType.editImages.edit.priority: Настройка приоритета показа
+views.hotel.roomType.editImages.edit.priority.save: Сохранить приоритет
+views.hotel.roomType.editImages.edit.priority.close: Закрыть

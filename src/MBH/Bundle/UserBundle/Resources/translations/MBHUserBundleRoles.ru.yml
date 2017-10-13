@@ -8,6 +8,7 @@ ROLE_SENIOR_MANAGER: 'Старший менеджер'
 ROLE_USER: Пользователь
 ROLE_READ_ONLY: Гость
 ROLE_BASE_USER: 'Базовый пользователь'
+ROLE_DASHBOARD: 'Системные сообщения'
 ROLE_STAFF: 'Обслуживающий персонал'
 ROLE_CLEANING: Уборка
 ROLE_COOKING: Кухня
@@ -112,6 +113,7 @@ ROLE_OSTROVOK: Ostrovok
 ROLE_OKTOGO: Oktogo
 ROLE_HOTELINN: Hotel-inn
 ROLE_MYALLOCATOR: MyAllocator
+ROLE_101HOTELS: '101 Отель'
 ROLE_ONLINE_FORM: 'Онлайн форма'
 ROLE_ONLINE_FORM_VIEW: 'Просмотр онлайн форм'
 ROLE_ONLINE_FORM_EDIT: 'Редактирование онлайн форм'
@@ -120,6 +122,8 @@ ROLE_ONLINE_FORM_DELETE: 'Удаление онлайн форм'
 ROLE_POLLS: Голосования
 ROLE_REPORTS: Отчеты
 ROLE_ANALYTICS: Аналитика
+ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT: 'Отчет "Заезд/Выезд"'
+ROLE_DAILY_REPORT_BY_PACKAGES: 'Отчет "Денежные средства"'
 ROLE_PACKAGE: Брони
 ROLE_SEARCH: Подбор
 ROLE_PACKAGE_VIEW: 'Просмотр брони'
@@ -143,15 +147,18 @@ ROLE_PACKAGE_PRICE_EDIT: 'Редактирование цены брони'
 ROLE_INDIVIDUAL_PROMOTION_ADD: 'Добавление индивидуальной акции'
 ROLE_PROMOTION_ADD: 'Добавление акции'
 ROLE_FORCE_BOOKING: 'Принудительное бронирование'
+ROLE_PACKAGE_DELETE_REASON: 'Причина удаления брони'
+ROLE_PRICE_SUMMARY: 'Просмотр итоговых значений броней по суммам'
 ROLE_TOURIST: Клиенты
 ROLE_TOURIST_REPORT: 'Отчет по клиентам'
 ROLE_PORTER_REPORT: 'Отчет портье'
-ROLE_ACCOMMODATION_REPORT: 'Отчет по размещению'
+ROLE_ACCOMMODATION_REPORT: 'Шахматка'
 ROLE_SERVICES_REPORT: 'Отчет по услугам'
 ROLE_ORGANIZATION: Организации
 ROLE_MANAGERS_REPORT: 'Отчет по менеджерам'
 ROLE_POLLS_REPORT: 'Отчет по оценкам'
 ROLE_ROOMS_REPORT: 'Отчет по номерному фонду'
+ROLE_WINDOWS_REPORT: 'Отчет окна'
 ROLE_TOURIST_VIEW: 'Просмотр гостей'
 ROLE_TOURIST_NEW: 'Создание гостя'
 ROLE_TOURIST_EDIT: 'Редактирование гостя'
@@ -227,7 +234,7 @@ ROLE_RESTAURANT_DISHORDER_VIEW: 'Просмотр заказов'
 ROLE_RESTAURANT_DISHORDER_NEW: 'Добавление заказа'
 ROLE_RESTAURANT_DISHORDER_EDIT: 'Редактирование заказа'
 ROLE_RESTAURANT_DISHORDER_DELETE: 'Удаление заказа'
-ROLE_RESTAURANT_DISHORDER_FREEZED: 'Ресторан - управление оплаченными заказами'
+ROLE_RESTAURANT_DISHORDER_FREEZED: 'Управление оплаченными заказами'
 ROLE_RESTAURANT_DISHORDER_FREEZED_EDIT: 'Редактировать уже оплаченный заказ'
 ROLE_RESTAURANT_DISHORDER_FREEZED_DELETE: 'Удалить уже оплаченный заказ'
 ROLE_RESTAURANT_DISHORDER_PAY: 'Фиксирование факта оплаты'
@@ -236,3 +243,11 @@ ROLE_RESTAURANT_TABLE_VIEW: 'Просмотр столиков'
 ROLE_RESTAURANT_TABLE_NEW: 'Добавить столик'
 ROLE_RESTAURANT_TABLE_EDIT: 'Редактировать столик'
 ROLE_RESTAURANT_TABLE_DELETE: 'Удалить столик'
+ROLE_RESTAURANT_TABLE_ITEM_NEW: 'Добавить стул'
+ROLE_RESTAURANT_TABLE_ITEM_EDIT: 'Редактировать стул'
+ROLE_RESTAURANT_TABLE_ITEM_DELETE: 'Удалить стул'
+ROLE_RESTAURANT_TABLE_CATEGORY_NEW: 'Добавить категорию'
+ROLE_RESTAURANT_TABLE_CATEGORY_EDIT: 'Редактировать категорию'
+ROLE_RESTAURANT_TABLE_CATEGORY_DELETE: 'Удалить категорию'
+ROLE_DYNAMIC_SALES: Динамика продаж
+ROLE_DYNAMIC_SALES_VIEW: Отчет продаж

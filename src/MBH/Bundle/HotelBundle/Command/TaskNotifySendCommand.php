@@ -3,15 +3,16 @@
 namespace MBH\Bundle\HotelBundle\Command;
 
 use Documents\UserRepository;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
  * Class NotificationSenderCommand
@@ -50,10 +51,12 @@ class TaskNotifySendCommand extends ContainerAwareCommand
         $router = $this->getContainer()->get('router');
 
         $message = new NotifierMessage();
-        $message->setSubject('mailer.closedTasks.subject');
-        $message->setLink($router->generate('task', [], Router::ABSOLUTE_URL));
-        $message->setTemplate('MBHBaseBundle:Mailer:closedTasks.html.twig');
-        $message->setText('mailer.closedTasks.text');
+        $message
+            ->setSubject('mailer.closedTasks.subject')
+            ->setLink($router->generate('task', [], Router::ABSOLUTE_URL))
+            ->setTemplate('MBHBaseBundle:Mailer:closedTasks.html.twig')
+            ->setText('mailer.closedTasks.text')
+            ->setMessageType(NotificationType::TASK_TYPE);
 
         $counter = 0;
         foreach ($users as $user) {

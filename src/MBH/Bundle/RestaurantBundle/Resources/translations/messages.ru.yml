@@ -1,10 +1,24 @@
-mbhrestaurantbundle.form.dishmenuitemtype.marzha: Маржа
-mbhrestaurantbundle.view.dishorder.index.daty: Даты
-mbhrestaurantbundle.view.dishorder.index.tseny: Цены
-mbhrestaurantbundle.view.dishorder.index.oplachen: Оплачен
-mbhrestaurantbundle.view.form.amount.dobavitʹ: Добавить
-mbhrestaurantbundle.view.ingredient.index.nazvaniye: Название
-mbhrestaurantbundle.view.ingredient.editingredient.redaktirovaniyeingrediyentavkategorii: 'редактирование ингредиента в категории '
+restaurant.dishorder.noingredients: 'Нет ингредиентов для составления блюд.'
+restaurant.dishmenu.item.action.new.action.new: 'Добавить новые ингрeдиенты'
+restaurantbundle.controller.entity_successful_created: 'Запись успешно создана.'
+restaurantbundle.controller.entry_successfully_edited: 'Запись успешно отредактирована.'
+restaurantbundle.controller.price_successfully_saved: 'Цены успешно сохранены.'
+restaurantbundle.controller.attention_not_all_parameter_successful_saved: 'Внимание, не все параметры сохранены успешно'
+restaurantbundle.form.paid: Оплачено
+restaurantbundle.form.not_paid: 'Не оплачено'
+dish_order.index.dates_filter: Даты
+dish_order.index.prices_filter: Цены
+dish_order.index.paid: Оплачен
+views.form.amount.add: Добавить
+fixtures.dish_menu_category_data.categories.hot_dishes: 'Горячие блюда'
+fixtures.dish_menu_category_data.categories.beverages: Напитки
+fixtures.dish_menu_category_data.categories.salads: Салаты
+fixtures.dish_menu_category_data.categories.bar: Бар
+fixtures.dish_menu_category_data.categories.bread: Хлеб
+fixtures.ingredients_category_data.categories.vegetables: Овощи
+fixtures.ingredients_category_data.categories.fruit: Фрукты
+fixtures.ingredients_category_data.categories.beverages: Напитки
+fixtures.table_type_data.categories.main: Основной
 restaurant.amount: Количество
 restaurant.group: 'Общая информация'
 restaurant.collectorder: 'Составление заказа'
@@ -14,7 +28,7 @@ restaurant.collectprice: 'Формирование цены'
 restaurant.dishconsist: 'Состав блюда'
 restaurant.namelabel: Название
 restaurant.common.title: ингредиенты
-restaurant.common.small_title: список
+restaurant.common.small_title: Список
 restaurant.common.edit: редактировать
 restaurant.common.add: добавить
 restaurant.common.delete: удалить
@@ -32,13 +46,15 @@ restaurant.category.form.title.placeholder: null
 restaurant.category.form.title.help: 'Название для использования внутри MaxiBooking'
 restaurant.category.newaction.title: 'создание категории ингредиентов'
 restaurant.category.editaction.title: 'редактирование категории ингредиентов'
+restaurant.ingredient.editIngredient.small_title: 'редактирование ингредиента в категории <%categoryName%>'
+restaurant.ingredient.name: Название
 restaurant.ingredient.price: цена
 restaurant.ingredient.costprice: себестоимость
 restaurant.ingredient.output: выход
 restaurant.ingredient.units: ед.изм
 restaurant.ingredient.addincat: 'добавить ингредиент в категорию'
-restaurant.ingredient.add: 'добавить ингредиент'
-restaurant.ingredient.active: наличие
+restaurant.ingredient.add: 'Добавить ингредиент'
+restaurant.ingredient.active: Наличие
 restaurant.ingredient.edit: 'редактирование ингредиента'
 restaurant.ingredient.delete: 'удаление ингредиента'
 restaurant.ingredient.newaction.small_title: 'добавление ингредиента в категорию'
@@ -60,7 +76,7 @@ restaurant.ingredient.form.output.help: 'Процент получаемый н�
 restaurant.ingredient.form.is_enable.label: Показать
 restaurant.ingredient.form.is_enable.help: 'Показывать ли ингредиент в списке выбора'
 restaurant.dishmenu.title: 'Меню блюд'
-restaurant.dishmenu.small_title: список
+restaurant.dishmenu.small_title: Список
 restaurant.dishmenu.common.add: null
 restaurant.dishmenu.common.edit: редактировать
 restaurant.dishmenu.common.delete: удалить
@@ -75,7 +91,7 @@ restaurant.dishmenu.category.form.fullTitle.label: Название
 restaurant.dishmenu.category.form.fullTitle.placeholder: 'Введите название'
 restaurant.dishmenu.category.form.fullTitle.help: 'Имя категории блюд'
 restaurant.dishmenu.category.form.title.label: 'Внутреннее название'
-restaurant.dishmenu.category.form.title.placeholder: 'введите название'
+restaurant.dishmenu.category.form.title.placeholder: 'Введите название'
 restaurant.dishmenu.category.form.title.help: 'Название для использования внутри MaxiBooking'
 restaurant.dishmenu.item.title: null
 restaurant.dishmenu.item.small_title: 'добавление блюда в категорию'
@@ -103,17 +119,19 @@ restaurant.dishmenu.item.form.description.placeholder: 'Введите опис�
 restaurant.dishmenu.item.form.description.help: 'Описание блюда'
 restaurant.dishmenu.item.form.margin.label: 'Процент маржи'
 restaurant.dishmenu.item.form.margin.disabled: 'Установлена маржа, цена формируется автоматически.'
+restaurant.dishmenu.item.form.is_marging.label: Маржа
 restaurant.dishmenu.item.form.amount.help: Количество
 restaurant.dishmenu.item.form.amount.placeholder: 'Количество ингредиента'
 restaurant.dishmenu.item.form.dishIngredients.label: 'Ингредиенты блюда'
 restaurant.dishmenu.item.form.is_enable.label: Показать
 restaurant.dishmenu.item.form.is_enable.help: 'Показывать ли блюдо в списке формирования заказа'
+restaurant.dishorder.nodish: 'Добавьте блюдо чтобы можно было добавить заказ'
 restaurant.dishorder.status.payed: Оплачен
 restaurant.dishorder.payer.noname: 'нет привязки к брони'
 restaurant.dishorder.title: Заказы
 restaurant.dishorder.common.title: Заказы
 restaurant.dishorder.common.addsuccess: 'Заказ успешно создан'
-restaurant.dishorder.common.editsuccess: 'Ззаказ успешно отредактирован'
+restaurant.dishorder.common.editsuccess: 'Заказ успешно отредактирован'
 restaurant.dishorder.common.noitems: 'Заказов нет'
 restaurant.dishorder.table.number: '№ Заказа'
 restaurant.dishorder.table.table: Столик
@@ -124,13 +142,13 @@ restaurant.dishorder.table.content: Состав
 restaurant.dishorder.table.payer: Плательщик
 restaurant.dishorder.table.time: Дата
 restaurant.dishorder.actions.tolist: 'К списку'
-restaurant.dishorder.actions.list.small_title: 'добавление заказа'
+restaurant.dishorder.actions.list.small_title: 'Добавление заказа'
 restaurant.dishorder.actions.showfreeze.small_title: 'Просмотр заказа'
 restaurant.dishorder.actions.add: 'создать заказ'
-restaurant.dishorder.actions.edit: 'редактирование заказа'
-restaurant.dishorder.actions.delete: 'удалить заказ'
+restaurant.dishorder.actions.edit: 'Редактирование заказа'
+restaurant.dishorder.actions.delete: 'Удалить заказ'
 restaurant.dishorder.actions.freezed: рассчитать
-restaurant.dishorder.actions.isfreezed: оплачен
+restaurant.dishorder.actions.isfreezed: Оплачен
 restaurant.dishorder.actions.pay: 'вы подтверждаете оплату заказа'
 restaurant.dishorder.actions.confirm: подтвердить
 restaurant.dishorder.form.id.label: 'Номер заказа'
@@ -147,28 +165,52 @@ restaurant.dishorder.form.dishes.label: 'Список блюд'
 restaurant.dishorder.form.dishes.placeholder: null
 restaurant.dishorder.form.dishes.help: null
 restaurant.dishorder.form.order.label: Плательщик
-restaurant.dishorder.form.order.help: 'Введите имя брони или комнаты'
+restaurant.dishorder.form.order.help: 'Введите номер брони или комнаты'
 restaurant.dishorder.form.isfreezed.label: Оплата
-restaurant.table.common.title: Столики
-restaurant.table.common.editsuccess: 'Столик успешно отредактирован'
-restaurant.table.common.addsuccess: 'Столик успешно добавлен'
-restaurant.table.common.noitems: 'Нет столиков в списке'
-restaurant.table.newaction.small_title: 'добавление столика'
-restaurant.table.actions.list.small_title: 'Список столиков'
-restaurant.table.actions.edit: 'редактирование столика'
-restaurant.table.actions.add: 'Добавить столик'
-restaurant.table.actions.delete: 'Удалить столик'
+restaurant.table.item.helper.counts: Количество
+restaurant.table.item.helper.inputcountchairs: 'Введите количество взрослых стульев'
+restaurant.table.item.helper.countchairs: 'Количество стульев'
+restaurant.table.item.helper.new: 'Создать стол в категории'
+restaurant.table.item.helper.childrenchairs: Детский
+restaurant.table.item.helper.deletechair: 'Вы действительно хотите удалить стул ?'
+restaurant.table.item.helper.addtype: 'Выберите тип'
+restaurant.table.item.helper.addchairs: 'Добавьте стулья'
+restaurant.table.item.noitems: 'В этой категории нет ни отдного стола'
+restaurant.table.item.nochair: 'В этом столе нет ни отдного стула'
+restaurant.table.item.category.new: 'Новая категория столов'
+restaurant.table.item.category.edit_table_incategory: 'Редактирование стола в категории'
+restaurant.table.item.category.category_new: 'Название категории столов'
+restaurant.table.item.category.chears: Стулья
+restaurant.table.item.category.table: Стол
+restaurant.table.common.title: Столы
+restaurant.table.common.editsuccess: 'Стол успешно отредактирован'
+restaurant.table.common.addsuccess: 'Стол успешно добавлен'
+restaurant.table.common.noitems: 'Нет столов в списке'
+restaurant.table.common.shifted: 'Сдвигается со столами'
+restaurant.table.newaction.title: 'Новая категория столов'
+restaurant.table.newaction.small_title: 'добавление стола'
+restaurant.table.newaction.small_title_addchairs: 'добавление стульев'
+restaurant.table.actions.list.small_title: 'Список столов'
+restaurant.table.actions.edit: 'редактирование стола'
+restaurant.table.actions.add: 'Добавить стол'
+restaurant.table.actions.addchars: 'Добавить стул'
+restaurant.table.actions.delete: 'Удалить стол'
+restaurant.table.actions.adult: Взрослый
 restaurant.table.table.name: Название
 restaurant.table.table.isEnable: Активен
 restaurant.table.table.doing: Действия
 restaurant.table.form.fullTitle.label: Название
-restaurant.table.form.fullTitle.help: 'Название столика'
-restaurant.table.form.fullTitle.placeholder: Столик1
+restaurant.table.form.fullTitle.help: 'Название стола'
+restaurant.table.form.fullTitle.placeholder: 'Стол 1'
 restaurant.table.form.title.label: 'Внутреннее название'
 restaurant.table.form.title.help: 'Название для использования внутри MaxiBooking'
-restaurant.table.form.title.placeholder: 'Столик возле окна'
+restaurant.table.form.title.placeholder: 'Стол возле окна'
 restaurant.table.form.is_enable.label: Активен
-restaurant.table.form.is_enable.help: 'Активен ли столик'
+restaurant.table.form.is_enable.help: 'Активен ли стол'
+restaurant.table.category.form.fullTitle.placeholder: 'Название категории столов'
+restaurant.exceptions.editsuccsess: 'Запись успешно отредактирована.'
+restaurant.exceptions.edittables: 'Столики успешно отредактированы.'
+restaurant.exceptions.danger: 'Внимание, не все параметры сохранены успешно'
 restaurant.exceptions.delete.ingredient: null
 restaurant.exceptions.delete.table: null
 restaurant.exceptions.delete.dishmenuitem: null

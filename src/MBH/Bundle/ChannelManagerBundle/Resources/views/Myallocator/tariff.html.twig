@@ -12,14 +12,14 @@
 
             {% if config is empty %}
                 <div class="alert alert-warning">
-                    <i class="fa fa-exclamation-circle"></i> {{ 'mbhchannelmanagerbundle.view.myallocator.tariff.neobkhodimosnachalazapolnitʹosnovnyyenastroyki'|trans }} .
+                    <i class="fa fa-exclamation-circle"></i> {{ 'view.myallocator.tariff.need_fill_main_settings'|trans}}
                 </div>
             {% endif %}
 
             {% if config.token is empty %}
                 <div class="alert alert-warning">
                     <i class="fa fa-exclamation-circle"></i>
-                    {{ 'mbhchannelmanagerbundle.view.myallocator.tariff.neobkhodimosnachalaprivyazatʹ'|trans }}.
+                    {{ 'view.myallocator.tariff.need_bind_to_mb'|trans}}
                 </div>
             {% endif %}
 

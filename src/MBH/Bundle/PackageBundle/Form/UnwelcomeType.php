@@ -5,6 +5,8 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
@@ -32,23 +34,23 @@ class UnwelcomeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $levels = [
-            0 => 'Нет',
-            1 => 'Незначительная',
-            2 => 'Низкая',
-            3 => 'Средняя',
-            4 => 'Высокая',
-            5 => 'Очень высокая'
+            0 => 'form.unwelcomeType.levels.no',
+            1 => 'form.unwelcomeType.levels.minor',
+            2 => 'form.unwelcomeType.levels.low',
+            3 => 'form.unwelcomeType.levels.middle',
+            4 => 'form.unwelcomeType.levels.high',
+            5 => 'form.unwelcomeType.levels.very_high'
         ];
 
         foreach($this->getCharacteristics() as $characteristic) {
-            $builder->add($characteristic, 'choice', [
+            $builder->add($characteristic, ChoiceType::class, [
                 'label' => 'form.unwelcomeType.'.$characteristic,
                 'group' => 'form.unwelcomeType.group.common',
                 'expanded' => true,
-                'empty_value' => null,
+                'placeholder' => null,
                 'choices' => $levels,
                 'choice_label' => function($key, $value){
-                    return $key == 0 ? 'Нет' : $key;
+                    return $key == 0 ? 'form.unwelcomeType.levels.no' : $key;
                 },
                 'choice_attr' => function($key, $value) {
                     return $key > 0 ? [
@@ -59,11 +61,11 @@ class UnwelcomeType extends AbstractType
             ]);
         }
 
-        $builder->add('comment', 'textarea', [
+        $builder->add('comment', TextareaType::class, [
             'label' => 'form.unwelcomeType.comment',
             'group' => 'form.unwelcomeType.group.common',
             'attr' => ['style' => 'height:150px'],
-            'help' => 'mbhpackagebundle.form.unwelcometype.dostupentolʹkodlyavasineperedayetsyavservisnezhelatelʹnykhgostey'
+            'help' => 'form.unwelcomeType.comment.help'
         ]);
     }
 
@@ -81,14 +83,14 @@ class UnwelcomeType extends AbstractType
                            return;
                         }
                     }
-                    $context->addViolation('Оцените хотя бы одну характеристику гостя');
+                    $context->addViolation('validator.document.Unwelcome.need_feel_at_least_one_characteristic');
                 }])
             ],
         ]);
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_package_bundle_unwelcome';
     }

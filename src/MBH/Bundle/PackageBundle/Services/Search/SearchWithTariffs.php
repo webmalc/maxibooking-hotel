@@ -3,7 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 
 
 /**
@@ -138,5 +138,14 @@ class SearchWithTariffs implements SearchInterface
     public function searchTariffs(SearchQuery $query)
     {
         return $this->search->searchTariffs($query);
+    }
+
+    /**
+     * @param SearchQuery $query
+     * @return array
+     */
+    public function searchSpecials(SearchQuery $query)
+    {
+        return $this->search->searchSpecials($query);
     }
 }

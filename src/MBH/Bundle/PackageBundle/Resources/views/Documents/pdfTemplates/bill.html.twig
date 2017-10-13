@@ -1,5 +1,44 @@
-{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
-{% block document %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Pdf</title>
+</head>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+<body>
+<style>
+    body{
+        font-family: "Open Sans"; /*Arial*/
+        font-size: 16px;
+    }
+    .document{
+        padding-top: 0px;
+        width: 900px;
+        margin: 0 auto;
+    }
+    .ib{
+        display: inline-block;
+    }
+    .area {
+        border-bottom: solid #000000 1px;
+    }
+    .left {
+        float: left;
+    }
+    .right {
+        float: right;
+    }
+    .center {
+        text-align: center;
+    }
+    .indent {
+        text-indent: 1.5em;
+    }
+    .upper {
+        text-transform: uppercase;
+    }
+</style>
+<div class="document">
     <style>
         /* Header */
         .header .title {
@@ -33,17 +72,17 @@
     </style>
     <!-- Header -->
     {% set hotel = null %}
-    {% if entity.roomType and entity.roomType.hotel %}
-        {% set hotel = entity.roomType.hotel %}
+    {% if package.roomType and package.roomType.hotel %}
+        {% set hotel = package.roomType.hotel %}
     {% endif %}
 
     <div class="header">
         <div class="title">
-            <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.schët'|trans }} № {{ entity.numberWithPrefix }} от {{ 'now'|date('d.m.Y H:i') }}.</h2>
+            <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.schet'|trans }} № {{ package.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ 'now'|date('d.m.Y H:i') }}.</h2>
         </div>
-        {% if hotel and hotel.logoUrl %}
+        {% if hotel and hotel.logoImage %}
             <div class="logo">
-                <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile'))) }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>
@@ -56,16 +95,18 @@
             <tr>
                 <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
                 <td width="85%">
-                    {{ 'mbhpackagebundle.view.documents.pdftemplates.bill.otelʹ'|trans }} {% if hotel and hotel.fullTitle %}<strong>"{{ hotel.fullTitle }}"</strong>{% else %}____________________{% endif %},
-                    {{ 'mbhpackagebundle.view.documents.pdftemplates.bill.adres'|trans }} : {% if hotel and hotel.country and hotel.city and hotel.street %}
-                    {{ hotel.country.title }}, {% if hotel.region %}{{ hotel.region.title }},{% endif %} г. {{ hotel.city.title }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
-                    {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-                    {{ 'mbhpackagebundle.view.documents.pdftemplates.bill.inn'|trans }} {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}
+                    <strong>{{ package.address.name }}</strong>
+                    {{ "package.pdf.address"|trans({}, "MBHPackageBundle") }}: {% if package.address and package.address.country and package.address.city and package.address.street %}
+                    {{ package.address.country.title }}, {% if package.address.region %}{{ package.address.region.title }},{% endif %} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.city.title }}{% if package.address.settlement is defined %}, {{ package.address.settlement }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.street }},
+                    {% if package.address.house %} {{ "package.pdf.short_home_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.house }}{% endif %}{% if package.address.corpus %}, {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.corpus }}{% endif %}{% if package.address.flat %}, {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.flat }}{% endif %}{% else %}_________________________________________{% endif %},
+                    {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if package.address.inn is defined %}{{ package.address.inn }}{% else %}________________________{% endif %}
                 </td>
             </tr>
             <tr>
                 <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
-                <td><strong>{{ entity.order.mainTourist.fullName|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong></td>
+                <td>
+                    <strong>{{ package.order.payer.name|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong>
+                </td>
             </tr>
         </table>
 
@@ -83,7 +124,7 @@
             </thead>
             <tbody>
 
-            {% set packages = entity.order.packages %}
+            {% set packages = package.order.packages %}
 
             {% set counter = 0 %}
             {% for package in packages %}
@@ -92,7 +133,7 @@
                     <tr>
                         <td align="center">{{ counter }}</td>
                         <td>
-                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace('_', '.') }}
+                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace({'_': '.'}) }}
                             {% if package.roomType and package.roomType.fullTitle %}
                                 ({{ package.roomType.fullTitle }})
                             {% endif %}
@@ -111,7 +152,7 @@
                     <td align="center">{{ counter }}</td>
                     <td>{{ serviceGroup.byService.name }}</td>
                     <td align="center">{{ serviceGroup.actuallyAmount }}</td>
-                    <td align="center">шт.</td>
+                    <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
                     <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
                     <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
                 </tr>
@@ -122,12 +163,12 @@
         <!-- Total -->
         <table border="0" width="100%">
             <tr>
-                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.zakazano'|trans }} :</strong></td>
+                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.zakazanno'|trans }}:</strong></td>
                 <td align="right" style="width: 120px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
         </table>
 
-        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.vsegozakazanouslug'|trans }} {{ counter }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.bill.na.summu.'|trans }} {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ counter }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
 
@@ -143,7 +184,7 @@
             <tbody>
             {% set counter = 0 %}
             {% set paidTotal = 0 %}
-            {% for cashDocument in cashDocuments %}
+            {% for cashDocument in package.order.cashDocuments %}
                 {% if cashDocument.isPaid %}
                     {% set counter = counter + 1 %}
                     <tr>
@@ -166,17 +207,16 @@
             </thead>
             <tbody>
                 <tr>
-                    <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.oplacheno'|trans }} :</strong></td>
+                    <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.oplacheno'|trans }}:</strong></td>
                     <td align="right" style="width: 120px;"><strong>+{{ paidTotal|number_format(2) }}</strong></td>
                 </tr>
             </tbody>
         </table>
 
         {% if paidTotal > 0 %}
-            <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.vsegooplechenouslugnasummu'|trans }} {{ paidTotal|number_format(2) }} {{ currency().text }}<br>
+            <p>{{ "package.pdf.count_paid_total"|trans({}, "MBHPackageBundle") }} {{ paidTotal|number_format(2) }} {{ currency().text }}<br>
                 <strong>{{ paidTotal|num2str|capitalize }}</strong></p>
         {% endif %}
-
 
         <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0">
             <thead>
@@ -184,7 +224,7 @@
             <tbody>
             <tr style="font-size: 20px">
                 <td align="right">
-                    <strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.itog'|trans }} :</strong>
+                    <strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.itog'|trans }}:</strong>
                 </td>
                 <td align="right" style="width: 160px;"><strong>{{ (paidTotal - order.price)|number_format(2) }}</strong></td>
             </tr>
@@ -193,12 +233,11 @@
 
 
         <div style="margin-top: 70px">
-            <div class="ib">{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.dezhurnyyadministrator'|trans }} </div>
+            <div class="ib">{{ 'mbhpackagebundle.view.documents.pdftemplates.dezhurniy_administrator'|trans }}</div>
             <div class="ib" style="border-bottom: 1px solid #000; width: 300px;"></div>
             <div class="ib" style="width: 150px">{% if user is defined and user %}{{ user|initial }}{% endif %}</div>
         </div>
     </div>
-{% endblock %}
-
-
-
+</div>
+</body>
+</html>

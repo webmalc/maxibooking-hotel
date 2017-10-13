@@ -1,6 +1,6 @@
 {% set accommodation = {
-    'val': entity.accommodation ? entity.accommodation : 'mbhpackagebundle.view.package.edittabs.net'|trans,
-    'class': entity.accommodation ? 'label-success' : 'label-default',
+    'val': entity.accommodation ? entity.accommodation : 'package.edit_tabs.no'|trans,
+    'class': pAccClass(entity),
     'checkIn': entity.accommodation and entity.isCheckIn and entity.isCheckOut is empty ? ' check-in-label' : '',
     'checkOut': entity.accommodation and entity.isCheckOut ? ' check-out-label' : '',
     'append': 'not.stopped'
@@ -14,7 +14,7 @@
 
 {% set confirmed = entity.order.confirmed ? '' : '<i class="fa fa-check"></i>' %}
 {% set tourists = entity.tourists|length ? entity.tourists|length : '' %}
-{% set services = entity.services|length ? entity.services|length : '' %}
+{% set services = entity.unDeletedServices|length ? entity.unDeletedServices|length : '' %}
 {% set documents = entity.order.documents|length ? entity.order.documents|length : '' %}
 
 {% if entity.order.isPaid and  entity.order.price < entity.order.paid %}
@@ -68,7 +68,7 @@
         'route': 'package_service',
         'order': false,
         'title': '<i class="fa fa-plug"></i> '~'package.editTabs.services'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ services ~ '</small>',
-        'append': entity.services|length > 0 ? entity.services|length ~ ' ' ~ ('services')|transchoice(entity.services|length) ~ ', ' ~ entity.servicesPrice|number_format(2) : 'dash',
+        'append': services != '' ? entity.unDeletedServices|length ~ ' ' ~ ('services')|transchoice(entity.unDeletedServices|length) ~ ', ' ~ entity.servicesPrice|number_format(2) : 'dash',
     },
     {
         'route': 'package_accommodation',
@@ -87,7 +87,7 @@
         'order': true,
         'title': '<i class="fa fa-file"></i> '~'package.editTabs.documents'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ documents ~ '</small>',
         'append': entity.order.documents|length > 0 ? entity.order.documents|length : 'dash',
-    }
+    },
 ] %}
 
 <ul class="nav nav-tabs" role="tablist" id="package-tabs">

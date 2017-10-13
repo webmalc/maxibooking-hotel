@@ -5,8 +5,8 @@ namespace MBH\Bundle\HotelBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class RoomSubscriber
@@ -27,8 +27,8 @@ class RoomSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            Events::preRemove => 'preRemove',
             Events::prePersist => 'prePersist',
+            Events::preRemove => 'preRemove'
         ];
     }
 
@@ -37,6 +37,7 @@ class RoomSubscriber implements EventSubscriber
         $document = $args->getDocument();
         if($document instanceof Room) {
             $this->container->get('mbh.cache')->clear('accommodation_rooms');
+            $this->container->get('mbh.cache')->clear('rooms');
         }
     }
 

@@ -24,7 +24,7 @@
         {% endif %}
 
         {% for group, items in groups %}
-
+            {% if group != 'no-group' %}
             <div class="box box-default box-solid">
 
                 <div class="box-header with-border">
@@ -37,16 +37,23 @@
                 </div>
 
                 <div class="box-body">
-                    {% for item in items %}
-                        {{ form_row(form[item]) }}
-                    {% endfor %}
+                    {{ block('drawForm') }}
                 </div>
             </div>
+            {% else %}
+                {{ block('drawForm') }}
+            {% endif %}
         {% endfor %}
 
         {{ form_rest(form) }}
     </div>
 {% endblock form_widget_compound %}
+
+{% block drawForm %}
+    {% for item in items %}
+        {{ form_row(form[item]) }}
+    {% endfor %}
+{% endblock %}
 
 {% block form_row %}
     {% spaceless %}
@@ -83,7 +90,7 @@
 
 {% block form_label %}
     {% spaceless %}
-        {% if label is not sameas(false) %}
+        {% if label is not same as(false) %}
             {% if not compound %}
                 {% set label_attr = label_attr|merge({'for': id}) %}
             {% endif %}
@@ -120,8 +127,8 @@
     {% spaceless %}
         {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control input-sm')|trim}) %}
         <select {{ block('widget_attributes') }}{% if multiple %} multiple {% endif %}>
-            {% if empty_value is not none %}
-                <option {% if required %} disabled="disabled"{% if value is empty %} selected="selected"{% endif %}{% else %} value=""{% endif %}>{{ empty_value|trans({}, translation_domain) }}</option>
+            {% if placeholder is not none %}
+                <option {% if required %} disabled="disabled"{% if value is empty %} selected="selected"{% endif %}{% else %} value=""{% endif %}>{{ placeholder|trans({}, translation_domain) }}</option>
             {% endif %}
             {% if preferred_choices|length > 0 %}
                 {% set options = preferred_choices %}
@@ -165,6 +172,14 @@
         {% endfor %}
     {% endif %}
 
+    {% set ids = {} %}
+
+    {% for parent in form.vars.choices %}
+        {% for child in parent.choices %}
+            {% set ids = ids|merge({(child.label): child.value}) %}
+        {% endfor %}
+    {% endfor %}
+
     {% for parent in form.vars.choices %}
 
         {% set label = parent.label|replace({'__GROUP': ''}) %}
@@ -173,7 +188,7 @@
             <div class="box-header" style="background-color: #efefef;">
                 <h3 class="box-title">
                     <label style="cursor: pointer;">
-                        <input type="checkbox" {{ label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ label }}">
+                        <input type="checkbox" {{ label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ attribute(ids, label) }}">
                         &nbsp;
                         <span class="{{ label in exists or label in form.vars.data ? 'text-info'}}">{{ label|trans({}, form.vars.translation_domain) }}</span>
                     </label>
@@ -184,10 +199,10 @@
             </div>
             <div class="box-body">
                 {% if parent.choices is defined%}
-                    {% for child in parent.choices  if label != child.label %}
+                    {% for child in parent.choices if label != child.label %}
                         <div class="form-group" style="padding-left: 50px;">
                             <label style="cursor: pointer;">
-                                <input type="checkbox"  {{ child.label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ child.label }}">
+                                <input type="checkbox" {{ child.label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ child.value }}">
                                 &nbsp;
                                 <span class="{{ child.label in exists or child.label in form.vars.data ? 'text-info'}}">{{ child.label|trans({}, form.vars.translation_domain) }}</span>
                             </label>

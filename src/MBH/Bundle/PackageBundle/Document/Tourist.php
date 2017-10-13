@@ -2,19 +2,19 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Lib\Exportable;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Zend\Stdlib\JsonSerializable;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 
 /**
  * @ODM\Document(collection="Tourists", repositoryClass="MBH\Bundle\PackageBundle\Document\TouristRepository")
@@ -22,7 +22,7 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Tourist extends Base implements JsonSerializable, PayerInterface, RecipientInterface
+class Tourist extends Base implements \JsonSerializable, PayerInterface, RecipientInterface, Exportable
 {
     /**
      * Hook timestampable behavior
@@ -53,7 +53,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      */
     public $packages;
     /**
-     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="payer")
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="touristPayer")
      */
     protected $cashDocuments;
     /**
@@ -67,6 +67,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_name"
      * )
+     * @ODM\Index()
      */
     protected $firstName;
     /**
@@ -80,6 +81,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_surname"
      * )
+     * @ODM\Index()
      */
     protected $lastName;
     /**
@@ -92,6 +94,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_second_name"
      * )
+     * @ODM\Index()
      */
     protected $patronymic;
     /**
@@ -129,6 +132,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_phone"
      * )
+     * @ODM\Index()
      */
     protected $phone;
     /**
@@ -141,12 +145,14 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_phone"
      * )
+     * @ODM\Index()
      */
     protected $mobilePhone;
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $messenger;
     /**
@@ -154,6 +160,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="email")
      * @Assert\Email()
+     * @ODM\Index()
      */
     protected $email;
     /**
@@ -166,6 +173,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      *      max=1000,
      *      maxMessage= "validator.document.Tourist.max_note"
      * )
+     * @ODM\Index()
      */
     protected $note;
     /**
@@ -185,7 +193,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     protected $addressObjectDecomposed;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $addressObjectCombined;
     /**
@@ -207,17 +215,26 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $communicationLanguage;
 
     /**
      * @var bool
      * @ODM\Boolean()
+     * @ODM\Index()
      */
     protected $isUnwelcome = false;
 
+    /**
+     *
+     * @ODM\ReferenceMany(targetDocument="RestarauntSeat", mappedBy="tourist")
+     */
+    protected $restarauntSeat;
+
     public function __construct()
     {
+        $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -453,7 +470,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      * @param boolean $original
      * @return string
      */
-    public function getMobilePhone($original=false)
+    public function getMobilePhone($original = false)
     {
         return self::formatPhone($this->mobilePhone, $original);
     }
@@ -611,13 +628,13 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     }
 
     /**
-     * Get age
-     * @return int
+     * @param \DateTime|null $date
+     * @return int|null
      */
-    public function getAge()
+    public function getAge(\DateTime $date = null)
     {
         if ($this->getBirthday()) {
-            $now = new \DateTime();
+            $now = $date ?? new \DateTime();
             $diff = $now->diff($this->getBirthday());
 
             return $diff->y;
@@ -872,6 +889,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     public function setCommunicationLanguage($communicationLanguage)
     {
         $this->communicationLanguage = $communicationLanguage;
+        return $this;
     }
 
     /**
@@ -921,6 +939,26 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
             'communicationLanguage' => $this->communicationLanguage,
             'citizenship' => $this->getCitizenship() ? $this->getCitizenship()->getName() : null,
             'documentRelation' => $this->getDocumentRelation() ? $this->getDocumentRelation() : null
+        ];
+    }
+
+    public static function getExportableFieldsData(): array
+    {
+        return [
+            'form.touristType.name' => ['field' => 'firstName'],
+            'form.touristType.surname' => ['field' => 'lastName'],
+            'form.touristType.second_name' => ['field' => 'patronymic'],
+            'form.organizationType.phone' => ['field' => 'phone'],
+            'form.touristType.mobile_phone' => ['field' => 'mobilePhone'],
+            'form.touristType.email' => ['field' => 'email'],
+            'exportable.tourist.fio' => [
+                'callback' => function ($entityData) {
+                    $fio = $entityData['lastName'] . ' ' . $entityData['firstName'];
+                    if (isset($entityData['patronymic']) && !empty($entityData['patronymic'])) {
+                        $fio .= ' ' . $entityData['patronymic'];
+                    }
+                    return $fio;
+                }]
         ];
     }
 }

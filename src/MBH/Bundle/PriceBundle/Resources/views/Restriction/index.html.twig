@@ -1,23 +1,23 @@
 {% extends 'MBHPriceBundle:Restriction:layout.html.twig' %}
 
-{% set small_title = 'mbhpricebundle.view.restriction.index.obzor'|trans %}
+{% set small_title = 'price.views.restriction.index.small_title'|trans({},'MBHPriceBundle') %}
 {% set layout = 'box' %}
 
 {% block content %}
 
         {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'restriction-overview-filter-widget' } %}
-        <form id="restriction-overview-filter" class="form-inline filter-form remember" role="form">
+           <form id="restriction-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.restriction.index.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp
-                <input type="text" id="restriction-overview-filter-begin" class="datepicker restriction-overview-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
+                <i class="fa fa-calendar" title='{{ 'price.views.restriction.index.date'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp
+                <input type="text" id="restriction-overview-filter-begin" class="datepicker restriction-overview-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
             </div>
             <div class="input hidden">
                 - &nbsp
-                <input type="text" id="restriction-overview-filter-end" class="datepicker restriction-overview-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ? 'now'|date_modify("+45 days")|date('d.m.Y') : app.request.get('end') }}">
+                <input type="text" id="restriction-overview-filter-end" class="datepicker restriction-overview-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
             </div>
 
             <div class="input">
-                <i class="fa fa-bed" title='{{ 'mbhpricebundle.view.restriction.index.tipnomera'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.restriction.index.tipnomera'|trans }} " id="restriction-overview-filter-roomType" class="restriction-overview-filter form-control input-sm">
+                <i class="fa fa-bed" title='{{ 'price.views.restriction.index.type'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.restriction.index.tipnomera'|trans }} " id="restriction-overview-filter-roomType" class="restriction-overview-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
@@ -26,13 +26,14 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-sliders" title='{{ 'mbhpricebundle.view.restriction.index.tarif'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.restriction.index.tarif'|trans }} " id="restriction-overview-filter-tariff" class="restriction-overview-filter form-control input-sm">
+                <i class="fa fa-sliders" title='{{ 'price.views.restriction.index.rate'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.restriction.index.tarif'|trans }} " id="restriction-overview-filter-tariff" class="restriction-overview-filter form-control input-sm">
                         <option></option>
                         {% for tariff in tariffs %}
                             <option value="{{ tariff.id }}" {% if (tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length) or (app.request.get('tariffs') is empty and tariff.isDefault) %}selected{% endif %}>{{ tariff.name }}</option>
                         {% endfor %}
                 </select>
             </div>
+               {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'restriction_overview'} %}
         </form>
     </div></div>
 
@@ -43,9 +44,9 @@
         <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
             <div class="container-fluid">
                 <ul class="nav navbar-nav">
-                    <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'mbhpricebundle.view.restriction.index.sokhranitʹ'|trans }} </button></li>
-                    <li><button type="button" onclick="location.href = '{{ path('restriction_generator') }}'" class="btn btn-primary navbar-btn"><i class="fa fa-magic"></i> {{ 'mbhpricebundle.view.restriction.index.generatorusloviyiogranicheniy'|trans }} </button></li>
-                    <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> {{ 'mbhpricebundle.view.restriction.index.otmena'|trans }} </button></li>
+                    <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i>{{ 'price.views.restruction.index.save'|trans }}</button></li>
+                    <li><button type="button" onclick="location.href = '{{ path('restriction_generator') }}'" class="btn btn-primary navbar-btn"><i class="fa fa-magic"></i> {{ 'mbhpricebundle.view.restriction.index.generatorusloviyiogranicheniy'|trans}}</button></li>
+                    <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> {{ 'mbhpricebundle.view.restriction.index.otmena'|trans }}</button></li>
                 </ul>
             </div>
         </div>

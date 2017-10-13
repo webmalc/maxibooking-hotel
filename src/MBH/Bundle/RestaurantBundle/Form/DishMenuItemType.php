@@ -8,7 +8,6 @@
 
 namespace MBH\Bundle\RestaurantBundle\Form;
 
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -22,8 +21,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DishMenuItemType extends AbstractType 
 {
-
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
@@ -81,7 +78,7 @@ class DishMenuItemType extends AbstractType
                 'group' => 'restaurant.collectprice'
             ])
             ->add('is_margin', CheckboxType::class, [
-                'label' => 'mbhrestaurantbundle.form.dishmenuitemtype.marzha',
+                'label' => 'restaurant.dishmenu.item.form.is_margin.label',
                 'required' => false,
                 'attr' => [
                     'class' => 'is_margin'
@@ -165,7 +162,7 @@ class DishMenuItemType extends AbstractType
     }
 
     
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_restaurantbundle_dishmenu_item_type';
     }

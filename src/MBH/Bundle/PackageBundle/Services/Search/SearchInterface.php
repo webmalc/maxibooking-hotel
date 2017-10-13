@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 
 /**

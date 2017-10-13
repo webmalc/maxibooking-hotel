@@ -2,32 +2,37 @@
 
 namespace MBH\Bundle\UserBundle\Document;
 
-use FOS\UserBundle\Model\User as BaseUser;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use FOS\UserBundle\Model\User as BaseUser;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
+use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 
 
 /**
- * @ODM\Document(collection="Users")
+ * @ODM\Document(collection="Users", repositoryClass="UserRepository")
  * @Gedmo\Loggable
  * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
+ * @MongoDBUnique(fields="email", message="validator.user.email_is_busy")
  * @MongoDBUnique(fields="username", message="mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan")
  */
 class User extends BaseUser implements RecipientInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
+    const TWO_FACTOR_TYPES = ['email', 'google'];
+    const SYSTEM_USER = 'mb';
+
+    use AllowNotificationTypesTrait;
 
     /**
      * @var string
@@ -88,6 +93,7 @@ class User extends BaseUser implements RecipientInterface
      * @Assert\Type(type="boolean")
      */
     protected $notifications = true;
+
 
     /**
      * @var boolean
@@ -152,6 +158,41 @@ class User extends BaseUser implements RecipientInterface
     protected $isEnabledWorkShift = false;
 
     /**
+     * @var string $twoFactorAuthentication google or email
+     * @ODM\Field(type="string")
+     * @Assert\Choice(callback = "getTwoFactorTypes")
+     */
+    protected $twoFactorAuthentication;
+
+    /**
+     * @var string $googleAuthenticatorCode Stores the secret code
+     * @ODM\Field(type="string")
+     */
+    private $googleAuthenticatorCode;
+
+    /**
+     * @var integer $twoFactorCode Current authentication code
+     * @ODM\Field(type="integer")
+     */
+    protected $twoFactorCode;
+
+    /**
+     * @ODM\Field(type="boolean")
+     */
+    protected $locked;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $locale = 'ru';
+
+    /**
+     * @ODM\Field(type="date")
+     * @Assert\DateTime()
+     */
+    protected $expiresAt;
+    /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
      */
@@ -175,12 +216,41 @@ class User extends BaseUser implements RecipientInterface
     }
 
     /**
+     * @return mixed
+     */
+    public function isLocked()
+    {
+        return $this->locked;
+    }
+
+    /**
+     * @param mixed $locked
+     */
+    public function setLocked($locked)
+    {
+        $this->locked = $locked;
+    }
+
+    /**
      * @return \DateTime
      */
     public function getExpiresAt()
     {
         return $this->expiresAt;
     }
+
+    /**
+     * @param mixed $expiresAt
+     * @return User
+     */
+    public function setExpiresAt(\DateTime $expiresAt = null)
+    {
+        $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+
 
     /**
      * Get firstName
@@ -473,5 +543,84 @@ class User extends BaseUser implements RecipientInterface
         $this->defaultNoticeDoc = $defaultNoticeDoc;
     }
 
+    /**
+     * @return string
+     */
+    public function getTwoFactorAuthentication()
+    {
+        return $this->twoFactorAuthentication;
+    }
+
+    /**
+     * @param string $twoFactorAuthentication
+     * @return User
+     */
+    public function setTwoFactorAuthentication($twoFactorAuthentication): User
+    {
+        $this->twoFactorAuthentication = $twoFactorAuthentication;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTwoFactorCode(): int
+    {
+        return $this->twoFactorCode;
+    }
+
+    /**
+     * @param int $twoFactorCode
+     * @return User
+     */
+    public function setTwoFactorCode(int $twoFactorCode): User
+    {
+        $this->twoFactorCode = $twoFactorCode;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGoogleAuthenticatorCode()
+    {
+        return $this->googleAuthenticatorCode;
+    }
+
+    /**
+     * @param string $googleAuthenticatorCode
+     * @return User
+     */
+    public function setGoogleAuthenticatorCode(string $googleAuthenticatorCode): User
+    {
+        $this->googleAuthenticatorCode = $googleAuthenticatorCode;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getTwoFactorTypes(): array
+    {
+        return self::TWO_FACTOR_TYPES;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     */
+    public function setLocale(string $locale)
+    {
+        $this->locale = $locale;
+    }
 
 }

@@ -32,7 +32,6 @@ var initAccommodationTab = function () {
         $arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
         $departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
         datepickerOptions = {
-            language: "ru",
             autoclose: true,
             format: 'dd.mm.yyyy'
         };
@@ -121,7 +120,7 @@ var initAccommodationTab = function () {
         if (!confirmed) {
             var text = [];
             if ($checkOut.is(':checked') && Package.debt > 0) {
-                text.push('Заказ не оплачен');
+                text.push(Translator.trans("package.order_is_not_paid"));
             }
             var confirmText = getConfirmText();
             if (confirmText) {
@@ -129,7 +128,7 @@ var initAccommodationTab = function () {
             }
             if (text.length > 0) {
                 e.preventDefault();
-                mbh.alert.show(null, 'Подтверждение', text.join('<br>'), 'Продолжить', null, 'danger', function () {
+                mbh.alert.show(null, Translator.trans("package.confirmation"), text.join('<br>'), Translator.trans("package.continue"), null, 'danger', function () {
                     mbh.alert.hide();
                     confirmed = true;
                     $('button[type=submit][name=save]').trigger('click');
@@ -143,9 +142,43 @@ var initAccommodationTab = function () {
     });
 }
 
+var deleteUndaid = function () {
+    $('.booking-delete-link').on('click', function (e) {
+        e.preventDefault();
+        $('#modal_delete_package').attr('data-order', $(this).data('order'));
+        $('.modal-body').html(mbh.loader.html);
+
+        return $.ajax({
+            url: Routing.generate('package_delete', {'id': $(this).data('id')}),
+            type: "GET",
+            data: {},
+            success: function (urlFromController) {
+                $('#modal_delete_package').html(urlFromController);
+                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
+                $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+            }
+        });
+    });
+    $('.order-booking-delete-link').on('click', function (e) {
+        e.preventDefault();
+        $('.modal-body').html(mbh.loader.html);
+
+        return $.ajax({
+            url: Routing.generate('order_delete', {'id': $(this).data('id')}),
+            type: "GET",
+            data: {},
+            success: function (urlFromController) {
+                $('#modal_delete_package').html(urlFromController);
+                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
+                $('select#mbh_bundle_packagebundle_order_delete_reason_type_deleteReason').select2();
+            }
+        });
+    });
+}
 
 var docReadyPackages = function () {
     'use strict';
+    deleteUndaid();
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
@@ -177,7 +210,7 @@ var docReadyPackages = function () {
     $('.price-spinner').TouchSpin({
         min: 0,
         max: 9999999999999999,
-        step: 0.1,
+        step: 0.01,
         decimals: 2,
         boostat: 10,
         maxboostedstep: 20,
@@ -204,7 +237,22 @@ var docReadyPackages = function () {
     }());
 
     //package datatable
-    var pTable = $('#package-table').dataTable({
+    var pTable = $('#package-table')
+        .on('init.dt', function () {
+            var  timeout = 0;
+            var $input = $('.dataTables_filter input');
+            $input.unbind();
+            $input.on('keyup keydown', function (event) {
+                clearTimeout(timeout);
+                var that = this;
+                timeout = setTimeout(function () {
+                    searchTable(event, $(that))
+                }, 500);
+            });
+
+        })
+        .dataTable({
+        searchDelay: 350,
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
             {
@@ -215,7 +263,54 @@ var docReadyPackages = function () {
             {
                 extend: 'pdf',
                 text: '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
-                className: 'btn btn-default btn-sm'
+                className: 'btn btn-default btn-sm',
+                exportOptions: {
+                    stripNewlines: false
+                }
+            },
+            {
+                text: '<i class="fa fa-file-excel-o" title="CSV" data-toggle="tooltip" data-placement="bottom"></i>',
+                className: 'btn btn-default btn-sm',
+                action: function (e, dt, button, config) {
+                    $.ajax({
+                        url: Routing.generate('package_csv'),
+                        type: 'POST',
+                        data: {},
+                        success: function (response) {
+
+                            $('<div id="template-document-csv-modal" class="modal"> </div> ').insertAfter($('.content-wrapper'));
+                            var $modal = $('#template-document-csv-modal');
+                            var $body = $modal.find('.modal-body');
+
+                            $modal.html(response);
+                            $modal.modal('show');
+
+                            $modal.find('input[type=checkbox]').bootstrapSwitch({
+                                'size': 'mini',
+                                'onColor': 'success',
+                                'onText': Translator.trans("package.yes"),
+                                'offText': Translator.trans("package.no")
+                            });
+                            var form = $modal.find("form");
+
+                            form.submit(function () {
+                                $('#mbh_bundle_packagebundle_package_csv_type_roomType').val($('#package-filter-roomType').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_status').val($('#package-filter-status').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_deleted').val($('#package-filter-deleted').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_begin').val($('#package-filter-begin').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_end').val($('#package-filter-end').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_dates').val($('#package-filter-dates').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_paid').val($('#package-filter-paid').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_confirmed').val($('#package-filter-confirmed').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_deleted').val(($('#package-filter-deleted').is(':checked')) ? 1 : 0)
+                                $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'))
+                                $('.modal.in').modal('hide')
+                            });
+
+                        }
+                    });
+
+                }
             }
         ],
         "processing": true,
@@ -249,10 +344,12 @@ var docReadyPackages = function () {
         "drawCallback": function (settings, json) {
 
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
-            deleteLink();
             $('.deleted-entry').closest('tr').addClass('danger');
             $('.not-confirmed-entry').closest('tr').addClass('info');
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
+            $('.booking-delete-link').attr('data-toggle', 'modal');
+
+            deleteUndaid();
 
             //summary
             $('#package-summary-total').html(settings.json.package_summary_total || '-');
@@ -263,7 +360,13 @@ var docReadyPackages = function () {
         }
     });
 
-    // package datatable filter
+    var searchTable = function (event, $search) {
+        var value = $search.val();
+        if (value.length >= 4 || event.keyCode === 13 || value.length === 0) {
+            pTable.api().search(value).draw();
+        }
+    };
+
     (function () {
 
         $('#package-table-quick-links li').each(function () {
@@ -376,8 +479,8 @@ var docReadyPackages = function () {
                 if (!response.error) {
                     $body.find("input[type=checkbox]").bootstrapSwitch({
                         'size': 'small',
-                        'onText': 'да',
-                        'offText': 'нет',
+                        'onText': Translator.trans("package.yes"),
+                        'offText': Translator.trans("package.no"),
                         'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>'
                     });
                     $body.find("select").select2();
@@ -398,10 +501,10 @@ var docReadyPackages = function () {
     discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'), $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'))
 }
 
+
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
-
     //package ajax tabs
     (function () {
         var tabs = $('#package-tabs');
@@ -410,7 +513,7 @@ $(document).ready(function () {
         }
         tabs.find('li > a').click(function (e) {
             e.preventDefault();
-            $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>' + Translator.trans("package.processing") + '...</div>');
             tabs.find('li').removeClass('active');
             $(this).closest('li').addClass('active');
             var href = $(this).attr('href');
@@ -426,7 +529,7 @@ $(document).ready(function () {
                 docReadyPackages();
                 docReadyCash();
                 docReadyDocs();
-
+                docReadyAccommodations();
             });
         });
     }());

@@ -1,0 +1,63 @@
+{% extends 'MBHPackageBundle:Report:layout.html.twig' %}
+
+{% set small_title = 'report.windows.title'|trans() %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'windows-report-filter-widget'} %}
+    <form id="windows-report-filter" class="form-inline filter-form remember mbh-start-date" role="form">
+        <div class="input">
+            <i class="fa fa-calendar" title='{{ 'report.windows.dates'|trans }}' data-toggle='tooltip'></i>&nbsp
+            <input type="text" name="begin" id="windows-report-filter-begin" class="datepicker windows-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
+        </div>
+        <div class="input hidden">
+            - &nbsp
+            <input type="text" name="end" id="windows-report-filter-end" class="datepicker windows-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
+        </div>
+
+        <div class="input">
+            <i class="fa fa-bed"  title='{{ 'report.windows.room_type'|trans }}' data-toggle='tooltip'></i>&nbsp  <select name="roomType" multiple data-placeholder="{{ 'report.windows.room_type'|trans }}" id="windows-report-filter-roomType" class="windows-report-filter form-control input-sm">
+                <option></option>
+                {% for roomType in roomTypes %}
+                    <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="input">
+            <button class="btn btn-primary" id="report-submit-button">
+                <i class="fa fa-filter"></i> {{ 'show'|trans()|capitalize  }}
+            </button>
+        </div>
+    </form>
+    </div></div>
+
+    <div id="windows-report-content" class="scrolling"></div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="package-info-modal" tabindex="-1" role="dialog" aria-labelledby="package-info-modal-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        {{ 'report.windows.modal.title'|trans() }}
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <i class="fa fa-spinner fa-spin"></i> {{ 'loading'|trans() }}...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa fa-ban"></i> {{ 'cancel'|trans()|capitalize }}
+                    </button>
+                    <button type="submit" id="modal-submit" class="btn btn-primary">
+                        <i class="fa fa-check"></i> {{ 'save'|trans()|capitalize }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

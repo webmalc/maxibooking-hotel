@@ -2,14 +2,15 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="Room", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomRepository")
@@ -42,13 +43,14 @@ class Room extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="rooms")
      * @Assert\NotNull(message="validator.document.room.hotel_not_selected")
+     * @ODM\Index()
      */
     protected $hotel;
     
     /**
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="RoomType", inversedBy="rooms")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull(message="validator.document.room.room_type_not_selected")
+     * @ODM\Index()
      */
     protected $roomType;
 
@@ -63,6 +65,7 @@ class Room extends Base
      *      max=100,
      *      maxMessage="validator.document.room.max_name"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
 
@@ -76,12 +79,14 @@ class Room extends Base
      *      max=100,
      *      maxMessage="validator.document.room.max_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Housing")
+     * @ODM\Index()
      */
     protected $housing;
 
@@ -95,13 +100,13 @@ class Room extends Base
      *      max=10,
      *      maxMessage="validator.document.room.max_floor"
      * )
+     * @ODM\Index()
      */
     protected $floor;
 
     /**
-     * @var RoomStatus
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomStatus")
+     * @var RoomStatus[]|ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomStatus")
      */
     protected $status;
 
@@ -110,6 +115,26 @@ class Room extends Base
      * @ODM\Collection()
      */
     protected $facilities;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isSmoking = false;
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomViewType")
+     */
+    protected $roomViewsTypes;
+
+    /**
+     * Room constructor.
+     */
+    public function __construct()
+    {
+        $this->status = new ArrayCollection();
+        $this->roomViewsTypes = new ArrayCollection();
+    }
 
     /**
      * Set hotel
@@ -195,6 +220,7 @@ class Room extends Base
     public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
     {
         $this->roomType = $roomType;
+
         return $this;
     }
 
@@ -265,7 +291,7 @@ class Room extends Base
     }
 
     /**
-     * @return RoomStatus|null
+     * @return RoomStatus[]|ArrayCollection
      */
     public function getStatus()
     {
@@ -274,10 +300,25 @@ class Room extends Base
 
     /**
      * @param RoomStatus $status
+     * @return $this
      */
-    public function setStatus($status = null)
+    public function addStatus(RoomStatus $status)
     {
-        $this->status = $status;
+        $this->status->add($status);
+
+        return $this;
+    }
+
+//    public function setStatus(RoomStatus $status)
+//    {
+//        $this->status->set
+//    }
+
+    public function removeStatus(RoomStatus $status)
+    {
+        $this->status->removeElement($status);
+
+        return $this;
     }
 
     /**
@@ -303,5 +344,51 @@ class Room extends Base
     public function setFacilities($facilities)
     {
         $this->facilities = $facilities;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsSmoking(): ?bool
+    {
+        return $this->isSmoking;
+    }
+
+    /**
+     * @param bool $isSmoking
+     * @return Room
+     */
+    public function setIsSmoking(bool $isSmoking): Room
+    {
+        $this->isSmoking = $isSmoking;
+
+        return $this;
+    }
+
+    public function getRoomViewsTypes()
+    {
+        return $this->roomViewsTypes;
+    }
+
+    /**
+     * @param RoomViewType $roomViewType
+     * @return Room
+     */
+    public function removeRoomViewType(RoomViewType $roomViewType): Room
+    {
+        $this->roomViewsTypes->remove($roomViewType);
+
+        return $this;
+    }
+
+    /**
+     * @param RoomViewType $roomViewType
+     * @return Room
+     */
+    public function addRoomViewType(RoomViewType $roomViewType): Room
+    {
+        $this->roomViewsTypes->add($roomViewType);
+
+        return $this;
     }
 }

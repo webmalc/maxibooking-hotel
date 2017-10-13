@@ -1,11 +1,11 @@
 {% extends 'MBHPriceBundle:Service:layout.html.twig' %}
 
-{% set small_title = 'mbhpricebundle.view.service.edit.redaktirovaniyekategoriiuslug'|trans ~ " #" ~ entity.id %}
+{% set small_title = "price.resources.views.roomcache.edit_category_of_services"|trans ~ " #" ~ entity.id %}
 {% set layout = 'box' %}
 
 {% block content %}
 
-    {{ form_start(form, {'action': path('price_service_category_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('price_service_category_update', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'price_service_category_delete' } %}
     {{ form_end(form) }}

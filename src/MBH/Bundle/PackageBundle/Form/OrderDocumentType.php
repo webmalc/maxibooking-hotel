@@ -2,17 +2,20 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * Class OrderDocumentType
  * @package MBH\Bundle\PackageBundle\Form
-
  */
 class OrderDocumentType extends AbstractType
 {
@@ -22,32 +25,30 @@ class OrderDocumentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $mainGroupTitles = [
-            self::SCENARIO_ADD => 'Добавить документ',
-            self::SCENARIO_EDIT => 'Редактировать документ',
+            self::SCENARIO_ADD => 'form.order_document_type.add_document',
+            self::SCENARIO_EDIT => 'form.order_document_type.edit_document',
         ];
 
         $groupTitle = $mainGroupTitles[$options['scenario']];
 
         $builder->add(
-            'type',
-            'choice',
+            'type',  InvertChoiceType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.tip',
+                'label' => 'form.order_document_type.type.label',
                 'required' => true,
-                'empty_value' => '',
+                'placeholder' => '',
                 'choices' => $options['documentTypes']
             ]
         );
 
         $builder->add(
-            'scanType',
-            'choice',
+            'scanType',  InvertChoiceType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.tipskana',
+                'label' => 'form.order_document_type.scan_type',
                 'required' => false,
-                'empty_value' => '',
+                'placeholder' => '',
                 'choices' => $options['scanTypes']
             ]
         );
@@ -56,13 +57,13 @@ class OrderDocumentType extends AbstractType
 
         $builder->add(
             'tourist',
-            'document',
+            DocumentType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.kliyent',
+                'label' => 'form.order_document_type.client.label',
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
-                'property' => 'generateFullNameWithAge',
+                'choice_label' => 'generateFullNameWithAge',
                 'query_builder' => function(DocumentRepository $er) use($touristIds) {
                     return $er->createQueryBuilder()->field('_id')->in($touristIds);
                 },
@@ -83,20 +84,20 @@ class OrderDocumentType extends AbstractType
 
         $builder->add(
             'file',
-            'file',
+            FileType::class,
             [
                 'group' => $groupTitle,
-                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'mbhpackagebundle.form.orderdocumenttype.zamenitʹfayl' : 'Файл',
+                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'form.order_document_type.change_file' : 'form.order_document_type.file',
                 'required' => $options['scenario'] == self::SCENARIO_ADD,
             ] + ($options['scenario'] == self::SCENARIO_EDIT ? ['help' => '<i class="fa '.(isset($typeIcons[strtolower($document->getExtension())]) ? $typeIcons[strtolower($document->getExtension())] : null).'"></i> '.$document->getOriginalName()] : [])
         );
 
         $builder->add(
             'comment',
-            'textarea',
+            TextareaType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.kommentariy',
+                'label' => 'form.order_document_type.note',
                 'required' => false,
                 'constraints' => [
                     new Length(['min' => 2, 'max' => 300])
@@ -110,12 +111,12 @@ class OrderDocumentType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_package_bundle_order_document_type';
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'documentTypes' => [],

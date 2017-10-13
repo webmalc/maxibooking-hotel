@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+    <username>{{ config.hotelId }}</username>
+    {% for roomId, roomInfo in data %}
+        <room id="{{ roomId }}">
+            {% for date,tariffIds in roomInfo %}
+                {% for tariffId in tariffIds %}
+                    {% if tariffId|length>1 %}
+                        <update>
+                        <date value="{{ date }}"/>
+                        <rate id="{{ tariffId.id_tariff }}"
+                        price="{{ tariffId.price }}" />
+                        </update>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </room>
+    {% endfor %}
+</request>

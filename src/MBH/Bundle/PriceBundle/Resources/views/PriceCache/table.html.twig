@@ -19,38 +19,41 @@
                 <input type="hidden" name="roomTypes[{{ roomType.id }}]" class="hidden" value="{{ roomType.id }}">
 
                 <tr class="mbh-grid-header2 warning">
-                    <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
+                    <td colspan="{{ period|length + 1 }}"><strong {% if not roomType.isEnabled %} class="disabled-room-type"{% endif %}>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
                 </tr>
-
-                <tr class="header">
+                <tr class="header" data-copy-row-id="{{ roomType.id }}">
                     <td class="first-th"></td>
                     {% for date in period %}
-                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+                        <td class="header-td {% if date|date('N') >= 6 %} text-danger{% endif %}">
+                            <span class="header-info">{{ date|mbh_format }}</span>
+                            <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.generator'|trans }}" href="#" class="header-action header-action-generator"><i class="fa fa fa-magic"></i></a>
+                            <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.copy'|trans }}" href="#" class="header-action header-action-copy"><i class="fa fa-copy"></i></a>
+                        </td>
                     {% endfor %}
                 </tr>
 
-                {% set categories = {'price': 'mbhpricebundle.view.pricecache.table.tsena'|trans} %}
+                {% set categories = {'price': 'price.views.priceCache.table.prices'|trans({},'MBHPriceBundle')} %}
 
                 {% if roomType.isHostel is empty %}
-                    {% set categories = categories|merge({'price': 'mbhpricebundle.view.pricecache.table.tsena'|trans, 'isPersonPrice': ('mbhpricebundle.view.pricecache.table.tsenazacheloveka'|trans ~ '?'), 'singlePrice': 'mbhpricebundle.view.pricecache.table.tsenaOdnoMestnogo' | trans}) %}
+                    {% set categories = categories|merge({'price': 'price.views.priceCache.table.prices'|trans({},'MBHPriceBundle'), 'isPersonPrice': 'price.views.priceCache.table.isPersonPrice'|trans({},'MBHPriceBundle'), 'singlePrice': 'price.views.priceCache.table.singlePrice'|trans({},'MBHPriceBundle')}) %}
                 {% endif %}
 
                 {% if roomType.isChildPrices %}
-                    {% set categories = categories|merge({'childPrice': 'mbhpricebundle.view.pricecache.table.tsenazadetskoyeosn'|trans }) %}
+                    {% set categories = categories|merge({'childPrice': 'mbhpricebundle.view.pricecache.table.price_for_children_main_place'|trans}) %}
                 {% endif %}
 
                 {% if roomType.additionalPlaces > 0 %}
-                    {% set categories = categories|merge({'additionalPrice': 'mbhpricebundle.view.pricecache.table.tsenazavzrosloyedop'|trans , 'additionalChildrenPrice': 'mbhpricebundle.view.pricecache.table.tsenazadetskoyedop'|trans }) %}
+                    {% set categories = categories|merge({'additionalPrice': 'mbhpricebundle.view.pricecache.table.price_for_adult_main_place'|trans, 'additionalChildrenPrice': 'mbhpricebundle.view.pricecache.table.price_for_children_additional_place'|trans }) %}
                 {% endif %}
 
                 {% if roomType.additionalPlaces > 1 and roomType.isIndividualAdditionalPrices %}
                     {% for num in 1..(roomType.additionalPlaces - 1) %}
-                        {% set categories = categories|merge({('additionalPrice' ~ num):  'mbhpricebundle.view.pricecache.table.tsenazavzrosloyedop'|trans ~ '#' ~ (num + 1), ('additionalChildrenPrice' ~ num):'mbhpricebundle.view.pricecache.table.tsenazadetskoyedop'|trans ~ '#'  ~ (num + 1) }) %}
+                        {% set categories = categories|merge({('additionalPrice' ~ num): 'mbhpricebundle.view.pricecache.table.price_for_adult_main_place'|trans ~ '#' ~ (num + 1), ('additionalChildrenPrice' ~ num): 'mbhpricebundle.view.pricecache.table.price_for_children_main_place' ~ '#'  ~ (num + 1) }) %}
                     {% endfor %}
                 {% endif %}
 
                 {% for categoryId, category in categories %}
-                    <tr>
+                    <tr data-copy-row-id="{{ roomType.id }}">
                         <td class="first-td"><small>{{ category }}</small></td>
 
                         {% for date in period %}

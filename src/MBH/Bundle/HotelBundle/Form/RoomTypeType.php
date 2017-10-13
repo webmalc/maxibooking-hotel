@@ -2,8 +2,15 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\FacilitiesType;
+use MBH\Bundle\HotelBundle\Document\RoomViewType;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -12,18 +19,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class RoomTypeType extends AbstractType
 {
+    /** @var  Translator $translator */
+    private $translator;
+
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         if ($options['useRoomTypeCategory']) {
             $hotel = $options['hotel'];
             $builder
-                ->add('category', 'document', [
+                ->add('category', DocumentType::class, [
                     'label' => 'form.roomTypeType.category',
                     'group' => 'form.roomTypeType.general_info',
                     'required' => true,
-                    'empty_value' => '',
+                    'placeholder' => '',
                     'class' => 'MBHHotelBundle:RoomTypeCategory',
-                    'query_builder' => function(DocumentRepository $repository) use ($hotel) {
+                    'query_builder' => function (DocumentRepository $repository) use ($hotel) {
                         $qb = $repository->createQueryBuilder();
                         if ($hotel) {
                             $qb->field('hotel.id')->equals($hotel->getID());
@@ -34,32 +49,32 @@ class RoomTypeType extends AbstractType
             ;
         }
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'form.roomTypeType.name',
                 'required' => true,
                 'group' => 'form.roomTypeType.general_info',
                 'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus']
             ])
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'form.roomTypeType.inner_name',
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
                 'attr' => ['placeholder' => 'form.roomTypeType.comport_plus_rooms_in_new_housing'],
-                'help' => 'mbhhotelbundle.form.roomtypetype.nazvaniyedlyaispolʹzovaniyavnutriMaxiBooking'
+                'help' => 'form.roomTypeType.inner_name.help'
             ])
-            ->add('internationalTitle', 'text', [
+            ->add('internationalTitle', TextType::class, [
                 'label' => 'form.roomTypeType.international_title',
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextareaType::class, [
                 'label' => 'form.roomTypeType.description',
                 'help' => 'form.roomTypeType.online_reservation_room_description',
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
                 'attr' => ['class' => 'big roomTypeTypeEditor tinymce']
             ])
-            ->add('color', 'text', [
+            ->add('color', TextType::class, [
                 'label' => 'form.roomTypeType.color',
                 'required' => true,
                 'group' => 'form.roomTypeType.general_info',
@@ -67,31 +82,51 @@ class RoomTypeType extends AbstractType
                 'addon' => 'fa fa-eyedropper',
                 'help' => 'form.roomTypeType.chess_room_type_color'
             ])
-            ->add('roomSpace', 'text', [
+            ->add('roomSpace', TextType::class, [
                 'label' => 'form.roomTypeType.room_space',
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
             ])
-            ->add('facilities', 'mbh_facilities', [
+            ->add('facilities', FacilitiesType::class, [
                 //'label' => 'form.roomTypeType.is_included',
                 'group' => 'form.roomTypeType.general_info',
                 'required' => false
             ])
-            ->add('isHostel', 'checkbox', [
+            ->add('roomViewsTypes', DocumentType::class, [
+                'choice_label' => function ($value) {
+                    return $this->translator->trans($value);
+                },
+                'label' => 'form.roomType.room_view_types.label',
+                'group' => 'form.roomTypeType.general_info',
+                'required' => false,
+                'query_builder' => function (DocumentRepository $documentRepository) {
+                    return $documentRepository->createQueryBuilder();
+                },
+                'class' => RoomViewType::class,
+                'multiple' => 'true',
+            ])
+            ->add('isSmoking', CheckboxType::class, [
+                'label' => 'form.hotelType.isSmoking.label',
+                'group' => 'form.roomTypeType.general_info',
+                'value' => true,
+                'required' => false,
+                'help' => 'form.hotelType.isSmoking.help'
+            ])
+            ->add('isHostel', CheckboxType::class, [
                 'label' => 'form.hotelType.hostel',
                 'group' => 'form.roomTypeType.places',
                 'value' => true,
                 'required' => false,
                 'help' => 'form.hotelType.hostel_hotel_or_not'
             ])
-            ->add('places', 'text', [
+            ->add('places', TextType::class, [
                 'label' => 'form.roomTypeType.main_places',
                 'group' => 'form.roomTypeType.places',
                 'required' => true,
                 'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_main_places_amount'
             ])
-            ->add('additionalPlaces', 'text', [
+            ->add('additionalPlaces', TextType::class, [
                 'label' => 'form.roomTypeType.additional_places',
                 'group' => 'form.roomTypeType.places',
                 'required' => true,
@@ -101,14 +136,14 @@ class RoomTypeType extends AbstractType
 
         if (!$options['useRoomTypeCategory']) {
             $builder
-                ->add('isChildPrices', 'checkbox', [
+                ->add('isChildPrices', CheckboxType::class, [
                     'label' => 'form.roomTypeType.isChildPrices',
                     'group' => 'form.roomTypeType.prices',
                     'value' => true,
                     'required' => false,
                     'help' => 'form.roomTypeType.isChildPricesDesc'
                 ])
-                ->add('isIndividualAdditionalPrices', 'checkbox', [
+                ->add('isIndividualAdditionalPrices', CheckboxType::class, [
                     'label' => 'form.roomTypeType.isIndividualAdditionalPrices',
                     'group' => 'form.roomTypeType.prices',
                     'value' => true,
@@ -119,7 +154,7 @@ class RoomTypeType extends AbstractType
         }
 
         $builder
-            ->add('isEnabled', 'checkbox', [
+            ->add('isEnabled', CheckboxType::class, [
                 'label' => 'form.roomTypeType.is_included',
                 'group' => 'form.roomTypeType.settings',
                 'value' => true,
@@ -127,7 +162,6 @@ class RoomTypeType extends AbstractType
                 'help' => 'form.roomTypeType.is_room_included_in_search'
             ])
         ;
-
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -142,9 +176,8 @@ class RoomTypeType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_room_type_type';
     }
-
 }

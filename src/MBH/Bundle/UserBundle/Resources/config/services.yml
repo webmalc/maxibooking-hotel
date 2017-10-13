@@ -1,7 +1,7 @@
 services:
     security.authentication.success_handler:
         class: MBH\Bundle\UserBundle\Security\AuthenticationSuccessHandler
-        arguments:  ["@security.http_utils", {}, "@mbh.mbhs"]
+        arguments:  ["@security.http_utils", {}, "@mbh.mbhs", "@mbh.dashboard"]
         tags:
             - { name: 'monolog.logger', channel: 'security' }
 
@@ -9,12 +9,12 @@ services:
         class: MBH\Bundle\UserBundle\Form\GroupType
         tags:
           - { name: form.type, alias: mbh_bundle_userbundle_grouptype }
-        arguments: [%security.role_hierarchy.roles%]
+        arguments: ["%security.role_hierarchy.roles%"]
 
     mbh.user.roles.type:
         class: MBH\Bundle\UserBundle\Form\Type\RolesType
         arguments:
-            - %security.role_hierarchy.roles%
+            - "%security.role_hierarchy.roles%"
         tags:
             - { name: form.type, alias: roles }
     mbh.user.metadata_listener:
@@ -23,23 +23,85 @@ services:
             -  { name: doctrine_mongodb.odm.event_listener, event: loadClassMetadata }
     mbh.user.validator:
         class: MBH\Bundle\UserBundle\Validator\Constraints\UserValidator
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: validator.constraint_validator, alias: mbh.user.validator }
 
-    mbh.user.work_shift_repository:
-        class: Doctrine\ORM\DocumentRepository
-        factory_service: doctrine_mongodb.odm.default_document_manager
-        factory_method: getRepository
-        arguments:
-            - MBH\Bundle\UserBundle\Document\WorkShift
-
+#    mbh.user.work_shift_repository:
+#        class: Doctrine\ODM\MongoDB\DocumentRepository
+#        factory_service: doctrine_mongodb.odm.default_document_manager
+#        factory_method: getRepository
+#        arguments:
+#            - MBH\Bundle\UserBundle\Document\WorkShift
+#
     mbh.user.work_shift_manager:
         class: MBH\Bundle\UserBundle\Service\WorkShiftManager
-        arguments: [@doctrine_mongodb.odm.default_document_manager, @mbh.hotel.selector]
+        arguments: ['@doctrine_mongodb.odm.default_document_manager', '@mbh.hotel.selector']
+#
+#    mbh.user.work_shift_listener:
+#        class: MBH\Bundle\UserBundle\EventListener\WorkShiftListener
+#        arguments: ['@security.token_storage', '@session', '@router', '@mbh.user.work_shift_repository', '@translator.default']
+#        tags:
+#            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
-    mbh.user.work_shift_listener:
-        class: MBH\Bundle\UserBundle\EventListener\WorkShiftListener
-        arguments: [@security.token_storage, @session, @router, @mbh.user.work_shift_repository, @translator.default]
+    # Two factor auth
+    mbh.twofactor.email.helper:
+      class: MBH\Bundle\UserBundle\Service\TwoFactor\Email\Helper
+      arguments: ["@doctrine.odm.mongodb.document_manager", "@mbh.notifier.mailer"]
+
+    mbh.twofactor.email.interactive_login_listener:
+          class: MBH\Bundle\UserBundle\Service\TwoFactor\InteractiveLoginListener
+          arguments: ["@mbh.twofactor.email.helper", "email"]
+          tags:
+            - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
+
+    mbh.twofactor.email.request_listener:
+              class: MBH\Bundle\UserBundle\Service\TwoFactor\RequestListener
+              arguments: ["@mbh.twofactor.email.helper", "@security.token_storage", "@templating", "@router", "email"]
+              tags:
+                - { name: kernel.event_listener, event: kernel.request, method: onCoreRequest, priority: "-1"}
+
+    mbh.twofactor.google:
+          class: Google\Authenticator\GoogleAuthenticator
+
+    mbh.twofactor.google.helper:
+          class: MBH\Bundle\UserBundle\Service\TwoFactor\Google\Helper
+          arguments: ["maxibooking.ru", "@mbh.twofactor.google", "@doctrine.odm.mongodb.document_manager", "@mbh.notifier.mailer"]
+
+    mbh.twofactor.google.interactive_login_listener:
+          class: MBH\Bundle\UserBundle\Service\TwoFactor\InteractiveLoginListener
+          arguments: ["@mbh.twofactor.google.helper", "google"]
+          tags:
+            - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
+
+    mbh.twofactor.google.request_listener:
+              class: MBH\Bundle\UserBundle\Service\TwoFactor\RequestListener
+              arguments: ["@mbh.twofactor.google.helper", "@security.token_storage", "@templating", "@router", "google"]
+              tags:
+                - { name: kernel.event_listener, event: kernel.request, method: onCoreRequest, priority: "-1"}
+
+    mbh.recaptcha.interactive_login_listener:
+      class: MBH\Bundle\UserBundle\Service\ReCaptcha\InteractiveLoginListener
+      tags:
+        - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin, priority: "-1"}
+      arguments: ["%mbh.recaptcha%"]
+
+    mbh.user.locale.listener:
+      class: MBH\Bundle\UserBundle\EventListener\UserLocalListener
+      arguments: ['@session']
+      tags:
+        - { name: kernel.event_listener, event: security.interactive_login, method: onInteractiveLogin }
+
+    mbh.resetting_subscriber:
+        class: MBH\Bundle\UserBundle\EventListener\ResettingSubscriber
+        arguments:
+            - "%mbh.recaptcha%"
+            - '@templating'
+            - '@translator'
         tags:
-            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+            - { name: kernel.event_subscriber}
+    mbh.user_type:
+      class: MBH\Bundle\UserBundle\Form\UserType
+      arguments: ['@translator', '@doctrine_mongodb.odm.default_document_manager']
+      tags:
+          - {name: form.type}

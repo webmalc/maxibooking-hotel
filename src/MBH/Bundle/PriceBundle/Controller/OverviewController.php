@@ -3,20 +3,19 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("overview")
  */
 class OverviewController extends Controller implements CheckHotelControllerInterface
 {
-
     /**
      * @Route("/", name="room_overview")
      * @Method("GET")
@@ -25,9 +24,17 @@ class OverviewController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
+        $roomTypeManager = $this->get('mbh.hotel.room_type_manager');
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $getRoomTypeCallback = function () use ($roomTypeManager) {
+            return $roomTypeManager->getRooms($this->hotel);
+        };
+        $roomTypes = $this->helper->getFilteredResult($this->dm, $getRoomTypeCallback, $isDisableableOn);
+
         return [
-            'roomTypes' => $this->hotel->getRoomTypes(),
+            'roomTypes' => $roomTypes,
             'tariffs' => $this->hotel->getTariffs(),
+            'displayDisabledRoomType' => !$isDisableableOn
         ];
     }
 
@@ -49,11 +56,11 @@ class OverviewController extends Controller implements CheckHotelControllerInter
 
         //dates
         $begin = $helper->getDateFromString($request->get('begin'));
-        if(!$begin) {
+        if (!$begin) {
             $begin = new \DateTime('00:00');
         }
         $end = $helper->getDateFromString($request->get('end'));
-        if(!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
+        if (!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
             $end = clone $begin;
             $end->modify('+45 days');
         }
@@ -70,50 +77,80 @@ class OverviewController extends Controller implements CheckHotelControllerInter
             'hotel' => $hotel
         ];
 
-        //get roomTypes
-        $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
-            ->fetch($hotel, $request->get('roomTypes'))
-        ;
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $inputRoomTypeIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
+        $roomTypeManager = $this->get('mbh.hotel.room_type_manager');
+        $roomTypesCallback = function () use ($inputRoomTypeIds, $roomTypeManager) {
+            return $roomTypeManager->getRooms($this->hotel, $inputRoomTypeIds);
+        };
+
+        $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+        if (empty($roomTypeIds = $inputRoomTypeIds)) {
+            $roomTypeIds = $helper->toIds($roomTypes);
+        }
 
         if (!count($roomTypes)) {
-            return array_merge($response, ['error' => 'Типы номеров не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.overviewcontroller.room_type_is_not_found')]);
         }
         //get tariffs
         $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
             ->fetch($hotel, $request->get('tariffs'))
         ;
         if (!count($tariffs)) {
-            return array_merge($response, ['error' => 'Тарифы не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.overviewcontroller.tariffs_is_not_found')]);
         }
 
         //get roomCaches
         $roomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
-                $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [],
-                null, true)
+                $begin,
+                $end,
+                $hotel,
+                $roomTypeIds,
+                null,
+                true
+            )
         ;
         //get tariff roomCaches
         $tariffRoomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
-                $begin, $end, $hotel,
-                $request->get('roomTypes') && !$manager->useCategories ? $request->get('roomTypes') : [], [], true);
+                $begin,
+                $end,
+                $hotel,
+                $request->get('roomTypes') && !$manager->useCategories ? $request->get('roomTypes') : [],
+                [],
+                true
+            );
         
         //get priceCaches
-        $priceCaches = $dm->getRepository('MBHPriceBundle:PriceCache')
-            ->fetch(
-                $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [], [], true, $manager->useCategories);
+        $priceCachesCallback = function () use ($dm, $begin, $end, $hotel, $request, $manager) {
+            return $dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch(
+                    $begin,
+                    $end,
+                    $hotel,
+                    $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                    [],
+                    true,
+                    $manager->useCategories
+                );
+        };
+        $priceCaches = $helper->getFilteredResult($this->dm, $priceCachesCallback);
         
         //get restrictions
         $restrictions = $dm->getRepository('MBHPriceBundle:Restriction')
             ->fetch(
-                $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [], [], true);
-
+                $begin,
+                $end,
+                $hotel,
+                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                [],
+                true
+            );
         return array_merge($response, [
             'roomTypes' => $roomTypes,
             'tariffs' => $tariffs,
+            'channelManager' => $this->get('mbh.channelmanager')->getOverview($begin, $end, $this->hotel),
             'roomCaches' => $roomCaches,
             'tariffRoomCaches' => $tariffRoomCaches,
             'priceCaches' => $priceCaches,

@@ -2,14 +2,14 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="Housing")
@@ -28,6 +28,7 @@ class Housing extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Hotel")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $hotel;
 
@@ -36,26 +37,30 @@ class Housing extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string") 
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $name;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $internalName;
 
     /**
      * @var City
      * @ODM\ReferenceOne(targetDocument="City")
+     * @ODM\Index()
      */
     protected $city;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $settlement;
 

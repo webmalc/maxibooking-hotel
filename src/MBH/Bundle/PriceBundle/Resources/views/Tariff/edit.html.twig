@@ -9,7 +9,7 @@
 
     <div class="tab-content">
         <div class="tab-pane active" id="general_info">
-        {{ form_start(form, {'action': path('tariff_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_start(form, {'action': path('tariff_update', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
         {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': entity.isDefault ? null : 'tariff_delete' } %}
         {{ form_end(form) }}

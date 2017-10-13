@@ -11,20 +11,23 @@
 
 namespace MBH\Bundle\WarehouseBundle\DataFixtures\MongoDB;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\WarehouseBundle\Document\WareCategory;
-use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class WarehouseData implements FixtureInterface, ContainerAwareInterface
+class WarehouseData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
-	private $cats = [
-		'Бытовая химия',
-		'Питание',
-		'Бельё',
-	];
+	private function cats()
+    {
+        return [
+            $this->container->get('translator')->trans('warehouse.fixtures.mongodb.warehousedata.household_chemical'),
+            $this->container->get('translator')->trans('warehouse.fixtures.mongodb.warehousedata.food'),
+            $this->container->get('translator')->trans('warehouse.fixtures.mongodb.warehousedata.underwear')
+        ];
+    }
 
     /**
      * @var ContainerInterface
@@ -47,7 +50,7 @@ class WarehouseData implements FixtureInterface, ContainerAwareInterface
 		$existingCats = $manager->getRepository('MBHWarehouseBundle:WareCategory')->findAll();
 		
 		// skip existing categories
-		foreach ($this->cats as $name) {
+		foreach ($this->cats() as $name) {
 			if ($this->checkExistance($existingCats, $name)) {
 				continue;
 			}
@@ -78,5 +81,10 @@ class WarehouseData implements FixtureInterface, ContainerAwareInterface
 		
 		return false;
 	}
+
+    public function getOrder()
+    {
+        return 9993;
+    }
 	
 }

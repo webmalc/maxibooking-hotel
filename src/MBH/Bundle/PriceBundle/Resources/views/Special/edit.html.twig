@@ -1,0 +1,24 @@
+{% extends 'MBHPriceBundle:Special:layout.html.twig' %}
+
+{% set small_title = "entity.edit.title"|trans({'%title%': entity.name}) %}
+{% set layout = 'box' %}
+
+{% block content %}
+    <div class="bg-gray color-palette alert">
+        {{ 'special.edit.sold_from'|trans({"%soldAmount%" : entity.sold, "%soldLimit%" : entity.limit, "%remain%" : entity.remain})}}
+        <div id="special-packages-list">{{ 'special.edit.packages'|trans}}:
+            {% for package in entity.packages %}
+                <a href="{{ path('package_edit', {'id': package.id, 'orderId': package.order.id}) }}">
+                    <small>{{ package }}</small>
+                </a>&nbsp;
+            {% endfor %}
+        </div>
+    </div>
+    {{ form_start(form, {'action': path('special_edit', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'special_delete' } %}
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'special_delete' } %}
+
+{% endblock %}

@@ -1,4 +1,45 @@
 services:
     mbh.mbhs:
         class: MBH\Bundle\ClientBundle\Service\Mbhs
-        arguments: [@service_container]
+        arguments: ['@service_container']
+    mbh.notice.unpaid:
+        class: MBH\Bundle\ClientBundle\Service\NoticeUnpaid
+        arguments: ['@service_container','@doctrine_mongodb', '@mbh.notifier.mailer']
+        
+    #Dashboard
+    mbh.dashboard:
+      class: MBH\Bundle\ClientBundle\Service\Dashboard\Dashboard
+      calls:
+        - [attach, ["@mbh.dashboard.room_cache"]]
+        - [attach, ["@mbh.dashboard.price_cache"]]
+      arguments: ['@doctrine_mongodb']
+
+    mbh.dashboard.price_cache:
+      class: MBH\Bundle\ClientBundle\Service\Dashboard\PriceCacheSource
+      arguments: ['@doctrine_mongodb', '@validator', '@translator', '@mbh.helper']
+
+    mbh.dashboard.room_cache:
+      class: MBH\Bundle\ClientBundle\Service\Dashboard\RoomCacheSource
+      arguments: ['@doctrine_mongodb', '@validator', '@translator', '@mbh.helper']
+
+    mbh_bundle_client.twig.dashboard_extension:
+        class: MBH\Bundle\ClientBundle\Twig\DashboardExtension
+        arguments: ['@mbh.dashboard']
+        tags:
+            - { name: twig.extension }
+
+    mbh.client_payment_system_type:
+        class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
+        arguments:
+            - '%mbh.payment_systems%'
+            - '%mbh.payment_systems.change%'
+            - '%mbh.payment_systems.default%'
+            - '%mbh.taxation%'
+        tags:
+            - { name: form.type }
+
+    mbh.client_config_type:
+        class: MBH\Bundle\ClientBundle\Form\ClientConfigType
+        arguments: ['@mbh.helper']
+        tags:
+            - {name: form.type}

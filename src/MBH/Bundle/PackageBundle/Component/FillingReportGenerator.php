@@ -72,7 +72,11 @@ class FillingReportGenerator
                 $criteria['roomType.id'] = ['$in' => $roomTypeIDs];
             }
         }
-        $priceCaches = $priceCacheRepository->findBy($criteria);
+        $priceCachesCallback = function () use ($criteria, $priceCacheRepository) {
+            return $priceCacheRepository->findBy($criteria);
+        };
+        $priceCaches = $this->container->get('mbh.helper')
+            ->getFilteredResult($this->container->get('doctrine.odm.mongodb.document_manager'), $priceCachesCallback);
 
 
         $allPackages = $dm->getRepository('MBHPackageBundle:Package')->findBy([
@@ -120,7 +124,8 @@ class FillingReportGenerator
                 '$lte' => $end,
             ],
             'roomType.id' => ['$in' => $roomTypeIDs],
-            'hotel.id' => $this->hotel->getId()
+            'hotel.id' => $this->hotel->getId(),
+            'tariff' => null
         ]);
 
         $roomCachesByRoomTypeAndDate = [];
@@ -208,25 +213,25 @@ class FillingReportGenerator
                     }
 
                     foreach($filteredPackages as $package) {
-                        $priceByDate = $package->getPricesByDate();
+                        $priceByDate = $package->getPricesByDateWithDiscount();
                         $packagePrice = 0;
                         if(isset($priceByDate[$date->format('d_m_Y')])) {
                             $packagePrice = $priceByDate[$date->format('d_m_Y')];
                         }
                         $packageRowData['packagePrice'] += $packagePrice;
 
+                        $servicesPrice = 0;
                         foreach($package->getServices() as $service) {
                             if($date >= $service->getBegin() && $date < $service->getEnd()) {
-                                $packageRowData['servicePrice'] += $service->calcTotal() / $service->getNights();
+                                $servicesPrice += $service->calcTotal() / $service->getNights();
                             }
                         }
-                        //$packageRowData['servicePrice'] += $package->getServicesPrice() / $package->getNights();
-                        //$packageRowData['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+
+                        $packageRowData['servicePrice'] += $servicesPrice;
 
                         $relationPaid = $package->getOrder()->getPrice() ?
                             $package->getOrder()->getPaid() / $package->getOrder()->getPrice() : 0;
-                        $packageRowData['paid'] += $relationPaid * ($packagePrice + $packageRowData['servicePrice']);
-                        //$packageRowData['debt'] += $package->getNights() > 0 ? $package->getDebt() / $package->getNights() : 0;
+                        $packageRowData['paid'] += $relationPaid * ($packagePrice + $servicesPrice);
                         $packageRowData['guests'] += $package->getAdults();
                         $uniqueAdults[$package->getId()] = $package->getAdults();
 
@@ -351,10 +356,10 @@ class FillingReportGenerator
             //$totals['packagesCount'] = $totals['packagesCount'] / $roomTypeCount;
             //$totals['notPaidRooms'] = $totals['notPaidRooms'] / $roomTypeCount;
             //$totals['guests'] = $totals['guests'] / $roomTypeCount;
-            $totals['roomGuests'] = $totals['roomGuests'] / $roomTypeCount;
-            $totals['packagesCountPercent'] = $totals['packagesCountPercent'] / $roomTypeCount;
-            $totals['paidPercent'] = $totals['paidPercent'] / $roomTypeCount;
-            $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $roomTypeCount;
+            $totals['roomGuests'] = isset($totals['roomGuests']) ? $totals['roomGuests'] / $roomTypeCount : 0;
+            $totals['packagesCountPercent'] = isset($totals['packagesCountPercent']) ? $totals['packagesCountPercent'] / $roomTypeCount : 0;
+            $totals['paidPercent'] =  isset($totals['paidPercent']) ? $totals['paidPercent'] / $roomTypeCount : 0;
+            $totals['maxIncomePercent'] = isset($totals['maxIncomePercent']) ? $totals['maxIncomePercent'] / $roomTypeCount : 0;
         }
 
         $totalTableData = [

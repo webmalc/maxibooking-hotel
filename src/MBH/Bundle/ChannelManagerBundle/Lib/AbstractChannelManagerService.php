@@ -2,26 +2,43 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-
+use Doctrine\ODM\MongoDB\Query\Builder;
+use Doctrine\MongoDB\CursorInterface;
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
 {
 
+    const COMMAND_UPDATE = 'update';
+
+    const COMMAND_UPDATE_PRICES = 'updatePrices';
+
+    const COMMAND_UPDATE_ROOMS = 'updateRooms';
+
+    const COMMAND_UPDATE_RESTRICTIONS = 'updateRestrictions';
+
     /**
      * Test mode on/off
      */
-    CONST TEST = true;
+    const TEST = true;
+
+    const UNAVAIBLE_PRICES = [];
+    
+    const UNAVAIBLE_RESTRICTIONS = [];
 
     /**
      * Default period for room/prices upload
      */
-    CONST DEFAULT_PERIOD = 365;
+    const DEFAULT_PERIOD = 365;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -34,7 +51,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     protected $dm;
 
     /**
-     * @var \Symfony\Bundle\TwigBundle\Debug\TimedTwigEngine
+     * @var TwigEngine
      *
      */
     protected $templating;
@@ -64,16 +81,113 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     protected $currency;
 
+    protected $roomManager;
+    
+    /**
+     * @var array
+     */
+    protected $errors = [];
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->templating = $this->container->get('templating');
-        $this->request = $container->get('request');
+        $this->request = $container->get('request_stack')->getCurrentRequest();
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
+        $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->currency = $container->get('mbh.currency');
         $this->roomManager = $container->get('mbh.hotel.room_type_manager');
+    }
+
+    /**
+     * {{ @inheritDoc }}
+     */
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+    
+    /**
+     * {{ @inheritDoc }}
+     */
+    public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): ?ChannelManagerOverview
+    {
+        $method = 'get' . static::CONFIG;
+        $config = $hotel->$method();
+        if (!$config && !$config->getIsEnabled()) {
+            return null;
+        }
+
+        $trans = $this->container->get('translator');
+        $overview = new ChannelManagerOverview();
+        $overview->setBegin($begin)
+            ->setName(static::class)
+            ->setEnd($end);
+
+        $getError = function (array $types, string $prefix, ChannelManagerOverview &$overview, string $method) use ($config, $trans, $begin, $end) {
+            if (empty($types)) {
+                return null;
+            }
+            $getMethod = 'get' . ucfirst($method);
+            foreach ($this->$getMethod($config, $begin, $end, $types) as $val) {
+                $message = $val->getDate()->format('d.m.Y') . ': ' . $val->getTariff();
+                $message .= ' - ' . $val->getRoomType() . ' - ';
+                $message .= implode(', ', array_filter(array_map(function ($element) use ($trans, $prefix, $val) {
+                    $typeMethod = 'get' . ucfirst($element);
+                    if ($val->$typeMethod()) {
+                        return $trans->trans($prefix . '.type.' . $element);
+                    }
+                }, array_keys($types))));
+
+                $addMethod = 'add' . ucfirst($method);
+                $overview->$addMethod($val, $message);
+            }
+        };
+
+        $getError(static::UNAVAIBLE_PRICES, 'channelmanager.notifications.prices', $overview, 'prices');
+        $getError(static::UNAVAIBLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $overview, 'restrictions');
+
+        return $overview;
+    }
+
+    /**
+     * {{ @inheritDoc }}
+     */
+    public function getNotifications(ChannelManagerConfigInterface $config): array
+    {
+        $errors = [];
+        if (!$config->getIsEnabled()) {
+            return [];
+        }
+        $trans = $this->container->get('translator');
+        $getError = function (array $types, string $message, array &$errors, string $method) use ($config, $trans) {
+            if (empty($types)) {
+                return $errors;
+            }
+            if (count($types) && $this->$method($config, $types)) {
+                $error = $trans->trans($message) . ': ';
+                $error .= implode(', ', array_map(function ($element) use ($trans, $message) {
+                    return $trans->trans($message . '.type.' . $element);
+                }, array_keys($types)));
+                $errors[] = $error;
+            }
+            return $errors;
+        };
+        $getError(static::UNAVAIBLE_PRICES, 'channelmanager.notifications.prices', $errors, 'countPrices');
+        $getError(static::UNAVAIBLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $errors, 'countRestrictions');
+
+        return $errors;
+    }
+
+    /**
+     * {{ @inheritDoc }}
+     */
+    public function addError(string $error): ChannelManagerServiceInterface
+    {
+        $this->errors[] = $error;
+        return $this;
     }
 
     /**
@@ -110,11 +224,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     public function closeAll()
     {
         $result = true;
-
         foreach ($this->getConfig() as $config) {
             $check = $this->closeForConfig($config);
             $result ? $result = $check : $result;
-
         }
 
         return $result;
@@ -144,6 +256,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+        $this->log('ChannelManager update function start');
+
         $result = true;
 
         $check = $this->updateRooms($begin, $end, $roomType);
@@ -155,6 +269,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->updatePrices($begin, $end, $roomType);
         $result ? $result = $check : $result;
 
+        $this->log('ChannelManager update function end.');
+
         return $result;
     }
 
@@ -163,9 +279,13 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function clearAllConfigs()
     {
+        $this->log('Abstract clearAllConfigs function start.');
+
         foreach ($this->getConfig() as $config) {
             $this->clearConfig($config);
         }
+
+        $this->log('Abstract clearAllConfigs function end.');
     }
 
     /**
@@ -177,7 +297,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $rooms = $this->pullRooms($config);
         foreach ($config->getRooms() as $room) {
             if (!isset($rooms[$room->getRoomId()])) {
-
                 $config->removeRoom($room);
             }
         }
@@ -200,22 +319,21 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     public function createTariff(ChannelManagerConfigInterface $config, $id)
     {
         $tariffsInfo = $this->pullTariffs($config);
+        $info = null;
 
-        if (!isset($tariffsInfo[$id])) {
-            return null;
+        if (isset($tariffsInfo[$id])) {
+            $info = $tariffsInfo[$id];
         }
-        $info = $tariffsInfo[$id];
-
+        $info ? $title = $info['title'] : $title = 'Automatically generated rate: undefined';
         $oldTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy([
-            'title' => $info['title']
+            'title' => $title
         ]);
         if ($oldTariff) {
             return $oldTariff;
         }
-
         $tariff = new Tariff();
-        $tariff->setTitle($info['title'])
-            ->setFullTitle($info['title'])
+        $tariff->setTitle($title)
+            ->setFullTitle($title)
             ->setIsDefault(false)
             ->setIsOnline(false)
             ->setHotel($config->getHotel())
@@ -280,6 +398,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $result = [];
 
         foreach ($config->getRooms() as $room) {
+            /** @var Room $room */
             $roomType = $room->getRoomType();
             if (empty($room->getRoomId()) || !$roomType->getIsEnabled() || !empty($roomType->getDeletedAt())) {
                 continue;
@@ -296,11 +415,155 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                     'doc' => $roomType
                 ];
             }
-
-
         }
 
         return $result;
+    }
+
+    /**
+     * Get roomTypeIds from config
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    private function getRoomTypeIdsFromConfig(ChannelManagerConfigInterface $config): array
+    {
+        return  array_unique(array_map(function ($element) {
+            return $element->getRoomType()->getId();
+        }, $config->getRooms()->toArray()));
+    }
+    
+    /**
+     * Get tariffIds from config
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    private function getTariffIdsFromConfig(ChannelManagerConfigInterface $config): array
+    {
+        return  array_unique(array_map(function ($element) {
+            return $element->getTariff()->getId();
+        }, $config->getTariffs()->toArray()));
+    }
+
+    /**
+     * Get restrictions by config
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @return Builder
+     */
+    protected function getRestrictionsByConfigQueryBuilder(ChannelManagerConfigInterface $config): Builder
+    {
+        $builder = $this->dm->getRepository('MBHPriceBundle:Restriction')->createQueryBuilder();
+
+        $tariffsIds = $this->getTariffIdsFromConfig($config);
+        $roomTypeIds = $this->getRoomTypeIdsFromConfig($config);
+
+        $builder->field('tariff.id')->in($tariffsIds)
+            ->field('roomType.id')->in($roomTypeIds)
+            ->field('date')->gte(new \DateTime('midnight'))
+        ;
+
+        return $builder;
+    }
+
+    /**
+     * Get priceCaches by config
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @return Builder
+     */
+    protected function getPricesByConfigQueryBuilder(ChannelManagerConfigInterface $config): Builder
+    {
+        $builder = $this->dm->getRepository('MBHPriceBundle:PriceCache')->createQueryBuilder();
+
+        $tariffsIds = $this->getTariffIdsFromConfig($config);
+        $roomTypeIds = $this->getRoomTypeIdsFromConfig($config);
+
+        $builder->field('tariff.id')->in($tariffsIds)
+            ->field('roomType.id')->in($roomTypeIds)
+            ->field('cancelDate')->equals(null)
+            ->field('date')->gte(new \DateTime('midnight'))
+        ;
+
+        return $builder;
+    }
+
+    /**
+     * Count restrictions by config and type
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @param array $types
+     * @return int
+     */
+    protected function countRestrictions(ChannelManagerConfigInterface $config, array $types = []): int
+    {
+        $builder = $this->getRestrictionsByConfigQueryBuilder($config);
+
+        foreach ($types as $type => $val) {
+            $builder->addOr($builder->expr()->field($type)->notEqual($val));
+        }
+        return $builder->getQuery()->count();
+    }
+
+    /**
+     * Get restrictions by config and type
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @param array $types
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return CursorInterface
+     */
+    protected function getRestrictions(ChannelManagerConfigInterface $config, \DateTime $begin, \DateTime $end, array $types = []): CursorInterface
+    {
+        $builder = $this->getRestrictionsByConfigQueryBuilder($config);
+        $builder->field('date')->gte($begin)
+            ->field('date')->lte($end)
+            ->sort('date');
+        foreach ($types as $type => $val) {
+            $builder->addOr($builder->expr()->field($type)->notEqual($val));
+        }
+        return $builder->getQuery()->execute();
+    }
+    
+    /**
+     * Get prices by config and type
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @param array $types
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return CursorInterface
+     */
+    protected function getPrices(ChannelManagerConfigInterface $config, \DateTime $begin, \DateTime $end, array $types = []): CursorInterface
+    {
+        $builder = $this->getPricesByConfigQueryBuilder($config);
+        $builder->field('date')->gte($begin)
+            ->field('date')->lte($end)
+            ->sort('date');
+        foreach ($types as $type => $val) {
+            $builder->addOr($builder->expr()->field($type)->notEqual($val));
+        }
+        return $builder->getQuery()->execute();
+    }
+
+    /**
+     * Count prices by config and type
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @param array $types
+     * @return int
+     */
+    protected function countPrices(ChannelManagerConfigInterface $config, array $types = []): int
+    {
+        $builder = $this->getPricesByConfigQueryBuilder($config);
+
+        foreach ($types as $type => $val) {
+            $builder->addOr($builder->expr()->field($type)->notEqual($val));
+        }
+        
+        return $builder->getQuery()->count();
     }
 
     /**
@@ -384,31 +647,44 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param array $data
      * @param array $headers
      * @param bool $error
-     * @param $post $error
+     * @param string $method
      * @return mixed
      */
-    public function send($url, $data = [], $headers = null, $error = false, $post = true)
+    public function send($url, $data = [], $headers = null, $error = false, $method = 'POST')
     {
-        $ch = curl_init($url);
+        $ch = curl_init();
 
-        if ($post) {
+        if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
         }
+        if ($method == 'PUT') {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        }
+        if (static::TEST) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+        //TODO: ИСПРАВИТЬ ДЛЯ ПРОДА!!!
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
-        if ($post && !empty($data)) {
-            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+        if (!empty($data)) {
+            if ($method == 'POST' || $method == 'PUT') {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            } elseif ($method == 'GET') {
+                $url = $url . '?' . http_build_query($data);
+            }
         }
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
 
-        if (static::TEST) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        }
         $output = curl_exec($ch);
 
         if (!$output && $error) {
@@ -444,7 +720,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     /**
      * @param $service
      * @param null $info
-     * @return bool
+     * @return bool|\MBH\Bundle\BaseBundle\Service\Messenger\Notifier
      */
     public function notifyError($service, $info = null)
     {
@@ -466,12 +742,13 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setType('danger')
                 ->setCategory('notification')
                 ->setAutohide(false)
-                ->setEnd(new \DateTime('+10 minute'));
+                ->setEnd(new \DateTime('+10 minute'))
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
+            ;
 
             return $notifier->setMessage($message)->notify();
-
         } catch (\Exception $e) {
-            return false;
+            $this->logger->addAlert('Error notification Error ChannelManager'.$e->getMessage());
         }
     }
 
@@ -493,7 +770,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $hotel = null;
 
             foreach ($order->getPackages() as $package) {
-                if ($package->getDeletedAt()) {
+                if ($package->getDeletedAt() && $type != 'delete') {
                     continue;
                 }
                 $packages[] = $package->getNumberWithPrefix();
@@ -503,7 +780,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             }
 
             $message
-                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ',  $packages)], 'MBHChannelManagerBundle'))
+                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packages)], 'MBHChannelManagerBundle'))
                 ->setFrom('channelmanager')
                 ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
                 ->setType($type == 'delete' ? 'danger' : 'info')
@@ -513,12 +790,12 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setOrder($order)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
             ;
 
             $notifier->setMessage($message)->notify();
-
         } catch (\Exception $e) {
-            return false;
+            $this->logger->addAlert('Notification channelManager ERROR'.$e->getMessage());
         }
     }
 
@@ -539,8 +816,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         } catch (Exception $e) {
             return $amount * $config->getCurrencyDefaultRatio();
         }
-
-        return $amount;
     }
 
     /**
@@ -560,7 +835,22 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         } catch (Exception $e) {
             return $amount / $config->getCurrencyDefaultRatio();
         }
+    }
 
-        return $amount;
+    /**
+     * @param Order $order
+     * @param $isModified
+     * @return string
+     */
+    public function getUnexpectedOrderError(Order $order, $isModified)
+    {
+        $errorMessageId = $isModified
+            ? 'services.channel_manager.error.unexpected_modified_order'
+            : 'services.channel_manager.error.unexpected_removed_order';
+
+        return $this->container->get('translator')->trans($errorMessageId, [
+            '%orderId%' => $order->getChannelManagerId(),
+            '%service_name%' => $order->getChannelManagerType()
+        ], 'MBHChannelManagerBundle');
     }
 }

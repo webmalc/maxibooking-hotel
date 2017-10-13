@@ -1,0 +1,15 @@
+[Unit]
+Description=Supervisor process control system for UNIX
+Documentation=http://supervisord.org
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/supervisord -n -c /var/www/mbh/maxibooking/app/supervisor/prod/supervisord.conf -i maxibooking
+ExecStop=/usr/bin/supervisorctl -c /var/www/mbh/maxibooking/app/supervisor/prod/supervisord.conf shutdown
+ExecReload=/usr/bin/supervisorctl -c /var/www/mbh/maxibooking/app/supervisor/prod/supervisord.conf reload
+KillMode=process
+Restart=on-failure
+RestartSec=30s
+
+[Install]
+WantedBy=multi-user.target

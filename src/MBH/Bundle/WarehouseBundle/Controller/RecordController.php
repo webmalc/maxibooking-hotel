@@ -6,15 +6,15 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\WarehouseBundle\Document\Record;
 use MBH\Bundle\WarehouseBundle\Document\WareItem;
-use MBH\Bundle\WarehouseBundle\Form\RecordType;
 use MBH\Bundle\WarehouseBundle\Form\RecordFilterType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use MBH\Bundle\WarehouseBundle\Form\RecordType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**
@@ -32,7 +32,7 @@ class RecordController extends Controller
      */
     public function indexAction()
     {
-		$form = $this->createForm(new RecordFilterType());
+		$form = $this->createForm(RecordFilterType::class);
 		
         return [
 			'form' => $form->createView(),
@@ -67,7 +67,7 @@ class RecordController extends Controller
         $formData = (array) $request->get('form');
         $formData['search'] = $tableParams->getSearch();
 		
-        $form = $this->createForm(new RecordFilterType());
+        $form = $this->createForm(RecordFilterType::class);
 
         $form->submit($formData);
 		
@@ -103,7 +103,7 @@ class RecordController extends Controller
      */
     public function inventoryAction()
     {
-		$form = $this->createForm(new RecordFilterType());
+		$form = $this->createForm(RecordFilterType::class);
 		
         return [
 			'form' => $form->createView(),
@@ -132,7 +132,7 @@ class RecordController extends Controller
         $formData = (array) $request->get('form');
         $formData['search'] = $tableParams->getSearch();
 		
-        $form = $this->createForm(new RecordFilterType());
+        $form = $this->createForm(RecordFilterType::class);
 
         $form->submit($formData);
 		
@@ -201,7 +201,7 @@ class RecordController extends Controller
 		
 		$items = $this->dm->getRepository('MBHWarehouseBundle:WareItem')->findAll();
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -246,7 +246,7 @@ class RecordController extends Controller
      * Edits an existing record.
      *
      * @Route("/{id}/update", name="warehouse_record_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_WAREHOUSE_RECORD_EDIT')")
      * @Template("MBHWarehouseBundle:Record:edit.html.twig")
      * @ParamConverter(class="MBHWarehouseBundle:Record")
@@ -256,7 +256,7 @@ class RecordController extends Controller
 		
 		$items = $this->dm->getRepository('MBHWarehouseBundle:WareItem')->findAll();
 		
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -298,7 +298,7 @@ class RecordController extends Controller
 	 */
 	private function getForm(Record $entity) {
 		
-        return $this->createForm(new RecordType(), $entity, [
+        return $this->createForm(RecordType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 	}

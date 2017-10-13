@@ -3,10 +3,12 @@
 namespace MBH\Bundle\PriceBundle\Form;
 
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class TariffServicesType
@@ -14,24 +16,30 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class TariffServicesType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         $builder
-            ->add('services', 'document', [
-                'label' => 'mbhpricebundle.form.tariffservicestype.dostupnyyeuslugi',
-                'group' => 'Общая информация',
+            ->add('services', DocumentType::class, [
+                'label' => 'mbhpricebundle.form.tariffpromotionstype.dostupnyyeaktsii',
+                'group' => 'mbhpricebundle.form.tariffservicetype.common_group_name',
                 'required' => false,
-                'attr' => ['data-placeholder' => 'mbhpricebundle.form.tariffservicestype.vseuslugi'],
+                'attr' => ['data-placeholder' => $this->translator->trans('mbhpricebundle.form.tariffservicestype.vseuslugi')],
                 'class' => 'MBH\Bundle\PriceBundle\Document\Service',
-                'choices' => $options['services'],
+                'choices' => $options['services_all'],
                 'multiple' => true
             ])
-            ->add('defaultServices', 'collection', [
+            ->add('defaultServices', CollectionType::class, [
                 'label' => 'mbhpricebundle.form.tariffservicestype.uslugipoumolchaniyu',
-                'group' => 'Общая информация',
+                'group' => 'mbhpricebundle.form.tariffservicetype.common_group_name',
                 'required' => false,
-                'type' => new TariffServiceType($options['services']),
+                'entry_type' => TariffServiceType::class,
+                'entry_options' => ['services' => $options['services']],
                 'allow_add' => true,
                 'allow_delete' => true,
             ]);
@@ -41,12 +49,13 @@ class TariffServicesType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff',
-            'services' => []
+            'services' => [],
+            'services_all' => []
         ]);
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_price_tariff_promotions';
     }

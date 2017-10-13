@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="{{ app.request.locale }}">
+
+<head>
+    <meta charset="utf-8">
+    <title>Maxibooking</title>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css"/>
+    <style>
+        body {
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    {#<div id="mbh-calendar-close" style="text-align: right; color: maroon; cursor: pointer;">x</div>#}
+    <div id="mbh-calendar-locale"></div>
+    <div id="mbh-calendar-datepicker"></div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+    <script src="{{ asset('bundles/bazingajstranslation/js/translator.min.js') }}"></script>
+    <script src="/js/translations/front_messages/ru.js"></script>
+    <script src="{{ asset('/bundles/mbhonline/js/online/online-calendar.js') }}"></script>
+</body>
+
+</html>

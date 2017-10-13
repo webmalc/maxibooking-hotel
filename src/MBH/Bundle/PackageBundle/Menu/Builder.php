@@ -4,17 +4,21 @@ namespace MBH\Bundle\PackageBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\MenuItem;
+use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class Builder
 
  */
-class Builder extends ContainerAware
+class Builder implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function templateDocuments(FactoryInterface $factory, array $options)
     {
         $package = $options['package'];
@@ -40,7 +44,7 @@ class Builder extends ContainerAware
 
 
 
-        if ($checker->isGranted('ROLE_DOCUMENTS_GENERATOR')) {
+        if ($checker->isGranted('ROLE_DOCUMENTS_GENERATOR') && $this->container->getParameter('locale') == 'ru') {
 
             $rootItem
                 ->addChild('Docs header', [
@@ -53,7 +57,7 @@ class Builder extends ContainerAware
         if ($checker->isGranted('ROLE_SEARCH')) {
             $rootItem
                 ->addChild('Search Header', [
-                    'label' => $translator->trans('package.actions.search', [], 'MBHPackageBundle')
+                    'label' => $translator->trans('package.action.action_header', [], 'MBHPackageBundle')
                 ])
                 ->setAttributes([
                     'divider_prepend' => true,
@@ -80,8 +84,37 @@ class Builder extends ContainerAware
                         'level' => 2,
                     ]);
             }
-        }
 
+            $dateDifference = date_diff(new \DateTime(), $package->getBegin());
+            if ($dateDifference->d > 0 || $dateDifference->m > 0 || $dateDifference->y > 0) {
+                $linkClass = 'delete-link';
+            } else {
+                $linkClass = '';
+            }
+
+            if ($checker->isGranted('ROLE_ORDER_EDIT')
+                && $checker->isGranted('ROLE_PACKAGE_NEW')
+                && ($checker->isGranted('EDIT', $package->getOrder())
+                    || $checker->isGranted('ROLE_PACKAGE_EDIT_ALL'))) {
+                $rootItem
+                    ->addChild('Reset totalOverwrite value', [
+                        'route' => 'reset_total_overwrite_value',
+                        'routeParameters' => ['id' => $package->getId()],
+                        'label' => $translator->trans('package.action.resetTotalOverwrite', [], 'MBHPackageBundle'),
+                    ])
+                    ->setLinkAttributes([
+                        'class' => $linkClass,
+                        'data-text' => $translator->trans('package.action.resetTotalOverwrite.modal_window_text', [], 'MBHPackageBundle'),
+                        'data-button' => $translator->trans('package.action.resetTotalOverwrite.modal_window_delete_button_text', [], 'MBHPackageBundle'),
+                        'data-button-icon' => 'fa fa-chain-broken'
+                    ])
+                    ->setAttributes([
+                        'icon' => 'fa fa-chain-broken',
+                        'divider_append' => true,
+                        'level' => 2,
+                    ]);
+            }
+        }
 
 
         if(!$package->getIsLocked()) {
@@ -94,24 +127,32 @@ class Builder extends ContainerAware
             if ($checker->isGranted('ROLE_PACKAGE_DELETE') && ($checker->isGranted('DELETE', $package) || $checker->isGranted('ROLE_PACKAGE_DELETE_ALL'))) {
                 $rootItem
                     ->addChild('Delete', [
-                        'route' => 'package_delete',
-                        'routeParameters' => ['id' => $package->getId()],
+                        'uri' => '#modal_delete_package',
                         'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle'),
                     ])
-                    ->setLinkAttribute('class', 'delete-link')
+                    ->setLinkAttributes([
+                        'class' => 'booking-delete-link',
+                        'data-id' => $package->getId(),
+                        'data-toggle' => 'modal'
+                    ])
                     ->setAttributes([
                         'icon' => 'fa fa-trash-o',
+                        'class' => 'booking-delete-link',
+                        'data-id' => $package->getId()
                     ]);
             }
 
             if ($checker->isGranted('ROLE_PACKAGE_DELETE') && ($checker->isGranted('DELETE', $package->getOrder()) || $checker->isGranted('ROLE_PACKAGE_DELETE_ALL'))) {
                 $rootItem
                     ->addChild('Order delete', [
-                        'route' => 'package_order_delete',
-                        'routeParameters' => ['id' => $package->getOrder()->getId()],
+                        'uri' => '#modal_delete_package',
                         'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle'),
                     ])
-                    ->setLinkAttribute('class', 'delete-link')
+                    ->setLinkAttributes([
+                        'class' => 'order-booking-delete-link',
+                        'data-id' => $package->getOrder()->getId(),
+                        'data-toggle' => 'modal'
+                    ])
                     ->setAttributes([
                         'icon' => 'fa fa-trash-o'
                     ]);
@@ -140,16 +181,7 @@ class Builder extends ContainerAware
         //$types = $generatorFactory->getAvailableTypes();
 
         $types = [
-            TemplateGeneratorFactory::TYPE_CONFIRMATION,
-            TemplateGeneratorFactory::TYPE_CONFIRMATION_EN,
-            TemplateGeneratorFactory::TYPE_REGISTRATION_CARD,
-            TemplateGeneratorFactory::TYPE_FMS_FORM_5,
             XlsGeneratorFactory::TYPE_NOTICE,
-            TemplateGeneratorFactory::TYPE_EVIDENCE,
-            TemplateGeneratorFactory::TYPE_FORM_1_G,
-            TemplateGeneratorFactory::TYPE_RECEIPT,
-            TemplateGeneratorFactory::TYPE_BILL,
-            TemplateGeneratorFactory::TYPE_ACT,
         ];
 
         foreach ($types as $type) {
@@ -184,9 +216,10 @@ class Builder extends ContainerAware
             return true;
         }
         $menu->addChild('Additional docs header', [
-            'label' => 'Шаблоны документов'
+            'label' => $translator->trans('mbh.package.builder.document_tempates')
         ])
         ->setAttribute('dropdown_header', true);
+        /** @var DocumentTemplate $doc */
         foreach ($customDocs as $doc) {
             $menu->addChild('doc_' . $doc->getId(), [
                 'label' => $doc->getName(),

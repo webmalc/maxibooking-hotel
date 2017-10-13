@@ -2,16 +2,19 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Annotations as MBH;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\BaseBundle\Annotations as MBH;
 
 /**
  * @ODM\Document(collection="Order", repositoryClass="MBH\Bundle\PackageBundle\Document\OrderRepository")
@@ -40,6 +43,11 @@ class Order extends Base
     use BlameableDocument;
 
     /**
+     * Delete Reason Trait
+     */
+    use DeleteReasonTrait;
+
+    /**
      * @var int
      * @ODM\Id(strategy="INCREMENT")
      */
@@ -47,7 +55,7 @@ class Order extends Base
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="PackageSource")
+     * @ODM\ReferenceOne(targetDocument="PackageSource", inversedBy="orders")
      */
     protected $source;
 
@@ -82,6 +90,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.order.price_min_message"
      * )
+     * @ODM\Index()
      */
     protected $price;
 
@@ -94,6 +103,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.order.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $originalPrice;
 
@@ -106,6 +116,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.package.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $totalOverwrite;
 
@@ -118,6 +129,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.order.payed_sum_min_message"
      * )
+     * @ODM\Index()
      */
     protected $paid = 0;
 
@@ -126,6 +138,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isPaid = false;
 
@@ -134,6 +147,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $confirmed = false;
 
@@ -145,6 +159,7 @@ class Order extends Base
      *      choices = {"offline", "online", "channel_manager"},
      *      message = "validator.document.order.wrong_status"
      * )
+     * @ODM\Index()
      */
     protected $status;
 
@@ -164,9 +179,10 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator"},
+     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "101Hotels","oktogo"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
+     * @ODM\Index()
      */
     protected $channelManagerType;
 
@@ -174,6 +190,7 @@ class Order extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerId")
+     * @ODM\Index()
      */
     protected $channelManagerId;
 
@@ -209,6 +226,7 @@ class Order extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="note")
+     * @ODM\Index()
      */
     protected $note;
 
@@ -239,8 +257,9 @@ class Order extends Base
 
     public function __construct()
     {
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->documents = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->packages = new ArrayCollection();
+        $this->documents = new ArrayCollection();
+        $this->cashDocuments = new ArrayCollection();
     }
 
     public static function getOnlinePaymentTypesList()
@@ -271,7 +290,7 @@ class Order extends Base
     /**
      * Get packages
      *
-     * @return Package[] $packages
+     * @return Package[]|ArrayCollection $packages
      */
     public function getPackages()
     {
@@ -775,7 +794,7 @@ class Order extends Base
     }
 
     /**
-     * @return PayerInterface|null
+     * @return RecipientInterface|PayerInterface|null
      */
     public function getPayer()
     {

@@ -1,6 +1,6 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% set small_title =  'mbhhotelbundle.view.roomtype.index.spisok'|trans %}
+{% set small_title = "views.hotel.roomType.index.list"|trans %}
 {% set layout = "tabs" %}
 
 {% block content %}
@@ -14,8 +14,7 @@
                     {% if not entity.isEnabled %}<del class="text-danger">{% endif %}
                         {{ entity.name }}
                         {% if client_config() and client_config().useRoomTypeCategory %}
-                            {% set groups = 'mbhhotelbundle.view.roomtype.index.gruppaneukazana'|trans %}
-                            <br><small>{{ entity.category ? entity.category : 'groups' }}</small>
+                            <br><small>{{ entity.category ? entity.category : 'views.hotel.roomType.index.group_not_change'|trans }}</small>
                         {% endif %}
                     {% if not entity.isEnabled %}</del>{% endif %}
                 </a>
@@ -109,6 +108,9 @@
                             <ul class="nav navbar-nav navbar-right">
                                 <li id='list-export-add-{{ loop.index }}'></li>
                             </ul>
+                            <div style="float: right; margin-right: 5px; margin-top: 13px">
+                                {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'room_type'} %}
+                            </div>
                         </div>
                     </div>
                 {% else %}

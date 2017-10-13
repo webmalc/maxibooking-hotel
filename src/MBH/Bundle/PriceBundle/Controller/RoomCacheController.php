@@ -3,15 +3,15 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PriceBundle\Document\RoomCache;
-use MBH\Bundle\PriceBundle\Lib\RoomCacheGraphGenerator;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
+use MBH\Bundle\PriceBundle\Lib\RoomCacheGraphGenerator;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("room_cache")
@@ -27,10 +27,17 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     public function indexAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        //get roomTypes
+        $roomTypesCallback = function () use ($hotel) {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
+        };
+        $roomTypes = $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         return [
-            'roomTypes' => $hotel->getRoomTypes(),
+            'roomTypes' => $roomTypes,
             'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms'),
+            'displayDisabledRoomType' => !$isDisableableOn
         ];
     }
 
@@ -92,16 +99,20 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ];
 
         //get roomTypes
-        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->fetch($hotel, $request->get('roomTypes'))
-        ;
+        $roomTypesCallback = function () use ($hotel, $request) {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
+        };
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+
         if (!count($roomTypes)) {
-            return array_merge($response, ['error' => 'Типы номеров не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.tariffcontroller.room_type_is_not_found')]);
         }
+
         //get tariffs
         if (!empty($request->get('tariffs'))) {
             $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
-                ->fetch($hotel, $request->get('tariffs'))
+                ->fetchChildTariffs($hotel, 'rooms', $request->get('tariffs'))
             ;
         } else {
             $tariffs = [null];
@@ -211,9 +222,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
         $this->dm->flush();
 
-        $request->getSession()->getFlashBag()->set('success', 'Изменения успешно сохранены.');
+        $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.tariffcontroller.update_successfully_saved'));
         $this->get('mbh.channelmanager')->updateRoomsInBackground();
-        $this->get('mbh.cache')->clear();
+        $this->get('mbh.cache')->clear('room_cache');
 
         return $this->redirectToRoute('room_cache_overview', [
             'begin' => $request->get('begin'),
@@ -232,7 +243,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(new RoomCacheGeneratorType(), [], [
+        $form = $this->createForm(RoomCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -254,15 +265,15 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(new RoomCacheGeneratorType(), [], [
+        $form = $this->createForm(RoomCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $request->getSession()->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.tariffcontroller.data_successfully_generated'));
 
             $data = $form->getData();
 
@@ -271,7 +282,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             );
 
             $this->get('mbh.channelmanager')->updateRoomsInBackground();
-            $this->get('mbh.cache')->clear();
+            $this->get('mbh.cache')->clear('room_cache');
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('room_cache_generator') :

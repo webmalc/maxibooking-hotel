@@ -3,20 +3,25 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
-use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Zend\Stdlib\JsonSerializable;
-use MBH\Bundle\PackageBundle\Lib\PayerInterface;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
+use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
+use MBH\Bundle\PriceBundle\Document\Special;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -26,11 +31,13 @@ use MBH\Bundle\BaseBundle\Annotations as MBH;
  * @ODM\HasLifecycleCallbacks
  * @MongoDBUnique(fields="numberWithPrefix", message="mbhpackagebundle.document.package.takoy.nomer.broni.uzhe.sushchestvuyet")
  */
-class Package extends Base implements JsonSerializable
+class Package extends Base implements \JsonSerializable
 {
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
+    use DeleteReasonTrait;
+
 
     const ROOM_STATUS_OPEN = 'open';
     const ROOM_STATUS_WAIT = 'wait'; //Не заехал
@@ -46,42 +53,65 @@ class Package extends Base implements JsonSerializable
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Order", inversedBy="packages")
      * @Assert\NotNull(message= "validator.document.package.order_not_selected")
+     * @ODM\Index()
      */
     protected $order;
 
     /** @ODM\ReferenceMany(targetDocument="PackageService", mappedBy="package") */
     protected $services;
 
-    /** 
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      * @Assert\NotNull(message= "validator.document.package.tariff_not_selected")
+     * @ODM\Index()
      */
     protected $tariff;
     
-    /** 
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull(message= "validator.document.package.room_type_not_selected")
+     * @ODM\Index()
      */
     protected $roomType;
-    
-    /** 
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     * @deprecated
+     */
+    protected $accommodation;
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="PackageAccommodation", inversedBy="package", cascade={"persist"})
+     * @ODM\Index()
+     */
+    protected $accommodations;
+
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
-    protected $accommodation;
+    protected $virtualRoom;
     
-    /** 
+    /**
      * @ODM\ReferenceMany(targetDocument="Tourist", inversedBy="packages")
      * @MBH\Versioned()
      */
     protected $tourists;
-    
+
+    /**
+
+     * @ODM\ReferenceMany(targetDocument="RestarauntSeat", mappedBy="package")
+     */
+    protected $restarauntSeat;
+
     /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Integer()
+     * @ODM\Index()
      */
     protected $number;
     
@@ -105,6 +135,7 @@ class Package extends Base implements JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.package.adults_amount_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $adults;
     
@@ -119,6 +150,7 @@ class Package extends Base implements JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.package.children_amount_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $children;
     
@@ -128,6 +160,7 @@ class Package extends Base implements JsonSerializable
      * @ODM\Date(name="begin")
      * @Assert\NotNull(message= "validator.document.package.begin_not_specified")
      * @Assert\Date()
+     * @ODM\Index()
      */
     protected $begin;
     
@@ -137,6 +170,7 @@ class Package extends Base implements JsonSerializable
      * @ODM\Date(name="end")
      * @Assert\NotNull(message= "validator.document.package.end_not_specified")
      * @Assert\Date()
+     * @ODM\Index()
      */
     protected $end;
 
@@ -146,6 +180,13 @@ class Package extends Base implements JsonSerializable
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Promotion")
      */
     protected $promotion;
+
+    /**
+     * @var Special|null
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Special")
+     */
+    protected $special;
 
     /**
      * @var float
@@ -165,6 +206,7 @@ class Package extends Base implements JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.package.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $price;
 
@@ -177,6 +219,7 @@ class Package extends Base implements JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.order.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $originalPrice;
 
@@ -189,6 +232,7 @@ class Package extends Base implements JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.package.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $totalOverwrite;
 
@@ -202,7 +246,7 @@ class Package extends Base implements JsonSerializable
     protected $pricesByDate = [];
 
     /**
-     * @var PackagePrice
+     * @var PackagePrice[]
      * @ODM\EmbedMany(targetDocument="PackagePrice")
      */
     protected $prices;
@@ -218,11 +262,13 @@ class Package extends Base implements JsonSerializable
      * )
      */
     protected $servicesPrice;
-    
+
+
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="note")
+     * @ODM\Index()
      */
     protected $note;
 
@@ -242,9 +288,10 @@ class Package extends Base implements JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking"},
+     *      choices = {"vashotel", "booking", "expedia", "hotels", "venere", "ostrovok", "oktogo", "myallocator", "101Hotels"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
+     * @ODM\Index()
      */
     protected $channelManagerType;
 
@@ -274,7 +321,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * Assert\Range(
      *      min=1,
@@ -342,6 +389,17 @@ class Package extends Base implements JsonSerializable
     protected $isForceBooking = false;
 
     /**
+     * @var array
+     * @ODM\Collection()
+     */
+    protected $childAges = [];
+
+    /**
+     * @var SearchQuery
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\SearchQuery")
+     */
+    protected $searchQuery;
+    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -358,9 +416,16 @@ class Package extends Base implements JsonSerializable
      *
      * @return \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      */
-        public function getTariff()
+    public function getTariff()
     {
         return $this->tariff;
+    }
+
+    public function allowPercentagePrice($price)
+    {
+        $minPerPay = $this->getTariff()->getMinPerPrepay();
+
+        return $price * $minPerPay / 100;
     }
 
     /**
@@ -394,37 +459,15 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Set accommodation
-     *
-     * @param $accommodation
-     * @return self
+     * @param bool $old
+     * @return mixed|null
      */
-    public function setAccommodation($accommodation)
+    public function getAccommodation(bool $old = false)
     {
-        $this->accommodation = $accommodation;
-        return $this;
-    }
-
-    /**
-     * Get accommodation
-     *
-     * @return \MBH\Bundle\HotelBundle\Document\Room $accommodation
-     */
-    public function getAccommodation()
-    {
-        return $this->accommodation;
-    }
-
-    /**
-     * Remove accommodation
-     * @return $this
-     */
-    public function removeAccommodation()
-    {
-        $this->accommodation = null;
-        $this->setIsCheckIn(false);
-
-        return $this;
+        if ($old) {
+            return $this->accommodation;
+        }
+        return $this->accommodations->last() ?? null;
     }
 
     /**
@@ -585,7 +628,7 @@ class Package extends Base implements JsonSerializable
     public function getPromotionTotal($calculate = false)
     {
         if ($calculate) {
-            if($this->getPromotion()) {
+            if ($this->getPromotion()) {
                 $promotion = $this->getPromotion();
                 $this->promotionTotal = $promotion->getisPercentDiscount() ?
                     $this->price * $promotion->getDiscount() / 100 :
@@ -716,7 +759,12 @@ class Package extends Base implements JsonSerializable
    
     public function __construct()
     {
-        $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new ArrayCollection();
+        $this->restarauntSeat = new ArrayCollection();
+        $this->tourists = new ArrayCollection();
+        $this->accommodations = new ArrayCollection();
+        $this->prices = new ArrayCollection();
+        $this->searchQuery = new ArrayCollection();
     }
 
 
@@ -770,6 +818,14 @@ class Package extends Base implements JsonSerializable
     public function getPaid()
     {
         return $this->getOrder()->getPaid();
+    }
+
+    /**
+     * @return float|int
+     */
+    public function getCalculatedPayment()
+    {
+        return $this->getOrder()->getPrice() == 0 ? 0 : round($this->getPrice() / $this->getOrder()->getPrice() * $this->getPaid(), 2);
     }
     
     /**
@@ -848,7 +904,6 @@ class Package extends Base implements JsonSerializable
             $title .= ' Плательщик: '.$name.'. ';
         }
         return $title;
-
     }
 
     /**
@@ -930,6 +985,7 @@ class Package extends Base implements JsonSerializable
     public function setIsPercentDiscount($isPercentDiscount)
     {
         $this->isPercentDiscount = $isPercentDiscount;
+        return $this;
     }
 
     /**
@@ -960,6 +1016,40 @@ class Package extends Base implements JsonSerializable
     public function getServices()
     {
         return $this->services;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUnDeletedServices()
+    {
+        $services = [];
+        /** @var PackageService $service */
+        foreach ($this->services as $service) {
+            if (empty($service->getDeletedAt())) {
+                $services[] = $service;
+            }
+        }
+
+        return $services;
+    }
+    
+    /**
+     * get services for recalculation
+     *
+     * @return array
+     */
+    public function getServicesForRecalc(): array
+    {
+        return array_filter($this->services->toArray(), function ($service) {
+            if (!$service->isRecalcWithPackage()) {
+                return false;
+            }
+            if ($service->getBegin() == $this->getBegin() && $service->getEnd() == $this->getEnd()) {
+                return false;
+            }
+            return true;
+        });
     }
 
     /**
@@ -1076,15 +1166,14 @@ class Package extends Base implements JsonSerializable
 
         if (!$date || empty($this->pricesByDate[$date])) {
             return round($this->getPackagePrice()/$this->getNights(), 2);
-        }
-        else {
+        } else {
             return (float) $this->pricesByDate[$date];
         }
     }
 
     public function isEarlyCheckIn()
     {
-        foreach($this->getServices() as $service) {
+        foreach ($this->getServices() as $service) {
             if ($service->getService()->getCode() == 'Early check-in') {
                 return true;
             }
@@ -1095,7 +1184,7 @@ class Package extends Base implements JsonSerializable
 
     public function isLateCheckOut()
     {
-        foreach($this->getServices() as $service) {
+        foreach ($this->getServices() as $service) {
             if ($service->getService()->getCode() == 'Late check-out') {
                 return true;
             }
@@ -1139,14 +1228,14 @@ class Package extends Base implements JsonSerializable
         $result = [];
         $begin = null;
         $nights = 1;
-        for($i = 0; $i < count($prices); ++$i) {
+        for ($i = 0; $i < count($prices); ++$i) {
             $price = $prices[$i];
             $nextPrice = @$prices[$i+1];
             $date = $dates[$i];
             $nextDate = @$dates[$i+1];
-            if($nextPrice) {
-                if($price == $nextPrice) {
-                    if($begin == null) {
+            if ($nextPrice) {
+                if ($price == $nextPrice) {
+                    if ($begin == null) {
                         $begin = $date;
                     }
                     ++$nights;
@@ -1159,7 +1248,7 @@ class Package extends Base implements JsonSerializable
                     $nights = 1;
                 }
             } else {
-                if(!$nextDate) {
+                if (!$nextDate) {
                     $nextDate = \DateTime::createFromFormat('d_m_Y', $date)->modify('+1 day')->format('d_m_Y');
                 }
                 $result[$begin.' - '.$nextDate] = [
@@ -1275,6 +1364,7 @@ class Package extends Base implements JsonSerializable
     public function setIsCheckOut($isCheckOut)
     {
         $this->isCheckOut = $isCheckOut;
+        return $this;
     }
 
     /**
@@ -1409,9 +1499,9 @@ class Package extends Base implements JsonSerializable
                     return self::ROOM_STATUS_IN_TODAY;
                 } elseif ($this->getEnd() == $today) {
                     return self::ROOM_STATUS_OUT_TODAY;
-                } elseif($this->getEnd() == $tomorrow) {
+                } elseif ($this->getEnd() == $tomorrow) {
                     return self::ROOM_STATUS_OUT_TOMORROW;
-                } elseif($this->getEnd() <= new \DateTime('midnight +1 day')) {
+                } elseif ($this->getEnd() <= new \DateTime('midnight +1 day')) {
                     return self::ROOM_STATUS_NOT_OUT;
                 } else {
                     return self::ROOM_STATUS_WILL_OUT;
@@ -1454,11 +1544,24 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * @return PackagePrice
+     * @return PackagePrice[]|PersistentCollection
      */
     public function getPrices()
     {
         return $this->prices;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPricesByDateWithDiscount()
+    {
+        $prices = [];
+        foreach ($this->pricesByDate as $dateString => $price) {
+            $prices[$dateString] = $price - ($this->getDiscountMoney() / $this->getNights());
+        }
+
+        return $prices;
     }
 
     /**
@@ -1468,6 +1571,17 @@ class Package extends Base implements JsonSerializable
     public function setPrices($prices)
     {
         $this->prices = $prices;
+        return $this;
+    }
+
+    /**
+     * @param PackagePrice $packagePrice
+     * @return Package
+     */
+    public function addPackagePrice(PackagePrice $packagePrice)
+    {
+        $this->prices->add($packagePrice);
+
         return $this;
     }
 
@@ -1494,5 +1608,212 @@ class Package extends Base implements JsonSerializable
         $this->services = new ArrayCollection();
         
         return $this;
-    }    
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVirtualRoom()
+    {
+        return $this->virtualRoom;
+    }
+
+    /**
+     * @param mixed $virtualRoom
+     * @return Package
+     */
+    public function setVirtualRoom(Room $virtualRoom = null): self
+    {
+        $this->virtualRoom = $virtualRoom;
+        return $this;
+    }
+
+    /**
+     * @return Collection|ArrayCollection
+     */
+    public function getAccommodations(): Collection
+    {
+        return $this->getSortedAccommodations();
+    }
+
+    /**
+     * @return Special|null
+     */
+    public function getSpecial(): ?Special
+    {
+        return $this->special;
+    }
+
+    /**
+     * @param Special|null $special
+     * @return Package
+     */
+    public function setSpecial(Special $special = null): self
+    {
+        $this->special = $special;
+
+        return $this;
+    }
+
+    /**
+     * @return AddressInterface|null
+     */
+    public function getAddress(): AddressInterface
+    {
+        return $this->getHotel()->getOrganization() ?? $this->getHotel();
+    }
+
+    public function getSortedAccommodations()
+    {
+        $data = $this->accommodations->toArray();
+        usort($data, function ($a, $b) {
+            /** @var PackageAccommodation $a*/
+            /** @var PackageAccommodation $b*/
+            return ($a->getBegin() < $b->getBegin())? -1 : 1;
+        });
+
+        return new ArrayCollection($data);
+    }
+
+    /**
+     * @param Collection $accommodations
+     * @return Package
+     */
+    public function setAccommodations(Collection $accommodations): self
+    {
+        $this->accommodations = $accommodations;
+        return $this;
+    }
+
+    /**
+     * Add accommodation
+     *
+     * @param PackageAccommodation $accommodation
+     * @return Package
+     */
+    public function addAccommodation(PackageAccommodation $accommodation): self
+    {
+        $this->accommodations[] = $accommodation;
+
+        return $this;
+    }
+
+    /**
+     * Remove accommodation
+     *
+     * @param PackageAccommodation $accommodation
+     * @return Package
+     */
+    public function removeAccommodation(PackageAccommodation $accommodation)
+    {
+        $this->accommodations->removeElement($accommodation);
+
+        return $this;
+    }
+
+    /**
+     * @return Package
+     */
+    public function removeAccommodations()
+    {
+        $this->accommodations = new ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     * @deprecated
+     */
+    public function getLastEndAccommodation(): \DateTime
+    {
+        $begin = $this->getBegin();
+        if ($this->accommodations->count()) {
+            $begin = max(array_map(function ($acc) {
+                /** @var PackageAccommodation $acc */
+                return $acc->getEnd();
+            }, $this->accommodations->toArray()));
+        }
+
+        return $begin;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastAccommodation()
+    {
+        return $this->getAccommodations()->last();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFirstAccommodation()
+    {
+        return $this->getAccommodations()->first();
+    }
+
+    /** Для совместимости в автозадачах */
+    public function getAccommodationCheckIn()
+    {
+        return $this->getFirstAccommodation();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccommodationCheckOut()
+    {
+        return $this->getLastAccommodation();
+    }
+
+    /**
+     * @param \DateTime $dateTime
+     * @return mixed
+     */
+    public function getAccommodationByDate(\DateTime $dateTime)
+    {
+        $accommodation = $this->accommodations->filter(function ($accommodation) use ($dateTime) {
+            /** @var PackageAccommodation $accommodation */
+            return $accommodation->getBegin() <= $dateTime && $dateTime <= $accommodation->getEnd();
+        });
+
+        return $accommodation->first();
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return PackagePrice|null
+     */
+    public function getPackagePriceByDate(\DateTime $date)
+    {
+        /** @var PackagePrice $price */
+        foreach ($this->getPrices() as $price) {
+            if ($price->getDate() == $date) {
+                return $price;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getSearchQuery()
+    {
+        return $this->searchQuery;
+    }
+
+    /**
+     * @param SearchQuery $searchQuery
+     * @return Package
+     */
+    public function addSearchQuery(SearchQuery $searchQuery): Package
+    {
+        $this->searchQuery->add($searchQuery);
+
+        return $this;
+    }
 }

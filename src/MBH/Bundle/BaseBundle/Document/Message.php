@@ -14,24 +14,29 @@ class Message extends Base implements \JsonSerializable
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $text;
 
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $type = 'info';
 
     /**
+     * @deprecated
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $category = 'notification';
     
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $from;
     
@@ -58,6 +63,13 @@ class Message extends Base implements \JsonSerializable
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="roomTypes")
      */
     protected $hotel;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @ODM\Index()
+     */
+    protected $messageType;
 
     /**
      * Set text
@@ -183,7 +195,7 @@ class Message extends Base implements \JsonSerializable
 
     /**
      * Set category
-     *
+     * @deprecated
      * @param string $category
      * @return self
      */
@@ -195,7 +207,7 @@ class Message extends Base implements \JsonSerializable
 
     /**
      * Get category
-     *
+     * @deprecated
      * @return string $category
      */
     public function getCategory()
@@ -241,10 +253,31 @@ class Message extends Base implements \JsonSerializable
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
      * @return self
      */
-    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel = null)
     {
         $this->hotel = $hotel;
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getMessageType()
+    {
+        return $this->messageType;
+    }
+
+    /**
+     * @param string $messageType
+     * @return Message
+     */
+    public function setMessageType($messageType): Message
+    {
+        $this->messageType = $messageType;
+
+        return $this;
+    }
+
+
 }

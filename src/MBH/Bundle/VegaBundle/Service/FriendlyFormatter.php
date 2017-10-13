@@ -23,7 +23,7 @@ class FriendlyFormatter
 
         $result = mb_convert_case($country, MB_CASE_TITLE, self::CHARSET);
         $wrongCountryTitles = [];
-        foreach(self::$specialCountryTitles as $title) {
+        foreach (self::$specialCountryTitles as $title) {
             $wrongCountryTitles[] = mb_convert_case($title, MB_CASE_TITLE, self::CHARSET);
         }
 
@@ -81,9 +81,9 @@ class FriendlyFormatter
             $result .= ' обл.';
         } elseif (!in_array($result, $specialNames)) {
             $type = $specialNames[$result];
-            if($type == 'респ.') {
+            if ($type == 'респ.') {
                 $result = $type.' '.$result;
-            }else {
+            } else {
                 $result .= ' '.$type;
             }
         }

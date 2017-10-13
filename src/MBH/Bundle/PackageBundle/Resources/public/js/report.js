@@ -55,7 +55,7 @@ $(document).ready(function () {
             if (wrapper.length === 0) {
                 return false;
             }
-            wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            wrapper.html(mbh.loader.html);
 
             if (!accommodationReportProcessing) {
                 var data = form.serializeObject();

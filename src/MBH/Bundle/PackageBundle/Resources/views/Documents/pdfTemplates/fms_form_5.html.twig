@@ -1,34 +1,44 @@
-{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
-{% block document %}
-    {#<style>
-        .table .field {
-            /*height: 40px;*/
-            font-size: 14px;
-        }
-
-        .table .field .title {
-            float: left;
-            width: 80px;
-        }
-
-        .table .field .title div:first-child {
-            text-transform: uppercase;
-        }
-
-        .table .field .field .title div:last-child {
-            font-size: 13px;
-        }
-
-        .table td {
-            clear: both;
-        }
-
-        .table .area {
-            height: 30px;
-            margin-left: 81px;
-            font-size: 14px
-        }
-    </style>#}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Pdf</title>
+</head>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+<body>
+<style>
+    body{
+        font-family: "Open Sans"; /*Arial*/
+        font-size: 16px;
+    }
+    .document{
+        padding-top: 0px;
+        width: 900px;
+        margin: 0 auto;
+    }
+    .ib{
+        display: inline-block;
+    }
+    .area {
+        border-bottom: solid #000000 1px;
+    }
+    .left {
+        float: left;
+    }
+    .right {
+        float: right;
+    }
+    .center {
+        text-align: center;
+    }
+    .indent {
+        text-indent: 1.5em;
+    }
+    .upper {
+        text-transform: uppercase;
+    }
+</style>
+<div class="document">
     <style>
         .two-list {
             width: 900px;
@@ -72,37 +82,39 @@
     {% set tourist = null %}
     {% set hotel = null %}
 
-
     {% set arrival = null %}
     {% set departure = null %}
 
-    {% if entity.begin %}
-        {% set arrival = entity.begin|date('d.m.Y') %}
+    {% if package.begin %}
+        {% set arrival = package.begin|date('d.m.Y') %}
     {% endif %}
 
-    {% if entity.end %}
-        {% set departure = entity.end|date('d.m.Y') %}
+    {% if package.end %}
+        {% set departure = package.end|date('d.m.Y') %}
     {% endif %}
 
-    {% if entity.arrivalTime %}
-        {% set arrival = entity.arrivalTime|date('d.m.Y') %}
+    {% if package.arrivalTime %}
+        {% set arrival = package.arrivalTime|date('d.m.Y') %}
     {% endif %}
 
-    {% if entity.departureTime %}
-        {% set departure = entity.departureTime|date('d.m.Y') %}
-    {% endif %}
-
-
-    {% if entity.order and entity.order.organization %}
-        {% set organization = entity.order.organization %}
-    {% endif %}
-
-    {% if entity.roomType and entity.roomType.hotel %}
-        {% set hotel = entity.roomType.hotel %}
+    {% if package.departureTime %}
+        {% set departure = package.departureTime|date('d.m.Y') %}
     {% endif %}
 
 
-    {% for tourist in tourists %}
+    {% if package.order and package.order.organization %}
+        {% set organization = package.order.organization %}
+    {% endif %}
+
+    {% if package.roomType and package.roomType.hotel %}
+        {% set hotel = package.roomType.hotel %}
+    {% endif %}
+
+
+    {% for tourist in package.tourists %}
+        {% if loop.index != 1 %}
+            <div style="page-break-after: always;"></div>
+        {% endif %}
         <div>
             <div class="two-list">
                 <div class="form">
@@ -111,7 +123,7 @@
                             <td style="width: 33%"></td>
                             <td style="width: 33%;font-size:16px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa'|trans }} </td>
                             <td style="width: 33%;font-size:16px;">
-                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.forma'|trans }} №5
+                                Форма №5
                             </td>
                         </tr>
                     </table>
@@ -123,21 +135,21 @@
                                     {{ hotel.name }}
                                 </div>
                                 <div class="center" style="font-size: 9px">
-                                    ({{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.naimenovaniyegostinitsy'|trans }} )
+                                    {{ 'package.resources.views.hotel_name_sanatory'|trans }}
                                 </div>
                             </div>
 
                             <div class="field">
                                 <div class="center area" style="margin-top: 6px; font-size: 11px; font-weight: bold;">
                                     &nbsp
-                                    {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.address %}
-                                        {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
-                                    {% elseif entity.roomType.hotel.region and entity.roomType.hotel.city %}
-                                        {{ entity.roomType.hotel.region }} г. {{ entity.roomType.hotel.city }}{% if entity.roomType.hotel.street  %}, {{ entity.roomType.hotel.street }}{% endif %}{% if entity.roomType.hotel.house %}, д. {{ entity.roomType.hotel.house }}{% if entity.roomType.hotel.house %}, кор. {{ entity.roomType.hotel.corpus }}{% endif %}{% endif %}
+                                    {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.address %}
+                                        {{ package.accommodation.housing.city }} {{ package.accommodation.housing.address }}
+                                    {% elseif package.roomType.hotel.region and package.roomType.hotel.city %}
+                                        {{ package.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }}. {{ package.roomType.hotel.city }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}
                                     {% endif %}
                                 </div>
                                 <div class="center" style="font-size: 9px">
-                                    {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.adres'|trans }}
+                                    {{ 'package.resources.views.adres_region_ltc'|trans }}
                                 </div>
                             </div>
                         </div>
@@ -150,7 +162,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title">
-                                            1. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.familiya'|trans }} 
+                                            1. {{ 'package.resources.views.familiya'|trans }}
                                         </div>
                                         <div class="area">&nbsp{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
                                     </div>
@@ -158,9 +170,9 @@
                                 <td>
                                     <div class="field">
                                         <div class="title">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.komnata'|trans }} №
+                                            {{ 'package.resources.views.room'|trans }} №
                                         </div>
-                                        <div class="area">&nbsp{% if entity and entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
+                                        <div class="area">&nbsp{% if package and package.accommodation %}{{ package.accommodation.fullTitle }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -168,7 +180,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title">
-                                            2. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.imya'|trans }} 
+                                            2. {{ 'package.resources.views.name'|trans }}
                                         </div>
                                         <div class="area">&nbsp{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
                                     </div>
@@ -178,7 +190,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title">
-                                            3. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.otchestvo'|trans }} 
+                                            3. {{ 'package.resources.views.secondname'|trans }}
                                         </div>
                                         <div class="area">&nbsp{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
                                     </div>
@@ -188,7 +200,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title" style="width : 110px;">
-                                            4. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.datarozhdeniya'|trans }} 
+                                            4. {{ 'package.resources.views.birthday'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 110px">&nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
@@ -197,7 +209,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width : 45px;">
-                                            5. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.pol'|trans }} .
+                                            5. {{ 'package.resources.views.pol'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 45px;">&nbsp{% if tourist %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} {% endif %}</div>
                                     </div>
@@ -207,7 +219,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width : 130px;">
-                                            6. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.mestorozhdeniya'|trans }} 
+                                            6. {{ 'package.resources.views.birthday_place'|trans }}
                                         </div>
                                         &nbsp{% if tourist and tourist.birthplace %}<!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
                                     </div>
@@ -217,7 +229,7 @@
                                 <td colspan="3">
                                     <div class="field" style="margin-left: 30px">
                                         <div class="title" style="width: 70px">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.oblastʹ'|trans }} 
+                                            {{ 'package.resources.views.oblast'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion }}{% endif %}</div>
                                     </div>
@@ -227,7 +239,7 @@
                                 <td colspan="3">
                                     <div class="field" style="margin-left: 30px">
                                         <div class="title" style="width: 70px">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.rayon'|trans }} 
+                                            {{ 'package.resources.views.raion'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district }}{% endif %}</div>
                                     </div>
@@ -237,7 +249,7 @@
                                 <td colspan="3">
                                     <div class="field" style="margin-left: 30px">
                                         <div class="title" style="width: 70px">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.gorod'|trans }} 
+                                            {{ 'package.resources.views.city'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.city }}{% endif %}</div>
                                     </div>
@@ -247,7 +259,7 @@
                                 <td colspan="3">
                                     <div class="field" style="margin-left: 30px">
                                         <div class="title" style="width: 70px">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.nas'|trans }}
+                                            {{ 'package.resources.views.nas_punkt'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.settlement }}{% endif %}</div>
                                     </div>
@@ -257,7 +269,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 120px">
-                                            7. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.grazhdanstvo'|trans }} 
+                                            7. {{ 'package.resources.views.grazhdanstvo'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenship }}</div>
                                     </div>
@@ -267,7 +279,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 280px;">
-                                            8. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.dokument'|trans }}
+                                            8. {{ 'package.resources.views.document'|trans }}
                                         </div>
                                         <!--<div class="area" style="margin-left: 240px">&nbsp</div>-->
                                     </div>
@@ -289,7 +301,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 45px">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.seriya'|trans }} 
+                                            {{ 'package.resources.views.seria'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 45px">&nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.series }} {% endif %}</div>
@@ -307,7 +319,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 45px">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.vydan'|trans }} 
+                                            {{ 'package.resources.views.vidan'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 45px">
                                             &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
@@ -319,7 +331,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 200px">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.organ'|trans }}
+                                            {{ 'package.resources.views.organ_vidaushiy_document'|trans }}
                                         </div>
                                     </div>
                                 </td>
@@ -328,7 +340,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="area" style="margin-left: 0px">
-                                            &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
+                                            &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan ? tourist.documentRelation.authorityOrgan : tourist.documentRelation.authorityOrganText }} {% endif %}
                                         </div>
                                     </div>
                                 </td>
@@ -337,7 +349,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 215px">
-                                            9. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.adresmestazhitelʹstva'|trans }} : &nbsp&nbsp {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.strana'|trans }} 
+                                            9. {{ 'package.resources.views.adres_mesta_zhitelstva'|trans }}: &nbsp&nbsp {{ 'package.resources.views.country'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
@@ -348,7 +360,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title" style="width: 30px;">
-                                            Обл.
+                                            {{ 'package.resources.views.obl'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.region %} {{ tourist.addressObjectDecomposed.region.name }} {% endif %}</div>
@@ -357,7 +369,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 40px">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.gorod'|trans }} 
+                                            {{ 'package.resources.views.city'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
@@ -368,7 +380,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title" style="width: 40px;">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.rayon'|trans }} 
+                                            {{ 'package.resources.views.raion'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district }} {% endif %}</div>
@@ -377,7 +389,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 65px;">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.nas'|trans }}
+                                            {{ 'package.resources.views.nas_punkt'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 66px">&nbsp{% if tourist and tourist.addressObjectDecomposed %}{{ tourist.addressObjectDecomposed.settlement }}{% endif %}</div>
@@ -388,7 +400,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 40px;">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.ulitsa'|trans }} 
+                                            {{ 'package.resources.views.street'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 41px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
@@ -399,7 +411,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 30px;">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.dom'|trans }} 
+                                            {{ 'package.resources.views.home'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.house }} {% endif %}</div>
@@ -408,7 +420,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 30px;">
-                                            Кор.
+                                            {{ 'package.resources.views.kor'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.corpus }} {% endif %}</div>
@@ -417,7 +429,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 25px;">
-                                            Кв.
+                                            {{ 'package.resources.views.kv'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 25px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.flat }} {% endif %}</div>
@@ -428,13 +440,13 @@
                                 <td colspan="3">
                                     <div class="field ib" style="width:49%">
                                         <div class="title" style="width: 70px">
-                                           10. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.pribyl'|trans }} 
+                                           10. {{ 'package.resources.views.pribil'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{{ arrival }}</div>
                                     </div>
                                     <div class="field ib" style="width:50%">
                                         <div class="title" style="width:45px">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.vybyl'|trans }} 
+                                            {{ 'package.resources.views.vibil'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 46px;">&nbsp{{ departure }}</div>
                                     </div>
@@ -444,7 +456,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title" style="width: 125px">
-                                            11. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.zaregistriroval'|trans }} 
+                                            11. {{ 'package.resources.views.registrationed'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 126px">&nbsp{{ arrival }}</div>
                                     </div>
@@ -452,7 +464,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 60px;">
-                                            {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.podpisʹ'|trans }} 
+                                            {{ 'package.resources.views.signature'|trans }}
                                         </div>
                                         <div style="margin-left: 61px" class="area">&nbsp</div>
                                     </div>
@@ -477,20 +489,6 @@
                 </style>
 
                 <div class="left-form">
-                    {#<div>
-                        <div style="margin: 10px 5px 0;float: right; width: 100px; font-size: 16px;"> №5</div>
-                        <div style="clear: both"></div>
-                    </div>
-
-                    <div style="margin-left: 20px; font-size: 12px;"> </div>
-                    <div class="block">
-
-                    </div>
-
-                    <div style="text-align: center">Ф.И.О</div>#}
-
-
-
 
                     <div class="form" style="border-right: none">
                         <table style="margin-top:5px;width: 445px;" class="center">
@@ -498,7 +496,7 @@
                                 <td style="width: 33%"></td>
                                 <td style="width: 33%;font-size:16px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa'|trans }} </td>
                                 <td style="width: 33%;font-size:16px;">
-                                    {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.forma'|trans }} №5
+                                    {{ 'package.resources.views.form'|trans }} №5
                                 </td>
                             </tr>
                         </table>
@@ -510,21 +508,21 @@
                                         {{ hotel.name }}
                                     </div>
                                     <div class="center" style="font-size: 9px">
-                                        ({{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.naimenovaniyegostinitsy'|trans }} , санатория, дома отдыха и пр.)
+                                        {{ 'package.resources.views.name_hotel_sanatory_home_relax'|trans }}
                                     </div>
                                 </div>
 
                                 <div class="field">
                                     <div class="center area" style="margin-top: 6px; font-size: 11px; font-weight: bold;">
                                         &nbsp
-                                        {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.address %}
-                                            {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
-                                        {% elseif entity.roomType.hotel.region and entity.roomType.hotel.city %}
-                                            {{ entity.roomType.hotel.region }} {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.g'|trans }} . {{ entity.roomType.hotel.city }}{% if entity.roomType.hotel.street  %}, {{ entity.roomType.hotel.street }}{% endif %}{% if entity.roomType.hotel.house %}, д. {{ entity.roomType.hotel.house }}{% if entity.roomType.hotel.house %}, кор. {{ entity.roomType.hotel.corpus }}{% endif %}{% endif %}
+                                        {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.address %}
+                                            {{ package.accommodation.housing.city }} {{ package.accommodation.housing.address }}
+                                        {% elseif package.roomType.hotel.region and package.roomType.hotel.city %}
+                                            {{ package.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }} {{ package.roomType.hotel.city }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}
                                         {% endif %}
                                     </div>
                                     <div class="center" style="font-size: 9px">
-                                        {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.adres'|trans }} (регион, район, город, населенный пункт)
+                                        {{ 'package.resources.views.adres_region_ltc'|trans }}
                                     </div>
                                 </div>
                             </div>
@@ -537,7 +535,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title">
-                                                1. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.familiya'|trans }} 
+                                                1. {{ 'package.resources.views.familiya'|trans }}
                                             </div>
                                             <div class="area">&nbsp{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
                                         </div>
@@ -545,9 +543,9 @@
                                     <td>
                                         <div class="field">
                                             <div class="title">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.komnata'|trans }} №
+                                                {{ 'package.resources.views.room'|trans }} №
                                             </div>
-                                            <div class="area">&nbsp{% if entity and entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
+                                            <div class="area">&nbsp{% if package and package.accommodation %}{{ package.accommodation.fullTitle }}{% endif %}</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -555,7 +553,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title">
-                                                2. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.imya'|trans }} 
+                                                2. {{ 'package.resources.views.name'|trans }}
                                             </div>
                                             <div class="area">&nbsp{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
                                         </div>
@@ -565,7 +563,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title">
-                                                3. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.otchestvo'|trans }} 
+                                                3. {{ 'package.resources.views.secondname'|trans }}
                                             </div>
                                             <div class="area">&nbsp{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
                                         </div>
@@ -575,7 +573,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title" style="width : 110px;">
-                                                4. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.datarozhdeniya'|trans }} 
+                                                4. {{ 'package.resources.views.birthday'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 110px">&nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
@@ -584,7 +582,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width : 45px;">
-                                                5. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.pol'|trans }} .
+                                                5. {{ 'package.resources.views.pol'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 45px;">&nbsp{% if tourist %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} {% endif %}</div>
                                         </div>
@@ -594,7 +592,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width : 130px;">
-                                                6. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.mestorozhdeniya'|trans }} 
+                                                6. {{ 'package.resources.views.birthday_place'|trans }}
                                             </div>
                                             &nbsp{% if tourist and tourist.birthplace %}<!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
                                         </div>
@@ -604,7 +602,7 @@
                                     <td colspan="3">
                                         <div class="field" style="margin-left: 30px">
                                             <div class="title" style="width: 70px">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.oblastʹ'|trans }} 
+                                                {{ 'package.resources.views.oblast'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion }}{% endif %}</div>
                                         </div>
@@ -614,7 +612,7 @@
                                     <td colspan="3">
                                         <div class="field" style="margin-left: 30px">
                                             <div class="title" style="width: 70px">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.rayon'|trans }} 
+                                                {{ 'package.resources.views.raion'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district }}{% endif %}</div>
                                         </div>
@@ -624,7 +622,7 @@
                                     <td colspan="3">
                                         <div class="field" style="margin-left: 30px">
                                             <div class="title" style="width: 70px">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.gorod'|trans }} 
+                                                {{ 'package.resources.views.city'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.city }}{% endif %}</div>
                                         </div>
@@ -634,7 +632,7 @@
                                     <td colspan="3">
                                         <div class="field" style="margin-left: 30px">
                                             <div class="title" style="width: 70px">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.nas'|trans }}
+                                                {{ 'package.resources.views.nas_punkt'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.settlement }}{% endif %}</div>
                                         </div>
@@ -644,7 +642,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 120px">
-                                                7. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.grazhdanstvo'|trans }} 
+                                                7. {{ 'package.resources.views.grazhdanstvo'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenship }}</div>
                                         </div>
@@ -654,7 +652,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 280px;">
-                                                8. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.dokument'|trans }}
+                                                8. {{ 'package.resources.views.document'|trans }}
                                             </div>
                                             <!--<div class="area" style="margin-left: 240px">&nbsp</div>-->
                                         </div>
@@ -676,7 +674,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 45px">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.seriya'|trans }} 
+                                                {{ 'package.resources.views.seria'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 45px">&nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.series }} {% endif %}</div>
@@ -694,7 +692,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 45px">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.vydan'|trans }} 
+                                                {{ 'package.resources.views.vidan'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 45px">
                                                 &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
@@ -706,7 +704,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 200px">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.organ'|trans }}
+                                                {{ 'package.resources.views.organ_vidaushiy_document'|trans }}
                                             </div>
                                         </div>
                                     </td>
@@ -715,7 +713,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="area" style="margin-left: 0px">
-                                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
+                                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan ? tourist.documentRelation.authorityOrgan : tourist.documentRelation.authorityOrganText }} {% endif %}
                                             </div>
                                         </div>
                                     </td>
@@ -724,7 +722,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 215px">
-                                                9. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.adresmestazhitelʹstva'|trans }} : &nbsp&nbsp {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.strana'|trans }} 
+                                                9. {{ 'package.resources.views.adres_mesta_zhitelstva'|trans }}: &nbsp&nbsp {{ 'package.resources.views.country'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
@@ -735,7 +733,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title" style="width: 30px;">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.obl'|trans }} .
+                                                {{ 'package.resources.views.obl'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.region %} {{ tourist.addressObjectDecomposed.region.name }} {% endif %}</div>
@@ -744,7 +742,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 40px">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.gorod'|trans }} 
+                                                {{ 'package.resources.views.city'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
@@ -755,7 +753,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title" style="width: 40px;">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.rayon'|trans }} 
+                                                {{ 'package.resources.views.raion'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district }} {% endif %}</div>
@@ -764,7 +762,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 65px;">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.nas'|trans }}
+                                                {{ 'package.resources.views.nas_punkt'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 66px">&nbsp{% if tourist and tourist.addressObjectDecomposed %}{{ tourist.addressObjectDecomposed.settlement }}{% endif %}</div>
@@ -775,7 +773,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 40px;">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.ulitsa'|trans }} 
+                                                {{ 'package.resources.views.street'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 41px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
@@ -786,7 +784,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 30px;">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.dom'|trans }} 
+                                                {{ 'package.resources.views.home'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.house }} {% endif %}</div>
@@ -795,7 +793,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 30px;">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.kor'|trans }} .
+                                                {{ 'package.resources.views.kor'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.corpus }} {% endif %}</div>
@@ -804,7 +802,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 25px;">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.kv'|trans }} .
+                                                {{ 'package.resources.views.kv'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 25px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.flat }} {% endif %}</div>
@@ -815,13 +813,13 @@
                                     <td colspan="3">
                                         <div class="field ib" style="width:49%">
                                             <div class="title" style="width: 70px">
-                                                10. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.pribyl'|trans }} 
+                                                10. {{ 'package.resources.views.pribil'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{{ arrival }}</div>
                                         </div>
                                         <div class="field ib" style="width:50%">
                                             <div class="title" style="width:45px">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.vybyl'|trans }} 
+                                                {{ 'package.resources.views.vibil'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 46px;">&nbsp{{ departure }}</div>
                                         </div>
@@ -831,7 +829,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title" style="width: 125px">
-                                                11. {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.zaregistriroval'|trans }} 
+                                                11. {{ 'package.resources.views.registrationed'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 126px">&nbsp{{ arrival }}</div>
                                         </div>
@@ -839,7 +837,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 60px;">
-                                                {{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.podpisʹ'|trans }} 
+                                                {{ 'package.resources.views.signature'|trans }}
                                             </div>
                                             <div style="margin-left: 61px" class="area">&nbsp</div>
                                         </div>
@@ -861,4 +859,6 @@
             {% endif %}
         </div>
     {% endfor %}
-{% endblock %}
+</div>
+</body>
+</html>

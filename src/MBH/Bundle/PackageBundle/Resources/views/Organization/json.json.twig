@@ -9,7 +9,7 @@
                 "{{ organization.inn }}",
                 "{{ organization.location }}",
                 "{{ organization.phone }}",
-                "{% if organization.type == 'my' %} {{ organization.hotels|join(', ') }} {% else %} {{ organization.comment|replace({"\n":' ', "\r":' '}) }} {% endif %}",
+                "{% if organization.type == 'my' %} {{ organization.hotels|join(', ') }} {% else %} {{ organization.comment|replace({"\n":' ', "\r":' ', "'": '', "\t": ' '})}} {% endif %}",
                 "<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': organization, 'route': 'organization'} %}{% endembed %}</div>"
             ] {% if key + 1 != organizations|length %} , {% endif %}
         {% endfor %}

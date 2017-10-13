@@ -221,7 +221,7 @@
 </div>
 
 <div class="show-on-print pull-right">
-    <a>{{ 'mbhcashbundle.view.cash.index.ostatokpokasse'|trans }} : <strong>{{ total|number_format(2) }}</strong>&nbsp;<i class="{{ currency().icon }}"></i></a>
+    <a>{{ 'views.cash.index.cash_balance'|trans({}, 'MBHCashBundle') }}: <strong>{{ total|number_format(2) }}</strong>&nbsp;<i class="{{ currency().icon }}"></i></a>
 </div>
 
 <style>
@@ -234,24 +234,23 @@ display: none;
 {% block left %}
 <li>
 <button onclick="location.href = '{{ path('cash_new') }}'" class="btn btn-success navbar-btn">
-    <i class="fa fa-plus"></i> {{ 'mbhcashbundle.view.cash.index.sozdatʹ'|trans }} 
+    <i class="fa fa-plus"></i> {{ 'views.cash.index.create'|trans({}, 'MBHCashBundle') }}
 </button>
 </li>
 <li>
 <div class="dropup">
     <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true">
-        <i class="fa fa-upload"></i> {{ 'mbhcashbundle.view.cash.index.eksportv'|trans }} 1C <span class="caret"></span>
+        <i class="fa fa-upload"></i> {{ 'mbhcashbundle.view.cash.index.1c_export'|trans }} <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu">
-        <li><a href="{{ path('cash_1c_export') }}" target="_blank">{{ 'mbhcashbundle.view.cash.index.vygruzitʹbeznal'|trans }} </a></li>
-        <li><a href="{{ path('cash_1c_export', {method: 'cashless'}) }}" target="_blank">{{ 'mbhcashbundle.view.cash.index.vygruzitʹvsë'|trans }} </a></li>
+        <li><a href="{{ path('cash_1c_export') }}" target="_blank">{{ 'mbhcashbundle.view.cash.index.upload_clearing'|trans }}</a></li> <li><a href="{{ path('cash_1c_export', {method: 'cashless'}) }}" target="_blank">{{ 'views.cash.index.upload_all'|trans({}, 'MBHCashBundle') }}</a></li>
     </ul>
 </div>
 </li>
 {% endblock %}
 {% block right %}
 <li>
-    <a href="{{ path('cash') }}"> {{ 'mbhcashbundle.view.cash.index.ostatokpokasse'|trans }} : <strong>{{ total|number_format(2) }}</strong>&nbsp;<i class="{{ currency().icon }}"></i></a>
+    <a href="{{ path('cash') }}"> {{ 'mbhcashbundle.view.cash.index.ostatok.po.kasse'|trans }} : <strong>{{ total|number_format(2) }}</strong>&nbsp;<i class="{{ currency().icon }}"></i></a>
 </li>
 {% endblock %}
 {% endembed %}

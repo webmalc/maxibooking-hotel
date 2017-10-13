@@ -10,7 +10,7 @@
         {% block content %}
         <form id="filling-table-filter" class="form-inline icon-label-form">
             <div class="form-group input">
-                <label><i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.filling.daty'|trans }} ' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-calendar" title="{{ 'report.filling.filling.dates'|trans }}" data-toggle='tooltip'></i></label>
                 <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
             </div>
             <div class="form-group input">
@@ -23,8 +23,8 @@
             </div>
 
             <div class="form-group input">
-                <label><i class="fa fa-bed" title='{{ 'mbhpackagebundle.view.report.filling.tipnomera'|trans }} ' data-toggle='tooltip'></i></label>
-                <select name="roomType" data-placeholder="{{ 'mbhpackagebundle.view.report.filling.tipnomera'|trans }} " id="filling-report-filter-roomType" class="form-control input-sm">
+                <label><i class="fa fa-bed" title='{{ 'report.filling.filling.room_types'|trans }}' data-toggle='tooltip'></i></label>
+                <select name="roomType" data-placeholder='{{ 'report.filling.filling.room_types'|trans }}' id="filling-report-filter-roomType" class="form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypeList %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>

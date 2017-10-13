@@ -17,25 +17,32 @@ class TwigTranslateConverter extends AbstractTranslateConverter
 {
 
 
-    const SUFFIX = '.html.twig';
+    const FILE_SUFFIX = '.html.twig';
 
     const FOLDER = '/Resources/views';
 
     const TYPE = "TwigParser";
 
+    const HANDLE_TYPE = 'twig';
+
     /**
-     * @param $string
+     * @param $transliteratedString
      * @return mixed
      */
-    protected function getConvertPattern(string $string)
+    protected function getConvertPattern(string $transliteratedString)
     {
-        return sprintf('{{ \'%s\'|trans }} ', $string);
+        return sprintf('{{ \'%s\'|trans }}', $transliteratedString);
     }
 
 
     protected function transIdPattert(): string
     {
         return '%s.view.%s.%s';
+    }
+
+    protected function checkAdvanceConditions(string $line): bool
+    {
+        return true;
     }
 
 

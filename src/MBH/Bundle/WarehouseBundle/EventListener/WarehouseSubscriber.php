@@ -3,12 +3,11 @@ namespace MBH\Bundle\WarehouseBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\WarehouseBundle\Document\WareCategory;
 use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\PackageBundle\Lib\DeleteException;
 
 
 class WarehouseSubscriber implements EventSubscriber
@@ -50,7 +49,7 @@ class WarehouseSubscriber implements EventSubscriber
             ;
 
             if(count($docs) > 0) {
-                throw new DeleteException('Невозможно удалить категорию с товарами');
+                throw new DeleteException($this->container->get('translator')->trans('warehouse.eventlistener.warehousesubscriber.can_not_delete_product_category'));
             }
         }
 

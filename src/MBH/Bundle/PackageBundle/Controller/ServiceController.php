@@ -2,16 +2,14 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
-use MBH\Bundle\PackageBundle\Document\Tourist;
-use MBH\Bundle\PriceBundle\Document\ServiceCategory;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -65,8 +63,9 @@ class ServiceController extends BaseController
      */
     public function ajaxListAction(Request $request)
     {
-        $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
-        $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
+        $helper = $this->get('mbh.helper');
+        $begin = $helper->getDateFromString($request->get('begin'));
+        $end = $helper->getDateFromString($request->get('end'));
         $service = $request->get('service');
         $category = $request->get('category');
         $services = null;
@@ -93,8 +92,12 @@ class ServiceController extends BaseController
 
         /** @var DocumentRepository $repository */
         $repository = $this->dm->getRepository('MBHPackageBundle:PackageService');
-
         $queryBuilder = $repository->createQueryBuilder();
+
+        $packageFilterType = $request->get('package-filter-dates-type');
+        $packageIds = $this->getPackageIdsByFilter($packageFilterType, $begin, $end);
+        $queryBuilder->field('package.id')->in($packageIds);
+
         $queryBuilder->addNor($queryBuilder->expr()
             ->addOr($queryBuilder->expr()
                 ->field('begin')->gt($begin)->addAnd($queryBuilder->expr()->field('begin')->gt($end))
@@ -132,27 +135,56 @@ class ServiceController extends BaseController
         /** @var \MBH\Bundle\PackageBundle\Document\PackageService[] $results */
         $results = $queryBuilder->getQuery()->execute()->toArray();
 
-        $totals = [
-            'nights' => 0,
-            'guests' => 0,
-            'amount' => 0,
-            'result' => 0,
-            'payment' => 0,
-            'dept' => 0,
-        ];
+        $queryBuilder
+            ->group(
+                ['id' => 1],
+                [
+                    'result' => 0,
+                    'amount' => 0,
+                    'nights' => 0,
+                    'guests' => 0,
+                ]
+            )->reduce(
+                'function (obj, prev) {
+                    var price = 0;
+                    var amount = 0;
+                    var nights = 0;
+                    var persons = 0;
 
-        foreach ($results as $service) {
-            if ($service->getCalcType() == 'per_night')
-                $totals['nights'] += intval($service->getNights());
-            if ($service->getCalcType() != 'not_applicable') {
-                $totals['guests'] += intval($service->getPersons());
-            }
-            $totals['amount'] += intval($service->getAmount());
-            $totals['result'] += $service->getTotal();
+                    if (obj.totalOverwrite) {
+                        price = obj.totalOverwrite;
+                    } else {
+                        price = obj.total;
+                    }
+                    if (!isNaN(parseInt(obj.amount))) {
+                        amount = parseInt(obj.amount);
+                    }
+                    if (!isNaN(parseInt(obj.nights))) {
+                        nights = parseInt(obj.nights);
+                    }
+                    if (!isNaN(parseInt(obj.persons))) {
+                        persons = parseInt(obj.persons);
+                    }
+            
+                    prev.result += parseInt(price) !== NaN ? parseInt(price) : 0;
+                    prev.amount += amount;
+                    prev.nights += nights;
+                    prev.guests += persons;
+                }'
+            );
+
+        $totals = iterator_to_array($queryBuilder->getQuery()->execute());
+        if (isset($totals[0])) {
+            $totals = $totals[0];
+            $totals['result'] = number_format($totals['result'], 2);
+        } else {
+            $totals = [
+                'nights' => 0,
+                'guests' => 0,
+                'amount' => 0,
+                'result' => 0
+            ];
         }
-
-        $totals['result'] = number_format($totals['result'], 2);
-        $totals = json_encode($totals);
 
         if ($request->get('deleted') == 'on') {
             $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -161,8 +193,38 @@ class ServiceController extends BaseController
         return [
             'results' => $results,
             'recordsFiltered' => $count,
-            'totals' => $totals,
+            'totals' => json_encode($totals),
             'config' => $this->container->getParameter('mbh.services'),
         ];
+    }
+
+    private function getPackageIdsByFilter($dateFilterType, \DateTime $begin, \DateTime $end) {
+        $packageIds = [];
+
+        $queryCriteria = new PackageQueryCriteria();
+        switch ($dateFilterType) {
+            case 'begin':
+                $queryCriteria->dateFilterBy = 'begin';
+                $queryCriteria->begin = $begin;
+                $queryCriteria->end = $end;
+                break;
+            case 'end':
+                $queryCriteria->dateFilterBy = 'end';
+                $queryCriteria->begin = $begin;
+                $queryCriteria->end = $end;
+                break;
+            case 'accommodation':
+                $queryCriteria->filter = 'live_between';
+                $queryCriteria->liveBegin = $begin;
+                $queryCriteria->liveEnd = $end;
+                break;
+        }
+
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($queryCriteria);
+        foreach ($packages as $package) {
+            $packageIds[] = $package->getId();
+        }
+
+        return $packageIds;
     }
 }

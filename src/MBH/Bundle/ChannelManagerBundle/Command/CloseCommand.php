@@ -2,9 +2,9 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Command;
 
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CloseCommand extends ContainerAwareCommand

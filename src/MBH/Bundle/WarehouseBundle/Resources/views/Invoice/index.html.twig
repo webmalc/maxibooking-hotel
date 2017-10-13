@@ -1,6 +1,6 @@
 {% extends 'MBHWarehouseBundle:Invoice:layout.html.twig' %}
 
-{% set small_title = '{{ 'mbhwarehousebundle.view.invoice.index.spisoktovarnykhnakladnykh'|trans }} ' %}
+{% set small_title = 'warehouse.resources.view.lists'|trans %}
 {% set layout = "box" %}
 
 {% block content %}
@@ -15,12 +15,12 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th class="td-sm">{{ 'mbhwarehousebundle.view.invoice.index.operatsiya'|trans }} </th>
-            <th class="td-sm">{{ 'mbhwarehousebundle.view.invoice.index.data'|trans }} </th>
-            <th class="td-sm">{{ 'mbhwarehousebundle.view.invoice.index.nomer'|trans }} </th>
-            <th class="td-xs">{{ 'mbhwarehousebundle.view.invoice.index.organizatsiya'|trans }} </th>
-            <th class="td-md">{{ 'mbhwarehousebundle.view.invoice.index.otelʹ'|trans }} </th>
-            <th class="td-md text-right">{{ 'mbhwarehousebundle.view.invoice.index.amount'|trans }}</th>
+            <th class="td-sm">{{ 'warehouse.resources.view.operation'|trans }}</th>
+            <th class="td-sm">{{ 'warehouse.resources.view.date'|trans }}</th>
+            <th class="td-sm">{{ 'warehouse.resources.view.nubmer'|trans }}</th>
+            <th class="td-xs">{{ 'warehouse.resources.view.organization'|trans }}</th>
+            <th class="td-md">{{ 'warehouse.resources.view.hotel'|trans }}</th>
+            <th class="td-md text-right">Amount</th>
             <th class="td-sm"></th>
         </tr>
 		</thead>

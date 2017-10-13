@@ -2,22 +2,22 @@
 
 namespace MBH\Bundle\CashBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBBundleUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\CashBundle\Validator\Constraints as MBHValidator;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\CashBundle\Validator\Constraints as MBHValidator;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBBundleUnique;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
-use MBH\Bundle\PackageBundle\Document\Order;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 
 /**
  * @ODM\Document(collection="CashDocuments", repositoryClass="MBH\Bundle\CashBundle\Document\CashDocumentRepository")
@@ -61,6 +61,7 @@ class CashDocument extends Base
      * @ODM\Field(type="string")
      * @Assert\Type(type="string")
      * @Assert\Length(max=40)
+     * @ODM\Index()
      *
      */
     protected $number;
@@ -73,6 +74,7 @@ class CashDocument extends Base
      *      choices = {"cash", "cashless", "electronic"},
      *      message = "validator.document.cashDocument.wrong_tariff_type"
      * )
+     * @ODM\Index()
      */
     protected $method;
 
@@ -85,6 +87,7 @@ class CashDocument extends Base
      *      min=0.1,
      *      minMessage="validator.document.cashDocument.min_sum_less_1"
      * )
+     * @ODM\Index()
      */
     protected $total;
 
@@ -96,6 +99,7 @@ class CashDocument extends Base
      *      choices = {"in", "out", "fine", "fee"},
      *      message = "validator.document.cashDocument.wrong_tariff_type"
      * )
+     * @ODM\Index()
      */
     protected $operation;
 
@@ -103,6 +107,7 @@ class CashDocument extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $note;
 
@@ -111,6 +116,7 @@ class CashDocument extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isConfirmed = false;
 
@@ -119,6 +125,7 @@ class CashDocument extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isPaid = true;
 
@@ -126,6 +133,7 @@ class CashDocument extends Base
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
+     * @ODM\Index()
      */
     protected $documentDate;
 
@@ -133,6 +141,7 @@ class CashDocument extends Base
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
+     * @ODM\Index()
      */
     protected $paidDate;
 
@@ -150,7 +159,7 @@ class CashDocument extends Base
 
 
     /**
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\OrderDocument", inversedBy="cashDocuments")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\OrderDocument", inversedBy="cashDocument")
      */
     protected $orderDocument;
 
@@ -159,6 +168,32 @@ class CashDocument extends Base
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\CashBundle\Document\CashDocumentArticle")
      */
     protected $article;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     */
+    protected $isSendMail;
+
+    /**
+     * @return bool
+     */
+    public function isSendMail(): ?bool
+    {
+        return $this->isSendMail;
+    }
+
+    /**
+     * @param bool $isSendMail
+     * @return CashDocument
+     */
+    public function setIsSendMail(bool $isSendMail): CashDocument
+    {
+        $this->isSendMail = $isSendMail;
+
+        return $this;
+    }
 
     /**
      * Set method

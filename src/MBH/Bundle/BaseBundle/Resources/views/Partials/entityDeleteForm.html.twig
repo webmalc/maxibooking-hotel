@@ -9,10 +9,8 @@
           {{ 'views.partials.entityDeleteForm.are_you_sure_delete_record'|trans({}, 'MBHBaseBundle') }}
       </div>
       <div class="modal-footer">
-          {% set del = 'mbhbasebundle.view.partials.entitydeleteform.udalitʹ'|trans %}
-          {% set deltwo ='mbhbasebundle.view.partials.entitydeleteform.udalitʹ'|trans %}
         <button type="button" class="btn btn-outline pull-left" data-dismiss="modal"><i class="fa fa-ban"> </i> {{ 'views.partials.entityDeleteForm.cancel'|trans({}, 'MBHBaseBundle') }}</button>
-        <button type="button" id="entity-delete-button" data-default="outline" class="btn btn-outline"><i id="entity-delete-button-icon" data-default="fa-trash-o"  class="fa fa-trash-o"></i>&nbsp;<span data-default="{{ delete_title|default('del') }} " id="entity-delete-button-text">{{ delete_title|default('deltwo') }}</span></button>
+        <button type="button" id="entity-delete-button" data-default="outline" class="btn btn-outline"><i id="entity-delete-button-icon" data-default="fa-trash-o"  class="fa fa-trash-o"></i>&nbsp;<span data-default="{{ delete_title|default('views.partials.disable_button.entity_delete_form.remove'|trans) }} " id="entity-delete-button-text">{{ delete_title|default('views.partials.disable_button.entity_delete_form.remove'|trans) }}</span></button>
       </div>
     </div>
   </div>

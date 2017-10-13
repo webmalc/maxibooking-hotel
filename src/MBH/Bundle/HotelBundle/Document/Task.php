@@ -2,16 +2,16 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
-use MBH\Bundle\UserBundle\Document\User;
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use MBH\Bundle\UserBundle\Document\Group;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
@@ -28,15 +28,17 @@ class Task extends Base
 
     use HotelableDocument;
 
-    const PRIORITY_LOW = 0;
-    const PRIORITY_AVERAGE = 1;
-    const PRIORITY_HIGH = 2;
+    const PRIORITY_LOW = 1;
+    const PRIORITY_AVERAGE = 2;
+    const PRIORITY_HIGH = 3;
 
     const STATUS_OPEN = 'open';
     const STATUS_PROCESS = 'process';
     const STATUS_CLOSED = 'closed';
 
     const DAY_DEAL_LINE = 3;
+
+    const AUTO_CREATE = 'validator.document.task.auto_created_task';
 
     /**
      * @var string
@@ -49,6 +51,7 @@ class Task extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="TaskType")
      * @Assert\NotNull(message="validator.document.task.taskType_no_selected")
+     * @ODM\Index()
      */
     protected $type;
 
@@ -58,6 +61,7 @@ class Task extends Base
      * @ODM\Field(type="string") 
      * @Assert\NotNull()
      * @Assert\Choice(choices = {"open", "closed", "process"})
+     * @ODM\Index()
      */
     protected $status;
 

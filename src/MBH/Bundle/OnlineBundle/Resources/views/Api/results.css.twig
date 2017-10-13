@@ -1,81 +1,406 @@
 <style>
-     .mbh-payment-type-row-total {
-         float:right;
-     }
-    .button {
-        background: #7fbbd7; /* Old browsers */
-        /* IE9 SVG, needs conditional override of 'filter' to 'none' */
-        background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIxJSIgc3RvcC1jb2xvcj0iIzdmYmJkNyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM1Zjk3YjIiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-        background: -moz-linear-gradient(top, #7fbbd7 1%, #5f97b2 100%); /* FF3.6+ */
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#7fbbd7), color-stop(100%,#5f97b2)); /* Chrome,Safari4+ */
-        background: -webkit-linear-gradient(top, #7fbbd7 1%,#5f97b2 100%); /* Chrome10+,Safari5.1+ */
-        background: -o-linear-gradient(top, #7fbbd7 1%,#5f97b2 100%); /* Opera 11.10+ */
-        background: -ms-linear-gradient(top, #7fbbd7 1%,#5f97b2 100%); /* IE10+ */
-        background: linear-gradient(to bottom, #7fbbd7 1%,#5f97b2 100%); /* W3C */
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7fbbd7', endColorstr='#5f97b2',GradientType=0 ); /* IE6-8 */
-        border: 1px solid #71a3be;
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-        padding: 3px 5px;
-        margin: 0px 5px;
-        display: inline-block;
-        color: #fff;
-        text-shadow: 1px 1px 2px #71a3be;
+    .spacer-top {
+        margin-top: 10px;
+    }
+    .spacer-left-sm {
+        margin-left: 5px;
     }
     #mbh-result-response-info {
         display: none;
     }
-    .button:disabled {
-        color: #43809f;
-    }
-    .without-border {
-        border: 0px !important;
-    }
     .mbh-right {
-        text-align: right !important;
+        text-align: right;
     }
     .mbh-left {
-        text-align: left !important;
+        text-align: left;
     }
     .mbh-center {
-        text-align: center !important;
+        text-align: center;
     }
-    #mbh-results-global-wrapper {
-        margin: 10px 0px 0px 0px;
-        font-size: 14px;
-        font-family : Arial, Helvetica, "Nimbus Sans L", "Liberation Sans", FreeSans, Sans-serif;
-    }
-    .mbh-results-packages-count, .mbh-results-services-count {
+    .mbh-results-packages-count {
         width: 50px;
-    }
-    #mbh-results-global-wrapper a, #mbh-results-global-wrapper a:visited, #mbh-results-global-wrapper a:link
-    {
-        color: #0f62a4;
-        text-decoration: underline;
     }
     .select2-container a {
         text-decoration: none !important;
         color: #949494 !important;
     }
-    #mbh-results-global-wrapper a:visited {
-        text-decoration: none;
+
+    /* -------------------------------------------  Inline facility  ------------------------------------ */
+
+    ul.inline-facility {
+        margin-left: 0;
+        padding: 0px;
     }
 
-    #mbh-results-duration {
-        padding: 0px 14px;
+    ul.inline-facility li {
+        display: inline;
+        margin-right: 5px;
+        padding: 3px;
+    }
+
+    /* -------------------------------------- Icons Form -------------------------------------------- */
+
+    @font-face {
+        font-family: 'MaxiBooking';
+        font-weight: 700;
+        font-style: normal;
+        src: local('MaxiBooking'), url("{{ absolute_url(asset('/bundles/mbhbase/css/mbsuperfont/fonts/mbsuperfont.woff')) }}") format('woff');
+    }
+
+    /* Custom Icons */
+    [class^="mbf-"], [class*=" mbf-"] {
+        font-family: MaxiBooking;
+        font-style: normal;
+        font-weight: normal;
+        text-decoration: inherit;
+        display: inline-block;
+        position: relative;
+    }
+
+    [class^="mbf-"], [class*=" mbf-"]:hover::after {
+        content: attr(data-title);
+        position: absolute;
+        left: 100%; top: 100%;
+        z-index: 1;
+        background: #fff;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        padding: 5px 10px;
+        border: 1px solid #555;
+    }
+
+    .mbf-clock:before {
+        content: "\e001";
+    }
+    .mbf-flame:before {
+        content: "\e002";
+    }
+    .mbf-fold:before {
+        content: "\e003";
+    }
+    .mbf-gift:before {
+        content: "\e004";
+    }
+    .mbf-globe:before {
+        content: "\e005";
+    }
+    .mbf-key:before {
+        content: "\e006";
+    }
+    .mbf-bell-two:before {
+        content: "\e007";
+    }
+    .mbf-bell:before {
+        content: "\e008";
+    }
+    .mbf-first-aid:before {
+        content: "\e009";
+    }
+    .mbf-ambulance:before {
+        content: "\e00a";
+    }
+    .mbf-briefcase:before {
+        content: "\e00b";
+    }
+    .mbf-home:before {
+        content: "\e00c";
+    }
+    .mbf-hospital:before {
+        content: "\e00d";
+    }
+    .mbf-adjust:before {
+        content: "\e00e";
+    }
+    .mbf-wifi:before {
+        content: "\e00f";
+    }
+    .mbf-air:before {
+        content: "\e010";
+    }
+    .mbf-lock:before {
+        content: "\e011";
+    }
+    .mbf-internet:before {
+        content: "\e012";
+    }
+    .mbf-plug:before {
+        content: "\e013";
+    }
+    .mbf-ruby:before {
+        content: "\e014";
+    }
+    .mbf-sign-in:before {
+        content: "\e015";
+    }
+    .mbf-tools:before {
+        content: "\e016";
+    }
+    .mbf-animals:before {
+        content: "\e017";
+    }
+    .mbf-no-animals:before {
+        content: "\e018";
+    }
+    .mbf-metro:before {
+        content: "\e019";
+    }
+    .mbf-car-side:before {
+        content: "\e01a";
+    }
+    .mbf-cc-nc:before {
+        content: "\e01b";
+    }
+    .mbf-monitor:before {
+        content: "\e01c";
+    }
+    .mbf-thumbs-up:before {
+        content: "\e01d";
+    }
+    .mbf-toilets:before {
+        content: "\e01e";
+    }
+    .mbf-telephone:before {
+        content: "\e01f";
+    }
+    .mbf-swimming:before {
+        content: "\e020";
+    }
+    .mbf-skiing:before {
+        content: "\e021";
+    }
+    .mbf-shopping:before {
+        content: "\e022";
+    }
+    .mbf-chapel:before {
+        content: "\e023";
+    }
+    .mbf-lodging:before {
+        content: "\e025";
+    }
+    .mbf-golf:before {
+        content: "\e026";
+    }
+    .mbf-disability:before {
+        content: "\e027";
+    }
+    .mbf-parking:before {
+        content: "\e02a";
+    }
+    .mbf-armchair:before {
+        content: "\e02b";
+    }
+    .mbf-bar:before {
+        content: "\e02c";
+    }
+    .mbf-beach-bar:before {
+        content: "\e02d";
+    }
+    .mbf-bar3:before {
+        content: "\e02e";
+    }
+    .mbf-credit-card:before {
+        content: "\e02f";
+    }
+    .mbf-torchere:before {
+        content: "\e030";
+    }
+    .mbf-platen:before {
+        content: "\e031";
+    }
+    .mbf-taxi:before {
+        content: "\e032";
+    }
+    .mbf-bath:before {
+        content: "\e033";
+    }
+    .mbf-bed:before {
+        content: "\e034";
+    }
+    .mbf-double-bed:before {
+        content: "\e035";
+    }
+    .mbf-beer:before {
+        content: "\e036";
+    }
+    .mbf-reception:before {
+        content: "\e037";
+    }
+    .mbf-baggage-man:before {
+        content: "\e038";
+    }
+    .mbf-bookcase:before {
+        content: "\e039";
+    }
+    .mbf-cafeteria:before {
+        content: "\e03a";
+    }
+    .mbf-camera:before {
+        content: "\e03b";
+    }
+    .mbf-breakfast:before {
+        content: "\e03c";
+    }
+    .mbf-keys:before {
+        content: "\e03d";
+    }
+    .mbf-homecinema:before {
+        content: "\e03e";
+    }
+    .mbf-board-games:before {
+        content: "\e03f";
+    }
+    .mbf-washbasin:before {
+        content: "\e040";
+    }
+    .mbf-fastfood:before {
+        content: "\e041";
+    }
+    .mbf-restaurant:before {
+        content: "\e042";
+    }
+    .mbf-dresstable:before {
+        content: "\e043";
+    }
+    .mbf-coffee:before {
+        content: "\e044";
+    }
+    .mbf-baggage-safe:before {
+        content: "\e045";
+    }
+    .mbf-wardrobe:before {
+        content: "\e046";
+    }
+    .mbf-chair:before {
+        content: "\e047";
+    }
+    .mbf-maleroom:before {
+        content: "\e048";
+    }
+    .mbf-menu:before {
+        content: "\e049";
+    }
+    .mbf-radio:before {
+        content: "\e04a";
+    }
+    .mbf-food-delivery:before {
+        content: "\e04b";
+    }
+    .mbf-kitchen:before {
+        content: "\e04c";
+    }
+    .mbf-safebox:before {
+        content: "\e04d";
+    }
+    .mbf-lounge:before {
+        content: "\e04e";
+    }
+    .mbf-shower:before {
+        content: "\e04f";
+    }
+    .mbf-sink:before {
+        content: "\e050";
+    }
+    .mbf-sofa:before {
+        content: "\e051";
+    }
+    .mbf-stake:before {
+        content: "\e052";
+    }
+    .mbf-table:before {
+        content: "\e053";
+    }
+    .mbf-ws:before {
+        content: "\e054";
+    }
+    .mbf-femaleroom:before {
+        content: "\e055";
+    }
+    .mbf-washmachine:before {
+        content: "\e056";
+    }
+    .mbf-modern-tv:before {
+        content: "\e057";
+    }
+    .mbf-old-tv:before {
+        content: "\e058";
+    }
+    .mbf-travelling:before {
+        content: "\e059";
+    }
+    .mbf-teapot:before {
+        content: "\e05a";
+    }
+    .mbf-female:before {
+        content: "\e028";
+    }
+    .mbf-male:before {
+        content: "\e024";
+    }
+    .mbf-mb-logo:before {
+        content: "\e000";
+    }
+    .mbf-blind:before {
+        content: "\e029";
+    }
+    .mbf-disc-floppy:before {
+        content: "\e05b";
+    }
+    .mbf-heart-broken:before {
+        content: "\e05c";
+    }
+    .mbf-fan:before {
+        content: "\e05d";
+    }
+    .mbf-fitness:before {
+        content: "\e05e";
+    }
+    .mbf-conditioner:before {
+        content: "\e05f";
+    }
+    .mbf-safe:before {
+        content: "\e060";
+    }
+    .mbf-spa:before {
+        content: "\e061";
+    }
+    .mbf-sauna:before {
+        content: "\e062";
+    }
+    .mbf-free-wifi:before {
+        content: "\e063";
+    }
+    .mbf-iron:before {
+        content: "\e064";
+    }
+    .mbf-fridge:before {
+        content: "\e065";
+    }
+    .mbf-airbnb:before {
+        content: "\e066";
+    }
+    .mbf-booking:before {
+        content: "\e067";
+    }
+    .mbf-clean:before {
+        content: "\e068";
+    }
+    .mbf-hotelinn:before {
+        content: "\e069";
+    }
+    .mbf-myallocator:before {
+        content: "\e06a";
+    }
+    .mbf-oktogo:before {
+        content: "\e06b";
+    }
+    .mbf-vashotel:before {
+        content: "\e06c";
+    }
+    .mbf-ostrovok:before {
+        content: "\e06d";
     }
 
     /* ------------------------------------------------------  TARIFFS ---------------------------------- */
-    #mbh-results-tariffs h4, .mbh-results-info, #mbh-user-form h4, #mbh-payment-types h4 {
-        font-size: 14px;
-        padding: 7px 7px;
-        color: #fff;
-        background-color: #308dac;
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-    }
     #mbh-results-tariffs p {
         padding: 0px;
         margin: 0px;
@@ -113,50 +438,28 @@
     }
 
     /* -------------------------- RESULTS -------------------------------- */
-    #mbh-results-table th {
-        font-weight: normal;
-        font-style: italic;
-    }
-    #mbh-results-table-wrapper {
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-        border: #b4b4b4 1px solid;
-        margin: 20px 0px 0px 0px;
-        width: 100%;
-        overflow: hidden;
-    }
-    #mbh-results-table {
-        border-collapse: collapse;
-        width: 100%;
-    }
     .mbh-results-tariff {
         display: none;
-    }
-    #mbh-results-table th, #mbh-results-table td {
-        border-bottom: #b4b4b4 1px solid;
-        padding: 4px 10px;
-        text-align: center;
-        font-size: 12px;
-    }
-    #mbh-results-table tr:last-child td {
-        /*border-bottom: 0px;*/
-    }
-    #mbh-results-table th {
-        border-width: 0px 0px 1px 0px;
-    }
-    #mbh-results-table tr
-    {
-        background-color: #f3f8fb;
-    }
-    #mbh-results-table tr.even
-    {
-        background-color: #e6f1f5;
     }
     .mbh-results-hotel {
         font-size: 12px;
         color: #999;
         padding: 0px 0px 0px 4px;
+    }
+    .warning .mbh-results-hotel {
+        color: #000;
+    }
+    #mbh-results-image-wrapper {
+        float: left;
+        max-width: 180px;
+    }
+    #mbh-results-image-wrapper img {
+        margin: 0px 5px 5px 0px;
+        max-width: 30px;
+    }
+    #mbh-results-image-wrapper img.main {
+        margin: 0px 5px 5px 0px;
+        max-width: 155px;
     }
     #mbh-results-table-th-amount {
         width:80px;
@@ -182,11 +485,8 @@
         font-size: 11px;
         color: #7e747c;
     }
-    .mbh-result-selected-tr {
-        background-color: #ffc480 !important;
-    }
     .mbh-results-roomType {
-        font-size: 15px;
+        font-size: 18px;
     }
     .mbh-results-tourists-select {
         width: 100px;
@@ -197,6 +497,10 @@
     .mbh-results-roomType-description {
         background-color: #fff;
         border: 0px;
+    }
+    .mbh-results-roomType-description p {
+        padding: 0px;
+        margin: 0px 0px 0px 3px;
     }
     .mbh-roomType-image {
         max-width: 100px;
@@ -209,13 +513,9 @@
     #mbh-image-show-wrapper {
         border: 1px solid #b4b4b4;
         position: absolute;
-        /*left: 20%;*/
-        /*top: 30%;*/
         z-index: 100;
         max-width: 420px;
         max-width: 420px;
-        /*width: 420px; */
-        /*height: 420px;*/
         -webkit-border-radius: 4px;
         -moz-border-radius: 4px;
         border-radius: 4px;
@@ -231,55 +531,9 @@
         max-height: 400px;
     }
     /* -------------------------- SERVICES -------------------------------- */
-    #mbh-results-services-wrapper h3 {
-        font-size: 14px;
-        padding: 7px 7px;
-        color: #fff;
-        background-color: #308dac;
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-    }
-    #mbh-results-services-table-wrapper {
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-        border: #b4b4b4 1px solid;
-        margin: 20px 0px 0px 0px;
-        width: 100%;
-        overflow: hidden;
-    }
-    #mbh-results-services-table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-    #mbh-results-services-table th {
-        font-weight: normal;
-        font-style: italic;
-    }
-    #mbh-results-services-table th, #mbh-results-services-table td {
-        border-bottom: #b4b4b4 1px solid;
-        padding: 4px 10px;
-        text-align: center;
-        font-size: 12px;
-    }
     .mbh-results-services-name small {
         font-size: 11px;
         color: #7e747c;
-    }
-    #mbh-results-services-table tr:last-child td {
-        border-bottom: 0px;
-    }
-    #mbh-results-services-table th {
-        border-width: 0px 0px 1px 0px;
-    }
-    #mbh-results-services-table tr
-    {
-        background-color: #f3f8fb;
-    }
-    #mbh-results-services-table tr.even
-    {
-        background-color: #e6f1f5;
     }
     .mbh-results-services-name {
         font-size: 15px;
@@ -307,47 +561,22 @@
         font-weight: bold;
     }
     /* -------------------------- USER FORM -------------------------------- */
-    #mbh-user-form-form {
-        background-color: #e6f1f5;
-        margin: 10px 0px;
-        padding: 10px;
-        -webkit-border-radius: 8px;
-        -moz-border-radius: 8px;
-        border-radius: 8px;
-        border: 1px solid #b4b4b4;
-        font-size: 14px;
-        font-family : Arial, Helvetica, "Nimbus Sans L", "Liberation Sans", FreeSans, Sans-serif;
-    }
+    .mbh-results-services-count {
+        width: 60px;
+    } 
     #mbh-user-form sup {
         color: maroon;
     }
     #mbh-user-form-form label {
-        display: block;
-        margin: 0px;
-        padding: 0px;
-        float: left;
-        width: 150px;
-        color: #555;
         font-weight: bold;
     }
-    .mbh-user-form-row {
-        margin-bottom: 15px;
-        clear: both;
-    }
-    #mbh-user-form-birthday {
+    #mbh-user-form-birthday, #mbh-user-form-arrival, #mbh-user-form-departure {
         width: 100px;
     }
     /* -------------------------- PAYMENT TYPE FORM -------------------------------- */
     .mbh-payment-type-row {
-        background-color: #e6f1f5;
-        margin: 10px 0px;
-        padding: 10px;
-        -webkit-border-radius: 8px;
-        -moz-border-radius: 8px;
-        border-radius: 8px;
-        border: 1px solid #b4b4b4;
-        font-size: 14px;
-        vertical-align: middle;
+        margin-bottom: 5px;
+        padding: 5px;
     }
     .mbh-payment-type-row p {
         font-size: 11px;

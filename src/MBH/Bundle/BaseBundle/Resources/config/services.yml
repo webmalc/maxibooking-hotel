@@ -6,28 +6,32 @@ services:
         class: Twig_Extensions_Extension_Text
         tags:
             - name: twig.extension
+    twig.intl_extension:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - name: twig.extension
 
-    #twig.date_extension:
-    #    class: Twig_Extensions_Extension_Date
-    #    tags:
-    #        - name: twig.extension
+    twig.date_extension:
+        class: Twig_Extensions_Extension_Date
+        tags:
+            - name: twig.extension
 
     doctrine_odm.mongodb.validator.unique:
       class: MBH\Bundle\BaseBundle\Validator\Constraints\UniqueEntityValidator
       arguments:
-        - @doctrine_mongodb
+        - '@doctrine_mongodb'
       tags:
         - { name: validator.constraint_validator, alias: doctrine_odm.mongodb.unique }
 
     mbh.base_on_request_listener:
         class: MBH\Bundle\BaseBundle\EventListener\OnRequest
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
     mbh.base_on_controller_listener:
         class: MBH\Bundle\BaseBundle\EventListener\OnController
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
@@ -36,57 +40,42 @@ services:
 
     mbh.twig.hotel_selector_extension:
         class: MBH\Bundle\BaseBundle\Twig\HotelSelectorExtension
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: twig.extension }
 
     mbh.twig.extension:
         class: MBH\Bundle\BaseBundle\Twig\Extension
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: twig.extension }
             
     mbh.form.fieldset_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\FieldsetExtension
         tags:
-            - { name: form.type_extension, alias: form }
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType, alias: form }
             
     mbh.form.help_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\HelpMessageTypeExtension
         tags:
-            - { name: form.type_extension, alias: form }
-
-    form.type.date:
-        class: MBH\Bundle\BaseBundle\Form\Extension\DateType
-        tags:
-          - { name: form.type, alias: date }
-
-    form.type.time:
-            class: MBH\Bundle\BaseBundle\Form\Extension\TimeType
-            tags:
-              - { name: form.type, alias: time }
-
-    form.type.datetime:
-            class: MBH\Bundle\BaseBundle\Form\Extension\DateTimeType
-            tags:
-              - { name: form.type, alias: datetime }
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType, alias: form }
             
     mbh.form.bottom_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\BottomMessageTypeExtension
         tags:
-            - { name: form.type_extension, alias: form }
+            - { name: form.type_extension, alias: form, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
             
     mbh.hotel.selector:
         class: MBH\Bundle\BaseBundle\Service\HotelSelector
-        arguments: [@service_container]
+        arguments: ['@service_container']
 
     mbh.currency:
             class: MBH\Bundle\BaseBundle\Service\Currency
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.helper:
             class: MBH\Bundle\BaseBundle\Service\Helper
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.pdf_generator:
         class: MBH\Bundle\BaseBundle\Service\PdfGenerator
@@ -95,11 +84,11 @@ services:
 
     mbh.mongo:
           class: MBH\Bundle\BaseBundle\Service\Mongo
-          arguments: [@service_container]
+          arguments: ['@service_container']
 
     doctrine_mongo_db_param_converter:
         class: Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter
-        arguments: [@doctrine_mongodb]
+        arguments: ['@doctrine_mongodb']
         tags:
           - { name: request.param_converter, converter: doctrine.odm }
 
@@ -110,21 +99,21 @@ services:
       calls:
         - [attach, ["@mbh.system.messenger"]]
         - [attach, ["@mbh.mailer"]]
-      arguments: [@service_container]
+      arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.notifier.mailer:
           class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
           calls:
             - [attach, ["@mbh.mailer"]]
-          arguments: [@service_container]
+          arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.mailer:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Mailer
-      arguments: [@service_container]
+      arguments: ['@service_container']
 
     mbh.system.messenger:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Messenger
-      arguments: [@service_container]
+      arguments: ['@service_container']
 
 
     form.type.facilities:
@@ -140,19 +129,12 @@ services:
         tags:
             - { name: form.type, alias: mbh_language }
 
-
-    #mbh.translatable_listener:
-    #    class: MBH\Bundle\BaseBundle\EventListener\TranslatableListener
-    #    calls:
-    #          - [ setDefaultLocale, [ 'ru_RU' ] ]
-    #          - [ setAnnotationReader, [ @annotation_reader ] ]
-    #    tags:
-    #          - { name: doctrine.event_subscriber, connection: default }
-
     mbh.event_listener.check_relation_subscriber:
-        class: MBH\Bundle\BaseBundle\EventListener\CheckDeleteRelationSubscriber
-        tags:
-            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+            class: MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Subscriber
+            arguments: ['@service_container']
+            tags:
+                - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
 
     mbh.event_listener.versioned_subscriber:
             class: MBH\Bundle\BaseBundle\EventListener\VersionedSubscriber
@@ -160,9 +142,14 @@ services:
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+    mbh.event_listener.disable_listener:
+        class: MBH\Bundle\BaseBundle\Lib\Disableable\DisableableSubscriber
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     mbh.event_listener.hotelable_listener:
         class: MBH\Bundle\BaseBundle\EventListener\HotelableListener
-        arguments: [@mbh.hotel.selector]
+        arguments: ['@mbh.hotel.selector']
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
     mbh.get_set_method_normalizer:
@@ -179,14 +166,178 @@ services:
         class: MBH\Bundle\BaseBundle\EventListener\GenerateInternationalListener
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
-
+ 
     mbh.cache:
-            class: MBH\Bundle\BaseBundle\Service\Cache
-            arguments: ['%mbh_cache%']
+        class: MBH\Bundle\BaseBundle\Service\Cache
+        arguments:
+          - '%mbh_cache%'
+          - '%mbh_redis%'
+          - '@doctrine_mongodb'
+          - '@validator'
+          - '@mbh.cache.logger'
+          - '@mbh.mongo'
 
-    #mbh.menu.voter.request:
-    #    class: MBH\Bundle\BaseBundle\Menu\RequestContentIdentityVoter
-    #    arguments:
-    #        - @service_container
-    #    tags:
-    #       - { name: knp_menu.voter }
+    mbh.task.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: ['task']
+        calls:
+            - [pushHandler, ['@mbh.task.logger_handler']]
+
+    mbh.task.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.task.log", 200]
+
+
+    #Translation
+    mbh.base.command.translate:
+        class:  MBH\Bundle\BaseBundle\Command\TranslatorCommand
+        arguments: ['mbh:translation']
+        calls:
+            - [ addConverter, ['@mbh.base.lib.document_translator' ]]
+            - [ addConverter, ['@mbh.base.lib.twig_translator' ]]
+            - [ addConverter, ['@mbh.base.lib.form_translator' ]]
+            - [ addConverter, ['@mbh.base.lib.service_translator' ]]
+            - [ addConverter, ['@mbh.base.lib.services_translator' ]]
+        tags:
+            - { name: console.command }
+
+    mbh.base.lib.abstract_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\AbstractTranslateConverter
+        abstract: true
+        arguments: ['@translation.loader','@translation.writer', '@mbh.task.logger']
+
+    mbh.base.lib.document_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\DocumentTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.base.lib.twig_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\TwigTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.base.lib.form_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\FormTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.base.lib.service_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\ServiceTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.base.lib.services_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\ServicesTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+        
+    mbh.cache.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.cache.logger_handler']]
+
+
+
+    mbh.cache.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]
+
+    mbh.mailer.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: ['mailer']
+        calls:
+            - [pushHandler, ['@mbh.mailer.logger_handler']]
+
+    mbh.universal_command.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.mailer.log", 200]
+
+    mbh.universal_command.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: ['app']
+        calls:
+            - [pushHandler, ['@mbh.universal_command.logger_handler']]
+
+    mbh_bundle_base.command.universal_command:
+        class: MBH\Bundle\BaseBundle\Command\UniversalCommand
+        arguments: ["@mbh.universal_command.logger"]
+        calls:
+            - [setContainer, ['@service_container']]
+        tags:
+            - { name: console.command }
+
+    mbh.mailer.logger_handler:
+        public: false
+        class: Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.mailer.log", 200]
+
+    task_command_runner:
+        class:      MBH\Bundle\BaseBundle\Task\CommandRunner
+        arguments:  ["@mbh.task.logger", "@kernel"]
+
+    mbh.locale.subscriber:
+        class: MBH\Bundle\BaseBundle\EventListener\LocaleSubscriber
+        arguments: ['%kernel.default_locale%']
+        tags:
+          - { name: kernel.event_subscriber }
+
+    mbh.mongodb.context_service:
+        class: 'resource'
+        factory: 'stream_context_create'
+        arguments:
+          - { ssl: { verify_expiry: false, allow_self_signed: true }}
+
+    mbh.instance_info.collector:
+        class: 'MBH\Bundle\BaseBundle\DataCollector\InstanceInfoCollector'
+        public: false
+        arguments: ["@kernel"]
+        tags:
+          -
+            name: 'data_collector'
+            template: "@MBHBase/Profiler/instance.profiler.html.twig"
+            id: 'client.instance.informer'
+
+    mbh.image_migrate.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.image_migrate.logger_handler']]
+    mbh.image_migrate.logger_handler:
+        public: false
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.image_migrate.log", 200]
+
+    mbh.export_data_handler:
+        class: MBH\Bundle\BaseBundle\Service\Export\ExportDataHandler
+
+    mbh.entities_exporter:
+        class: MBH\Bundle\BaseBundle\Service\Export\CSVExporter
+        arguments:
+            - '@mbh.export_data_handler'
+            - '@translator'
+
+    mbh.command.image_migrate:
+        class: MBH\Bundle\BaseBundle\Command\ImageMigrateCommand
+        arguments: ['@mbh.service.ssh_commands', '@mbh.app.root_dir', '@mbh.client.name']
+        tags:
+            - { name: console.command }
+
+    mbh.client.name:
+        class: AppKernel
+        factory: ['@kernel',getClient]
+
+    mbh.app.root_dir:
+        class: AppKernel
+        factory: ['@kernel',getRootDir]
+
+    mbh.swiftmailer.array.logger:
+        public: false
+        class: MBH\Bundle\BaseBundle\Lib\SwiftMailerLogger
+        arguments: ['@mbh.mailer.logger']
+
+    mbh.swiftmailer.logger:
+        class: Swift_Plugins_LoggerPlugin
+        arguments: ["@mbh.swiftmailer.array.logger"]
+        tags:
+            - { name: 'swiftmailer.default.plugin' }
+    mbh.report:
+        class: MBH\Bundle\BaseBundle\Lib\Report\Report
+        shared: false
+        arguments:
+            - '@templating'

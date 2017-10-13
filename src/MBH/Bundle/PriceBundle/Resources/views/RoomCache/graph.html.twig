@@ -5,8 +5,8 @@
 {% else %}
     <ul class="mbh-graph-help">
         <li><div class="bg-green disabled color-palette">3</div> - {{ 'mbhpricebundle.view.roomcache.graph.zabronirovano'|trans }} </li>
-        <li><div class="bg-gray disabled color-palette">5</div> - {{ 'mbhpricebundle.view.roomcache.graph.ostalosʹ'|trans }} </li>
-        <li><div class="mbh-graph-cell-danger"><i class="fa text-red fa-times"></i></div> - {{ 'mbhpricebundle.view.roomcache.graph.netdannykh'|trans }} </li>
+        <li><div class="bg-gray disabled color-palette">5</div> - {{ 'price.resources.views.roomcache.left'|trans }}</li>
+        <li><div class="mbh-graph-cell-danger"><i class="fa text-red fa-times"></i></div> - {{ 'mbhpricebundle.view.roomcache.graph.net.dannykh'|trans }} </li>
     </ul>
 
     {% for roomType in data.roomTypes %}
@@ -23,7 +23,7 @@
                         <th class="mbh-graph-date-th">
                             <span class="{{ date|date('N') in [6,7] ? 'text-red' }} {{ date|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-yellow' }} ">{{ date|date('d.m') }}</span>
                             <div class="text-muted">
-                            {{ date|date('Y') == 'now'|date('Y') ? weekdays[date|date('N')]|lower : date|date('Y') }}
+                            {{ date|date('Y') == 'now'|date('Y') ? weekdays[date|date('N')]|trans({}, 'front_messages')|lower : date|date('Y') }}
                             </div>
                         </th>
                     {% endfor %}

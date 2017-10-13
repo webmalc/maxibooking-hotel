@@ -3,18 +3,18 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Form\ServiceCategoryType;
 use MBH\Bundle\PriceBundle\Form\ServiceType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("service")
@@ -73,7 +73,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $this->dm->flush();
         };
 
-        $request->getSession()->getFlashBag()->set('success', 'Цены успешно сохранены.');
+        $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('price.controller.servicecontroller.price_successful_saved'));
 
         return $this->redirectToRoute('price_service_category');
     }
@@ -94,7 +94,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         }
 
         $entry = new Service();
-        $form = $this->createForm(new ServiceType(), $entry, [
+        $form = $this->createForm(ServiceType::class, $entry, [
             'calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']
         ]);
 
@@ -123,11 +123,11 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $entry = new Service();
         $entry->setCategory($entity);
 
-        $form = $this->createForm(new ServiceType(), $entry, [
+        $form = $this->createForm(ServiceType::class, $entry, [
             'calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             if (!empty($request->get("mbh_bundle_pricebundle_service_type")["time"])) {
@@ -137,7 +137,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($entry);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.controller.servicecontroller.entry_successful_saved'));
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('price_service_category_entry_edit', ['id' => $entry->getId()]) :
@@ -165,7 +165,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new ServiceType(), $entry, [
+        $form = $this->createForm(ServiceType::class, $entry, [
             'calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']
         ]);
 
@@ -181,7 +181,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      * Displays a form to edit a new entity.
      *
      * @Route("/{id}/update/entry", name="price_service_category_entry_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_SERVICE_EDIT')")
      * @Template("MBHPriceBundle:Service:editEntry.html.twig")
      * @ParamConverter(class="MBHPriceBundle:Service")
@@ -192,16 +192,16 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new ServiceType(), $entry, [
+        $form = $this->createForm(ServiceType::class, $entry, [
             'calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
         if ($form->isValid()) {
             $this->dm->persist($entry);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.controller.servicecontroller.entry_successfully_updated'));
 
             if ($request->get('save') !== null) {
                 return $this->redirectToRoute('price_service_category_entry_edit', ['id' => $entry->getId()]);
@@ -229,7 +229,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
     public function newAction()
     {
         $entity = new ServiceCategory();
-        $form = $this->createForm(new ServiceCategoryType(), $entity);
+        $form = $this->createForm(ServiceCategoryType::class, $entity);
 
         return [
             'entity' => $entity,
@@ -250,14 +250,14 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $entity = new ServiceCategory();
         $entity->setHotel($this->hotel);
 
-        $form = $this->createForm(new ServiceCategoryType(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(ServiceCategoryType::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.controller.servicecontroller.entry_successful_saved'));
 
             return $this->afterSaveRedirect('price_service_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -283,7 +283,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new ServiceCategoryType(), $entity);
+        $form = $this->createForm(ServiceCategoryType::class, $entity);
 
         return [
             'entity' => $entity,
@@ -296,7 +296,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      * Edits an existing entity.
      *
      * @Route("/{id}", name="price_service_category_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_SERVICE_CATEGORY_EDIT')")
      * @Template("MBHPriceBundle:Service:edit.html.twig")
      * @ParamConverter(class="MBHPriceBundle:ServiceCategory")
@@ -307,14 +307,14 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new ServiceCategoryType(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(ServiceCategoryType::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.controller.servicecontroller.entry_successfully_updated'));
 
             return $this->afterSaveRedirect('price_service_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -364,9 +364,9 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно удалена.');
+            $this->addFlash('success', 'controller.baseController.delete_record_success');
         } catch (DeleteException $e) {
-            $request->getSession()->getFlashBag()->set('danger', $e->getMessage());
+            $this->addFlash('danger', $this->get('translator')->trans($e->getMessage(), ['%total%' => $e->total]));
         }
 
         return $this->redirectToRoute('price_service_category', ['tab' => $catId]);

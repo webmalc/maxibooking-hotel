@@ -2,15 +2,15 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
-use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
+use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="VashotelConfig")
@@ -38,7 +38,7 @@ class VashotelConfig extends Base implements BaseInterface
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -63,10 +63,11 @@ class VashotelConfig extends Base implements BaseInterface
      */
     protected $services;
 
-    /** 
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="vashotelConfig")
      * @Assert\NotNull(message="validator.document.vashotelConfig.no_hotel_selected")
+     * @ODM\Index()
      */
     protected $hotel;
 
@@ -75,8 +76,17 @@ class VashotelConfig extends Base implements BaseInterface
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="hotelId")
      * @Assert\NotNull(message="validator.document.vashotelConfig.no_hotel_id_specified")
+     * @ODM\Index()
      */
     protected $hotelId;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull(message="validator.document.vashotelConfig.no_password")
+     */
+    protected $password;
 
     /**
      * Set hotel
@@ -128,7 +138,7 @@ class VashotelConfig extends Base implements BaseInterface
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Add room
      *
@@ -247,5 +257,23 @@ class VashotelConfig extends Base implements BaseInterface
     public function getServices()
     {
         return $this->services;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     * @return VashotelConfig
+     */
+    public function setPassword(string $password)
+    {
+        $this->password = $password;
+        return $this;
     }
 }

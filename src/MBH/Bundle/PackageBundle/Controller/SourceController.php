@@ -2,17 +2,16 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Form\PackageSourceType;
-use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\PackageBundle\Form\SearchType;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("management/source")
@@ -31,9 +30,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
     public function indexAction(Request $request)
     {
         $entity = new PackageSource();
-        $form = $this->createForm(
-            new PackageSourceType(), $entity, []
-        );
+        $form = $this->createForm(PackageSourceType::class, $entity, []);
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -44,17 +41,8 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
             ->execute()
         ;
 
-        if(!count($entities)) {
-            foreach($this->container->getParameter('mbh.default.sources') as $default) {
-                $new =new PackageSource();
-                $new->setFullTitle($default)->setTitle($default);
-                $dm->persist($new);
-            }
-            $dm->flush();
-        }
-
         if($request->isMethod('POST')) {
-            $form->submit($request);
+            $form->handleRequest($request);
             $dm->persist($entity);
             $dm->flush();
 
@@ -92,7 +80,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new PackageSourceType(), $entity, []);
+        $form = $this->createForm(PackageSourceType::class, $entity, []);
 
         return [
             'entity' => $entity,
@@ -105,7 +93,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
      * Edits an existing entity.
      *
      * @Route("/{id}", name="package_source_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template("MBHPackageBundle:Source:edit.html.twig")
      *
@@ -120,9 +108,9 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
         if (!$entity) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(new PackageSourceType(), $entity);
+        $form = $this->createForm(PackageSourceType::class, $entity);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 
@@ -143,7 +131,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );;
+        );
     }
 
     /**
@@ -151,11 +139,15 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}/delete", name="package_source_delete")
      * @Method("GET")
+     * @ParamConverter(class="MBHPackageBundle:PackageSource")
+     * @param PackageSource $entity
      * @Security("is_granted('ROLE_ADMIN')")
      */
-    public function deleteAction($id)
+    public function deleteAction(PackageSource $entity)
     {
-        return $this->deleteEntity($id, 'MBHPackageBundle:PackageSource', 'package_source');
+        if (!$entity->getSystem()) {
+            return $this->deleteEntity($entity->getId(), 'MBHPackageBundle:PackageSource', 'package_source');
+        }
 
     }
 

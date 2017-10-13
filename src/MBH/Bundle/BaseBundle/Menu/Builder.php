@@ -3,15 +3,28 @@
 namespace MBH\Bundle\BaseBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
-use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
-use MBH\Bundle\UserBundle\Document\User;
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Knp\Menu\ItemInterface;
-use JMS\SecurityExtraBundle\Metadata\Driver\AnnotationDriver;
+use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class Builder extends ContainerAware
+class Builder implements ContainerAwareInterface
 {
+
+    use ContainerAwareTrait;
+
+    /**
+     * @var \MBH\Bundle\ClientBundle\Document\ClientConfig
+     */
+    protected $config;
+
+    protected function setConfig()
+    {
+        if (!$this->config) {
+            $this->config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        }
+    }
 
     protected $counter = 0;
 
@@ -25,6 +38,7 @@ class Builder extends ContainerAware
     {
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
+        $this->setConfig();
 
         /** @var UserInterface $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
@@ -55,7 +69,7 @@ class Builder extends ContainerAware
                 'badge_class_left' => 'bg-red badge-sidebar-left badge-sidebar-margin',
                 'badge_id_left' => 'arrivals',
                 'badge_value_left' => $arrivals,
-                'badge_title_left' => 'menu.help.noarrival'
+                'badge_title_left' => $this->container->get('translator')->trans('menu.help.noarrival')
             ];
         }
         if ($out) {
@@ -64,7 +78,7 @@ class Builder extends ContainerAware
                 'badge_class_right' => 'bg-green badge-sidebar-right badge-sidebar-margin',
                 'badge_id_right' => 'out',
                 'badge_value_right' => $out,
-                'badge_title_right' => 'menu.help.nodepart'
+                'badge_title_right' => $this->container->get('translator')->trans('menu.help.nodepart')
             ];
         }
 
@@ -72,7 +86,7 @@ class Builder extends ContainerAware
         $menu->addChild('porter_links', ['route' => '_welcome', 'label' => 'menu.label.portie'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bell']  + $porterBadges);
 
-        $menu['porter_links']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'menu.label.portie.nomfond'])
+        $menu['porter_links']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'menu.header.navigation'])
             ->setAttributes(['icon' => 'fa fa-bed']);
 
         $menu['porter_links']->addChild('report_porter', [
@@ -80,7 +94,8 @@ class Builder extends ContainerAware
             'label' => 'menu.label.portie.arrdep',
         ])
             ->setAttributes(['icon' => 'fa fa-exchange']);
-        $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'menu.label.portie.shah'])
+
+        $menu['porter_links']->addChild('chessboard', ['route' => 'chess_board_home', 'label' => 'menu.label.portie.shah'])
             ->setAttributes(['icon' => 'fa fa-table']);
 
         //Prices links
@@ -99,7 +114,7 @@ class Builder extends ContainerAware
         $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
-		
+
         if ($openTaskCount > 0) {
             $taskAttributes += [
                 'badge' => true,
@@ -125,9 +140,11 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-plug']);
         $menu['prices']->addChild('promotions', ['route' => 'promotions', 'label' => 'menu.label.nomandprice.promotions'])
             ->setAttributes(['icon' => 'fa fa-bookmark']);
+        $menu['prices']->addChild('special', ['route' => 'special', 'label' => 'special.title'])
+            ->setAttributes(['icon' => 'fa fa-star']);
 
         // cash
-        $menu->addChild('cash', ['route' => 'cash', 'label' => 'menu.label.cash'])
+        $menu->addChild('cash', ['route' => 'cash', 'label' => 'mbhbasebundle.view.navbar.kassa'])
             ->setAttribute('icon', $this->container->get('mbh.currency')->info()['icon'])
         ;
 
@@ -156,15 +173,25 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'menu.label.reports.polls'])
             ->setAttributes(['icon' => 'fa fa-star']);
+        $menu['reports']->addChild('dynamic_sale', ['route' => 'dynamic_sales', 'label' => 'Динамика продаж'])
+            ->setAttributes(['icon' => 'fa fa-bar-chart']);
+        $menu['reports']->addChild('packages_daily_report', ['route' => 'packages_daily_report', 'label' => 'menu.label.reports.daily_report'])
+            ->setAttributes(['icon' => 'fa fa-money']);
+        $menu['reports']->addChild('distribution_report', ['route' => 'distribution_by_days_of_the_week', 'label' => 'distribution_by_days_report.title'])
+            ->setAttributes(['icon' => 'fa fa-check-square-o']);
+
+        if ($this->config && $this->config->getSearchWindows()) {
+            $menu['reports']->addChild('report_windows', ['route' => 'report_windows', 'label' => 'menu.label.reports.windows'])
+                ->setAttributes(['icon' => 'fa fa-windows']);
+        }
         //$token = $this->container->get('security.token_storage')->getToken();
         //if ($token && $token->getUser() instanceof User && $token->getUser()->getIsEnabledWorkShift()) {
-        $menu['reports']->addChild('report_work_shift',
-            ['route' => 'report_work_shift', 'label' => 'menu.label.reports.work_shift'])
+        $menu['reports']->addChild(
+            'report_work_shift',
+            ['route' => 'report_work_shift', 'label' => 'menu.label.reports.work_shift']
+        )
             ->setAttributes(['icon' => 'fa fa-clock-o']);
         //}
-
-        /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'menu.label.reports.fms'])
-            ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
 
         return $this->filter($menu, $factory, $options);
     }
@@ -193,6 +220,7 @@ class Builder extends ContainerAware
         $router = $this->container->get('router');
         $router->getContext()->setMethod('GET');
         $security = $this->container->get('security.authorization_checker');
+        $this->setConfig();
 
         !empty($options['title_url']) ? $title_url = $options['title_url'] : $title_url = null;
 
@@ -201,7 +229,6 @@ class Builder extends ContainerAware
         }
 
         foreach ($menu->getChildren() as $child) {
-
             if (empty($child->getUri())) {
                 continue;
             }
@@ -219,9 +246,7 @@ class Builder extends ContainerAware
                 $rMethod = new \ReflectionMethod($controllerInfo[0], $controllerInfo[1]);
 
                 $metadata = $rMethod->getDocComment();
-
             } catch (\Exception $e) {
-
                 $menu->removeChild($child);
                 continue;
             }
@@ -233,7 +258,6 @@ class Builder extends ContainerAware
             }
 
             if (!$security->isGranted($roles[1])) {
-
                 $menu->removeChild($child);
             } elseif (empty($child->getAttribute('dropdown'))) {
                 $this->counter += 1;
@@ -259,7 +283,7 @@ class Builder extends ContainerAware
             'class' => 'sidebar-menu', 'id' => 'management-menu'
         ]);
 
-        $menu->addChild('header', [])->setAttributes(['header' => 'menu.header.settings']);
+        $menu->addChild('header', [])->setAttributes(['header' => 'menu.settings.label.header']);
 
 
         //Hotels links
@@ -272,20 +296,19 @@ class Builder extends ContainerAware
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'menu.settings.label.room_types'])
             ->setAttributes(['icon' => 'fa fa-bed']);
 
-        $config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        if ($config && $config->getUseRoomTypeCategory()) {
+        if ($this->config && $this->config->getUseRoomTypeCategory()) {
             $menu['hotels']->addChild('room_type_category', ['route' => 'room_type_category', 'label' => 'menu.room_type_category'])
                 ->setAttributes(['icon' => 'fa fa-bed']);
         }
 
         //Restaurant links
-        $menu->addChild('restaurant', ['route' => '_welcome', 'label' => 'menu.settings.label.restaurant'])
+        $menu->addChild('restaurant', ['route' => '_welcome', 'label' => 'menu.label.restaurant'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cutlery']);
         $menu['restaurant']->addChild('ingredients', ['route'=>'restaurant_ingredient_category', 'label' => 'menu.settings.label.restaurant.ingredients'])
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
         $menu['restaurant']->addChild('dishmenu', ['route'=>'restaurant_dishmenu_category', 'label' => 'menu.settings.label.restaurant.dishmenu'])
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
-        $menu['restaurant']->addChild('tables', ['route'=>'restaurant_table', 'label' => 'menu.settings.label.restaurant.tables'])
+        $menu['restaurant']->addChild('tables', ['route'=>'restaurant_table_category', 'label' => 'menu.settings.label.restaurant.tables'])
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
 
 
@@ -302,6 +325,9 @@ class Builder extends ContainerAware
         $menu['configs']->addChild('sources', ['route' => 'package_source', 'label' => 'menu.configs.sources'])
             ->setAttributes(['icon' => 'fa fa-compass'])
         ;
+        $menu['configs']->addChild('delete_reasons', ['route' => 'package_delete_reasons', 'label' => 'menu.configs.delete_reasons'])
+            ->setAttributes(['icon' => 'fa fa-compass'])
+        ;
         $menu['configs']->addChild('document_templates', ['route' => 'document_templates', 'label' => 'menu.configs.templates'])
             ->setAttributes(['icon' => 'fa fa-file'])
         ;
@@ -309,12 +335,12 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-cog'])
         ;
 
-        $menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
+        $menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'menu.configs.tasktype'])
             ->setAttributes(['icon' => 'fa fa-cog']);
 
-		// Warehouse link
+        // Warehouse link
         $menu['configs']->addChild('warehouse_category', ['route' => 'warehouse_category', 'label' => 'menu.configs.warehouse'])
-			->setAttributes(['icon' => 'fa fa-book']) ;
+            ->setAttributes(['icon' => 'fa fa-book']) ;
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'menu.communication.label'])
@@ -326,15 +352,19 @@ class Builder extends ContainerAware
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('myallocator', ['route' => 'channels', 'label' => 'menu.communication.label.advanced'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
-            //$menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok'])
-            //  ->setAttributes(['icon' => 'fa fa-cloud-download']);
-            $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'menu.communication.label.yh'])
+            $menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok'])
+              ->setAttributes(['icon' => 'fa fa-cloud-download']);
+            $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'menu.communication.label.your_hotel'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
+
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
-            //$menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru']);
-
+            $menu['services']->addChild('expedia', ['route' => 'expedia', 'label' => 'Expedia'])
+                ->setAttributes(['icon' => 'fa fa-cloud-download']);
+            $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru'])
+                ->setAttributes(['icon' => 'fa fa-cloud-download']);
         }
-
+        $menu['services']->addChild('hundredOneHotel', ['route' => 'hundred_one_hotels', 'label' => 'menu.communication.label.hundred_one_hotels'])
+            ->setAttributes(['icon' => 'fa fa-cloud-download']);
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'menu.communication.label.onlineform'])
             ->setAttributes(['icon' => 'fa fa-globe']);
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'menu.communication.label.polls'])
@@ -365,7 +395,8 @@ class Builder extends ContainerAware
             ->setAttribute('icon', 'fa fa-plus')
         ;
 
-        return $this->filter($menu, $factory, $options);;
+        return $this->filter($menu, $factory, $options);
+        ;
     }
 
 }

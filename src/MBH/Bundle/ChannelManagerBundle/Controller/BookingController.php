@@ -3,19 +3,19 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\BookingType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/booking")
@@ -34,7 +34,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         $config = $this->hotel->getBookingConfig();
 
         $form = $this->createForm(
-            $this->get('mbh.channelmanager.booking_type'), $config
+            BookingType::class,
+            $config
         );
 
         return [
@@ -44,6 +45,25 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
+    /**
+     * Sync old packages
+     * @Route("/packages/sync", name="booking_packages_sync")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_BOOKING')")
+     */
+    public function syncPackages()
+    {
+        $config = $this->hotel->getBookingConfig();
+        if ($config) {
+            $this->get('mbh.channelmanager')->pullOrders('booking', true);
+            $this->addFlash(
+                'warning',
+                $this->get('translator')->trans('controller.bookingController.packages_sync_start')
+            );
+        }
+        return $this->redirect($this->generateUrl('booking'));
+    }
+    
     /**
      * Main configuration save
      * @Route("/", name="booking_save")
@@ -63,12 +83,12 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $config->setHotel($hotel);
         }
         $form = $this->createForm(
-            $this->get('mbh.channelmanager.booking_type'), $config
+            BookingType::class,
+            $config
         );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($config);
@@ -78,8 +98,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                ->set(
+                    'success',
+                    $this->get('translator')->trans('controller.bookingController.settings_saved_success')
+                );
 
             return $this->redirect($this->generateUrl('booking'));
         }
@@ -109,7 +131,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomsType(), $config->getRoomsAsArray(), [
+        $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.booking')->pullRooms($config),
         ]);
@@ -130,8 +152,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                ->set(
+                    'success',
+                    $this->get('translator')->trans('controller.bookingController.settings_saved_success')
+                );
 
             return $this->redirect($this->generateUrl('booking_room'));
         }
@@ -161,7 +185,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
+        $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.booking')->pullTariffs($config),
         ]);
@@ -182,8 +206,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                ->set(
+                    'success',
+                    $this->get('translator')->trans('controller.bookingController.settings_saved_success')
+                );
 
             return $this->redirect($this->generateUrl('booking_tariff'));
         }

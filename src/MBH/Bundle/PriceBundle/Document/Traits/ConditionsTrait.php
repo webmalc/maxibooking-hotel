@@ -3,8 +3,8 @@
 namespace MBH\Bundle\PriceBundle\Document\Traits;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class ConditionsTrait
@@ -22,7 +22,7 @@ trait ConditionsTrait
      * @ODM\Integer()
      * @var integer
      * @Assert\Type(type="numeric")
-     * @Assert\Range(min="1", max="10")
+     * @Assert\Range(min="1")
      */
     protected $conditionQuantity;
 
@@ -37,7 +37,7 @@ trait ConditionsTrait
      * @ODM\Integer()
      * @var integer
      * @Assert\Type(type="numeric")
-     * @Assert\Range(min="1", max="10")
+     * @Assert\Range(min="1")
      */
     protected $additionalConditionQuantity;
 

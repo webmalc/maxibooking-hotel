@@ -12,21 +12,22 @@ namespace MBH\Bundle\BaseBundle\Lib\RuTranslateConverter;
 class FormTranslateConverter extends AbstractTranslateConverter
 {
 
-    const SUFFIX = '.php';
+    const FILE_SUFFIX = '.php';
 
     const FOLDER = '/Form';
 
     const TYPE = "FormParser";
 
+    const HANDLE_TYPE = 'form';
 
 
     /**
-     * @param string $string
+     * @param string $transliteratedString
      * @return mixed
      */
-    protected function getConvertPattern(string $string)
+    protected function getConvertPattern(string $transliteratedString)
     {
-        return sprintf('%s', $string);
+        return sprintf('%s', $transliteratedString);
     }
 
     protected function transIdPattert(): string
@@ -34,18 +35,17 @@ class FormTranslateConverter extends AbstractTranslateConverter
         return '%s.form.%s.%s';
     }
 
-    protected function checkAdvanceConditions($line): bool
+    protected function checkAdvanceConditions(string $line): bool
     {
-        $words = [
-            'label',
-            'help',
-            'placeholder'
-        ];
-        $pattern = '/' . implode('|', $words) . '/';
+        $words = ['label', 'help', 'placeholder'];
+        $pattern = '/'.implode('|', $words).'/';
         if (preg_match($pattern, $line)) {
             return true;
+        } else {
+            return false;
         }
-        return false;
+
+
     }
 
 

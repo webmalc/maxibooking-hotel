@@ -10,27 +10,27 @@ mbh.datarangepicker = {
             "format": "ll",
             "separator": " - ",
             "daysOfWeek": [
-                "Вс",
-                "Пн",
-                "Вт",
-                "Ср",
-                "Чт",
-                "Пт",
-                "Сб"
+                Translator.trans("online.online-calendar.sun_abbr_min"),
+                Translator.trans("online.online-calendar.mon_abbr_min"),
+                Translator.trans("online.online-calendar.tue_abbr_min"),
+                Translator.trans("online.online-calendar.wed_abbr_min"),
+                Translator.trans("online.online-calendar.thu_abbr_min"),
+                Translator.trans("online.online-calendar.fri_abbr_min"),
+                Translator.trans("online.online-calendar.sat_abbr_min")
             ],
             "monthNames": [
-                "Январь",
-                "Февраль",
-                "Март",
-                "Апрель",
-                "Май",
-                "Июнь",
-                "Июль",
-                "Август",
-                "Сентябрь",
-                "Октябрь",
-                "Ноябрь",
-                "Декабрь"
+                Translator.trans("analytics.months.jan"),
+                Translator.trans("analytics.months.feb"),
+                Translator.trans("analytics.months.mar"),
+                Translator.trans("analytics.months.apr"),
+                Translator.trans("analytics.months.may"),
+                Translator.trans("analytics.months.jun"),
+                Translator.trans("analytics.months.jul"),
+                Translator.trans("analytics.months.aug"),
+                Translator.trans("analytics.months.sep"),
+                Translator.trans("analytics.months.okt"),
+                Translator.trans("analytics.months.nov"),
+                Translator.trans("analytics.months.dec")
             ],
             "firstDay": 1
         }
@@ -111,7 +111,7 @@ $.fn.mbhGuestSelectPlugin = function () {
         $this.select2({
             minimumInputLength: 3,
             allowClear: true,
-            placeholder: 'Выберите гостя',
+            placeholder: Translator.trans("020-forms.select_guest"),
             ajax: {
                 url: Routing.generate('ajax_tourists'),
                 dataType: 'json',
@@ -153,7 +153,7 @@ $.fn.mbhOrganizationSelectPlugin = function () {
         $this.select2({
             minimumInputLength: 3,
             allowClear: true,
-            placeholder: 'Выберите организацию',
+            placeholder: Translator.trans("020-forms.chose_organization"),
             ajax: {
                 url: Routing.generate('organization_json_list'),
                 dataType: 'json',
@@ -169,7 +169,7 @@ $.fn.mbhOrganizationSelectPlugin = function () {
                     var details = data.details;
                     $.each(data.list, function (k, v) {
                         var d = details[v.id];
-                        data.list[k].text = v.text + ' ' + '(ИНН ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
+                        data.list[k].text = v.text + ' ' + '(' + Translator.trans("020-forms.inn") + ' ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
                     });
 
                     return {results: data.list};
@@ -241,7 +241,7 @@ var docReadyForms = function () {
     //select all
     (function () {
         $('select.select-all ').each(function () {
-            var elements = $('<div class="text-right"><small><a href="#" class="select-all-link">выбрать всё</a></small></div>');
+            var elements = $('<div class="text-right"><small><a href="#" class="select-all-link">' + Translator.trans("020-forms.chose_all") + '</a></small></div>');
             var select = $(this);
             $(this)
                 .closest('div.col-sm-6')
@@ -296,8 +296,8 @@ var docReadyForms = function () {
     //BootstrapSwitch configuration
     var bootstrapSwitchConfig = {
         'size': 'small',
-        'onText': 'да',
-        'offText': 'нет',
+        'onText': Translator.trans("020-forms.yes"),
+        'offText': Translator.trans("020-forms.no"),
         'onColor': 'success'
     };
     $('input[type="checkbox"]')
@@ -321,7 +321,7 @@ var docReadyForms = function () {
 
     //Select2 configuration
     $('select:not(.plain-html)').addClass('select2').select2({
-        placeholder: "Сделайте выбор",
+        placeholder: Translator.trans("020-forms.make_choice"),
         allowClear: true,
         width: 'resolve',
         formatSelection: function (item, container) {
@@ -480,7 +480,7 @@ var docReadyForms = function () {
             .select2({
                 minimumInputLength: 3,
                 allowClear: true,
-                placeholder: 'Выберите город',
+                placeholder: Translator.trans("020-forms.select_city"),
                 ajax: {
                     url: Routing.generate('hotel_city'),
                     dataType: 'json',
@@ -509,7 +509,7 @@ var docReadyForms = function () {
     }());
 
     //order select
-    (function (){
+    (function () {
         var orderSelect = $('.order-select');
 
         if (orderSelect.length !== 1) {
@@ -520,7 +520,7 @@ var docReadyForms = function () {
             .select2({
                 minimumInputLength: 1,
                 allowClear: true,
-                placeholder: 'Выберите бронь',
+                placeholder: Translator.trans("020-forms.select_package"),
                 ajax: {
                     url: Routing.generate('getPackageJsonSearch'),
                     dataType: 'json',
@@ -536,14 +536,13 @@ var docReadyForms = function () {
                 initSelection: function (element, callback) {
                     var id = $(element).val();
                     if (id !== "") {
-                        console.log(id);
                         $.ajax(Routing.generate('getPackageJsonById',
                             {
                                 id: id
                             }), {dataType: "json"})
                             .done(function (data) {
-                            callback(data);
-                        });
+                                callback(data);
+                            });
                     }
                 },
                 dropdownCssClass: "bigdrop"
@@ -621,13 +620,24 @@ var select2TemplateResult = {
         if (!state.id) {
             return state.text;
         }
-        var icon = state.element.getAttribute('data-icon');
-        return icon ? '<i class="fa ' + icon + '"></i>' : null;
+        var rawIcons = state.element.getAttribute('data-icon'),
+            result = '';
+        if (rawIcons) {
+            var icons = rawIcons.split(';');
+
+            $.each(icons, function (key, icon) {
+                if (icon) {
+                    result += '<i class="fa ' + icon + '"></i>';
+                }
+            });
+        }
+
+        return result ? result : null;
     },
     appendIcon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);
         var html = iconHtml ?
-        state.text + ' ' + iconHtml :
+            state.text + ' ' + iconHtml :
             state.text;
 
         return $('<div>' + html + '</div>');
@@ -635,7 +645,7 @@ var select2TemplateResult = {
     prependIcon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);
         var html = iconHtml ?
-        iconHtml + ' ' + state.text :
+            iconHtml + ' ' + state.text :
             state.text;
 
         return $('<div>' + html + '</div>');
@@ -814,7 +824,7 @@ var select2TemplateResult = {
         } else if (typeof method === 'object' || !method) {
             return methods.init.apply(this, arguments);
         } else {
-            $.error('Метод с именем ' + method + ' не существует');
+            $.error('Method named "' + method + ' does not exist');
         }
     };
 })(window.jQuery);
@@ -837,7 +847,7 @@ $.fn.mbhSelect2OptionsFilter = function (filter, resetOptionsHtml) {
 
 var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
     $discountInput.TouchSpin({
-        min: 0.01,
+        min: -9999999999999999,
         max: 9999999999999999,
         step: 0.1,
         decimals: 2,
@@ -847,10 +857,10 @@ var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
 
     var discountInputUpdate = function (state) {
         if (state) { //$isPercentDiscountCheckbox.is(':checked')
-            $discountInput.trigger("touchspin.updatesettings", {max: 100});
+            $discountInput.trigger("touchspin.updatesettings", {max: 100, min: -1000});
             $discountTypeInputPostfix.html('%');
         } else {
-            $discountInput.trigger("touchspin.updatesettings", {max: 100000000});
+            $discountInput.trigger("touchspin.updatesettings", {max: 100000000, min: -100000000});
             $discountTypeInputPostfix.html('<i class="fa fa-money"></i>')
         }
     }
@@ -900,8 +910,87 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     return this;
 };
 
+var mbhStartDate = function (e) {
+    if ($('form').is('.mbh-start-date')) {
+        if (!($('.begin-datepicker').val()) && !($('.end-datepicker').val())) {
+            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
+            $('.begin-datepicker').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
+            $('.end-datepicker').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
+        }
+    }
+};
+
+var disableCheckboxListen = function () {
+    var $disableCheckBox = $('#mbh-disable');
+    $disableCheckBox.is(':checked');
+    $disableCheckBox.on('switchChange.bootstrapSwitch', function () {
+        var disableMode = !$disableCheckBox.bootstrapSwitch('state') ? 'true' : 'false';
+        var routeName = $disableCheckBox.attr('data-route-name');
+        window.location.href = Routing.generate('change_room_type_enableable_mode', {disableMode: disableMode, route : routeName});
+    });
+};
+
+function getExportButtonSettings(entityName, format, filterDataCallback) {
+    var exportUrl = Routing.generate('export_entities', {entityName: entityName, format: format});
+    return {
+        text: '<i class="fa fa-file-excel-o" title="' + format + '" data-toggle="tooltip" data-placement="bottom"></i>',
+        className: 'btn btn-default btn-sm',
+        action: function () {
+        $.ajax({
+            url: exportUrl,
+            type:'GET',
+            success: function (response) {
+                $('<div id="template-document-csv-modal" class="modal"></div>').insertAfter($('.content-wrapper'));
+                var $modal = $('#template-document-csv-modal');
+                $modal.html(response);
+                $modal.find('select').css('width', '100%').select2();
+                $modal.modal('show');
+
+                var $form = $modal.find("form");
+                $form.find('#export-send-button').click(function() {
+                    window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
+                    $modal.modal('hide');
+                });
+            }
+        });
+        }
+    }
+}
+
+function onHideCheckboxChange() {
+    var $boxHideableCheckbox = $('.box-full-visibility-checkbox, .box-specified-visibility-checkbox');
+
+    var setVisibility = function (checkbox) {
+        var $checkbox = $(checkbox);
+        var isAllFormGroups = $checkbox.hasClass('box-full-visibility-checkbox');
+        var $boxFormGroups;
+        if (isAllFormGroups) {
+            $boxFormGroups = $checkbox.closest('.box').find('.form-group');
+        } else {
+            $boxFormGroups = $checkbox.closest('.box').find('.visibility-changeable').closest('.form-group');
+        }
+
+        var $hideFormGroups =  $boxFormGroups.not($checkbox.closest('.form-group'));
+        var isOn = $checkbox.bootstrapSwitch('state');
+        isOn ? $hideFormGroups.show() : $hideFormGroups.hide();
+    };
+
+    $boxHideableCheckbox.each(function () {
+        setVisibility(this)
+    });
+
+    $boxHideableCheckbox.on('switchChange.bootstrapSwitch', function () {
+        setVisibility(this);
+    });
+}
+
+
 $(document).ready(function () {
     'use strict';
-
     docReadyForms();
+
+    mbhStartDate();
+    onHideCheckboxChange();
+    disableCheckboxListen();
 });

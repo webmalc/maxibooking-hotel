@@ -1,13 +1,25 @@
 services:
     mbh.cash.document.subscriber:
         class: MBH\Bundle\CashBundle\EventListener\CashDocumentSubscriber
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
     mbh.cash.1c_exporter:
         class: MBH\Bundle\CashBundle\Service\OneCExporter
-        arguments: [@service_container]
+        arguments: ['@service_container']
 
     mbh.cash:
         class: MBH\Bundle\CashBundle\Service\Cash
-        arguments: [@service_container]
+        arguments: ['@service_container']
+
+    mbh.new_cash_document_type:
+        class: MBH\Bundle\CashBundle\Form\NewCashDocumentType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}
+
+    mbh.cash_document_type:
+        class: MBH\Bundle\CashBundle\Form\CashDocumentType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}

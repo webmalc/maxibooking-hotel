@@ -10,7 +10,17 @@ validator.document.vashotelConfig.no_hotel_selected: 'Не выбран отел
 validator.document.ostrovokConfig.no_hotel_selected: 'Не выбран отель'
 validator.document.vashotelConfig.no_api_key_specified: 'Не указан ключ API'
 validator.document.vashotelConfig.no_hotel_id_specified: 'Не указан Id отеля'
+validator.document.vashotelConfig.no_password: 'Не заполнен пароль'
+validator.document.hundredOneHotelsConfig.no_hotel_selected: 'Не выбран отель'
+validator.document.hundredOneHotelsConfig.no_hotel_id_specified: 'Не указан Id отеля'
+validator.document.hundredOneHotelsConfig.no_api_key_specified: 'Не указан ключ API отеля'
 roomtype.validation: 'Выбрано более одного типа номера'
 tarifftype.validation: 'Выбрано более одного типа тарифа'
 validator.default_currency: 'Курс по умолчанию обязателен к заполнению'
 document.myallocatorConfig.no_hotel_selected: 'Не выбран отель'
+validator.default_currency: Курс по умолчанию обязателен к заполнению
+document.myallocatorConfig.no_hotel_selected: Не выбран отель
+validator.document.expediaConfig.no_hotel_id_specified: Не указан id отеля
+validator.document.expediaConfig.no_hotel_selected: Не выбран отель
+validator.document.expediaConfig.username_not_specified: Не указано имя пользователя
+validator.document.expediaConfig.password_not_specified: Не указан пароль

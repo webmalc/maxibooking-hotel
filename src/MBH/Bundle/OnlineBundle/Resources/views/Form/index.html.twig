@@ -8,10 +8,10 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th>{{ 'mbhonlinebundle.view.form.index.oteli'|trans }} </th>
-            <th>{{ 'mbhonlinebundle.view.form.index.tipynomerov'|trans }} </th>
-            <th>{{ 'mbhonlinebundle.view.form.index.gosti'|trans }} </th>
-            <th>{{ 'mbhonlinebundle.view.form.index.vklyuchena'|trans }} </th>
+            <th>{{ 'onlinebundle.resources.views.hotels'|trans }}</th>
+            <th>{{ 'onlinebundle.resources.views.room_types'|trans }}</th>
+            <th>{{ 'onlinebundle.resources.views.guests'|trans }}</th>
+            <th>{{ 'onlinebundle.resources.views.on'|trans }}</th>
             <th class="td-sm"></th>
         </tr>
         </thead>
@@ -23,24 +23,24 @@
                     {% if doc.hotels|length %}
                         {{ doc.hotels|join(', ') }}
                     {% else %}
-                        {{ 'mbhonlinebundle.view.form.index.vseoteli'|trans }} 
+                        {{ 'onlinebundle.resources.views.all_hotels'|trans }}
                     {% endif %}
                 </td>
                 <td>
                     {% if doc.roomTypes %}
-                        <span class="label label-success">{{ 'mbhonlinebundle.view.form.index.da'|trans }} </span>
+                        <span class="label label-success">{{ 'onlinebundle.resources.da'|trans }}</span>
                     {% endif %}
                 </td>
                 <td>
                     {% if doc.tourists %}
-                        <span class="label label-success">{{ 'mbhonlinebundle.view.form.index.da'|trans }} </span>
+                        <span class="label label-success">{{ 'onlinebundle.resources.da'|trans }}</span>
                     {% endif %}
                 </td>
                 <td>
                     {% if not doc.enabled %}
-                        <span class="label label-danger">{{ 'mbhonlinebundle.view.form.index.net'|trans }} </span>
+                        <span class="label label-danger">{{ 'onlinebundle.resources.net'|trans }}</span>
                     {% else %}
-                        <span class="label label-success">{{ 'mbhonlinebundle.view.form.index.da'|trans }} </span>
+                        <span class="label label-success">{{ 'onlinebundle.resources.da'|trans }}</span>
                     {% endif %}
                 </td>
                 <td class="table-actions-td text-center">

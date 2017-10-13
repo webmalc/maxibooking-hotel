@@ -1,0 +1,41 @@
+views.cash.edit.new_document: 'Entry #'
+views.cash.edit.edit_document: 'Edit #'
+views.cash.index.period: Dates
+views.cash.index.filter.byPaidDate: Paid
+views.cash.index.filter.byDocumentDate: Created
+views.cash.index.filter.byDeletedDate: Deleted
+views.cash.index.document_list: 'List of documents'
+views.cash.index.note: Comments
+views.cash.index.reservation: Order
+views.cash.index.income: Revenue
+views.cash.index.expense: Expense
+views.cash.index.saldo: Saldo
+views.cash.index.is_paid: Paid
+views.cash.index.user: User
+views.cash.index.is_updated: Updated
+views.cash.index.removed: Deleted
+views.cash.index.payment_way: 'Payment options'
+views.cash.index.operation_type: 'Transaction type'
+views.cash.index.article: Category
+views.cash.index.date: Date
+views.cash.index.no_confirmed: 'Not confirmed'
+views.cash.jsonButtons.confirm_payment: 'Payment confirmation'
+views.cash.jsonButtons.are_you_sure_confirm_payment: 'Confirm the payment of <b> %total_sum% </b>?'
+views.cash.jsonButtons.confirm: Confirm
+views.cash.jsonButtons.edit_record: 'Edit entry'
+views.cash.jsonButtons.delete_record: 'Delete entry'
+views.cash.layout.cash: Account
+views.cash.index.show_no_paid: 'Include unpaid'
+views.cash.index.show_not_confirmed: 'Show unconfirmed only'
+views.cash.index.show_deleted: 'Include deleted'
+views.cash.index.byDay: 'By date'
+views.cash.index.result: Result
+views.cash.index.type: 'Cash movements'
+cashDocument.method.cash: Cash
+cashDocument.method.cashless: Non-cash
+cashDocument.method.electronic: 'Wire transfer'
+views.cash.edit.order_document: 'Order document'
+views.cash.index.doc: Doc.
+views.cash.index.cash_balance: 'Cashdesk balance'
+views.cash.index.create: Create
+views.cash.index.upload_all: 'Download all'

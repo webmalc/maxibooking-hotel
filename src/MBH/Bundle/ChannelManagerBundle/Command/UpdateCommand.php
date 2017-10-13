@@ -24,7 +24,7 @@ class UpdateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = new \DateTime();
-        
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $roomType = $begin = $end = null;
@@ -45,7 +45,6 @@ class UpdateCommand extends ContainerAwareCommand
             $end = \DateTime::createFromFormat('d.m.Y', $input->getOption('end'));
             ($end) ? $end->setTime(0, 0, 0) : $end = null;
         }
-
         if ($input->getOption('type') == 'rooms') {
             $this->getContainer()->get('mbh.channelmanager')->updateRooms($begin, $end, $roomType);
         } elseif ($input->getOption('type') == 'prices') {

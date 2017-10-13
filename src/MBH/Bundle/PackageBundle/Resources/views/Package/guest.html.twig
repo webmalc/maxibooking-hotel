@@ -33,7 +33,7 @@
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
-                        <th>{{ 'mbhpackagebundle.view.package.guest.fio'|trans }} </th>
+                        <th>{{ 'package.guest.fio'|trans}}</th>
                         <th class="td-md">{{ 'package.guest.phone'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md">{{ 'package.guest.email'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md">{{ 'package.guest.birth_date'|trans({}, 'MBHPackageBundle') }}</th>
@@ -53,10 +53,10 @@
                                 &nbsp;
                                 {% if tourist.isUnwelcome %}
                                     <a href='{{ path('tourist_edit_unwelcome', {id: tourist.id}) }}'>
-                                        <i data-toggle='tooltip' data-original-title='{{ 'mbhpackagebundle.view.package.guest.kliyentvchernomspiske'|trans }} ' class='fa fa-user-secret unwelcome-icon'></i>
+                                        <i data-toggle='tooltip' data-original-title='{{ 'package.guest.client_in_black_list'|trans }}' class='fa fa-user-secret unwelcome-icon'></i>
                                     </a>
                                 {% else %}
-                                    <i style='opacity:0.4' data-toggle='tooltip' data-original-title='{{ 'mbhpackagebundle.view.package.guest.kliyentnevchernomspiske'|trans }} ' class='fa fa-check-circle'></i>
+                                    <i style='opacity:0.4' data-toggle='tooltip' data-original-title='{{ 'package.guest.client_not_in_black_list'|trans }}' class='fa fa-check-circle'></i>
                                 {% endif %}
                             </td>
                             <td>{% if tourist.phone %}{{ tourist.phone }}{% endif %}</td>
@@ -103,16 +103,16 @@
 
             {% if not package.tourists|length < totalGuests %}
                 <div class="bg-gray color-palette alert" id="guest-overflow-alert">
-                    <i class="fa fa-info-circle"></i> {{ 'mbhpackagebundle.view.package.guest.dobavlenomaksimalʹnoyekolichestvogostey'|trans }} .
+                    <i class="fa fa-info-circle"></i> {{ 'package.guest.added_max_guests'|trans}}
                     &nbsp;
                     <div class="btn btn-default btn-xs">
-                        <i class="fa fa-plus"></i> {{ 'mbhpackagebundle.view.package.guest.dobavitʹyeshchë'|trans }} 
+                        <i class="fa fa-plus"></i> {{ 'package.guest.add_more'|trans}}
                     </div>
                 </div>
             {% endif %}
 
             {% if is_granted('ROLE_PACKAGE_GUESTS') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                {{ form_start(form, {'action': path('package_guest', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' ~ (not package.tourists|length < totalGuests ? ' hide': '') }}) }}
+                {{ form_start(form, {'action': path('package_guest', {'id': package.id}),  'attr': {'class': 'form-horizontal' ~ (not package.tourists|length < totalGuests ? ' hide': '') }}) }}
                 {{ form_widget(form) }}
             {% endif %}
                 {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_GUESTS'} %}

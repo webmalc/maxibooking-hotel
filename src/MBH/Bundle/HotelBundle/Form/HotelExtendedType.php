@@ -2,121 +2,110 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\BaseBundle\Form\FacilitiesType;
+use MBH\Bundle\CashBundle\Document\CardType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HotelExtendedType extends AbstractType
 {
+    /** @var  DocumentManager */
     private $dm;
+    private $smokingPolicyOptions;
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, $smokingPolicyOptions)
     {
         $this->dm = $dm;
+        $this->smokingPolicyOptions = $smokingPolicyOptions;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('city', 'text', [
-                'label' => 'form.hotelExtendedType.city',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => true,
-                'attr' => [
-                    'class' => 'citySelect',
-                    'placeholder' => 'form.hotelExtendedType.city',
-                ]
-            ])
-            ->add('settlement', 'text', [
-                'label' => 'form.hotelExtendedType.settlement',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false,
-            ])
-            ->add('street', 'text', [
-                'label' => 'form.hotelExtendedType.street',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false
-            ])
-            ->add('house', 'text', [
-                'label' => 'form.hotelExtendedType.house',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false
-            ])
-            ->add('corpus', 'text', [
-                'label' => 'form.hotelExtendedType.corpus',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false
-            ]);
-
-        $builder->add('flat', 'text', [
-                'label' => 'form.hotelExtendedType.flat',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false,
-            ]);
-        //}
-        $builder
-            ->add('latitude', 'text', [
-                'label' => 'form.hotelExtendedType.latitude',
-                'group' => 'form.hotelExtendedType.location',
-                'required' => false,
-                'attr' => ['placeholder' => '55.752014'],
-                'help' => 'form.hotelExtendedType.gps_coordinates_latitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
-            ])
-            ->add('longitude', 'text', [
-                'label' => 'form.hotelExtendedType.longitude',
-                'group' => 'form.hotelExtendedType.location',
-                'required' => false,
-                'attr' => ['placeholder' => '37.617515'],
-                'help' => 'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
-            ])
-            ->add('rating', 'text', [
+            ->add('rating', TextType::class, [
                 'label' => 'form.hotelExtendedType.how_many_stars_hotel',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
             ])
-            ->add('type', 'choice', [
+            ->add('type', InvertChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_type',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
                 'choices' => (isset($options['config']['types'])) ? $options['config']['types'] : [],
                 'multiple' => true
             ])
-            ->add('theme', 'choice', [
+            ->add('theme', InvertChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_theme',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
                 'choices' => (isset($options['config']['themes'])) ? $options['config']['themes'] : [],
                 'multiple' => true
             ])
-            ->add('facilities', 'mbh_facilities', [
+            ->add('facilities', FacilitiesType::class, [
                 'label' => 'form.hotelExtendedType.hotel_amenities',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
-            ]);
+            ])
+            ->add('acceptedCardTypes', DocumentType::class, [
+                'group' => 'form.hotelExtendedType.accepted_payment_types',
+                'label' => 'form.hotelExtendedType.accepted_card_type.label',
+                'help' => 'form.hotelExtendedType.accepted_card_type.help',
+                'class' => CardType::class,
+                'placeholder' => '',
+                'required' => false,
+                'multiple' => true
+            ])
+            ->add('isInvoiceAccepted', CheckboxType::class, [
+                    'group' => 'form.hotelExtendedType.accepted_payment_types',
+                    'label' => 'form.hotelExtendedType.is_invoice_accepted.label',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'form.hotelExtendedType.is_invoice_accepted.help'
+                ])
+            //TODO: Необходимы данные на разных языках
+            ->add('checkinoutPolicy', TextareaType::class, [
+                'label' => 'form.hotelExtendedType.check_in_out_policy.label',
+                'help' => 'form.hotelExtendedType.check_in_out_policy.help',
+                'required' => false,
+                'group' => 'form.hotelExtendedType.parameters',
+                'attr' => [
+                    'placeholder' => 'form.hotelExtendedType.check_in_out_policy.placeholder'
+                ]
+            ])
+            ->add('smokingPolicy', InvertChoiceType::class, [
+                'label' => 'form.hotelExtendedType.smoking_policy.label',
+                'required' => false,
+                'group' => 'form.hotelExtendedType.parameters',
+                'choices' => $this->smokingPolicyOptions
+            ])
+        ;
 
-        $builder->add('vega_address_id', 'number', [
-            'label' => 'form.hotelExtendedType.vega_address_id',
-            'help' => 'form.hotelExtendedType.vega_address_id_help',
-            'group' => 'form.hotelExtendedType.integration',
-            'required' => false
-        ]);
-
-        $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
+//        $builder->add('vega_address_id', NumberType::class, [
+//            'label' => 'form.hotelExtendedType.vega_address_id',
+//            'help' => 'form.hotelExtendedType.vega_address_id_help',
+//            'group' => 'form.hotelExtendedType.integration',
+//            'required' => false
+//        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
-            'city' => null,
             'config' => null,
         ]);
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_hotel_extended_type';
     }

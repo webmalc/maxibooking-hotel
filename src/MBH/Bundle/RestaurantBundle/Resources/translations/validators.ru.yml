@@ -21,4 +21,8 @@ validator.document.ingredient.full_output: 'Выход продукта не м�
 validator.document.table.hotel: 'Поле "отель" не должно быть пустым'
 validator.document.table.min_name: 'Имя стола должно быть менее одного символа'
 validator.document.table.max_name: 'Превышено допустимое количество символов'
+validator.document.tableType.min_name: 'Имя категории должно быть менее одного символа'
+validator.document.tableType.max_name: 'Превышено допустимое количество символов'
 validator.document.category.unique: 'Такая категория уже существует'
+validator.document.table.unique: 'Такой стол уже существует'
+validator.document.table.table_can_have_less_chairs: 'Всего стол может иметь 20 стульев'

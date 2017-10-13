@@ -15,10 +15,10 @@
         <tr>
             <td rowspan="2" colspan="2">
                 <div>{{ myOrganization.bank }}</div>
-                <div style="font-size: 14px">{{ 'mbhbasebundle.view.pdftemplates.organization.bankpoluchatelya'|trans }} </div>
+                <div style="font-size: 14px">{{ 'mbhbasebundle.view.pdftemplates.organization.bank.poluchatelya'|trans }} </div>
             </td>
             <td>
-                {{ 'mbhbasebundle.view.pdftemplates.organization.bik'|trans }} 
+                {{ 'mbhbasebundle.view.pdftemplates.organization.bik'|trans }}
             </td>
             <td rowspan="2" class="top">
                 <div>{{ myOrganization.bankBik }}</div>
@@ -27,7 +27,7 @@
         </tr>
         <tr>
             <td>
-                Cч. №
+                {{ 'mbhbasebundle.view.pdftemplates.organization.sch'|trans }}. №
             </td>
         </tr>
         <tr>
@@ -38,7 +38,7 @@
                 {{ 'mbhbasebundle.view.pdftemplates.organization.kpp'|trans }} {{ myOrganization.kpp }}
             </td>
             <td rowspan="2" class="top">
-                Cч. №
+                {{ 'mbhbasebundle.view.pdftemplates.organization.sch'|trans }}. №
             </td>
             <td rowspan="2" class="top">
                 {{ myOrganization.checkingAccount }}
@@ -47,30 +47,30 @@
         <tr>
             <td colspan="2">
                 <div class="top">{{ myOrganization.name }}</div>
-                <div class="bottom" style="font-size: 14px">{{ 'mbhbasebundle.view.pdftemplates.organization.poluchatelʹ'|trans }} </div>
+                <div class="bottom" style="font-size: 14px">{{ 'mbhbasebundle.view.pdftemplates.organization.poluchatel'|trans }}</div>
             </td>
         </tr>
     </table>
 
-    <div style="font-size: 24px; font-weight: bold; margin-top: 12px">{{ 'mbhbasebundle.view.pdftemplates.organization.schetnaoplatu'|trans }} № {{ cashDocument.number }} {{ 'mbhbasebundle.view.pdftemplates.organization.ot'|trans }} {{ cashDocument.documentDate|date('d.m.Y') }}</div>
+    <div style="font-size: 24px; font-weight: bold; margin-top: 12px">{{ 'mbhbasebundle.view.pdftemplates.organization.chet_na_oplatu'|trans }} № {{ cashDocument.number }} от {{ cashDocument.documentDate|date('d.m.Y') }}</div>
 
     <hr>
     <table class="table2">
         <tr>
-            <td class="top">{{ 'mbhbasebundle.view.pdftemplates.organization.postavshchik'|trans }} :</td>
+            <td class="top">{{ 'mbhbasebundle.view.pdftemplates.organization.postavshik'|trans }}:</td>
             <td>
                 <strong>
                     {{ myOrganization.name }}, {{ 'mbhbasebundle.view.pdftemplates.organization.inn'|trans }} {{ myOrganization.inn }}, {{ 'mbhbasebundle.view.pdftemplates.organization.kpp'|trans }} {{ myOrganization.kpp }}, {{ myOrganization.index }}
-                    {{ myOrganization.location }}, {{ 'mbhbasebundle.view.pdftemplates.organization.tel'|trans }} .: {{ myOrganization.phone }}
+                    {{ myOrganization.location }}, {{ 'mbhbasebundle.view.pdftemplates.organization.tel'|trans }}.: {{ myOrganization.phone }}
                 </strong>
             </td>
         </tr>
         <tr>
-            <td class="top">{{ 'mbhbasebundle.view.pdftemplates.organization.pokupatelʹ'|trans }} :</td>
+            <td class="top">{{ 'mbhbasebundle.view.pdftemplates.organization.pokupatel'|trans }}:</td>
             <td>
                 <strong>
                     {{ cashDocument.payer.name }}, {{ 'mbhbasebundle.view.pdftemplates.organization.inn'|trans }} {{ cashDocument.payer.inn }}, {{ 'mbhbasebundle.view.pdftemplates.organization.kpp'|trans }} {{ cashDocument.payer.kpp }}, {{ cashDocument.payer.index }}
-                    {{ cashDocument.payer.location }}, {{ 'mbhbasebundle.view.pdftemplates.organization.tel'|trans }} .: {{ cashDocument.payer.phone }}
+                    {{ cashDocument.payer.location }}, {{ 'mbhbasebundle.view.pdftemplates.organization.tel'|trans }}.: {{ cashDocument.payer.phone }}
                 </strong>
             </td>
         </tr>
@@ -80,9 +80,9 @@
         <thead>
         <tr>
             <th>№</th>
-            <th>{{ 'mbhbasebundle.view.pdftemplates.organization.tovary'|trans }} ({{ 'mbhbasebundle.view.pdftemplates.organization.raboty'|trans }} , {{ 'mbhbasebundle.view.pdftemplates.organization.uslugi'|trans }} )</th>
-            <th>{{ 'mbhbasebundle.view.pdftemplates.organization.kol'|trans }} -{{ 'mbhbasebundle.view.pdftemplates.organization.vo'|trans }} </th>
-            <th>{{ 'mbhbasebundle.view.pdftemplates.organization.yed'|trans }} .</th>
+            <th>{{ 'mbhbasebundle.view.pdftemplates.organization.tovary_raboty_uslugi'|trans }}</th>
+            <th>{{ 'mbhbasebundle.view.pdftemplates.organization.kol.vo'|trans }} </th>
+            <th>{{ 'mbhbasebundle.view.pdftemplates.organization.ed'|trans }}.</th>
             <th>{{ 'mbhbasebundle.view.pdftemplates.organization.tsena'|trans }} </th>
             <th>{{ 'mbhbasebundle.view.pdftemplates.organization.summa'|trans }} </th>
         </tr>
@@ -91,10 +91,10 @@
         <tr>
             <td style="text-align: center;vertical-align: top;font-size: 14px;font-size: 16px">1</td>
             <td style="max-width: 350px;font-size: 14px">
-                {{ 'mbhbasebundle.view.pdftemplates.organization.uslugiotelyaposchetu'|trans }} №{{ cashDocument.number }}. {{ 'mbhbasebundle.view.pdftemplates.organization.zakaz'|trans }} №{{ cashDocument.order.id }} {{ 'mbhbasebundle.view.pdftemplates.organization.ot'|trans }} {{ cashDocument.documentDate|date('d.m.Y') }} г.
+                {{ 'mbhbasebundle.view.pdftemplates.organization.uslugi_otela_po_schetu'|trans }} №{{ cashDocument.number }}. {{ 'mbhbasebundle.view.pdftemplates.organization.zakaz'|trans }} №{{ cashDocument.order.id }} {{ 'mbhbasebundle.view.pdftemplates.organization.ot'|trans }} {{ cashDocument.documentDate|date('d.m.Y') }} {{ 'mbhbasebundle.view.pdftemplates.organization.g'|trans }}.
             </td>
             <td>1</td>
-            <td>{{ 'mbhbasebundle.view.pdftemplates.organization.usl'|trans }} .</td>
+            <td>усл.</td>
             <td><div class="right">{{ cashDocument.total|number_format(2) }}</div></td>
             <td><div class="right">{{ cashDocument.total|number_format(2) }}</div></td>
         </tr>
@@ -104,7 +104,7 @@
     <table class="total-result-table">
         <tr>
             <td>
-                <div>{{ 'mbhbasebundle.view.pdftemplates.organization.itog'|trans }} :</div>
+                <div>{{ 'mbhbasebundle.view.pdftemplates.organization.itog'|trans }}:</div>
             </td>
             <td>
                 <div>{{ cashDocument.total|number_format(2) }}</div>
@@ -112,7 +112,7 @@
         </tr>
         <tr>
             <td>
-                <div>{{ 'mbhbasebundle.view.pdftemplates.organization.beznaloga'|trans }} ({{ 'mbhbasebundle.view.pdftemplates.organization.nds'|trans }} ):</div>
+                <div>{{ 'mbhbasebundle.view.pdftemplates.organization.bez_naloga'|trans }}:</div>
             </td>
             <td>
                 <div>-</div>
@@ -120,7 +120,7 @@
         </tr>
         <tr>
             <td>
-                <div style="white-space: nowrap;">{{ 'mbhbasebundle.view.pdftemplates.organization.vsegokoplate'|trans }} :</div>
+                <div style="white-space: nowrap;">{{ 'mbhbasebundle.view.pdftemplates.organization.vsego_k_oplate'|trans }}:</div>
             </td>
             <td>
                 <div>{{ cashDocument.total }}</div>
@@ -131,7 +131,7 @@
     <div style="clear: both"></div>
 
     <div class="conclusion">
-        <div>{{ 'mbhbasebundle.view.pdftemplates.organization.vsegonaimenovaniy'|trans }} 1, {{ 'mbhbasebundle.view.pdftemplates.organization.nasummu'|trans }} {{ cashDocument.total }} {{ currency().text }}</div>
+        <div>{{ 'mbhbasebundle.view.pdftemplates.organization.vsego_naimenovanii'|trans }} {{ cashDocument.total }} {{ currency().text }}</div>
         <strong>{{ cashDocument.total|num2str|capitalize }}</strong>
     </div>
 
@@ -139,7 +139,7 @@
 
     <div class="sign">
         <div style="width: 395px;" class="inline-block">
-            <strong>{{ 'mbhbasebundle.view.pdftemplates.organization.rukovoditelʹ'|trans }} </strong>
+            <strong>{{ 'mbhbasebundle.view.pdftemplates.organization.rukovoditel'|trans }}</strong>
             <div class="inline-block sign-field" style="width: 250px; position: absolute"><span style="visibility: hidden">%</span></div>
             <div class="inline-block sign-field right">{{ myOrganization.directorFio }}</div>
         </div>

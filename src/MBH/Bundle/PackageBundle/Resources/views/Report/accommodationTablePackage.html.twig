@@ -1,16 +1,15 @@
-<b>{{ 'mbhpackagebundle.view.report.accommodationtablepackage.zakaz'|trans }} :</b> #{{ data.doc.order }} {% if data.doc.order.isPaid %}
+<b>{{ 'report.accommodation_table_package.order_number'|trans}}:</b> #{{ data.doc.order }} {% if data.doc.order.isPaid %}
     <small class='text-success'><i class='fa fa-check'></i> {{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }}</small> {% else %}
     <small class='text-danger'><i class='fa fa-times'></i> {{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</small><br>
-<b>{{ 'mbhpackagebundle.view.report.accommodationtablepackage.daty'|trans }} :</b> {{ data.doc.begin|date('d.m.Y') }} - {{ data.doc.end|date('d.m.Y') }}<br>
-<b>{{ 'mbhpackagebundle.view.report.accommodationtablepackage.zayekhali'|trans }} :</b> {{ data.doc.isCheckIn ? 'mbhpackagebundle.view.report.accommodationtablepackage.da'|trans  : 'mbhpackagebundle.view.report.accommodationtablepackage.net'|trans  }}<br>
-<b>{{ 'mbhpackagebundle.view.report.accommodationtablepackage.vyyekhali'|trans }} :</b> {{ data.doc.isCheckOut ? 'mbhpackagebundle.view.report.accommodationtablepackage.da'|trans  : 'mbhpackagebundle.view.report.accommodationtablepackage.net'|trans  }}<br>
-<b>{{ 'mbhpackagebundle.view.report.accommodationtablepackage.gosti'|trans }} :</b> {{ data.doc.adults }}+{{ data.doc.children }}<br>
-<b>{{ 'mbhpackagebundle.view.report.accommodationtablepackage.stoimostʹ'|trans }} :</b> {{ data.doc.order.price }} {{ currency().text }}<br>
-<b>{{ 'mbhpackagebundle.view.report.accommodationtablepackage.dolg'|trans }} :</b> {{ data.doc.order.debt }} {{ currency().text }}<br>
+<b>{{ 'report.accommodation_table_package.dates'|trans}}:</b> {{ data.doc.begin|date('d.m.Y') }} - {{ data.doc.end|date('d.m.Y') }}<br>
+<b>{{ 'report.accommodation_table_package.is_arrived'|trans}}:</b> {{ data.doc.isCheckIn ? 'report.accommodation_table_package.yes'|trans : 'report.accommodation_table_package.no'|trans }}<br>
+<b>{{ 'report.accommodation_table_package.is_departured'|trans}}:</b> {{ data.doc.isCheckOut ? 'report.accommodation_table_package.yes'|trans : 'report.accommodation_table_package.no'|trans }}<br>
+<b>{{ 'report.accommodation_table_package.guests'|trans}}:</b> {{ data.doc.adults }}+{{ data.doc.children }}<br>
+<b>{{ 'report.accommodation_table_package.cost'|trans}}:</b> {{ data.doc.order.price }} {{ currency().text }}<br>
+<b>{{ 'report.accommodation_table_package.debt'|trans}}:</b> {{ data.doc.order.debt }} {{ currency().text }}<br>
 {% if data.doc.services is not empty %}
-    <b>{{ 'mbhpackagebundle.view.report.accommodationtablepackage.uslugi'|trans }} :</b>
+    <b>{{ 'report.accommodation_table_package.services'|trans}}:</b>
     {{ data.doc.services|join(', ') }}
 {% endif %}
-<div class='text-center'><small><a href='{{ path('package_edit', {'id': data.doc.id}) }}'>{{ 'mbhpackagebundle.view.report.accommodationtablepackage.pereytikzapisi'|trans }} </a></small></div>
+<div class='text-center'><small><a href='{{ path('package_edit', {'id': data.doc.id}) }}'>{{ 'report.accommodation_table_package.go_to_entry'|trans}}</a></small></div>
 
-                            

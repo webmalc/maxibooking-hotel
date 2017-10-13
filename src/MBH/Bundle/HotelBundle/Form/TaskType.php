@@ -2,19 +2,20 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * Class TaskType
@@ -29,11 +30,13 @@ class TaskType extends AbstractType
      */
     protected $dm;
 
-    public function __construct(DocumentManager $dm)
-    {
+    /** @var  Helper */
+    private $helper;
+
+    public function __construct(Helper $helper, DocumentManager $dm) {
+        $this->helper = $helper;
         $this->dm = $dm;
     }
-
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -47,14 +50,14 @@ class TaskType extends AbstractType
         /** @var Hotel $hotel */
         $hotel = $options['hotel'];
 
-
         $queryBuilderSelectedHotelOnly = function(DocumentRepository $repository) use($hotel) {
             $queryBuilder = $repository->createQueryBuilder();
             $queryBuilder->field('hotel.id')->equals($hotel->getId());
             return $queryBuilder;
         };
+
         $builder
-            ->add('type', 'document', [
+            ->add('type', DocumentType::class, [
                 'label' => 'form.task.type',
                 'group' => $generalGroup,
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
@@ -62,24 +65,25 @@ class TaskType extends AbstractType
                 'required' => true,
                 'query_builder' => $queryBuilderSelectedHotelOnly
             ])
-            ->add('priority', 'choice', [
+            ->add('priority',  InvertChoiceType::class, [
                 'label' => 'form.task.priority',
                 'group' => $generalGroup,
                 'choices' => $options['priorities'],
                 'required' => true,
                 'expanded' => true,
             ])
-            ->add('date', 'datetime', array(
+            ->add('date', DateTimeType::class, array(
                 'label' => 'form.task.date',
                 'html5' => false,
                 'group' => $generalGroup,
                 'required' => false,
+                'date_format' => 'dd.MM.yyyy',
                 'time_widget' => 'single_text',
                 'date_widget' => 'single_text',
                 //'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
             ));
         if ($options['scenario'] == TaskType::SCENARIO_NEW) {
-            $builder->add('housing', 'document', [
+            $builder->add('housing', DocumentType::class, [
                 'label' => 'form.task.housing',
                 'group' => $generalGroup,
                 'required' => false,
@@ -93,7 +97,7 @@ class TaskType extends AbstractType
                 }
             ]);
             $floors = $this->dm->getRepository('MBHHotelBundle:Room')->getFloorsByHotel($hotel);
-            $builder->add('floor', 'choice', [
+            $builder->add('floor',  InvertChoiceType::class, [
                 'label' => 'form.task.floor',
                 'group' => $generalGroup,
                 'required' => false,
@@ -101,10 +105,21 @@ class TaskType extends AbstractType
                 'choices' => array_combine($floors, $floors)
             ]);
 
-            $builder->add('rooms', 'document', [
+            $builder->add('rooms', DocumentType::class, [
                 'label' => 'form.task.rooms',
                 'group' => $generalGroup,
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',
+                'query_builder' => function(RoomRepository $repository) use ($hotel) {
+                    $qb = $repository->createQueryBuilder();
+                    $qb
+                        ->field('roomType.id')->in($this->getResolvedRoomTypeIds($hotel));
+
+                    return $qb;
+                },
+                'group_by' => function($room) {
+                    /** @var Room $room */
+                    return mb_substr($room->getRoomType(), 0, 50);
+                },
                 'required' => true,
                 'multiple' => true,
                 'mapped' => false,
@@ -117,16 +132,26 @@ class TaskType extends AbstractType
                 },
             ]);
         } elseif ($options['scenario'] == TaskType::SCENARIO_EDIT) {
-            $builder->add('room', 'document', [
+            $builder->add('room', DocumentType::class, [
                 'label' => 'form.task.room',
                 'group' => $generalGroup,
-                'group_by' => 'roomType',
+                'query_builder' => function(RoomRepository $repository) use ($hotel) {
+                    $qb = $repository->createQueryBuilder();
+                    $qb
+                        ->field('roomType.id')->in($this->getResolvedRoomTypeIds($hotel));
+
+                    return $qb;
+                },
+                'group_by' => function($room) {
+                    /** @var Room $room */
+                    return mb_substr($room->getRoomType(), 0, 50);
+                },
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',
                 'required' => true,
             ]);
         }
         $builder
-            ->add('userGroup', 'document', [
+            ->add('userGroup', DocumentType::class, [
                 'label' => 'form.task.roles',
                 'group' => 'form.task.group.assign',
                 //'multiple' => true,
@@ -135,18 +160,18 @@ class TaskType extends AbstractType
                 'required' => false,
                 'class' => Group::class
             ])
-            ->add('performer', 'document', [
+            ->add('performer', DocumentType::class, [
                 'label' => 'form.userType.users',
                 'group' => 'form.task.group.assign',
                 'class' => 'MBH\Bundle\UserBundle\Document\User',
                 'required' => false,
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextareaType::class, [
                 'label' => 'form.task.description',
                 'group' => 'form.task.group.settings',
                 'required' => false,
             ])
-            ->add('status', 'choice', [
+            ->add('status',  InvertChoiceType::class, [
                 'label' => 'form.task.status',
                 'group' => 'form.task.group.settings',
                 'required' => true,
@@ -154,6 +179,22 @@ class TaskType extends AbstractType
                 'expanded' => true,
             ])
         ;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return array
+     */
+    private function getResolvedRoomTypeIds(Hotel $hotel)
+    {
+        $qb = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder();
+        $qb
+            ->addOr($qb->expr()->field('deletedAt')->equals(null))
+            ->addOr($qb->expr()->field('deletedAt')->exists(false))
+            ->field('hotel.id')->equals($hotel->getId());
+        $resolvedRoomTypes = $qb->getQuery()->execute()->toArray();
+
+        return $this->helper->toIds($resolvedRoomTypes);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -168,7 +209,7 @@ class TaskType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_task';
     }

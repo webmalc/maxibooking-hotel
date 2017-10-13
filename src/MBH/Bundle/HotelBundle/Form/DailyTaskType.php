@@ -2,12 +2,13 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
-use MBH\Bundle\HotelBundle\Document\Hotel;
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class DailyTaskType
@@ -15,25 +16,21 @@ use Symfony\Component\Validator\Constraints\Length;
  */
 class DailyTaskType extends AbstractType
 {
-    /**
-     * @var Hotel
-     */
-    protected $hotel;
+    private $translator;
 
-    public function __construct(Hotel $hotel)
-    {
-        $this->hotel = $hotel;
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $hotel = $this->hotel;
+        $hotel = $options['hotel'];
         $queryBuilderFunction = function(TaskTypeRepository $repository) use($hotel) {
             return $repository->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
         };
 
         $builder
-            ->add('day', 'integer', [
+            ->add('day', IntegerType::class, [
                 'required' => true,
                 'attr' => [
                     'style' => 'width:60px',
@@ -42,15 +39,15 @@ class DailyTaskType extends AbstractType
                     'max' => 60
                 ],
             ])
-            ->add('taskType', 'document', [
+            ->add('taskType', DocumentType::class, [
                 'required' => true,
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
                 'group_by' => 'category',
                 'attr' => [
                     'style' => 'width:250px',
-                    'data-placeholder' => 'mbhhotelbundle.form.dailytasktype.vyberiteuslugu'
+                    'data-placeholder' => $this->translator->trans('mbhhotelbundle.form.dailytasktype.vyberite.uslugu')
                 ],
-                'empty_value' => '',
+                'placeholder' => '',
                 'query_builder' => $queryBuilderFunction
             ]);
     }
@@ -59,11 +56,12 @@ class DailyTaskType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\HotelBundle\Document\DailyTaskSetting',
+            'hotel' => null
         ]);
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotel_daily_task';
     }

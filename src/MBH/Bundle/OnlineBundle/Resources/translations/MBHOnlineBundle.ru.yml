@@ -6,6 +6,7 @@ views.api.form.nights_amount: 'Количество ночей'
 views.api.form.room_type: 'Тип номера'
 views.api.form.adults: Взрослые
 views.api.form.children: Дети
+views.api.form.children_ages.label: 'Возраста детей'
 views.api.form.find_room: 'Найти номер'
 views.api.form.online_reservation_system: 'система онлайн бронирования'
 views.api.getPaymentType.dates: 'Даты:'
@@ -24,20 +25,22 @@ views.api.getPaymentType.choose_other_rooms: 'Выбрать другие ном
 views.api.getPaymentType.reservate: Бронировать
 views.api.getPaymentType.reservation_error_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
 views.api.getResultsTable.hotel_rooms_for: 'Номера в отеле на'
-views.api.getResultsTable.room_type: 'Тип номера'
+views.api.getResultsTable.room_type: 'Тип размещения'
+views.api.getResultsTable.room_cache_count: 'В наличии'
 views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена
 views.api.getResultsTable.rooms_amount: Кол-во
-views.api.getResultsTable.room_description: 'описание номера'
-views.api.getResultsTable.room_price: 'цена за номер'
+views.api.getResultsTable.room_description: 'Описание номера'
+views.api.getResultsTable.room_price: 'Цена за номер'
 views.api.getResultsTable.hotel: Отель
 views.api.getResultsTable.service_type: 'Тип услуги'
 views.api.getResultsTable.amount: Количество
-views.api.getResultsTable.price_per: 'цена за'
-views.api.getResultsTable.day: день
+views.api.getResultsTable.price_per: 'Цена за'
+views.api.getResultsTable.day: День
 views.api.getResultsTable.rooms: 'Номера:'
 views.api.getResultsTable.services: 'Услуги:'
 views.api.getResultsTable.result: 'Итого:'
+views.api.getResultsTable.facilities: Удобства
 views.api.getResultsTable.continue: Продолжить
 views.api.getResultsTable.nothing_found_for_your_query: 'По вашему запросу ничего не найдено.'
 views.api.getUserForm.enter_data_to_continue: 'Заполните данные для продолжения'
@@ -52,6 +55,7 @@ views.api.getUserForm.check_in_time: 'Время заезда'
 views.api.getUserForm.check_out_time: 'Время отъезда'
 views.api.getUserForm.comment: Комментарий
 views.api.getUserForm.required_fields: '- поля обязательные для заполнения'
+views.api.getUserForm.personal_data_policies: 'С <a target="_blank" href="url">Политикой обработки персональных данных</a> ознакомлен'
 views.api.getUserForm.choose_other_rooms: 'Выбрать другие номера'
 views.api.getUserForm.continue: Продолжить
 views.api.getUserForm.reservation_error: 'Произошла ошибка во время бронирования.'
@@ -65,19 +69,35 @@ views.api.notification.phone: 'Телефон:'
 views.api.make_payment_for_order_id: 'Оплатить %total%. Номера заказа: %order_id%'
 views.api.tariffs.base_tariff: '(базовый тариф)'
 views.api.tariffs.tariffs_and_special_offers: 'Тарифы и спецпредложения'
-views.form.index.list: список
-views.form.index.edit: редактирование
-views.form.index.new: создание
+views.form.index.list: Список
+views.form.index.edit: Редактирование
+views.form.index.new: Создание
 views.form.index.settings: Настройки
 views.form.index.site_embed_code: 'Код для сайта'
+views.form.index.edit_templates: 'Тонкая настройка шаблона'
 views.form.index.settings_required: 'Необходимо заполнить основные настройки!'
 views.form.index.site_embed_form_code: 'Код формы для вставки на сайт'
 views.form.index.to_form_place: 'На место для формы:'
 views.form.index.before_closing_tag: 'Перед закрывающим тегом'
 views.form.index.search_page_embed_code: 'Код страницы поиска для вставки на сайт:'
 views.form.index.to_results_place: 'На место для результатов:'
-views.form.layout.online_form: 'Онлайн форма'
+views.form.layout.online_form: 'Онлайн модуль'
 views.form.layout.online_polls: Оценки
 views.form.layout.invite: 'Визовое приглашение'
 online_form.notification: 'Оформлены новые брони через онлайн форму.'
 views.form.period_is_not_filled: 'Не выбраны даты заезда и выезда!'
+views.api.getResultsTable.noch: Ночь
+views.api.getResultsTable.nochi: Ночи
+views.api.getResultsTable.nochei: Ночей
+views.form.index.settings_in_quotes: настройки
+views.form.index.site_embed_code: Код для сайта
+views.form.index.settings_required: "Необходимо заполнить основные настройки!"
+views.form.index.site_embed_form_code: Код формы поиска
+views.form.index.to_form_place: "На место для формы:"
+views.form.index.before_closing_tag: Перед закрывающим тегом
+views.form.index.search_page_embed_code: "Код формы результатов поиска:"
+views.form.index.to_results_place: "На место для результатов:"
+views.form.layout.online_polls: "Оценки"
+views.form.layout.invite: "Визовое приглашение"
+online_form.notification: "Оформлены новые брони через онлайн форму."
+views.form.period_is_not_filled: Не выбраны даты заезда и выезда!

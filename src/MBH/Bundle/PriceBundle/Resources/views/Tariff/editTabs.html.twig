@@ -1,24 +1,24 @@
 <ul class="nav nav-tabs" role="tablist">
     <li {{ active == 1 ? 'class="active"' : '' }}>
         <a href="{{ path('tariff_edit', {'id': entity.id}) }}">
-            <i class="fa fa-info-circle"></i> {{ 'mbhpricebundle.view.tariff.edittabs.obshchayainformatsiya'|trans }} 
+            <i class="fa fa-info-circle"></i> {{ 'pricebundle.resources.views.public_info'|trans }}
         </a>
     </li>
     <li {{ active == 2 ? 'class="active"' : '' }}>
         <a href="{{ path('tariff_promotions_edit', {'id': entity.id}) }}">
-            <i class="fa fa-bookmark"></i> {{ 'mbhpricebundle.view.tariff.edittabs.aktsii'|trans }} 
+            <i class="fa fa-bookmark"></i> {{ 'pricebundle.resources.views.actions'|trans }}
         </a>
     </li>
 
     <li {{ active == 3 ? 'class="active"' : '' }}>
         <a href="{{ path('tariff_services_edit', {'id': entity.id}) }}">
-            <i class="fa fa-plug"></i> {{ 'mbhpricebundle.view.tariff.edittabs.uslugi'|trans }} 
+            <i class="fa fa-plug"></i> {{ 'pricebundle.resources.views.services'|trans }}
         </a>
     </li>
     {% if entity.parent %}
     <li {{ active == 4 ? 'class="active"' : '' }}>
         <a href="{{ path('tariff_inheritance_edit', {'id': entity.id}) }}">
-            <i class="fa fa-arrow-circle-right"></i> {{ 'mbhpricebundle.view.tariff.edittabs.nasledovaniye'|trans }} 
+            <i class="fa fa-arrow-circle-right"></i> {{ 'pricebundle.resources.views.inheritage'|trans }}
         </a>
     </li>
     {% endif %}

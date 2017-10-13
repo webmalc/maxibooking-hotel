@@ -2,21 +2,21 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="PackageSource")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
- * @MongoDBUnique(fields={"title", "fullTitle"}, message="mbhpackagebundle.document.packagesource.takoy.istochnik.uzhe.sushchestvuyet")
+ * @MongoDBUnique(fields={"title", "fullTitle", "code"}, message="mbhpackagebundle.document.packagesource.takoy.istochnik.uzhe.sushchestvuyet")
  */
 class PackageSource extends Base
 {
@@ -39,7 +39,7 @@ class PackageSource extends Base
     use BlameableDocument;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Order", inversedBy="source")
+     * @ODM\ReferenceMany(targetDocument="Order", mappedBy="source")
      */
     protected $orders;
 
@@ -70,6 +70,59 @@ class PackageSource extends Base
      */
     protected $title;
 
+    /**
+     * @var boolean
+     * @ODM\Field(type="boolean", name="system")
+     * @Assert\NotNull()
+     */
+    protected $system;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string", name="code")
+     */
+    protected $code;
+
+    public function __construct()
+    {
+       $this->setSystem(false);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSystem()
+    {
+        return $this->system;
+    }
+
+    /**
+     * @param mixed $system
+     * @return PackageSource
+     */
+    public function setSystem($system)
+    {
+        $this->system = $system;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     * @return PackageSource
+     */
+    public function setCode(string $code): PackageSource
+    {
+        $this->code = $code;
+        return $this;
+    }
     /**
      * Set fullTitle
      *
@@ -128,11 +181,6 @@ class PackageSource extends Base
         return $this->fullTitle;
     }
 
-    public function __construct()
-    {
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
     /**
      * Add order
      *
@@ -152,6 +200,7 @@ class PackageSource extends Base
     {
         $this->orders->removeElement($order);
     }
+
 
     /**
      * Get orders

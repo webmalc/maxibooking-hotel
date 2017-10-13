@@ -1,11 +1,11 @@
 {% extends 'MBHRestaurantBundle:Ingredient:layout.html.twig' %}
 
-{% set small_title = 'mbhrestaurantbundle.view.ingredient.editingredient.redaktirovaniyeingrediyentavkategorii'|trans ~"<" ~ entry.category.name ~ ">" %}
+{% set small_title = 'restaurant.ingredient.editIngredient.small_title'|trans({'%categoryName%' : entry.category.name}) %}
 {% set layout = 'box' %}
 
 {% block content %}
 
-    {{ form_start(form, {'action': path('restaurant_ingredient_update', {'id': entry.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('restaurant_ingredient_update', {'id': entry.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry, 'delete_route': 'restaurant_ingredient_delete', 'delete_role':'ROLE_RESTAURANT_INGREDIENT_DELETE' } %}
     {{ form_end(form) }}

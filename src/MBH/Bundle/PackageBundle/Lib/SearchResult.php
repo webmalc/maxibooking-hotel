@@ -2,10 +2,11 @@
 
 namespace MBH\Bundle\PackageBundle\Lib;
 
-use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class SearchResult
 {
@@ -34,6 +35,11 @@ class SearchResult
      * @var RoomType
      */
     protected $roomType;
+
+    /**
+     * @var Room
+     */
+    protected $virtualRoom;
 
     /**
      * @var Tariff 
@@ -82,6 +88,9 @@ class SearchResult
     protected $forceBooking = false;
 
     protected $infants = 0;
+
+    /** @var string */
+    protected $queryId;
 
     /**
      * @return \DateTime
@@ -494,4 +503,43 @@ class SearchResult
 
         return $tariffs;
     }
+
+    /**
+     * @return Room
+     */
+    public function getVirtualRoom()
+    {
+        return $this->virtualRoom;
+    }
+
+    /**
+     * @param Room $virtualRoom
+     * @return SearchResult
+     */
+    public function setVirtualRoom(Room $virtualRoom): SearchResult
+    {
+        $this->virtualRoom = $virtualRoom;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQueryId(): ?string
+    {
+        return $this->queryId;
+    }
+
+    /**
+     * @param mixed $queryId
+     * @return SearchResult
+     */
+    public function setQueryId(string $queryId)
+    {
+        $this->queryId = $queryId;
+
+        return $this;
+    }
+
+
 }

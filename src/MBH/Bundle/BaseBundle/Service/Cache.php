@@ -2,14 +2,22 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
-use Lsw\MemcacheBundle\Cache\MemcacheInterface;
+use MBH\Bundle\BaseBundle\Document\CacheItem;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bridge\Monolog\Logger;
+use MBH\Bundle\BaseBundle\Service\Mongo;
 
 /**
  * Helper service
  */
 class Cache
 {
-    const LIFETIME = 60 * 60 * 24;
+    /**
+     * @var int
+     */
+    private $lifetime;
 
     /**
      * @var string
@@ -22,34 +30,113 @@ class Cache
     private $isEnabled;
 
     /**
-     * @var \Memcached
+     * @var \RedisAdapter
      */
-    private $memcached;
+    private $cache;
 
-    public function __construct(array $params)
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectManager
+     */
+    private $documentManager;
+
+    /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    /**
+     * @var Mongo
+     */
+    private $mongo;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    public function __construct(array $params, string $redisUrl, ManagerRegistry $documentManager, ValidatorInterface $validator, Logger $logger, Mongo $mongo)
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
-        $this->memcached = new \Memcached();
-        $this->memcached->addServer('localhost', 11211);;
+        $this->lifetime = $params['lifetime'];
+
+        if (!$this->lifetime) {
+            throw new \InvalidArgumentException('lifetime == 0');
+        }
+        $this->mongo = $mongo;
+        $redis = RedisAdapter::createConnection($redisUrl);
+        $this->cache = new RedisAdapter($redis);
+        $this->documentManager = $documentManager->getManager();
+        $this->validator = $validator;
+        if (!empty($params['logs'])) {
+            $this->logger = $logger;
+        }
+    }
+
+    /**
+     * clear expired CacheItems from database
+     *
+     * @return int
+     */
+    public function clearExpiredItems(): int
+    {
+        return $this->documentManager
+            ->getRepository('MBHBaseBundle:CacheItem')->clearExpiredItems();
     }
 
     /**
      * @param string|null $prefix
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param bool $all
+     * @return int
      */
-    public function clear(string $prefix = null)
+    public function clear(string $prefix = null, \DateTime $begin = null, \DateTime $end = null, bool $all = false): int
     {
-        $memcached = $this->memcached;
-
+        if (!$this->isEnabled) {
+            return 0;
+        }
+        $repo = $this->documentManager->getRepository('MBHBaseBundle:CacheItem');
+        if ($all) {
+            $this->cache->clear();
+            $repo->deleteByPrefix('');
+            return 0;
+        }
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
-        $keys = array_filter($memcached->getAllKeys() ? $memcached->getAllKeys() : [], function ($val) use ($prefix) {
-            $length = strlen($prefix);
-            return (substr($val, 0, $length) === $prefix);
-        });
 
-        array_walk($keys, function ($val) {
-            $this->memcached->delete($val);
-        });
+        $keys = $this->documentManager->getRepository('MBHBaseBundle:CacheItem')
+            ->getKeysByPrefix($prefix, $begin, $end);
+        $this->cache->deleteItems($keys);
+        if ($this->logger) {
+            $this->logger->info('DEL: ' . implode('', $keys));
+        }
+
+        return $repo->deleteByPrefix($prefix, $begin, $end);
+    }
+
+    /**
+     * @param array $keys
+     * @return string
+     */
+    public function generateArgsString(array $keys): string
+    {
+        $hash = '';
+
+        foreach ($keys as $key) {
+            if ($key instanceof \DateTime) {
+                $hash .= '_' . $key->format('d.m.Y');
+            } elseif (is_object($key) && method_exists($key, 'getId')) {
+                $hash .= '_' . $key->getId();
+            } elseif (is_array($key)) {
+                $hash .= '_' . implode('.', $key);
+            } elseif (is_object($key) && !method_exists($key, '__toString')) {
+                continue;
+            } else {
+                $hash .= '_' . (string) $key;
+            }
+        }
+
+        return $hash;
     }
 
     /**
@@ -60,28 +147,8 @@ class Cache
     public function generateKey(string $prefix, array $keys): string
     {
         $keyString = $this->globalPrefix . '_' . $prefix;
-        $hash = '';
 
-        foreach ($keys as $key) {
-            if ($key instanceof \DateTime) {
-                $hash .= '_' . $key->format('d.m.Y');
-            }
-            elseif (is_object($key) && method_exists($key, 'getId')) {
-                $hash .= '_' . $key->getId();
-            }
-            elseif (is_array($key)) {
-                $hash .= '_' . implode('.', $key);
-            }
-            elseif (is_object($key) && !method_exists($key, '__toString')) {
-                continue;
-            }
-            else {
-                $hash .= '_' . (string) $key;
-            }
-
-        }
-
-        return $keyString . '_' . md5($hash);
+        return $keyString . '_' . md5($this->generateArgsString($keys));
     }
 
     /**
@@ -96,7 +163,33 @@ class Cache
             return $this;
         }
 
-        $this->memcached->set($this->generateKey($prefix, $keys), $value, self::LIFETIME);
+        $key = $this->generateKey($prefix, $keys);
+        $item = $this->cache->getItem($this->generateKey($prefix, $keys));
+        $item->set($value)->expiresAfter($this->lifetime * 24 * 60 * 60);
+        $this->cache->save($item);
+
+        if ($this->logger) {
+            $this->logger->info(
+                'SET: ' . $key . '__' .$this->generateArgsString($keys) .
+                ' - LIFETIME: ' . $this->lifetime
+            );
+        }
+        $dates = array_values(array_filter($keys, function ($entry) {
+            return $entry instanceof \DateTime;
+        }));
+
+        $data = ['key' => $key];
+
+        if (isset($dates[0])) {
+            $data['begin'] = new \MongoDate($dates[0]->getTimestamp());
+        }
+        if (isset($dates[1])) {
+            $data['end'] = new \MongoDate($dates[1]->getTimestamp());
+        }
+        $expiresAt = new \DateTime('+' . $this->lifetime . ' days');
+        $data['lifetime'] = new \MongoDate($expiresAt->getTimestamp());
+
+        $this->mongo->insert('CacheItem', $data);
 
         return $this;
     }
@@ -112,6 +205,7 @@ class Cache
             return false;
         }
 
-        return $this->memcached->get($this->generateKey($prefix, $keys));
+        $item = $this->cache->getItem($this->generateKey($prefix, $keys));
+        return $item->isHit() ? $item->get() : false;
     }
 }

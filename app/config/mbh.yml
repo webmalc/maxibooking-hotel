@@ -1,20 +1,22 @@
 parameters:
     #currencies
-    mbh.currency.ratio.fix: %currency_ratio_fix%
     mbh.currency.data:
       rub: {text: 'руб.', small: 'коп.', icon: 'fa fa-ruble'}
       eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
       uah: {text: 'грн.', small: 'коп.', icon: 'fa fa-money'}
       kzt: {text: 'тенге', small: 'тиын', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
+      usd: {text: '$', small: '$', icon: 'fa fa-usd'}
 
-    #timezone. default - deafult server timezone
-    mbh.timezone: "%mbh_timezone%"
+    # ReCaptcha
+    mbh.recaptcha:
+      site: '6Lev6AYUAAAAADL-WFxyHoaaGfya4uFBCUh09FWx'
+      secret: '6Lev6AYUAAAAAIk51IMnRdGS4Im_-1h3pk-cM87a'
 
     mbh.weekdays: {1: 'Понедельник', 2: 'Вторник', 3: 'Среда', 4: 'Четверг', 5: 'Пятница', 6: 'Суббота', 0: 'Воскресенье'}
 
     mbh.mongodb:
-      url: "%mongodb_url%"
+      url: "mongodb://%mongodb_host%:%mongodb_port%/%mongodb_database%"
       db : "%mongodb_database%"
 
     mbh.environment: "%mbh_environment%"
@@ -154,11 +156,8 @@ parameters:
 
     #mbhs
     mbh.mbhs:
-      mbhs: 'aHR0cDovL21iaHMubWF4aWJvb2tpbmcucnUv'
+      mbhs: 'aHR0cHM6Ly9tYmhzLm1heGlib29raW5nLnJ1Lw=='
       key: '%mbhs_key%'
-
-    #mbh sources
-    mbh.default.sources: ['Он-лайн бронирование', 'ВашОтель.ру', 'Постоянный клиент', 'Рекомендация знакомых']
 
     #mbh services
     mbh.services:
@@ -171,23 +170,15 @@ parameters:
     #mailer
     mbh.mailer:
       fromText: 'MaxiBooking'
-      fromMail:  %from_email%
+      fromMail:  "%from_email%"
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
     #параметры онлайн формы
     mbh.online.form:
-          sites: %online_form_sites%
-          packages_max: 5
           messages: true
-          form:
-            width: '300px'
-            height: 'auto'
-          result:
-            width: 'auto'
-            height: 'auto'
-            url: %online_form_result_url%
           payment_types:
+            by_receipt: 'Оплата по счету через банк'
             in_hotel: 'Оплата при заселении'
             online_full: 'Онлайн оплата (100%)'
             online_first_day: 'Онлайн оплата (одни сутки)'
@@ -200,8 +191,25 @@ parameters:
       payanyway: 'PayAnyWay'
       uniteller: 'Uniteller'
       rbk: 'Rbk'
+      paypal: 'PayPal'
     mbh.payment_systems.default: uniteller
-    mbh.payment_systems.change: %mbh_payment_systems_change%
+    mbh.payment_systems.change: "%mbh_payment_systems_change%"
+
+    mbh.taxation:
+      rate_codes:
+        -1: не облагается НДС
+        0: облагается НДС по ставке 0%
+        10: облагается НДС по ставке 10%
+        18: облагается НДС по ставке 18%
+        110: облагается НДС по ставке 10/110
+        118: облагается НДС по ставке 18/118
+      system_codes:
+        0: Общая система налогообложения
+        1: Упрощенная система налогообложения (Доход)
+        2: Упрощенная СН (Доход минус Расход)
+        3: Единый налог на вмененный доход
+        4: Единый сельскохозяйственный налог
+        5: Патентная система налогообложения
 
     #параметры Channel manager
     mbh.channelmanager.services:
@@ -217,8 +225,8 @@ parameters:
         ostrovok:
           title: 'Ostrovok'
           service: 'mbh.channelmanager.ostrovok'
-          username: 722ac50470d8af33d509c069ccb83443
-          password: edfdfba3f6902eb63aa254935e9a8a36
+          username: 59a0ed03e26016ab59a3fe1cfdeb9479
+          password: 1b9952573d01aef185ca3edc17432aab
         myallocator:
           title: 'MyAllocator'
           service: 'mbh.channelmanager.myallocator'
@@ -226,6 +234,17 @@ parameters:
           api_password: VCuMhanjdxiC
           vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
+        expedia:
+          title: 'Expedia'
+          service: 'mbh.channelmanager.expedia'
+        hundred_one_hotels:
+          title: '101 Отель'
+          service: 'mbh.channelmanager.hundred_one_hotels'
+        oktogo:
+          title: 'Oktogo'
+          service: 'mbh.channelmanager.oktogo'
+          api_username: .maxiBooking_api
+          api_password: qdcmBz9K
 
     #параметры логов
     mbh.logs.max: 100
@@ -256,13 +275,6 @@ parameters:
         humanitarian: Гуманитарная
         other: Другая
 
-    #Время заезда/выезда по умолчанию
-    mbh.package.arrival.time: %mbh_package_arrival_time%
-    mbh.package.departure.time: %mbh_package_departure_time%
-    
-    #Просроченные брони
-    mbh.package.notpaid.time: '%mbh_package_notpaid_time%'
-
     #Цели приезда
     mbh.package.statuses:
         offline: { title: "Обычная", class: "info", icon: "fa fa-paper-plane-o"}
@@ -278,9 +290,9 @@ parameters:
 
     #Приоритет задач
     mbh.tasktype.priority:
-        0: low
-        1: average
-        2: high
+        1: low
+        2: average
+        3: high
 
     #Типы документов
     mbh.order.document.types:
@@ -351,4 +363,10 @@ parameters:
         in: "Приход"
         out: "Расход"
 
+    #Указаны идентификаторы для переводов. Переводы хранятся в HotelBundle
+    mbh.smoking_policy:
+        47:	form.hotelExtendedType.all_rooms_non_smoking
+        198: form.hotelExtendedType.non_smoking_room
+        268: form.hotelExtendedType.all_public_areas_non_smoking
+        900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 

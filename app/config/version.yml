@@ -1,2 +1,4 @@
 parameters:
-    mbh.version: 1.1.1
+    mbh.version: '2.4.0'
+
+

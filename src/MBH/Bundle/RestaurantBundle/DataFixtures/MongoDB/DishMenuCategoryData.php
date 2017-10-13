@@ -8,13 +8,16 @@
 
 namespace MBH\Bundle\RestaurantBundle\DataFixtures\MongoDB;
 
-
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class DishMenuCategoryData implements FixtureInterface
+class DishMenuCategoryData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
 
     public function load(ObjectManager $manager)
     {
@@ -23,8 +26,9 @@ class DishMenuCategoryData implements FixtureInterface
         if ($hotels) {
             foreach ($hotels as $hotel) {
 
-                foreach ($this->getCategories() as $categoryFullTitle) {
-                    if ($manager->getRepository('MBHRestaurantBundle:DishMenuCategory')->findOneBy(['fullTitle'=>$categoryFullTitle])) {
+                foreach ($this->getCategories() as $categoryFullTitleId) {
+                    $categoryFullTitle = $this->container->get('translator')->trans($categoryFullTitleId);
+                    if ($manager->getRepository('MBHRestaurantBundle:DishMenuCategory')->findOneBy(['fullTitle' => $categoryFullTitle])) {
                         continue;
                     }
 
@@ -43,12 +47,17 @@ class DishMenuCategoryData implements FixtureInterface
     private function getCategories(): array
     {
         return [
-            'Горячие блюда',
-            'Напитки',
-            'Салаты',
-            'Бар',
-            'Хлеб'
+            'fixtures.dish_menu_category_data.categories.hot_dishes',
+            'fixtures.dish_menu_category_data.categories.beverages',
+            'fixtures.dish_menu_category_data.categories.salads',
+            'fixtures.dish_menu_category_data.categories.bar',
+            'fixtures.dish_menu_category_data.categories.bread'
         ];
+    }
+
+    public function getOrder()
+    {
+        return 9995;
     }
 
 }

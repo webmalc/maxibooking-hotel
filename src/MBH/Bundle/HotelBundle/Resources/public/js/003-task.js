@@ -1,50 +1,84 @@
-/*global window, document, $, Routing, console */
+/*global window, document, $, Routing, console, deleteLink */
 $(document).ready(function () {
     'use strict';
     var $taskTable = $('#task-table'),
         $taskTableFilterForm = $('#task-table-filter'),
         processing = false,
         columns = [
-            {"name": "number", "class": 'text-center'},
-            {"name": "status", "class": 'text-center'},
+            {"name": "id", "class": "text-center"},
+            {"name": "status", "class": "text-center"},
             {"name": "task", "bSortable": false},
-            {"name": "priority", "class": 'text-center'},
+            {"name": "priority", "class": "text-center"},
             {"name": "room", "bSortable": false},
             {"name": "assign", "bSortable": false},
-            {"name": "period"},
+            {"name": "period", "bSortable": false},
             {"name": "createdAt"},
             {"bSortable": false}
-        ];
-    var ajax = {
-        "url": Routing.generate('task_json'),
-        "method": "POST",
-        "beforeSend": function () {
-            processing = true;
+        ],
+        ajax = {
+            "url": Routing.generate("task_json"),
+            "method": "POST",
+            "beforeSend": function () {
+                processing = true;
+            },
+            "data": function (data) {
+                data = $.extend({}, data, $taskTableFilterForm.serializeObject());
+                return data;
+            }
         },
-        "data": function (data) {
-            data = $taskTableFilterForm.serializeObject();
-            return data;
-        }
-    };
-    var dataTableOptions = {
-        "processing": true,
-        "serverSide": true,
-        "ordering": true,
-        "searching": false,
-        "ajax": ajax,
-        "aoColumns": columns,
-        "drawCallback": function (settings) {
-            processing = false;
-            $taskTable.find('tr a[data-row-class]').each(function () {
-                var $this = $(this),
-                    rowClass = $this.data('row-class');
+        customize = function ( win ) {
+            var table = win.content[1].table.body;
+            for(var i = 0; i<table.length; i++)
+            {
+                //getting date substring
+                if (i>0) {
+                    var dateString = table[i][7].text;
+                    var index = dateString.indexOf(Translator.trans("views.task.index.before"));
+                    table[i][7].text = dateString.substr(index,100);
+                }
+                //removal period column
+                table[i].splice(6, 1);
+            }
+        },
+        buttons = [
+        {
+            extend: 'excel',
+            text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
+            className: 'btn btn-default btn-sm'
+        },
+        {
+            extend: 'pdf',
+            exportOptions: {
+                stripNewlines: true
+            },
+            customize: customize,
+            text: '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
+            className: 'btn btn-default btn-sm'
+        }],
 
-                $this.closest('tr').addClass(rowClass);
-            });
-        },
-        "order": [[7, "desc"]]
-    };
+        dataTableOptions = {
+            dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            "searching": false,
+            "buttons": buttons,
+            "ajax": ajax,
+            "aoColumns": columns,
+            "drawCallback": function (settings) {
+                processing = false;
+                $taskTable.find('tr a[data-row-class]').each(function () {
+                    var $this = $(this),
+                        rowClass = $this.data('row-class');
+
+                    $this.closest('tr').addClass(rowClass);
+                });
+                deleteLink();
+            },
+            "order": [[7, "desc"]]
+        };
     $taskTable.dataTable(dataTableOptions);
+
 
     var updateTaskTable = function () {
         if (!processing) {
@@ -72,8 +106,7 @@ $(document).ready(function () {
     var $housingSelect = $('#mbh_bundle_hotelbundle_task_housing'),
         $floorSelect = $('#mbh_bundle_hotelbundle_task_floor'),
         $roomsSelect = $('#mbh_bundle_hotelbundle_task_rooms'),
-        resetRoomsSelectHtml = $roomsSelect.html()
-    ;
+        resetRoomsSelectHtml = $roomsSelect.html();
 
     //var firstCall = true;
     var changeHousingAndFloor = function (e) {
@@ -82,23 +115,23 @@ $(document).ready(function () {
         }
         $roomsSelect.val('');
         /*if(!firstCall) {
-            roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');
-        }*/
+         roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');
+         }*/
         var housing = $housingSelect.val(),
             floor = $floorSelect.val()
             //$roomsSelectHtml = $('<select>' + roomsSelectHtml + '</select>')
-        ;
+            ;
 
         /*$roomsSelectHtml.find('option').map(function() {
-            var isChecked = (!housing|| this.getAttribute("data-housing") == housing)
-                && (!floor || this.getAttribute("data-floor") == floor);
-            if(!isChecked)
-                $(this).remove();
-        });
-        var newHtml = $roomsSelectHtml.html();*/
+         var isChecked = (!housing|| this.getAttribute("data-housing") == housing)
+         && (!floor || this.getAttribute("data-floor") == floor);
+         if(!isChecked)
+         $(this).remove();
+         });
+         var newHtml = $roomsSelectHtml.html();*/
 
-        $roomsSelect.mbhSelect2OptionsFilter(function(){
-            return (!housing|| this.getAttribute("data-housing") == housing)
+        $roomsSelect.mbhSelect2OptionsFilter(function () {
+            return (!housing || this.getAttribute("data-housing") == housing)
                 && (!floor || this.getAttribute("data-floor") == floor);
         }, resetRoomsSelectHtml);
 
@@ -112,17 +145,15 @@ $(document).ready(function () {
     changeHousingAndFloor();
     $roomsSelect.parent().append(
         '<div class="btn-group pull-right" style="margin-top: 3px" role="group">' +
-        '<div class="btn btn-xs btn-default clickable" id="select-all-rooms">Выбрать все</div>' +
-        '<div class="btn btn-xs btn-default clickable" id="clear-rooms">Очистить</div>' +
+        '<div class="btn btn-xs btn-default clickable" id="select-all-rooms">'+ Translator.trans("003-task.chose_all") +'</div>' +
+        '<div class="btn btn-xs btn-default clickable" id="clear-rooms">'+ Translator.trans("003-task.clear") +'</div>' +
         '<div>'
     );
     $('#select-all-rooms').on('click', function () {
-        console.log('all');
         $roomsSelect.find("option").prop("selected", "selected");
         $roomsSelect.trigger("change");
     });
     $('#clear-rooms').on('click', function () {
-        console.log('clear');
         $roomsSelect.select2('val', null);
     });
 
@@ -146,14 +177,14 @@ $(document).ready(function () {
                 var status,
                     buttonClass,
                     buttonTitle;
-                if (response.status == 'Открыта') {
+                if (response.status === 'open') {
                     status = 'process';
                     buttonClass = 'btn-primary';
-                    buttonTitle = 'Взять в работу';
+                    buttonTitle = Translator.trans("003-task.take_to_work");
                 } else {
                     status = 'closed';
                     buttonClass = 'btn-success';
-                    buttonTitle = 'Завершить';
+                    buttonTitle = Translator.trans("003-task.complete");
                 }
 
                 $button.removeClass('btn-primary btn-success').addClass(buttonClass);
@@ -163,7 +194,7 @@ $(document).ready(function () {
                 $taskInfoModal.modal('show');
             }
         });
-    }
+    };
 
     $ownedTaskTable.find('tr').on('click', function (e) {
         if (e.target.tagName != 'A' && $(e.target.tagName).closest('a').length == 0) {
@@ -178,7 +209,7 @@ $(document).ready(function () {
         e.preventDefault();
         var id = $(this).closest('tr').data('id');
         showTaskModal(id);
-    })
+    });
 });
 
 

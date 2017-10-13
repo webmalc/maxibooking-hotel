@@ -6,10 +6,19 @@ parameters:
   mailer_user: robot@example.com
   mailer_password: password
   from_email: robot@example.com
+  mailer_encryption: ssl
 
   #MongoBD
-  mongodb_url: 'mongodb://mbh:password@localhost:27017/mbh'
+  mongodb_host: mbh-mongo
+  mongodb_port: 27017
   mongodb_database: mbh
+
+  #Rabbitmq
+  rabbitmq_user: 'rabbitmq'
+  rabbitmq_password: 'rabbitmq'
+  rabbitmq_host: 'mbh-rabbitmq'
+  rabbitmq_vhost: '/'
+  rabbitmq_port: '5672'
 
   #Security
   secret: mySyperSecretKeyForSymfony
@@ -21,37 +30,37 @@ parameters:
   locale.currency: rub
   debug_toolbar: true
   debug_redirects: false
-  use_assetic_controller: true
+  use_assetic_controller: false
   router.request_context.host: 'example.com'
   router.request_context.scheme: http
   router.request_context.base_url: null
-  mbh_timezone: 'default'
-
-  #Packages
-  mbh_package_arrival_time: 12
-  mbh_package_departure_time: 14
-  mbh_package_notpaid_time: '-5 days'
-
-  #Mailer
-  mailer_user_arrival_links:
-    about: 'http://example.com/'
-    rooms: 'http://example.com/'
-    map: 'http://example.com/'
-    contacts: 'http://example.com/'
-    poll: 'http://example.com'
 
   #Cash
   mbh_payment_systems_change: true
-  currency_ratio_fix: 1.015
 
-  #Online form
-  online_form_sites: ['http://example.com', 'http://example.com']
-  online_form_result_url: 'http://example.com/results/'
+  #Redis
+  mbh_redis: 'redis://mbh-redis' 
 
   #Cache
   mbh_cache:
-    is_enabled: true
+    is_enabled: false
     prefix: mbh
+    lifetime: 7
+    logs: false
+    search:
+      months: 6
+      max_duration: 21
+      min_duration: 3
+
+  wkhtmltopdf_path: '/usr/local/bin/wkhtmltopdf'
 
   mbh_modules:
     tasks: true
+
+  #client name for env
+  client: ''
+
+
+  #mongodb_ssl
+  mongodb_ssl: false
+  mbh_dynamic_sale_period: 90

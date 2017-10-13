@@ -3,15 +3,14 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\HotelBundle\Document\TaskTypeRepository;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
 use MBH\Bundle\HotelBundle\Form\TaskTypeCategoryType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**
@@ -23,19 +22,20 @@ class TaskTypeCategoryController extends Controller
 {
     /**
      * @Route("/new", name="task_type_category_new")
-     * @Method({"GET","PUT"})
+     * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_TASK_TYPE_CATEGORY_NEW')")
      * @Template()
      */
     public function newAction(Request $request)
     {
         $entity = new TaskTypeCategory();
-        $form = $this->createForm(new TaskTypeCategoryType(), $entity, [
-            'method' => Request::METHOD_PUT
+        $form = $this->createForm(TaskTypeCategoryType::class, $entity, [
+            'method' => Request::METHOD_POST
         ]);
 
         if($form->handleRequest($request)->isValid()){
             $entity->setIsSystem(false);
+            $entity->setHotel($this->hotel);
             $this->dm->persist($entity);
             $this->dm->flush();
 
@@ -63,10 +63,10 @@ class TaskTypeCategoryController extends Controller
      */
     public function editAction(TaskTypeCategory $entity, Request $request)
     {
-        $form = $this->createForm(new TaskTypeCategoryType($this->dm), $entity, []);
+        $form = $this->createForm(TaskTypeCategoryType::class, $entity, []);
 
         if($request->isMethod(Request::METHOD_POST)){
-            if($form->submit($request)->isValid()){
+            if($form->handleRequest($request)->isValid()){
                 //$entity->setIsSystem(false);
                 $this->dm->persist($entity);
                 $this->dm->flush();

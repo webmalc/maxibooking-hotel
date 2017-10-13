@@ -2,10 +2,9 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
-use MBH\Bundle\BaseBundle\MBHBaseBundle;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
@@ -44,7 +43,14 @@ class HotelSelector
 
         // Is admin?
         $token = new UsernamePasswordToken($user, 'none', 'none', $user->getRoles());
-        if ($this->container->get('security.access.decision_manager')->decide($token, array('ROLE_ADMIN'))) {
+
+        if ($this->container->get('kernel')->getEnvironment() == 'prod' && $this->container->has('security.access.decision_manager')) {
+            $decision_manager = $this->container->get('security.access.decision_manager');
+        } else {
+            $decision_manager = $this->container->get('debug.security.access.decision_manager');
+        }
+
+        if ($decision_manager->decide($token, array('ROLE_ADMIN'))) {
             return true;
         }
 

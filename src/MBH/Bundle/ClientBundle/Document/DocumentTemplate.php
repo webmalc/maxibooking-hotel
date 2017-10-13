@@ -3,15 +3,15 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 
 /**
@@ -85,10 +85,13 @@ class DocumentTemplate extends Base
 
     /**
      * @param string $title
+     * @return DocumentTemplate
      */
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -101,10 +104,13 @@ class DocumentTemplate extends Base
 
     /**
      * @param string $content
+     * @return $this
      */
     public function setContent($content)
     {
         $this->content = $content;
+
+        return $this;
     }
 
     /**

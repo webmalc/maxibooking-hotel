@@ -1,14 +1,6 @@
-mbhuserbundle.form.usersecuritytype.yesli.ne.ukazano.srok.deystviya.polʹzovatelya.neogranichen: 'Если не указано - срок действия пользователя неограничен'
-mbhuserbundle.view.workshift.wait.rub: руб
-mbhuserbundle.view.workshift.index.nachatʹnovuyusmenu: 'Начать новую смену'
+mbhuserbundle.view.twofactor.email.vam.na.pochtu.vyslan.kod.dlya.vkhoda: 'Вам на почту выслан код для входа'
 mbhuserbundle.view.workshift.index.vyyti: Выйти
-mbhuserbundle.view.workshift.wait.vashasmenazablokirovanaiozhidayetsdachi: 'Ваша смена заблокирована и ожидает сдачи'
-mbhuserbundle.view.workshift.wait.dlitelʹnostʹ: Длительность
-mbhuserbundle.view.workshift.wait.kassa: Касса
-mbhuserbundle.view.workshift.wait.vozobnovitʹ: Возобновить
-mbhuserbundle.view.workshift.wait.otchet: Отчёт
-mbhuserbundle.view.workshift.wait.vyyti: Выйти
-mbhuserbundle.view.profile.profile.smenitʹparolʹ: 'Сменить пароль'
+mbhuserbundle.view.workshift.index.nachat.novuyu.smenu: 'Начать новую смену'
 form.profileType.enter_new_password: 'Введите новый пароль'
 form.userType.authentication_data: 'Данные аутентификации'
 form.userType.new_password: 'Новый пароль'
@@ -24,18 +16,22 @@ form.userType.hotels: Отели
 form.userType.hotels_user_has_access_to: 'Отели к которым имеет доступ пользователь.'
 form.userType.is_included: 'Включен?'
 form.userType.expires_at: 'Действует до'
+form.userType.expires_at.help: 'Если не указано - срок действия пользователя неограничен'
 form.userType.surname: Фамилия
+form.userType.two_factor: 'Двухфакторная аутентификация?'
 form.userType.general_info: 'Общая информация'
 form.userType.placeholder_surname: Иванов
 form.userType.name: Имя
 form.userType.patronymic: Отчество
 form.userType.birth_date: 'Дата рождения'
+form.userType.locale: Язык
 form.userType.placeholder_name: Иван
 form.userType.placeholder_patronymic: Иванович
-controller.profileController.new_password_saved_success: 'Новый пароль успешно сохранен.'
-controller.profileController.record_saved_success: 'Запись успешно создана.'
+form.userType.need_at_least_one_hotel: 'Для включения рабочих смен должен быть выбран один отель'
+controller.profileController.new_password_saved_success: 'Новый пароль успешно сохранен'
+controller.profileController.record_saved_success: 'Пользователь успешно добавлен'
 controller.profileController.record_edited_success: 'Запись успешно отредактирована.'
-controller.group.create_success: 'Группа успешно создана.'
+controller.group.create_success: 'Группа успешно создана'
 controller.group.update_success: 'Группа успешно обновлена.'
 form.groupType.group.main: 'Общая информация'
 form.groupType.group.roles: Права
@@ -54,7 +50,32 @@ views.user.tabs.main_info: 'Основная информация'
 views.user.tabs.document_relation: 'Удостоверение личности'
 views.user.tabs.address: Адрес
 views.user.tabs.security: Безопасность
+restaurantbundle.controller.system_administrator: 'Администратор системы'
+restaurantbundle.controller.hotel_administrator: 'Администратор отеля'
+restaurantbundle.controller.analitic: Аналитик
+restaurantbundle.controller.buhgalter: Бухгалтер
+restaurantbundle.controller.turagent: Турагент
+restaurantbundle.controller.little_manager: 'Младший менеджер'
+restaurantbundle.controller.manager: Менеджер
+restaurantbundle.controller.senior_manager: 'Старший менеджер'
+restaurantbundle.controller.portie: Портье
+restaurantbundle.controller.servive_staff: 'Обслуживающий персонал'
+restaurantbundle.controller.restoran_senior_manager: 'Ресторан старший менеджер'
+restaurantbundle.controller.restoran_manager: 'Ресторан менеджер'
+restaurantbundle.controller.warehouse: Склад
+mbhuserbundle.view.workshift.wait.vyyti: Выйти
+view.wait.your_shift_is_blocked: 'Ваша смена заблокирована и ожидает сдачи.'
+view.wait.duration: Длительность
+view.wait.cash: Касса
+view.wait.resume: Возобновить
+view.wait.time: '%hourst% ч. %minutes% мин.'
+view.profile.change_pass: 'Сменить пароль'
+views.add_guest_modal.add_guest: 'Добавление гостя'
+view.google.enter_code: 'Введите код из приложения телефона Google Authenticator'
+view.google.check_mail: 'Если Google Authenticator не настроен, проверьте почтовый ящик для получения дальнейших инструкций'
 workShift.statuses.open: Открыта
 workShift.statuses.locked: Заблокирована
 workShift.statuses.closed: Закрыта
 workShift.notification.work_shift_expired: 'Смена идет больше 12 часов. Закройте её'
+form.clientConfigType.notification.staff.label: Список уведомлений для пользователя
+form.clientConfigType.notification.staff.help: Типы каких уведомлений будут доступны пользователю

@@ -7,10 +7,9 @@
 
     <div class="bg-gray color-palette alert"><i class="fa fa-lock"> </i> {{ 'views.profile.profile.password_error'|trans({}, 'FOSUserBundle') }}</div>
 
-    {{ form_start(form, {'action': path('user_profile_update'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('user_profile_update'),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% set changepsswd = 'mbhuserbundle.view.profile.profile.smenitʹparolʹ'|trans %}
-    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': changepsswd} %}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'view.profile.change_pass'|trans } %}
     {{ form_end(form) }}
 
 {% endblock %}

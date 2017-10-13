@@ -2,10 +2,10 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\PackageBundle\Document\Order as OrderDoc;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\BaseBundle\Document\Base;
 
 
 /**
@@ -48,6 +48,7 @@ class Permissions
 
     /**
      * @return Package[]
+     * @deprecated
      */
     public function getAvailablePackages()
     {
@@ -78,6 +79,7 @@ class Permissions
 
     /**
      * @return array
+     * @deprecated
      */
     public function getAvailableOrders()
     {

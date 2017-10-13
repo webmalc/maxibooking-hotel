@@ -19,30 +19,36 @@
                 <input type="hidden" name="roomTypes[{{ roomType.id }}]" class="hidden" value="{{ roomType.id }}">
 
                 <tr class="mbh-grid-header2 warning">
-                    <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
+                    <td colspan="{{ period|length + 1 }}"><strong {% if not roomType.isEnabled %} class="disabled-room-type"{% endif %}>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
                 </tr>
 
-                <tr class="header">
+                <tr class="header" data-copy-row-id="{{ roomType.id }}">
                     <td class="first-th"></td>
                     {% for date in period %}
-                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+                        <td class="header-td {% if date|date('N') >= 6 %} text-danger{% endif %}">
+                            <span class="header-info">{{ date|mbh_format }}</span>
+                            <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.generator'|trans }}" href="#" class="header-action header-action-generator"><i class="fa fa fa-magic"></i></a>
+                            <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.copy'|trans }}" href="#" class="header-action header-action-copy"><i class="fa fa-copy"></i></a>
+                        </td>
                     {% endfor %}
                 </tr>
 
                 {% set categories = {
-                    'minStayArrival': 'mbhpricebundle.view.restriction.table.mindlinabroni'|trans,
-                    'maxStayArrival': 'mbhpricebundle.view.restriction.table.maksDlinaBroniZaezd'|trans,
-                    'minStay': 'mbhpricebundle.view.restriction.table.mindlinabroniSkvoznoe'|trans,
-                    'maxStay': 'mbhpricebundle.view.restriction.table.maxdlinabroniSkvoznoe'|trans,
-                    'minBeforeArrival': 'mbhpricebundle.view.restriction.table.minDneyDoZaezda'|trans,
-                    'maxBeforeArrival': 'mbhpricebundle.view.restriction.table.maxDneyDoZaezda'|trans,
-                    'closedOnArrival': 'mbhpricebundle.view.restriction.table.netzayezda'|trans,
-                    'closedOnDeparture':'mbhpricebundle.view.restriction.table.netvyyezda'|trans,
-                    'closed':'mbhpricebundle.view.restriction.table.zakryto'|trans,
+                    'minStayArrival': 'price.views.restriction.table.minstayArrival'|trans({},'MBHPriceBundle'),
+                    'maxStayArrival': 'price.views.restriction.table.maxStayArrival'|trans({},'MBHPriceBundle'),
+                    'minStay': 'price.views.restriction.table.minStay'|trans({},'MBHPriceBundle'),
+                    'maxStay': 'price.views.restriction.table.maxStay'|trans({},'MBHPriceBundle'),
+                    'minBeforeArrival': 'price.views.restriction.table.minBeforeArrival'|trans({},'MBHPriceBundle'),
+                    'maxBeforeArrival': 'price.views.restriction.table.maxBeforeArrival'|trans({},'MBHPriceBundle'),
+                    'maxGuest': 'price.views.restriction.table.maxGuest'|trans({},'MBHPriceBundle'),
+                    'minGuest': 'price.views.restriction.table.minGuest'|trans({},'MBHPriceBundle'),
+                    'closedOnArrival': 'price.views.restriction.table.closedOnArrival'|trans({},'MBHPriceBundle'),
+                    'closedOnDeparture': 'price.views.restriction.table.closedOnDeparture'|trans({},'MBHPriceBundle'),
+                    'closed': 'price.views.restriction.table.closed'|trans({},'MBHPriceBundle'),
                 } %}
 
                 {% for categoryId, category in categories %}
-                    <tr>
+                    <tr data-copy-row-id="{{ roomType.id }}">
                         <td class="first-td"><small>{{ category }}</small></td>
 
                         {% for date in period %}

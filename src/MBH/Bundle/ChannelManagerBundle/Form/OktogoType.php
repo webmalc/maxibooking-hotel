@@ -2,19 +2,21 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
+use MBH\Bundle\BaseBundle\Service\Currency;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class OktogoType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add(
                 'enabled',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.oktogoType.is_included',
                     'value' => true,
@@ -23,36 +25,15 @@ class OktogoType extends AbstractType
                 ]
             )
             ->add(
-                'login',
-                'text',
-                [
-                    'label' => 'form.oktogoType.login',
-                    'required' => true,
-                    'attr' => ['placeholder' => 'login'],
-                    'help' => 'form.oktogoType.oktogo_api_login_access'
-                ]
-            )
-            ->add(
-                'password',
-                'text',
-                [
-                    'label' => 'form.oktogoType.password',
-                    'required' => true,
-                    'attr' => ['placeholder' => 'password'],
-                    'help' => 'form.oktogoType.oktogo_api_password_access'
-                ]
-            )
-            ->add(
-                'username',
-                'text',
+                'hotelId',
+                TextType::class,
                 [
                     'label' => 'form.oktogoType.username',
                     'required' => true,
                     'attr' => ['placeholder' => 'username'],
                     'help' => 'form.oktogoType.oktogo_ru_username'
                 ]
-            )
-        ;
+            );
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

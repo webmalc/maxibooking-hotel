@@ -1,3 +1,6 @@
+azovsky_remote/
+docker/
+docker_zalex/
 deploy/
 scripts/
 *~
@@ -27,4 +30,7 @@ web/app_dev.php
 nbproject
 parameters.yml
 .idea
+docs/
+var/clients/
+app/config/clients/
 

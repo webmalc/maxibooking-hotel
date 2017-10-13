@@ -2,30 +2,31 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
-use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
 
 /**
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhhotelbundle.document.roomtype.takoy.tip.nomera.uzhe.sushchestvuyet")
- *
+ * @Disableable\Disableable
  * @ODM\HasLifecycleCallbacks
  */
 class RoomType extends Base implements RoomTypeInterface
 {
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -49,11 +50,12 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
-     * @Assert\NotNull(message="mbhhotelbundle.document.roomtype.ne.vybran.otelʹ")
+     * @Assert\NotNull(message="validator.document.roomType.hotel_in_not_select")
+     * @ODM\Index()
      */
     protected $hotel;
 
-    /** @ODM\ReferenceMany(targetDocument="Room", mappedBy="roomType") */
+    /** @ODM\ReferenceMany(targetDocument="Room", mappedBy="roomType" ) */
     protected $rooms;
 
     /**
@@ -67,6 +69,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      max=100,
      *      maxMessage="validator.document.roomType.max_name"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
 
@@ -80,6 +83,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      max=100,
      *      maxMessage="validator.document.roomType.max_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 
@@ -94,6 +98,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      max=1000,
      *      maxMessage="validator.document.roomType.max_description"
      * )
+     * @ODM\Index()
      */
     protected $description;
 
@@ -121,6 +126,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      min=1,
      *      minMessage="validator.document.roomType.min_places_amount"
      * )
+     * @ODM\Index()
      */
     protected $places = 1;
 
@@ -133,8 +139,9 @@ class RoomType extends Base implements RoomTypeInterface
      * @Assert\Range(
      *      min=0,
      *      minMessage="validator.document.roomType.places_amount_less_zero",
-     *      max=5
+     *      max=10
      * )
+     * @ODM\Index()
      */
     protected $additionalPlaces = 0;
 
@@ -142,6 +149,7 @@ class RoomType extends Base implements RoomTypeInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="roomSpace")
+     * @ODM\Index()
      */
     protected $roomSpace;
 
@@ -158,12 +166,19 @@ class RoomType extends Base implements RoomTypeInterface
      * @ODM\Boolean()
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isHostel = false;
     /**
      * @ODM\EmbedMany(targetDocument="RoomTypeImage")
      */
     private $images = [];
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|Image[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\BaseBundle\Document\Image", cascade={"persist"})
+     */
+    protected $onlineImages;
     /**
      * @var TaskSettings
      * @ODM\EmbedOne(targetDocument="TaskSettings")
@@ -180,9 +195,23 @@ class RoomType extends Base implements RoomTypeInterface
      */
     protected $category;
 
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isSmoking = false;
+
+    /**
+     * @var array
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomViewType")
+     */
+    protected $roomViewsTypes;
+
     public function __construct()
     {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rooms = new ArrayCollection();
+        $this->roomViewsTypes = new ArrayCollection();
+        $this->onlineImages = new ArrayCollection();
     }
 
     /**
@@ -342,7 +371,6 @@ class RoomType extends Base implements RoomTypeInterface
         $total = $children + $adults;
 
         for ($i = 1; $i <= $total; $i++) {
-
             if ($i > $this->getTotalPlaces()) {
                 break;
             }
@@ -520,30 +548,11 @@ class RoomType extends Base implements RoomTypeInterface
         return $this;
     }
 
-    /**
-     * Add image
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
-     */
-    public function addImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
-    {
-        $this->images[] = $image;
-    }
-
-    /**
-     * Remove image
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
-     */
-    public function removeImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
-    {
-        $this->images->removeElement($image);
-    }
-
     public function getMainImage()
     {
-        foreach ($this->getImages() as $image) {
-            if ($image->getIsMain()) {
+        /** @var Image $image */
+        foreach ($this->onlineImages as $image) {
+            if ($image->isMain()) {
                 return $image;
             }
         }
@@ -553,7 +562,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * Get images
-     *
+     * @deprecated use
      * @return \Doctrine\Common\Collections\Collection|RoomTypeImage[] $images
      */
     public function getImages()
@@ -561,26 +570,33 @@ class RoomType extends Base implements RoomTypeInterface
         return $this->images;
     }
 
-    public function deleteImageById($imageId)
-    {
-        $result = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($this->getImages() as $element) {
-            if ($element->getId() == $imageId) {
-                $imagePath = $element->getPath();
-                if (file_exists($imagePath) && is_readable($imagePath)) {
-                    unlink($imagePath);
-                }
-            } else {
-                $result[] = $element;
-            }
-        }
-        $this->images = $result;
-    }
-
     public function makeMainImageById($imageId)
     {
-        foreach ($this->getImages() as $element) {
-            $element->setIsMain($element->getId() == $imageId);
+        foreach ($this->getOnlineImages() as $onlineImage) {
+            $onlineImage->setIsMain($onlineImage->getId() == $imageId);
+        }
+    }
+
+    /**
+     * @return $this
+     */
+    public function makeFirstImageAsMain()
+    {
+        if (count($this->onlineImages)) {
+            foreach ($this->onlineImages as $onlineImage) {
+                $onlineImage->setIsMain(false);
+            }
+
+            $this->onlineImages->first()->setIsMain(true);
+        }
+
+        return $this;
+    }
+
+    public function makeMainImage(Image $image)
+    {
+        foreach ($this->getOnlineImages() as $onlineImage) {
+            $onlineImage->setIsMain($onlineImage == $image);
         }
     }
 
@@ -646,4 +662,94 @@ class RoomType extends Base implements RoomTypeInterface
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isIsSmoking(): ?bool
+    {
+        return $this->isSmoking;
+    }
+
+    /**
+     * @param bool $isSmoking
+     * @return RoomType
+     */
+    public function setIsSmoking(bool $isSmoking): RoomType
+    {
+        $this->isSmoking = $isSmoking;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoomViewsTypes()
+    {
+        return $this->roomViewsTypes;
+    }
+
+    /**
+     * @param array $roomViewsTypes
+     * @return RoomType
+     */
+    public function setRoomViewsTypes(array $roomViewsTypes): RoomType
+    {
+        $this->roomViewsTypes = $roomViewsTypes;
+
+        return $this;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection|Image[]
+     */
+    public function getOnlineImages()
+    {
+        return $this->onlineImages;
+    }
+
+    /**
+     * @param Image $onlineImage
+     * @internal param \Doctrine\Common\Collections\Collection|Image[] $onlineImages
+     */
+    public function addOnlineImage(Image $onlineImage)
+    {
+        $this->onlineImages->add($onlineImage);
+    }
+
+    public function removeOnlineImage(Image $onlineImage)
+    {
+        $this->onlineImages->removeElement($onlineImage);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOnlineImagesByPriority(): array
+    {
+        $result = [];
+        $images = $this->onlineImages;
+        if (count($images)) {
+            $result = $images->toArray();
+            uasort($result,
+                function ($imageA, $imageB) {
+                    /** @var Image $imageA */
+                    /** @var Image $imageB */
+                    $priorityA = $imageA->getPriority();
+                    $priorityB = $imageB->getPriority();
+                    if ($priorityA === $priorityB) {
+                        return $imageA->getCreatedAt() <=> $imageB->getCreatedAt();
+                    }
+
+                    return $imageA->getPriority() <=> $imageB->getPriority();
+                });
+        }
+
+        return $result;
+    }
+
+
 }

@@ -3,11 +3,15 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\VegaBundle\Service\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -58,29 +62,30 @@ class DocumentRelationType extends AbstractType
         //main
         if($options['citizenship']) {
             $builder
-                ->add('citizenship', 'document', [
+                ->add('citizenship', DocumentType::class, [
                     'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
                     'label' => 'form.TouristExtendedType.citizenship',
                     'group' => 'form.DocumentRelation.citizenship',
                     'query_builder' => function(DocumentRepository $repository){
                         return $repository->createQueryBuilder()->sort(['name' => 1]);
-                    }
+                    },
+                    'help' => $options['isFormInTouristController'] ? 'form.BirthplaceType.country.help' : null
                 ]);
         }
         $builder
-            ->add('type', 'choice', [
+            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'choices' => $documentTypes,
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.type',
                 'property_path' => 'documentRelation.type'
             ])
-            ->add('series', 'text', [
+            ->add('series', TextType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'required' => false,
                 'label' => 'form.DocumentRelation.series',
                 'property_path' => 'documentRelation.series'
             ])
-            ->add('number', 'text', [
+            ->add('number', TextType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'required' => false,
                 'label' => 'form.DocumentRelation.number',
@@ -91,13 +96,13 @@ class DocumentRelationType extends AbstractType
             ])
         ;
         $builder
-            ->add('authorityOrgan', 'text', [
+            ->add('authorityOrgan', TextType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.authority',
                 'required' => false,
                 'property_path' => 'documentRelation.authorityOrgan'
             ])
-            ->add('authorityOrganText', 'hidden', [
+            ->add('authorityOrganText', HiddenType::class, [
                 'required' => false,
                 'property_path' => 'documentRelation.authorityOrganText'
             ])
@@ -120,7 +125,7 @@ class DocumentRelationType extends AbstractType
         });
 
         $builder
-            ->add('authorityOrganCode', 'text', [
+            ->add('authorityOrganCode', TextType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.authorityOrganCode',
                 'required' => false,
@@ -130,19 +135,8 @@ class DocumentRelationType extends AbstractType
                 ]
             ]);
 
-        /*$builder
-            ->add('authorityOrgan', 'document', [
-                'group' => 'form.DocumentRelation.main',
-                'label' => 'form.DocumentRelation.authority',
-                'required' => false,
-                'property_path' => 'documentRelation.authorityOrgan',
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaFMS',
-                'choices' => [],
-            ])
-        ;*/
-
         $builder
-            ->add('issued', 'date', [
+            ->add('issued', DateType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.issued',
                 'widget' => 'single_text',
@@ -151,7 +145,7 @@ class DocumentRelationType extends AbstractType
                 'attr' => ['class' => 'input-small datepicker', 'data-date-format' => 'dd.mm.yyyy'],
                 'property_path' => 'documentRelation.issued'
             ])
-            ->add('expiry', 'date', [
+            ->add('expiry', DateType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.expiry',
                 'widget' => 'single_text',
@@ -160,7 +154,7 @@ class DocumentRelationType extends AbstractType
                 'attr' => ['class' => 'input-small datepicker', 'data-date-format' => 'dd.mm.yyyy'],
                 'property_path' => 'documentRelation.expiry'
             ])
-            ->add('relation', 'choice', [
+            ->add('relation',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.relation',
                 'choices' => array_combine($dictTypes, $dictTypes),
@@ -171,43 +165,44 @@ class DocumentRelationType extends AbstractType
         //birthplace
         if($options['birthplace']) {
             $builder
-                ->add('country', 'document', [
+                ->add('country', DocumentType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
                     'label' => 'form.BirthplaceType.country',
                     'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
                     'query_builder' => function(DocumentRepository $repository){
                         return $repository->createQueryBuilder()->sort(['name' => 1]);
                     },
-                    'empty_value' => '',
+                    'placeholder' => '',
                     'required' => false,
-                    'property_path' => 'birthplace.country'
+                    'property_path' => 'birthplace.country',
+                    'help' => $options['isFormInTouristController'] ? 'form.BirthplaceType.country.help' : null
                 ])
-                ->add('main_region', 'text', [
+                ->add('main_region', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
                     'label' => 'form.BirthplaceType.main_region',
                     'required' => false,
                     'property_path' => 'birthplace.main_region',
                     'attr' => ['class' => 'typeahead']
                 ])
-                ->add('district', 'text', [
+                ->add('district', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
                     /*'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
                     'query_builder' => function(DocumentRepository $repository){
                         return $repository->createQueryBuilder()->sort(['name' => 1]);
                     },
-                    'empty_value' => '',
+                    'placeholder' => '',
                     */
                     'label' => 'form.BirthplaceType.district',
                     'required' => false,
                     'property_path' => 'birthplace.district'
                 ])
-                ->add('city', 'text', [//'mbh_city'
+                ->add('city', TextType::class, [//'mbh_city'
                     'group' => 'form.DocumentRelation.birthplace',
                     'label' => 'form.BirthplaceType.city',
                     'required' => false,
                     'property_path' => 'birthplace.city'
                 ])
-                ->add('settlement', 'text', [
+                ->add('settlement', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
                     'label' => 'form.BirthplaceType.settlement',
                     'required' => false,
@@ -228,6 +223,7 @@ class DocumentRelationType extends AbstractType
             //'cascade_validation' => true
             'citizenship' => true,
             'birthplace' => true,
+            'isFormInTouristController' => false
         ]);
     }
 
@@ -237,7 +233,7 @@ class DocumentRelationType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_document_relation';
     }

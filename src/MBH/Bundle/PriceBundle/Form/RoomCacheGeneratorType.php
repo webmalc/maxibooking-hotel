@@ -2,23 +2,26 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\Range;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class RoomCacheGeneratorType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-                ->add('begin', 'date', array(
+                ->add('begin', DateType::class, array(
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.nachaloperioda',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
@@ -27,7 +30,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'attr' => array('class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
                 ))
-                ->add('end', 'date', array(
+                ->add('end', DateType::class, array(
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.konetsperioda',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
@@ -35,15 +38,15 @@ class RoomCacheGeneratorType extends AbstractType
                     'attr' => array('class' => 'datepicker end-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
                 ))
-                ->add('weekdays', 'choice', [
+                ->add('weekdays',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.dninedeli',
                     'required' => false,
                     'multiple' => true,
                     'choices' => $options['weekdays'],
                     'help' => 'mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
-                    'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.vsedninedeli'),
+                    'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.vse.dni.nedeli'),
                 ])
-                ->add('roomTypes', 'document', [
+                ->add('roomTypes', DocumentType::class, [
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.tipynomerov',
                     'required' => true,
                     'multiple' => true,
@@ -52,15 +55,15 @@ class RoomCacheGeneratorType extends AbstractType
                         return $dr->fetchQueryBuilder($options['hotel']);
                     },
                     'help' => 'mbhpricebundle.form.roomcachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
-                    'attr' => array('placeholder' => $options['hotel']. ': все типы номеров', 'class' => 'select-all'),
+                    'attr' => array('placeholder' => $options['hotel']. ': mbhpricebundle.form.roomcachegeneratortype.vse.tipy.nomerov', 'class' => 'select-all'),
                 ])
-                ->add('quotas', 'checkbox', [
-                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.ustanovitʹkvoty?',
+                ->add('quotas', CheckboxType::class, [
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.ustanovitkvoty',
                     'value' => true,
                     'required' => false,
-                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.ustanovitʹkvotynomerovpotarifam?'
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.ustanovitkvotynomerovpotarifam'
                 ])
-                ->add('tariffs', 'document', [
+                ->add('tariffs', DocumentType::class, [
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.tarify',
                     'required' => false,
                     'multiple' => true,
@@ -68,39 +71,34 @@ class RoomCacheGeneratorType extends AbstractType
                     'query_builder' => function (DocumentRepository $dr) use ($options) {
                         return $dr->fetchChildTariffsQuery($options['hotel'], 'rooms');
                     },
-                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot',
-                    'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.kvotynebudutsgenerirovany'),
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.kvot',
+                    'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.kvoty.ne.budut.sgenerirovany'),
                 ])
-                ->add('rooms', 'text', [
-                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvomest',
+                ->add('rooms', TextType::class, [
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvo.mest',
                     'required' => true,
                     'data' => null,
                     'attr' => ['class' => 'spinner--1 delete-rooms'],
                     'constraints' => [
-                        new Range(['min' => -1, 'minMessage' => 'Количество мест не может быть меньше минус одного']),
+                        new Range(['min' => -1, 'minMessage' => 'mbhpricebundle.room_cache_generator_type.number_of_places_cannot_be_less_then_one']),
                         new NotBlank()
                     ],
-                    'help' => 'Количестов мест доступные в выбранные сроки. Минус один (-1) для удаления дней',
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvomest',
                 ])
-                /*->add('isClosed', 'checkbox', [
-                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.zakryto?',
-                    'value' => true,
-                    'required' => false,
-                ])*/
         ;
     }
 
     public function checkDates($data, ExecutionContextInterface $context)
     {
         if($data['begin'] >= $data['end']){
-            $context->addViolation('Начало периода должно быть меньше конца периода.');
+            $context->addViolation('mbhpricebundle.room_cache_generator_type.begin_cannot_be_more_end');
         }
         if ($data['end']->diff($data['begin'])->format("%a") > 370 ) {
-            $context->addViolation('Период не может быть больше года.');
+            $context->addViolation('mbhpricebundle.room_cache_generator_type.period_length_cannot_be_more_then_year');
         }
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'weekdays' => [],
@@ -109,7 +107,7 @@ class RoomCacheGeneratorType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_pricebundle_room_cache_generator_type';
     }

@@ -2,15 +2,14 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * Class RoomStatus
@@ -30,18 +29,22 @@ class RoomStatus extends Base
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     public $code;
 
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     public $title;
 
     /**
      * @return string
      */
+
+
     public function getCode()
     {
         return $this->code;
@@ -82,4 +85,5 @@ class RoomStatus extends Base
         $this->title = $title;
         return $this;
     }
+
 }

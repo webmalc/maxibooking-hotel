@@ -6,6 +6,8 @@ use Doctrine\MongoDB\ArrayIterator;
 use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 use MBH\Bundle\BaseBundle\Service\Cache;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 
 /**
  * Class RoomRepository
@@ -16,6 +18,43 @@ class RoomRepository extends AbstractBaseRepository
     public function findByCriteria(QueryCriteriaInterface $criteria)
     {
         return;
+    }
+
+    public function getVirtualRoomsForPackageQB(Package $package = null)
+    {
+        $qb = $this->createQueryBuilder();
+        if ($package) {
+            $virtualRoom = $package->getVirtualRoom();
+            $begin = $package->getBegin();
+            $end = $package->getEnd();
+            $packages = $this
+                ->getDocumentManager()
+                ->getRepository('MBHPackageBundle:Package')
+                ->fetchWithVirtualRooms($begin, $end, $package->getRoomType())
+            ;
+
+            $rooms = array_map(function ($p) use ($virtualRoom, $begin, $end) {
+                $id = $p->getVirtualRoom()->getId();
+
+                if ($p->getBegin() == $end || $p->getEnd() == $begin) {
+                    return null;
+                }
+
+                if (!$virtualRoom || $id != $virtualRoom->getId()) {
+                    return $id;
+                }
+
+                return null;
+
+            }, iterator_to_array($packages));
+
+            $qb->field('roomType')->references($package->getRoomType())
+                ->field('id')->notIn($rooms)
+                ->sort(['fullTitle', 'title'])
+            ;
+        }
+
+        return $qb;
     }
 
 
@@ -59,6 +98,7 @@ class RoomRepository extends AbstractBaseRepository
      */
     public function getRoomsByType(Hotel $hotel, $grouped = true)
     {
+        $groupedRooms = null;
         $hotelRoomTypes = [];
         foreach ($hotel->getRoomTypes() as $roomType) {
             $hotelRoomTypes[] = $roomType->getId();
@@ -84,7 +124,18 @@ class RoomRepository extends AbstractBaseRepository
         return $groupedRooms;
     }
 
-
+//    public function fetchAccommodationRoomsForPackage(Package $package, Hotel $hotel)
+//    {
+//        $begin = $package->getLastEndAccommodation();
+//        $end = $package->getEnd();
+//        $interval = $end->diff($begin, true);
+//        if (!$interval->format('%d')) {
+//            return [];
+//        }
+//        $excludePackages = $package->getId();
+//
+//        return $this->fetchAccommodationRooms($begin, $end, $hotel, null, null, $excludePackages, true);
+//    }
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -119,29 +170,42 @@ class RoomRepository extends AbstractBaseRepository
         $roomTypes && !is_array($roomTypes) ? $roomTypes = [$roomTypes] : $roomTypes;
         $rooms && !is_array($rooms) ? $rooms = [$rooms] : $rooms;
         $excludePackages and !is_array($excludePackages) ? $excludePackages = [$excludePackages] : $excludePackages;
-        $ids = $groupedRooms = [];
+        $fullRoomsIds = $groupedRooms = [];
         $hotelRoomTypes = [];
         $newEnd = clone $end;
         $newBegin = clone $begin;
 
         foreach ($hotel->getRoomTypes() as $roomType) {
-            if ($roomTypes && !in_array($roomType->getId(), $roomTypes)) {
+            if ($roomTypes && !in_array($roomType->getId(), $roomTypes) || !$roomType->getIsEnabled()) {
                 continue;
             }
             $hotelRoomTypes[] = $roomType->getId();
         }
 
-        //packages with accommodation
-        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation($newBegin->modify('+1 day'), $newEnd->modify('-1 day'), $rooms, $excludePackages);
-        foreach ($packages as $package) {
-            $ids[] = $package->getAccommodation()->getId();
-        };
+        $existedAccommodations = $dm
+            ->getRepository('MBHPackageBundle:PackageAccommodation')
+            ->getWithAccommodationQB(
+                $newBegin->modify('+1 day'),
+                $newEnd->modify('-1 day'),
+                $rooms,
+                $excludePackages)
+            ->select(['accommodation.id'])
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+
+        foreach ($existedAccommodations as  $accommodation) {
+            /** @var PackageAccommodation $accommodation */
+            $fullRoomsIds[] = $accommodation['accommodation']['$id'];
+        }
 
         // rooms
-        $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
+        $qb = $this->createQueryBuilder()->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
              ->field('isEnabled')->equals(true)
              ->inToArray('roomType.id', $hotelRoomTypes)
-             ->notInNotEmpty('id', $ids)
+             ->notInNotEmpty('id', $fullRoomsIds)
              ->inNotEmpty('id', $rooms)
         ;
 
@@ -178,6 +242,8 @@ class RoomRepository extends AbstractBaseRepository
      * @param int $limit
      * @param bool $group
      * @param bool $isEnabled
+     * @param array|null $sort
+     * @param Cache|null $cache
      * @return array
      */
     public function fetch(
@@ -188,10 +254,19 @@ class RoomRepository extends AbstractBaseRepository
         $skip = null,
         $limit = null,
         $group = false,
-        $isEnabled = null
+        $isEnabled = null,
+        array $sort = null,
+        Cache $cache = null
     )
     {
-        $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit, $isEnabled)->getQuery()->execute();
+        if ($cache) {
+            $cacheEntry = $cache->get('rooms_fetch', func_get_args());
+            if ($cacheEntry !== false) {
+                return $cacheEntry;
+            }
+        }
+
+        $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit, $isEnabled, $sort)->getQuery()->execute();
 
         if ($group) {
             $grouped = [];
@@ -199,21 +274,30 @@ class RoomRepository extends AbstractBaseRepository
                 $grouped[$doc->getRoomType()->getId()][] = $doc;
             }
 
+            if ($cache) {
+                $cache->set($grouped, 'rooms_fetch', func_get_args());
+            }
+
             return $grouped;
+        }
+
+        if ($cache) {
+            $cache->set(iterator_to_array($result), 'rooms_fetch', func_get_args());
         }
 
         return $result;
     }
 
     /**
-     * @param Hotel $hotel
-     * @param mixed $roomTypes
-     * @param mixed $housing
-     * @param mixed $floor
-     * @param int $skip
-     * @param int $limit
-     * @param bool $isEnabled
-     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     * @param Hotel|null $hotel
+     * @param null $roomTypes
+     * @param null $housing
+     * @param null $floor
+     * @param null $skip
+     * @param null $limit
+     * @param null $isEnabled
+     * @param array|null $sort
+     * @return \Doctrine\ODM\MongoDB\Query\Builder|\MBH\Bundle\BaseBundle\Lib\QueryBuilder
      */
     public function fetchQuery(
         Hotel $hotel = null,
@@ -222,7 +306,8 @@ class RoomRepository extends AbstractBaseRepository
         $floor = null,
         $skip = null,
         $limit = null,
-        $isEnabled = null
+        $isEnabled = null,
+        array $sort = null
     ) {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder('s');
@@ -266,7 +351,12 @@ class RoomRepository extends AbstractBaseRepository
         if ($limit !== null) {
             $qb->limit((int)$limit);
         }
-        $qb->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
+        $qb->field('deletedAt')->equals(null)
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
+
+        if ($sort) {
+            $qb->sort($sort);
+        }
 
         return $qb;
     }
@@ -277,7 +367,7 @@ class RoomRepository extends AbstractBaseRepository
     public function fetchFloors()
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
         $docs = $qb->distinct('floor')
             ->getQuery()
             ->execute();

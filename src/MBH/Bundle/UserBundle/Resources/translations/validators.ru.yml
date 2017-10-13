@@ -26,3 +26,4 @@ form.profileType.min_password: 'Пароль не может быть меньш
 form.profileType.min_number_password: 'Пароль должен содержать хотя бы одну цифру'
 form.profileType.min_capital_letter_password: 'Пароль должен содержать хотя бы одну заглавную букву'
 validator.user.default_notice_count: 'Уже существует пользователь с включенным полем «Принимающая сторона» (%user%)'
+validator.user.email_is_busy: 'Такой e-mail уже зарегистрирован'

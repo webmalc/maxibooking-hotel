@@ -2,17 +2,18 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use MBH\Bundle\BaseBundle\Document\Base;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * @ODM\Document(collection="RoomCache", repositoryClass="MBH\Bundle\PriceBundle\Document\RoomCacheRepository")
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="RoomCache already exist.")
+ * @ODM\Index(keys={"hotel"="asc","roomType"="asc","date"="asc"})
  */
 class RoomCache extends Base
 {
@@ -20,6 +21,7 @@ class RoomCache extends Base
      * @var \MBH\Bundle\HotelBundle\Document\Hotel
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $hotel;
 
@@ -27,12 +29,14 @@ class RoomCache extends Base
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $roomType;
 
     /**
      * @var \MBH\Bundle\PriceBundle\Document\Tariff
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
+     * @ODM\Index()
      */
     protected $tariff;
 
@@ -41,6 +45,7 @@ class RoomCache extends Base
      * @ODM\Date()
      * @Assert\Date()
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $date;
 
@@ -50,6 +55,7 @@ class RoomCache extends Base
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
+     * @ODM\Index()
      */
     protected $totalRooms;
 
@@ -59,6 +65,7 @@ class RoomCache extends Base
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
+     * @ODM\Index()
      */
     protected $packagesCount = 0;
 
@@ -66,6 +73,7 @@ class RoomCache extends Base
      * @var int
      * @ODM\Integer()
      * @Assert\Type(type="numeric")
+     * @ODM\Index()
      */
     protected $leftRooms;
 
