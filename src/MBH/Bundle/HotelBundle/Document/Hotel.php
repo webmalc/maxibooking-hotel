@@ -101,7 +101,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
@@ -139,21 +139,21 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $type = [];
 
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $theme = [];
 
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $facilities = [];
 
@@ -358,7 +358,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $supportedLanguages = [];
 

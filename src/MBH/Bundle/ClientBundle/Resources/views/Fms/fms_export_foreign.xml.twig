@@ -1,0 +1,240 @@
+﻿<migst:case xmlns="http://umms.fms.gov.ru/replication/core" xmlns:mig="http://umms.fms.gov.ru/replication/migration"
+            xmlns:fcc="http://umms.fms.gov.ru/replication/foreign-citizen-core" schemaVersion="1.0"
+            xmlns:migst="http://umms.fms.gov.ru/replication/migration/staying">
+    <mig:notificationReceived>{{ package.begin|date('Y-m-d') }}</mig:notificationReceived>
+    <mig:stayPeriod>
+        <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
+        <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>
+    </mig:stayPeriod>
+    <mig:personDataDocument>
+        <person>
+            <lastName>{{ tourist.lastName }}</lastName>
+            <lastNameLat>{{ tourist.lastName|transToLat }}</lastNameLat>
+            <firstName>{{ tourist.firstName }}</firstName>
+            <firstNameLat>{{ tourist.firstName|transToLat }}</firstNameLat>
+            <middleName>{{ tourist.patronymic }}</middleName>
+            <middleNameLat>{{ tourist.patronymic|transToLat }}</middleNameLat>
+            <gender>
+                <type>Gender</type>
+                <element>{{ tourist.sex == 'female' ? 'M' : 'F' }}</element>
+            </gender>
+            <birthDate>{{ tourist.birthday|date('d.m.Y') }}</birthDate>
+            <citizenship>
+                <type>Citizenship</type>
+                {#Здесь должен быть alpha3 code#}
+                <element>{{ tourist.citizenship }}ESP</element>
+            </citizenship>
+            <birthPlace>
+                <country>
+                    <type>Country</type>
+                    {#Здесь должен быть alpha3 code#}
+                    <element>{{ tourist.birthplace.country }}SUN</element>
+                </country>
+                <place3>{{ tourist.birthplace.city }}</place3>
+            </birthPlace>
+        </person>
+        <document>
+            <type>
+                <type>DocumentType</type>
+                {#Тип документа. Справочник dict_documenttype (ID).#}
+                <element>103012</element>
+            </type>
+            <series>{{ tourist.documentRelation.series }}</series>
+            <number>{{ tourist.documentRelation.number }}</number>
+            <authority>МИД РФ</authority>
+            <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
+            <validFrom>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validFrom>
+            <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
+        </document>
+        <entered>true</entered>
+    </mig:personDataDocument>
+    <mig:stayPlace>
+        <address>
+            <russianAddress>
+                <housing>
+                    <type>
+                        <type>addressObjectType</type>
+                        <element>1202</element>
+                    </type>
+                    <value>{{ tourist.addressObjectDecomposed.house }}</value>
+                </housing>
+                <housing>
+                    <type>
+                        <type>addressObjectType</type>
+                        <element>1304</element>
+                    </type>
+                    <value>{{ tourist.addressObjectDecomposed.flat }}</value>
+                </housing>
+                {% if tourist.addressObjectDecomposed.corpus is not empty%}
+                <housing>
+                    <type>
+                        <type>addressObjectType</type>
+                        <element>1203</element>
+                    </type>
+                    <value>{{ tourist.addressObjectDecomposed.corpus }}</value>
+                </housing>
+                {% endif %}
+                {% if tourist.addressObjectDecomposed.structure is not empty%}
+                <housing>
+                    <type>
+                        <type>addressObjectType</type>
+                        <element>1204</element>
+                    </type>
+                    <value>{{ tourist.addressObjectDecomposed.structure }}</value>
+                </housing>
+            </russianAddress>
+        </address>
+    </mig:stayPlace>
+    <mig:arrivalFromPlaceAddress>
+        <addressObjectString>Свердловская обл$$Нижний Тагил г$$$Садовая ул</addressObjectString>
+        <housing>
+            <type>
+                <type>addressObjectType</type>
+                <element>1202</element>
+            </type>
+            <value>дом</value>
+        </housing>
+        <housing>
+            <type>
+                <type>addressObjectType</type>
+                <element>1304</element>
+            </type>
+            <value>квартира</value>
+        </housing>
+        <housing>
+            <type>
+                <type>addressObjectType</type>
+                <element>1203</element>
+            </type>
+            <value>корпус</value>
+        </housing>
+        <housing>
+            <type>
+                <type>addressObjectType</type>
+                <element>1204</element>
+            </type>
+            <value>строение</value>
+        </housing>
+    </mig:arrivalFromPlaceAddress>
+    <mig:docResidence>
+        <mig:visa>
+            <uid>ResidenceDocument_7196e9ee-06f1-4f9f-b2de-cd67c67abca5</uid>
+            <type>
+                <type>DocumentType</type>
+                {% if tourist.visa.type == 'visa' %}
+                    {% set residentDocTypeNumber = 139356 %}
+                {% elseif tourist.visa.type == 'residence' %}
+                    {% set residentDocTypeNumber = 135709 %}
+                {% elseif tourist.visa.type == 'temporary_residence_permit' %}
+                    {% set residentDocTypeNumber = 139373 %}
+                {% endif %}
+                <element>{{ residentDocTypeNumber }}</element>
+            </type>
+            <series>{{ tourist.visa.series }}</series>
+            <number>{{ tourist.visa.number }}</number>
+            <issued>{{ tourist.visa.issued|date('Y-m-d') }}</issued>
+            <validFrom>{{ tourist.visa.issued|date('Y-m-d') }}</validFrom>
+            <validTo>{{ tourist.visa.expiry|date('Y-m-d') }}</validTo>
+            <status>
+                <type>DocumentStatus</type>
+                <element>102877</element>
+            </status>
+            <fcc:category>
+                <type>VisaCategory</type>
+                <element>135436</element>
+            </fcc:category>
+            <fcc:multiplicity>
+                <type>VisaMultiplicity</type>
+                <element>135495</element>
+            </fcc:multiplicity>
+            <fcc:identitifier>876543</fcc:identitifier>
+            <fcc:visitPurpose>
+                <type>EntryGoal</type>
+                <element>103092</element>
+            </fcc:visitPurpose>
+        </mig:visa>
+        <mig:entered>false</mig:entered>
+    </mig:docResidence>
+    <mig:stateProgramMember>
+        <type>mig.specialStatus</type>
+        <element>1019</element>
+    </mig:stateProgramMember>
+    <mig:host>
+        <mig:personDataDocument>
+            <person>
+                <lastName>Кожевина</lastName>
+                <firstName>Дарья</firstName>
+                <middleName>Михайловна</middleName>
+                <gender>
+                    <type>Gender</type>
+                    <element>F</element>
+                </gender>
+                <birthDate>28.12.1992</birthDate>
+                <citizenship>
+                    <type>Citizenship</type>
+                    <element>RUS</element>
+                </citizenship>
+                <birthPlace>
+                    <country>
+                        <type>Country</type>
+                        <element>RUS</element>
+                    </country>
+                    <place2>НОВОСИБИРСК</place2>
+                </birthPlace>
+            </person>
+            <document>
+                <type>
+                    <type>DocumentType</type>
+                    <element>103008</element>
+                </type>
+                <series>5013</series>
+                <number>076878</number>
+                <authorityOrgan>
+                    <type>officialOrgan</type>
+                    <element>116340</element>
+                </authorityOrgan>
+                <issued>2013-01-21</issued>
+                <validFrom>2013-01-21</validFrom>
+            </document>
+        </mig:personDataDocument>
+        <mig:contactInfo>
+            <address>
+                <russianAddress>
+                    <addressObjectString>Новосибирская обл$$Новосибирск г$$$Ленина пл</addressObjectString>
+                    <housing>
+                        <type>
+                            <type>addressObjectType</type>
+                            <element>1202</element>
+                        </type>
+                        <value>3</value>
+                    </housing>
+                </russianAddress>
+            </address>
+            <phone>+7(982) 456-73-73</phone>
+        </mig:contactInfo>
+    </mig:host>
+    <mig:entrancePurpose>
+        <type>VisitPurpose</type>
+        <element>139345</element>
+    </mig:entrancePurpose>
+    <mig:migrationCard>
+        <uid>MigrationCard_7196e9ee-06f1-4f9f-b2de-cd67c67abca5</uid>
+        <fcc:series>6</fcc:series>
+        <fcc:number>8765</fcc:number>
+        <fcc:stayPeriod>
+            <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
+            <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>
+        </fcc:stayPeriod>
+        <fcc:entranceDate>{{ tourist.visa.arrivalTime|date('Y-m-d') }}</fcc:entranceDate>arrivalTime
+        <fcc:entranceCheckpoint>
+            <type>officialOrgan</type>
+            <element>112999</element>
+        </fcc:entranceCheckpoint>
+        <fcc:departureDate>{{ tourist.visa.departureTime|date('Y-m-d') }}</fcc:departureDate>
+        <fcc:visitPurpose>
+            <type>VisitPurpose</type>
+            <element>139345</element>
+        </fcc:visitPurpose>
+    </mig:migrationCard>
+    <mig:profession>Программист</mig:profession>
+</migst:case>

@@ -37,6 +37,7 @@ mbhpackagebundle.view.report.invite.tip.vizy: 'Тип визы'
 mbhpackagebundle.view.report.roomtypestable.mest: мест
 mbhpackagebundle.view.report.fillingtable.itog: Итог
 form.AddressObjectDecomposedType.corpus: Корпус
+form.AddressObjectDecomposedType.structure.label: 'Строение'
 mbhpackagebundle.view.package.accommodation.etazh: Этаж
 mbhpackagebundle.view.package.index.status.oplaty: 'Статус оплаты'
 mbhpackagebundle.view.report.usertable.itogo: Итого
@@ -610,6 +611,8 @@ tourist.migration.type_series: Серия
 tourist.migration.type_representative: 'Сведения о законных представителях'
 tourist.migration.type_address: 'Адрес прежнего места пребывания'
 tourist.visa.type_type: Тип
+tourist.visa.multiplicity_type.label: 'Кратность'
+tourist.visa.visit_purpose.label: 'Цель поездки'
 tourist.visa.type_series: Серия
 tourist.visa.type_profession: Профессия
 tourist.visa.arrival_time: 'Дата въезда'

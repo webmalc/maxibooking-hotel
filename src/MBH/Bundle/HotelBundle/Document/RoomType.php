@@ -163,7 +163,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
@@ -186,7 +186,7 @@ class RoomType extends Base implements RoomTypeInterface
     private $taskSettings;
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $facilities = [];
     /**

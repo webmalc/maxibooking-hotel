@@ -244,6 +244,13 @@ var docReadyTourists = function () {
         });
     });
 
+    $('#mbh_address_object_decomposed_structure').TouchSpin({
+        min: 1,
+        max: 999,
+        step: 1,
+        stepinterval: 1
+    });
+
     new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
     new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
 };

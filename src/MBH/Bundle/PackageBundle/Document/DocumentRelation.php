@@ -53,13 +53,13 @@ class DocumentRelation implements \JsonSerializable
     protected $number;
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $issued;
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $expiry;

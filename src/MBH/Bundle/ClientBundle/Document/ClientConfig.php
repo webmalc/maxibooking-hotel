@@ -58,7 +58,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -67,7 +67,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -96,7 +96,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -165,7 +165,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -173,7 +173,7 @@ class ClientConfig extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Gedmo\Versioned
      * @Assert\Type(type="DateTime")
      */
@@ -209,7 +209,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

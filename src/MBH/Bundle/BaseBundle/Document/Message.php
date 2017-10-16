@@ -42,19 +42,19 @@ class Message extends Base implements \JsonSerializable
     
     /**
      * @var string
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      */
     protected $autohide = false;
     
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $end;
 
     /**
      * @var string
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      */
     protected $isSend = false;
 

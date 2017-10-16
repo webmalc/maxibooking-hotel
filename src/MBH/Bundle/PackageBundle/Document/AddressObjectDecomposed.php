@@ -3,7 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\HotelBundle\Document\Country;
 use MBH\Bundle\VegaBundle\Document\VegaRegion;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 
@@ -77,10 +76,35 @@ class AddressObjectDecomposed
     protected $flat;
 
     /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $structure;
+
+    /**
      * @var string
      * @ODM\Field(type="string") 
      */
     protected $addressObject;
+
+    /**
+     * @return int
+     */
+    public function getStructure(): ?int
+    {
+        return $this->structure;
+    }
+
+    /**
+     * @param int $structure
+     * @return AddressObjectDecomposed
+     */
+    public function setStructure(int $structure): AddressObjectDecomposed
+    {
+        $this->structure = $structure;
+
+        return $this;
+    }
 
     /**
      * @return VegaState|null

@@ -78,7 +78,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
@@ -88,7 +88,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -97,7 +97,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -106,7 +106,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -115,7 +115,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

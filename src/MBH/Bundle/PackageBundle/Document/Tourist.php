@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -221,7 +222,7 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
 
     /**
      * @var bool
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @ODM\Index()
      */
     protected $isUnwelcome = false;
@@ -234,8 +235,8 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
 
     public function __construct()
     {
-        $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->restarauntSeat = new ArrayCollection();
+        $this->packages = new ArrayCollection();
     }
 
     public function getShortName()

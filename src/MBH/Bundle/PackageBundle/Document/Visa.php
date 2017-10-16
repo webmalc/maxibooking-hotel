@@ -37,12 +37,12 @@ class Visa extends Base
     protected $number;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $issued;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $expiry;
     /**
@@ -52,14 +52,64 @@ class Visa extends Base
     protected $profession;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $arrivalTime;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $departureTime;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $multiplicityType;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $visitPurpose;
+
+    /**
+     * @return int
+     */
+    public function getVisitPurpose(): ?int
+    {
+        return $this->visitPurpose;
+    }
+
+    /**
+     * @param int $visitPurpose
+     * @return Visa
+     */
+    public function setVisitPurpose(int $visitPurpose): Visa
+    {
+        $this->visitPurpose = $visitPurpose;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMultiplicityType(): ?int
+    {
+        return $this->multiplicityType;
+    }
+
+    /**
+     * @param int $multiplicityType
+     * @return Visa
+     */
+    public function setMultiplicityType(int $multiplicityType): Visa
+    {
+        $this->multiplicityType = $multiplicityType;
+
+        return $this;
+    }
 
     /**
      * @return string

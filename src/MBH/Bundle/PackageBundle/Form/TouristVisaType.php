@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionariesData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -28,6 +29,20 @@ class TouristVisaType extends AbstractType
                     'residence' => 'tourist.visa.choices.residence',
                     'temporary_residence_permit' => 'tourist.visa.choices.temporary_residence_permit'
                 ],
+                'required' => false,
+            ])
+            ->add('multiplicityType',  InvertChoiceType::class, [
+                'label' => 'tourist.visa.multiplicity_type.label',
+                'group' => 'visa',
+                'placeholder' => '',
+                'choices' => FMSDictionariesData::getVisaMultiplicityData(),
+                'required' => false,
+            ])
+            ->add('visitPurpose',  InvertChoiceType::class, [
+                'label' => 'tourist.visa.visit_purpose.label',
+                'group' => 'visa',
+                'placeholder' => '',
+                'choices' => FMSDictionariesData::getVisitPurposesData(),
                 'required' => false,
             ])
             ->add('series', TextType::class, [
