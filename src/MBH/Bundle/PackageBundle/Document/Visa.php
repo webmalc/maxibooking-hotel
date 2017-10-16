@@ -1,6 +1,5 @@
 <?php
 
-
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -14,8 +13,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\EmbeddedDocument
  * @Gedmo\Loggable
  * @MBHAssert\Range(firstProperty="arrivalTime", secondProperty="departureTime")
- *
-
  */
 class Visa extends Base
 {
@@ -72,6 +69,56 @@ class Visa extends Base
      * @ODM\Field(type="int")
      */
     protected $visitPurpose;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $visaCategory;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $stateProgramMember;
+
+    /**
+     * @return int
+     */
+    public function getStateProgramMember(): ?int
+    {
+        return $this->stateProgramMember;
+    }
+
+    /**
+     * @param int $stateProgramMember
+     * @return Visa
+     */
+    public function setStateProgramMember(int $stateProgramMember): Visa
+    {
+        $this->stateProgramMember = $stateProgramMember;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVisaCategory(): ?int
+    {
+        return $this->visaCategory;
+    }
+
+    /**
+     * @param int $visaCategory
+     * @return Visa
+     */
+    public function setVisaCategory(int $visaCategory): Visa
+    {
+        $this->visaCategory = $visaCategory;
+
+        return $this;
+    }
 
     /**
      * @return int

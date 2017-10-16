@@ -609,10 +609,12 @@ pdf_templates.bill.administrator_on_duty: 'Дежурный администра
 pdf_templates.bill.number_of_elements: шт.
 tourist.migration.type_series: Серия
 tourist.migration.type_representative: 'Сведения о законных представителях'
-tourist.migration.type_address: 'Адрес прежнего места пребывания'
+tourist.migration.type_address.group: 'Адрес прежнего места пребывания'
 tourist.visa.type_type: Тип
+tourist.visa.category_type.label: 'Категория визы'
 tourist.visa.multiplicity_type.label: 'Кратность'
 tourist.visa.visit_purpose.label: 'Цель поездки'
+tourist.visa.state_program_member.label: 'Участник гос. программы'
 tourist.visa.type_series: Серия
 tourist.visa.type_profession: Профессия
 tourist.visa.arrival_time: 'Дата въезда'

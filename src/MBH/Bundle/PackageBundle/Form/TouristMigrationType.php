@@ -2,7 +2,8 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -11,7 +12,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class TouristMigrationType
-
  */
 class TouristMigrationType extends AbstractType
 {
@@ -33,10 +33,60 @@ class TouristMigrationType extends AbstractType
                 'group' => 'migration.card',
                 'required' => false,
             ])
-            ->add('address', TextareaType::class, [
-                'label' => 'tourist.migration.type_address',
-                'group' => 'migration.card',
+            ->add('region', DocumentType::class, [
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+                'label' => 'form.AddressObjectDecomposedType.region',
+                'query_builder' => function(DocumentRepository $repository) {
+                    return $repository->createQueryBuilder()->sort(['name' => 1]);
+                },
+                'group' => 'tourist.migration.type_address.group',
                 'required' => false,
+                'property_path' => 'addressObjectDecomposed.region'
+            ])
+            ->add('city', TextType::class, [
+                'label' => 'form.AddressObjectDecomposedType.city',
+                'required' => false,
+                'group' => 'tourist.migration.type_address.group',
+                'property_path' => 'addressObjectDecomposed.city'
+            ])
+            ->add('settlement', TextType::class, [
+                'label' => 'form.AddressObjectDecomposedType.settlement',
+                'required' => false,
+                'group' => 'tourist.migration.type_address.group',
+                'property_path' => 'addressObjectDecomposed.settlement'
+            ])
+            ->add('street', TextType::class, [
+                'label' => 'form.AddressObjectDecomposedType.street',
+                'required' => false,
+                'group' => 'tourist.migration.type_address.group',
+                'property_path' => 'addressObjectDecomposed.street'
+            ])
+            ->add('house', TextType::class, [
+                'label' => 'form.AddressObjectDecomposedType.house',
+                'required' => false,
+                'group' => 'tourist.migration.type_address.group',
+                'property_path' => 'addressObjectDecomposed.house'
+            ])
+            ->add('corpus', TextType::class, [
+                'label' => 'form.AddressObjectDecomposedType.corpus',
+                'required' => false,
+                'group' => 'tourist.migration.type_address.group',
+                'property_path' => 'addressObjectDecomposed.corpus'
+            ])
+            ->add('structure', TextType::class, [
+                'required' => false,
+                'group' => 'tourist.migration.type_address.group',
+                'attr' => [
+                    'class' => 'spinner',
+                ],
+                'label' => 'form.AddressObjectDecomposedType.structure.label',
+                'property_path' => 'addressObjectDecomposed.structure'
+            ])
+            ->add('flat', TextType::class, [
+                'group' => 'tourist.migration.type_address.group',
+                'label' => 'form.AddressObjectDecomposedType.flat',
+                'required' => false,
+                'property_path' => 'addressObjectDecomposed.flat'
             ]);
     }
 

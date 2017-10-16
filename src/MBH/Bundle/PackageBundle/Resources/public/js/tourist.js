@@ -204,10 +204,25 @@ var docReadyTourists = function () {
             $authorityOrganCodeInput.attr('disabled', false);
         }
     });
+    handleOnAddCountryButtonClick();
 
+    $('#mbh_address_object_decomposed_structure, #form_migration_structure').TouchSpin({
+        min: 1,
+        max: 999,
+        step: 1,
+        stepinterval: 1
+    });
+
+    new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
+    new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
+};
+
+function handleOnAddCountryButtonClick() {
     var $newCountryModal = $('#new-country-modal');
-    var $documentRelationCountry = $('#mbh_document_relation_country');
+    var $statesSelectInputs = $('.vega-state-select');
+    var clickedAddCountryButton;
     $('.add-country-button').click(function () {
+        clickedAddCountryButton = this;
         $newCountryModal.modal('show');
     });
 
@@ -232,8 +247,11 @@ var docReadyTourists = function () {
                     var customCountryOption = document.createElement('option');
                     customCountryOption.innerHTML = response.country.name;
                     customCountryOption.value = response.country.id;
-                    $documentRelationCountry.append(customCountryOption);
-                    $documentRelationCountry.val(response.country.id);
+                    $statesSelectInputs.each(function (index, element) {
+                        console.log(element);
+                        $(element).append(customCountryOption)
+                    });
+                    $(clickedAddCountryButton).parent().parent().parent().find('.vega-state-select').val(response.country.id);
                     $newCountryModal.modal('hide');
                 } else {
                     response.errors.forEach(function(error) {
@@ -243,17 +261,7 @@ var docReadyTourists = function () {
             }
         });
     });
-
-    $('#mbh_address_object_decomposed_structure').TouchSpin({
-        min: 1,
-        max: 999,
-        step: 1,
-        stepinterval: 1
-    });
-
-    new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
-    new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
-};
+}
 
 /*global document, window, Routing, $ */
 $(document).ready(function () {

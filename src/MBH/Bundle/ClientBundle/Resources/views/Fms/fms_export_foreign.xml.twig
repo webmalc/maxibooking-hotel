@@ -37,6 +37,13 @@
             <type>
                 <type>DocumentType</type>
                 {#Тип документа. Справочник dict_documenttype (ID).#}
+                {% if tourist.documentRelation.type == 'visa' %}
+                    {% set residentDocTypeNumber = 139356 %}
+                {% elseif tourist.documentRelation.type == 'residence' %}
+                    {% set residentDocTypeNumber = 135709 %}
+                {% elseif tourist.documentRelation.type == 'temporary_residence_permit' %}
+                    {% set residentDocTypeNumber = 139373 %}
+                {% endif %}
                 <element>103012</element>
             </type>
             <series>{{ tourist.documentRelation.series }}</series>
@@ -86,39 +93,39 @@
         </address>
     </mig:stayPlace>
     <mig:arrivalFromPlaceAddress>
+        {#Заполнить нужно в соответствии с ФИАС#}
         <addressObjectString>Свердловская обл$$Нижний Тагил г$$$Садовая ул</addressObjectString>
         <housing>
             <type>
                 <type>addressObjectType</type>
                 <element>1202</element>
             </type>
-            <value>дом</value>
+            <value>{{ tourist.migration.house }}</value>
         </housing>
         <housing>
             <type>
                 <type>addressObjectType</type>
                 <element>1304</element>
             </type>
-            <value>квартира</value>
+            <value>{{ tourist.migration.flat }}</value>
         </housing>
         <housing>
             <type>
                 <type>addressObjectType</type>
                 <element>1203</element>
             </type>
-            <value>корпус</value>
+            <value>{{ tourist.migration.corpus }}</value>
         </housing>
         <housing>
             <type>
                 <type>addressObjectType</type>
                 <element>1204</element>
             </type>
-            <value>строение</value>
+            <value>{{ tourist.migration.structure }}</value>
         </housing>
     </mig:arrivalFromPlaceAddress>
     <mig:docResidence>
         <mig:visa>
-            <uid>ResidenceDocument_7196e9ee-06f1-4f9f-b2de-cd67c67abca5</uid>
             <type>
                 <type>DocumentType</type>
                 {% if tourist.visa.type == 'visa' %}
@@ -135,29 +142,26 @@
             <issued>{{ tourist.visa.issued|date('Y-m-d') }}</issued>
             <validFrom>{{ tourist.visa.issued|date('Y-m-d') }}</validFrom>
             <validTo>{{ tourist.visa.expiry|date('Y-m-d') }}</validTo>
-            <status>
-                <type>DocumentStatus</type>
-                <element>102877</element>
-            </status>
             <fcc:category>
                 <type>VisaCategory</type>
-                <element>135436</element>
+                <element>{{ tourist.visa.visaCategory }}</element>
             </fcc:category>
             <fcc:multiplicity>
                 <type>VisaMultiplicity</type>
-                <element>135495</element>
+                <element>{{ tourist.visa.multiplicityType }}</element>
             </fcc:multiplicity>
             <fcc:identitifier>876543</fcc:identitifier>
             <fcc:visitPurpose>
                 <type>EntryGoal</type>
-                <element>103092</element>
+                <element>{{ tourist.visa.visitPurpose }}</element>
             </fcc:visitPurpose>
         </mig:visa>
+        {#Въехал ли#}
         <mig:entered>false</mig:entered>
     </mig:docResidence>
     <mig:stateProgramMember>
         <type>mig.specialStatus</type>
-        <element>1019</element>
+        <element>{{ tourist.visa.stateProgramMember }}</element>
     </mig:stateProgramMember>
     <mig:host>
         <mig:personDataDocument>

@@ -59,9 +59,6 @@ class AddressObjectDecomposedType extends AbstractType
             ])
             ->add('structure', TextType::class, [
                 'required' => false,
-                'attr' => [
-                    'class' => 'spinner',
-                ],
                 'label' => 'form.AddressObjectDecomposedType.structure.label'
             ])
             ->add('flat', TextType::class, [

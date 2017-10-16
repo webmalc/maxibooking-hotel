@@ -31,6 +31,13 @@ class TouristVisaType extends AbstractType
                 ],
                 'required' => false,
             ])
+            ->add('visaCategory',  InvertChoiceType::class, [
+                'label' => 'tourist.visa.category_type.label',
+                'group' => 'visa',
+                'placeholder' => '',
+                'choices' => FMSDictionariesData::getVisaCategories(),
+                'required' => false,
+            ])
             ->add('multiplicityType',  InvertChoiceType::class, [
                 'label' => 'tourist.visa.multiplicity_type.label',
                 'group' => 'visa',
@@ -43,6 +50,13 @@ class TouristVisaType extends AbstractType
                 'group' => 'visa',
                 'placeholder' => '',
                 'choices' => FMSDictionariesData::getVisitPurposesData(),
+                'required' => false,
+            ])
+            ->add('stateProgramMember',  InvertChoiceType::class, [
+                'label' => 'tourist.visa.state_program_member.label',
+                'group' => 'visa',
+                'placeholder' => '',
+                'choices' => FMSDictionariesData::getMigrationSpecStatuses(),
                 'required' => false,
             ])
             ->add('series', TextType::class, [

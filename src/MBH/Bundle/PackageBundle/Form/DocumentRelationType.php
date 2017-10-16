@@ -69,7 +69,8 @@ class DocumentRelationType extends AbstractType
                     'query_builder' => function(DocumentRepository $repository){
                         return $repository->createQueryBuilder()->sort(['name' => 1]);
                     },
-                    'help' => $options['isFormInTouristController'] ? 'form.BirthplaceType.country.help' : null
+                    'help' => $options['isFormInTouristController'] ? 'form.BirthplaceType.country.help' : null,
+                    'attr' => ['class' => 'vega-state-select']
                 ]);
         }
         $builder
@@ -100,7 +101,7 @@ class DocumentRelationType extends AbstractType
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.authority',
                 'required' => false,
-                'property_path' => 'documentRelation.authorityOrgan'
+                'property_path' => 'documentRelation.authorityOrgan',
             ])
             ->add('authorityOrganText', HiddenType::class, [
                 'required' => false,
@@ -172,6 +173,7 @@ class DocumentRelationType extends AbstractType
                     'query_builder' => function(DocumentRepository $repository){
                         return $repository->createQueryBuilder()->sort(['name' => 1]);
                     },
+                    'attr' => ['class' => 'vega-state-select'],
                     'placeholder' => '',
                     'required' => false,
                     'property_path' => 'birthplace.country',

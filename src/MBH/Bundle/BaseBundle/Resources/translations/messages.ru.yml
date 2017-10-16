@@ -313,6 +313,7 @@ form.filter: Фильтр
 info: Информация
 list: Список
 migration.card: 'Миграционная карта'
+
 visa: Виза
 form.facilitiesType.label: Удобства
 form.facilitiesType.placeholder: 'Выберите удобства'

@@ -80,12 +80,12 @@ assetic:
         cssrewrite: ~
         uglifycss:
             bin: /usr/local/bin/uglifycss
-            node: /usr/bin/nodejs
+            node: /usr/local/bin/node
         uglifyjs2:
             bin: /usr/local/bin/uglifyjs
-            node: /usr/bin/nodejs
+            node: /usr/local/bin/node
         less:
-            node: /usr/bin/nodejs
+            node: /usr/local/bin/node
             node_paths: [/usr/local/lib/node_modules/]
             apply_to: ".less$"
         scssphp:

@@ -31,11 +31,17 @@ class Migration extends Base
      * @ODM\Field(type="string") 
      */
     protected $representative;
+
     /**
-     * @var string
-     * @ODM\Field(type="string") 
+     * @var AddressObjectDecomposed
+     * @ODM\EmbedOne(targetDocument="AddressObjectDecomposed")
      */
-    protected $address;
+    protected $addressObjectDecomposed;
+
+    public function __construct()
+    {
+        $this->addressObjectDecomposed = new AddressObjectDecomposed();
+    }
 
     /**
      * @return int
@@ -95,18 +101,19 @@ class Migration extends Base
      * @return string
      * @return self
      */
-    public function getAddress()
+    public function getAddressObjectDecomposed()
     {
-        return $this->address;
+        return $this->addressObjectDecomposed;
     }
 
     /**
      * @param string $address
      * @return self
      */
-    public function setAddress($address)
+    public function setAddressObjectDecomposed($address)
     {
-        $this->address = $address;
+        $this->addressObjectDecomposed = $address;
+
         return $this;
     }
 }
