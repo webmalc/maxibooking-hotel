@@ -436,10 +436,10 @@ class ApiController extends Controller
         }
 
         $facilityArray = [];
-
+        $translator = $this->get('translator');
         foreach ($this->getParameter('mbh.hotel')['facilities'] as $facilityVal) {
             foreach ($facilityVal as $key => $val) {
-                $facilityArray[$key] = $val;
+                $facilityArray[$key] = $translator->trans($val);
             }
         }
 

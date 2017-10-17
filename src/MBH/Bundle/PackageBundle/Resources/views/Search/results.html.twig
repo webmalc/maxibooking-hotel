@@ -96,7 +96,7 @@
                 {% if row.roomType.facilities %}
                     <small>
                         {% for facility in row.roomType.facilities %}
-                            <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
+                            <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility]|trans }}" class="fa fa-lg mbf-{{ facility }}"></i>
                         {% endfor %}
                     </small>
                 {% endif %}
