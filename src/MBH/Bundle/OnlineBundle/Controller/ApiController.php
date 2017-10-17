@@ -50,6 +50,7 @@ class ApiController extends Controller
      */
     public function getFormResultsIframeAction($formId = null)
     {
+        $this->setLocaleByRequest();
         $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
             ->findOneById($formId);
 
@@ -68,6 +69,7 @@ class ApiController extends Controller
      */
     public function getFormIframeAction($formId = null)
     {
+        $this->setLocaleByRequest();
         $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
             ->findOneById($formId);
 
