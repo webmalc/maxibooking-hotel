@@ -72,6 +72,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
             }
             $this->isPricesInit = true;
         }
+
         return $this->prices;
     }
 
@@ -164,6 +165,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
             /** @var PackagePrice $packagePrice */
             $totalPrice += $packagePrice->getPrice();
         }
+
         return $totalPrice;
     }
 

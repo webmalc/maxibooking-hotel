@@ -4,9 +4,13 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
 class ExpediaNotificationPackageInfo extends AbstractPackageInfo
 {
+    const ADULTS_AGE_QUALIFYING_CODE = 10;
+    const CHILDREN_AGE_QUALIFYING_CODE = 8;
+
     /** @var ExpediaConfig $config */
     private $config;
     private $packageDataXMLElement;
@@ -21,6 +25,8 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
     private $roomType;
     private $isTariffInit = false;
     private $tariff;
+    private $prices = [];
+    private $isPricesInit = false;
 
     /**
      * @param $packageData
@@ -41,14 +47,20 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
         return $this;
     }
 
+    /**
+     * @return bool|\DateTime
+     */
     public function getBeginDate()
     {
-        // TODO: Implement getBeginDate() method.
+        return \DateTime::createFromFormat('Y-m-d', (string)$this->packageDataXMLElement->TimeSpan->attributes()['Start']);
     }
 
+    /**
+     * @return bool|\DateTime
+     */
     public function getEndDate()
     {
-        // TODO: Implement getEndDate() method.
+        return \DateTime::createFromFormat('Y-m-d', (string)$this->packageDataXMLElement->TimeSpan->attributes()['End']);
     }
 
     public function getRoomType()
@@ -110,34 +122,70 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
         return $this->tariff;
     }
 
+    /**
+     * @return int
+     */
     public function getAdultsCount()
     {
-        // TODO: Implement getAdultsCount() method.
+        return $this->getNumberOfGuestsByCode(self::ADULTS_AGE_QUALIFYING_CODE);
     }
 
+    /**
+     * @return int
+     */
     public function getChildrenCount()
     {
-        // TODO: Implement getChildrenCount() method.
+        return $this->getNumberOfGuestsByCode(self::CHILDREN_AGE_QUALIFYING_CODE);
     }
 
+    /**
+     * @return array
+     */
     public function getPrices()
     {
-        // TODO: Implement getPrices() method.
+        if (!$this->isPricesInit) {
+            foreach ($this->packageDataXMLElement->RoomRates as $roomRateNode) {
+                /** @var \SimpleXMLElement $rateNode */
+                $rateNode = $roomRateNode->Rates->Rate;
+                $currentDate = \DateTime::createFromFormat('Y-m-d', $rateNode->attributes()['EffectiveDate']);
+                $price = (float)$rateNode->Base->attributes()['AmountBeforeTax'];
+                foreach ($rateNode->AdditionalGuestAmounts as $additionalGuestAmountNode) {
+                    $price += $additionalGuestAmountNode->AdditionalGuestAmount->Amount->attribute()['AmountBeforeTax'];
+                }
+
+                $this->prices[] = new PackagePrice($currentDate, $price, $this->getTariff());
+
+                return $this->prices;
+            }
+
+            $this->isPricesInit = true;
+        }
+
+        return $this->prices;
     }
 
     public function getPrice()
     {
-        // TODO: Implement getPrice() method.
+        $totalPrice = 0;
+        foreach ($this->getPrices() as $packagePrice) {
+            /** @var PackagePrice $packagePrice */
+            $totalPrice += $packagePrice->getPrice();
+        }
+
+        return $totalPrice;
     }
 
     public function getNote()
     {
-        // TODO: Implement getNote() method.
+        return $this->note;
     }
 
+    /**
+     * @return bool
+     */
     public function getIsCorrupted()
     {
-        // TODO: Implement getIsCorrupted() method.
+        return $this->isCorrupted;
     }
 
     public function getTourists()
@@ -175,5 +223,18 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
         $this->channelManagerId = $channelManagerId;
 
         return $this;
+    }
+
+    private function getNumberOfGuestsByCode($qualifyingCode)
+    {
+        $numberOfAdults = 0;
+        /** @var \SimpleXMLElement $guestCountsNode */
+        foreach ($this->packageDataXMLElement->GuestCounts as $guestCountsNode) {
+            if ($guestCountsNode->attributes()['AgeQualifyingCode'] == $qualifyingCode) {
+                $numberOfAdults += (int)$guestCountsNode->attributes()['Count'];
+            }
+        }
+
+        return $numberOfAdults;
     }
 }
