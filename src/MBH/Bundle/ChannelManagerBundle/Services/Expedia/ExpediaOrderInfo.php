@@ -23,8 +23,11 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     private $orderDataXMLElement;
     private $roomTypes;
     private $tariffs;
+
     private $isPackagesDataInit = false;
     private $packagesData = [];
+    private $payer;
+    private $isPayerInit = false;
 
     public function setInitData(\SimpleXMLElement $orderInfoElement, ExpediaConfig $config, $tariffs, $roomTypes)
     {
@@ -32,6 +35,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         $this->orderDataXMLElement = $orderInfoElement;
         $this->tariffs = $tariffs;
         $this->roomTypes = $roomTypes;
+
         return $this;
     }
 
@@ -62,33 +66,32 @@ class ExpediaOrderInfo extends AbstractOrderInfo
             $this->translator->trans('order_info.expedia.required_order_data', ['%dataAttribute%' => $param]));
     }
 
-    /**
-     * @return Tourist
-     */
     public function getPayer(): Tourist
     {
-        /** @var \SimpleXMLElement $primaryGuestDataElement */
-        $primaryGuestDataElement = $this->orderDataXMLElement->PrimaryGuest;
-        $lastNameString = trim((string)$primaryGuestDataElement->Name->attributes()['surname']);
-        $firstNameString = trim((string)$primaryGuestDataElement->Name->attributes()['givenName']);
-        $lastName = empty($lastNameString) ? $this->getChannelManagerOrderId() : $lastNameString;
-        $phoneNumber = null;
-        if ((string)$primaryGuestDataElement->Phone) {
-            $phoneAttributes = $primaryGuestDataElement->Phone->attributes();
-            $phoneNumber = $phoneAttributes['countryCode'] . $phoneAttributes['cityAreaCode'] . $phoneAttributes['number'];
+        if (!$this->isPayerInit) {
+            /** @var \SimpleXMLElement $primaryGuestDataElement */
+            $primaryGuestDataElement = $this->orderDataXMLElement->PrimaryGuest;
+            $lastNameString = trim((string)$primaryGuestDataElement->Name->attributes()['surname']);
+            $firstNameString = trim((string)$primaryGuestDataElement->Name->attributes()['givenName']);
+            $lastName = empty($lastNameString) ? $this->getChannelManagerOrderId() : $lastNameString;
+            $phoneNumber = null;
+            if ((string)$primaryGuestDataElement->Phone) {
+                $phoneAttributes = $primaryGuestDataElement->Phone->attributes();
+                $phoneNumber = $phoneAttributes['countryCode'] . $phoneAttributes['cityAreaCode'] . $phoneAttributes['number'];
+            }
+            $email = (string)$primaryGuestDataElement->Email ? (string)$primaryGuestDataElement->Email : null;
+
+            $this->payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                $lastName,
+                empty($firstNameString) ? null : $firstNameString,
+                null,
+                null,
+                $email,
+                $phoneNumber
+            );
+            $this->isPayerInit = true;
         }
-        $email = (string)$primaryGuestDataElement->Email ? (string)$primaryGuestDataElement->Email : null;
-
-        $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-            $lastName,
-            empty($firstNameString) ? null : $firstNameString,
-            null,
-            null,
-            $email,
-            $phoneNumber
-        );
-
-        return $payer;
+        return $this->payer;
     }
 
     /**
@@ -331,34 +334,36 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      */
     public function getNote(): string
     {
-        foreach ($this->orderDataXMLElement->SpecialRequest as $specialRequest) {
-            $codeString = (string)$specialRequest->attributes()['code'][0];
-            $specialRequestString = (string)$specialRequest;
-            /**
-             * 1.xx : bedding preferences, different codes for beddings
-             * 2.1 Non-smoking
-             * 2.2 Smoking
-             * 3 Multi room booking and Mixed Rate Bookings
-             * 4 Free text
-             * 5 payment instruction
-             * 6 Value Add Promotions
-             */
-            switch (substr($codeString, 0, 1)) {
-                case "1":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.bedding_preferences');
-                    break;
-                case "3":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.multi_room_booking_info');
-                    break;
-                case "4":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.user_comment');
-                    break;
-                case "5":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.payment_instructions');
-                    break;
-                case "6":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.add_promotion');
-                    break;
+        if (!empty((string)$this->orderDataXMLElement->SpecialRequest)) {
+            foreach ($this->orderDataXMLElement->SpecialRequest as $specialRequest) {
+                $codeString = (string)$specialRequest->attributes()['code'][0];
+                $specialRequestString = (string)$specialRequest;
+                /**
+                 * 1.xx : bedding preferences, different codes for beddings
+                 * 2.1 Non-smoking
+                 * 2.2 Smoking
+                 * 3 Multi room booking and Mixed Rate Bookings
+                 * 4 Free text
+                 * 5 payment instruction
+                 * 6 Value Add Promotions
+                 */
+                switch (substr($codeString, 0, 1)) {
+                    case "1":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.bedding_preferences');
+                        break;
+                    case "3":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.multi_room_booking_info');
+                        break;
+                    case "4":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.user_comment');
+                        break;
+                    case "5":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.payment_instructions');
+                        break;
+                    case "6":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.add_promotion');
+                        break;
+                }
             }
         }
 

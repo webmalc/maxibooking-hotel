@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
+use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
@@ -127,6 +129,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         $roomTypeIdStartPosition = strpos($url, 'roomTypes/') + strlen('roomTypes/');
         $roomTypeIdEndPosition = strpos($url, '/ratePlans');
         $roomTypeIdStringLength = $roomTypeIdEndPosition - $roomTypeIdStartPosition;
+        
         return substr($url, $roomTypeIdStartPosition, $roomTypeIdStringLength);
     }
 
@@ -140,4 +143,23 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         return str_replace($xmlnsString, "", $xmlString);
     }
 
+    /**
+     * @param $notificationOrdersXmlString
+     * @return ExpediaNotificationOrderInfo
+     */
+    public function getNotificationOrderInfo($notificationOrdersXmlString)
+    {
+        $notificationOrdersXmlString = str_replace("soap-env:", '', $notificationOrdersXmlString);
+        $simpleXml = new \SimpleXMLElement($notificationOrdersXmlString);
+        $hotelId = (string)$simpleXml->Header->Interface->PayloadInfo->PayloadDescriptor->PayloadReference->attributes()['SupplierHotelCode'];
+        /** @var ExpediaConfig $expediaConfig */
+        $expediaConfig = $this->container
+            ->get('doctrine_mongodb.odm.default_document_manager')
+            ->getRepository('MBHChannelManagerBundle:ExpediaConfig')
+            ->findOneBy(['hotel.id' => $hotelId]);
+
+        return $this->container
+            ->get('mbh.channel_manager.expedia_notification_order_info')
+            ->setInitData($simpleXml, $expediaConfig);
+    }
 }

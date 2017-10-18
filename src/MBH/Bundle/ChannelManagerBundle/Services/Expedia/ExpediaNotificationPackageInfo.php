@@ -5,29 +5,22 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 
-use MBH\Bundle\PackageBundle\Document\PackagePrice;
-
-class ExpediaPackageInfo extends AbstractPackageInfo
+class ExpediaNotificationPackageInfo extends AbstractPackageInfo
 {
     /** @var ExpediaConfig $config */
     private $config;
-    /**
-     * Данные о брони, в виде объекта SimpleXMLElement
-     * @var \SimpleXMLElement $orderDataXMLElement
-     */
     private $packageDataXMLElement;
     private $roomTypes;
     private $tariffs;
     private $payer;
-    private $isCorrupted = false;
-    private $isPricesInit = false;
-    private $prices = [];
     private $isSmoking = false;
     private $channelManagerId;
-    private $isTariffInit = false;
-    private $tariff;
+    private $isCorrupted = false;
+
     private $isRoomTypeInit = false;
     private $roomType;
+    private $isTariffInit = false;
+    private $tariff;
 
     /**
      * @param $packageData
@@ -35,7 +28,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
      * @param $tariffs
      * @param $roomTypes
      * @param $payer
-     * @return ExpediaPackageInfo
+     * @return ExpediaNotificationPackageInfo
      */
     public function setInitData($packageData, $config, $tariffs, $roomTypes, $payer)
     {
@@ -48,38 +41,20 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         return $this;
     }
 
-    public function getTariffId()
+    public function getBeginDate()
     {
-        return (int)$this->getPackageCommonData('ratePlanID');
+        // TODO: Implement getBeginDate() method.
     }
 
-    private function getPackageCommonData($param)
+    public function getEndDate()
     {
-        return (string)$this->packageDataXMLElement->attributes()[$param];
-    }
-
-    /**
-     * Ленивая загрузка метода получения массива PackagePrice.
-     * @return PackagePrice[]
-     */
-    public function getPrices() {
-        if (!$this->isPricesInit) {
-            foreach ($this->packageDataXMLElement->PerDayRates->PerDayRate as $perDayRate) {
-                /** @var \SimpleXMLElement $perDayRate */
-                $currentDate = \DateTime::createFromFormat('Y-m-d', $perDayRate->attributes()['stayDate']);
-                $price = (float)$perDayRate->attributes()['baseRate'];
-                $this->prices[] = new PackagePrice($currentDate, $price, $this->getTariff());
-            }
-            $this->isPricesInit = true;
-        }
-        return $this->prices;
+        // TODO: Implement getEndDate() method.
     }
 
     public function getRoomType()
     {
         if (!$this->isRoomTypeInit) {
-
-            $roomTypeId = $this->getPackageCommonData('roomTypeID');
+            $roomTypeId = $this->packageDataXMLElement->RoomTypes->RoomType->attributes()['RoomTypeCode'];
             if (isset($this->roomTypes[$roomTypeId])) {
                 $this->roomType = $this->roomTypes[$roomTypeId]['doc'];
             } else {
@@ -102,10 +77,16 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         return $this->roomType;
     }
 
+    /**
+     * @return \MBH\Bundle\PriceBundle\Document\Tariff|null|object
+     * @throws \Exception
+     */
     public function getTariff()
     {
         if (!$this->isTariffInit) {
-            $serviceTariffId = $this->getPackageCommonData('ratePlanID');
+            /** @var \SimpleXMLElement $firstRatePlansElement */
+            $firstRatePlansElement = $this->packageDataXMLElement->RatePlans->RatePlan[0];
+            $serviceTariffId = $firstRatePlansElement->attributes()['RatePlanCode'];
             if (isset($this->tariffs[$serviceTariffId])) {
                 $this->tariff = $this->tariffs[$serviceTariffId]['doc'];
             } else {
@@ -118,8 +99,8 @@ class ExpediaPackageInfo extends AbstractPackageInfo
                 );
                 $this->addPackageNote($this->translator->trans('services.expedia.invalid_tariff_id'));
                 $this->isCorrupted = true;
-
             }
+
             if (!isset($this->tariff)) {
                 throw new \Exception($this->translator->trans('services.expedia.nor_one_tariff'));
             }
@@ -129,72 +110,39 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         return $this->tariff;
     }
 
-    public function getBeginDate()
-    {
-        $prices = $this->getPrices();
-        /** @var PackagePrice $firstPackagePrice */
-        $firstPackagePrice = current($prices);
-
-        return $firstPackagePrice->getDate();
-    }
-
-    public function getEndDate()
-    {
-        $prices = $this->getPrices();
-        /** @var PackagePrice $lastPackagePrice */
-        $lastPackagePriceDate = clone (end($prices)->getDate());
-
-        return ($lastPackagePriceDate->add(new \DateInterval('P1D')));
-    }
-
     public function getAdultsCount()
     {
-        return (int)$this->packageDataXMLElement->GuestCount->attributes()['adult'];
+        // TODO: Implement getAdultsCount() method.
     }
 
     public function getChildrenCount()
     {
-        return (int)$this->packageDataXMLElement->GuestCount->attributes()['child'];
+        // TODO: Implement getChildrenCount() method.
+    }
+
+    public function getPrices()
+    {
+        // TODO: Implement getPrices() method.
     }
 
     public function getPrice()
     {
-        $totalPrice = 0;
-        foreach ($this->getPrices() as $packagePrice) {
-            /** @var PackagePrice $packagePrice */
-            $totalPrice += $packagePrice->getPrice();
-        }
-        return $totalPrice;
+        // TODO: Implement getPrice() method.
     }
 
     public function getNote()
     {
-        foreach ($this->packageDataXMLElement->GuestCount->Child as $childNode) {
-            /** @var \SimpleXMLElement $childNode */
-            $this->addPackageNote($childNode->attributes()['age'], $this->translator->trans('package_info.expedia.child_age'));
-        }
-        return $this->note;
+        // TODO: Implement getNote() method.
     }
 
     public function getIsCorrupted()
     {
-        return $this->isCorrupted;
+        // TODO: Implement getIsCorrupted() method.
     }
 
     public function getTourists()
     {
         return [$this->payer];
-    }
-
-    /**
-     * @param $isSmoking
-     * @return ExpediaPackageInfo
-     */
-    public function setIsSmoking($isSmoking)
-    {
-        $this->isSmoking = $isSmoking;
-
-        return $this;
     }
 
     public function getIsSmoking()
@@ -203,12 +151,12 @@ class ExpediaPackageInfo extends AbstractPackageInfo
     }
 
     /**
-     * @param $channelManagerId
-     * @return ExpediaPackageInfo
+     * @param $isSmoking
+     * @return ExpediaNotificationPackageInfo
      */
-    public function setChannelManagerId($channelManagerId)
+    public function setIsSmoking($isSmoking)
     {
-        $this->channelManagerId = $channelManagerId;
+        $this->isSmoking = $isSmoking;
 
         return $this;
     }
@@ -216,5 +164,16 @@ class ExpediaPackageInfo extends AbstractPackageInfo
     public function getChannelManagerId()
     {
         return $this->channelManagerId;
+    }
+
+    /**
+     * @param $channelManagerId
+     * @return ExpediaNotificationPackageInfo
+     */
+    public function setChannelManagerId($channelManagerId)
+    {
+        $this->channelManagerId = $channelManagerId;
+
+        return $this;
     }
 }

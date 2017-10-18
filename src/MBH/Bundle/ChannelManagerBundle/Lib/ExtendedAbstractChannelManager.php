@@ -39,9 +39,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
-        // iterate hotels
         foreach ($this->getConfig() as $config) {
-
             $serviceTariffs = $this->pullTariffs($config);
             $pricesData = $this->requestDataFormatter->formatPriceRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdatePricesRequest($pricesData);
@@ -69,7 +67,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
-        // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomsData = $this->requestDataFormatter->formatRoomRequestData($begin, $end, $roomType, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdateRoomsRequest($roomsData);
@@ -98,7 +95,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
-        // iterate hotels
         foreach ($this->getConfig() as $config) {
             $serviceTariffs = $this->pullTariffs($config);
             $restrictionsData = $this->requestDataFormatter->formatRestrictionRequestData($begin, $end, $roomType, $serviceTariffs, $config);

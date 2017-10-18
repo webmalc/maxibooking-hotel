@@ -81,4 +81,11 @@ class Expedia extends ExtendedAbstractChannelManager
             }
         }
     }
+
+    public function handleNotificationOrder($xmlString)
+    {
+        /** @var ExpediaResponseHandler $responseHandler */
+        $responseHandler = $this->getResponseHandler($xmlString);
+        $responseHandler->getNotificationOrderInfo($xmlString);
+    }
 }
