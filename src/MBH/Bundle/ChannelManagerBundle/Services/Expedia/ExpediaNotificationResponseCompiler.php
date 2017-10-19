@@ -9,9 +9,10 @@ class ExpediaNotificationResponseCompiler
     public function formatSuccessCreationResponse(Order $order)
     {
         $responseNode = new \SimpleXMLElement('<soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"></soap-env:Envelope>');
-//        $responseNode->addAttribute('xmlns:soap-env', "http://schemas.xmlsoap.org/soap/envelope/");
         $headerNode = $responseNode->addChild('soap-env:Header');
-        $headerNode->addChild('Interface');
+        $interfaceNode = $headerNode->addChild('<Interface xmlns="http://www.newtrade.com/expedia/R14/header" Name="ExpediaDirectConnect" Version="4.0">');
+        $payloadInfoNode = $interfaceNode->addChild('PayloadInfo');
+
 
         return $responseNode->asXML();
     }
