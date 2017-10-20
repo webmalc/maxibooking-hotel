@@ -76,7 +76,7 @@ addLoadEvent(function () {
             var c = getCoords(formIframe);
             formCalendar.style.display = 'block';
             formCalendar.style.top = (e.data.top + c.top - 10) + 'px';
-            formCalendar.style.left = (e.data.left + c.left) + 'px';
+            formCalendar.style.left = (c.left) + 'px';
             formCalendar.contentWindow.postMessage(e.data, '*');
         }
         if (e.data.action === 'hideCalendar') {
