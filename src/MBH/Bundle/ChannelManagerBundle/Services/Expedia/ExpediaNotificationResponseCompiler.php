@@ -7,16 +7,98 @@ use MBH\Bundle\PackageBundle\Document\Order;
 
 class ExpediaNotificationResponseCompiler
 {
+    CONST DATE_FORMAT = 'Y-m-d\TH:i:s.vP';
+
+    /**
+     * @param Order $order
+     * @param NotificationRequestData $requestData
+     * @return string
+     */
     public function formatSuccessCreationResponse(Order $order, NotificationRequestData $requestData)
     {
-        $resultNode = new \SimpleXMLElement('<soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"></soap-env:Envelope>');
+        $resultNode = $this->getResultNodeEnvelopeNode();
         $this->addHeaderNode($resultNode, $requestData);
-
-
+        $this->addBodyNode($resultNode, $order, $requestData);
 
         return $resultNode->asXML();
     }
 
+    /**
+     * @param Order $order
+     * @param NotificationRequestData $requestData
+     * @return string
+     */
+    public function formatSuccessModificationResponse(Order $order, NotificationRequestData $requestData)
+    {
+        $resultNode = $this->getResultNodeEnvelopeNode();
+        $this->addHeaderNode($resultNode, $requestData);
+        $this->addBodyNode($resultNode, $order, $requestData, true);
+
+        return $resultNode->asXML();
+    }
+
+    public function formatSuccessCancellationResponse(Order $order, NotificationRequestData $requestData)
+    {
+        $resultNode = $this->getResultNodeEnvelopeNode();
+        $this->addHeaderNode($resultNode, $requestData);
+        //TODO: ЗАменить
+        $this->addCancellationResponseBody($resultNode, $order, $requestData);
+
+        return $resultNode->asXML();
+    }
+
+    private function addCancellationResponseBody(\SimpleXMLElement $resultNode, Order $order, NotificationRequestData $requestData)
+    {
+        $bodyNode = $resultNode->addChild('Body');
+        $responseNode = $bodyNode->addChild(
+            'OTA_CancelRS',
+            null,
+            'http://www.opentravel.org/OTA/2003/05'
+        );
+
+        $responseNode->addAttribute('Version', 1);
+        $responseNode->addAttribute('Status', "Cancelled");
+        $responseNode->addAttribute('TimeStamp', (new \DateTime())->format(self::DATE_FORMAT));
+        //TODO: Для теста другая
+        $responseNode->addAttribute('Target', "Production");
+        //TODO: Мб язык другой
+        $responseNode->addAttribute('PrimaryLangID', "en-us");
+
+        $responseNode->addChild('Success');
+        $expediaUniqueIdNode = $responseNode->addChild('UniqueID');
+        $expediaUniqueIdNode->addAttribute('ID', $order->getChannelManagerId());
+        $expediaUniqueIdNode->addAttribute('Type', 14);
+        $expediaUniqueIdNode->addChild('CompanyName', 'Expedia');
+
+        $mbhUniqueIdNode = $responseNode->addChild('UniqueID');
+        $mbhUniqueIdNode->addAttribute('ID', ExpediaOrderInfo::DEFAULT_CONFIRM_NUMBER);
+        $mbhUniqueIdNode->addAttribute('Type', 10);
+        $mbhUniqueIdNode->addChild('CompanyName', $requestData->getSourceId());
+
+        $cancelInfoNode = $responseNode->addChild('CancelInfoRS');
+        $cancelUniqueIDNode = $cancelInfoNode->addChild('UniqueID');
+        $cancelUniqueIDNode->addAttribute('Type', 10);
+        $cancelUniqueIDNode->addAttribute('ID', $order->getId());
+        $cancelUniqueIDNode->addChild('CompanyName', $requestData->getSourceId());
+    }
+
+    /**
+     * <OTA_CancelRS xmlns="http://www.opentravel.org/OTA/2003/05" Target="Production" TimeStamp="2016-05-17T02:57:35.247-04:00" Version="1.000" PrimaryLangID="en-us" Status="Cancelled">
+    <Success/>
+    <UniqueID ID="13357395" Type="14">
+    <CompanyName>Expedia</CompanyName>
+    </UniqueID>
+    <UniqueID ID="TestModifyConf" Type="10">
+    <CompanyName>EQCSpecTest</CompanyName>
+    </UniqueID>
+    <CancelInfoRS>
+    <UniqueID ID="TestCancel2" Type="10">
+    <CompanyName>EQCSpecTest</CompanyName>
+    </UniqueID>
+    </CancelInfoRS>
+    </OTA_CancelRS>
+     */
+    
     /**
      * @param \SimpleXMLElement $resultNode
      * @param NotificationRequestData $requestData
@@ -24,7 +106,9 @@ class ExpediaNotificationResponseCompiler
     private function addHeaderNode(\SimpleXMLElement $resultNode, NotificationRequestData $requestData)
     {
         $headerNode = $resultNode->addChild('soap-env:Header');
-        $interfaceNode = $headerNode->addChild('<Interface xmlns="http://www.newtrade.com/expedia/R14/header" Name="ExpediaDirectConnect" Version="4.0">');
+        $interfaceNode = $headerNode->addChild('Interface', null, 'http://www.newtrade.com/expedia/R14/header');
+        $interfaceNode->addAttribute('Name', 'ExpediaDirectConnect');
+        $interfaceNode->addAttribute('Version', '4.0');
 
         $payloadInfoNode = $interfaceNode->addChild('PayloadInfo');
         $payloadInfoNode->addAttribute('RequestId', $requestData->getRequestId());
@@ -44,32 +128,53 @@ class ExpediaNotificationResponseCompiler
         $payloadReferenceNode->addAttribute('SupplierHotelCode', $requestData->getMbhHotelId());
     }
 
-    public function addBodyNode(\SimpleXMLElement $resultNode)
+    /**
+     * @param \SimpleXMLElement $resultNode
+     * @param Order $order
+     * @param NotificationRequestData $requestData
+     * @param bool $isModified
+     */
+    private function addBodyNode(\SimpleXMLElement $resultNode, Order $order, NotificationRequestData $requestData, $isModified = false)
     {
-        $bodyNode = $resultNode->addChild('<soap-env:Body></soap-env:Body>');
-        $responseNode = $bodyNode->addChild('OTA_HotelResNotifRS');
-        $responseNode->addAttribute('xmlns', "http://www.opentravel.org/OTA/2003/05");
+        $bodyNode = $resultNode->addChild('Body');
+        $responseNode = $bodyNode->addChild(
+            $isModified ? 'OTA_HotelResModifyNotifRS' : 'OTA_HotelResNotifRS',
+            null,
+            'http://www.opentravel.org/OTA/2003/05'
+        );
+
         $responseNode->addAttribute('Version', 1);
-        //TODO: Для модифицированных - другая
-        $responseNode->addAttribute('ResResponseType', 'Committed');
-        $responseNode->addAttribute('TimeStamp', (new \DateTime())->format('Y-m-d\TH:i:s.vP'));
+        $responseNode->addAttribute('ResResponseType', $isModified ? 'Modified' : 'Committed');
+        $responseNode->addAttribute('TimeStamp', (new \DateTime())->format(self::DATE_FORMAT));
         //TODO: Для теста другая
         $responseNode->addAttribute('Target', "Production");
         //TODO: Мб язык другой
         $responseNode->addAttribute('PrimaryLangID', "en-us");
+
+        $responseNode->addChild('Success');
+        $hotelReservationsNode = $responseNode->addChild($isModified ? 'HotelResModifies' :'HotelReservations');
+        $hotelReservationNode = $hotelReservationsNode->addChild($isModified ? 'HotelResModify' :'HotelReservation');
+        $resGlobalInfoNode = $hotelReservationNode->addChild('ResGlobalInfo');
+        $reservationIdsNode = $resGlobalInfoNode->addChild('HotelReservationIDs');
+
+        $mbhReservationIdNode = $reservationIdsNode->addChild('HotelReservationID');
+        $mbhReservationIdNode->addAttribute('ResID_Type', 3);
+        $mbhReservationIdNode->addAttribute('ResID_Value', ExpediaOrderInfo::DEFAULT_CONFIRM_NUMBER);
+        $mbhReservationIdNode->addAttribute('ResID_Date', $order->getCreatedAt()->format(self::DATE_FORMAT));
+        $mbhReservationIdNode->addAttribute('ResID_Source', $requestData->getResponderId());
+
+        $expediaReservationIdNode = $reservationIdsNode->addChild('HotelReservationID');
+        $expediaReservationIdNode->addAttribute('ResID_Type', 8);
+        $expediaReservationIdNode->addAttribute('ResID_Value', $order->getChannelManagerId());
+        $expediaReservationIdNode->addAttribute('ResID_Date', (new \DateTime())->format(self::DATE_FORMAT));
+        $expediaReservationIdNode->addAttribute('ResID_Source', 'Expedia');
     }
 
     /**
-    <Success/>
-    <HotelReservations>
-    <HotelReservation>
-    <ResGlobalInfo>
-    <HotelReservationIDs>
-    <HotelReservationID ResID_Type="3" ResID_Value="ConfNumber123" ResID_Date="2016-05-17T12:56:52.597-07:00" ResID_Source="EQCSpecTest"/>
-    <HotelReservationID ResID_Type="8" ResID_Value="13357395" ResID_Source="Expedia" ResID_Date="2016-05-17T12:57:00-07:00"/>
-    </HotelReservationIDs>
-    </ResGlobalInfo>
-    </HotelReservation>
-    </HotelReservations>
+     * @return \SimpleXMLElement
      */
+    private function getResultNodeEnvelopeNode()
+    {
+        return new \SimpleXMLElement('<soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"></soap-env:Envelope>');
+    }
 }

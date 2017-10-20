@@ -28,6 +28,8 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     private $packagesData = [];
     private $payer;
     private $isPayerInit = false;
+    private $source;
+    private $isSourceInit = false;
 
     public function setInitData(\SimpleXMLElement $orderInfoElement, ExpediaConfig $config, $tariffs, $roomTypes)
     {
@@ -378,13 +380,16 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return [];
     }
 
-    /**
-     * @return PackageSource|null
-     */
     public function getSource(): ?PackageSource
     {
-        return $this->dm->getRepository('MBHPackageBundle:PackageSource')
-            ->findOneBy(['code' => $this->getChannelManagerName()]);
+        if (!$this->isSourceInit) {
+            $this->source = $this->dm->getRepository('MBHPackageBundle:PackageSource')
+                ->findOneBy(['code' => $this->getChannelManagerName()]);
+
+            $this->isSourceInit = true;
+        }
+
+        return $this->source;
     }
 
     /**

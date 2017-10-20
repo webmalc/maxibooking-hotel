@@ -66,7 +66,7 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
     public function getRoomType()
     {
         if (!$this->isRoomTypeInit) {
-            $roomTypeId = $this->packageDataXMLElement->RoomTypes->RoomType->attributes()['RoomTypeCode'];
+            $roomTypeId = (string)$this->packageDataXMLElement->RoomTypes->RoomType->attributes()['RoomTypeCode'];
             if (isset($this->roomTypes[$roomTypeId])) {
                 $this->roomType = $this->roomTypes[$roomTypeId]['doc'];
             } else {
@@ -98,7 +98,7 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
         if (!$this->isTariffInit) {
             /** @var \SimpleXMLElement $firstRatePlansElement */
             $firstRatePlansElement = $this->packageDataXMLElement->RatePlans->RatePlan[0];
-            $serviceTariffId = $firstRatePlansElement->attributes()['RatePlanCode'];
+            $serviceTariffId = (string)$firstRatePlansElement->attributes()['RatePlanCode'];
             if (isset($this->tariffs[$serviceTariffId])) {
                 $this->tariff = $this->tariffs[$serviceTariffId]['doc'];
             } else {
@@ -144,18 +144,16 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
     public function getPrices()
     {
         if (!$this->isPricesInit) {
-            foreach ($this->packageDataXMLElement->RoomRates as $roomRateNode) {
+            foreach ($this->packageDataXMLElement->RoomRates->RoomRate as $roomRateNode) {
                 /** @var \SimpleXMLElement $rateNode */
                 $rateNode = $roomRateNode->Rates->Rate;
                 $currentDate = \DateTime::createFromFormat('Y-m-d', $rateNode->attributes()['EffectiveDate']);
                 $price = (float)$rateNode->Base->attributes()['AmountBeforeTax'];
-                foreach ($rateNode->AdditionalGuestAmounts as $additionalGuestAmountNode) {
-                    $price += $additionalGuestAmountNode->AdditionalGuestAmount->Amount->attribute()['AmountBeforeTax'];
+                foreach ($rateNode->AdditionalGuestAmounts->AdditionalGuestAmount as $additionalGuestAmountNode) {
+                    $price += $additionalGuestAmountNode->Amount->attributes()['AmountBeforeTax'];
                 }
 
                 $this->prices[] = new PackagePrice($currentDate, $price, $this->getTariff());
-
-                return $this->prices;
             }
 
             $this->isPricesInit = true;
@@ -229,7 +227,7 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
     {
         $numberOfAdults = 0;
         /** @var \SimpleXMLElement $guestCountsNode */
-        foreach ($this->packageDataXMLElement->GuestCounts as $guestCountsNode) {
+        foreach ($this->packageDataXMLElement->GuestCounts->GuestCount as $guestCountsNode) {
             if ($guestCountsNode->attributes()['AgeQualifyingCode'] == $qualifyingCode) {
                 $numberOfAdults += (int)$guestCountsNode->attributes()['Count'];
             }

@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\ExtendedAbstractChannelManager;
+use MBH\Bundle\PackageBundle\Document\Order;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
 
@@ -86,6 +87,30 @@ class Expedia extends ExtendedAbstractChannelManager
     {
         /** @var ExpediaResponseHandler $responseHandler */
         $responseHandler = $this->getResponseHandler($xmlString);
-        $responseHandler->getNotificationOrderInfo($xmlString);
+
+        $result = null;
+        $orderInfo = $responseHandler->getNotificationOrderInfo();
+        $this->handleOrderInfo($orderInfo, $result);
+
+        if ($result instanceof Order) {
+            $requestData = $responseHandler->getNotificationRequestData();
+            $notificationResponseCompiler = $this->container
+                ->get('mbh.channel_manager.expedia_notification_response_compiler');
+            if ($orderInfo->isOrderCreated()) {
+                $response = $notificationResponseCompiler->formatSuccessCreationResponse($result, $requestData);
+            } elseif ($orderInfo->isOrderModified()) {
+                $response = $notificationResponseCompiler->formatSuccessModificationResponse($result, $requestData);
+            } elseif ($orderInfo->isOrderCancelled()) {
+                $response = $notificationResponseCompiler->formatSuccessCancellationResponse($result, $requestData);
+            } else {
+                //TODO: Добавить обработку ошибки
+                $response = 'Все пропало';
+            }
+        } else {
+            //TODO: Добавить обработку ошибки
+            $response = 'Все пропало';
+        }
+
+        return $response;
     }
 }

@@ -3,15 +3,16 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
-use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Model\Expedia\NotificationRequestData;
 
 class ExpediaResponseHandler extends AbstractResponseHandler
 {
     const OCCUPANCY_BASED_PRICING = 'OccupancyBasedPricing';
     private $response;
     private $config;
+
     private $isOrderInfosInit = false;
     private $orderInfos = [];
 
@@ -144,22 +145,62 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     }
 
     /**
-     * @param $notificationOrdersXmlString
      * @return ExpediaNotificationOrderInfo
      */
-    public function getNotificationOrderInfo($notificationOrdersXmlString)
+    public function getNotificationOrderInfo()
     {
-        $notificationOrdersXmlString = str_replace("soap-env:", '', $notificationOrdersXmlString);
+        $notificationOrdersXmlString = str_replace("soap-env:", '', $this->response);
         $simpleXml = new \SimpleXMLElement($notificationOrdersXmlString);
-        $hotelId = (string)$simpleXml->Header->Interface->PayloadInfo->PayloadDescriptor->PayloadReference->attributes()['SupplierHotelCode'];
-        /** @var ExpediaConfig $expediaConfig */
-        $expediaConfig = $this->container
-            ->get('doctrine_mongodb.odm.default_document_manager')
-            ->getRepository('MBHChannelManagerBundle:ExpediaConfig')
-            ->findOneBy(['hotel.id' => $hotelId]);
+
+        $expediaConfig = $this->getExpediaConfigByNotificationRequest();
+
+        $dm = $this->container->get('doctrine_mongodb.odm.default_document_manager');
+        $roomTypes = [
+            '50292' =>
+                ['doc' => $dm->find('MBHHotelBundle:RoomType', '59428e3c2bf944480f704891')]];
+        $tariffs = ['113712' =>
+            ['doc' => $dm->find('MBHPriceBundle:Tariff', '59428e3c2bf944480f70488f')]];
 
         return $this->container
             ->get('mbh.channel_manager.expedia_notification_order_info')
-            ->setInitData($simpleXml, $expediaConfig);
+            ->setInitData($simpleXml, $expediaConfig, $tariffs, $roomTypes);
+    }
+
+    /**
+     * @return ExpediaConfig
+     */
+    public function getExpediaConfigByNotificationRequest()
+    {
+        $requestXml = str_replace("soap-env:", '', $this->response);
+        $simpleXml = new \SimpleXMLElement($requestXml);
+        $hotelId = (string)$simpleXml->Header->Interface->PayloadInfo->PayloadDescriptor->PayloadReference->attributes()['SupplierHotelCode'];
+
+        return $this->container
+            ->get('doctrine_mongodb.odm.default_document_manager')
+            ->getRepository('MBHChannelManagerBundle:ExpediaConfig')
+            ->findOneBy(['hotel.id' => $hotelId]);
+    }
+
+    /**
+     * @return NotificationRequestData
+     */
+    public function getNotificationRequestData(): NotificationRequestData
+    {
+        $requestXml = str_replace("soap-env:", '', $this->response);
+        $simpleXml = new \SimpleXMLElement($requestXml);
+        /** @var \SimpleXMLElement $payloadInfoNode */
+        $payloadInfoNode = $simpleXml->Header->Interface->PayloadInfo;
+        $payloadInfoAttributes = $payloadInfoNode->attributes();
+
+        $commdescriptorAttributes = $payloadInfoNode->CommDescriptor->attributes();
+
+        return (new NotificationRequestData())
+            ->setRequestId($payloadInfoAttributes['RequestId'])
+            ->setRequestorId($payloadInfoAttributes['RequestorId'])
+            ->setResponderId($payloadInfoAttributes['ResponderId'])
+            ->setDestinationId($commdescriptorAttributes['DestinationId'])
+            ->setSourceId($commdescriptorAttributes['SourceId'])
+            ->setVersion($payloadInfoNode->PayloadDescriptor->attributes()['Version'])
+            ->setMbhHotelId($payloadInfoNode->PayloadDescriptor->PayloadReference->attributes()['SupplierHotelCode']);
     }
 }

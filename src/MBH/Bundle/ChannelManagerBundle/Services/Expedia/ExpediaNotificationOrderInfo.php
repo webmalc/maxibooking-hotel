@@ -14,6 +14,10 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 
 class ExpediaNotificationOrderInfo extends AbstractOrderInfo
 {
+    const NEW_ORDER_NODE_NAME = 'OTA_HotelResNotifRQ';
+    const MODIFIED_ORDER_NODE_NAME = 'OTA_HotelResModifyNotifRQ';
+    const CANCELLED_ORDER_NODE_NAME = 'OTA_CancelRQ';
+
     /** @var  \SimpleXMLElement */
     private $notificationElement;
     /** @var  \SimpleXMLElement */
@@ -22,18 +26,31 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
     private $roomStayElement;
     /** @var  ExpediaConfig */
     private $config;
+    private $tariffs;
+    private $roomTypes;
 
     private $isPackagesDataInit = false;
     private $packagesData = [];
     private $payer;
     private $isPayerInit = false;
+    private $source;
+    private $isSourceInit = false;
 
-    public function setInitData(\SimpleXMLElement $notificationElement, ExpediaConfig $config)
+    public function setInitData(\SimpleXMLElement $notificationElement, ExpediaConfig $config, $tariffs, $roomTypes)
     {
         $this->notificationElement = $notificationElement;
-        $this->orderInfoElement = $notificationElement->Body->OTA_HotelResNotifRQ->HotelReservations->HotelReservation;
+        if ($this->isOrderCreated()) {
+            $this->orderInfoElement = $notificationElement->Body->OTA_HotelResNotifRQ->HotelReservations->HotelReservation;
+        } elseif ($this->isOrderModified()) {
+            $this->orderInfoElement = $notificationElement->Body->OTA_HotelResModifyNotifRQ->HotelResModifies->HotelResModify;
+        } else {
+            $this->orderInfoElement = $notificationElement->Body->OTA_CancelRQ;
+        }
+
         $this->roomStayElement = $this->orderInfoElement->RoomStays->RoomStay;
         $this->config = $config;
+        $this->tariffs = $tariffs;
+        $this->roomTypes = $roomTypes;
 
         return $this;
     }
@@ -48,7 +65,7 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
             $firstName = trim((string)$nameNode->GivenName);
             $patronymic = trim((string)$nameNode->MiddleName) ?? null;
             $phoneNumber = null;
-            if (!empty((string)$customerNode->Telephone)) {
+            if (!empty($customerNode->Telephone->attributes())) {
                 $phoneAttributes = $customerNode->Telephone->attributes();
                 $phoneNumber = '';
 
@@ -68,12 +85,19 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
 
             $this->isPayerInit = true;
         }
+
         return $this->payer;
     }
 
     public function getChannelManagerOrderId(): string
     {
-        return (string)$this->orderInfoElement->UniqueID->attributes()['ID'];
+        foreach ($this->orderInfoElement->UniqueID as $uniqueIdNode) {
+            if ((string)$uniqueIdNode->attributes()['Type'] == "14") {
+                return (string)$this->orderInfoElement->UniqueID->attributes()['ID'];
+            }
+        }
+
+        throw new \Exception('Channel manager id not specified');
     }
 
     public function getPrice()
@@ -87,36 +111,44 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
         /** @var \SimpleXMLElement $pricesNode */
         $pricesNode = $this->roomStayElement->Total;
         $sumOfTaxes = 0;
-        //TODO: Добавить проверку на то, оплачено ли
-        /** @var \SimpleXMLElement $taxNode */
-        foreach ($pricesNode->Taxes as $taxNode) {
-            $taxCashDocument = new CashDocument();
-            $taxSum = (float)$taxNode->attributes()['Amount'];
-            $sumOfTaxes += $taxSum;
-            $cashDocuments[] = $taxCashDocument->setIsConfirmed(false)
+        if (!is_null($this->getCreditCard())) {
+            /** @var \SimpleXMLElement $taxNode */
+            foreach ($pricesNode->Taxes as $taxNode) {
+                $taxCashDocument = new CashDocument();
+                $taxSum = (float)$taxNode->attributes()['Amount'];
+                $sumOfTaxes += $taxSum;
+                $cashDocuments[] = $taxCashDocument
+                    ->setIsPaid(true)
+                    ->setMethod('electronic')
+                    ->setOperation('out')
+                    ->setOrder($order)
+                    ->setTouristPayer($this->getPayer())
+                    ->setTotal($taxSum);
+            }
+
+            $cashDocument = new CashDocument();
+            $cashDocuments[] = $cashDocument
                 ->setIsPaid(true)
                 ->setMethod('electronic')
-                ->setOperation('tax')
+                ->setOperation('in')
                 ->setOrder($order)
                 ->setTouristPayer($this->getPayer())
-                ->setTotal($taxSum);
+                ->setTotal((float)$pricesNode->attributes()['AmountAfterTax']);
         }
 
-        $cashDocument = new CashDocument();
-        $cashDocuments[] = $cashDocument->setIsConfirmed(false)
-            ->setIsPaid(true)
-            ->setMethod('electronic')
-            ->setOperation('in')
-            ->setOrder($order)
-            ->setTouristPayer($this->getPayer())
-            ->setTotal((float)$pricesNode->attributes()['AmountAfterTax'] + $sumOfTaxes);
+        return $cashDocuments;
     }
 
     public function getSource(): ?PackageSource
     {
-        return $this->dm
-            ->getRepository('MBHPackageBundle:PackageSource')
-            ->findOneBy(['code' => $this->getChannelManagerName()]);
+        if (!$this->isSourceInit) {
+            $this->source = $this->dm->getRepository('MBHPackageBundle:PackageSource')
+                ->findOneBy(['code' => $this->getChannelManagerName()]);
+
+            $this->isSourceInit = true;
+        }
+
+        return $this->source;
     }
 
     /**
@@ -198,17 +230,17 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
 
     public function isOrderModified(): bool
     {
-        return $this->getOrderDataNodeName() == 'OTA_HotelResModifyNotifRQ';
+        return $this->getOrderDataNodeName() == self::MODIFIED_ORDER_NODE_NAME;
     }
 
     public function isOrderCreated(): bool
     {
-        return $this->getOrderDataNodeName() == 'OTA_HotelResNotifRQ';
+        return $this->getOrderDataNodeName() == self::NEW_ORDER_NODE_NAME;
     }
 
     public function isOrderCancelled(): bool
     {
-        return $this->getOrderDataNodeName() == 'OTA_CancelRQ';
+        return $this->getOrderDataNodeName() == self::CANCELLED_ORDER_NODE_NAME;
     }
 
     /**
