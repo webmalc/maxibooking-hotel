@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @ODM\EmbeddedDocument
  */
-class Rbk implements PaymentSystemInterface
+class Rbk extends AbstractPaymentSystem implements PaymentSystemInterface
 {
     const COMMISSION = 0.039;
 

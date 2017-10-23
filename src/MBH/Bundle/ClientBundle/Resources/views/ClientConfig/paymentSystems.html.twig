@@ -1,0 +1,46 @@
+{% extends 'MBHClientBundle:ClientConfig:layout.html.twig' %}
+
+{% set small_title = 'views.hotel.index.list'|trans %}
+{% set layout = "box" %}
+
+{% block content %}
+    <table class="table table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th>{{ 'views.hotel.index.name'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-md text-center">{{ 'views.hotel.index.prefix'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-md text-center">{{ 'views.hotel.index.chosen_by_default'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for paymentSystemName in config.paymentSystems %}
+            <tr>
+                <td class="text-center table-icon"><i class="fa fa-home"></i></td>
+                <td>
+                </td>
+                <td class="text-center">{{ paymentSystemName }}</td>
+                <td class="text-center">
+                    {#{% if entity.isDefault %}#}
+                        {#<span class="label label-success">{{ 'mbhhotelbundle.view.hotel.index.da'|trans({}, 'MBHHotelBundle') }} </span>#}
+                    {#{% endif %}#}
+                </td>
+                <td class="table-actions-td text-center">
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                <li>
+                    <button type="submit" onclick="location.href = '{{ path('client_payment_system_form') }}'" class="btn btn-success btn"><i class="fa {{ icon is defined ? icon : 'fa-plus'}}"> </i> {{ text is defined ? text : 'views.actions.list.add'|trans({}, 'MBHBaseBundle')}}</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+

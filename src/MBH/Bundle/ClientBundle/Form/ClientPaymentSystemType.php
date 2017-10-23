@@ -27,36 +27,34 @@ class ClientPaymentSystemType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var ClientConfig $entity */
-        $entity = $options['entity'];
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $options['entity'];
         $robokassaMerchantLogin = $robokassaMerchantPass1 = $robokassaMerchantPass2 = null;
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
         $unitellerIsWithFiscalization = $unitellerShopIDP = $unitellerPassword = $taxationSystemCode = $taxationRateCode = null;
         $rbkEshopId = $rbkSecretKey = null;
         $paypalLogin = null;
-        $default = $this->paymentSystemsDefault;
 
-        if ($entity) {
-            $robokassaMerchantLogin = $entity->getRobokassa() ? $entity->getRobokassa()->getRobokassaMerchantLogin() : '';
-            $robokassaMerchantPass1 = $entity->getRobokassa() ? $entity->getRobokassa()->getRobokassaMerchantPass1() : '';
-            $robokassaMerchantPass2 = $entity->getRobokassa() ? $entity->getRobokassa()->getRobokassaMerchantPass2() : '';
-            $payanywayMntId = $entity->getPayanyway() ? $entity->getPayanyway()->getPayanywayMntId() : '';
-            $payanywayKey = $entity->getPayanyway() ? $entity->getPayanyway()->getPayanywayKey() : '';
-            $moneymailShopIDP = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailShopIDP() : '';
-            $moneymailKey = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailKey() : '';
-            $unitellerShopIDP = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerShopIDP() : '';
-            $unitellerPassword = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerPassword() : '';
-            $unitellerIsWithFiscalization = $entity->getUniteller() ? $entity->getUniteller()->isWithFiscalization(): true;
-            $taxationRateCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationRateCode() : '';
-            $taxationSystemCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationSystemCode() : '';
-            $rbkEshopId = $entity->getRbk() ? $entity->getRbk()->getRbkEshopId() : '';
-            $rbkSecretKey = $entity->getRbk() ? $entity->getRbk()->getRbkSecretKey() : '';
-            $paypalLogin = $entity->getPaypal() ? $entity->getPaypal()->getPaypalLogin() : '';
+        $paymentSystemName = $options['paymentSystemName'] ?? $this->paymentSystemsDefault;
+        $default = $clientConfig->getPaymentSystemDocByName($paymentSystemName);
 
-            if ($entity->getPaymentSystem()) {
-                $default = $entity->getPaymentSystem();
-            }
+        if ($clientConfig) {
+            $robokassaMerchantLogin = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantLogin() : '';
+            $robokassaMerchantPass1 = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantPass1() : '';
+            $robokassaMerchantPass2 = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantPass2() : '';
+            $payanywayMntId = $clientConfig->getPayanyway() ? $clientConfig->getPayanyway()->getPayanywayMntId() : '';
+            $payanywayKey = $clientConfig->getPayanyway() ? $clientConfig->getPayanyway()->getPayanywayKey() : '';
+            $moneymailShopIDP = $clientConfig->getMoneymail() ? $clientConfig->getMoneymail()->getMoneymailShopIDP() : '';
+            $moneymailKey = $clientConfig->getMoneymail() ? $clientConfig->getMoneymail()->getMoneymailKey() : '';
+            $unitellerShopIDP = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerShopIDP() : '';
+            $unitellerPassword = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerPassword() : '';
+            $unitellerIsWithFiscalization = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->isWithFiscalization(): true;
+            $taxationRateCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationRateCode() : '';
+            $taxationSystemCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationSystemCode() : '';
+            $rbkEshopId = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkEshopId() : '';
+            $rbkSecretKey = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkSecretKey() : '';
+            $paypalLogin = $clientConfig->getPaypal() ? $clientConfig->getPaypal()->getPaypalLogin() : '';
         }
 
         if (!$this->paymentSystemsChange) {
@@ -72,7 +70,7 @@ class ClientPaymentSystemType extends AbstractType
             $builder
                 ->add(
                     'paymentSystem',
-                    \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
+                    InvertChoiceType::class,
                     [
                         'label' => 'form.clientPaymentSystemType.payment_system',
                         'choices' => $this->paymentSystems,
@@ -289,7 +287,8 @@ class ClientPaymentSystemType extends AbstractType
             'data_class' => 'MBH\Bundle\ClientBundle\Document\ClientConfig',
             'entity' => null,
             'taxationRateCodes' => null,
-            'taxationSystemCode' => null
+            'taxationSystemCode' => null,
+            'paymentSystemName' => null
         ]);
     }
 

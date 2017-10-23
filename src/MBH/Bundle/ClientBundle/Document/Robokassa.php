@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @ODM\EmbeddedDocument
  */
-class Robokassa  implements PaymentSystemInterface
+class Robokassa extends AbstractPaymentSystem implements PaymentSystemInterface
 {
     /**
      * @var string

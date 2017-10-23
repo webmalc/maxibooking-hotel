@@ -82,24 +82,34 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     }
 
     /**
+     * @Route("/payment_systems")
+     * @Template()
+     */
+    public function paymentSystemsAction()
+    {
+        return [
+            'config' => $this->clientConfig
+        ];
+    }
+
+    /**
      * Payment system configuration page
-     * @Route("/payment_system", name="client_payment_system")
+     * @Route("/payment_system_form", name="client_payment_system_form")
      * @Method("GET")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
      * @Template()
      */
-    public function paymentSystemAction()
+    public function paymentSystemFormAction($paymentSystemName = null)
     {
-        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-
-        $form = $this->createForm(ClientPaymentSystemType::class, $entity, [
-            'entity' => $entity,
+        $form = $this->createForm(ClientPaymentSystemType::class, $this->clientConfig, [
+            'entity' => $this->clientConfig,
+            'paymentSystemName' => $paymentSystemName
         ]);
 
         return [
-            'entity' => $entity,
+            'entity' => $this->clientConfig,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($this->clientConfig)
         ];
     }
 
@@ -108,7 +118,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Route("/payment_system/save", name="client_payment_system_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
-     * @Template("MBHClientBundle:ClientConfig:paymentSystem.html.twig")
+     * @Template("MBHClientBundle:ClientConfig:paymentSystemForm.html.twig")
      * @param $request Request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
@@ -124,7 +134,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
         if ($form->isValid()) {
 
-            switch ($entity->getPaymentSystem()) {
+            switch ($entity->getPaymentSystems()) {
                 case 'robokassa':
                     $robokassa = new Robokassa();
                     $robokassa->setRobokassaMerchantLogin($form->get('robokassaMerchantLogin')->getData())

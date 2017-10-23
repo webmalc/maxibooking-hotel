@@ -12,9 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @ODM\EmbeddedDocument
  */
-class Uniteller implements PaymentSystemInterface
+class Uniteller extends AbstractPaymentSystem implements PaymentSystemInterface
 {
-
     const COMMISSION = 0.035;
 
     const DO_CHECK_URL = 'https://wpay.uniteller.ru/api/1/iacheck';

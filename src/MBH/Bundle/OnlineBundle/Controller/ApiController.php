@@ -569,11 +569,11 @@ class ApiController extends Controller
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        if ($requestJson->paymentType == 'in_hotel' || $requestJson->paymentType == 'by_receipt' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
+        if ($requestJson->paymentType == 'in_hotel' || $requestJson->paymentType == 'by_receipt' || !$clientConfig || !$clientConfig->getPaymentSystems()) {
             $form = false;
         } else {
             $form = $this->container->get('twig')->render(
-                'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig',
+                'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystems().'.html.twig',
                 [
                     'data' => array_merge(
                         [
