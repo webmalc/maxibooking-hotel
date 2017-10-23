@@ -547,8 +547,8 @@ class Search implements SearchInterface
         ;
 
         $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(
-            $begin,
-            $end,
+            $result->getBegin(),
+            $result->getEnd(),
             $roomType,
             null,
             $this->memcached
