@@ -93,10 +93,10 @@ form.expedia.should_we_use_in_channel_manager: Использовать ли в 
 form.expedia.hotel_id: ID отеля
 form.expedia.hotel_id.help: ID отеля в Expedia Partner Central
 form.expedia.password.label: Пароль
-form.expedia.password.help: Пароль для входа в аккаунт Expedia
+form.expedia.password.help: 'Пароль для взаимодействия по API с Expedia'
 form.expedia.password.placeholder: Пароль
-form.expedia.username.label: Имя пользователя
-form.expedia.username.help: Имя пользователя для входа в аккаунт Expedia
+form.expedia.username.label: Логин пользователя
+form.expedia.username.help: 'Логин пользователя для взаимодействия по API с Expedia'
 form.expedia.username.placeholder: Имя пользователя
 order_info.expedia.need_сonfirm_cash_payment_document: 'Необходимо подвердить кассовый документ о платеже'
 order_info.expedia.need_сonfirm_cash_tax_document: 'Необходимо подвердить кассовый документ о комиссии'

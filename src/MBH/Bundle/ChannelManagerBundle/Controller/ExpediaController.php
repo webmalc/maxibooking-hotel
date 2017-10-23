@@ -14,6 +14,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ExpediaController
@@ -63,8 +64,7 @@ class ExpediaController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $errorMessage = '';
-//            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
+            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
             if ($errorMessage === '' || !$config->getIsEnabled()) {
                 $this->dm->persist($config);
                 $this->dm->flush();
@@ -196,5 +196,21 @@ class ExpediaController extends Controller
         );
 
         return $this->redirect($this->generateUrl('expedia'));
+    }
+
+    /**
+     * @Route("/push_notification", name="expedia_push_notification")
+     * @param Request $request
+     * @return Response
+     */
+    public function handlePushNotificationAction(Request $request)
+    {
+        $requestXml = $request->getContent();
+
+        $responseXml = $this->get('mbh.channelmanager.expedia')->handleNotificationOrder($requestXml);
+
+        return new Response($responseXml, 200, [
+            'Content-Type' => 'text/xml'
+        ]);
     }
 }

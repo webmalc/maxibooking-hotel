@@ -41,8 +41,19 @@ class ExpediaNotificationResponseCompiler
     {
         $resultNode = $this->getResultNodeEnvelopeNode();
         $this->addHeaderNode($resultNode, $requestData);
-        //TODO: ЗАменить
         $this->addCancellationResponseBody($resultNode, $order, $requestData);
+
+        return $resultNode->asXML();
+    }
+
+    public function formErrorResponse($errorCode, $errorMessage)
+    {
+        $resultNode = $this->getResultNodeEnvelopeNode();
+        $resultNode->addChild('<soap-env:Header');
+        $bodyNode = $resultNode->addChild('Body');
+        $faultNode = $bodyNode->addChild('Fault');
+        $faultNode->addChild('faultcode', 'soap-env:Client.' . $errorCode, '');
+        $faultNode->addChild('faultstring', $errorMessage, '');
 
         return $resultNode->asXML();
     }
@@ -81,23 +92,6 @@ class ExpediaNotificationResponseCompiler
         $cancelUniqueIDNode->addAttribute('ID', $order->getId());
         $cancelUniqueIDNode->addChild('CompanyName', $requestData->getSourceId());
     }
-
-    /**
-     * <OTA_CancelRS xmlns="http://www.opentravel.org/OTA/2003/05" Target="Production" TimeStamp="2016-05-17T02:57:35.247-04:00" Version="1.000" PrimaryLangID="en-us" Status="Cancelled">
-    <Success/>
-    <UniqueID ID="13357395" Type="14">
-    <CompanyName>Expedia</CompanyName>
-    </UniqueID>
-    <UniqueID ID="TestModifyConf" Type="10">
-    <CompanyName>EQCSpecTest</CompanyName>
-    </UniqueID>
-    <CancelInfoRS>
-    <UniqueID ID="TestCancel2" Type="10">
-    <CompanyName>EQCSpecTest</CompanyName>
-    </UniqueID>
-    </CancelInfoRS>
-    </OTA_CancelRS>
-     */
     
     /**
      * @param \SimpleXMLElement $resultNode

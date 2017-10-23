@@ -628,4 +628,15 @@ class Helper
 
         return count($numberMatches) > 0 ? $numberMatches[0] : intval($string);
     }
+
+    /**
+     * @param $xmlString
+     * @return bool
+     */
+    public function isXMLValid($xmlString)
+    {
+        $result = simplexml_load_string($xmlString, 'SimpleXmlElement', LIBXML_NOERROR+LIBXML_ERR_FATAL+LIBXML_ERR_NONE);
+
+        return $result->__toString() !== '';
+    }
 }

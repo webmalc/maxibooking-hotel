@@ -45,6 +45,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $requestInfoArray = $this->requestFormatter->formatUpdatePricesRequest($pricesData);
             foreach ($requestInfoArray as $requestInfo) {
                 $this->log('begin update prices');
+                $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
                 $this->log('response for update prices request:');
@@ -101,6 +102,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $requestInfoArray = $this->requestFormatter->formatUpdateRestrictionsRequest($restrictionsData);
             foreach ($requestInfoArray as $requestInfo) {
                 $this->log('begin update restrictions');
+                $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
                 $this->log('response for update restrictions request:');

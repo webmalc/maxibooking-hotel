@@ -113,11 +113,12 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         return $roomTypesData;
     }
 
+    /**
+     * @return bool
+     */
     private function isXMLResponse()
     {
-        $result = simplexml_load_string($this->response, 'SimpleXmlElement', LIBXML_NOERROR+LIBXML_ERR_FATAL+LIBXML_ERR_NONE);
-
-        return $result->__toString() === '' ? false : true;
+        return $this->container->get('mbh.helper')->isXMLValid($this->response);
     }
 
     /**
@@ -149,21 +150,16 @@ class ExpediaResponseHandler extends AbstractResponseHandler
      */
     public function getNotificationOrderInfo()
     {
-        $notificationOrdersXmlString = str_replace("soap-env:", '', $this->response);
-        $simpleXml = new \SimpleXMLElement($notificationOrdersXmlString);
+        $simpleXml = $this->getSimpleXmlByRequestXml();
 
         $expediaConfig = $this->getExpediaConfigByNotificationRequest();
-
-        $dm = $this->container->get('doctrine_mongodb.odm.default_document_manager');
-        $roomTypes = [
-            '50292' =>
-                ['doc' => $dm->find('MBHHotelBundle:RoomType', '59428e3c2bf944480f704891')]];
-        $tariffs = ['113712' =>
-            ['doc' => $dm->find('MBHPriceBundle:Tariff', '59428e3c2bf944480f70488f')]];
+        $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
+        $tariffsSyncData = $channelManagerHelper->getTariffsSyncData($this->config, true);
+        $roomTypesSyncData = $channelManagerHelper->getRoomTypesSyncData($this->config, true);
 
         return $this->container
             ->get('mbh.channel_manager.expedia_notification_order_info')
-            ->setInitData($simpleXml, $expediaConfig, $tariffs, $roomTypes);
+            ->setInitData($simpleXml, $expediaConfig, $tariffsSyncData, $roomTypesSyncData);
     }
 
     /**
@@ -171,8 +167,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
      */
     public function getExpediaConfigByNotificationRequest()
     {
-        $requestXml = str_replace("soap-env:", '', $this->response);
-        $simpleXml = new \SimpleXMLElement($requestXml);
+        $simpleXml = $this->getSimpleXmlByRequestXml();
         $hotelId = (string)$simpleXml->Header->Interface->PayloadInfo->PayloadDescriptor->PayloadReference->attributes()['SupplierHotelCode'];
 
         return $this->container
@@ -186,8 +181,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
      */
     public function getNotificationRequestData(): NotificationRequestData
     {
-        $requestXml = str_replace("soap-env:", '', $this->response);
-        $simpleXml = new \SimpleXMLElement($requestXml);
+        $simpleXml = $this->getSimpleXmlByRequestXml();
         /** @var \SimpleXMLElement $payloadInfoNode */
         $payloadInfoNode = $simpleXml->Header->Interface->PayloadInfo;
         $payloadInfoAttributes = $payloadInfoNode->attributes();
@@ -202,5 +196,12 @@ class ExpediaResponseHandler extends AbstractResponseHandler
             ->setSourceId($commdescriptorAttributes['SourceId'])
             ->setVersion($payloadInfoNode->PayloadDescriptor->attributes()['Version'])
             ->setMbhHotelId($payloadInfoNode->PayloadDescriptor->PayloadReference->attributes()['SupplierHotelCode']);
+    }
+
+    private function getSimpleXmlByRequestXml()
+    {
+        $requestXml = str_replace("soap-env:", '', $this->response);
+
+        return new \SimpleXMLElement($requestXml);
     }
 }
