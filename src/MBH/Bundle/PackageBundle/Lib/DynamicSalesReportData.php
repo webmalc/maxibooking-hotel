@@ -166,7 +166,7 @@ class DynamicSalesReportData
                 $sum += $dayTotalValue;
             }
 
-            return DynamicSales::getRoundedValue($sum / count($periodData), $option);
+            return DynamicSales::getRoundedValue($sum, $option);
         } elseif (in_array($option, DynamicSales::FOR_PERIOD_OPTIONS)) {
             return DynamicSales::getRoundedValue(end($periodData), $option);
         }
