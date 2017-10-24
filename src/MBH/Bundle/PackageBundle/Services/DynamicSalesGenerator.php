@@ -72,31 +72,6 @@ class DynamicSalesGenerator
     }
 
     /**
-     * @param Request $request
-     * @param Hotel $hotel
-     * @return DynamicSalesReportData
-     */
-    public function generateDynamicSales(Request $request, Hotel $hotel)
-    {
-        $begin = $request->get('begin');
-        $end = $request->get('end');
-
-        $begin = array_diff($begin, array('', null, false));
-        $end = array_diff($end, array('', null, false));
-
-        $begin = array_values($begin);
-        $end = array_values($end);
-
-        if ($request->get('roomTypes')) {
-            $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
-        } else {
-            $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
-        }
-
-        return $this->getDynamicSalesReportData($begin, $end, $roomTypes);
-    }
-
-    /**
      * @param $filterBeginDates
      * @param $filterEndDates
      * @param $roomTypes

@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 12.05.17
- * Time: 14:36
- */
 
 namespace MBH\Bundle\PackageBundle\Lib;
-
 
 use MBH\Bundle\PackageBundle\Services\DynamicSalesGenerator;
 
@@ -166,7 +159,7 @@ class DynamicSalesReportData
                 $sum += $dayTotalValue;
             }
 
-            return DynamicSales::getRoundedValue($sum / count($periodData), $option);
+            return DynamicSales::getRoundedValue($sum, $option);
         } elseif (in_array($option, DynamicSales::FOR_PERIOD_OPTIONS)) {
             return DynamicSales::getRoundedValue(end($periodData), $option);
         }

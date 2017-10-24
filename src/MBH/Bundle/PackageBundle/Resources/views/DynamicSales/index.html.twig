@@ -36,7 +36,7 @@
                                                        data-placeholder="{{ 'dynamic.sales.type.room'|trans({},'MBHPackageBundle') }}"
                                                        id="dynamic-sales-filter-roomType"
                                                        class="dynamic-sale-filter-filter form-control input-sm">
-                <option></option>
+                <option value="total">{{ 'dynamic_sales.room_type_options.total'|trans({}, "MBHPackageBundle")}}</option>
                 {% for roomType in roomTypes %}
                     <option value="{{ roomType.id }}"
                             {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>

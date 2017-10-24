@@ -588,13 +588,7 @@ class Helper
     public function getDataFromMultipleSelectField($fieldData)
     {
         if (!empty($fieldData) && is_array($fieldData)) {
-            foreach ($fieldData as $index => $singleValue) {
-                if ($singleValue === '') {
-                    unset($fieldData[$index]);
-                }
-            }
-
-            return $fieldData;
+            return  array_values(array_diff($fieldData, array('', null, false)));
         }
 
         return [];
