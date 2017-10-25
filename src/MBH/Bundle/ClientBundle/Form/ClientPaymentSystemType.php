@@ -6,7 +6,6 @@ use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,7 +17,8 @@ class ClientPaymentSystemType extends AbstractType
     private $paymentSystemsDefault;
     private $taxationRateCodes;
 
-    public function __construct($paymentSystems, $paymentSystemsChange, $paymentSystemsDefault, $taxationRateCodes) {
+    public function __construct($paymentSystems, $paymentSystemsChange, $paymentSystemsDefault, $taxationRateCodes)
+    {
         $this->paymentSystems = $paymentSystems;
         $this->paymentSystemsChange = $paymentSystemsChange;
         $this->paymentSystemsDefault = $paymentSystemsDefault;
@@ -37,7 +37,9 @@ class ClientPaymentSystemType extends AbstractType
         $paypalLogin = null;
 
         $paymentSystemName = $options['paymentSystemName'] ?? $this->paymentSystemsDefault;
-        $default = $clientConfig->getPaymentSystemDocByName($paymentSystemName);
+        $paymentSystemsChoices = array_filter($this->paymentSystems, function ($paymentSystemName) use ($clientConfig, $options) {
+            return !in_array($paymentSystemName, $clientConfig->getPaymentSystems()) || $paymentSystemName == $options['paymentSystemName'];
+        }, ARRAY_FILTER_USE_KEY);
 
         if ($clientConfig) {
             $robokassaMerchantLogin = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantLogin() : '';
@@ -49,7 +51,7 @@ class ClientPaymentSystemType extends AbstractType
             $moneymailKey = $clientConfig->getMoneymail() ? $clientConfig->getMoneymail()->getMoneymailKey() : '';
             $unitellerShopIDP = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerShopIDP() : '';
             $unitellerPassword = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerPassword() : '';
-            $unitellerIsWithFiscalization = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->isWithFiscalization(): true;
+            $unitellerIsWithFiscalization = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->isWithFiscalization() : true;
             $taxationRateCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationRateCode() : '';
             $taxationSystemCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationSystemCode() : '';
             $rbkEshopId = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkEshopId() : '';
@@ -57,37 +59,30 @@ class ClientPaymentSystemType extends AbstractType
             $paypalLogin = $clientConfig->getPaypal() ? $clientConfig->getPaypal()->getPaypalLogin() : '';
         }
 
-        if (!$this->paymentSystemsChange) {
-            $builder
-                ->add(
-                    'paymentSystem',
-                    HiddenType::class,
-                    [
-                        'data' => $default,
-                    ]
-                );
-        } else {
-            $builder
-                ->add(
-                    'paymentSystem',
-                    InvertChoiceType::class,
-                    [
-                        'label' => 'form.clientPaymentSystemType.payment_system',
-                        'choices' => $this->paymentSystems,
-                        'group' => 'form.clientPaymentSystemType.payment_system_group',
-                        'placeholder' => '',
-                        'data' => $default,
-                        'required' => true
-                    ]
-                );
-        }
+        $builder
+            ->add(
+                'paymentSystem',
+                InvertChoiceType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.payment_system',
+                    'choices' => $paymentSystemsChoices,
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'placeholder' => '',
+                    'data' => $paymentSystemName,
+                    'required' => true,
+                    'mapped' => false,
+                    'attr' => ['disabled' => isset($options['paymentSystemName'])]
+                ]
+            );
+
         $builder
             ->add('isUnitellerWithFiscalization', CheckboxType::class, [
                 'mapped' => false,
                 'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
                 'group' => 'form.clientPaymentSystemType.payment_system_group',
                 'data' => $unitellerIsWithFiscalization,
-                'required' => false
+                'required' => false,
+                'attr' => ['class' => 'payment-system-params uniteller'],
             ])
             ->add(
                 'robokassaMerchantLogin',
@@ -257,26 +252,6 @@ class ClientPaymentSystemType extends AbstractType
                     'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $paypalLogin
-                ]
-            )
-            ->add(
-                'successUrl',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.successUrl',
-                    'help' => 'form.clientPaymentSystemType.successUrlDesc',
-                    'group' => 'form.clientPaymentSystemType.payment_system_group_links',
-                    'required' => false,
-                ]
-            )
-            ->add(
-                'failUrl',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.failUrl',
-                    'help' => 'form.clientPaymentSystemType.failUrlDesc',
-                    'group' => 'form.clientPaymentSystemType.payment_system_group_links',
-                    'required' => false,
                 ]
             );
     }

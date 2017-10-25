@@ -52,7 +52,6 @@ class ClientConfig extends Base
      * @var string
      * @Gedmo\Versioned()
      * @ODM\Field(type="string")
-     * @Assert\NotNull()
      * @Assert\Choice(callback="getTimeZonesList")
      */
     protected $timeZone;
@@ -108,7 +107,6 @@ class ClientConfig extends Base
      * @var array
      * @Gedmo\Versioned
      * @ODM\Field(type="collection")
-     * @Assert\Choice(callback = "getAvailablePaymentSystems")
      */
     protected $paymentSystems = [];
 
@@ -543,12 +541,26 @@ class ClientConfig extends Base
 
 
     /**
-     * @param boolean $paymentSystems
+     * @param boolean $paymentSystem
      * @return self
      */
-    public function setPaymentSystems($paymentSystems)
+    public function addPaymentSystem($paymentSystem)
     {
-        $this->paymentSystems = $paymentSystems;
+        if (!in_array($paymentSystem, $this->paymentSystems)) {
+            $this->paymentSystems[] = $paymentSystem;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $paymentSystem
+     * @return ClientConfig
+     */
+    public function removePaymentSystem($paymentSystem)
+    {
+        $this->paymentSystems = array_diff($this->paymentSystems, [$paymentSystem]);
+
         return $this;
     }
 
