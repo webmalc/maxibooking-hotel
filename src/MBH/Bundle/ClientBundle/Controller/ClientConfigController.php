@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Document\Invoice;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
 use MBH\Bundle\ClientBundle\Document\Paypal;
@@ -93,6 +94,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     {
         return [
             'config' => $this->clientConfig,
+            'paymentSystems' => $this->getParameter('mbh.payment_systems')
         ];
     }
 
@@ -225,6 +227,10 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $paypal = new Paypal();
                     $paypal->setPaypalLogin($form->get('paypalLogin')->getData());
                     $config->setPaypal($paypal);
+                    break;
+                case 'invoice':
+                    $invoice = (new Invoice())->setInvoiceDocument($form->get('invoiceDocument')->getData());
+                    $config->setInvoice($invoice);
                     break;
                 default:
                     throw new Exception('Incorrect name of payment system!');

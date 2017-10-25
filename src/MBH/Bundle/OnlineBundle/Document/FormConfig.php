@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\OnlineBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -18,7 +19,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 class FormConfig extends Base
 {
     const paymentTypesList = [
-        "in_hotel", "in_office", "by_receipt", "online_full", "online_first_day", "online_half"
+        "in_hotel",
+        "in_office",
+        "by_receipt",
+        "online_full",
+        "online_first_day",
+        "online_half",
+        "by_receipt_full",
+        "by_receipt_first_day",
+        "by_receipt_half"
     ];
 
     const THEMES = [
@@ -345,7 +354,7 @@ class FormConfig extends Base
 
     public function __construct()
     {
-        $this->hotels = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->hotels = new ArrayCollection();
     }
 
     /**
@@ -493,7 +502,7 @@ class FormConfig extends Base
      * Get paymentTypes
      *
      * @param boolean $online
-     * @return collection $paymentTypes
+     * @return array $paymentTypes
      */
     public function getPaymentTypes($online = true)
     {
@@ -653,8 +662,4 @@ class FormConfig extends Base
 
         return $this;
     }
-
-
-
-
 }

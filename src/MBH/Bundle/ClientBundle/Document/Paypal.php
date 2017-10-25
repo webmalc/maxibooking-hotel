@@ -12,7 +12,7 @@ use MBH\Bundle\ClientBundle\Lib\PaypalIPN;
 /**
  * @ODM\EmbeddedDocument
  */
-class Paypal extends AbstractPaymentSystem implements PaymentSystemInterface
+class Paypal implements PaymentSystemInterface
 {
     /**
      * @var string

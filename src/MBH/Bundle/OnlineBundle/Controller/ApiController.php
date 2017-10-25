@@ -5,10 +5,12 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
 
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -518,6 +520,7 @@ class ApiController extends Controller
             'formConfig' => $formConfig,
             'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig(),
             'request' => $requestJson,
+            'paymentSystems' => $this->getParameter('mbh.payment_systems')
         ];
     }
 
@@ -569,11 +572,17 @@ class ApiController extends Controller
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        if ($requestJson->paymentType == 'in_hotel' || $requestJson->paymentType == 'by_receipt' || !$clientConfig || !$clientConfig->getPaymentSystems()) {
+        if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystems()) {
             $form = false;
+        } elseif (in_array($requestJson->paymentType, ['by_receipt_full', 'by_receipt_half', 'by_receipt_first_day'])) {
+            $form = $this->container->get('twig')->render('@MBHClient/PaymentSystem/invoice.html.twig', [
+                'packageId' => current($packages),
+                'docId' => $this->clientConfig->getInvoice()->getInvoiceDocument()->getId()
+            ]);
         } else {
+            $paymentSystem = $requestJson->paymentSystem;
             $form = $this->container->get('twig')->render(
-                'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystems().'.html.twig',
+                'MBHClientBundle:PaymentSystem:'.$paymentSystem.'.html.twig',
                 [
                     'data' => array_merge(
                         [
@@ -586,13 +595,30 @@ class ApiController extends Controller
                                 'MBHOnlineBundle'
                             ),
                         ],
-                        $clientConfig->getFormData($order->getCashDocuments()[0])
+                        $clientConfig->getFormData($order->getCashDocuments()[0], $paymentSystem)
                     ),
                 ]
             );
         }
 
         return new JsonResponse(['success' => true, 'message' => $message, 'form' => $form]);
+    }
+
+    /**
+     * @Route("payment/generate_invoice/{id}", name="generate_invoice")
+     * @param Package $package
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws Exception
+     */
+    public function generateInvoiceAction(Package $package)
+    {
+        if (($package->getCreatedAt()->diff(new \DateTime()))->m > 30) {
+            throw new Exception('Incorrect package id for invoice generator!');
+        }
+        return $this->redirectToRoute('document_templates_show', [
+            'id' => $this->clientConfig->getInvoice()->getInvoiceDocument()->getId(),
+            'packageId' => $package->getId()
+        ]);
     }
 
     /**

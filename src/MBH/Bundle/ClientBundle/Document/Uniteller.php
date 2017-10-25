@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @ODM\EmbeddedDocument
  */
-class Uniteller extends AbstractPaymentSystem implements PaymentSystemInterface
+class Uniteller implements PaymentSystemInterface
 {
     const COMMISSION = 0.035;
 

@@ -147,6 +147,12 @@ class ClientConfig extends Base
     protected $paypal;
 
     /**
+     * @var Invoice
+     * @ODM\EmbedOne(targetDocument="Invoice")
+     */
+    protected $invoice;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
@@ -261,6 +267,25 @@ class ClientConfig extends Base
      * @Assert\Type(type="float")
      */
     protected $currencyRatioFix = 1.015;
+
+    /**
+     * @return Invoice
+     */
+    public function getInvoice(): ?Invoice
+    {
+        return $this->invoice;
+    }
+
+    /**
+     * @param Invoice $invoice
+     * @return ClientConfig
+     */
+    public function setInvoice(Invoice $invoice): ClientConfig
+    {
+        $this->invoice = $invoice;
+
+        return $this;
+    }
 
     /**
      * @return bool

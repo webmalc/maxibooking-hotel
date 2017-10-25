@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\ClientBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -35,6 +37,7 @@ class ClientPaymentSystemType extends AbstractType
         $unitellerIsWithFiscalization = $unitellerShopIDP = $unitellerPassword = $taxationSystemCode = $taxationRateCode = null;
         $rbkEshopId = $rbkSecretKey = null;
         $paypalLogin = null;
+        $invoiceDocument = null;
 
         $paymentSystemName = $options['paymentSystemName'] ?? $this->paymentSystemsDefault;
         $paymentSystemsChoices = array_filter($this->paymentSystems, function ($paymentSystemName) use ($clientConfig, $options) {
@@ -57,6 +60,7 @@ class ClientPaymentSystemType extends AbstractType
             $rbkEshopId = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkEshopId() : '';
             $rbkSecretKey = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkSecretKey() : '';
             $paypalLogin = $clientConfig->getPaypal() ? $clientConfig->getPaypal()->getPaypalLogin() : '';
+            $invoiceDocument = $clientConfig->getInvoice() ? $clientConfig->getInvoice()->getInvoiceDocument() : null;
         }
 
         $builder
@@ -242,6 +246,14 @@ class ClientPaymentSystemType extends AbstractType
                     'data' => $rbkSecretKey
                 ]
             )
+            ->add('invoiceDocument', DocumentType::class, [
+                'class' => DocumentTemplate::class,
+                'mapped' => false,
+                'data' => $invoiceDocument,
+                'required' => false,
+                'attr' => ['class' => 'payment-system-params invoice'],
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+            ])
             ->add(
                 'paypalLogin',
                 TextType::class,

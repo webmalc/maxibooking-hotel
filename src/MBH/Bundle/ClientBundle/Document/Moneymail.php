@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @ODM\EmbeddedDocument
  */
-class Moneymail extends AbstractPaymentSystem implements PaymentSystemInterface
+class Moneymail implements PaymentSystemInterface
 {
     /**
      * @var string
