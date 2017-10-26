@@ -5,6 +5,24 @@ $(document).ready(function ($) {
     //Show table
     $('#dynamic-sales-filter-begin2').val('');
     $('#dynamic-sales-filter-begin3').val('');
+    var $roomTypeOptionsSelect = $('#dynamic-sales-filter-roomType');
+
+    var wasTotalValuesSelected = false;
+    $roomTypeOptionsSelect.on("change", (function () {
+        var selectedOptions = $roomTypeOptionsSelect.val();
+        var isTotalValueSelected = selectedOptions && selectedOptions.indexOf('total') > -1;
+        if (!wasTotalValuesSelected && isTotalValueSelected && selectedOptions.length > 1) {
+            $roomTypeOptionsSelect.val('total').trigger('change');
+            wasTotalValuesSelected = true;
+        } else if (wasTotalValuesSelected && isTotalValueSelected) {
+            selectedOptions.splice(selectedOptions.indexOf('total'), 1);
+            $roomTypeOptionsSelect.val(selectedOptions[0]).trigger('change');
+            wasTotalValuesSelected = false;
+        } else {
+            wasTotalValuesSelected = isTotalValueSelected;
+        }
+    }));
+
     var pricesProcessing = false,
         showTable = function () {
             var wrapper = $('#dynamic-sales-table-wrapper'),
@@ -21,7 +39,7 @@ $(document).ready(function ($) {
             var data = {
                 'begin': begin,
                 'end': end,
-                'roomTypes': $('#dynamic-sales-filter-roomType').val(),
+                'roomTypes': $roomTypeOptionsSelect.val(),
                 'optionsShow': $('#dynamic-sales-show-filter-roomType').val()
             };
 

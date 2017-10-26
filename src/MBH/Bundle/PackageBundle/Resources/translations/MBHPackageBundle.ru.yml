@@ -496,4 +496,4 @@ dynamic.sales.dates: Даты
 dynamic.sales.show.title: Отображаемые категории
 dynamic.sales.type.room: Тип номера
 dynamic.sales.result: Итого
-
+dynamic_sales.room_type_options.total: 'Итого'
