@@ -1,4 +1,4 @@
-<form class="payment-system-form" {{ data.formId is defined ? 'id="' ~ data.formId ~'"'}}method="post" action="{{ data.test is defined and data.test ? data.testAction|default('') : data.action|default('') }}">
+<form target="_top"  class="payment-system-form" {{ data.formId is defined ? 'id="' ~ data.formId ~'"'}}method="post" action="{{ data.test is defined and data.test ? data.testAction|default('') : data.action|default('') }}">
     <input type="hidden" class="payment-system-form-shop-id" name="Shop_IDP" value="{{ data.shopId|default('') }}">
     <input type="hidden" class="payment-system-form-total" name="Subtotal_P" value="{{ data.total|default('') }}">
     <input type="hidden" class="payment-system-form-order-id" name="Order_IDP" value="{{ data.orderId|default('') }}">
