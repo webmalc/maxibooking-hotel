@@ -528,12 +528,15 @@ class ApiController extends Controller
      */
     public function createPackagesAction(Request $request)
     {
+//        $this->addAccessControlAllowOriginHeaders();
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $requestJson = json_decode($request->getContent());
 
         //Create packages
-        $order = $this->createPackages($requestJson, ($requestJson->paymentType != 'in_hotel' || $requestJson->paymentType != 'by_receipt'));
+        $isWithCashCashDocument = $requestJson->paymentType != 'in_hotel'
+            || (substr($requestJson->paymentType, 0, strlen('by_receipt')) === 'by_receipt');
+        $order = $this->createPackages($requestJson, $isWithCashCashDocument);
 
         if (empty($order)) {
             return new JsonResponse(

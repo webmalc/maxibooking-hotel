@@ -26,6 +26,8 @@ class ApiResponseCompiler
     const ROOM_TYPE_WITH_SPECIFIED_ID_NOT_EXISTS = 'external_api_controller.error.room_type_with_specified_id_not_exists';
     const FORM_CONFIG_NOT_CONTAINS_SPECIFIED_ROOM_TYPE = 'external_api_controller.error.specified_room_type_not_contains_in_form_config';
     const FORM_CONFIG_NOT_CONTAINS_SPECIFIED_HOTEL = 'external_api_controller.error.specified_hotel_not_contains_in_form_config';
+    const ORDER_WITH_SPECIFIED_ID_TO_EXISTS = 'external_api_controller.error.order_not_exists';
+    const TARIFF_WITH_SPECIFIED_ID_NOT_EXISTS = 'external_api_controller.error.tariff_with_specified_id_not_exists';
 
     public function __construct(TranslatorInterface $translator) {
         $this->translator = $translator;
