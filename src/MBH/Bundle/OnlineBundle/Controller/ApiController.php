@@ -684,7 +684,6 @@ class ApiController extends Controller
                 'accommodation' => false,
                 'tariff' => $info->tariff->id,
                 'isOnline' => true,
-                'accommodation' => false,
             ];
         }
         foreach ($request->services as $info) {
@@ -704,10 +703,14 @@ class ApiController extends Controller
                         'birthday' => $request->user->birthday,
                         'email' => $request->user->email,
                         'phone' => $request->user->phone,
+                        'inn' => $request->user->inn,
+                        'patronymic' => $request->user->patronymic,
+                        'documentNumber' => $request->user->documentNumber
                     ],
                     'status' => 'online',
                     'order_note' => $request->note,
                     'confirmed' => false,
+                    'onlineFormId' => $request->configId
                 ],
                 null,
                 null,

@@ -46,10 +46,14 @@ views.api.getResultsTable.nothing_found_for_your_query: 'По вашему за�
 views.api.getUserForm.enter_data_to_continue: 'Заполните данные для продолжения'
 views.api.getUserForm.surname: Фамилия
 views.api.getUserForm.placeholder_surname: Иванов
+views.api.getUserForm.patronymic: Отчество
+views.api.get_user_form.default_patronymic: 'Иванович'
 views.api.getUserForm.name: Имя
 views.api.getUserForm.phone: Телефон
 views.api.getUserForm.email: E-mail
 views.api.getUserForm.placeholder_email: mail@example.com
+views.api.getUserForm.inn: ИИН
+views.api.getUserForm.document_number: 'Номер удостоверения личности/ паспорта'
 views.api.getUserForm.birth_date: 'День рождения'
 views.api.getUserForm.check_in_time: 'Время заезда'
 views.api.getUserForm.check_out_time: 'Время отъезда'
