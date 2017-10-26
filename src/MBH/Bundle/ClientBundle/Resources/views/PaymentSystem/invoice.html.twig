@@ -1,3 +1,1 @@
-<form action="{{ path('document_templates_show', {'packageId': packageId, 'id': docId}) }}">
-    <button class="btn btn-info"><i class="fa fa-cc-visa"></i>&nbsp;Скачать счет</button>
-</form>
+<a target="_blank" href="{{ path('generate_invoice', {'id': packageId}) }}" class="btn btn-info"><i class="fa fa-cc-visa"></i>&nbsp;Скачать счет</a>

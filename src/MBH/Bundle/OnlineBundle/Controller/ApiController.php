@@ -224,11 +224,14 @@ class ApiController extends Controller
 
     /**
      * Results js
-     * @Route("/order/check", name="online_form_check_order")
+     * @Route("/order/check/{paymentSystemName}", name="online_form_check_order")
      * @Method({"POST", "GET"})
      * @Template()
+     * @param Request $request
+     * @param $paymentSystemName
+     * @return Response
      */
-    public function checkOrderAction(Request $request)
+    public function checkOrderAction(Request $request, $paymentSystemName)
     {
         /** @var DocumentManager $dm */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -244,7 +247,7 @@ class ApiController extends Controller
             $logger->info('FAIL. '.$logText.' .Not found config');
             throw $this->createNotFoundException();
         }
-        $response = $clientConfig->checkRequest($request);
+        $response = $clientConfig->checkRequest($request, $paymentSystemName);
 
         if (!$response) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
@@ -576,8 +579,7 @@ class ApiController extends Controller
             $form = false;
         } elseif (in_array($requestJson->paymentType, ['by_receipt_full', 'by_receipt_half', 'by_receipt_first_day'])) {
             $form = $this->container->get('twig')->render('@MBHClient/PaymentSystem/invoice.html.twig', [
-                'packageId' => current($packages),
-                'docId' => $this->clientConfig->getInvoice()->getInvoiceDocument()->getId()
+                'packageId' => current($packages)->getId(),
             ]);
         } else {
             $paymentSystem = $requestJson->paymentSystem;
