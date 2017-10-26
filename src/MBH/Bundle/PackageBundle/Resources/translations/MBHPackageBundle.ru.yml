@@ -463,4 +463,5 @@ dynamic.sales.day.sum-paid-to-clients-for-period-for-removed: Оплата А/Р
 dynamic.sales.dates: Даты
 dynamic.sales.show.title: Отображаемые категории
 dynamic.sales.type.room: Тип номера
+dynamic_sales.room_type_options.total: 'Итого'
 dynamic.sales.result: Итого
