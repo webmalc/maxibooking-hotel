@@ -27,7 +27,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Tariff extends Base implements ConditionsInterface
 {
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -737,7 +736,7 @@ class Tariff extends Base implements ConditionsInterface
 
         return $this;
     }
-    
+
     /**
      * @param bool $isFull
      * @return array
@@ -748,6 +747,7 @@ class Tariff extends Base implements ConditionsInterface
             'id' => $this->getId(),
             'title' => $this->getName(),
             'description' => $this->getDescription() ?? '',
+            'hotel' => $this->getHotel()->getId()
         ];
         if ($isFull) {
             $comprehensiveData = [
