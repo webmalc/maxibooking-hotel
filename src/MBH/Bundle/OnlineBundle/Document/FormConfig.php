@@ -190,6 +190,30 @@ class FormConfig extends Base
     private $personalDataPolicies;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Gedmo\Versioned
+     * @Assert\NotNull()
+     */
+    private $requestInn = false;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Gedmo\Versioned
+     * @Assert\NotNull()
+     */
+    private $requestTouristDocumentNumber = false;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Gedmo\Versioned
+     * @Assert\NotNull()
+     */
+    private $requestPatronymic = false;
+
+    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="int")
@@ -237,6 +261,63 @@ class FormConfig extends Base
      * @ODM\Field(type="boolean")
      */
     private $isHorizontal = false;
+
+    /**
+     * @return bool
+     */
+    public function isRequestPatronymic(): ?bool
+    {
+        return $this->requestPatronymic;
+    }
+
+    /**
+     * @param bool $requestPatronymic
+     * @return FormConfig
+     */
+    public function setRequestPatronymic(bool $requestPatronymic): FormConfig
+    {
+        $this->requestPatronymic = $requestPatronymic;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequestInn(): ?bool
+    {
+        return $this->requestInn;
+    }
+
+    /**
+     * @param bool $requestInn
+     * @return FormConfig
+     */
+    public function setRequestInn(bool $requestInn): FormConfig
+    {
+        $this->requestInn = $requestInn;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequestTouristDocumentNumber(): ?bool
+    {
+        return $this->requestTouristDocumentNumber;
+    }
+
+    /**
+     * @param bool $requestTouristDocumentNumber
+     * @return FormConfig
+     */
+    public function setRequestTouristDocumentNumber(bool $requestTouristDocumentNumber): FormConfig
+    {
+        $this->requestTouristDocumentNumber = $requestTouristDocumentNumber;
+
+        return $this;
+    }
 
     /**
      * @return string

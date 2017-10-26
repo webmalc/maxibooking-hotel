@@ -50,6 +50,7 @@
                                         </a>
                                     {% endfor %}
                                     </div>
+                                    <input type="hidden" id="mbh-form-locale" value="{{ app.request.locale }}">
                                     <span class="mbh-results-roomType"
                                           data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle(app.request.locale) }}</span>
                                     <span class="mbh-results-hotel"

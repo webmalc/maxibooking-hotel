@@ -33,6 +33,7 @@ $(document).ready(function ($) {
                 data: data,
                 success: function (response) {
                     table.html(response);
+                    setVerticalScrollable($('.vertical-scrollable').first(), document.getElementById('windows-report-content'));
                     processLinks();
                     $('.descr').readmore({
                         moreLink: '<div class="more-link"><a href="#">'+$('#expand-window').text() +' <i class="fa fa-caret-right"></i></a></div>',

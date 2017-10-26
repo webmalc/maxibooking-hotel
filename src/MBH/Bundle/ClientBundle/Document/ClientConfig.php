@@ -135,6 +135,12 @@ class ClientConfig extends Base
     protected $uniteller;
 
     /**
+     * @var RNKB
+     * @ODM\EmbedOne(targetDocument="RNKB")
+     */
+    protected $rnkb;
+
+    /**
      * @var Rbk
      * @ODM\EmbedOne(targetDocument="Rbk")
      */
@@ -549,6 +555,25 @@ class ClientConfig extends Base
     }
 
     /**
+     * @return RNKB
+     */
+    public function getRnkb()
+    {
+        return $this->rnkb;
+    }
+
+    /**
+     * @param RNKB $rnkb
+     * @return ClientConfig
+     */
+    public function setRnkb(RNKB $rnkb): ClientConfig
+    {
+        $this->rnkb = $rnkb;
+
+        return $this;
+    }
+
+    /**
      * @return Rbk
      */
     public function getRbk()
@@ -926,7 +951,8 @@ class ClientConfig extends Base
             "moneymail",
             "uniteller",
             "paypal",
-            "rbk"
+            "rbk",
+            "rnkb"
         ];
     }
 }
