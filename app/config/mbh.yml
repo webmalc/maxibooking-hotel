@@ -192,6 +192,7 @@ parameters:
       uniteller: 'Uniteller'
       rbk: 'Rbk'
       paypal: 'PayPal'
+      rnkb: 'Rnkb'
     mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: "%mbh_payment_systems_change%"
 
