@@ -29,6 +29,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/report")
@@ -138,14 +139,14 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ->addChild('arrivals', [
                 'route' => 'report_porter',
                 'routeParameters' => ['type' => 'arrivals'],
-                'label' => 'Заезд'
+                'label' => $this->get('translator')->trans('report.porter.menu.arrival')
             ]);
         $menuItem
             ->addChild('lives', ['route' => 'report_porter', 'routeParameters' => ['type' => 'lives']])
-            ->setLabel('Проживание');
+            ->setLabel($this->get('translator')->trans('report.porter.menu.accommodation'));
         $menuItem
             ->addChild('out', ['route' => 'report_porter', 'routeParameters' => ['type' => 'out']])
-            ->setLabel('Выезд');
+            ->setLabel($this->get('translator')->trans('report.porter.menu.departure'));
 
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
@@ -276,7 +277,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'paid' => 0,
         ];
 
-        $iteratedOrderIds = [];
         foreach ($packages as $package) {
             /** @var Package $package */
             if (empty($package->getOrder()->getChannelManagerType())
@@ -304,14 +304,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                     $dayTotal[$day] = $default;
                 }
                 $packageOrderId = $package->getOrder()->getId();
-                $add = function ($entry, Package $package) use ($packageOrderId, $iteratedOrderIds) {
+                $add = function ($entry, Package $package) use ($packageOrderId) {
                     $entry['sold']++;
                     $entry['packagePrice'] += $package->getPackagePrice();
                     $entry['price'] += $package->getPrice();
                     $entry['servicesPrice'] += $package->getServicesPrice();
-                    if (!in_array($packageOrderId, $iteratedOrderIds)) {
-                        $entry['paid'] += $package->getPaid();
-                    }
+                    $entry['paid'] += $package->getCalculatedPayment();
                     foreach ($package->getServices() as $packageService) {
                         $entry['services'] += $packageService->getTotalAmount();
                     }
@@ -322,7 +320,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 $data[$user][$day] = $add($data[$user][$day], $package);
                 $total[$user] = $add($total[$user], $package);
                 $dayTotal[$day] = $add($dayTotal[$day], $package);
-                $iteratedOrderIds[] = $packageOrderId;
             }
             $allTotal = $default;
             foreach ($total as $i => $tData) {
@@ -364,7 +361,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             }
 
             $end->modify('+ 23 hours  59 minutes');
-            $roomTypeIds = $helper->toIds($hotel->getRoomTypes());
 
             $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findBy([
                 'isCheckIn' => true,
@@ -380,7 +376,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
             if (!$zipFile) {
                 return [
-                    'message' => 'Нет данных для выгрузки'
+                    'message' => $this->get('translator')->trans('controller.report_controller.fms_report_error.no_data_for_upload')
                 ];
             }
 
@@ -578,7 +574,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\Response
      * @Route("/filling/table", name="report_filling_table", options={"expose"=true})
      * @Method({"GET"})
      * @Security("is_granted('ROLE_ROOMS_REPORT')")
@@ -606,7 +602,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         if ($begin->diff($end)->days > 90) {
             return $this->render('MBHPackageBundle:Report:reportFillingTableError.html.twig', [
-                'message' => 'Период не должен превышать 90 дней'
+                'message' => $this->get('translator')->trans('controller.report_controller.filling_table_error.period_can_not_be_more_than')
             ]);
         }
 
@@ -819,5 +815,102 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
+    }
+
+    /**
+     * @Security("is_granted('ROLE_DAILY_REPORT_BY_PACKAGES')")
+     * @Route("/packages_daily_report", name="packages_daily_report" )
+     * @Template()
+     * @return array
+     */
+    public function packagesDailyReportAction()
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $begin = new \DateTime('midnight - 30 days');
+        $end = new \DateTime('midnight');
+
+        list($calculationBegin, $calculationEnd) = $this->helper->getDefaultDatesOfSettlement();
+
+        return [
+            'begin' => $begin,
+            'end' => $end,
+            'calculationBegin' => $calculationBegin,
+            'calculationEnd' => $calculationEnd,
+            'hotels' => $hotels,
+        ];
+    }
+
+    /**
+     * @Security("is_granted('ROLE_DAILY_REPORT_BY_PACKAGES')")
+     * @Route("/packages_daily_report_table", name="packages_daily_report_table", options={"expose"=true} )
+     * @param Request $request
+     * @return Response
+     */
+    public function packagesDailyReportTableAction(Request $request)
+    {
+        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
+
+        $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
+        $end = $this->helper->getDateFromString($request->query->get('end'))
+            ?? (clone $defaultBeginDate)->modify('+45 days');
+
+        list($defaultCalculationBegin, $defaultCalculationEnd) = $this->helper->getDefaultDatesOfSettlement();
+        $calculationBegin = $this->helper->getDateFromString($request->query->get('calcBegin'))
+            ?? $defaultCalculationBegin;
+        $calculationEnd = $this->helper->getDateFromString($request->query->get('calcEnd'))
+            ?? $defaultCalculationEnd;
+
+        $hotels = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')));
+
+        $report = $this->get('mbh.packages_daily_report_compiler')
+            ->generate($begin, $end, $hotels->toArray(), $calculationBegin, $calculationEnd);
+
+        return $report->generateReportTableResponse();
+    }
+
+    /**
+     * @Template()
+     * @Security("is_granted('ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT')")
+     * @Route("/distribution_by_days_of_the_week", name="distribution_by_days_of_the_week", options={"expose"=true})
+     */
+    public function packagesByDaysOfWeekAction()
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+
+        return [
+            'hotels' => $hotels,
+        ];
+    }
+
+    /**
+     * @Security("is_granted('ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT')")
+     * @Route("/distribution_report_table", name="distribution_report_table", options={"expose"=true})
+     * @param Request $request
+     * @return Response
+     */
+    public function distributionReportTableAction(Request $request)
+    {
+        $defaultBeginDate = $this->clientConfig->getActualBeginDate();
+
+        $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
+        $end = $this->helper->getDateFromString($request->query->get('end'))
+            ?? (clone $defaultBeginDate)->modify('+45 days');
+
+        $creationBegin = $this->helper->getDateFromString($request->query->get('creationBegin'));
+        $creationEnd = $this->helper->getDateFromString($request->query->get('creationEnd'));
+        $hotels = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')), false)
+            ->toArray();
+
+        $groupType = $request->query->get('group_type');
+        $type = $request->query->get('type');
+
+        $report = $this->get('mbh.distribution_report_compiler')
+            ->generate($begin, $end, $hotels, $groupType, $type, $creationBegin, $creationEnd);
+
+        return $report->generateReportTableResponse();
     }
 }

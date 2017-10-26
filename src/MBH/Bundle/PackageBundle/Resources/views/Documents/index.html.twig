@@ -55,7 +55,7 @@
                                     <div>{{ document.payer.name }}</div>
                                     {% if document.tourist and document.tourist.birthday %}
                                         <small>{{ document.tourist.birthday|date("d.m.Y") }}
-                                            Возраст: {{ document.tourist.age }}</small>
+                                            {{ 'documents.index.age'|trans}}: {{ document.tourist.age }}</small>
                                     {% endif %}
                                 {% endif %}
                             </td>

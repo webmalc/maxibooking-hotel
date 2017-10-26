@@ -13,7 +13,13 @@ security:
         dev:
             pattern:    ^/(_profiler|_wdt|css|js)
             security:   false
+        # https://github.com/FriendsOfSymfony/FOSJsRoutingBundle/issues/140#issue-31895197
+        js_router:
+            pattern: ^/(js\/routing|profile\/js\/routing)
+            security: false
         main:
+#           Dev test only
+#            http_basic: ~
             pattern: ^/
             form_login:
                 always_use_default_target_path: false
@@ -35,9 +41,12 @@ security:
                 path:     /
                 domain:   ~
 
+
     access_control:
+        - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/media/cache/resolve, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/user/login$, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' } 

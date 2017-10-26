@@ -25,6 +25,12 @@
             <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
                 {{ 'mailer.order.number'|trans(transParams) }}
             </th>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+                {{ 'mailer.order.arrival'|trans(transParams) }}
+            </th>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+                {{ 'mailer.order.departure'|trans(transParams) }}
+            </th>
             <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:18%;">
                 {{ 'mailer.order.cost'|trans(transParams) }}
             </th>
@@ -54,6 +60,12 @@
                             , {{ package.children }} {{ 'mbhbasebundle.views.mailer.rb'|trans }}.
                         {% endif %}
                     </small>
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                    {{ package.arrivalTime ? package.arrivalTime|date('H:i') : package.hotel.packageArrivalTime ~ ':00' }}
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                    {{ package.departureTime ? package.departureTime|date('H:i') : package.hotel.packageDepartureTime ~ ':00' }}
                 </td>
                 <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">{{ package.packagePrice|number_format(2) }}</td>
             </tr>
@@ -108,9 +120,6 @@
     {% endif %}
 
     <div style="padding:10px 0;margin:5px 0 20px;">
-        <!--<div style="width:50%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;"><b>Способ
-                оплаты:</b> Наличными в отеле
-        </div>-->
         <div style="width:100%;text-align:right;font-family:Tahoma,Arial;color:#333;font-size:14px;"><b>{{ 'mailer.order.amount'|trans(transParams) }}:</b>
             {{ order.price|number_format(2) }}
         </div>
@@ -147,26 +156,6 @@
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
                         {{ order.payer.email }}
-                    </td>
-                </tr>
-            {% endif %}
-            {% if arrivalTime is defined and arrivalTime %}
-                <tr>
-                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:42%;">
-                        {{ 'mailer.order.arrival_time'|trans(transParams) }}:
-                    </td>
-                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
-                        {{ arrivalTime|date('H:i') }}
-                    </td>
-                </tr>
-            {% endif %}
-            {% if departureTime is defined and departureTime %}
-                <tr>
-                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">
-                        {{ 'mailer.order.departure_time'|trans(transParams) }}:
-                    </td>
-                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
-                        {{ departureTime|date('H:i') }}
                     </td>
                 </tr>
             {% endif %}

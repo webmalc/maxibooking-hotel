@@ -30,7 +30,8 @@ class RoomsType extends AbstractType
                 },
                 'placeholder' => '',
                 'required' => false,
-                'attr' => ['placeholder' => 'roomtype.placeholder']
+                'attr' => ['placeholder' => 'roomtype.placeholder'],
+                'group' => isset($options['groupName']) ? $options['groupName'] : ''
             ]);
         }
     }

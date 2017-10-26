@@ -3,6 +3,10 @@
 namespace MBH\Bundle\UserBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -17,7 +21,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -25,6 +29,13 @@ class UserType extends AbstractType
 {
     private $isNew;
     private $roles;
+    private $translator;
+    /** @var  DocumentManager */
+    private $dm;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -98,33 +109,37 @@ class UserType extends AbstractType
                 'group' => 'form.userType.settings',
                 'required' => false,
             ])
-        ;
-
-        $builder
-            ->add('notifications', CheckboxType::class, [
-                'group' => 'form.userType.notifications_fieldset',
-                'label' => 'form.userType.notifications',
-                'value' => true,
-                'required' => false,
-            ])
-            ->add('taskNotify', CheckboxType::class, [
-                'group' => 'form.userType.notifications_fieldset',
-                'label' => 'form.userType.taskNotify',
-                'value' => true,
-                'required' => false,
-            ])
-            ->add('reports', CheckboxType::class, [
-                'group' => 'form.userType.notifications_fieldset',
-                'label' => 'form.userType.reports',
-                'value' => true,
-                'required' => false,
-            ])
-            ->add('errors', CheckboxType::class, [
-                'group' => 'form.userType.notifications_fieldset',
-                'label' => 'form.userType.errors',
-                'value' => true,
-                'required' => false,
-            ])
+            ->add(
+                'allowNotificationTypes',
+                DocumentType::class,
+                [
+                    'group' => 'form.clientConfigType.notification_group',
+                    'label' => 'form.clientConfigType.notification.staff.label',
+                    'help' => 'form.clientConfigType.notification.staff.help',
+                    'required' => false,
+                    'multiple' => true,
+                    'class' => NotificationType::class,
+                    'query_builder' => function (DocumentRepository $repository) {
+                        return $repository
+                            ->createQueryBuilder()
+                            ->field('owner')
+                            ->in(
+                                [
+                                    NotificationType::OWNER_STUFF,
+                                    NotificationType::OWNER_ALL,
+                                ]
+                            );
+                    },
+                    'choice_label' => function (NotificationType $type) {
+                        return 'notifier.config.label.'.$type->getType();
+                    },
+                    'choice_attr' => function (NotificationType $type) {
+                        return ['title' => 'notifier.config.title.'.$type->getType()];
+                    },
+                    #http://symfony.com/blog/new-in-symfony-2-7-form-and-validator-updates#added-choice-translation-domain-domain-to-avoid-translating-options
+                    'choice_translation_domain' => true
+                ]
+            )
             ->add('lastName', TextType::class, [
                 'required' => false,
                 'label' => 'form.userType.surname',
@@ -152,8 +167,8 @@ class UserType extends AbstractType
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'),
             ))
             ->add('locale', LocaleType::class, [
-                'label' => 'form.userType.locale'
-
+                'label' => 'form.userType.locale',
+                'group' => 'form.userType.general_info',
             ])
         ;
 
@@ -161,7 +176,7 @@ class UserType extends AbstractType
             $form = $event->getForm();
             $hotelsFiled = $form->get('hotels');
             if ($form->get('isEnabledWorkShift')->getData() && count($hotelsFiled->getData()) != 1) {
-                $hotelsFiled->addError(new FormError('Для включения рабочих смен должен быть выбран один отель'));
+                $hotelsFiled->addError(new FormError($this->translator->trans('form.userType.need_at_least_one_hotel')));
             }
         };
 

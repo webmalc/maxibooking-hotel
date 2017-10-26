@@ -1,6 +1,6 @@
 {% spaceless %}
 <div id="mbh-results-global-wrapper" xmlns="http://www.w3.org/1999/html">
-    {%  if request.packages|length and request.user|length and formConfig is not null %}
+    {%  if request.packages|length and request.user|length and formConfig is not null and (formConfig.personalDataPolicies is empty or request.isConfrmWithPersDataProcessing) %}
 
         <div id="mbh-package-info">
             {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.begin }} - {{ request.end }}.</strong>
@@ -29,7 +29,7 @@
                 {% for paymentType in formConfig.getPaymentTypes(clientConfig.paymentSystemDoc) %}
                     <div class="mbh-payment-type-row" data-type="{{ paymentType }}">
                         <input {% if formConfig.getPaymentTypes(clientConfig.paymentSystemDoc)|length == 1 %}checked style="display:none;"{% endif %} type="radio" class="mbh-payment-types-radio" name="paymentType" value="{{ paymentType }}" id="{{ paymentType }}_radio" required><label for="{{ paymentType }}_radio" class="mbh-payment-type-label">{{ ('payment_types.' ~ paymentType)|trans }}</label>
-                        {% if paymentType == 'in_hotel' %}
+                        {% if paymentType == 'in_hotel' or paymentType == 'by_receipt' %}
                             <div class="mbh-payment-type-row-total">{{ request.total }} {{ currency().text }}</div>
                             <p> {{ 'views.api.getPaymentType.payment_fine'|trans({}, 'MBHOnlineBundle') }}</p>
                         {% endif %}
@@ -63,7 +63,7 @@
             </button>
         </div>
     {% else %}
-        <div class="mbh-results-error"><i class="fa fa-exclamation-circle"> </i> {{ 'views.api.getPaymentType.reservation_error_try_again'|trans({}, 'MBHOnlineBundle') }}  Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.</div>
+        <div class="mbh-results-error"><i class="fa fa-exclamation-circle"> </i> {{ 'views.api.getPaymentType.reservation_error_try_again'|trans({}, 'MBHOnlineBundle') }}</div>
     {% endif %}
     </div>
 {% endspaceless %}

@@ -1,0 +1,51 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block toolbar %}
+    {% set icon %}
+        <span class="icon"><img
+                    src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeD0iMHB4IiB5PSIwcHgiIHZpZXdCb3g9IjAgMCA1MTEuOTk5IDUxMS45OTkiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDUxMS45OTkgNTExLjk5OTsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik00NzEuMjQ2LDI0Ljc2Nkg0MC43NTRDMTguMjgzLDI0Ljc2NiwwLDQzLjA0OSwwLDY1LjUydjU5LjIyN2MwLDQuNjAyLDMuNzMxLDguMzMyLDguMzMyLDguMzMyICAgIGM0LjYwMSwwLDguMzMyLTMuNzMxLDguMzMyLTguMzMyVjY1LjUyYzAtMTMuMjg0LDEwLjgwNy0yNC4wOSwyNC4wOS0yNC4wOWg0MzAuNDkyYzEzLjI4NCwwLDI0LjA5LDEwLjgwNywyNC4wOSwyNC4wOXYyODQuNDExICAgIGgtNTIuMjFjLTQuNjAyLDAtOC4zMzIsMy43MzEtOC4zMzIsOC4zMzJzMy43MzEsOC4zMzIsOC4zMzIsOC4zMzJoNTIuMjF2MTUuMjczYzAsMTMuMjg0LTEwLjgwNywyNC4wOS0yNC4wOSwyNC4wOWgtMTU1LjQxICAgIEgxOTYuMTY0SDQwLjc1NGMtMTMuMjg0LDAtMjQuMDktMTAuODA3LTI0LjA5LTI0LjA5di0xNS4yNzNoMzk4LjY4OGM0LjYwMiwwLDguMzMyLTMuNzMxLDguMzMyLTguMzMycy0zLjczMS04LjMzMi04LjMzMi04LjMzMiAgICBIMTYuNjY0VjE1Mi41MjJjMC00LjYwMi0zLjczMS04LjMzMi04LjMzMi04LjMzMmMtNC42MDEsMC04LjMzMiwzLjczLTguMzMyLDguMzMyVjM4MS44N2MwLDIyLjQ3MiwxOC4yODMsNDAuNzU0LDQwLjc1NCw0MC43NTQgICAgSDE4My41NGwtMjAuNDk0LDQ3Ljk0NWgtNDAuMDM0Yy00LjYwMiwwLTguMzMyLDMuNzMxLTguMzMyLDguMzMyczMuNzMxLDguMzMyLDguMzMyLDguMzMyaDI2NS45NzUgICAgYzQuNjAyLDAsOC4zMzItMy43MzEsOC4zMzItOC4zMzJzLTMuNzMxLTguMzMyLTguMzMyLTguMzMyaC00MC4wMzRsLTIwLjQ5NC00Ny45NDVoMTQyLjc4NmMyMi40NzIsMCw0MC43NTQtMTguMjgyLDQwLjc1NC00MC43NTQgICAgVjY1LjUyQzUxMiw0My4wNDksNDkzLjcxNywyNC43NjYsNDcxLjI0NiwyNC43NjZ6IE0zMzAuODMsNDcwLjU2OEgxODEuMTdsMTQuMjM4LTMzLjMxaDEyMS4xODNMMzMwLjgzLDQ3MC41Njh6IiBmaWxsPSIjRkZGRkZGIi8+Cgk8L2c+CjwvZz4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNMjYyLjkyNSwzNzkuNjc4Yy0xLjkxNC0yLjkwNi01LjU4My00LjI5OC04Ljk1Mi0zLjQ1N2MtMy41MTcsMC44NzktNi4xMTYsNC4wNDgtNi4yOTEsNy42NyAgICBjLTAuMzY0LDcuNTM0LDkuMTA3LDExLjYyOSwxNC4zMyw2LjE3MkMyNjQuNjc0LDM4Ny4yODIsMjY1LjA4OSwzODIuODg3LDI2Mi45MjUsMzc5LjY3OHoiIGZpbGw9IiNGRkZGRkYiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K"/></span>
+        <span class="sf-toolbar-value">{{ collector.user }}</span>
+    {% endset %}
+
+    {% set text %}
+        {% if collector.dirs is iterable %}
+            {% for dirname, dir in collector.dirs %}
+                <div class="sf-toolbar-info-piece">
+                    <br><b>{{ dirname }}</b>
+                    <span>{{ dir }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+    {% endset %}
+
+
+    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: true }) }}
+{% endblock toolbar %}
+
+{% block head %}
+    {{ parent() }}
+{% endblock %}
+
+{% block menu %}
+    <span class="label">
+        <span class="icon"><img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeD0iMHB4IiB5PSIwcHgiIHZpZXdCb3g9IjAgMCA1MTEuOTk5IDUxMS45OTkiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDUxMS45OTkgNTExLjk5OTsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik00NzEuMjQ2LDI0Ljc2Nkg0MC43NTRDMTguMjgzLDI0Ljc2NiwwLDQzLjA0OSwwLDY1LjUydjU5LjIyN2MwLDQuNjAyLDMuNzMxLDguMzMyLDguMzMyLDguMzMyICAgIGM0LjYwMSwwLDguMzMyLTMuNzMxLDguMzMyLTguMzMyVjY1LjUyYzAtMTMuMjg0LDEwLjgwNy0yNC4wOSwyNC4wOS0yNC4wOWg0MzAuNDkyYzEzLjI4NCwwLDI0LjA5LDEwLjgwNywyNC4wOSwyNC4wOXYyODQuNDExICAgIGgtNTIuMjFjLTQuNjAyLDAtOC4zMzIsMy43MzEtOC4zMzIsOC4zMzJzMy43MzEsOC4zMzIsOC4zMzIsOC4zMzJoNTIuMjF2MTUuMjczYzAsMTMuMjg0LTEwLjgwNywyNC4wOS0yNC4wOSwyNC4wOWgtMTU1LjQxICAgIEgxOTYuMTY0SDQwLjc1NGMtMTMuMjg0LDAtMjQuMDktMTAuODA3LTI0LjA5LTI0LjA5di0xNS4yNzNoMzk4LjY4OGM0LjYwMiwwLDguMzMyLTMuNzMxLDguMzMyLTguMzMycy0zLjczMS04LjMzMi04LjMzMi04LjMzMiAgICBIMTYuNjY0VjE1Mi41MjJjMC00LjYwMi0zLjczMS04LjMzMi04LjMzMi04LjMzMmMtNC42MDEsMC04LjMzMiwzLjczLTguMzMyLDguMzMyVjM4MS44N2MwLDIyLjQ3MiwxOC4yODMsNDAuNzU0LDQwLjc1NCw0MC43NTQgICAgSDE4My41NGwtMjAuNDk0LDQ3Ljk0NWgtNDAuMDM0Yy00LjYwMiwwLTguMzMyLDMuNzMxLTguMzMyLDguMzMyczMuNzMxLDguMzMyLDguMzMyLDguMzMyaDI2NS45NzUgICAgYzQuNjAyLDAsOC4zMzItMy43MzEsOC4zMzItOC4zMzJzLTMuNzMxLTguMzMyLTguMzMyLTguMzMyaC00MC4wMzRsLTIwLjQ5NC00Ny45NDVoMTQyLjc4NmMyMi40NzIsMCw0MC43NTQtMTguMjgyLDQwLjc1NC00MC43NTQgICAgVjY1LjUyQzUxMiw0My4wNDksNDkzLjcxNywyNC43NjYsNDcxLjI0NiwyNC43NjZ6IE0zMzAuODMsNDcwLjU2OEgxODEuMTdsMTQuMjM4LTMzLjMxaDEyMS4xODNMMzMwLjgzLDQ3MC41Njh6IiBmaWxsPSIjRkZGRkZGIi8+Cgk8L2c+CjwvZz4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNMjYyLjkyNSwzNzkuNjc4Yy0xLjkxNC0yLjkwNi01LjU4My00LjI5OC04Ljk1Mi0zLjQ1N2MtMy41MTcsMC44NzktNi4xMTYsNC4wNDgtNi4yOTEsNy42NyAgICBjLTAuMzY0LDcuNTM0LDkuMTA3LDExLjYyOSwxNC4zMyw2LjE3MkMyNjQuNjc0LDM4Ny4yODIsMjY1LjA4OSwzODIuODg3LDI2Mi45MjUsMzc5LjY3OHoiIGZpbGw9IiNGRkZGRkYiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" alt=""/></span>
+        <strong>Instance Variables</strong>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    {# Optional, for showing the most details. #}
+    <h2>Instance variables</h2>
+    <table>
+        <tr>
+            <th>Instance dirs</th>
+        </tr>
+
+        {% for dir in collector.dirs %}
+            <tr>
+                <td>{{ dir }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

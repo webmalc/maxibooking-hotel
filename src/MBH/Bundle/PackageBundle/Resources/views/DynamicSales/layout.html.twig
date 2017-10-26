@@ -1,0 +1,20 @@
+{% extends "MBHBaseBundle::page.html.twig" %}
+
+{% set title = 'dynamic.sales.layout.title'|trans({}, 'MBHPackageBundle') %}
+{% set title_url = path('dynamic_sales') %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='?uglifyjs2'
+    '@MBHPackageBundle/Resources/public/js/dynamicSales/*' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/dynamic_sales.less'%}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}

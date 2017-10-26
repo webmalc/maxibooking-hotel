@@ -27,13 +27,14 @@ addLoadEvent(function() {
     resultsWrapper.innerHTML = '<iframe id="mbh-results-iframe" scrolling="no" frameborder="0" width="100%" height="300" src="' + configResults.results_url + url +'"></iframe>';
     var resultsIframe = document.getElementById('mbh-results-iframe');
     var resize = function () {
-        resultsIframe.style.height = resultsIframe.contentWindow.document.body.scrollHeight + 'px'; 
+        resultsIframe.style.height = resultsIframe.contentWindow.document.body.scrollHeight + 'px';
     };
     var processMessage = function (e) {
         if (e.data.type !== 'mbh') {
             return;
         }
-        if (e.data.action == 'resize') {
+        if (e.data.action === 'resize') {
+            resultsIframe = document.getElementById('mbh-results-iframe');
             resultsIframe.style.height =  e.data.height > 300 ? e.data.height + 'px' : '300px';
         }
     };

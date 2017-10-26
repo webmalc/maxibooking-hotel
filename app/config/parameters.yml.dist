@@ -9,7 +9,8 @@ parameters:
   mailer_encryption: ssl
 
   #MongoBD
-  mongodb_url: 'mongodb://mbh-mongo:27017/mbh'
+  mongodb_host: mbh-mongo
+  mongodb_port: 27017
   mongodb_database: mbh
 
   #Rabbitmq
@@ -26,6 +27,7 @@ parameters:
 
   #System
   locale: ru
+  country_type: ru
   locale.currency: rub
   debug_toolbar: true
   debug_redirects: false
@@ -33,25 +35,9 @@ parameters:
   router.request_context.host: 'example.com'
   router.request_context.scheme: http
   router.request_context.base_url: null
-  mbh_timezone: 'default'
-
-  #Packages
-  mbh_package_arrival_time: 12
-  mbh_package_departure_time: 14
-  mbh_package_notpaid_time: '-5 days'
-  mbh_online_form_max_packages: 5
-
-  #Mailer
-  mailer_user_arrival_links:
-    about: 'http://example.com/'
-    rooms: 'http://example.com/'
-    map: 'http://example.com/'
-    contacts: 'http://example.com/'
-    poll: 'http://example.com'
 
   #Cash
   mbh_payment_systems_change: true
-  currency_ratio_fix: 1.015
 
   #Redis
   mbh_redis: 'redis://mbh-redis' 
@@ -71,3 +57,11 @@ parameters:
 
   mbh_modules:
     tasks: true
+
+  #client name for env
+  client: ''
+
+  #mongodb_ssl
+  mongodb_ssl: false
+  mbh_dynamic_sale_period: 90
+

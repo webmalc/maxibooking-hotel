@@ -18,3 +18,9 @@ services:
         class: MBH\Bundle\OnlineBundle\Services\ApiHandler
         arguments:
             - '@doctrine.odm.mongodb.document_manager'
+
+    mbh.form_type:
+        class: MBH\Bundle\OnlineBundle\Form\FormType
+        arguments: ['%country_type%']
+        tags:
+            {name: form.type}
