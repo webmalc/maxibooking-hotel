@@ -234,7 +234,6 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $rnkb->setKey($form->get('rnkbKey')->getData());
                     $rnkb->setRnkbShopIDP($form->get('rnkbShopIDP')->getData());
                     $config->setRnkb($rnkb);
-                    $config->setPaypal($paypal);
                     break;
                 case 'invoice':
                     $invoice = (new Invoice())->setInvoiceDocument($form->get('invoiceDocument')->getData());
