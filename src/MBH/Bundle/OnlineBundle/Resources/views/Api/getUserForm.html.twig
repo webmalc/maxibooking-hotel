@@ -49,7 +49,7 @@
                                             <span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span></td>
                                         <td class="mbh-right">
                                             <span class="mbh-results-services-prices" data-value="{{ service.price }}">
-                                                {{ service.price|number_format }} р.
+                                                {{ service.price|number_format ~ ' ' ~ currency()['text'] }}
                                             </span><br>
                                         </td>
                                         <td>
