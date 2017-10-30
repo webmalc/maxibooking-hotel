@@ -9,11 +9,14 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +36,7 @@ class ExternalApiController extends BaseController
      */
     public function getRoomTypesAction(Request $request)
     {
+
         $requestHandler = $this->get('mbh.api_handler');
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $queryData = $request->query;
@@ -71,7 +75,6 @@ class ExternalApiController extends BaseController
 
         /** @var FormConfig $formConfig */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
-        $requestHandler->addErrorMessage('form id: ' . $formConfig->getId());
         if ($responseCompiler->isSuccessFull()) {
             $responseData = [];
             $domainName = $this->getParameter('router.request_context.host');
@@ -81,7 +84,9 @@ class ExternalApiController extends BaseController
                     || ($formConfig->getHotels()->contains($roomType->getHotel())
                         && (!$formConfig->getRoomTypes() || $formConfig->getRoomTypeChoices()->contains($roomType)))
                 ) {
-                    $responseData[] = $roomType->getJsonSerialized($isFull, $domainName);
+                    $responseData[] = $roomType->getJsonSerialized($isFull,
+                        $this->getParameter('router.request_context.host'),
+                        $this->get('vich_uploader.templating.helper.uploader_helper'));
                 }
             }
             $responseCompiler->setData($responseData);
@@ -179,6 +184,61 @@ class ExternalApiController extends BaseController
         $responseCompiler->setData($responseData);
 
         return $responseCompiler->getResponse();
+    }
+
+    /**
+     * @Route("/services")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getServicesAction(Request $request)
+    {
+        $responseCompiler = $this->get('mbh.api_response_compiler');
+        $requestHandler = $this->get('mbh.api_handler');
+        $queryData = $request->query;
+        $requestHandler->checkMandatoryFields($queryData, ['tariffId'], $responseCompiler);
+
+        if (!$responseCompiler->isSuccessFull()) {
+            return $responseCompiler->getResponse();
+        }
+
+        $tariffId = $queryData->get('tariffId');
+        $tariff = $this->dm->find('MBHPriceBundle:Tariff', $tariffId);
+        $services = $this->dm->getRepository('MBHPriceBundle:Service')->getAvailableServicesForTariff($tariff);
+
+        $responseData = [];
+        foreach ($services as $serviceByCategory) {
+            foreach ($serviceByCategory as $service) {
+                /** @var Service $service */
+                $responseData[] = $service->getJsonSerialized();
+            }
+        }
+        $responseCompiler->setData($responseData);
+
+        return $responseCompiler->getResponse();
+    }
+
+    /**
+     * @Route("/api_payment/{id}")
+     * @param Order $order
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function addCashDocumentAndRedirectToPayment(Order $order)
+    {
+        $cashDocument = new CashDocument();
+        $cashDocument->setIsConfirmed(false)
+            ->setIsPaid(false)
+            ->setMethod('electronic')
+            ->setOperation('in')
+            ->setOrder($order)
+            ->setTouristPayer($order->getMainTourist())
+            ->setTotal($order->getPrice());
+
+        $order->addCashDocument($cashDocument);
+        $this->dm->persist($cashDocument);
+        $this->dm->flush();
+
+        return $this->redirect('https://yandex.ru');
     }
 
     /**

@@ -605,8 +605,15 @@ class ApiController extends Controller
                 ]
             );
         }
+        $this->dm->refresh($order->getFirstPackage());
 
-        return new JsonResponse(['success' => true, 'message' => $message, 'form' => $form]);
+        return new JsonResponse(['success' => true,
+            'message' => $message,
+            'form' => $form,
+            'order' => $order->getJsonSerialized(),
+            'invoiceUrl' => $this->generateUrl('generate_invoice',
+                ['id' => $order->getFirstPackage()->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL)]);
     }
 
     /**

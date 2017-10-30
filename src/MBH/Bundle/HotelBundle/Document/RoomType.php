@@ -16,6 +16,7 @@ use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 /**
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
@@ -753,16 +754,17 @@ class RoomType extends Base implements RoomTypeInterface
     }
 
     /**
-     * @param $domainName
+     * @param UploaderHelper $helper
+     * @param $domain
      * @return array
      */
-    public function getRoomTypePhotoData($domainName)
+    public function getRoomTypePhotoData(UploaderHelper $helper, $domain)
     {
         $imagesData = [];
-        foreach ($this->getImages() as $image) {
-            $roomTypeImageData = ['isMain' => $image->getIsMain()];
-            /** @var RoomTypeImage $image */
-            $roomTypeImageData['url'] = 'http://' . $domainName . '/' . $image->getPath();
+        /** @var Image $image */
+        foreach ($this->getOnlineImages() as $image) {
+            $roomTypeImageData = ['isMain' => $image->getIsDefault()];
+            $roomTypeImageData['url'] = 'http://' . $domain . '/' . $helper->asset($image, 'imageFile');
             if ($image->getWidth()) {
                 $roomTypeImageData['width'] = (int)$image->getWidth();
             }
@@ -777,16 +779,18 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @param bool $isFull
-     * @param null $domainName
+     * @param null $domain
+     * @param UploaderHelper|null $helper
      * @return array
      */
-    public function getJsonSerialized($isFull = false, $domainName = null)
+    public function getJsonSerialized($isFull = false, $domain = null, UploaderHelper $helper = null)
     {
         $data = [
             'id' => $this->getId(),
             'isEnabled' => $this->getIsEnabled(),
             'hotel' => $this->getHotel()->getId(),
-            'title' => $this->getName(),
+            'title' => $this->getFullTitle(),
+            'internalTitle' => $this->getTitle(),
             'description' => $this->getDescription() ?? '',
             'numberOfPlaces' => $this->getPlaces(),
             'numberOfAdditionalPlaces' => $this->getAdditionalPlaces(),
@@ -802,8 +806,8 @@ class RoomType extends Base implements RoomTypeInterface
             if ($this->getRoomSpace()) {
                 $comprehensiveData['roomSpace'] = $this->getRoomSpace();
             }
-            if (!is_null($domainName)) {
-                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($domainName);
+            if (!is_null($helper)) {
+                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($helper, $domain);
             }
             $data = array_merge($data, $comprehensiveData);
         }

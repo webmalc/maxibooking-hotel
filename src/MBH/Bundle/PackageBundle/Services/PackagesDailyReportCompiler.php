@@ -266,6 +266,7 @@ class PackagesDailyReportCompiler
         $cashDocuments = $this->dm
             ->getRepository('MBHCashBundle:CashDocument')
             ->createQueryBuilder()
+            ->field('isPaid')->equals(true)
             ->field('order.id')->in($orderIds)
             ->getQuery()
             ->execute();
