@@ -154,11 +154,9 @@ class BaseController extends Controller
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 
-            $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.baseController.delete_record_success'));
+            $this->addFlash('success', 'controller.baseController.delete_record_success');
         } catch (DeleteException $e) {
-            $this->getRequest()->getSession()->getFlashBag()
-                ->set('danger', $this->get('translator')->trans($e->getMessage(), ['%total%' => $e->total]));
+            $this->addFlash('danger', $this->get('translator')->trans($e->getMessage(), ['%total%' => $e->total]));
         }
 
         return $this->redirectToRoute($route, $params);

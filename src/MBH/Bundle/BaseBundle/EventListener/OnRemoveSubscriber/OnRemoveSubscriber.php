@@ -20,7 +20,7 @@ use MBH\Bundle\RestaurantBundle\Document\Ingredient;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class Subscriber implements EventSubscriber
+class OnRemoveSubscriber implements EventSubscriber
 {
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface

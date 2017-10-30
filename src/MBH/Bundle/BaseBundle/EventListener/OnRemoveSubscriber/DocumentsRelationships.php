@@ -127,6 +127,7 @@ class DocumentsRelationships
                 new Relationship(Service::class, 'category', 'exception.serviceCategory_relation_message.service')
             ],
             Promotion::class => [
+                new Relationship(Tariff::class, 'promotions', 'exception.promotions_relation_delete.message.tariff', true),
                 new Relationship(Tariff::class, 'defaultPromotion', 'exception.promotion_relation_delete.message.tariff'),
                 new Relationship(Package::class, 'promotion', 'exception.promotion_relation_delete.message.package')
             ],

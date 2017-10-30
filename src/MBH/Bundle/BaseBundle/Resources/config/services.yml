@@ -130,7 +130,7 @@ services:
             - { name: form.type, alias: mbh_language }
 
     mbh.event_listener.check_relation_subscriber:
-            class: MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Subscriber
+            class: MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\OnRemoveSubscriber
             arguments: ['@service_container']
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
