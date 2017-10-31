@@ -14,7 +14,6 @@ use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
-use MBH\Bundle\VegaBundle\Document\VegaState;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -178,8 +177,8 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
      */
     protected $note;
     /**
-     * @var VegaState|null
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
+     * @var string
+     * @ODM\Field(type="string")
      */
     protected $citizenship;
     /**
@@ -770,7 +769,7 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
     }
 
     /**
-     * @return VegaState
+     * @return string
      */
     public function getCitizenship()
     {
@@ -778,9 +777,9 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
     }
 
     /**
-     * @param VegaState $citizenship
+     * @param string $citizenship
      */
-    public function setCitizenship(VegaState $citizenship = null)
+    public function setCitizenship(string $citizenship = null)
     {
         $this->citizenship = $citizenship;
     }

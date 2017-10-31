@@ -4,15 +4,12 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
-use MBH\Bundle\PackageBundle\Document\Criteria\TouristQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\Tourist;
-use MBH\Bundle\PackageBundle\Document\TouristRepository;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
@@ -30,8 +27,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -132,13 +127,15 @@ class TouristController extends Controller
      * @Route("/create/ajax", name="tourist_create_ajax")
      * @Method("POST")
      * @Security("is_granted('ROLE_TOURIST_NEW')")
+     * @param Request $request
+     * @return JsonResponse
      */
     public function createAjaxAction(Request $request)
     {
         $entity = new Tourist();
         $entity->setDocumentRelation(new DocumentRelation());
         $entity->setBirthplace(new BirthPlace());
-        $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $entity->setCitizenship($this->getParameter('country_type'));
         $entity->getDocumentRelation()->setType('vega_russian_passport');
 
         $form = $this->createForm(
@@ -192,6 +189,8 @@ class TouristController extends Controller
      * @Method("POST")
      * @Security("is_granted('ROLE_TOURIST_NEW')")
      * @Template("MBHPackageBundle:Tourist:new.html.twig")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createAction(Request $request)
     {
@@ -234,6 +233,9 @@ class TouristController extends Controller
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template("MBHPackageBundle:Tourist:edit.html.twig")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Request $request
+     * @param Tourist $tourist
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateAction(Request $request, Tourist $tourist)
     {
@@ -249,11 +251,9 @@ class TouristController extends Controller
             $this->dm->persist($tourist);
             $this->dm->flush();
 
-            $flashBag = $request->getSession()->getFlashBag();
-            $flashBag->set('success', $this->get('translator')
-                ->trans('controller.touristController.record_edited_success'));
+            $this->addFlash('success', 'controller.touristController.record_edited_success');
             if ($notUnwelcome && $tourist->getIsUnwelcome()) {
-                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> ' . $this->get('translator')
+                $this->addFlash('warning', '<i class="fa fa-user-secret"></i> ' . $this->get('translator')
                         ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
             }
 
@@ -275,6 +275,8 @@ class TouristController extends Controller
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Tourist $entity
+     * @return array
      */
     public function editAction(Tourist $entity)
     {
@@ -295,6 +297,9 @@ class TouristController extends Controller
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Tourist $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editDocumentAction(Tourist $entity, Request $request)
     {
@@ -302,7 +307,7 @@ class TouristController extends Controller
         $entity->getDocumentRelation() ?: $entity->setDocumentRelation(new DocumentRelation());
 
         //Default Value
-        $entity->getCitizenship() ?: $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $entity->getCitizenship() ?: $entity->setCitizenship($this->getParameter('country_type'));
         $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
 
         $form = $this->createForm(DocumentRelationType::class, $entity, [
@@ -374,12 +379,14 @@ class TouristController extends Controller
     }
 
     /**
-     *
      * @Route("/{id}/edit/visa", name="tourist_edit_visa")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Tourist $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editVisaAction(Tourist $entity, Request $request)
     {

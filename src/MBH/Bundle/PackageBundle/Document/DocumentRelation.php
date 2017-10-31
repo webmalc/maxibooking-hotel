@@ -3,13 +3,11 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class DocumentRelation
  * @ODM\EmbeddedDocument
-
  *
  * @ODM\HasLifecycleCallbacks()
  */
@@ -21,20 +19,11 @@ class DocumentRelation implements \JsonSerializable
      */
     protected $type;
     /**
-     * @var VegaFMS
-     * @ODM\ReferenceOne(name="authority_organ", targetDocument="MBH\Bundle\VegaBundle\Document\VegaFMS")
+     * @var int
+     * @ODM\Field(type="int")
      */
-    protected $authorityOrgan;
-    /**
-     * @var String
-     * @ODM\Field(type="string") 
-     */
-    protected $authorityOrganText;
-    /**
-     * @var String
-     * @ODM\Field(type="string") 
-     */
-    protected $authorityOrganCode;
+    protected $authorityOrganId;
+
     /**
      * @var String
      * @ODM\Field(type="string") 
@@ -70,6 +59,25 @@ class DocumentRelation implements \JsonSerializable
     protected $relation;
 
     /**
+     * @return int
+     */
+    public function getAuthorityOrganId(): ?int
+    {
+        return $this->authorityOrganId;
+    }
+
+    /**
+     * @param int $authorityOrganId
+     * @return DocumentRelation
+     */
+    public function setAuthorityOrganId(int $authorityOrganId): DocumentRelation
+    {
+        $this->authorityOrganId = $authorityOrganId;
+
+        return $this;
+    }
+
+    /**
      * @return String
      */
     public function getType()
@@ -85,65 +93,6 @@ class DocumentRelation implements \JsonSerializable
     {
         $this->type = $type;
         return $this;
-    }
-
-    /**
-     * @return VegaFMS
-     */
-    public function getAuthorityOrgan()
-    {
-        return $this->authorityOrgan;
-    }
-
-    /**
-     * @param VegaFMS $authorityOrgan
-     */
-    public function setAuthorityOrgan(VegaFMS $authorityOrgan = null)
-    {
-        $this->authorityOrgan = $authorityOrgan;
-    }
-
-    /**
-     * @return String
-     */
-    public function getAuthority()
-    {
-        return $this->authority;
-    }
-
-    /**
-     * @return String
-     */
-    public function getAuthorityOrganText()
-    {
-        return $this->authorityOrganText;
-    }
-
-    /**
-     * @param String $authorityOrganText
-     * @return DocumentRelation
-     */
-    public function setAuthorityOrganText($authorityOrganText)
-    {
-        $this->authorityOrganText = $authorityOrganText;
-
-        return $this;
-    }
-
-    /**
-     * @return String
-     */
-    public function getAuthorityOrganCode()
-    {
-        return $this->authorityOrganCode;
-    }
-
-    /**
-     * @param String $authorityOrganCode
-     */
-    public function setAuthorityOrganCode($authorityOrganCode)
-    {
-        $this->authorityOrganCode = $authorityOrganCode;
     }
 
     /**
@@ -248,18 +197,9 @@ class DocumentRelation implements \JsonSerializable
 
     public function __toString()
     {
-        return $this->getAuthority() . ' ' . ($this->getIssued() ? $this->getIssued()->format('d.m.Y') : '');
+        return $this->getAuthorityOrganId() . ' ' . ($this->getIssued() ? $this->getIssued()->format('d.m.Y') : '');
     }
 
-    /**
-     * @ODM\PrePersist()
-     */
-    public function prePersist()
-    {
-        if($this->getAuthorityOrgan()) {
-            $this->setAuthorityOrganCode($this->getAuthorityOrgan()->getCode());
-        }
-    }
 
     /**
      * @return array
@@ -269,7 +209,7 @@ class DocumentRelation implements \JsonSerializable
         return [
             'type' => $this->getType(),
             //'authorityOrgan' => $this->getAuthorityOrgan() ? $this->getAuthorityOrgan() : null,
-            'authority' => $this->getAuthority(),
+            'authority' => $this->getAuthorityOrganId(),
             'series' => $this->getSeries(),
             'number' => $this->getNumber(),
             'issued' => $this->getIssued() ? $this->getIssued()->format('d.m.Y') : null,

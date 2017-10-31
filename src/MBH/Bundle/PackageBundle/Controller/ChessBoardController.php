@@ -477,12 +477,12 @@ class ChessBoardController extends BaseController
         }
 
         if (isset($data['filter_begin'])) {
-            $beginDate = Helper::getDateFromString($data['filter_begin']);
+            $beginDate = $this->helper->getDateFromString($data['filter_begin']);
         } else {
             $beginDate = (new \DateTime('midnight'))->modify('-5 days');
         }
         if (isset($data['filter_end'])) {
-            $endDate = Helper::getDateFromString($data['filter_end']);
+            $endDate = $this->helper->getDateFromString($data['filter_end']);
         } else {
             $endDate = (new \DateTime('midnight'))->modify('+25 days');
         }

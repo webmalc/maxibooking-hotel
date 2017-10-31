@@ -2,26 +2,21 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\VegaBundle\Service\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Type;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 
 /**
  * Class DocumentRelationType
  * @package MBH\Bundle\PackageBundle\Form
-
  */
 class DocumentRelationType extends AbstractType
 {
@@ -62,18 +57,13 @@ class DocumentRelationType extends AbstractType
         //main
         if($options['citizenship']) {
             $builder
-                ->add('citizenship', DocumentType::class, [
-                    'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                ->add('citizenship', TextType::class, [
                     'label' => 'form.TouristExtendedType.citizenship',
-                    'group' => 'form.DocumentRelation.citizenship',
-                    'query_builder' => function(DocumentRepository $repository){
-                        return $repository->createQueryBuilder()->sort(['name' => 1]);
-                    },
-                    'help' => $options['isFormInTouristController'] ? 'form.BirthplaceType.country.help' : null
+                    'group' => 'form.DocumentRelation.citizenship'
                 ]);
         }
         $builder
-            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('type',  InvertChoiceType::class, [
                 'choices' => $documentTypes,
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.type',
@@ -96,43 +86,11 @@ class DocumentRelationType extends AbstractType
             ])
         ;
         $builder
-            ->add('authorityOrgan', TextType::class, [
+            ->add('authorityOrganId', TextType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.authority',
                 'required' => false,
-                'property_path' => 'documentRelation.authorityOrgan'
-            ])
-            ->add('authorityOrganText', HiddenType::class, [
-                'required' => false,
-                'property_path' => 'documentRelation.authorityOrganText'
-            ])
-        ;
-        $builder->get('authorityOrgan')->addModelTransformer(
-            new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS')
-        );
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event) {
-            $data = $event->getData();
-            $authorityOrgan = $data['authorityOrgan'];
-            if($authorityOrgan) {
-                if(\MongoId::isValid($authorityOrgan)) {
-                    $data['authorityOrganText'] = null;
-                } else {
-                    $data['authorityOrgan'] = null;
-                    $data['authorityOrganText'] = $authorityOrgan;
-                }
-                $event->setData($data);
-            }
-        });
-
-        $builder
-            ->add('authorityOrganCode', TextType::class, [
-                'group' => 'form.DocumentRelation.main',
-                'label' => 'form.DocumentRelation.authorityOrganCode',
-                'required' => false,
-                'property_path' => 'documentRelation.authorityOrganCode',
-                'attr' => [
-                    'style' =>  'width: 100px'
-                ]
+                'property_path' => 'documentRelation.authorityOrganId'
             ]);
 
         $builder
@@ -154,7 +112,7 @@ class DocumentRelationType extends AbstractType
                 'attr' => ['class' => 'input-small datepicker', 'data-date-format' => 'dd.mm.yyyy'],
                 'property_path' => 'documentRelation.expiry'
             ])
-            ->add('relation',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('relation',  InvertChoiceType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.relation',
                 'choices' => array_combine($dictTypes, $dictTypes),
@@ -162,20 +120,13 @@ class DocumentRelationType extends AbstractType
                 'property_path' => 'documentRelation.relation'
             ]);
 
-        //birthplace
         if($options['birthplace']) {
             $builder
-                ->add('country', DocumentType::class, [
+                ->add('country', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
                     'label' => 'form.BirthplaceType.country',
-                    'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                    'query_builder' => function(DocumentRepository $repository){
-                        return $repository->createQueryBuilder()->sort(['name' => 1]);
-                    },
-                    'placeholder' => '',
                     'required' => false,
                     'property_path' => 'birthplace.country',
-                    'help' => $options['isFormInTouristController'] ? 'form.BirthplaceType.country.help' : null
                 ])
                 ->add('main_region', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
