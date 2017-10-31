@@ -50,6 +50,7 @@ class ApiController extends Controller
      */
     public function getFormResultsIframeAction($formId = null)
     {
+        $this->setLocaleByRequest();
         $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
             ->findOneById($formId);
 
@@ -68,6 +69,7 @@ class ApiController extends Controller
      */
     public function getFormIframeAction($formId = null)
     {
+        $this->setLocaleByRequest();
         $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
             ->findOneById($formId);
 
@@ -434,10 +436,10 @@ class ApiController extends Controller
         }
 
         $facilityArray = [];
-
+        $translator = $this->get('translator');
         foreach ($this->getParameter('mbh.hotel')['facilities'] as $facilityVal) {
             foreach ($facilityVal as $key => $val) {
-                $facilityArray[$key] = $val;
+                $facilityArray[$key] = $translator->trans($val);
             }
         }
 
@@ -682,7 +684,6 @@ class ApiController extends Controller
                 'accommodation' => false,
                 'tariff' => $info->tariff->id,
                 'isOnline' => true,
-                'accommodation' => false,
             ];
         }
         foreach ($request->services as $info) {
@@ -702,10 +703,14 @@ class ApiController extends Controller
                         'birthday' => $request->user->birthday,
                         'email' => $request->user->email,
                         'phone' => $request->user->phone,
+                        'inn' => $request->user->inn,
+                        'patronymic' => $request->user->patronymic,
+                        'documentNumber' => $request->user->documentNumber
                     ],
                     'status' => 'online',
                     'order_note' => $request->note,
                     'confirmed' => false,
+                    'onlineFormId' => $request->configId
                 ],
                 null,
                 null,

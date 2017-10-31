@@ -33,6 +33,7 @@ class ClientPaymentSystemType extends AbstractType
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
         $unitellerIsWithFiscalization = $unitellerShopIDP = $unitellerPassword = $taxationSystemCode = $taxationRateCode = null;
+        $rnkbKey = $rnkbShopIDP = null;
         $rbkEshopId = $rbkSecretKey = null;
         $paypalLogin = null;
         $default = $this->paymentSystemsDefault;
@@ -47,6 +48,8 @@ class ClientPaymentSystemType extends AbstractType
             $moneymailKey = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailKey() : '';
             $unitellerShopIDP = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerShopIDP() : '';
             $unitellerPassword = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerPassword() : '';
+            $rnkbShopIDP = $entity->getRnkb() ? $entity->getRnkb()->getRnkbShopIDP() : '';
+            $rnkbKey = $entity->getRnkb() ? $entity->getRnkb()->getKey() : '';
             $unitellerIsWithFiscalization = $entity->getUniteller() ? $entity->getUniteller()->isWithFiscalization(): true;
             $taxationRateCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationRateCode() : '';
             $taxationSystemCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationSystemCode() : '';
@@ -89,7 +92,8 @@ class ClientPaymentSystemType extends AbstractType
                 'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
                 'group' => 'form.clientPaymentSystemType.payment_system_group',
                 'data' => $unitellerIsWithFiscalization,
-                'required' => false
+                'required' => false,
+                'attr' => ['class' => 'payment-system-params uniteller'],
             ])
             ->add(
                 'robokassaMerchantLogin',
@@ -197,6 +201,30 @@ class ClientPaymentSystemType extends AbstractType
                     'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $unitellerPassword
+                ]
+            )
+            ->add(
+                'rnkbShopIDP',
+                TextType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.uniteller_shop_id',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params rnkb'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'mapped' => false,
+                    'data' => $rnkbShopIDP
+                ]
+            )
+            ->add(
+                'rnkbKey',
+                TextType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.key.label',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params rnkb', 'type' => 'password'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'mapped' => false,
+                    'data' => $rnkbKey
                 ]
             )
             ->add(

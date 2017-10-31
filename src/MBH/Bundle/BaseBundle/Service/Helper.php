@@ -588,13 +588,7 @@ class Helper
     public function getDataFromMultipleSelectField($fieldData)
     {
         if (!empty($fieldData) && is_array($fieldData)) {
-            foreach ($fieldData as $index => $singleValue) {
-                if ($singleValue === '') {
-                    unset($fieldData[$index]);
-                }
-            }
-
-            return $fieldData;
+            return  array_values(array_diff($fieldData, array('', null, false)));
         }
 
         return [];
@@ -627,5 +621,23 @@ class Helper
         preg_match('/\d+/', $string, $numberMatches);
 
         return count($numberMatches) > 0 ? $numberMatches[0] : intval($string);
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getDefaultDatesOfSettlement()
+    {
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $this->container
+            ->get('doctrine_mongodb.odm.default_document_manager')
+            ->getRepository('MBHClientBundle:ClientConfig')
+            ->fetchConfig();
+
+        $calculationBegin = $clientConfig->getBeginDate() ?? new \DateTime('first day of January ' . date('Y'));
+        $calculationEnd = (clone $calculationBegin)->add(new \DateInterval('P6M'));
+
+        return [$calculationBegin, $calculationEnd];
     }
 }

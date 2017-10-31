@@ -106,7 +106,7 @@ class ClientConfig extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
-     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "paypal", "rbk"})
+     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "paypal", "rbk", "rnkb"})
      */
     protected $paymentSystem;
 
@@ -133,6 +133,12 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="Uniteller")
      */
     protected $uniteller;
+
+    /**
+     * @var RNKB
+     * @ODM\EmbedOne(targetDocument="RNKB")
+     */
+    protected $rnkb;
 
     /**
      * @var Rbk
@@ -517,6 +523,25 @@ class ClientConfig extends Base
     public function getUniteller()
     {
         return $this->uniteller;
+    }
+
+    /**
+     * @return RNKB
+     */
+    public function getRnkb()
+    {
+        return $this->rnkb;
+    }
+
+    /**
+     * @param RNKB $rnkb
+     * @return ClientConfig
+     */
+    public function setRnkb(RNKB $rnkb): ClientConfig
+    {
+        $this->rnkb = $rnkb;
+
+        return $this;
     }
 
     /**

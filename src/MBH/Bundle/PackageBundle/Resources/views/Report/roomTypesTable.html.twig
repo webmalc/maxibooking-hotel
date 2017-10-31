@@ -40,7 +40,7 @@
                 <div class="pull-right">
                     <small>
                         {% for facility in roomType.facilities %}
-                            <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
+                            <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility]|trans }}" class="fa fa-lg mbf-{{ facility }}"></i>
                         {% endfor %}
                     </small>
                 </div>
@@ -119,7 +119,7 @@
                                data-container="body"
                                data-toggle="popover"
                                data-placement="top"
-                               data-content="{% for facility in (room.facilities is not empty ? room.facilities : room.allFacilities) %}<i style='margin-left: 3px' data-toggle='tooltip' data-title='{{ facilities[facility] }}' class='fa fa-lg mbf-{{ facility }}'></i>{% endfor %}"
+                               data-content="{% for facility in (room.facilities is not empty ? room.facilities : room.allFacilities) %}<i style='margin-left: 3px' data-toggle='tooltip' data-title='{{ facilities[facility]|trans }}' class='fa fa-lg mbf-{{ facility }}'></i>{% endfor %}"
                             ></i>
                         </span>
                     {% endif %}
