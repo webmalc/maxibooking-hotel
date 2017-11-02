@@ -40,7 +40,7 @@ class TouristRepository extends DocumentRepository
         $nativeCitizenship = $this->getNativeCitizenship();
         foreach($tourists as $tourist) {
             if($tourist) {
-                $citizenship = $tourist->getCitizenship();
+                $citizenship = $tourist->getCitizenshipTld();
                 if(!$citizenship || !$nativeCitizenship || ($citizenship && $citizenship !== $nativeCitizenship)) {
                     $foreignTourists[] = $tourist;
                 }

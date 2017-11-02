@@ -93,10 +93,37 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @param $authorityOrganId
+     * @return \MBH\Bundle\PackageBundle\Models\AuthorityOrgan
+     */
+    public function getAuthorityOrganById($authorityOrganId)
+    {
+        return $this->container->get('mbh.billing.api')->getAuthorityOrganById($authorityOrganId);
+    }
+
+    /**
+     * @param $countryTld
+     * @param null $locale
+     * @return \MBH\Bundle\PackageBundle\Models\Country
+     */
+    public function getCountryByTld($countryTld, $locale = null)
+    {
+        return $this->container->get('mbh.billing.api')->getCountryByTld($countryTld, $locale);
+    }
+
+    /**
+     * @param $regionId
+     * @param null $locale
+     * @return \MBH\Bundle\PackageBundle\Models\Region
+     */
+    public function getRegionById($regionId, $locale = null)
+    {
+        return $this->container->get('mbh.billing.api')->getRegionById($regionId, $locale);
+    }
+
+    /**
      * @param \MongoDate $mongoDate
      * @return \DateTime
-     *
-
      */
     public function convertMongoDate(\MongoDate $mongoDate)
     {
@@ -147,7 +174,7 @@ class Extension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            'mbh_format' => new \Twig_SimpleFilter('mbh_format', [$this, 'format'], ['is_safe' => array('html')]),
+            'mbh_format' => new \Twig_SimpleFilter('mbh_format', [$this, 'format'], ['is_safe' => ['html']]),
             'mbh_md5' => new \Twig_SimpleFilter('mbh_md5', [$this, 'md5']),
             'num2str' => new \Twig_SimpleFilter('num2str', [$this, 'num2str']),
             'num2enStr' => new \Twig_SimpleFilter('num2enStr', [$this, 'num2enStr']),
@@ -199,6 +226,9 @@ class Extension extends \Twig_Extension
             'filter_begin_date' => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
             'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
+            'get_authority_organ' => new \Twig_SimpleFunction('get_authority_organ', [$this, 'getAuthorityOrganById'], ['is_safe' => ['html']]),
+            'get_country' => new \Twig_SimpleFunction('get_country', [$this, 'getCountryByTld'], ['is_safe' => ['html']]),
+            'get_region' => new \Twig_SimpleFunction('get_region', [$this, 'getRegionById'], ['is_safe' => ['html']])
         ];
     }
 

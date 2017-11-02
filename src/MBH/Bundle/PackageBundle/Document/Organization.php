@@ -317,7 +317,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
      */
     public function getLocation()
     {
-        return ($this->getCity() ? $this->getCity()->getTitle() : '').', '.$this->getStreet().' '.$this->getHouse();
+        return ($this->getCityId() ? $this->getCityId()->getTitle() : '').', '.$this->getStreet().' '.$this->getHouse();
     }
 
     /**
@@ -419,7 +419,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     /**
      * @return City
      */
-    public function getCity()
+    public function getCityId()
     {
         return $this->city;
     }
@@ -435,7 +435,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     /**
      * @return mixed
      */
-    public function getCountry()
+    public function getCountryTld()
     {
         return $this->country;
     }
@@ -451,7 +451,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     /**
      * @return mixed
      */
-    public function getRegion()
+    public function getRegionId()
     {
         return $this->region;
     }
@@ -751,9 +751,9 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
 
     private function fillLocationByCity()
     {
-        if ($this->getCity()) {
-            $this->setCountry($this->getCity()->getCountry());
-            $this->setRegion($this->getCity()->getRegion());
+        if ($this->getCityId()) {
+            $this->setCountry($this->getCityId()->getCountry());
+            $this->setRegion($this->getCityId()->getRegion());
         }
     }
 

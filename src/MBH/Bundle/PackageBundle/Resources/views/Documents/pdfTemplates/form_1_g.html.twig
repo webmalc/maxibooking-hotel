@@ -231,7 +231,7 @@
         <div class="center-block">
             <div>
                 <div style="width: 900px" class="area ib left">
-                    &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}</div>
+                    &nbsp{% if tourist and tourist.documentRelation %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}</div>
                 <div class="center">
                     <small>({{ 'mbhpackagebundle.views.naimenovanie_organa_vnutrennih_del_vidavshego_document'|trans }}
                         )
@@ -245,7 +245,7 @@
                     <div style="width: 900px" class="area ib left">
                         &nbsp
                         {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %}
-                            {{ tourist.addressObjectDecomposed.region }},
+                            {{ get_region(tourist.addressObjectDecomposed.regionId).name }},
                             {{ 'mbhpackagebundle.views.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% if tourist.addressObjectDecomposed.street %},
                             {{ 'mbhpackagebundle.views.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }},
                             {% if tourist.addressObjectDecomposed.house %}

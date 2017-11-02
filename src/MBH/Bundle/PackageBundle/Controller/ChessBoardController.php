@@ -108,7 +108,7 @@ class ChessBoardController extends BaseController
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
         $tourist->setBirthplace(new BirthPlace());
-        $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $tourist->setCitizenshipTld($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $tourist->getDocumentRelation()->setType('vega_russian_passport');
 
         return [

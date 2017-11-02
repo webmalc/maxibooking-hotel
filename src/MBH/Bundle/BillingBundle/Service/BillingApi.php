@@ -3,21 +3,23 @@
 namespace MBH\Bundle\BillingBundle\Service;
 
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\RequestException;
 use MBH\Bundle\PackageBundle\Models\AuthorityOrgan;
+use MBH\Bundle\PackageBundle\Models\City;
 use MBH\Bundle\PackageBundle\Models\Country;
+use MBH\Bundle\PackageBundle\Models\Region;
 use Monolog\Logger;
 use Symfony\Component\Serializer\Serializer;
 
 class BillingApi
 {
-    //TODO: Сменить на локаль
-    const BILLING_HOST = 'http://billing.maxibooking.ru/ru';
+    const BILLING_HOST = 'http://billing.maxibooking.ru';
     const RESULT_API_URL = '/result';
     const CLIENT_REQUEST_URL = '/clients';
     const CLIENT_PROPERTY_URL = '/property';
-    const FMS_ORGAN_URL_END = '/fms-fms';
-    const COUNTRY_URL_END = '/countries';
+    const FMS_ORGANS_ENDPOINT = 'fms-fms';
+    const COUNTRIES_ENDPOINT = 'countries';
+    const REGIONS_ENDPOINT = 'regions';
+    const CITIES_ENDPOINT = 'cities';
     const AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
 
     /** @var GuzzleClient */
@@ -25,13 +27,20 @@ class BillingApi
     private $logger;
     private $billingLogin;
     private $serializer;
+    private $locale;
 
-    public function __construct(Logger $logger, $billingLogin, Serializer $serializer)
+    private $loadedAuthorityOrgans = [];
+    private $loadedCountries = [];
+    private $loadedRegions = [];
+    private $loadedCities = [];
+
+    public function __construct(Logger $logger, $billingLogin, Serializer $serializer, $locale)
     {
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
         $this->billingLogin = $billingLogin;
         $this->serializer = $serializer;
+        $this->locale = $locale;
     }
 
     public function sendFalse(string $clientName): void
@@ -69,35 +78,73 @@ class BillingApi
 
     /**
      * @param $authorityId
+     * @param $locale
      * @return AuthorityOrgan
      */
-    public function getAuthorityOrganById($authorityId)
+    public function getAuthorityOrganById($authorityId, $locale = null)
     {
-        $response = $this->sendGet(self::BILLING_HOST . self::FMS_ORGAN_URL_END . '/' . $authorityId);
+        if (!isset($this->loadedAuthorityOrgans[$authorityId])) {
+            $authorityOrgan = $this->getBillingEntityById(self::FMS_ORGANS_ENDPOINT, $authorityId, AuthorityOrgan::class, $locale);
+            $this->loadedAuthorityOrgans[$authorityId] = $authorityOrgan;
+        }
 
-        return $this->serializer->deserialize($response->getBody(), 'MBH\Bundle\PackageBundle\Models\AuthorityOrgan', 'json');
+        return $this->loadedAuthorityOrgans[$authorityId];
     }
 
     /**
      * @param $countryTld
+     * @param $locale
      * @return Country
      */
-    public function getCountryByTld($countryTld)
-    {
-        $response = $this->sendGet(self::BILLING_HOST . self::COUNTRY_URL_END . '/' . $countryTld);
+    public function getCountryByTld($countryTld, $locale = null) {
+        if (!isset($this->loadedCountries[$countryTld])) {
+            $country = $this->getBillingEntityById(self::COUNTRIES_ENDPOINT, $countryTld, Country::class, $locale);
+            $this->loadedCountries[$countryTld] = $country;
+        }
 
-        return $this->serializer->deserialize($response->getBody(), 'MBH\Bundle\PackageBundle\Models\Country', 'json');
+        return $this->loadedCountries[$countryTld];
     }
 
     /**
-     * @param $countryName
-     * @return Country
+     * @param $regionId
+     * @param null $locale
+     * @return Region
      */
-    public function getCountryByName($countryName)
-    {
-        $response = $this->sendGet(self::BILLING_HOST . self::COUNTRY_URL_END . '/' . $countryName);
+    public function getRegionById($regionId, $locale = null) {
+        if (!isset($this->loadedRegions[$regionId])) {
+            $region = $this->getBillingEntityById(self::REGIONS_ENDPOINT, $regionId, Region::class, $locale);
+            $this->loadedRegions[$regionId] = $region;
+        }
 
-        return $this->serializer->deserialize($response->getBody(), 'MBH\Bundle\PackageBundle\Models\Country', 'json');
+        return $this->loadedRegions[$regionId];
+    }
+
+    /**
+     * @param $cityId
+     * @param null $locale
+     * @return City
+     */
+    public function getCityById($cityId, $locale = null) {
+        if (!isset($this->loadedCities[$cityId])) {
+            $city = $this->getBillingEntityById(self::CITIES_ENDPOINT, $cityId, City::class, $locale);
+            $this->loadedCities[$cityId] = $city;
+        }
+
+        return $this->loadedCities[$cityId];
+    }
+
+    /**
+     * @param $endpoint
+     * @param $id
+     * @param $modelType
+     * @param null $locale
+     * @return object
+     */
+    private function getBillingEntityById($endpoint, $id, $modelType, $locale = null)
+    {
+        $response = $this->sendGet($this->getBillingUrl($endpoint, $id, $locale));
+
+        return $this->serializer->deserialize($response->getBody(), $modelType, 'json');
     }
 
     /**
@@ -105,6 +152,19 @@ class BillingApi
      */
     public function getClient()
     {
-        return $this->sendGet(self::BILLING_HOST . self::CLIENT_REQUEST_URL . '/' . $this->billingLogin );
+        return $this->sendGet($this->getBillingUrl(self::CLIENT_REQUEST_URL, $this->billingLogin));
+    }
+
+    /**
+     * @param $endpoint
+     * @param null $identifier
+     * @param null $locale
+     * @return string
+     */
+    private function getBillingUrl($endpoint, $identifier = null, $locale = null)
+    {
+        $locale = $locale ?? $this->locale;
+
+        return self::BILLING_HOST . '/' . $locale . '/' . $endpoint . ($identifier ? '/' . $identifier : '');
     }
 }

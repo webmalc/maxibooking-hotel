@@ -5,13 +5,11 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\BaseBundle\Document\Base;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Migration
  * @ODM\EmbeddedDocument
  * @Gedmo\Loggable
-
  */
 class Migration extends Base
 {

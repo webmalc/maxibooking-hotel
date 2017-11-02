@@ -68,7 +68,7 @@ var docReadyTourists = function () {
         $guestForm.find('.guestPhone').val(data.phone);
         $guestForm.find('.guestEmail').val(data.email);
         $guestForm.find('select.guestCommunicationLanguage').select2('val', [data.communicationLanguage]);
-    }
+    };
     var $guestSelect = $guestForm.find('.findGuest');
     $guestSelect.change(function () {
         if (!$(this).val()) {
@@ -132,118 +132,6 @@ var docReadyTourists = function () {
         });
     }());
 
-    var isCustomAuthorityOrgan = function (organValue) {
-        var $selectOption = $('#mbh_document_relation_authorityOrgan').find('option[value="'+ organValue + '"]');
-
-        return $selectOption.html() === organValue;
-    };
-
-    var $authorityOrganTextInput = $('#mbh_document_relation_authorityOrganText');
-    var $authorityOrganCodeInput = $('#mbh_document_relation_authorityOrganCode');
-    select2Text($('#mbh_document_relation_authorityOrgan')).select2({
-        minimumInputLength: 3,
-        placeholder: Translator.trans('tourist.make_a_choice'),
-        allowClear: true,
-        ajax: {
-            url: Routing.generate('authority_organ_json_list'),
-            dataType: 'json',
-            data: function (term) {
-                return {
-                    query: term // search term
-                };
-            },
-            processResults: function (data, request) {
-                if (data.results.length == 0) {
-                    data.results.push({
-                        id: request.term,
-                        text: request.term
-                    });
-                }
-                //console.log(data.results);
-                return data;
-            }
-        },
-        initSelection: function (element, callback) {
-            var id = $(element).val();
-            if (!isCustomAuthorityOrgan(id)) { //mongoID
-                $.ajax(Routing.generate('ajax_authority_organ', {id: id}), {
-                    dataType: "json"
-                }).done(function (data) {
-                    callback(data);
-                    $authorityOrganTextInput.val('');
-
-                    $authorityOrganCodeInput.val(data.code);
-                    $authorityOrganCodeInput.attr('disabled', true);
-                });
-            } else if ($authorityOrganTextInput.val()) {
-                callback({
-                    id: $authorityOrganTextInput.val(),
-                    text: $authorityOrganTextInput.val()
-                });
-                $authorityOrganCodeInput.attr('disabled', false);
-            } else {
-                $authorityOrganCodeInput.attr('disabled', false);
-            }
-
-        },
-        dropdownCssClass: "bigdrop"
-    }).on('change', function (name, evt) {
-        var $this = $(this);
-        var value = $this.select2('val');
-        if (value && !isCustomAuthorityOrgan(value)) {
-            $authorityOrganCodeInput.attr('disabled', true);
-            $.ajax(Routing.generate('ajax_authority_organ', {id: value}), {
-                dataType: "json"
-            }).done(function (data) {
-                $authorityOrganCodeInput.val(data.code);
-            });
-        } else {
-            if (value) {
-                $authorityOrganTextInput.val(value);
-            }
-            $authorityOrganCodeInput.attr('disabled', false);
-        }
-    });
-
-    var $newCountryModal = $('#new-country-modal');
-    var $documentRelationCountry = $('#mbh_document_relation_country');
-    $('.add-country-button').click(function () {
-        $newCountryModal.modal('show');
-    });
-
-    $('#new-country-create').click(function () {
-        var $errorsBlock = $('#country-name-error');
-        $errorsBlock.html('');
-        var newCountryName = $('#new-country-name').val();
-        var $loader = $('#loader');
-        $loader.html(mbh.loader.html).show();
-        var $modalContent = $('#new-country-content');
-        $modalContent.hide();
-        $.ajax({
-            url: Routing.generate('new_vega_state'),
-            data: {countryName: newCountryName},
-            method: 'POST',
-            success: function (response) {
-                console.log(response);
-                $modalContent.show();
-                $loader.hide();
-                if (response.success) {
-                    $('#new-country-name').val('');
-                    var customCountryOption = document.createElement('option');
-                    customCountryOption.innerHTML = response.country.name;
-                    customCountryOption.value = response.country.id;
-                    $documentRelationCountry.append(customCountryOption);
-                    $documentRelationCountry.val(response.country.id);
-                    $newCountryModal.modal('hide');
-                } else {
-                    response.errors.forEach(function(error) {
-                        $errorsBlock.append(error + '<br>');
-                    });
-                }
-            }
-        });
-    });
-
     $('#mbh_address_object_decomposed_structure').TouchSpin({
         min: 1,
         max: 999,
@@ -258,9 +146,17 @@ var docReadyTourists = function () {
 /*global document, window, Routing, $ */
 $(document).ready(function () {
     'use strict';
-
     docReadyTourists();
+    initSelect2TextFieldsForBilling();
 });
+
+function initSelect2TextFieldsForBilling() {
+    initSelect2TextForBilling('mbh_document_relation_citizenshipTld', 'countries');
+    initSelect2TextForBilling('mbh_document_relation_countryTld', 'countries');
+    initSelect2TextForBilling('mbh_document_relation_authorityOrganId', 'fms');
+    initSelect2TextForBilling('mbh_address_object_decomposed_countryTld', 'countries');
+    initSelect2TextForBilling('mbh_address_object_decomposed_regionId', 'regions');
+}
 
 function getTouristFilterFormData($touristForm, $citizenshipSelect) {
     return {

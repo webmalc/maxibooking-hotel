@@ -25,5 +25,7 @@ $(document).ready(function () {
         boostat: 1,
         maxboostedstep: 1
     });
+
+    initSelect2TextForBilling('mbhhotel_bundle_hotel_contact_information_type_city', 'cities');
 });
 

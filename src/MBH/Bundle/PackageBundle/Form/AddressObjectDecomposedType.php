@@ -17,20 +17,12 @@ class AddressObjectDecomposedType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('country', DocumentType::class, [
+            ->add('countryTld', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.country',
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                'query_builder' => function(DocumentRepository $repository) {
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
                 'required' => false,
             ])
-            ->add('region', DocumentType::class, [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+            ->add('regionId', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.region',
-                'query_builder' => function(DocumentRepository $repository) {
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
                 'required' => false,
             ])
             ->add('city', TextType::class, [

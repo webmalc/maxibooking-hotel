@@ -76,7 +76,7 @@
                 <div style="margin-left: 62px;">
                     <div class="area">&nbsp
                         {% if tourist %}
-                            {{ tourist.fullName }}{% if tourist.birthday %}, {{ tourist.birthday|date('d.m.Y') }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ 'mbhpackagebundle.view.documents.pdftemplates.r'|trans }}.{% endif %}{% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}, {{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}{% endif %}
+                            {{ tourist.fullName }}{% if tourist.birthday %}, {{ tourist.birthday|date('d.m.Y') }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ 'mbhpackagebundle.view.documents.pdftemplates.r'|trans }}.{% endif %}{% if tourist.birthplace and tourist.birthplace.countryId and tourist.birthplace.city %}, {{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}{% endif %}
                         {% endif %}
                     </div>
                     <div style="display: block; font-size: 12px; font-weight: normal;">
@@ -148,7 +148,7 @@
                 </div>
                 <div style="margin-left: 202px;">
                     <div class="area">
-                        &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}
+                        &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrganId %}{{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }}{% endif %}
                     </div>
                     <div style="display: block; font-size: 12px; font-weight: normal;">
                         ({{ 'mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document'|trans }}

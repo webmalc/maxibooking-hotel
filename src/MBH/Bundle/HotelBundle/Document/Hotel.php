@@ -226,24 +226,21 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="Country")
-     * @ODM\Index()
+     * @ODM\Field(type="int")
      */
-    protected $country;
+    protected $countryTld;
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="Region")
-     * @ODM\Index()
+     * @ODM\Field(type="int")
      */
-    protected $region;
+    protected $regionId;
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="City")
-     * @ODM\Index()
+     * @ODM\Field(type="int")
      */
-    protected $city;
+    protected $cityId;
 
     /**
      * @Gedmo\Versioned
@@ -801,20 +798,20 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      *
      * @return \MBH\Bundle\HotelBundle\Document\Country $country
      */
-    public function getCountry()
+    public function getCountryTld()
     {
-        return $this->country;
+        return $this->countryTld;
     }
 
     /**
      * Set country
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Country $country
+     * @param \MBH\Bundle\HotelBundle\Document\Country $countryTld
      * @return self
      */
-    public function setCountry(\MBH\Bundle\HotelBundle\Document\Country $country)
+    public function setCountryTld(\MBH\Bundle\HotelBundle\Document\Country $countryTld)
     {
-        $this->country = $country;
+        $this->countryTld = $countryTld;
 
         return $this;
     }
@@ -824,20 +821,20 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      *
      * @return \MBH\Bundle\HotelBundle\Document\Region $region
      */
-    public function getRegion()
+    public function getRegionId()
     {
-        return $this->region;
+        return $this->regionId;
     }
 
     /**
      * Set region
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Region $region
+     * @param \MBH\Bundle\HotelBundle\Document\Region $regionId
      * @return self
      */
-    public function setRegion(\MBH\Bundle\HotelBundle\Document\Region $region)
+    public function setRegionId(\MBH\Bundle\HotelBundle\Document\Region $regionId)
     {
-        $this->region = $region;
+        $this->regionId = $regionId;
 
         return $this;
     }
@@ -1065,40 +1062,24 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @PreUpdate
-     */
-    public function preUpdate()
-    {
-        $this->fillLocationByCity();
-    }
-
-    private function fillLocationByCity()
-    {
-        if ($this->getCity()) {
-            $this->setCountry($this->getCity()->getCountry());
-            $this->setRegion($this->getCity()->getRegion());
-        }
-    }
-
-    /**
      * Get city
      *
      * @return \MBH\Bundle\HotelBundle\Document\City $city
      */
-    public function getCity()
+    public function getCityId()
     {
-        return $this->city;
+        return $this->cityId;
     }
 
     /**
      * Set city
      *
-     * @param \MBH\Bundle\HotelBundle\Document\City $city
+     * @param \MBH\Bundle\HotelBundle\Document\City $cityId
      * @return self
      */
-    public function setCity(\MBH\Bundle\HotelBundle\Document\City $city)
+    public function setCityId(\MBH\Bundle\HotelBundle\Document\City $cityId)
     {
-        $this->city = $city;
+        $this->cityId = $cityId;
 
         return $this;
     }
@@ -1345,7 +1326,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return [
             'id' => $this->getId(),
             'title' => $this->getFullTitle(),
-            'city' => $this->getCity() ? $this->getCity()->getTitle() : null,
+            'city' => $this->getCityId() ? $this->getCityId()->getTitle() : null,
         ];
     }
 

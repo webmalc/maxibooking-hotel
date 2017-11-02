@@ -490,7 +490,7 @@ tourist.edit.small_title: 'Редактирование гостя #'
 form.DocumentRelation.type: 'Тип документа'
 form.DocumentRelation.authority_organ: 'Код подразделения ФМС'
 form.DocumentRelation.authority: 'Орган выдачи документа'
-form.DocumentRelation.authorityOrganCode: 'Код подразделения'
+form.DocumentRelation.authority.help: 'Название или код органа выдачи документа'
 form.DocumentRelation.series: Серия
 form.DocumentRelation.number: Номер
 form.DocumentRelation.issued: 'Дата выдачи'

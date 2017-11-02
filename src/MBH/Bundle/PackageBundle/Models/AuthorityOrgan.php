@@ -107,7 +107,7 @@ class AuthorityOrgan
      * @param string $end_date
      * @return AuthorityOrgan
      */
-    public function setEnd_date(string $end_date): AuthorityOrgan
+    public function setEnd_date(?string $end_date): AuthorityOrgan
     {
         $this->end_date = $end_date;
 

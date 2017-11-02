@@ -340,7 +340,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="area" style="margin-left: 0px">
-                                            &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan ? tourist.documentRelation.authorityOrgan : tourist.documentRelation.authorityOrganText }} {% endif %}
+                                            &nbsp{% if tourist and tourist.documentRelation %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}
                                         </div>
                                     </div>
                                 </td>
@@ -352,7 +352,7 @@
                                             9. {{ 'package.resources.views.adres_mesta_zhitelstva'|trans }}: &nbsp&nbsp {{ 'package.resources.views.country'|trans }}
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
+                                             style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ get_country(tourist.addressObjectDecomposed.countryTld).name }} {% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -363,7 +363,7 @@
                                             {{ 'package.resources.views.obl'|trans }}
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.region %} {{ tourist.addressObjectDecomposed.region.name }} {% endif %}</div>
+                                             style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.regionId %} {{ get_region(tourist.addressObjectDecomposed.regionId).name }} {% endif %}</div>
                                     </div>
                                 </td>
                                 <td>
@@ -713,7 +713,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="area" style="margin-left: 0px">
-                                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan ? tourist.documentRelation.authorityOrgan : tourist.documentRelation.authorityOrganText }} {% endif %}
+                                                &nbsp{% if tourist and tourist.documentRelation %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}
                                             </div>
                                         </div>
                                     </td>
@@ -725,7 +725,7 @@
                                                 9. {{ 'package.resources.views.adres_mesta_zhitelstva'|trans }}: &nbsp&nbsp {{ 'package.resources.views.country'|trans }}
                                             </div>
                                             <div class="area"
-                                                 style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
+                                                 style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ get_country(tourist.addressObjectDecomposed.countryTld).name }} {% endif %}</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -736,7 +736,7 @@
                                                 {{ 'package.resources.views.obl'|trans }}
                                             </div>
                                             <div class="area"
-                                                 style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.region %} {{ tourist.addressObjectDecomposed.region.name }} {% endif %}</div>
+                                                 style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.regionId %} {{ get_region(tourist.addressObjectDecomposed.regionId).name }} {% endif %}</div>
                                         </div>
                                     </td>
                                     <td>

@@ -37,7 +37,7 @@ class NoticeStayPlaceXlsType extends AbstractType
         /** @var Tourist $tourist */
         foreach($options['tourists'] as $tourist) {
             if($tourist) {
-                $citizenship = $tourist->getCitizenship();
+                $citizenship = $tourist->getCitizenshipTld();
                 $citizenshipName = $citizenship ? $citizenship->getName() : $this->translator->trans('form.notice_stay_place_xls_type.not_specified');
                 $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . $citizenshipName . ')';
             }
