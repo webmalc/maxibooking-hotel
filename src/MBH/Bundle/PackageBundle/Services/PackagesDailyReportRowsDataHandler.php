@@ -77,7 +77,8 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
      */
     private function getCashlessReceiptsSum(Hotel $hotel)
     {
-        return $this->getSumByCashDocuments($hotel, 'in', 'cashless');
+        return $this->getSumByCashDocuments($hotel, 'in', 'cashless')
+            + $this->getSumByCashDocuments($hotel, 'in', 'electronic');
     }
 
     /**
@@ -95,7 +96,8 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
      */
     private function getSumForCancelledPackagesCashless(Hotel $hotel)
     {
-        return $this->getSumForCancelledPackages($hotel, 'cashless');
+        return $this->getSumForCancelledPackages($hotel, 'cashless')
+            + $this->getSumForCancelledPackages($hotel, 'electronic');
     }
 
     /**
@@ -125,7 +127,8 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
 
     private function getCashlessReceiptsSumOut(Hotel $hotel)
     {
-        return $this->getSumByCashDocuments($hotel, 'out', 'cashless', self::PACKAGE_NOT_DELETED_TYPE);
+        return $this->getSumByCashDocuments($hotel, 'out', 'cashless', self::PACKAGE_NOT_DELETED_TYPE)
+            + $this->getSumByCashDocuments($hotel, 'out', 'electronic', self::PACKAGE_NOT_DELETED_TYPE);
     }
 
     private function getCashReceiptsSumOut(Hotel $hotel)
