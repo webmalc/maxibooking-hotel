@@ -80,10 +80,10 @@
                     ,
                     {{ 'package.resources.views.place_of_birth'|trans }} <span class="area"
                                                                                style="display: inline-block; width: 505px">
-                    &nbsp {% if tourist and tourist.birthPlace %}
-                            {{ tourist.birthPlace.country }}
+                    &nbsp {% if tourist and tourist.birthPlace and tourist.birthPlace.cityId and tourist.birthPlace.countryTld %}
+                            {{ get_country(tourist.birthPlace.countryTld).name }}
                             {{ tourist.birthPlace.mainRegion }}
-                            {{ tourist.birthPlace.city }}
+                            {{ get_city(tourist.birthPlace.cityId).name }}
                             {{ tourist.birthPlace.district }}
                         {% endif %}
                 </span>
@@ -103,8 +103,8 @@
                     {% if tourist %}
                         {% set decomposedAddress = tourist.addressObjectDecomposed %}
                     {% endif %}
-                    {% if decomposedAddress and decomposedAddress.country and decomposedAddress.city %}
-                        {{ decomposedAddress.country ~ ' ' ~ decomposedAddress.city ~ ' ' ~ decomposedAddress.settlement }}
+                    {% if decomposedAddress and decomposedAddress.countryTld and decomposedAddress.cityId %}
+                        {{ get_country(decomposedAddress.countryTld).name ~ ' ' ~ get_city(decomposedAddress.cityId).name ~ ' ' ~ decomposedAddress.settlement }}
                         {% if decomposedAddress.street %} {{ 'mbhpackagebundle.view.documents.pdftemplates.ul'|trans }}. {{ decomposedAddress.street }}
                             {% if decomposedAddress.house %}
                                 {{ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans }}. {{ decomposedAddress.house }}

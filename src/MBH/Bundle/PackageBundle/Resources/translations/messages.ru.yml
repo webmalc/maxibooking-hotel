@@ -364,6 +364,8 @@ controller.documentsController.action_view: Просмотр
 controller.documentsController.confirm_remove: 'Вы действительно хотите удалить файл "%filename%"?'
 controller.documentsController.alert_no_documents: 'Не загружено ни одного документа.'
 controller.generated_document_controller.document_modal_form.package_has_not_foreign: 'В данной брони нет иностранных граждан'
+controller.organization_controller.organization_successfully_created: 'Огранизация успешно создана.'
+controller.organization_controller.organization_successfully_edited: 'Организация успешно отредактирована.'
 form.organizationType.short_name: 'Краткое название'
 form.organizationType.director_fio: 'ФИО руководителя'
 form.organizationType.accountant_fio: 'ФИО бухгалтера'

@@ -15,6 +15,7 @@ services:
             - [setContainer, ['@service_container']]
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     mbh.hotel_subscriber:
         class: MBH\Bundle\HotelBundle\EventListener\HotelSubscriber
         arguments: ['@mbh.billing.api']

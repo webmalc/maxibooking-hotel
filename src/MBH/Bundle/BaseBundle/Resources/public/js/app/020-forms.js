@@ -492,44 +492,13 @@ var docReadyForms = function () {
         });
     }());
 
-    //city select
-    // (function () {
-    //     var citySelect = $('.citySelect');
-    //     if (citySelect.length !== 1) {
-    //         return;
-    //     }
-    //
-    //     select2Text(citySelect)
-    //         .select2({
-    //             minimumInputLength: 3,
-    //             allowClear: true,
-    //             placeholder: Translator.trans("020-forms.select_city"),
-    //             ajax: {
-    //                 url: Routing.generate('hotel_city'),
-    //                 dataType: 'json',
-    //                 data: function (params) {
-    //                     return {
-    //                         query: params.term // search term
-    //                     };
-    //                 },
-    //                 results: function (data) {
-    //                     return {results: data};
-    //                 }
-    //             },
-    //             initSelection: function (element, callback) {
-    //                 var id = $(element).val();
-    //                 if (id !== "") {
-    //                     $.ajax(Routing.generate('hotel_city') + '/' + id, {
-    //                         dataType: "json"
-    //                     }).done(function (data) {
-    //                         callback(data);
-    //                     });
-    //                 }
-    //             },
-    //
-    //             dropdownCssClass: "bigdrop"
-    //         });
-    // }());
+    (function () {
+        var citySelect = $('.citySelect');
+        if (citySelect.length !== 1) {
+            return;
+        }
+        initSelect2TextForBilling(citySelect.get(0).id, 'cities');
+    }());
 
     //order select
     (function () {

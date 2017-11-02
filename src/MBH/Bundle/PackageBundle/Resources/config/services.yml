@@ -208,3 +208,9 @@ services:
       class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
       arguments: ['@doctrine.odm.mongodb.document_manager']
       shared: false
+
+    mbh.organization_subscriber:
+        class: MBH\Bundle\PackageBundle\EventListener\OrganizationSubscriber
+        arguments: ['@mbh.billing.api']
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default }

@@ -796,7 +796,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get country
      *
-     * @return \MBH\Bundle\HotelBundle\Document\Country $country
+     * @return string
      */
     public function getCountryTld()
     {
@@ -806,10 +806,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set country
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Country $countryTld
+     * @param string $countryTld
      * @return self
      */
-    public function setCountryTld(\MBH\Bundle\HotelBundle\Document\Country $countryTld)
+    public function setCountryTld($countryTld)
     {
         $this->countryTld = $countryTld;
 
@@ -819,7 +819,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get region
      *
-     * @return \MBH\Bundle\HotelBundle\Document\Region $region
+     * @return int
      */
     public function getRegionId()
     {
@@ -829,10 +829,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set region
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Region $regionId
+     * @param int $regionId
      * @return self
      */
-    public function setRegionId(\MBH\Bundle\HotelBundle\Document\Region $regionId)
+    public function setRegionId($regionId)
     {
         $this->regionId = $regionId;
 
@@ -1064,7 +1064,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get city
      *
-     * @return \MBH\Bundle\HotelBundle\Document\City $city
+     * @return int
      */
     public function getCityId()
     {
@@ -1074,10 +1074,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set city
      *
-     * @param \MBH\Bundle\HotelBundle\Document\City $cityId
+     * @param $cityId
      * @return self
      */
-    public function setCityId(\MBH\Bundle\HotelBundle\Document\City $cityId)
+    public function setCityId($cityId)
     {
         $this->cityId = $cityId;
 

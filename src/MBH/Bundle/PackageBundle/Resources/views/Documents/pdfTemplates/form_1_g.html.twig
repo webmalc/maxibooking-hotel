@@ -130,7 +130,7 @@
                         <div class="ib left ">
                             5.{{ 'mbhpackagebundle.view.documents.pdftemplates.form_1_g.mesto.rozhdeniya'|trans }} </div>
                         <div style="width: 310px" class="area ib">
-                            &nbsp{% if tourist and tourist.birthplace %} {{ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.district ~ ' ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
+                            &nbsp{% if tourist and tourist.birthplace and tourist.birthplace.cityId %} {{ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.district ~ ' ' ~ get_city(tourist.birthplace.cityId).name ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
                     </div>
                     <div>
                         <div class="left">
@@ -244,9 +244,9 @@
                 <div class="ib">
                     <div style="width: 900px" class="area ib left">
                         &nbsp
-                        {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %}
+                        {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.cityId %}
                             {{ get_region(tourist.addressObjectDecomposed.regionId).name }},
-                            {{ 'mbhpackagebundle.views.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% if tourist.addressObjectDecomposed.street %},
+                            {{ 'mbhpackagebundle.views.g'|trans }}. {{ get_city(tourist.addressObjectDecomposed.cityId).name }}{% if tourist.addressObjectDecomposed.street %},
                             {{ 'mbhpackagebundle.views.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }},
                             {% if tourist.addressObjectDecomposed.house %}
                                 {% if tourist.addressObjectDecomposed.house %} {{ 'mbhpackagebundle.views.d'|trans }}. {{ tourist.addressObjectDecomposed.house }}
@@ -320,12 +320,12 @@
 
             {% set location = '' %}
 
-            {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.street %}
-                {% set location = ' ' ~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ package.accommodation.housing.city  ~ ', ' ~ package.accommodation.housing.settlement ~ ' ' ~ package.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.views.d'|trans ~ '.' ~ package.accommodation.housing.house %}
+            {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.cityId and package.accommodation.housing.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ get_city(package.accommodation.housing.cityId).name  ~ ', ' ~ package.accommodation.housing.settlement ~ ' ' ~ package.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.views.d'|trans ~ '.' ~ package.accommodation.housing.house %}
             {% endif %}
 
-            {% if not location and package.roomType.hotel.city and package.roomType.hotel.street %}
-                {% set location = ' '~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ package.roomType.hotel.city  ~ ', ' ~ package.roomType.hotel.settlement ~ ', ' ~ package.roomType.hotel.street %}
+            {% if not location and package.roomType.hotel.cityId and package.roomType.hotel.street %}
+                {% set location = ' '~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ get_city(package.roomType.hotel.cityId).name  ~ ', ' ~ package.roomType.hotel.settlement ~ ', ' ~ package.roomType.hotel.street %}
                 {% if package.roomType.hotel.house %}
                     {% set location = location ~ ', ' ~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ package.roomType.hotel.house %}
                     {% if package.roomType.hotel.corpus %}

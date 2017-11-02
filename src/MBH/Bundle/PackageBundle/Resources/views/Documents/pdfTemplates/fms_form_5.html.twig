@@ -142,10 +142,10 @@
                             <div class="field">
                                 <div class="center area" style="margin-top: 6px; font-size: 11px; font-weight: bold;">
                                     &nbsp
-                                    {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.address %}
-                                        {{ package.accommodation.housing.city }} {{ package.accommodation.housing.address }}
-                                    {% elseif package.roomType.hotel.region and package.roomType.hotel.city %}
-                                        {{ package.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }}. {{ package.roomType.hotel.city }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}
+                                    {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.cityId and package.accommodation.housing.address %}
+                                        {{ get_city(package.accommodation.housing.cityId).name }} {{ package.accommodation.housing.address }}
+                                    {% elseif package.roomType.hotel.regionId and package.roomType.hotel.cityId %}
+                                        {{ get_region(package.roomType.hotel.regionId).name }} {{ 'package.resources.views.g'|trans }}. {{ get_city(package.roomType.hotel.cityId).name }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}
                                     {% endif %}
                                 </div>
                                 <div class="center" style="font-size: 9px">
@@ -221,7 +221,7 @@
                                         <div class="title" style="width : 130px;">
                                             6. {{ 'package.resources.views.birthday_place'|trans }}
                                         </div>
-                                        &nbsp{% if tourist and tourist.birthplace %}<!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
+                                        &nbsp{% if tourist and tourist.birthplace and tourist.birthplace and tourist.birthplace.countryTld %}<!--<div class="area" style="margin-left: 130px">{{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ get_city(tourist.birthplace.cityId).name }}</div>-->{% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -251,7 +251,7 @@
                                         <div class="title" style="width: 70px">
                                             {{ 'package.resources.views.city'|trans }}
                                         </div>
-                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.city }}{% endif %}</div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace and tourist.birthplace.cityId %}{{ get_city(tourist.birthplace.cityId).name }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -372,7 +372,7 @@
                                             {{ 'package.resources.views.city'|trans }}
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
+                                             style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.cityId %} {{ get_city(tourist.addressObjectDecomposed.cityId).name }} {% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -515,10 +515,10 @@
                                 <div class="field">
                                     <div class="center area" style="margin-top: 6px; font-size: 11px; font-weight: bold;">
                                         &nbsp
-                                        {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.address %}
-                                            {{ package.accommodation.housing.city }} {{ package.accommodation.housing.address }}
-                                        {% elseif package.roomType.hotel.region and package.roomType.hotel.city %}
-                                            {{ package.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }} {{ package.roomType.hotel.city }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}
+                                        {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.cityId and package.accommodation.housing.address %}
+                                            {{ get_city(package.accommodation.housing.cityId).name }} {{ package.accommodation.housing.address }}
+                                        {% elseif package.roomType.hotel.regionId and package.roomType.hotel.cityId %}
+                                            {{ get_region(package.roomType.hotel.regionId).name }} {{ 'package.resources.views.g'|trans }} {{ get_city(package.roomType.hotel.cityId).name }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}
                                         {% endif %}
                                     </div>
                                     <div class="center" style="font-size: 9px">
@@ -594,7 +594,7 @@
                                             <div class="title" style="width : 130px;">
                                                 6. {{ 'package.resources.views.birthday_place'|trans }}
                                             </div>
-                                            &nbsp{% if tourist and tourist.birthplace %}<!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
+                                            &nbsp{% if tourist and tourist.birthplace and tourist.birthplace.cityId and tourist.birthplace.countryTld %}<!--<div class="area" style="margin-left: 130px">{{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ get_city(tourist.birthplace.cityId).name }}</div>-->{% endif %}
                                         </div>
                                     </td>
                                 </tr>
@@ -624,7 +624,7 @@
                                             <div class="title" style="width: 70px">
                                                 {{ 'package.resources.views.city'|trans }}
                                             </div>
-                                            <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.city }}{% endif %}</div>
+                                            <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace and tourist.birthplace.cityId %}{{ get_city(tourist.birthplace.cityId).name }}{% endif %}</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -745,7 +745,7 @@
                                                 {{ 'package.resources.views.city'|trans }}
                                             </div>
                                             <div class="area"
-                                                 style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
+                                                 style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.cityId %} {{ get_city(tourist.addressObjectDecomposed.cityId).name }} {% endif %}</div>
                                         </div>
                                     </td>
                                 </tr>

@@ -18,7 +18,7 @@ class City
     private $longitude;
     /** @var  string */
     private $population;
-    /** @var  string */
+    /** @var  int */
     private $region;
     /** @var string */
     private $country;
@@ -157,18 +157,18 @@ class City
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getRegion(): ?string
+    public function getRegion(): ?int
     {
         return $this->region;
     }
 
     /**
-     * @param string $region
+     * @param int $region
      * @return City
      */
-    public function setRegion(string $region): City
+    public function setRegion($region): City
     {
         $this->region = $region;
 

@@ -4,6 +4,7 @@ namespace MBH\Bundle\BillingBundle\Service;
 
 use GuzzleHttp\Client as GuzzleClient;
 use MBH\Bundle\PackageBundle\Models\AuthorityOrgan;
+use MBH\Bundle\PackageBundle\Models\BillingEntitiesResponse;
 use MBH\Bundle\PackageBundle\Models\City;
 use MBH\Bundle\PackageBundle\Models\Country;
 use MBH\Bundle\PackageBundle\Models\Region;
@@ -12,6 +13,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class BillingApi
 {
+    const BILLING_QUERY_PARAM_NAME = 'search';
     const BILLING_HOST = 'http://billing.maxibooking.ru';
     const RESULT_API_URL = '/result';
     const CLIENT_REQUEST_URL = '/clients';
@@ -120,6 +122,15 @@ class BillingApi
     }
 
     /**
+     * @param $regionQuery
+     * @param null $locale
+     * @return Region[]
+     */
+    public function getRegionByQuery($regionQuery, $locale = null) {
+        return $this->getBillingEntitiesByQuery(self::REGIONS_ENDPOINT, [self::BILLING_QUERY_PARAM_NAME => $regionQuery], Region::class, $locale);
+    }
+
+    /**
      * @param $cityId
      * @param null $locale
      * @return City
@@ -148,6 +159,26 @@ class BillingApi
     }
 
     /**
+     * @param $endpoint
+     * @param $queryParams
+     * @param $modelType
+     * @param $locale
+     * @return array
+     */
+    private function getBillingEntitiesByQuery($endpoint, $queryParams, $modelType, $locale)
+    {
+        $response = $this->sendGet($this->getBillingUrl($endpoint, null, $locale, $queryParams));
+        $decodedResponse = json_decode($response->getBody(), true);
+
+        $entities = [];
+        foreach ($decodedResponse['results'] as $entityData) {
+            $entities[] = $this->serializer->denormalize($entityData, $modelType);
+        }
+        
+        return $entities;
+    }
+
+    /**
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function getClient()
@@ -159,12 +190,17 @@ class BillingApi
      * @param $endpoint
      * @param null $identifier
      * @param null $locale
+     * @param array $queryParams
      * @return string
      */
-    private function getBillingUrl($endpoint, $identifier = null, $locale = null)
+    private function getBillingUrl($endpoint, $identifier = null, $locale = null, $queryParams = [])
     {
         $locale = $locale ?? $this->locale;
 
-        return self::BILLING_HOST . '/' . $locale . '/' . $endpoint . ($identifier ? '/' . $identifier : '');
+        return self::BILLING_HOST
+            . '/' . $locale
+            . '/' . $endpoint
+            . ($identifier ? '/' . $identifier : '')
+            . '?' . http_build_query($queryParams);
     }
 }

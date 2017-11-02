@@ -122,6 +122,16 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @param $cityId
+     * @param null $locale
+     * @return \MBH\Bundle\PackageBundle\Models\City
+     */
+    public function getCityById($cityId, $locale = null)
+    {
+        return $this->container->get('mbh.billing.api')->getCityById($cityId, $locale);
+    }
+
+    /**
      * @param \MongoDate $mongoDate
      * @return \DateTime
      */
@@ -228,7 +238,8 @@ class Extension extends \Twig_Extension
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
             'get_authority_organ' => new \Twig_SimpleFunction('get_authority_organ', [$this, 'getAuthorityOrganById'], ['is_safe' => ['html']]),
             'get_country' => new \Twig_SimpleFunction('get_country', [$this, 'getCountryByTld'], ['is_safe' => ['html']]),
-            'get_region' => new \Twig_SimpleFunction('get_region', [$this, 'getRegionById'], ['is_safe' => ['html']])
+            'get_region' => new \Twig_SimpleFunction('get_region', [$this, 'getRegionById'], ['is_safe' => ['html']]),
+            'get_city' => new \Twig_SimpleFunction('get_city', [$this, 'getCityById'], ['is_safe' => ['html']])
         ];
     }
 

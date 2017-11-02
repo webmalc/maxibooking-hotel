@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\EventListener;
 
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Common\EventSubscriber;
@@ -30,16 +31,36 @@ class HotelSubscriber implements EventSubscriber
         ];
     }
 
+    /**
+     * @param PreUpdateEventArgs $args
+     */
     public function preUpdate(PreUpdateEventArgs $args)
     {
         $hotel = $args->getDocument();
         if ($hotel instanceof Hotel) {
             if ($args->hasChangedField('cityId')) {
-                $city = $this->billing->getCityById($hotel->getCityId());
-                $commaPosition = strpos($city->getRegion(), ',');
-                $region = $commaPosition === false ? $city->getRegion() : substr($city->getRegion(), 0, $commaPosition);
-
+                $this->updateHotelAddressData($hotel);
             }
         }
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function prePersist(LifecycleEventArgs $args)
+    {
+        $hotel = $args->getDocument();
+        if ($hotel instanceof Hotel) {
+            if (!empty($hotel->getCityId())) {
+                $this->updateHotelAddressData($hotel);
+            }
+        }
+    }
+
+    private function updateHotelAddressData(Hotel $hotel)
+    {
+        $city = $this->billing->getCityById($hotel->getCityId());
+        $hotel->setRegionId($city->getRegion());
+        $hotel->setCountryTld($city->getCountry());
     }
 }
