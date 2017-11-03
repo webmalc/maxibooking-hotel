@@ -331,6 +331,8 @@ jQuery(document).ready(function() {
                             success: function(data) {
                                 wrapper.html('{{ styles|escape("js") }}' + data);
 
+                                jQuery(document).trigger('user-form-load-event');
+
                                 setSelect2();
                                 var prevUser = jQuery.cookie('mbh.user');
                                 var prevPackage = jQuery.cookie('mbh.package');
@@ -395,7 +397,7 @@ jQuery(document).ready(function() {
                                 // validate user form
                                 (function() {
 
-                                    var inputs = jQuery('#mbh-user-form input:required:not(#mbh-user-form-patronymic)'),
+                                    var inputs = jQuery('#mbh-user-form input:required)'),
                                         validate = function() {
                                             var nextButton = jQuery('#mbh-user-form-next');
                                             nextButton.prop('disabled', false);
