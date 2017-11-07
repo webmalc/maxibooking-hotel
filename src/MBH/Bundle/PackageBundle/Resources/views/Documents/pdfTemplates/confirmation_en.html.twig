@@ -167,7 +167,7 @@
                         <div class="area">&nbsp
                             {% if tourist and tourist.addressObjectDecomposed %}
                                 {% if tourist.addressObjectDecomposed.countryTld %}
-                                    {{ get_country(tourist.addressObjectDecomposed.countryTld).name }}{% if tourist.addressObjectDecomposed.regionId %}, {{ get_region(tourist.addressObjectDecomposed.regionId).name|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.cityId %}, {{ get_city(tourist.addressObjectDecomposed.cityId).name|transToLat }} city{% endif %}{% if tourist.addressObjectDecomposed.street %}, str. {{ tourist.addressObjectDecomposed.street|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
+                                    {{ get_country(tourist.addressObjectDecomposed.countryTld).name }}{% if tourist.addressObjectDecomposed.regionId %}, {{ get_region(tourist.addressObjectDecomposed.regionId).name|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.city %}, {{ tourist.addressObjectDecomposed.city|transToLat }} city{% endif %}{% if tourist.addressObjectDecomposed.street %}, str. {{ tourist.addressObjectDecomposed.street|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
                                     {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, bldg. {{ tourist.addressObjectDecomposed.corpus|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, fl. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
                                 {% endif %}
                                 {% endif %}

@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls;
 
 
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterface;
@@ -34,11 +35,13 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
      * @var \PHPExcel
      */
     private $phpExcelObject;
+    /** @var  BillingApi */
+    private $billing;
 
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
-
+        $this->billing = $container->get('mbh.billing.api');
         $this->phpExcel = $this->container->get('phpexcel');
         $this->phpExcelObject = $this->phpExcel->createPHPExcelObject($this->getXlsPath());
     }
@@ -69,7 +72,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         //$this->write('', 'W15');
 
         if ($tourist->getCitizenshipTld()) {
-            $this->write($tourist->getCitizenshipTld()->getName(), 'AA18');
+            $this->write($this->billing->getCountryByTld($tourist->getCitizenshipTld())->getName(), 'AA18');
         }
         if ($birthday = $tourist->getBirthday()) {
             $this->write($birthday->format('d'), 'AE21');
@@ -83,7 +86,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
         if ($birthplace = $tourist->getBirthplace()) {
             if ($birthplace->getCountryTld() && $birthplace->getMainRegion()) {
-                $city = $birthplace->getCountryTld()->getName() . ' ' . $birthplace->getMainRegion();
+                $city = $this->billing->getCountryByTld($birthplace->getCountryTld())->getName() . ' ' . $birthplace->getMainRegion();
                 // . ' ' . $birthplace->getCity() . ' ' . $tourist->getBirthplace()->getDistrict();
                 $this->write(mb_substr($city, 0, 33), 'AE24');
             }
@@ -183,7 +186,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         //$this->write($tourist->getPatronymic(), 'W73');
 
         //$this->write('', 'W71');
-        $this->write($tourist->getCitizenshipTld(), 'AA74');
+        $this->write($this->billing->getCountryByTld($tourist->getCitizenshipTld())->getName(), 'AA74');
 
         if ($birthday = $tourist->getBirthday()) {
             $this->write($birthday->format('d'), 'AE77');
@@ -205,11 +208,11 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         }
 
         if($hotel->getRegionId()) {
-            $this->write($hotel->getRegionId()->getTitle(), 'AE83');
+            $this->write($this->billing->getRegionById($hotel->getRegionId())->getName(), 'AE83');
         }
         if ($hotel->getCityId()) {
             //$this->write($hotel->getCity()->getTitle(), 'W86');
-            $this->write($hotel->getCityId()->getTitle() . ' ' . $hotel->getSettlement(), 'AE88');//Населенный пункт
+            $this->write($this->billing->getCityById($hotel->getCityId())->getName() . ' ' . $hotel->getSettlement(), 'AE88');//Населенный пункт
         }
         $this->write($hotel->getStreet(), 'W91');
 
@@ -234,7 +237,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         //$this->write($hotel->getSettlement(), 'W17');
 
         if ($hotel->getCityId()) {
-            $this->write($hotel->getCityId()->getTitle(), 'AE19');  // Город или другой населенный пункт
+            $this->write($this->billing->getCityById($hotel->getCityId())->getName(), 'AE19');  // Город или другой населенный пункт
         }
         $this->write($hotel->getStreet(), 'W22');
         $this->write($hotel->getHouse(), 'S24');
@@ -272,7 +275,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         }
 
         if($addressObjectDecomposed = $user->getAddressObjectDecomposed()) {
-            if($region = $addressObjectDecomposed->getRegionId()) {
+            if($region = $this->billing->getRegionById($addressObjectDecomposed->getRegionId())) {
                 $this->write($region->getName(), 'AE39');
             }
 
@@ -307,7 +310,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
                 ? $organization->getShortName()
                 : $organization->getName();
 
-            $this->write(substr($organizationName, 0, $firstLineLength), 'AA51');
+            $this->write(mb_substr($organizationName, 0, $firstLineLength), 'AA51');
             if (strlen($organizationName) > $firstLineLength) {
                 $this->write(substr($organizationName, $firstLineLength), 'K54');
             }
@@ -316,9 +319,9 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
         if($hotel) {
             $address = [];
-            $city = $hotel->getCityId();
+            $city = $this->billing->getCityById($hotel->getCityId());
             if($city) {
-                $address[] = $city->getTitle();
+                $address[] = $city->getName();
 
                 if($hotel->getStreet()) {
                     $address[] = 'ул '. $hotel->getStreet();

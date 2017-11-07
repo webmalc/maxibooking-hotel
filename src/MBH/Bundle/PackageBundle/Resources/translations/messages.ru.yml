@@ -614,6 +614,7 @@ tourist.migration.type_representative: 'Сведения о законных п�
 tourist.migration.type_address: 'Адрес прежнего места пребывания'
 tourist.visa.type_type: Тип
 tourist.visa.multiplicity_type.label: 'Кратность'
+tourist.visa.visa_category.label: 'Категория визы'
 tourist.visa.visit_purpose.label: 'Цель поездки'
 tourist.visa.type_series: Серия
 tourist.visa.type_profession: Профессия

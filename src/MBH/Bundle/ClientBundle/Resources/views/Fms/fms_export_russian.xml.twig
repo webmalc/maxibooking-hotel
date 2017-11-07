@@ -7,19 +7,17 @@
             <middleName>{{ tourist.patronymic }}</middleName>
             <gender>
                 <type>Gender</type>
-                <element>{{ tourist.sex == 'female' ? 'M' : 'F' }}</element>
+                <element>{{ tourist.sex == 'female' ? 'F' : 'M' }}</element>
             </gender>
             <birthDate>{{ tourist.birthday|date('d.m.Y') }}</birthDate>
             <citizenship>
                 <type>Citizenship</type>
-                {#Здесь должен быть alpha3 code#}
-                <element>{{ tourist.citizenship }}RUS</element>
+                <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
             </citizenship>
             <birthPlace>
                 <country>
                     <type>Country</type>
-                    {#Здесь должен быть alpha3 code#}
-                    <element>{{ tourist.birthplace.country }}SUN</element>
+                    <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
                 </country>
                 <place>{{ tourist.birthplace.mainRegion.name }}</place>
                 <place2>{{ tourist.birthplace.district }}</place2>
@@ -30,8 +28,7 @@
         <document>
             <type>
                 <type>DocumentType</type>
-                {#Тип документа. Справочник dict_documenttype (ID).#}
-                <element>103008</element>
+                <element>{{ tourist.documentRelation.type }}</element>
             </type>
             <series>{{ tourist.documentRelation.series }}</series>
             <number>{{ tourist.documentRelation.number }}</number>
@@ -39,7 +36,7 @@
             для остальных документов – строка: <authority>выдан кем-то</authority>#}
             <authorityOrgan>
                 <type>officialOrgan</type>
-                <element>7747</element>
+                <element>{{ tourist.documentRelation.authorityOrganId }}</element>
             </authorityOrgan>
             <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
             <validFrom>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validFrom>
@@ -49,6 +46,7 @@
     <f5:livingAddress>
         <russianAddress>
             {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
+            {#<addressObjectString>Новосибирская обл$$Новосибирск г$$$Саввы Кожевникова ул</addressObjectString>#}
             <addressObjectString>Новосибирская обл$$Новосибирск г$$$Саввы Кожевникова ул</addressObjectString>
             <housing>
                 <type>
@@ -76,7 +74,7 @@
                     <type>addressObjectType</type>
                     <element>1204</element>
                 </type>
-                <value>строение</value>
+                <value>{{ tourist.addressObjectDecomposed.structure }}</value>
             </housing>
         </russianAddress>
     </f5:livingAddress>
@@ -84,27 +82,4 @@
         <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
         <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>
     </f5:stayPeriod>
-
-    {#<f5:hotelInfo>#}
-        {#<f5:organization>#}
-            {#<uid>7DEE537D-58EE-4685-A7EC-442A5CB6FE38</uid>#}
-            {#<inn>0000000000</inn>#}
-            {#<name>Первый отель Х</name>#}
-            {#<address>#}
-                {#<address>#}
-                    {#<russianAddress>#}
-                        {#<addressObjectString>Свердловская обл$$Екатеринбург г$$$Малышева пл</addressObjectString>#}
-                        {#<housing>#}
-                            {#<type>#}
-                                {#<type>addressObjectType</type>#}
-                                {#<element>1202</element>#}
-                            {#</type>#}
-                            {#<value>56</value>#}
-                        {#</housing>#}
-                    {#</russianAddress>#}
-                {#</address>#}
-            {#</address>#}
-            {#<headOrganization>true</headOrganization>#}
-        {#</f5:organization>#}
-    {#</f5:hotelInfo>#}
 </f5:form5>

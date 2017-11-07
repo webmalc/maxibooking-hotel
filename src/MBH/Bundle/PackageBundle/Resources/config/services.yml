@@ -179,6 +179,7 @@ services:
       arguments:
           - '@doctrine_mongodb.odm.document_manager'
           - '@translator'
+          - '@mbh.billing.api'
       tags:
           - {name: form.type}
 

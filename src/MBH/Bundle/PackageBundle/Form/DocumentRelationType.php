@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionariesData;
 use MBH\Bundle\VegaBundle\Service\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -45,9 +46,7 @@ class DocumentRelationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $dictTypes = array_keys($this->dictionaryProvider->getDictTypes());
-        $documentTypes = array_map(['\MBH\Bundle\VegaBundle\Service\FriendlyFormatter', 'convertDocumentType'], $this->dictionaryProvider->getDocumentTypes());
-
-        asort($documentTypes);
+        $passportDocTypeId = 103008;
 
         //main
         if ($options['citizenship']) {
@@ -59,10 +58,11 @@ class DocumentRelationType extends AbstractType
         }
         $builder
             ->add('type', InvertChoiceType::class, [
-                'choices' => $documentTypes,
+                'choices' => FMSDictionariesData::getDocumentTypes(),
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.type',
-                'property_path' => 'documentRelation.type'
+                'property_path' => 'documentRelation.type',
+                'data' => $builder->getData()->getDocumentRelation()->getType() ?? $passportDocTypeId
             ])
             ->add('series', TextType::class, [
                 'group' => 'form.DocumentRelation.main',

@@ -74,6 +74,31 @@ class Visa extends Base
     protected $visitPurpose;
 
     /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $visaCategory;
+
+    /**
+     * @return int
+     */
+    public function getVisaCategory(): ?int
+    {
+        return $this->visaCategory;
+    }
+
+    /**
+     * @param int $visaCategory
+     * @return Visa
+     */
+    public function setVisaCategory(int $visaCategory): Visa
+    {
+        $this->visaCategory = $visaCategory;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getVisitPurpose(): ?int

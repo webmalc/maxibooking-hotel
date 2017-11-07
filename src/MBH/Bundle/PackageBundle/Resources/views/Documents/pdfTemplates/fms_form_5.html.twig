@@ -372,7 +372,7 @@
                                             {{ 'package.resources.views.city'|trans }}
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.cityId %} {{ get_city(tourist.addressObjectDecomposed.cityId).name }} {% endif %}</div>
+                                             style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -745,7 +745,7 @@
                                                 {{ 'package.resources.views.city'|trans }}
                                             </div>
                                             <div class="area"
-                                                 style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.cityId %} {{ get_city(tourist.addressObjectDecomposed.cityId).name }} {% endif %}</div>
+                                                 style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
                                         </div>
                                     </td>
                                 </tr>

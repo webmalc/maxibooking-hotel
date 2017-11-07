@@ -244,9 +244,9 @@
                 <div class="ib">
                     <div style="width: 900px" class="area ib left">
                         &nbsp
-                        {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.cityId %}
+                        {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %}
                             {{ get_region(tourist.addressObjectDecomposed.regionId).name }},
-                            {{ 'mbhpackagebundle.views.g'|trans }}. {{ get_city(tourist.addressObjectDecomposed.cityId).name }}{% if tourist.addressObjectDecomposed.street %},
+                            {{ 'mbhpackagebundle.views.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% if tourist.addressObjectDecomposed.street %},
                             {{ 'mbhpackagebundle.views.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }},
                             {% if tourist.addressObjectDecomposed.house %}
                                 {% if tourist.addressObjectDecomposed.house %} {{ 'mbhpackagebundle.views.d'|trans }}. {{ tourist.addressObjectDecomposed.house }}

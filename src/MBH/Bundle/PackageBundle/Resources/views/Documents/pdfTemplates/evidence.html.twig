@@ -92,12 +92,12 @@
 
             {% set location = '' %}
 
-            {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.street %}
-                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ package.accommodation.housing.city  ~ ', ' ~ package.accommodation.housing.settlement ~ ' ' ~ package.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '.' ~ package.accommodation.housing.house %}
+            {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.cityId and package.accommodation.housing.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ get_city(package.accommodation.housing.cityId).name  ~ ', ' ~ package.accommodation.housing.settlement ~ ' ' ~ package.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '.' ~ package.accommodation.housing.house %}
             {% endif %}
 
-            {% if not location and package.roomType.hotel.city and package.roomType.hotel.street %}
-                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ package.roomType.hotel.city  ~ ', ' ~ package.roomType.hotel.settlement ~ ', ' ~ package.roomType.hotel.street %}
+            {% if not location and package.roomType.hotel.cityId and package.roomType.hotel.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ get_city(package.roomType.hotel.cityId).name ~ ', ' ~ package.roomType.hotel.settlement ~ ', ' ~ package.roomType.hotel.street %}
                 {% if package.roomType.hotel.house %}
                     {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '. ' ~ package.roomType.hotel.house %}
                     {% if package.roomType.hotel.corpus %}

@@ -1,10 +1,11 @@
 ﻿<migst:case xmlns="http://umms.fms.gov.ru/replication/core" xmlns:mig="http://umms.fms.gov.ru/replication/migration"
             xmlns:fcc="http://umms.fms.gov.ru/replication/foreign-citizen-core" schemaVersion="1.0"
             xmlns:migst="http://umms.fms.gov.ru/replication/migration/staying">
-    <mig:notificationReceived>{{ package.begin|date('Y-m-d') }}</mig:notificationReceived>
+    <mig:notificationReceived>{{ package.arrivalTime|date('Y-m-d') }}</mig:notificationReceived>
     <mig:stayPeriod>
+        {#Здесь должна быть дата въезда в РФ #}
         <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
-        <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>
+        <dateTo>{{ package.departureTime|date('Y-m-d') }}</dateTo>
     </mig:stayPeriod>
     <mig:personDataDocument>
         <person>
@@ -16,19 +17,18 @@
             <middleNameLat>{{ tourist.patronymic|transToLat }}</middleNameLat>
             <gender>
                 <type>Gender</type>
-                <element>{{ tourist.sex == 'female' ? 'M' : 'F' }}</element>
+                <element>{{ tourist.sex == 'female' ? 'F' : 'M' }}</element>
             </gender>
             <birthDate>{{ tourist.birthday|date('d.m.Y') }}</birthDate>
             <citizenship>
                 <type>Citizenship</type>
                 {#Здесь должен быть alpha3 code#}
-                <element>{{ tourist.citizenship }}ESP</element>
+                <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
             </citizenship>
             <birthPlace>
                 <country>
                     <type>Country</type>
-                    {#Здесь должен быть alpha3 code#}
-                    <element>{{ tourist.birthplace.country }}SUN</element>
+                    <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
                 </country>
                 <place3>{{ tourist.birthplace.city }}</place3>
             </birthPlace>
@@ -37,13 +37,13 @@
             <type>
                 <type>DocumentType</type>
                 {#Тип документа. Справочник dict_documenttype (ID).#}
-                <element>103012</element>
+                <element>{{ tourist.documentRelation.type }}</element>
             </type>
             <series>{{ tourist.documentRelation.series }}</series>
             <number>{{ tourist.documentRelation.number }}</number>
             <authority>МИД РФ</authority>
             <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
-            <validFrom>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validFrom>
+            <validFrom>{{ tourist.documentRelation.issued|date('Y-m-d') }}</validFrom>
             <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
         </document>
         <entered>true</entered>
@@ -54,38 +54,16 @@
                 <housing>
                     <type>
                         <type>addressObjectType</type>
-                        <element>1202</element>
-                    </type>
-                    <value>{{ tourist.addressObjectDecomposed.house }}</value>
-                </housing>
-                <housing>
-                    <type>
-                        <type>addressObjectType</type>
                         <element>1304</element>
                     </type>
-                    <value>{{ tourist.addressObjectDecomposed.flat }}</value>
-                </housing>
-                {% if tourist.addressObjectDecomposed.corpus is not empty%}
-                <housing>
-                    <type>
-                        <type>addressObjectType</type>
-                        <element>1203</element>
-                    </type>
-                    <value>{{ tourist.addressObjectDecomposed.corpus }}</value>
-                </housing>
-                {% endif %}
-                {% if tourist.addressObjectDecomposed.structure is not empty%}
-                <housing>
-                    <type>
-                        <type>addressObjectType</type>
-                        <element>1204</element>
-                    </type>
-                    <value>{{ tourist.addressObjectDecomposed.structure }}</value>
+                    {# Может быть не числом #}
+                    <value>{{ package.accommodation.accommodation.fullTitle }}</value>
                 </housing>
             </russianAddress>
         </address>
     </mig:stayPlace>
     <mig:arrivalFromPlaceAddress>
+        {# По идее данные из ФИАС #}
         <addressObjectString>Свердловская обл$$Нижний Тагил г$$$Садовая ул</addressObjectString>
         <housing>
             <type>
@@ -118,7 +96,6 @@
     </mig:arrivalFromPlaceAddress>
     <mig:docResidence>
         <mig:visa>
-            <uid>ResidenceDocument_7196e9ee-06f1-4f9f-b2de-cd67c67abca5</uid>
             <type>
                 <type>DocumentType</type>
                 {% if tourist.visa.type == 'visa' %}
@@ -135,22 +112,19 @@
             <issued>{{ tourist.visa.issued|date('Y-m-d') }}</issued>
             <validFrom>{{ tourist.visa.issued|date('Y-m-d') }}</validFrom>
             <validTo>{{ tourist.visa.expiry|date('Y-m-d') }}</validTo>
-            <status>
-                <type>DocumentStatus</type>
-                <element>102877</element>
-            </status>
             <fcc:category>
                 <type>VisaCategory</type>
-                <element>135436</element>
+                <element>{{ tourist.visa.visaCategory }}</element>
             </fcc:category>
             <fcc:multiplicity>
                 <type>VisaMultiplicity</type>
-                <element>135495</element>
+                <element>{{ tourist.visa.multiplicityType }}</element>
             </fcc:multiplicity>
+            {#Что за идентификатор? #}
             <fcc:identitifier>876543</fcc:identitifier>
             <fcc:visitPurpose>
                 <type>EntryGoal</type>
-                <element>103092</element>
+                <element>{{ tourist.visa. }}</element>
             </fcc:visitPurpose>
         </mig:visa>
         <mig:entered>false</mig:entered>

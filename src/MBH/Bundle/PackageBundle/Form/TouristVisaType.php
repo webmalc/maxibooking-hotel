@@ -31,6 +31,12 @@ class TouristVisaType extends AbstractType
                 ],
                 'required' => false,
             ])
+            ->add('visaCategory', InvertChoiceType::class, [
+                'label' => 'tourist.visa.visa_category.label',
+                'group' => 'visa',
+                'choices' => FMSDictionariesData::getVisaCategories(),
+                'required' => false,
+            ])
             ->add('multiplicityType',  InvertChoiceType::class, [
                 'label' => 'tourist.visa.multiplicity_type.label',
                 'group' => 'visa',

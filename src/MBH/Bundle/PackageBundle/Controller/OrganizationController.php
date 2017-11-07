@@ -278,7 +278,7 @@ class OrganizationController extends Controller
                 'phone' => $organization->getPhone(),
                 'inn' => $organization->getInn(),
                 'kpp' => $organization->getKpp(),
-                'city' => $organization->getCityId()->getId(),
+                'city' => $organization->getCityId(),
                 'city_name' => $organization->getCityId(),
                 'street' => $organization->getStreet(),
                 'house' => $organization->getHouse(),

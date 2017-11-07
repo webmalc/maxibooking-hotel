@@ -4,11 +4,17 @@ namespace MBH\Bundle\PackageBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Query\Builder;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionariesData;
+use MBH\Bundle\HotelBundle\Document\City;
+use MBH\Bundle\HotelBundle\Document\Country;
+use MBH\Bundle\HotelBundle\Document\Region;
+use MBH\Bundle\VegaBundle\Document\VegaRegion;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+// АТЕНШЕН! ДАННЫЙ КОД НЕ РЕКОМЕНДУЕТСЯ ДЛЯ ЧТЕНИЯ И ИСПОЛЬЗУЕТСЯ ОДНОКРАТНО!!!
 class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
 {
     /**
@@ -36,14 +42,23 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
         $output->writeln('Start conversion!');
         $startTime = new \DateTime();
 
-        $this->convertVegaStateIdsToBillingCountryIds();
+        $csvExporter = $this->getContainer()->get('mbh.entities_exporter');
+        $csvExporter->writeToCsv($this->convertTouristsAddressData(), $this->getFilePath('missingTouristData.csv'));
+        $output->writeln('Tourists conversion completed!');
+        $csvExporter->writeToCsv($this->convertUserVegaStateIdsToBillingCountryIds(), $this->getFilePath('missingUserData.csv'));
+        $output->writeln('Users conversion completed!');
+        $csvExporter->writeToCsv($this->convertOrganizationsAddressData(), $this->getFilePath('missingOrganizationsData.csv'));
+        $output->writeln('Organizations conversion completed!');
+        $csvExporter->writeToCsv($this->convertHotelAddressData(), $this->getFilePath('missingHotelData.csv'));
+        $output->writeln('Hotels conversion completed!');
 
         $endTime = new \DateTime();
-        $timeDiffInSeconds = $endTime->diff($startTime)->s;
-        $output->writeln('The conversion was completed in ' . $timeDiffInSeconds . ' seconds');
+        $output->writeln('The conversion was completed in '
+            . $endTime->diff($startTime)->i . ' minutes '
+            . $endTime->diff($startTime)->s . ' seconds');
     }
 
-    private function convertVegaStateIdsToBillingCountryIds()
+    private function convertTouristsAddressData()
     {
         /** @var DocumentManager $dm */
         $dm = $this->getDocumentManager();
@@ -54,9 +69,29 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
             ->createQueryBuilder();
 
         $touristsWithFilledCountryData = $touristsQB
-            ->field('citizenshipTld')->exists(false)
-            ->addOr($touristsQB->expr()->field('addressObjectDecomposed.country')->notEqual(null))
-            ->addOr($touristsQB->expr()->field('citizenship')->notEqual(null))
+            ->addOr($touristsQB->expr()
+                ->field('addressObjectDecomposed.country')->notEqual(null)
+                ->field('addressObjectDecomposed.countryTld')->exists(false)
+            )
+            ->addOr($touristsQB->expr()
+                ->field('addressObjectDecomposed.region')->notEqual(null)
+                ->field('addressObjectDecomposed.regionId')->exists(false)
+            )
+            ->addOr(
+                $touristsQB->expr()
+                    ->field('citizenship')->notEqual(null)
+                    ->field('citizenshipTld')->exists(false)
+            )
+            ->addOr(
+                $touristsQB->expr()
+                    ->field('birthplace.country')->notEqual(null)
+                    ->field('birthplace.countryTld')->exists(false)
+            )
+            ->addOr(
+                $touristsQB->expr()
+                    ->field('documentRelation.type')->notEqual(null)
+                    ->field('documentRelation.type')->type('string')
+            )
             ->hydrate(false)
             ->getQuery()
             ->execute()
@@ -64,20 +99,21 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
 
         $updates = [];
         $touristsWithUnknownCountry = [];
+        $touristsWithUnknownRegion = [];
+        $touristsWithUnknownDocType = [];
+
         $billingCountryTldByVegaStateIds = $this->getBillingCountryTldByVegaStateIds();
+        $billingRegionIdByVegaRegionIds = $this->getBillingRegionIdsByVegaRegionIds();
+        $fmsDocTypesIdsByVegaDocTypes = $this->getFMSDocumentTypeIdsByVegaDocumentTypes();
 
         foreach ($touristsWithFilledCountryData as $touristData) {
+            $updatedValues = [];
             if (isset($touristData['citizenship'])) {
                 $citizenshipId = $touristData['citizenship']['$id']->serialize();
                 $vegaState = $dm->find('MBHVegaBundle:VegaState', $citizenshipId);
                 if (isset($billingCountryTldByVegaStateIds[$citizenshipId])) {
                     $billingTld = $billingCountryTldByVegaStateIds[$citizenshipId];
-                    $updates[] = [
-                        'criteria' => ['_id' => $touristData['_id']],
-                        'values' => [
-                            'citizenshipTld' => $billingTld
-                        ]
-                    ];
+                    $updatedValues['citizenshipTld'] = $billingTld;
                 } else {
                     $touristsWithUnknownCountry[] = [
                         $touristData['_id'],
@@ -88,17 +124,28 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
                     ];
                 }
             }
-            if (isset($touristData['addressObjectDecomposed.country'])) {
-                $citizenshipId = $touristData['addressObjectDecomposed.country']['$id']->serialize();
+            if (isset($touristData['birthplace']['country'])) {
+                $citizenshipId = $touristData['birthplace']['country']['$id']->serialize();
                 $vegaState = $dm->find('MBHVegaBundle:VegaState', $citizenshipId);
                 if (isset($billingCountryTldByVegaStateIds[$citizenshipId])) {
                     $billingTld = $billingCountryTldByVegaStateIds[$citizenshipId];
-                    $updates[] = [
-                        'criteria' => ['_id' => $touristData['_id']],
-                        'values' => [
-                            'addressObjectDecomposed.countryTld' => $billingTld
-                        ]
+                    $updatedValues['birthplace.countryTld'] = $billingTld;
+                } else {
+                    $touristsWithUnknownCountry[] = [
+                        $touristData['_id'],
+                        $touristData['fullName'],
+                        'birthplace.country',
+                        $vegaState->getId(),
+                        $vegaState->getName()
                     ];
+                }
+            }
+            if (isset($touristData['addressObjectDecomposed']['country'])) {
+                $citizenshipId = $touristData['addressObjectDecomposed']['country']['$id']->serialize();
+                $vegaState = $dm->find('MBHVegaBundle:VegaState', $citizenshipId);
+                if (isset($billingCountryTldByVegaStateIds[$citizenshipId])) {
+                    $billingTld = $billingCountryTldByVegaStateIds[$citizenshipId];
+                    $updatedValues['addressObjectDecomposed.countryTld'] = $billingTld;
                 } else {
                     $touristsWithUnknownCountry[] = [
                         $touristData['_id'],
@@ -109,14 +156,266 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
                     ];
                 }
             }
-        }
-
-        if (!empty($touristsWithUnknownCountry)) {
-            $dataToWriteInCsv = array_merge([['ID туриста', 'Имя', 'Поле', 'ID страны', 'Название страны']], $touristsWithUnknownCountry);
-            $this->getContainer()->get('mbh.entities_exporter')->writeToCsv($dataToWriteInCsv, $this->getFilePath('test_file.csv'));
+            if (isset($touristData['addressObjectDecomposed']['region'])) {
+                $regionId = $touristData['addressObjectDecomposed']['region']['$id']->serialize();
+                if (isset($billingRegionIdByVegaRegionIds[$regionId])) {
+                    $billingId = $billingRegionIdByVegaRegionIds[$regionId];
+                    $updatedValues['addressObjectDecomposed.regionId'] = $billingId;
+                } else {
+                    $vegaRegion = $dm->find('MBHVegaBundle:VegaRegion', $regionId);
+                    $touristsWithUnknownRegion[] = [
+                        $touristData['_id'],
+                        $touristData['fullName'],
+                        'addressObjectDecomposed.region',
+                        $vegaRegion->getId(),
+                        $vegaRegion->getName()
+                    ];
+                }
+            }
+            if (isset($touristData['documentRelation']['type'])) {
+                $type = $touristData['documentRelation']['type'];
+                if (isset($fmsDocTypesIdsByVegaDocTypes[$type])) {
+                    $fmsDocTypeId = $fmsDocTypesIdsByVegaDocTypes[$type];
+                    $updatedValues['documentRelation.type'] = $fmsDocTypeId;
+                } else {
+                    $touristsWithUnknownDocType[] = [
+                        $touristData['_id'],
+                        $touristData['fullName'],
+                        'documentRelation.type',
+                        $type
+                    ];
+                }
+            }
+            if (!empty($updatedValues)) {
+                $updates[] = [
+                    'criteria' => ['_id' => $touristData['_id']],
+                    'values' => $updatedValues
+                ];
+            }
         }
 
         $this->getContainer()->get('mbh.mongo')->update('Tourists', $updates);
+
+        $missingData = [];
+        if (!empty($touristsWithUnknownCountry)) {
+            $missingData = array_merge([['ID туриста', 'Имя', 'Поле', 'ID страны', 'Название страны']], $touristsWithUnknownCountry);
+        }
+        if (!empty($touristsWithUnknownRegion)) {
+            $missingData = array_merge([['ID туриста', 'Имя', 'Поле', 'ID региона', 'Название региона']], $touristsWithUnknownRegion, $missingData);
+        }
+        if (!empty($touristsWithUnknownDocType)) {
+            $missingData = array_merge([['ID туриста', 'Имя', 'Поле', 'Тип документа']], $touristsWithUnknownDocType, $missingData);
+        }
+
+        return $missingData;
+    }
+
+    private function getFMSDocumentTypeIdsByVegaDocumentTypes()
+    {
+        $relations = [];
+        $vegaDocTypes = $this->getContainer()->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        foreach ($vegaDocTypes as $vegaDocType) {
+            foreach (FMSDictionariesData::getDocumentTypes() as $docTypeId => $documentType) {
+                if (mb_strtolower($vegaDocType) === mb_strtolower($documentType)) {
+                    $relations[$vegaDocType] = $docTypeId;
+                    break;
+                }
+            }
+        }
+
+        return $relations;
+    }
+
+    private function convertOrganizationsAddressData()
+    {
+        $billingCitiesIdsByLocalCitiesIds = $this->getBillingCityIdsByLocalCityIds();
+
+        /** @var DocumentManager $dm */
+        $dm = $this->getDocumentManager();
+
+        /** @var Builder $organizationsQB */
+        $organizationsQB = $dm
+            ->getRepository('MBHPackageBundle:Organization')
+            ->createQueryBuilder();
+
+        $organizationsWithFilledAddressData = $organizationsQB
+            ->addOr($organizationsQB->expr()
+                ->field('country')->notEqual(null)
+                ->field('countryTld')->exists(false)
+            )
+            ->addOr($organizationsQB->expr()
+                ->field('region')->notEqual(null)
+                ->field('regionId')->exists(false)
+            )
+            ->addOr($organizationsQB->expr()
+                ->field('city')->notEqual(null)
+                ->field('cityId')->exists(false)
+            )
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $updates = [];
+        $organizationsWithUnknownCity = [];
+
+        foreach ($organizationsWithFilledAddressData as $organizationData) {
+            $updatedValues = [];
+            if (isset($organizationData['city'])) {
+                $localCityId = $organizationData['city']['$id']->serialize();
+                $city = $dm->find('MBHHotelBundle:City', $localCityId);
+                if (isset($billingCitiesIdsByLocalCitiesIds[$localCityId])) {
+                    $billingCityId = $billingCitiesIdsByLocalCitiesIds[$localCityId];
+                    $updatedValues['cityId'] = $billingCityId;
+                } else {
+                    $organizationsWithUnknownCity[] = [
+                        $organizationData['_id'],
+                        $organizationData['shortName'],
+                        'city',
+                        $city->getId(),
+                        $city->getName()
+                    ];
+                }
+            }
+            if (!empty($updatedValues)) {
+                $updates[] = [
+                    'criteria' => ['_id' => $organizationData['_id']],
+                    'values' => $updatedValues
+                ];
+            }
+        }
+
+        $this->getContainer()->get('mbh.mongo')->update('Organizations', $updates);
+
+        $missingData = [];
+
+        if (!empty($organizationsWithUnknownCity)) {
+            $missingData = array_merge([['ID организации', 'Название', 'Поле', 'ID города', 'Название города']], $organizationsWithUnknownCity, $missingData);
+        }
+
+        return $missingData;
+    }
+
+    private function convertHotelAddressData()
+    {
+        $billingCitiesIdsByLocalCitiesIds = $this->getBillingCityIdsByLocalCityIds();
+        
+        /** @var DocumentManager $dm */
+        $dm = $this->getDocumentManager();
+
+        /** @var Builder $hotelsQB */
+        $hotelsQB = $dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->createQueryBuilder();
+
+        $hotelsWithFilledAddressData = $hotelsQB
+            ->addOr($hotelsQB->expr()
+                ->field('country')->notEqual(null)
+                ->field('countryTld')->exists(false)
+            )
+            ->addOr($hotelsQB->expr()
+                ->field('region')->notEqual(null)
+                ->field('regionId')->exists(false)
+            )
+            ->addOr($hotelsQB->expr()
+                ->field('city')->notEqual(null)
+                ->field('cityId')->exists(false)
+            )
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $updates = [];
+        $hotelsWithUnknownCity = [];
+
+        foreach ($hotelsWithFilledAddressData as $hotelData) {
+            $updatedValues = [];
+            if (isset($hotelData['city'])) {
+                $localCityId = $hotelData['city']['$id']->serialize();
+                $city = $dm->find('MBHHotelBundle:City', $localCityId);
+                if (isset($billingCitiesIdsByLocalCitiesIds[$localCityId])) {
+                    $billingTld = $billingCitiesIdsByLocalCitiesIds[$localCityId];
+                    $updatedValues['cityId'] = $billingTld;
+                } else {
+                    $hotelsWithUnknownCity[] = [
+                        $hotelData['_id'],
+                        $hotelData['title'],
+                        'city',
+                        $city->getId(),
+                        $city->getName()
+                    ];
+                }
+            }
+            if (!empty($updatedValues)) {
+                $updates[] = [
+                    'criteria' => ['_id' => $hotelData['_id']],
+                    'values' => $updatedValues
+                ];
+            }
+        }
+
+        $this->getContainer()->get('mbh.mongo')->update('Hotels', $updates);
+
+        $missingData = [];
+        if (!empty($hotelsWithUnknownCity)) {
+            $missingData = array_merge([['ID Отеля', 'Название', 'Поле', 'ID города', 'Название города']], $hotelsWithUnknownCity, $missingData);
+        }
+
+        return $missingData;
+    }
+
+    private function convertUserVegaStateIdsToBillingCountryIds()
+    {
+        /** @var DocumentManager $dm */
+        $dm = $this->getDocumentManager();
+
+        /** @var Builder $usersQB */
+        $usersQB = $dm
+            ->getRepository('MBHUserBundle:User')
+            ->createQueryBuilder();
+
+        $touristsWithFilledCountryData = $usersQB
+            ->field('addressObjectDecomposed.countryTld')->exists(false)
+            ->field('addressObjectDecomposed.country')->notEqual(null)
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $touristsWithUnknownCountry = [];
+        $updates = [];
+        $billingCountryTldByVegaStateIds = $this->getBillingCountryTldByVegaStateIds();
+
+        foreach ($touristsWithFilledCountryData as $touristData) {
+            $citizenshipId = $touristData['addressObjectDecomposed']['country']['$id']->serialize();
+            $vegaState = $dm->find('MBHVegaBundle:VegaState', $citizenshipId);
+            if (isset($billingCountryTldByVegaStateIds[$citizenshipId])) {
+                $billingTld = $billingCountryTldByVegaStateIds[$citizenshipId];
+                $updates[] = [
+                    'criteria' => ['_id' => $touristData['_id']],
+                    'values' => [
+                        'addressObjectDecomposed.countryTld' => $billingTld
+                    ]
+                ];
+            } else {
+                $touristsWithUnknownCountry[] = [
+                    $touristData['_id'],
+                    $touristData['username'],
+                    'addressObjectDecomposed.country',
+                    $vegaState->getId(),
+                    $vegaState->getName()
+                ];
+            }
+        }
+
+        $this->getContainer()->get('mbh.mongo')->update('Users', $updates);
+
+        if (!empty($touristsWithUnknownCountry)) {
+            return array_merge([['ID пользователя', 'Имя', 'Поле', 'ID страны', 'Название страны']], $touristsWithUnknownCountry);
+        }
+
+        return [];
     }
 
     /**
@@ -145,6 +444,145 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
         }
 
         return $billingCountryTldByVegaStateIds;
+    }
+
+    private function getBillingCountryTldByCountryIds()
+    {
+        $resource = fopen($this->getFilePath('countries.csv'), 'r');
+        $countryTldByNames = [];
+        if ($resource) {
+            while (($rowData = fgetcsv($resource, 1000, ";")) !== false) {
+                $countryTldByNames[strtolower($rowData[1])] = $rowData[2];
+            }
+            fclose($resource);
+        }
+
+        $countries = $this->getDocumentManager()->getRepository('MBHHotelBundle:Country')->findAll();
+        $billingCountryTldByCountryIds = [];
+
+        /** @var Country $country */
+        foreach ($countries as $country) {
+            $lowerCountryName = strtolower($country->getTitle());
+            if (isset($countryTldByNames[$lowerCountryName])) {
+                $billingCountryTldByCountryIds[$country->getId()] = $countryTldByNames[$lowerCountryName];
+            }
+        }
+
+        return $billingCountryTldByCountryIds;
+    }
+
+    /**
+     * @return array
+     */
+    private function getBillingRegionIdsByVegaRegionIds()
+    {
+        $resource = fopen($this->getFilePath('regions.csv'), 'r');
+        $regionIdsByNames = [];
+        $regionNames = [];
+        if ($resource) {
+            while (($rowData = fgetcsv($resource, 1000, ";")) !== false) {
+                $lowerBillingRegionName = mb_strtolower($rowData[1]);
+                $regionNames[] = $lowerBillingRegionName;
+                $regionIdsByNames[$lowerBillingRegionName] = $rowData[0];
+            }
+            fclose($resource);
+        }
+
+        $vegaRegions = $this->getDocumentManager()->getRepository('MBHVegaBundle:VegaRegion')->findAll();
+        $billingRegionIdByVegaRegionIds = [];
+
+        /** @var VegaRegion $vegaRegion */
+        foreach ($vegaRegions as $vegaRegion) {
+            $lowerVegaRegionName = mb_strtolower($vegaRegion->getOriginalName());
+            if (isset($regionIdsByNames[$lowerVegaRegionName])) {
+                $billingRegionIdByVegaRegionIds[$vegaRegion->getId()] = $regionIdsByNames[$lowerVegaRegionName];
+            } elseif (!is_null($regionName = $this->getBillingNameByLocalName($regionNames, $lowerVegaRegionName))) {
+                $billingRegionIdByVegaRegionIds[$vegaRegion->getId()] = $regionIdsByNames[$regionName];
+            }
+        }
+
+        return $billingRegionIdByVegaRegionIds;
+    }
+
+    private $billingRegionIdsByLocalRegionIds = [];
+    private $isBillingRegionIdsByLocalRegionIdsInit = false;
+
+    public function getBillingRegionIdsByLocalRegionIds()
+    {
+        if (!$this->isBillingRegionIdsByLocalRegionIdsInit) {
+            $resource = fopen($this->getFilePath('regions.csv'), 'r');
+            $regionIdsByNames = [];
+            $regionNames = [];
+            if ($resource) {
+                while (($rowData = fgetcsv($resource, 1000, ";")) !== false) {
+                    $lowerBillingRegionName = mb_strtolower($rowData[1]);
+                    $regionNames[] = $lowerBillingRegionName;
+                    $regionIdsByNames[$lowerBillingRegionName] = $rowData[0];
+                }
+                fclose($resource);
+            }
+
+            $localRegions = $this->getDocumentManager()->getRepository('MBHHotelBundle:Region')->findAll();
+
+            /** @var Region $localRegion */
+            foreach ($localRegions as $localRegion) {
+                $lowerVegaRegionName = mb_strtolower($localRegion->getTitle());
+                if (isset($regionIdsByNames[$lowerVegaRegionName])) {
+                    $this->billingRegionIdsByLocalRegionIds[$localRegion->getId()] = $regionIdsByNames[$lowerVegaRegionName];
+                } elseif (!is_null($regionName = $this->getBillingNameByLocalName($regionNames, $lowerVegaRegionName))) {
+                    $this->billingRegionIdsByLocalRegionIds[$localRegion->getId()] = $regionIdsByNames[$regionName];
+                }
+            }
+            $this->isBillingRegionIdsByLocalRegionIdsInit = true;
+        }
+
+        return $this->billingRegionIdsByLocalRegionIds;
+    }
+
+    private $billingCityIdsByLocalCityIds;
+    private $isBillingCityIdsByLocalCityIdsInit = false;
+
+    public function getBillingCityIdsByLocalCityIds()
+    {
+        if (!$this->isBillingCityIdsByLocalCityIdsInit) {
+            $resource = fopen($this->getFilePath('cities.csv'), 'r');
+            $citiesIdsByNames = [];
+            $citiesNames = [];
+            if ($resource) {
+                while (($rowData = fgetcsv($resource, 1000, ";")) !== false) {
+                    $lowerBillingRegionName = mb_strtolower($rowData[1]);
+                    $citiesNames[] = $lowerBillingRegionName;
+                    $citiesIdsByNames[$lowerBillingRegionName] = $rowData[0];
+                }
+                fclose($resource);
+            }
+
+            $localCities = $this->getDocumentManager()->getRepository('MBHHotelBundle:City')->findAll();
+
+            /** @var City $localCity */
+            foreach ($localCities as $localCity) {
+                $lowerVegaCityName = mb_strtolower($localCity->getTitle());
+                if (isset($citiesIdsByNames[$lowerVegaCityName])) {
+                    $this->billingCityIdsByLocalCityIds[$localCity->getId()] = $citiesIdsByNames[$lowerVegaCityName];
+                } elseif (!is_null($regionName = $this->getBillingNameByLocalName($citiesNames, $lowerVegaCityName))) {
+                    $this->billingCityIdsByLocalCityIds[$localCity->getId()] = $citiesIdsByNames[$regionName];
+                }
+            }
+            $this->isBillingCityIdsByLocalCityIdsInit = true;
+        }
+
+        return $this->billingCityIdsByLocalCityIds;
+    }
+
+    private function getBillingNameByLocalName($billingRegionNames, $localName)
+    {
+        foreach ($billingRegionNames as $billingRegionName) {
+            if (strpos($billingRegionName, $localName) !== false) {
+                return $billingRegionName;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -192,6 +630,9 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
 //        }
 //    }
 
+    /**
+     * @return DocumentManager
+     */
     private function getDocumentManager()
     {
         return $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');

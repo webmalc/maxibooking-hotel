@@ -1326,7 +1326,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return [
             'id' => $this->getId(),
             'title' => $this->getFullTitle(),
-            'city' => $this->getCityId() ? $this->getCityId()->getTitle() : null,
+            'city' => $this->getCityId() ? $this->getCityId() : null,
         ];
     }
 
