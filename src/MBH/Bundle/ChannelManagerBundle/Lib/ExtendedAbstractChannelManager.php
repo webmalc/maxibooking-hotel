@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
@@ -127,6 +128,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * Pull rooms from service server
      * @param ChannelManagerConfigInterface $config
      * @return array
+     * @throws ChannelManagerException
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
@@ -141,6 +143,8 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             if ($responseHandler->isResponseCorrect()) {
                 $roomTypesData = $responseHandler->getRoomTypesData();
                 $roomTypes += $roomTypesData;
+            } else {
+                throw new ChannelManagerException($responseHandler->getErrorMessage());
             }
         }
 
@@ -151,6 +155,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * Pull tariffs from service server
      * @param ChannelManagerConfigInterface $config
      * @return array
+     * @throws ChannelManagerException
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
@@ -163,8 +168,12 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         foreach ($requestInfoList as $requestInfo) {
             $response = $this->sendRequestAndGetResponse($requestInfo);
             $responseHandler = $this->getResponseHandler($response, $config);
-            $tariffsData = $responseHandler->getTariffsData($roomTypes);
-            $tariffs += $tariffsData;
+            if ($responseHandler->isResponseCorrect()) {
+                $tariffsData = $responseHandler->getTariffsData($roomTypes);
+                $tariffs += $tariffsData;
+            } else {
+                throw new ChannelManagerException($responseHandler->getErrorMessage());
+            }
         }
 
         return $tariffs;
