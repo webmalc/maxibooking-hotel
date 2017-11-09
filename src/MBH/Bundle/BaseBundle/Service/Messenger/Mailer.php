@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use FOS\UserBundle\Mailer\MailerInterface;
 use FOS\UserBundle\Model\UserInterface;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\MailerNotificationException;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
@@ -355,6 +356,9 @@ class Mailer implements \SplObserver, MailerInterface
     private function canISentToClient(string $notificationType): bool
     {
         $result = true;
+        if (NotificationType::AUTH_TYPE === $notificationType) {
+            return true;
+        }
         /** @var ClientConfig $clientConfig */
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         if ($notificationType) {

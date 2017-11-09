@@ -59,9 +59,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.formController.settings_saved_success'))
-            ;
+            $this->addFlash('success', 'controller.formController.settings_saved_success');
 
             return $this->afterSaveRedirect('online_form', $entity->getId());
         }

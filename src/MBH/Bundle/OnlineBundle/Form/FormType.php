@@ -3,13 +3,12 @@
 namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,6 +19,12 @@ use MBH\Bundle\OnlineBundle\Document\FormConfig;
 
 class FormType extends AbstractType
 {
+    private $countryType;
+
+    public function __construct($countryType)
+    {
+        $this->countryType = $countryType;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -34,7 +39,7 @@ class FormType extends AbstractType
                     'required' => false,
                     'multiple' => true,
                     'attr' => ['placeholder' => 'form.formType.hotels_placeholder'],
-                    'help' =>  'form.formType.hotels_desc'
+                    'help' => 'form.formType.hotels_desc'
                 ]
             )
             ->add(
@@ -45,7 +50,24 @@ class FormType extends AbstractType
                     'group' => 'form.formType.parameters',
                     'value' => true,
                     'required' => false,
-                    'help' =>  'form.formType.use_online_form'
+                    'help' => 'form.formType.use_online_form'
+                ]
+            )
+            ->add('resultsUrl', TextType::class, [
+                'label' => 'form.formType.resultsUrl_label',
+                'group' => 'form.formType.parameters',
+                'required' => true,
+                'help' => 'form.formType.resultsUrl_help'
+            ])
+            ->add(
+                'nights',
+                CheckboxType::class,
+                [
+                    'label' => 'form.formType.should_we_use_nights_field',
+                    'group' => 'form.formType.parameters',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date'
                 ]
             )
             ->add(
@@ -70,29 +92,18 @@ class FormType extends AbstractType
                     'multiple' => true,
                     'group_by' => 'hotel',
                     'attr' => ['placeholder' => 'form.formType.room_type_choices_placeholder'],
-                    'help' =>  'form.formType.room_type_choices_desc'
+                    'help' => 'form.formType.room_type_choices_desc'
                 ]
             )
             ->add(
                 'tourists',
                 CheckboxType::class,
                 [
-                        'label' => 'form.formType.are_there_guests',
-                        'group' => 'form.formType.parameters',
-                        'value' => true,
-                        'required' => false,
-                        'help' => 'form.formType.should_we_use_guests_amount_field_in_online_form'
-                    ]
-            )
-            ->add(
-                'nights',
-                CheckboxType::class,
-                [
-                    'label' => 'form.formType.should_we_use_nights_field',
+                    'label' => 'form.formType.are_there_guests',
                     'group' => 'form.formType.parameters',
                     'value' => true,
                     'required' => false,
-                    'help' => 'form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date'
+                    'help' => 'form.formType.should_we_use_guests_amount_field_in_online_form'
                 ]
             )
             ->add('isDisplayChildrenAges', CheckboxType::class, [
@@ -109,33 +120,57 @@ class FormType extends AbstractType
                 'required' => true,
                 'help' => 'form.formType.max_packages.help'
             ])
-            ->add('resultsUrl', TextType::class, [
-                'label' => 'form.formType.resultsUrl_label',
+            ->add('personalDataPolicies', TextType::class, [
+                'label' => 'form.formType.pers_data_policies_url.label',
+                'help' => 'form.formType.pers_data_policies_url.help',
+                'required' => false,
                 'group' => 'form.formType.parameters',
-                'required' => true,
-                'help' => 'form.formType.resultsUrl_help'
+            ]);
+        if ($this->countryType === 'ru' || $this->countryType == 'kaz') {
+            $innLabel = $this->countryType == 'ru' ? 'form.formType.is_request_inn.label' : 'form.formType.is_request_inn.kaz.label';
+            $innHelp = $this->countryType == 'ru' ? 'form.formType.is_request_inn.help' : 'form.formType.is_request_inn.kaz.help';
+            $builder
+                ->add('requestInn', CheckboxType::class, [
+                    'label' => $innLabel,
+                    'help' => $innHelp,
+                    'required' => false,
+                    'group' => 'form.formType.parameters',
+                ]);
+        }
+        $builder
+            ->add('requestTouristDocumentNumber', CheckboxType::class, [
+                'label' => 'form.formType.is_request_tourist_document_number.label',
+                'help' => 'form.formType.is_request_tourist_document_number.help',
+                'required' => false,
+                'group' => 'form.formType.parameters',
+            ])
+            ->add('requestPatronymic', CheckboxType::class, [
+                'label' => 'form.formType.is_request_tourist_patronymic.label',
+                'help' => 'form.formType.is_request_tourist_patronymic.help',
+                'required' => false,
+                'group' => 'form.formType.parameters',
             ])
             ->add('isFullWidth', CheckboxType::class, [
-                'group' => 'form.formType.parameters',
+                'group' => 'form.formType.css',
                 'label' => 'form.formType.frame_width.is_full_width.label',
                 'required' => false,
                 'help' => 'form.formType.frame_width.is_full_width.help'
             ])
             ->add('frameWidth', IntegerType::class, [
                 'label' => 'form.formType.frame_width.label',
-                'group' => 'form.formType.parameters',
+                'group' => 'form.formType.css',
                 'required' => true,
                 'help' => 'form.formType.frame_width.help'
             ])
             ->add('frameHeight', IntegerType::class, [
                 'label' => 'form.formType.frame_height.label',
-                'group' => 'form.formType.parameters',
+                'group' => 'form.formType.css',
                 'required' => true,
                 'help' => 'form.formType.frame_height.help'
             ])
             ->add(
                 'paymentTypes',
-                \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
+                InvertChoiceType::class,
                 [
                     'group' => 'form.formType.payment',
                     'choices' => $options['paymentTypes'],
@@ -153,6 +188,16 @@ class FormType extends AbstractType
                     'required' => false,
                     'help' => 'form.formType.css_help',
                     'attr' => ['rows' => 60]
+                ]
+            )
+            ->add(
+                'isHorizontal',
+                CheckboxType::class,
+                [
+                    'group' => 'form.formType.css',
+                    'label' => 'form.formType.is_horizontal.label',
+                    'required' => false,
+                    'help' => 'form.formType.is_horizontal.help',
                 ]
             )
             ->add('js',
@@ -178,22 +223,22 @@ class FormType extends AbstractType
         }
 
         $builder->add(
-                'cssLibraries',
-                ChoiceType::class,
-                [
-                    'group' => 'form.formType.css',
-                    'choices' => FormConfig::getCssLibrariesList(),
-                    'required' => false,
-                    'label' => 'form.formType.label.css_libraries',
-                    'help' => 'form.formType.help.css_libraries',
-                    'choice_attr' => function ($value) {
-                        return [
-                            'title' => $value,
-                        ];
-                    },
-                    'multiple' => true
-                ]
-            )
+            'cssLibraries',
+            ChoiceType::class,
+            [
+                'group' => 'form.formType.css',
+                'choices' => FormConfig::getCssLibrariesList(),
+                'required' => false,
+                'label' => 'form.formType.label.css_libraries',
+                'help' => 'form.formType.help.css_libraries',
+                'choice_attr' => function ($value) {
+                    return [
+                        'title' => $value,
+                    ];
+                },
+                'multiple' => true
+            ]
+        )
             ->add(
                 'theme',
                 ChoiceType::class,
@@ -204,8 +249,7 @@ class FormType extends AbstractType
                     'label' => 'form.formType.theme_label',
                     'help' => 'https://bootswatch.com'
                 ]
-            )
-        ;
+            );
     }
 
     public function finishView(FormView $view, FormInterface $form, array $options)

@@ -20,7 +20,7 @@ class Expedia extends ExtendedAbstractChannelManager
         'minBeforeArrival' => null,
         'maxBeforeArrival' => null,
         'maxGuest' => null,
-        'minGuest' => null
+        'minGuest' => null,
     ];
 
     public function __construct(ContainerInterface $container)
@@ -63,4 +63,22 @@ class Expedia extends ExtendedAbstractChannelManager
         }
     }
 
+    /**
+     * pull all orders during client connection
+     */
+    public function pullAllOrders()
+    {
+        $availableStatuses = ['confirmed', 'retrieved', 'pending'];
+        foreach ($availableStatuses as $status) {
+            /** @var ExpediaConfig $config */
+            foreach ($this->getConfig() as $config) {
+
+                $requestData = $this->requestDataFormatter->formatGetAllBookingsData($config, $status);
+                $request = $this->requestFormatter->formatGetOrdersRequest($requestData);
+
+                $response = $this->sendRequestAndGetResponse($request);
+                $this->handlePullOrdersResponse($response, $config, $result, true);
+            }
+        }
+    }
 }

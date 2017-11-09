@@ -67,8 +67,8 @@ class Search implements SearchInterface
     }
 
     /**
-     * @param \MBH\Bundle\PackageBundle\Lib\SearchQuery $query
-     * @return \MBH\Bundle\PackageBundle\Lib\SearchResult[]
+     * @param SearchQuery $query
+     * @return SearchResult[]
      */
     public function search(SearchQuery $query)
     {

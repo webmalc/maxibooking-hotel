@@ -1,0 +1,285 @@
+{% set dateCellHeight = 41 %}
+{% if dynamicSalesData.errors|length > 0 %}
+    {% for error in dynamicSalesData.errors %}
+        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
+    {% endfor %}
+{% else %}
+    {% set roomTypesQuantity = dynamicSalesData.dynamicSales|length %}
+    {% set showOnlyTotalValues = roomTypeOptions|length == 1 and roomTypeOptions[0] == 'total' %}
+    {% if roomTypesQuantity > 0 %}
+        {% set commonDynamicSalesData = dynamicSalesData.dynamicSales[0] %}
+        {% set maxCount = 0 %}
+        {% set periodsCount = commonDynamicSalesData.periods|length %}
+        {% set comparisonRowsCount = periodsCount - 1 %}
+        {% for dynamicSalePeriodCount in commonDynamicSalesData.periods %}
+            {% if maxCount < dynamicSalePeriodCount.dynamicSalesDays|length %}
+                {% set maxCount = dynamicSalePeriodCount.dynamicSalesDays|length %}
+            {% endif %}
+        {% endfor %}
+        <div id="left-top-scrollable">
+            {% set leftTopScrollableCellWidth = dateCellHeight * periodsCount - 1 %}
+            {% set topOffset = 12 * periodsCount %}
+            <div style="height: {{ topOffset }}px;"></div>
+            <div class="cell first-cell" style="height: {{ leftTopScrollableCellWidth - topOffset }}px;">&nbsp;</div>
+            <div class="cell second-cell" style="height: {{ leftTopScrollableCellWidth - topOffset }}px;">
+                <small>{{ 'dynamic.sales.day.periods'|trans({},'MBHPackageBundle') }}</small>
+            </div>
+        </div>
+        <table id="headerTable" class="table table-bordered table-striped table-condensed mbh-grid text-center">
+            <tbody>
+            <tr class="dates">
+                <td class="first-th left-offset-line" rowspan="{{ periodsCount }}"></td>
+                {% for dynamicSalePeriod in commonDynamicSalesData.periods %}
+                {% set index = loop.index %}
+                {% if loop.index != 1 %}
+            <tr class="dates">
+                {% endif %}
+                {% for dynamicSaleDay in dynamicSalePeriod.dynamicSalesDays %}
+                    <td class="date-td table-cell text-center {% if dynamicSaleDay.date|date('N') >= 6 %} text-danger{% endif %}">
+                        <span class="date-string">
+                        {% if dynamicSaleDay.date|date('Y') == date('now')|date('Y') %}
+                            {{ dynamicSaleDay.date|date('d.m') }}
+                        {% else %}
+                            {{ dynamicSaleDay.date|date('d.m.y') }}
+                        {% endif %}
+                        </span>
+                        <div class="text-muted text-center {% if dynamicSaleDay.date|date('N') >= 6 %} text-danger{% endif %}">
+                            {{ weekdays[dynamicSaleDay.date|date('N')]|trans({}, 'front_messages')|lower }}
+                        </div>
+                    </td>
+                {% endfor %}
+                {% if (maxCount - commonDynamicSalesData.periods[index-1].dynamicSalesDays|length) > 0 %}
+                    {% for i in 1..(maxCount - commonDynamicSalesData.periods[index-1].dynamicSalesDays|length) %}
+                        <td class="date-td">-</td>
+                    {% endfor %}
+                {% endif %}
+                {% if loop.index == 1 %}
+                    <td class="first-th table-cell date-td" rowspan="{{ periodsCount }}">
+                        <small>{{ 'dynamic.sales.day.summary'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if showOnlyTotalValues %}
+            {% set numberOfRightTables = 1 %}
+        {% elseif roomTypesQuantity > 1 %}
+            {% set numberOfRightTables = roomTypesQuantity + 1 %}
+        {% else %}
+            {% set numberOfRightTables = roomTypesQuantity %}
+        {% endif %}
+        {% for i in 1..numberOfRightTables %}
+            <table class="table table-bordered table-condensed rightTable">
+                <tbody>
+                {% for shownOption in optionsShows %}
+                    <tr>
+                    <td class="first-th line-name" rowspan="{{ periodsCount }}">
+                        {{ ('dynamic.sales.day.' ~ shownOption)|trans({},'MBHPackageBundle') }}
+                    </td>
+                    {% for dynamicSalePeriod in commonDynamicSalesData.periods %}
+                        {% if  loop.index != 1 %}
+                            <tr>
+                        {% endif %}
+                        <td class="periods-cell" data-class="{{ shownOption }}">
+                            {{ dynamicSalePeriod.dynamicSalesDays|first.date|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod.dynamicSalesDays|last.date|date('d.m.Y') }}
+                        </td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% if periodsCount > 1 and optionsShows|length > 0 %}
+                <table class="table table-bordered table-condensed rightTable rightTable-comparison">
+                    <tbody>
+                    {% for shownOption in optionsShows %}
+                        {% for comparisonRowNumber in 1..comparisonRowsCount %}
+                            <tr data-class="{{ shownOption ~ '-compare' }}">
+                                {% if comparisonRowNumber == 1 %}
+                                    <td class="first-th line-name text-center info"
+                                        rowspan="{{ comparisonRowsCount * 2 }}" style="font-weight: 700;">
+                                        {{ ('dynamic.sales.day.' ~ shownOption)|trans({},'MBHPackageBundle') }}
+                                    </td>
+                                {% endif %}
+                                <td class="periods-cell text-center success"
+                                    data-class="{{ shownOption ~ '-compare' }}">
+                                    <small>{{ 'dynamic.sales.day.sales.summ'|trans({},'MBHPackageBundle') }}</small>
+                                </td>
+                            </tr>
+                            <tr data-class="{{ shownOption ~ '-compare-percentage' }}">
+                                <td class="periods-cell text-center warning">
+                                    %
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        {% endfor %}
+
+        {% if not showOnlyTotalValues %}
+            {% for dynamicSaleTypeData in dynamicSalesData.dynamicSales %}
+                <table id="{{ dynamicSaleTypeData.roomType.id }}"
+                       class="dynamic-sales-table table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center">
+                    <tbody>
+                    <tr class="mbh-grid-header2 warning">
+                        <td colspan="{{ maxCount +2 }}" style="text-align: left">
+                            <strong class="table-title">
+                                {{ dynamicSaleTypeData.roomType }}
+                            </strong>&nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    {% for shownOption in optionsShows %}
+                        {% for periodNumber, dynamicSalePeriod in dynamicSaleTypeData.periods %}
+                            <tr data-class="{{ shownOption }}">
+                                <td class="left-offset-line"></td>
+                                {% for saleDateIndex, dynamicSaleDay in dynamicSalePeriod.dynamicSalesDays %}
+                                    <td class="table-cell">
+                                        {{ dynamicSaleDay.getSpecifiedValue(shownOption) }}
+                                    </td>
+                                    {% if loop.last %}
+                                        {% if (maxCount - dynamicSalePeriod.dynamicSalesDays|length) > 0 %}
+                                            {% for i in 1..(maxCount - dynamicSalePeriod.dynamicSalesDays|length) %}
+                                                <td>-</td>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                <td class="text-right table-cell" style="text-align: right">
+                                    <strong>{{ dynamicSalePeriod.getTotalValue(shownOption) }}</strong>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    {% if comparisonRowsCount > 0 and optionsShows|length > 0 %}
+                        <tr class="info">
+                            <td class="comparison-cell text-left" rowspan="1"
+                                style="text-align: left"
+                                colspan="{{ maxCount + 2 }}">
+                                <strong class="table-title">{{ 'dynamic.sales.day.sales.comparison'|trans({},'MBHPackageBundle') }}</strong>
+                            </td>
+                        </tr>
+
+                        {% for shownOption in optionsShows %}
+                            {% for comparisonPeriodNumber in 1..(comparisonRowsCount) %}
+                                {% set comparisonPeriod = dynamicSaleTypeData.periods[comparisonPeriodNumber] %}
+                                {% for lineNumber in 0..1 %}
+                                    {% set isRelativeRow = lineNumber == 1 %}
+                                    <tr class="{{ isRelativeRow? 'warning' : 'success' }}"
+                                        data-class="{{ shownOption ~ (isRelativeRow ? '-compare-percentage' : '-compare') }}">
+                                        <td class="left-offset-line"></td>
+                                        {% for saleDateIndex in 0..(maxCount - 1) %}
+                                            <td>
+                                                {% if dynamicSaleTypeData.hasBothPeriodsDayByNumber(0, comparisonPeriodNumber, saleDateIndex) %}
+                                                    {% set value = dynamicSaleTypeData.getComparativeData(comparisonPeriodNumber, saleDateIndex, shownOption, isRelativeRow) %}
+                                                    <span {% if value < 0 %}class="text-danger" {% endif %}>
+                                                    {{ value }}{% if isRelativeRow %}%{% endif %}
+                                                </span>
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                        {% set totalValue = dynamicSaleTypeData.getComparativeTotalData(comparisonPeriodNumber, shownOption, isRelativeRow) %}
+                                        <td {% if totalValue < 0 %}class="text-danger" {% endif %}>
+                                            {{ totalValue }}{% if isRelativeRow %}%{% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        {% endif %}
+
+
+        {% if roomTypesQuantity > 1 or showOnlyTotalValues %}
+            <table id="summary"
+                   class="dynamic-sales-table table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center">
+                <tbody>
+                <tr class="mbh-grid-header2 warning">
+                    <td colspan="{{ maxCount +2 }}" style="text-align: left">
+                        <strong class="table-title">
+                            {{ 'dynamic.sales.result'|trans({},'MBHPackageBundle') }}
+                        </strong>&nbsp;&nbsp;
+                    </td>
+                </tr>
+
+                {% for shownOption in optionsShows %}
+                    {% for periodNumber in 0..(periodsCount - 1) %}
+                        <tr data-class="{{ shownOption }}">
+                            <td class="left-offset-line"></td>
+                            {% set dynamicSalesPeriod = commonDynamicSalesData.periods[periodNumber] %}
+                            {% for dateNumber in 0..(dynamicSalesPeriod.dynamicSalesDays|length - 1) %}
+                                <td class="table-cell">
+                                    {{ dynamicSalesData.getTotalValueByDay(dateNumber, shownOption, periodNumber) }}
+                                </td>
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSalesPeriod.dynamicSalesDays|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSalesPeriod.dynamicSalesDays|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            <td class="text-right table-cell" style="text-align: right">
+                                <strong>{{ dynamicSalesData.getTotalValue(periodNumber, shownOption) }}</strong>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+                {% if comparisonRowsCount > 0 and optionsShows|length > 0 %}
+                    <tr class="info">
+                        <td class="comparison-cell text-left" rowspan="1" style="text-align: left"
+                            colspan="{{ maxCount + 2 }}">
+                            <strong class="table-title">{{ 'dynamic.sales.day.sales.comparison'|trans({},'MBHPackageBundle') }} </strong>
+                        </td>
+                    </tr>
+                    {% for shownOption in optionsShows %}
+                        {% for periodNumber in 1..(comparisonRowsCount) %}
+                            {% for i in 0..1 %}
+                                {% set isRelativeRow = i == 1 %}
+                                {% if isRelativeRow %}
+                                <tr class="warning" data-class="{{ shownOption ~ '-compare-percentage' }}">
+                                {% else %}
+                                    <tr class="success" data-class="{{ shownOption ~ '-compare' }}">
+                                {% endif %}
+                                <td class="left-offset-line"></td>
+                                {% set dynamicSalesPeriod = commonDynamicSalesData.periods[periodNumber] %}
+                                {% for dateNumber in 0..(dynamicSalesPeriod.dynamicSalesDays|length - 1) %}
+                                    <td>
+                                        {% if commonDynamicSalesData.hasBothPeriodsDayByNumber(0, periodNumber, dateNumber) %}
+                                            {% set value = (isRelativeRow ? dynamicSalesData.getRelativeComparisonData(periodNumber, dateNumber, shownOption) : dynamicSalesData.getComparisonData(periodNumber, dateNumber, shownOption)) %}
+                                            <span {% if value < 0 %}class="text-danger"{% endif %}>{{ value }}{% if isRelativeRow %}%{% endif %}</span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    {% if loop.last %}
+                                        {% if (maxCount - dynamicSalesPeriod.dynamicSalesDays|length) > 0 %}
+                                            {% for i in 1..(maxCount - dynamicSalesPeriod.dynamicSalesDays|length) %}
+                                                <td>-</td>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                <td class="text-right" style="text-align: right">
+                                    {% set totalValue = dynamicSalesData.getComparativeTotalData(periodNumber, shownOption, isRelativeRow) %}
+                                    <strong {% if totalValue < 0 %}class="text-danger" {% endif %}>{{ totalValue }}{% if isRelativeRow %}%{% endif %}</strong>
+                                </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endif %}
+{% endif %}

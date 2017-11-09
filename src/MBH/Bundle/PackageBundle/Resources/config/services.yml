@@ -132,6 +132,15 @@ services:
           class: MBH\Bundle\PackageBundle\Services\CsvGenerate
           arguments: ['@service_container']
 
+    mbh.package.dynamic.sales.generator:
+              class: MBH\Bundle\PackageBundle\Services\DynamicSalesGenerator
+              arguments:
+                  - '@doctrine.odm.mongodb.document_manager'
+                  - '@mbh.helper'
+                  - '@translator'
+                  - '%mbh_dynamic_sale_period%'
+                  - '@service_container'
+
     mbh.acl_document_owner_maker:
         class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
         arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']
@@ -178,3 +187,24 @@ services:
       arguments: ['@translator', '@doctrine.odm.mongodb.document_manager']
       tags:
           - {name: form.type}
+
+    mbh.packages_daily_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\PackagesDailyReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+            - '@mbh.calculation'
+
+    mbh.distribution_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\DistributionReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+
+
+    mbh.dynamic_sales_report.dynamic_sales_day:
+      class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
+      arguments: ['@doctrine.odm.mongodb.document_manager']
+      shared: false

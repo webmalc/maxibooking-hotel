@@ -272,6 +272,7 @@ jQuery(document).ready(function() {
                             requestParams.packages = [];
                             requestParams.services = [];
                             requestParams.locale = getLocale();
+                            requestParams.configId = "{{ configId }}";
                             roomCount.each(function() {
                             if (jQuery(this).val() > 0) {
                                 var tr = jQuery(this).closest('tr'),
@@ -336,17 +337,15 @@ jQuery(document).ready(function() {
 
                                 if (prevUser) {
                                     prevUser = JSON.parse(prevUser);
-                                    jQuery('#mbh-user-form-firstName').val(prevUser.firstName),
-                                        jQuery('#mbh-user-form-lastName').val(prevUser.lastName),
-                                        jQuery('#mbh-user-form-phone').val(prevUser.phone),
-                                        jQuery('#mbh-user-form-email').val(prevUser.email),
-                                        jQuery('#mbh-user-form-birthday').val(prevUser.birthday)
+                                    jQuery('#mbh-user-form-firstName').val(prevUser.firstName);
+                                    jQuery('#mbh-user-form-lastName').val(prevUser.lastName);
+                                    jQuery('#mbh-user-form-phone').val(prevUser.phone);
+                                    jQuery('#mbh-user-form-email').val(prevUser.email);
+                                    jQuery('#mbh-user-form-birthday').val(prevUser.birthday);
                                 }
 
                                 if (prevPackage) {
                                     prevPackage = JSON.parse(prevPackage);
-                                    jQuery('#mbh-user-form-arrival').val(prevPackage.arrival),
-                                        jQuery('#mbh-user-form-departure').val(prevPackage.departure),
                                         jQuery('#mbh-user-form-note').val(prevPackage.note)
                                 }
 
@@ -357,18 +356,23 @@ jQuery(document).ready(function() {
                                 });
 
                                 var getUser = function() {
+                                    var $innInput = jQuery('#mbh-user-form-inn');
+                                    var $documentNumber = jQuery('#mbh-user-form-document-number');
+                                    var $patronymicInput = jQuery('#mbh-user-form-patronymic');
+
                                     return {
                                         firstName: jQuery('#mbh-user-form-firstName').val(),
                                         lastName: jQuery('#mbh-user-form-lastName').val(),
                                         phone: jQuery('#mbh-user-form-phone').val(),
                                         email: jQuery('#mbh-user-form-email').val(),
-                                        birthday: jQuery('#mbh-user-form-birthday').val()
+                                        birthday: jQuery('#mbh-user-form-birthday').val(),
+                                        inn: $innInput.length > 0 ? $innInput.val() : null,
+                                        documentNumber: $documentNumber.length > 0 ? $documentNumber.val() : null,
+                                        patronymic: $patronymicInput.length > 0 ? $patronymicInput.val() : null
                                     };
                                 };
                                 var getPackageInfo = function() {
                                     return {
-                                        'arrival': jQuery('#mbh-user-form-arrival').val(),
-                                        'departure': jQuery('#mbh-user-form-departure').val(),
                                         'note': jQuery('#mbh-user-form-note').val()
                                     };
                                 };
@@ -391,12 +395,12 @@ jQuery(document).ready(function() {
                                 // validate user form
                                 (function() {
 
-                                    var inputs = jQuery('#mbh-user-form input:required'),
+                                    var inputs = jQuery('#mbh-user-form input:required:not(#mbh-user-form-patronymic)'),
                                         validate = function() {
                                             var nextButton = jQuery('#mbh-user-form-next');
                                             nextButton.prop('disabled', false);
                                             inputs.each(function() {
-                                                if (!jQuery(this).val()) {
+                                                if (!jQuery(this).val() || (this.type == 'checkbox' && !$(this).is(':checked'))) {
                                                     nextButton.prop('disabled', true);
                                                     return false;
                                                 }
@@ -441,6 +445,11 @@ jQuery(document).ready(function() {
                                     total += totalServices;
                                     requestParams.total = String(total);
                                     requestParams.totalServices = String(totalServices);
+
+                                    var $personalDataCheckbox = $('#mbh-form-personal-data');
+                                    requestParams.isConfrmWithPersDataProcessing
+                                        = $personalDataCheckbox.length == 1 && $personalDataCheckbox.is(':checked');
+                                    requestParams.configId = "{{ configId }}";
                                     waiting();
 
                                     // ------------------------------ STEP 3: load payment type -------------------------

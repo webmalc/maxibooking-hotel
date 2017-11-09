@@ -81,6 +81,7 @@ controller.myallocatorController.invalid_credentials: Неверные логи�
 
 #expedia
 controller.expediaController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.expediaController.old_ordes_sync_start: 'Синхронизация броней успешно запущена. Уведомления о бронях придет на email.'
 services.expedia.invalid_tariff_id: Тариф для данной брони не синхронизирован с тарифом Maxibooking
 services.expedia.nor_one_tariff: Не найдено ни одного тарифа для данного отеля
 services.expedia.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking

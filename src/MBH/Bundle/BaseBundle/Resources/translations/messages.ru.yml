@@ -186,6 +186,8 @@ mailer.order.total_paid: Всего оплачено
 mailer.order.surcharges: 'Доплата составляет'
 mailer.order.phone: Телефон
 mailer.order.number: Номер
+mailer.order.arrival: 'Заезд'
+mailer.order.departure: 'Выезд'
 mailer.order.numbers: Номеров
 mailer.order.customer: Заказчик
 mailer.order.payment: Оплата
@@ -363,6 +365,7 @@ menu.label.reports.managers: Менеджеры
 menu.label.reports.invite: 'Визовые приглашения'
 menu.label.reports.analystics: Аналитика
 menu.label.reports.polls: Оценки
+menu.label.reports.daily_report: 'Денежные средства'
 menu.label.reports.windows: Окна
 menu.label.reports.work_shift: 'Рабочие смены'
 menu.label.reports.fms: 'Для ФМС'
@@ -387,7 +390,7 @@ menu.configs.warehouse: Склад
 menu.communication.label: Взаимодействие
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.your_hotel: ВашОтель
-menu.communication.label.onlineform: 'Онлайн форма'
+menu.communication.label.onlineform: 'Онлайн модуль'
 menu.communication.label.polls: Оценки
 menu.communication.label.invite: 'Визовое приглашение'
 menu.communication.label.hundred_one_hotels: '101 Отель'
@@ -461,7 +464,7 @@ basebundle.menu.warehouse: Склад
 basebundle.menu.interaction: Взаимодействие
 basebundle.menu.additional_channels: 'Дополнительные каналы'
 basebundle.menu.vashotel: ВашОтель
-basebundle.menu.onlineform: 'Онлайн форма'
+basebundle.menu.onlineform: 'Онлайн модуль'
 basebundle.menu.estimates: Оценки
 basebundle.menu.visa_invitation: 'Визовое приглашение'
 basebundle.menu.create_new_hotel: 'Создать новый отель'
@@ -555,3 +558,77 @@ notifier.config.title.task: Уведомления о задачах
 form.clientConfigType.notification_group: Настройка уведомлений
 form.clientConfigType.notification.label: Список уведомлений для клиентов
 form.clientConfigType.notification.help: Выберите тип уведомлений доступный для рассылки клиентам
+
+facilities.parking: 'Парковка'
+facilities.fitness: 'Фитнес-центр'
+facilities.swimming: 'Бассейн'
+facilities.sauna: 'Баня/Сауна'
+facilities.internet: 'Интернет-класс'
+facilities.shopping: 'Шопинг'
+facilities.restaurant: 'Ресторан'
+facilities.cafeteria: 'Кафетерий'
+facilities.fastfood: 'Закусочная'
+facilities.beach-bar: 'Бар на пляже'
+facilities.beer: 'Пивной бар'
+facilities.baggage-safe: 'Комната хранения'
+facilities.baggage-man: 'Носильщик'
+facilities.disc-floppy: 'Гостевой офис'
+facilities.spa: 'Спа-салон'
+facilities.lounge: 'Зона отдыха'
+facilities.skiing: 'Лыжная трасса'
+facilities.chapel: 'Часовня'
+facilities.animals: 'Разрешены животные'
+facilities.no-animals: 'Размещение с животными запрещено'
+facilities.credit-card: 'Кредитные карты принимаются'
+facilities.cc-nc: 'Иностранная валюта не принимается'
+facilities.breakfast: 'Завтрак включен'
+facilities.reception: 'Круглосуточная стойка регистрации'
+facilities.wifi: 'Wi-Fi'
+facilities.free-wifi: 'Бесплатный Wi-Fi'
+facilities.car-side: 'Прокат автомобиля'
+facilities.taxi: 'Заказ такси'
+facilities.menu: 'Заказ еды'
+facilities.travelling: 'Заказ экскурсий'
+facilities.lock: 'Контроль доступа'
+facilities.camera: 'Видеонаблюдение'
+facilities.keys: 'Электронные замки'
+facilities.metro: 'Близость метрополитена'
+facilities.disability: 'Доступ для маломобильных граждан'
+facilities.blind: 'Доступ для слепых граждан'
+facilities.maleroom: 'Мужская комната'
+facilities.femaleroom: 'Женская комната'
+facilities.ruby: 'Люкс'
+facilities.bed: 'Односпальная кровать'
+facilities.double-bed: 'Двуспальная кровать'
+facilities.sofa: 'Диван-кровать'
+facilities.armchair: 'Кресло'
+facilities.table: 'Стол'
+facilities.platen: 'Столик'
+facilities.chair: 'Стул'
+facilities.dresstable: 'Трюмо'
+facilities.wardrobe: 'Платяной шкаф'
+facilities.bookcase: 'Книжный шкаф'
+facilities.torchere: 'Торшер'
+facilities.safe: 'Сейф'
+facilities.kitchen: 'Кухня'
+facilities.bar: 'Минибар'
+facilities.teapot: 'Чайник'
+facilities.coffee: 'Кофе-машина'
+facilities.fridge: 'Холодильник'
+facilities.bath: 'Ванная'
+facilities.sink: 'Умывальник'
+facilities.shower: 'Душ'
+facilities.toilets: 'Туалет'
+facilities.ws: 'Унитаз'
+facilities.sign-in: 'Запасной выход'
+facilities.telephone: 'Телефон'
+facilities.fan: 'Вентилятор'
+facilities.conditioner: 'Кондиционер'
+facilities.modern-tv: 'Современный телевизор'
+facilities.old-tv: 'Телевизор'
+facilities.homecinema: 'Домашний кинотеатр'
+facilities.washmachine: 'Стиральная машина'
+facilities.radio: 'Радио'
+facilities.iron: 'Утюг'
+facilities.plug: 'Электророзетка'
+facilities.board-games: 'Настольные игры'

@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,17 +68,46 @@ class Helper
     }
 
     /**
-     * @param Base[] $documents
+     * @param array $collection
+     * @param bool $withMultipleValues
+     * @param string $method
      * @return array
      */
-    public function sortById(array $documents)
+    public function sortByValue($collection, $withMultipleValues = false, $method = 'getId')
     {
-        $documentsByIds = [];
-        foreach ($documents as $document) {
-            $documentsByIds[$document->getId()] = $document;
+        $result = [];
+
+        foreach ($collection as $item) {
+            if ($withMultipleValues) {
+                $result[$item->$method()][] = $item;
+            } else {
+                $result[$item->$method()] = $item;
+            }
         }
 
-        return $documentsByIds;
+        return $result;
+    }
+
+    /**
+     * @param $collection
+     * @param $callback
+     * @param bool $withMultipleValues
+     * @return array
+     */
+    public function sortByValueByCallback($collection, $callback, $withMultipleValues = false)
+    {
+        $result = [];
+
+        foreach ($collection as $item) {
+            $key = $callback($item);
+            if ($withMultipleValues) {
+                $result[$key][] = $item;
+            } else {
+                $result[$key] = $item;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -559,17 +589,29 @@ class Helper
      */
     public function getDataFromMultipleSelectField($fieldData)
     {
-        if (!empty($fieldData) && is_array($fieldData) && $fieldData[0] != '') {
-            foreach ($fieldData as $index => $singleValue) {
-                if ($singleValue === '') {
-                    unset($fieldData[$index]);
-                }
-            }
-
-            return $fieldData;
+        if (!empty($fieldData) && is_array($fieldData)) {
+            return  array_values(array_diff($fieldData, array('', null, false)));
         }
 
         return [];
+    }
+
+    public function getTimeZone(?ClientConfig $clientConfig = null)
+    {
+        if (is_null($clientConfig)) {
+            $clientConfig = $this->container
+                ->get('doctrine.odm.mongodb.document_manager')
+                ->getRepository('MBHClientBundle:ClientConfig')
+                ->fetchConfig();
+        }
+
+        if (is_null($clientConfig) || empty($clientConfig->getTimeZone())) {
+            return $this->container->getParameter('locale') === 'ru'
+                ? 'Europe/Moscow'
+                : 'Europe/Paris';
+        }
+
+        return $clientConfig->getTimeZone();
     }
 
     /**
@@ -604,5 +646,23 @@ class Helper
         preg_match('/\d+/', $string, $numberMatches);
 
         return count($numberMatches) > 0 ? $numberMatches[0] : intval($string);
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getDefaultDatesOfSettlement()
+    {
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $this->container
+            ->get('doctrine_mongodb.odm.default_document_manager')
+            ->getRepository('MBHClientBundle:ClientConfig')
+            ->fetchConfig();
+
+        $calculationBegin = $clientConfig->getBeginDate() ?? new \DateTime('first day of January ' . date('Y'));
+        $calculationEnd = (clone $calculationBegin)->add(new \DateInterval('P6M'));
+
+        return [$calculationBegin, $calculationEnd];
     }
 }

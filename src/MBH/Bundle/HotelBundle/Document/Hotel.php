@@ -34,6 +34,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Hotel extends Base implements \JsonSerializable, AddressInterface
 {
+    const DEFAULT_ARRIVAL_TIME = 14;
+    const DEFAULT_DEPARTURE_TIME = 12;
 
     /**
      * Hook timestampable behavior
@@ -383,6 +385,52 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @ODM\Field(type="string")
      */
     protected $smokingPolicy;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     * @Assert\Range(max="23", min="0")
+     */
+    protected $packageArrivalTime = self::DEFAULT_ARRIVAL_TIME;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     * @Assert\Range(max="23", min="0")
+     */
+    protected $packageDepartureTime = self::DEFAULT_DEPARTURE_TIME;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $aboutLink;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $roomsLink;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $mapLink;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $contactsLink;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $pollLink;
 
     public function __construct()
     {
@@ -1647,5 +1695,136 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getAboutLink(): ?string
+    {
+        return $this->aboutLink;
+    }
+
+    /**
+     * @param string $aboutLink
+     * @return Hotel
+     */
+    public function setAboutLink(string $aboutLink): Hotel
+    {
+        $this->aboutLink = $aboutLink;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoomsLink(): ?string
+    {
+        return $this->roomsLink;
+    }
+
+    /**
+     * @param string $roomsLink
+     * @return Hotel
+     */
+    public function setRoomsLink(string $roomsLink): Hotel
+    {
+        $this->roomsLink = $roomsLink;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMapLink(): ?string
+    {
+        return $this->mapLink;
+    }
+
+    /**
+     * @param string $mapLink
+     * @return Hotel
+     */
+    public function setMapLink(string $mapLink): Hotel
+    {
+        $this->mapLink = $mapLink;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactsLink(): ?string
+    {
+        return $this->contactsLink;
+    }
+
+    /**
+     * @param string $contactsLink
+     * @return Hotel
+     */
+    public function setContactsLink(string $contactsLink): Hotel
+    {
+        $this->contactsLink = $contactsLink;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPollLink(): ?string
+    {
+        return $this->pollLink;
+    }
+
+    /**
+     * @param string $pollLink
+     * @return Hotel
+     */
+    public function setPollLink(string $pollLink): Hotel
+    {
+        $this->pollLink = $pollLink;
+
+        return $this;
+    }
+    /**
+     * @return int
+     */
+    public function getPackageArrivalTime(): ?int
+    {
+        return $this->packageArrivalTime;
+    }
+
+    /**
+     * @param int $packageArrivalTime
+     * @return Hotel
+     */
+    public function setPackageArrivalTime(?int $packageArrivalTime): Hotel
+    {
+        $this->packageArrivalTime = $packageArrivalTime;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPackageDepartureTime(): ?int
+    {
+        return $this->packageDepartureTime;
+    }
+
+    /**
+     * @param int $packageDepartureTime
+     * @return Hotel
+     */
+    public function setPackageDepartureTime(?int $packageDepartureTime): Hotel
+    {
+        $this->packageDepartureTime = $packageDepartureTime;
+
+        return $this;
+    }
 
 }

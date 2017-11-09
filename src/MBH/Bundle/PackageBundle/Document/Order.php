@@ -257,8 +257,9 @@ class Order extends Base
 
     public function __construct()
     {
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->documents = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->packages = new ArrayCollection();
+        $this->documents = new ArrayCollection();
+        $this->cashDocuments = new ArrayCollection();
     }
 
     public static function getOnlinePaymentTypesList()

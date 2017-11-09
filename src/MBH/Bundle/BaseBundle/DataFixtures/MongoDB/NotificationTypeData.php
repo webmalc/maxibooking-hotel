@@ -60,7 +60,8 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
         return [
             NotificationType::CHANNEL_MANAGER_TYPE,
             NotificationType::UNPAID_TYPE,
-            NotificationType::TASK_TYPE
+            NotificationType::TASK_TYPE,
+            NotificationType::DAILY_REPORT_TYPE
         ];
     }
 
@@ -72,6 +73,4 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
             NotificationType::CONFIRM_ORDER_TYPE
         ];
     }
-
-
 }

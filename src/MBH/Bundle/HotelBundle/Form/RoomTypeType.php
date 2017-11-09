@@ -170,7 +170,6 @@ class RoomTypeType extends AbstractType
             'data_class' => 'MBH\Bundle\HotelBundle\Document\RoomType',
             'imageUrl' => null,
             'deleteImageUrl' => null,
-            'facilities' => [],
             'useRoomTypeCategory' => false,
             'hotel' => null,
         ]);

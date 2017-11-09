@@ -386,4 +386,19 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
         return $rootNode->asXML();
     }
+
+    /**
+     * @param ExpediaConfig $config
+     * @param $status
+     * @return \SimpleXMLElement
+     */
+    public function formatGetAllBookingsData(ExpediaConfig $config, $status)
+    {
+        $paramsNode = new \SimpleXMLElement('<ParamSet/>');
+        $hotelNode = $paramsNode->addChild('Status');
+        $hotelNode->addAttribute('value', $status);
+
+        return $this->formatTemplateRequest([$paramsNode], $config, 'BookingRetrievalRQ',
+            self::BOOKING_RETRIEVAL_REQUEST_NAMESPACE);
+    }
 }

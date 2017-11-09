@@ -176,7 +176,7 @@ class RoomRepository extends AbstractBaseRepository
         $newBegin = clone $begin;
 
         foreach ($hotel->getRoomTypes() as $roomType) {
-            if ($roomTypes && !in_array($roomType->getId(), $roomTypes)) {
+            if ($roomTypes && !in_array($roomType->getId(), $roomTypes) || !$roomType->getIsEnabled()) {
                 continue;
             }
             $hotelRoomTypes[] = $roomType->getId();

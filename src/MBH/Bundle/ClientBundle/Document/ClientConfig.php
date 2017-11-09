@@ -20,7 +20,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ClientConfig extends Base
 {
+    const DEFAULT_NUMBER_OF_DAYS_FOR_PAYMENT = 5;
     const DEFAULT_BEGIN_DATE_OFFSET = -21;
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -43,6 +45,15 @@ class ClientConfig extends Base
      * List of notification types allow to client (not stuff)
      */
     use AllowNotificationTypesTrait;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     * @Assert\Choice(callback="getTimeZonesList")
+     */
+    protected $timeZone;
 
     /**
      * @var boolean
@@ -95,7 +106,7 @@ class ClientConfig extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
-     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "paypal", "rbk"})
+     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "paypal", "rbk", "rnkb"})
      */
     protected $paymentSystem;
 
@@ -122,6 +133,12 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="Uniteller")
      */
     protected $uniteller;
+
+    /**
+     * @var RNKB
+     * @ODM\EmbedOne(targetDocument="RNKB")
+     */
+    protected $rnkb;
 
     /**
      * @var Rbk
@@ -236,6 +253,20 @@ class ClientConfig extends Base
      * @Assert\NotNull()
      */
     protected $isSendMailAtPaymentConfirmation = false;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     */
+    protected $numberOfDaysForPayment = self::DEFAULT_NUMBER_OF_DAYS_FOR_PAYMENT;
+
+    /**
+     * @var float
+     * @ODM\Field(type="float")
+     * @Assert\Type(type="float")
+     */
+    protected $currencyRatioFix = 1.015;
 
     /**
      * @return bool
@@ -495,6 +526,25 @@ class ClientConfig extends Base
     }
 
     /**
+     * @return RNKB
+     */
+    public function getRnkb()
+    {
+        return $this->rnkb;
+    }
+
+    /**
+     * @param RNKB $rnkb
+     * @return ClientConfig
+     */
+    public function setRnkb(RNKB $rnkb): ClientConfig
+    {
+        $this->rnkb = $rnkb;
+
+        return $this;
+    }
+
+    /**
      * @return Rbk
      */
     public function getRbk()
@@ -745,11 +795,10 @@ class ClientConfig extends Base
         return (new \DateTime('midnight'))->modify($beginDateOffset . ' days');
     }
 
-
     /**
      * @return bool
      */
-    public function isQueryStat(): bool
+    public function isQueryStat()
     {
         return $this->queryStat;
     }
@@ -758,11 +807,72 @@ class ClientConfig extends Base
      * @param bool $queryStat
      * @return ClientConfig
      */
-    public function setQueryStat(bool $queryStat): ClientConfig
+    public function setQueryStat($queryStat): ClientConfig
     {
         $this->queryStat = $queryStat;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getTimeZone(): ?string
+    {
+        return $this->timeZone;
+    }
+
+    /**
+     * @param string $timeZone
+     * @return ClientConfig
+     */
+    public function setTimeZone(string $timeZone): ClientConfig
+    {
+        $this->timeZone = $timeZone;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfDaysForPayment(): ?int
+    {
+        return $this->numberOfDaysForPayment;
+    }
+
+    /**
+     * @param int $numberOfDaysForPayment
+     * @return ClientConfig
+     */
+    public function setNumberOfDaysForPayment(int $numberOfDaysForPayment): ClientConfig
+    {
+        $this->numberOfDaysForPayment = $numberOfDaysForPayment;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCurrencyRatioFix(): ?float
+    {
+        return $this->currencyRatioFix;
+    }
+
+    /**
+     * @param float $currencyRatioFix
+     * @return ClientConfig
+     */
+    public function setCurrencyRatioFix(float $currencyRatioFix): ClientConfig
+    {
+        $this->currencyRatioFix = $currencyRatioFix;
+
+        return $this;
+    }
+
+    public static function getTimeZonesList()
+    {
+        return \DateTimeZone::listIdentifiers();
+    }
 }

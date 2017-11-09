@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ClientBundle\Controller;
 
-
 use Liip\ImagineBundle\Templating\ImagineExtension;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
@@ -21,7 +20,7 @@ use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use Vich\UploaderBundle\Twig\Extension\UploaderExtension;
 
 /**
  * Class DocumentTemplateController
@@ -140,6 +139,7 @@ class DocumentTemplateController extends BaseController
         $env->addExtension(new AssetExtension($this->get('assets.packages')));
         $env->addExtension(new HttpFoundationExtension($this->get('request_stack')));
         $env->addExtension(new ImagineExtension($this->get('liip_imagine.cache.manager')));
+        $env->addExtension(new UploaderExtension($this->get('vich_uploader.templating.helper.uploader_helper')));
 
         $order = $package->getOrder();
         $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
@@ -151,8 +151,8 @@ class DocumentTemplateController extends BaseController
             'payer' => $order->getPayer(),
             'organization' => $organization,
             'user' => $this->getUser(),
-            'arrivalTimeDefault' => $this->getParameter('mbh_package_arrival_time'),
-            'departureTimeDefault' => $this->getParameter('mbh_package_departure_time')
+            'arrivalTimeDefault' => $hotel->getPackageArrivalTime(),
+            'departureTimeDefault' => $hotel->getPackageDepartureTime()
         ];
 
         $params = $this->addCalculatedParams($params, $package);
