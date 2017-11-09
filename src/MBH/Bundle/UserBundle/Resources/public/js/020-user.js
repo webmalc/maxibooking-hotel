@@ -18,7 +18,7 @@ $(document).ready(function () {
         }
     });
 
-    initSelect2TextForBilling('mbh_document_relation_authorityOrganId', 'fms');
-    initSelect2TextForBilling('mbh_address_object_decomposed_countryTld', 'countries');
-    initSelect2TextForBilling('mbh_address_object_decomposed_regionId', 'regions');
+    initSelect2TextForBilling('mbh_document_relation_authorityOrganId', BILLING_API_SETTINGS.fms);
+    initSelect2TextForBilling('mbh_address_object_decomposed_countryTld', BILLING_API_SETTINGS.countries);
+    initSelect2TextForBilling('mbh_address_object_decomposed_regionId', BILLING_API_SETTINGS.regions);
 });

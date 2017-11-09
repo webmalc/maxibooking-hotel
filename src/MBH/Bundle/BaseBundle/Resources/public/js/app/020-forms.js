@@ -20,6 +20,11 @@ var BILLING_API_SETTINGS = {
         url: 'http://billing.maxibooking.ru/ru/cities',
         id: 'id',
         text: 'display_name'
+    },
+    fmsKpp: {
+        url: 'http://billing.maxibooking.ru/ru/fms-kpp',
+        id: 'internal_id',
+        text: 'name'
     }
 };
 
@@ -497,7 +502,7 @@ var docReadyForms = function () {
         if (citySelect.length !== 1) {
             return;
         }
-        initSelect2TextForBilling(citySelect.get(0).id, 'cities');
+        initSelect2TextForBilling(citySelect.get(0).id, BILLING_API_SETTINGS.cities);
     }());
 
     //order select
@@ -977,9 +982,7 @@ function onHideCheckboxChange() {
     });
 }
 
-function initSelect2TextForBilling(inputId, apiName) {
-    var apiSettings = BILLING_API_SETTINGS[apiName];
-
+function initSelect2TextForBilling(inputId, apiSettings) {
     select2Text($('#' + inputId)).select2({
         minimumInputLength: 3,
         placeholder: Translator.trans('tourist.make_a_choice'),

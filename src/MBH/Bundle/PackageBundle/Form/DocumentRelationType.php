@@ -3,7 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use MBH\Bundle\ClientBundle\Lib\FMSDictionariesData;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\VegaBundle\Service\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -29,14 +29,13 @@ class DocumentRelationType extends AbstractType
      */
     private $managerRegistry;
 
-    public function setDictionaryProvider(DictionaryProvider $dictionaryProvider)
-    {
-        $this->dictionaryProvider = $dictionaryProvider;
-    }
+    /** @var FMSDictionaries */
+    private $fmsDictionaries;
 
-    public function setManagerRegistry(ManagerRegistry $managerRegistry)
-    {
+    public function __construct(DictionaryProvider $dictionaryProvider, ManagerRegistry $managerRegistry, FMSDictionaries $fmsDictionaries) {
+        $this->dictionaryProvider = $dictionaryProvider;
         $this->managerRegistry = $managerRegistry;
+        $this->fmsDictionaries = $fmsDictionaries;
     }
 
     /**
@@ -58,7 +57,7 @@ class DocumentRelationType extends AbstractType
         }
         $builder
             ->add('type', InvertChoiceType::class, [
-                'choices' => FMSDictionariesData::getDocumentTypes(),
+                'choices' => $this->fmsDictionaries->getDocumentTypes(),
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.type',
                 'property_path' => 'documentRelation.type',
@@ -79,6 +78,7 @@ class DocumentRelationType extends AbstractType
                     new Type(['type' => 'numeric'])
                 ]
             ]);
+
         $builder
             ->add('authorityOrganId', TextType::class, [
                 'group' => 'form.DocumentRelation.main',
@@ -86,7 +86,14 @@ class DocumentRelationType extends AbstractType
                 'help' => 'form.DocumentRelation.authority.help',
                 'required' => false,
                 'property_path' => 'documentRelation.authorityOrganId'
-            ]);
+            ])
+            ->add('authorityOrganText', TextType::class, [
+                'group' => 'form.DocumentRelation.main',
+                'label' => 'form.DocumentRelation.authority',
+                'required' => false,
+                'property_path' => 'documentRelation.authorityOrganText'
+            ])
+        ;
 
         $builder
             ->add('issued', DateType::class, [

@@ -445,6 +445,7 @@ tourist.index.foreign_citizens: 'Иностранные граждане'
 tourist.index.dates: Даты
 tourist.index.fio: ФИО
 tourist.index.main_document: 'Основной документ'
+tourist.index.button.export_to_kontur.text: 'Контур ФМС'
 tourist.index.visa: Виза
 tourist.index.migration_card: 'Миграционная карта'
 tourist.index.documents: Документы
@@ -616,6 +617,10 @@ tourist.visa.type_type: Тип
 tourist.visa.multiplicity_type.label: 'Кратность'
 tourist.visa.visa_category.label: 'Категория визы'
 tourist.visa.visit_purpose.label: 'Цель поездки'
+tourist.visa.special_status.label: 'Участник гос. программы'
+tourist.visa.entry_goal.label: 'Цель въезда'
+tourist.visa.fms_kpp_id.label: 'КПП въезда'
+tourist.visa.fms_kpp_id.help: 'Название или код КПП'
 tourist.visa.type_series: Серия
 tourist.visa.type_profession: Профессия
 tourist.visa.arrival_time: 'Дата въезда'

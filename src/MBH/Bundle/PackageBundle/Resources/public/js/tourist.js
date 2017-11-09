@@ -1,4 +1,5 @@
 /*global window, $, services, document, datepicker, deleteLink, Routing, mbh, Translator */
+var PASSPORT_DOCUMENT_TYPE_CODE = "103008";
 
 var docReadyTourists = function () {
     'use strict';
@@ -6,7 +7,7 @@ var docReadyTourists = function () {
     var $touristForm = $('#tourist-form');
     //roomType rooms datatables
     var $touristTable = $('#tourist-table');
-    var $citizenshipSelect = $touristForm.find('#form_citizenship');
+    var $citizenshipSelect = $touristForm.find('#mbhpackage_bundle_tourist_filter_form_citizenship');
     var touristFilterFormCallback = function () {
         return $.param({'form': getTouristFilterFormData($touristForm, $citizenshipSelect)});
     };
@@ -141,21 +142,41 @@ var docReadyTourists = function () {
 
     new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
     new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
+
+    initSelect2TextFieldsForBilling();
+    switchAuthOrganFieldsVisibility();
+    $('#mbh_document_relation_type').change(function () {
+        switchAuthOrganFieldsVisibility();
+    })
 };
 
 /*global document, window, Routing, $ */
 $(document).ready(function () {
     'use strict';
     docReadyTourists();
-    initSelect2TextFieldsForBilling();
 });
 
+function switchAuthOrganFieldsVisibility() {
+    var isPassportSelected = $('#mbh_document_relation_type').val() === PASSPORT_DOCUMENT_TYPE_CODE;
+    var $authorityOrganIdFormGroup = $('#mbh_document_relation_authorityOrganId').parent().parent();
+    var $authorityOrganTextFormGroup = $('#mbh_document_relation_authorityOrganText').parent().parent();
+    if (isPassportSelected) {
+        $authorityOrganIdFormGroup.show();
+        $authorityOrganIdFormGroup.find('.select2-container').css('width', '100%');
+        $authorityOrganTextFormGroup.hide();
+    } else {
+        $authorityOrganIdFormGroup.hide();
+        $authorityOrganTextFormGroup.show();
+    }
+}
+
 function initSelect2TextFieldsForBilling() {
-    initSelect2TextForBilling('mbh_document_relation_citizenshipTld', 'countries');
-    initSelect2TextForBilling('mbh_document_relation_countryTld', 'countries');
-    initSelect2TextForBilling('mbh_document_relation_authorityOrganId', 'fms');
-    initSelect2TextForBilling('mbh_address_object_decomposed_countryTld', 'countries');
-    initSelect2TextForBilling('mbh_address_object_decomposed_regionId', 'regions');
+    initSelect2TextForBilling('mbh_document_relation_citizenshipTld', BILLING_API_SETTINGS.countries);
+    initSelect2TextForBilling('mbh_document_relation_countryTld', BILLING_API_SETTINGS.countries);
+    initSelect2TextForBilling('mbh_document_relation_authorityOrganId', BILLING_API_SETTINGS.fms);
+    initSelect2TextForBilling('mbh_address_object_decomposed_countryTld', BILLING_API_SETTINGS.countries);
+    initSelect2TextForBilling('mbh_address_object_decomposed_regionId', BILLING_API_SETTINGS.regions);
+    initSelect2TextForBilling('form_visa_fmsKppId', BILLING_API_SETTINGS.fmsKpp);
 }
 
 function getTouristFilterFormData($touristForm, $citizenshipSelect) {

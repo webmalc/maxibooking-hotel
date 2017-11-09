@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Models;
+namespace MBH\Bundle\PackageBundle\Models\Billing;
 
 class City
 {

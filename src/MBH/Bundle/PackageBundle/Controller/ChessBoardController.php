@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
@@ -13,6 +14,7 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
 use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
+use MBH\Bundle\PackageBundle\Models\Billing\Country;
 use MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -108,8 +110,8 @@ class ChessBoardController extends BaseController
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
         $tourist->setBirthplace(new BirthPlace());
-        $tourist->setCitizenshipTld($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
-        $tourist->getDocumentRelation()->setType('vega_russian_passport');
+        $tourist->setCitizenshipTld(Country::RUSSIA_TLD);
+        $tourist->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
 
         return [
             'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),

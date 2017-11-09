@@ -15,7 +15,7 @@ class DocumentRelation implements \JsonSerializable
 {
     /**
      * @var String
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="int")
      */
     protected $type;
     /**
@@ -23,6 +23,12 @@ class DocumentRelation implements \JsonSerializable
      * @ODM\Field(type="int")
      */
     protected $authorityOrganId;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $authorityOrganText;
 
     /**
      * @var String
@@ -57,6 +63,25 @@ class DocumentRelation implements \JsonSerializable
      * @ODM\Field(type="string")
      */
     protected $relation;
+
+    /**
+     * @return string
+     */
+    public function getAuthorityOrganText(): ?string
+    {
+        return $this->authorityOrganText;
+    }
+
+    /**
+     * @param string $authorityOrganText
+     * @return DocumentRelation
+     */
+    public function setAuthorityOrganText(string $authorityOrganText): DocumentRelation
+    {
+        $this->authorityOrganText = $authorityOrganText;
+
+        return $this;
+    }
 
     /**
      * @return int

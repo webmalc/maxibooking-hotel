@@ -43,3 +43,7 @@ services:
         arguments: ['@mbh.helper']
         tags:
             - {name: form.type}
+
+    mbh.fms_dictionaries:
+        class: MBH\Bundle\ClientBundle\Lib\FMSDictionaries
+        arguments: ['@mbh.csv_reader']

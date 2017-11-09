@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Models;
+namespace MBH\Bundle\PackageBundle\Models\Billing;
 
 /**
  * Class Country
@@ -8,6 +8,7 @@ namespace MBH\Bundle\PackageBundle\Models;
  */
 class Country
 {
+    const RUSSIA_TLD = 'ru';
     /** @var  int */
     private $id;
     /** @var  string */

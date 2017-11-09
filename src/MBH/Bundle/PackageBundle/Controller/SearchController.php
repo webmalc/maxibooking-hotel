@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
@@ -13,6 +14,7 @@ use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\SearchType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
+use MBH\Bundle\PackageBundle\Models\Billing\Country;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -61,8 +63,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
         $tourist->setBirthplace(new BirthPlace());
-        $tourist->setCitizenshipTld($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
-        $tourist->getDocumentRelation()->setType('vega_russian_passport');
+        $tourist->setCitizenshipTld(Country::RUSSIA_TLD);
+        $tourist->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
 
         return [
             'form' => $form->createView(),

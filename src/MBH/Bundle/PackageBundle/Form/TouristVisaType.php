@@ -2,21 +2,23 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
-use MBH\Bundle\ClientBundle\Lib\FMSDictionariesData;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * Class TouristVisaType
-
- */
 class TouristVisaType extends AbstractType
 {
+    /** @var  FMSDictionaries */
+    private $fmsDictionaries;
+
+    public function __construct(FMSDictionaries $fmsDictionaries) {
+        $this->fmsDictionaries = $fmsDictionaries;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -34,22 +36,40 @@ class TouristVisaType extends AbstractType
             ->add('visaCategory', InvertChoiceType::class, [
                 'label' => 'tourist.visa.visa_category.label',
                 'group' => 'visa',
-                'choices' => FMSDictionariesData::getVisaCategories(),
+                'choices' => $this->fmsDictionaries->getVisaCategories(),
                 'required' => false,
             ])
             ->add('multiplicityType',  InvertChoiceType::class, [
                 'label' => 'tourist.visa.multiplicity_type.label',
                 'group' => 'visa',
                 'placeholder' => '',
-                'choices' => FMSDictionariesData::getVisaMultiplicityData(),
+                'choices' => $this->fmsDictionaries->getVisaMultiplicityData(),
                 'required' => false,
             ])
             ->add('visitPurpose',  InvertChoiceType::class, [
                 'label' => 'tourist.visa.visit_purpose.label',
                 'group' => 'visa',
                 'placeholder' => '',
-                'choices' => FMSDictionariesData::getVisitPurposesData(),
+                'choices' => $this->fmsDictionaries->getVisitPurposesData(),
                 'required' => false,
+            ])
+            ->add('entryGoal', InvertChoiceType::class, [
+                'group' => 'visa',
+                'required' => false,
+                'label' => 'tourist.visa.entry_goal.label',
+                'choices' => $this->fmsDictionaries->getEntryGoalOptions(),
+            ])
+            ->add('specialStatus', InvertChoiceType::class, [
+                'label' => 'tourist.visa.special_status.label',
+                'group' => 'visa',
+                'choices' => $this->fmsDictionaries->getMigrationSpecStatuses(),
+                'required' => false
+            ])
+            ->add('fmsKppId', TextType::class, [
+                'label' => 'tourist.visa.fms_kpp_id.label',
+                'help' => 'tourist.visa.fms_kpp_id.help',
+                'group' => 'visa',
+                'required' => false
             ])
             ->add('series', TextType::class, [
                 'group' => 'visa',

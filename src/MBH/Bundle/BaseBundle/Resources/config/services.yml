@@ -341,3 +341,8 @@ services:
         shared: false
         arguments:
             - '@templating'
+
+    mbh.csv_reader:
+        class: MBH\Bundle\BaseBundle\Service\CsvReader
+        arguments:
+            - '@kernel'

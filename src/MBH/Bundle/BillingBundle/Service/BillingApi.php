@@ -3,11 +3,10 @@
 namespace MBH\Bundle\BillingBundle\Service;
 
 use GuzzleHttp\Client as GuzzleClient;
-use MBH\Bundle\PackageBundle\Models\AuthorityOrgan;
-use MBH\Bundle\PackageBundle\Models\BillingEntitiesResponse;
-use MBH\Bundle\PackageBundle\Models\City;
-use MBH\Bundle\PackageBundle\Models\Country;
-use MBH\Bundle\PackageBundle\Models\Region;
+use MBH\Bundle\PackageBundle\Models\Billing\AuthorityOrgan;
+use MBH\Bundle\PackageBundle\Models\Billing\City;
+use MBH\Bundle\PackageBundle\Models\Billing\Country;
+use MBH\Bundle\PackageBundle\Models\Billing\Region;
 use Monolog\Logger;
 use Symfony\Component\Serializer\Serializer;
 

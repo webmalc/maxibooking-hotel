@@ -80,6 +80,81 @@ class Visa extends Base
     protected $visaCategory;
 
     /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $specialStatus;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $fmsKppId;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $entryGoal;
+
+    /**
+     * @return int
+     */
+    public function getEntryGoal(): ?int
+    {
+        return $this->entryGoal;
+    }
+
+    /**
+     * @param int $entryGoal
+     * @return Visa
+     */
+    public function setEntryGoal(int $entryGoal): Visa
+    {
+        $this->entryGoal = $entryGoal;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFmsKppId(): ?string
+    {
+        return $this->fmsKppId;
+    }
+
+    /**
+     * @param string $fmsKppId
+     * @return Visa
+     */
+    public function setFmsKppId(string $fmsKppId): Visa
+    {
+        $this->fmsKppId = $fmsKppId;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSpecialStatus()
+    {
+        return $this->specialStatus;
+    }
+
+    /**
+     * @param int $specialStatus
+     * @return Visa
+     */
+    public function setSpecialStatus($specialStatus)
+    {
+        $this->specialStatus = $specialStatus;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getVisaCategory(): ?int

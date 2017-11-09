@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
@@ -65,8 +66,7 @@ class TouristController extends Controller
      */
     public function jsonAction(Request $request)
     {
-        $qbData = $this->get('mbh.tourist_manager')
-            ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected());
+        $qbData = $this->get('mbh.tourist_manager')->getQueryBuilderByRequestData($request, $this->getUser(), $this->hotel);
 
         if (!$qbData instanceof Builder) {
             return new JsonResponse(['error' => $qbData]);
@@ -86,7 +86,7 @@ class TouristController extends Controller
             $touristPackages[$tourist->getId()] = $packageRepository->findOneByTourist($tourist, $packageCriteria);
         }
 
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        $vegaDocumentTypes = $this->container->get('mbh.fms_dictionaries')->getDocumentTypes();
         $arrivals = $this->container->getParameter('mbh.package.arrivals');
 
         return [
@@ -135,7 +135,7 @@ class TouristController extends Controller
         $entity->setDocumentRelation(new DocumentRelation());
         $entity->setBirthplace(new BirthPlace());
         $entity->setCitizenshipTld($this->getParameter('country_type'));
-        $entity->getDocumentRelation()->setType('vega_russian_passport');
+        $entity->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
 
         $form = $this->createForm(
             TouristType::class,
@@ -307,7 +307,7 @@ class TouristController extends Controller
 
         //Default Value
         $entity->getCitizenshipTld() ?: $entity->setCitizenshipTld($this->getParameter('country_type'));
-        $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
+        $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
 
         $form = $this->createForm(DocumentRelationType::class, $entity, [
             'method' => Request::METHOD_POST,

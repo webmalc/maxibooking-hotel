@@ -4,9 +4,8 @@ namespace MBH\Bundle\PackageBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Query\Builder;
-use MBH\Bundle\ClientBundle\Lib\FMSDictionariesData;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\HotelBundle\Document\City;
-use MBH\Bundle\HotelBundle\Document\Country;
 use MBH\Bundle\HotelBundle\Document\Region;
 use MBH\Bundle\VegaBundle\Document\VegaRegion;
 use MBH\Bundle\VegaBundle\Document\VegaState;
@@ -47,10 +46,10 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
         $output->writeln('Tourists conversion completed!');
         $csvExporter->writeToCsv($this->convertUserVegaStateIdsToBillingCountryIds(), $this->getFilePath('missingUserData.csv'));
         $output->writeln('Users conversion completed!');
-        $csvExporter->writeToCsv($this->convertOrganizationsAddressData(), $this->getFilePath('missingOrganizationsData.csv'));
-        $output->writeln('Organizations conversion completed!');
-        $csvExporter->writeToCsv($this->convertHotelAddressData(), $this->getFilePath('missingHotelData.csv'));
-        $output->writeln('Hotels conversion completed!');
+//        $csvExporter->writeToCsv($this->convertOrganizationsAddressData(), $this->getFilePath('missingOrganizationsData.csv'));
+//        $output->writeln('Organizations conversion completed!');
+//        $csvExporter->writeToCsv($this->convertHotelAddressData(), $this->getFilePath('missingHotelData.csv'));
+//        $output->writeln('Hotels conversion completed!');
 
         $endTime = new \DateTime();
         $output->writeln('The conversion was completed in '
@@ -172,7 +171,7 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
                     ];
                 }
             }
-            if (isset($touristData['documentRelation']['type'])) {
+            if (isset($touristData['documentRelation']['type']) && !is_int($touristData['documentRelation']['type'])) {
                 $type = $touristData['documentRelation']['type'];
                 if (isset($fmsDocTypesIdsByVegaDocTypes[$type])) {
                     $fmsDocTypeId = $fmsDocTypesIdsByVegaDocTypes[$type];
@@ -214,14 +213,16 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
     {
         $relations = [];
         $vegaDocTypes = $this->getContainer()->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        $fmsDocTypes = $this->getContainer()->get('mbh.fms_dictionaries')->getDocumentTypes();
         foreach ($vegaDocTypes as $vegaDocType) {
-            foreach (FMSDictionariesData::getDocumentTypes() as $docTypeId => $documentType) {
+            foreach ($fmsDocTypes as $docTypeId => $documentType) {
                 if (mb_strtolower($vegaDocType) === mb_strtolower($documentType)) {
                     $relations[$vegaDocType] = $docTypeId;
                     break;
                 }
             }
         }
+        $relations['vega_russian_passport'] = FMSDictionaries::RUSSIAN_PASSPORT_ID;
 
         return $relations;
     }
@@ -444,31 +445,6 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
         }
 
         return $billingCountryTldByVegaStateIds;
-    }
-
-    private function getBillingCountryTldByCountryIds()
-    {
-        $resource = fopen($this->getFilePath('countries.csv'), 'r');
-        $countryTldByNames = [];
-        if ($resource) {
-            while (($rowData = fgetcsv($resource, 1000, ";")) !== false) {
-                $countryTldByNames[strtolower($rowData[1])] = $rowData[2];
-            }
-            fclose($resource);
-        }
-
-        $countries = $this->getDocumentManager()->getRepository('MBHHotelBundle:Country')->findAll();
-        $billingCountryTldByCountryIds = [];
-
-        /** @var Country $country */
-        foreach ($countries as $country) {
-            $lowerCountryName = strtolower($country->getTitle());
-            if (isset($countryTldByNames[$lowerCountryName])) {
-                $billingCountryTldByCountryIds[$country->getId()] = $countryTldByNames[$lowerCountryName];
-            }
-        }
-
-        return $billingCountryTldByCountryIds;
     }
 
     /**

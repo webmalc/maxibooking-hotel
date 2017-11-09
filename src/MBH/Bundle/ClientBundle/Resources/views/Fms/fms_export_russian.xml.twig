@@ -19,7 +19,7 @@
                     <type>Country</type>
                     <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
                 </country>
-                <place>{{ tourist.birthplace.mainRegion.name }}</place>
+                <place>{{ tourist.birthplace.mainRegion }}</place>
                 <place2>{{ tourist.birthplace.district }}</place2>
                 <place3>{{ tourist.birthplace.city }}</place3>
                 <place4>{{ tourist.birthplace.settlement }}</place4>
@@ -32,12 +32,16 @@
             </type>
             <series>{{ tourist.documentRelation.series }}</series>
             <number>{{ tourist.documentRelation.number }}</number>
-            {#Кем выдан. Для Паспорта РФ - справочник dict_officialorgan_fms (ID);
-            для остальных документов – строка: <authority>выдан кем-то</authority>#}
-            <authorityOrgan>
-                <type>officialOrgan</type>
-                <element>{{ tourist.documentRelation.authorityOrganId }}</element>
-            </authorityOrgan>
+
+            {% set passportType = 103008 %}
+            {% if tourist.documentRelation.type === passportType %}
+                <authorityOrgan>
+                    <type>officialOrgan</type>
+                    <element>{{ tourist.documentRelation.authorityOrganId }}</element>
+                </authorityOrgan>
+            {% else %}
+                <authority>{{ tourist.documentRelation.authorityOrganText }}</authority>
+            {% endif %}
             <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
             <validFrom>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validFrom>
             <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>

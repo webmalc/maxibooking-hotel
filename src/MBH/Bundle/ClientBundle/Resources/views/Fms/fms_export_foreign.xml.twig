@@ -22,7 +22,6 @@
             <birthDate>{{ tourist.birthday|date('d.m.Y') }}</birthDate>
             <citizenship>
                 <type>Citizenship</type>
-                {#Здесь должен быть alpha3 code#}
                 <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
             </citizenship>
             <birthPlace>
@@ -36,7 +35,6 @@
         <document>
             <type>
                 <type>DocumentType</type>
-                {#Тип документа. Справочник dict_documenttype (ID).#}
                 <element>{{ tourist.documentRelation.type }}</element>
             </type>
             <series>{{ tourist.documentRelation.series }}</series>
@@ -64,7 +62,7 @@
     </mig:stayPlace>
     <mig:arrivalFromPlaceAddress>
         {# По идее данные из ФИАС #}
-        <addressObjectString>Свердловская обл$$Нижний Тагил г$$$Садовая ул</addressObjectString>
+        {#<addressObjectString>Свердловская обл$$Нижний Тагил г$$$Садовая ул</addressObjectString>#}
         <housing>
             <type>
                 <type>addressObjectType</type>
@@ -124,16 +122,19 @@
             <fcc:identitifier>876543</fcc:identitifier>
             <fcc:visitPurpose>
                 <type>EntryGoal</type>
-                <element>{{ tourist.visa. }}</element>
+                <element>{{ tourist.visa.entryGoal }}</element>
             </fcc:visitPurpose>
         </mig:visa>
-        <mig:entered>false</mig:entered>
+        <mig:entered>{{ package.isCheckIn ? 'true' : 'false' }}</mig:entered>
     </mig:docResidence>
-    <mig:stateProgramMember>
-        <type>mig.specialStatus</type>
-        <element>1019</element>
-    </mig:stateProgramMember>
+    {% if tourist.visa.specialStatus %}
+        <mig:stateProgramMember>
+            <type>mig.specialStatus</type>
+            <element>{{ tourist.visa.specialStatus }}</element>
+        </mig:stateProgramMember>
+    {% endif %}
     <mig:host>
+        {# Ответственное лицо #}
         <mig:personDataDocument>
             <person>
                 <lastName>Кожевина</lastName>
@@ -189,12 +190,11 @@
     </mig:host>
     <mig:entrancePurpose>
         <type>VisitPurpose</type>
-        <element>139345</element>
+        <element>{{ tourist.visa.visitPurpose }}</element>
     </mig:entrancePurpose>
     <mig:migrationCard>
-        <uid>MigrationCard_7196e9ee-06f1-4f9f-b2de-cd67c67abca5</uid>
-        <fcc:series>6</fcc:series>
-        <fcc:number>8765</fcc:number>
+        <fcc:series>{{ tourist.migration.series }}</fcc:series>
+        <fcc:number>{{ tourist.migration.number }}</fcc:number>
         <fcc:stayPeriod>
             <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
             <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>
@@ -202,13 +202,9 @@
         <fcc:entranceDate>{{ tourist.visa.arrivalTime|date('Y-m-d') }}</fcc:entranceDate>arrivalTime
         <fcc:entranceCheckpoint>
             <type>officialOrgan</type>
-            <element>112999</element>
+            <element>{{ tourist.visa.fmsKppId }}</element>
         </fcc:entranceCheckpoint>
         <fcc:departureDate>{{ tourist.visa.departureTime|date('Y-m-d') }}</fcc:departureDate>
-        <fcc:visitPurpose>
-            <type>VisitPurpose</type>
-            <element>139345</element>
-        </fcc:visitPurpose>
     </mig:migrationCard>
-    <mig:profession>Программист</mig:profession>
+    <mig:profession>{{ tourist.visa.profession }}</mig:profession>
 </migst:case>

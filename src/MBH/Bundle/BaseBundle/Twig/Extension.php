@@ -94,7 +94,7 @@ class Extension extends \Twig_Extension
 
     /**
      * @param $authorityOrganId
-     * @return \MBH\Bundle\PackageBundle\Models\AuthorityOrgan
+     * @return \MBH\Bundle\PackageBundle\Models\Billing\AuthorityOrgan
      */
     public function getAuthorityOrganById($authorityOrganId)
     {
@@ -104,7 +104,7 @@ class Extension extends \Twig_Extension
     /**
      * @param $countryTld
      * @param null $locale
-     * @return \MBH\Bundle\PackageBundle\Models\Country
+     * @return \MBH\Bundle\PackageBundle\Models\Billing\Country
      */
     public function getCountryByTld($countryTld, $locale = null)
     {
@@ -114,7 +114,7 @@ class Extension extends \Twig_Extension
     /**
      * @param $regionId
      * @param null $locale
-     * @return \MBH\Bundle\PackageBundle\Models\Region
+     * @return \MBH\Bundle\PackageBundle\Models\Billing\Region
      */
     public function getRegionById($regionId, $locale = null)
     {
@@ -124,7 +124,7 @@ class Extension extends \Twig_Extension
     /**
      * @param $cityId
      * @param null $locale
-     * @return \MBH\Bundle\PackageBundle\Models\City
+     * @return \MBH\Bundle\PackageBundle\Models\Billing\City
      */
     public function getCityById($cityId, $locale = null)
     {
