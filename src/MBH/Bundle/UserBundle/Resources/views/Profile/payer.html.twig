@@ -1,0 +1,16 @@
+{% extends 'MBHUserBundle:Profile:layout.html.twig' %}
+
+{% set title = 'view.personal_account.title'|trans %}
+{% set small_title = 'view.personal_account.payer.small_title'|trans %}
+{% set active = 4 %}
+
+{% block content %}
+    {{ parent() }}
+    <div class="tab-content">
+        {{ form_start(form, {'action': path('user_payer'),  'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+

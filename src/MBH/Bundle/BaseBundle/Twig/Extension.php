@@ -93,6 +93,15 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @param $serviceId
+     * @return string
+     */
+    public function getBillingService($serviceId)
+    {
+        return $this->container->get('mbh.billing.api')->getServiceById($serviceId);
+    }
+
+    /**
      * @param \MongoDate $mongoDate
      * @return \DateTime
      *
@@ -205,6 +214,7 @@ class Extension extends \Twig_Extension
             'filter_begin_date' => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
             'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
+            'get_service' => new \Twig_SimpleFunction('get_service', [$this, 'getBillingService'], ['is_safe' => ['html']]),
         ];
     }
 

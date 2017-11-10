@@ -66,6 +66,6 @@ record.index.remove: 'Удаление записи'
 layout.users: Пользователи
 new.create: Создание
 views.profile.layout.user: Пользователь
-views.profile.profile.change_password: 'Смена пароля'
+views.profile.profile.change_password: 'Пароль'
 views.profile.profile.password_error: 'Пароль дожен быть не меньше 8 символов и содержать цифру и заглавную букву!'
 views.security.login.enter_in: 'Войти в'

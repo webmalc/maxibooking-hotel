@@ -1,5 +1,38 @@
 /*global window, document, Routing, fole, str, $, select2, localStorage, mbh */
 
+var BILLING_API_SETTINGS = {
+    fms: {
+        url: 'http://billing.maxibooking.ru/ru/fms-fms',
+        id: 'internal_id',
+        text: 'name'
+    },
+    countries: {
+        url: 'http://billing.maxibooking.ru/ru/countries',
+        id: 'tld',
+        text: 'name'
+    },
+    regions: {
+        url: 'http://billing.maxibooking.ru/ru/regions',
+        id: 'id',
+        text: 'name'
+    },
+    cities: {
+        url: 'http://billing.maxibooking.ru/ru/cities',
+        id: 'id',
+        text: 'display_name'
+    },
+    fmsKpp: {
+        url: 'http://billing.maxibooking.ru/ru/fms-kpp',
+        id: 'internal_id',
+        text: 'name'
+    },
+    services: {
+        url: 'http://billing.maxibooking.ru/ru/services/',
+        id: 'id',
+        text: 'title'
+    }
+};
+
 mbh.datarangepicker = {
     options: {
         'dateLimit': 365,
@@ -508,6 +541,14 @@ var docReadyForms = function () {
             });
     }());
 
+    (function () {
+        var $billingTextSelect = $('.billing-text-select');
+        $billingTextSelect.each(function (index, element) {
+            var endpointName = element.getAttribute('data-endpoint-name');
+            initSelect2TextForBilling(element.id, BILLING_API_SETTINGS[endpointName]);
+        });
+    }());
+
     //order select
     (function () {
         var orderSelect = $('.order-select');
@@ -982,6 +1023,54 @@ function onHideCheckboxChange() {
 
     $boxHideableCheckbox.on('switchChange.bootstrapSwitch', function () {
         setVisibility(this);
+    });
+}
+
+function initSelect2TextForBilling(inputId, apiSettings) {
+    select2Text($('#' + inputId)).select2({
+        minimumInputLength: 3,
+        placeholder: Translator.trans('tourist.make_a_choice'),
+        allowClear: true,
+        ajax: {
+            headers: {
+                Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+            },
+            url: apiSettings['url'],
+            dataType: 'json',
+            data: function (params) {
+                return {
+                    search: params.term
+                };
+            },
+            processResults: function (data) {
+                var options = [];
+                data.results.forEach(function(fmsOrgan) {
+                    options.push({
+                        id: fmsOrgan[apiSettings['id']],
+                        text: fmsOrgan[apiSettings['text']]
+                    });
+                });
+
+                return {results: options};
+            }
+        },
+        initSelection: function (element, callback) {
+            var id = $(element).val();
+            $.ajax(apiSettings['url'] + '/' + id, {
+                dataType: "json",
+                headers: {
+                    Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+                }
+            }).done(function (data) {
+                var selectedOrgan = {
+                    id: data[apiSettings['id']],
+                    text: data[apiSettings['text']]
+                };
+                callback(selectedOrgan);
+            });
+        },
+
+        dropdownCssClass: "bigdrop"
     });
 }
 

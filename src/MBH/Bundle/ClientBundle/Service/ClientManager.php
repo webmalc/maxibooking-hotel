@@ -4,6 +4,8 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
+use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -11,7 +13,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class ClientManager
 {
     const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
-    const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_account';
+    const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_contacts';
+    const SESSION_CLIENT_FIELD = 'client';
 
     private $dm;
     private $session;
@@ -122,7 +125,7 @@ class ClientManager
      */
     public function getAvailableNumberOfRooms()
     {
-        return $this->getClientData()[Client::AVAILABLE_ROOMS_LIMIT];
+        return $this->getClient()->getRooms_limit();
     }
 
     /**
@@ -130,13 +133,13 @@ class ClientManager
      */
     public function isClientActive()
     {
-        return $this->getClientData()[Client::CLIENT_STATUS] == 'active';
+        return $this->getClient()->getStatus() == Client::CLIENT_ACTIVE_STATUS;
     }
 
     /**
-     * @return array
+     * @return Client
      */
-    public function getClientData()
+    public function getClient()
     {
         $dataReceiptTime = $this->session->get(Client::CLIENT_DATA_RECEIPT_DATETIME);
         $currentDateTime = new \DateTime();
@@ -144,20 +147,69 @@ class ClientManager
         if (is_null($dataReceiptTime)
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
-            $clientData = $this->billingApi->getClient();
-            $clientStatus = $clientData[Client::CLIENT_STATUS];
-            $roomsLimit = $clientData[Client::AVAILABLE_ROOMS_LIMIT];
-            $this->session->set(Client::CLIENT_STATUS, $clientData[Client::CLIENT_STATUS]);
-            $this->session->set(Client::CLIENT_DATA_RECEIPT_DATETIME, $currentDateTime);
-            $this->session->set(Client::AVAILABLE_ROOMS_LIMIT, $roomsLimit);
+            /** @var Client $client */
+            $client = $this->billingApi->getClient();
+            $this->updateSessionClientData($client, $currentDateTime);
         } else {
-            $clientStatus = $this->session->get(Client::CLIENT_STATUS);
-            $roomsLimit = $this->session->get(Client::AVAILABLE_ROOMS_LIMIT);
+            $client = $this->session->get(self::SESSION_CLIENT_FIELD);
         }
 
-        return [
-            Client::AVAILABLE_ROOMS_LIMIT => $roomsLimit,
-            Client::CLIENT_STATUS => $clientStatus
-        ];
+        return $client;
+    }
+
+    /**
+     * @param Client $client
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Result
+     */
+    public function updateClient(Client $client)
+    {
+        $clientResponse = $this->billingApi->updateClient($client);
+        if ($clientResponse->isSuccessful()) {
+            $this->updateSessionClientData($client, new \DateTime());
+        }
+
+        return $clientResponse;
+    }
+
+    /**
+     * @param Client $client
+     * @param \DateTime $currentDateTime
+     */
+    public function updateSessionClientData(Client $client, \DateTime $currentDateTime)
+    {
+        $this->session->set(Client::CLIENT_DATA_RECEIPT_DATETIME, $currentDateTime);
+        $this->session->set(self::SESSION_CLIENT_FIELD, $client);
+    }
+
+    /**
+     * @return Result
+     */
+    public function getAvailableServices()
+    {
+        $client = $this->getClient();
+        $clientServicesRequestResult = $this->billingApi->getClientServices($client);
+        if (!$clientServicesRequestResult->isSuccessful()) {
+            return $clientServicesRequestResult;
+        }
+
+        $clientServicesIds = array_map(function (ClientService $clientService) {
+            return $clientService->getService();
+        }, $clientServicesRequestResult->getData());
+
+        $servicesRequestResult = $this->billingApi->getServices();
+        if (!$servicesRequestResult->isSuccessful()) {
+            return $servicesRequestResult;
+        }
+
+        $services = [];
+        /** @var Service $service */
+        foreach ($servicesRequestResult->getData() as $service) {
+            //TODO: Временно для тестов
+//            if (!in_array($service->getId(), $clientServicesIds)) {
+                $services[] = $service;
+//            }
+        }
+
+        return Result::createSuccessResult($services);
     }
 }

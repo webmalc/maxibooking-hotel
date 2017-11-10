@@ -2,12 +2,10 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener;
 
-use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-
 
 class OnRequest
 {
@@ -25,11 +23,6 @@ class OnRequest
     {
         $timeZone = $this->container->get('mbh.helper')->getTimeZone();
         $this->container->get('twig')->getExtension('Twig_Extension_Core')->setTimezone($timeZone);
-        //set default timezone
-        $tz = $this->container->getParameter('mbh.timezone');
-        if (!empty($tz) && $tz != 'default') {
-            $this->container->get('twig')->getExtension('Twig_Extension_Core')->setTimezone($tz);
-        }
 
         $clientManager = $this->container->get('mbh.client_manager');
 

@@ -1,4 +1,7 @@
 parameters:
+    support:
+        email: 'support@maxi-booking.ru'
+
     #currencies
     mbh.currency.data:
       rub: {text: 'руб.', small: 'коп.', icon: 'fa fa-ruble'}

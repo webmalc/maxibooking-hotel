@@ -51,4 +51,12 @@ $(document).ready(function () {
         },
         dropdownCssClass: "bigdrop"
     });
-})
+
+    
+});
+
+function onServiceSelected() {
+    $('#mbhuser_bundle_client_service_type_service').change(function () {
+        console.log(services);
+    });
+}

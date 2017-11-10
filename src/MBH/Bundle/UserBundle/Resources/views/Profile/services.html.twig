@@ -1,0 +1,44 @@
+{% extends 'MBHUserBundle:Profile:layout.html.twig' %}
+
+{% set title = 'view.personal_account.title'|trans %}
+{% set small_title = 'view.personal_account.services.small_title'|trans %}
+{% set active = 3 %}
+
+{% block content %}
+    {{ parent() }}
+    <div class="tab-content">
+        <table class="table table-striped table-hover table-condensed table-icons table-actions">
+            <thead>
+            <tr>
+                <th class="td-md text-center">{{ 'view.personal_account.services.service_name'|trans }}</th>
+                <th class="td-md text-center">{{ 'view.personal_account.services.period'|trans }}</th>
+                <th class="td-md text-center">{{ 'view.personal_account.services.price'|trans }}</th>
+                <th class="td-md text-center">{{ 'view.personal_account.services.quantity'|trans }}</th>
+                <th class="td-md text-center">{{ 'view.personal_account.services.unit_type'|trans }}</th>
+                <th class="td-md text-center">{{ 'view.personal_account.services.cost'|trans }}</th>
+                <th class="td-sm"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for clientService in services %}
+                {% set service = get_service(clientService.id) %}
+                <tr>
+                    <td class="text-center">{{ service.title }}</td>
+                    <td class="text-center">{{ clientService.beginAsDateTime|date('d.m.Y') ~ ' - ' ~ clientService.endAsDateTime|date('d.m.Y') }}</td>
+                    <td class="text-center">{{ service.price ~ ' ' ~ service.price_currency }}</td>
+                    <td class="text-center">{{ clientService.quantity }}</td>
+                    <td class="table-actions-td text-center">{{ service.period_units }}</td>
+                    <td class="text-center">{{ clientService.price ~ ' ' ~ clientService.price_currency }}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if availableServices|length > 0 %}
+        {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'add_client_service', 'role': 'HOTEL'} %}
+    {% endif %}
+
+{% endblock %}
+

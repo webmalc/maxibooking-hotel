@@ -39,15 +39,15 @@ class UserController extends Controller
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHUserBundle:User')->createQueryBuilder('q')
+        $entities = $this->dm->getRepository('MBHUserBundle:User')->createQueryBuilder()
             ->sort('username', 'asc')
             ->getQuery()
             ->execute()
         ;
 
-        return array(
+        return [
             'entities' => $entities,
-        );
+        ];
     }
 
     /**
@@ -69,9 +69,9 @@ class UserController extends Controller
             $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles')]
         );
 
-        return array(
+        return [
             'form' => $form->createView(),
-        );
+        ];
     }
 
     /**
@@ -81,6 +81,8 @@ class UserController extends Controller
      * @Method("POST")
      * @Security("is_granted('ROLE_USER_NEW')")
      * @Template("MBHUserBundle:User:new.html.twig")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createAction(Request $request)
     {
@@ -101,10 +103,10 @@ class UserController extends Controller
             return $this->afterSaveRedirect('user', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
-        );
+        ];
     }
 
     /**
@@ -115,6 +117,8 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param User $entity
+     * @return array
      */
     public function editAction(User $entity)
     {
@@ -143,13 +147,12 @@ class UserController extends Controller
             $entity, ['hotels' => $hasHotels, 'roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
         );
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
-
 
 
     /**
@@ -158,6 +161,9 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param User $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editDocumentAction(User $entity, Request $request)
     {
@@ -178,11 +184,11 @@ class UserController extends Controller
             }
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -191,6 +197,9 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param User $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editSecurityAction(User $entity, Request $request)
     {
@@ -204,11 +213,11 @@ class UserController extends Controller
             return $this->redirectToRoute('user_security_edit', ['id' => $entity->getId()]);
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -217,6 +226,9 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param User $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAddressAction(User $entity, Request $request)
     {
@@ -233,11 +245,11 @@ class UserController extends Controller
             }
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -248,6 +260,9 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template("MBHUserBundle:User:edit.html.twig")
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param Request $request
+     * @param User $entity
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateAction(Request $request, User $entity)
     {
@@ -276,11 +291,11 @@ class UserController extends Controller
             return $this->afterSaveRedirect('user', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     private function updateAcl(User $user, $form)
