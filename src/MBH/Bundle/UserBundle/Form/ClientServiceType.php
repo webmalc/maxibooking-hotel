@@ -25,15 +25,6 @@ class ClientServiceType extends AbstractType
                 'choices' => $services,
                 'label' => 'form.client_service_type.service.label'
             ])
-            ->add('period', ChoiceType::class, [
-                'label' => 'form.client_service_type.period.label',
-                //TODO: Заменить
-                'choices' => [
-                    '1 месяц' => 1,
-                    '3 месяца' => 3,
-                    '6 месяцев' => 6
-                ]
-            ])
             ->add('price', TextType::class, [
                 'label' => 'form.client_service_type.price.label',
                 'attr' => [
@@ -42,7 +33,11 @@ class ClientServiceType extends AbstractType
                 'required' => false
             ])
             ->add('quantity', TextType::class, [
-                'label' => 'form.client_service_type.quantity.label'
+                'label' => 'form.client_service_type.quantity.label',
+                'attr' => [
+                    'class' => 'mbh-spinner',
+                    'spinner-max' => 10000
+                ]
             ])
             ->add('units', TextType::class, [
                 'label' => 'form.client_service_type.units.label',

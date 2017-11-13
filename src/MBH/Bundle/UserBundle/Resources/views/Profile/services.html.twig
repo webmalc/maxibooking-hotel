@@ -21,7 +21,7 @@
             </thead>
             <tbody>
             {% for clientService in services %}
-                {% set service = get_service(clientService.id) %}
+                {% set service = get_service(clientService.service) %}
                 <tr>
                     <td class="text-center">{{ service.title }}</td>
                     <td class="text-center">{{ clientService.beginAsDateTime|date('d.m.Y') ~ ' - ' ~ clientService.endAsDateTime|date('d.m.Y') }}</td>
@@ -36,9 +36,9 @@
         </table>
     </div>
 
-    {% if availableServices|length > 0 %}
-        {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'add_client_service', 'role': 'HOTEL'} %}
-    {% endif %}
+    {#{% if availableServices|length > 0 %}#}
+        {#{% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'add_client_service', 'role': 'HOTEL'} %}#}
+    {#{% endif %}#}
 
 {% endblock %}
 

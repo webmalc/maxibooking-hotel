@@ -549,6 +549,20 @@ var docReadyForms = function () {
         });
     }());
 
+    (function () {
+        $('.mbh-spinner').each(function (index, element) {
+            var min = element.getAttribute('spinner-min') ? element.getAttribute('spinner-min') : 0;
+            var max = element.getAttribute('spinner-max') ? element.getAttribute('spinner-max') : 100000000;
+            var step = element.getAttribute('step') ? element.getAttribute('step') : 1;
+
+            $(element).TouchSpin({
+                min: min,
+                max: max,
+                step: step
+            });
+        });
+    }());
+
     //order select
     (function () {
         var orderSelect = $('.order-select');

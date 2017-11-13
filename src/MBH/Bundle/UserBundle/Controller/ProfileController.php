@@ -163,9 +163,10 @@ class ProfileController extends Controller
      * @Template()
      * @Route("/services/add", name="add_client_service")
      */
-    public function addClientServiceAction()
+    public function addClientServiceAction(Request $request)
     {
-        $availableServicesResult = $this->get('mbh.client_manager')->getAvailableServices();
+        $clientManager = $this->get('mbh.client_manager');
+        $availableServicesResult = $clientManager->getAvailableServices();
         if (!$availableServicesResult->isSuccessful()) {
             $this->addBillingErrorFlash();
 
@@ -176,6 +177,12 @@ class ProfileController extends Controller
         $form = $this->createForm(ClientServiceType::class, null, [
             'services' => $availableServices
         ]);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $res = $this->get('mbh.billing.api')->createClientService($form->getData(), $clientManager->getClient());
+            dump($res);
+            exit();
+        }
 
         return [
             'form' => $form->createView(),

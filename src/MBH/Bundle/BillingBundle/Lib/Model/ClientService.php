@@ -334,7 +334,7 @@ class ClientService
      * @param string $created_by
      * @return ClientService
      */
-    public function setCreated_by(string $created_by): ClientService
+    public function setCreated_by(?string $created_by): ClientService
     {
         $this->created_by = $created_by;
 
@@ -353,7 +353,7 @@ class ClientService
      * @param string $modified_by
      * @return ClientService
      */
-    public function setModified_by(string $modified_by): ClientService
+    public function setModified_by(?string $modified_by): ClientService
     {
         $this->modified_by = $modified_by;
 

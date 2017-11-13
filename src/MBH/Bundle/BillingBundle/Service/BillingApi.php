@@ -59,38 +59,6 @@ class BillingApi
 
     }
 
-    private function sendGet(string $uri)
-    {
-        return $this->guzzle->get($uri, [
-            RequestOptions::HEADERS => [
-                'Authorization' => 'Token ' . self::AUTH_TOKEN
-            ]
-        ]);
-    }
-
-    public function sendPost(string $uri, array $data)
-    {
-        return $this->guzzle->post($uri . '/', [
-            RequestOptions::HEADERS => [
-                'Authorization' => 'Token ' . self::AUTH_TOKEN,
-            ],
-            RequestOptions::JSON => $data
-        ]);
-    }
-
-    private function sendPatch(string $uri, array $data)
-    {
-        $data['url'] = null;
-
-        return $this->guzzle->patch($uri . '/', [
-            RequestOptions::HEADERS => [
-                'Authorization' => 'Token ' . self::AUTH_TOKEN,
-                'Content-type' => 'application/json',
-            ],
-            RequestOptions::JSON => $data,
-        ]);
-    }
-
     /**
      * @return object
      */
@@ -116,6 +84,7 @@ class BillingApi
     {
         $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT, $client->getLogin());
         $clientData = $this->serializer->normalize($client);
+        $clientData['url'] = null;
         $requestResult = new Result();
 
         try {
@@ -124,11 +93,7 @@ class BillingApi
             $requestResult->setIsSuccessful(false);
 
             $response = $exception->getResponse();
-            if ($response->getStatusCode() == 400) {
-                $requestResult->setErrors(json_decode((string)$response->getBody(), true));
-            } else {
-                $this->logger->error('Error by update of client "' . (string)$response->getBody() . '"');
-            }
+            $this->handleErrorResponse($response, $requestResult);
 
             return $requestResult;
         }
@@ -136,6 +101,71 @@ class BillingApi
         $requestResult = $this->tryDeserializeObject($response, $requestResult, Client::class);
 
         return $requestResult;
+    }
+
+    /**
+     * @param Client $client
+     * @return Result
+     */
+    public function getClientServices(Client $client)
+    {
+        if (!$this->isClientServicesInit) {
+            $queryData = ['client' => $client->getId()];
+
+            $this->clientServices = $this->getEntities(self::CLIENT_SERVICES_ENDPOINT, $queryData, ClientService::class);
+            $this->isClientServicesInit = true;
+        }
+
+        return $this->clientServices;
+    }
+
+    /**
+     * @param array $serviceData
+     * @param Client $client
+     * @return Result
+     */
+    public function createClientService(array $serviceData, Client $client)
+    {
+        $newClientServiceData = [
+            'quantity' => $serviceData['quantity'],
+            'service' => $serviceData['service'],
+            'client' => $client->getLogin(),
+            'begin' => (new \DateTime())->format(self::BILLING_DATETIME_FORMAT),
+            'end' => (new \DateTime('+' . $serviceData['period'] . $serviceData['units']))->format(self::BILLING_DATETIME_FORMAT)
+        ];
+
+        $response = $this->sendPost($this->getBillingUrl(self::CLIENT_SERVICES_ENDPOINT), $newClientServiceData);
+        $requestResult = new Result();
+
+        if ($response->getStatusCode() == 200) {
+            return $this->tryDeserializeObject($response, $requestResult, ClientService::class);
+        }
+
+        return $this->handleErrorResponse($response, $requestResult);
+    }
+
+    /**
+     * @return Result
+     */
+    public function getServices()
+    {
+        return $this->getEntities(self::SERVICES_ENDPOINT, [], Service::class);
+    }
+
+    /**
+     * @param string $uri
+     * @param array $data
+     * @return ResponseInterface
+     */
+    private function sendPatch(string $uri, array $data)
+    {
+        return $this->guzzle->patch($uri . '/', [
+            RequestOptions::HEADERS => [
+                'Authorization' => 'Token ' . self::AUTH_TOKEN,
+                'Content-type' => 'application/json',
+            ],
+            RequestOptions::JSON => $data,
+        ]);
     }
 
     /**
@@ -158,26 +188,49 @@ class BillingApi
     }
 
     /**
+     * @param ResponseInterface $response
+     * @param Result $requestResult
      * @return Result
      */
-    public function getClientServices(Client $client)
+    private function handleErrorResponse(ResponseInterface $response, Result $requestResult)
     {
-        if (!$this->isClientServicesInit) {
-            $queryData = ['client' => $client->getId()];
-
-            $this->clientServices = $this->getEntities(self::CLIENT_SERVICES_ENDPOINT, $queryData, ClientService::class);
-            $this->isClientServicesInit = true;
+        if ($response->getStatusCode() == 400) {
+            $requestResult->setErrors(json_decode((string)$response->getBody(), true));
+        } else {
+            $this->logger->error('Error by update of client "' . (string)$response->getBody() . '"');
         }
 
-        return $this->clientServices;
+        return $requestResult;
     }
 
     /**
-     * @return Result
+     * @param string $uri
+     * @return ResponseInterface
      */
-    public function getServices()
+    private function sendGet(string $uri)
     {
-        return $this->getEntities(self::SERVICES_ENDPOINT, [], Service::class);
+        return $this->guzzle->get($uri, [
+            RequestOptions::HEADERS => [
+                'Authorization' => 'Token ' . self::AUTH_TOKEN
+            ]
+        ]);
+    }
+
+    /**
+     * @param string $uri
+     * @param array $data
+     * @param bool $throwException
+     * @return ResponseInterface
+     */
+    public function sendPost(string $uri, array $data, $throwException = false)
+    {
+        return $this->guzzle->post($uri . '/', [
+            RequestOptions::HEADERS => [
+                'Authorization' => 'Token ' . self::AUTH_TOKEN,
+            ],
+            RequestOptions::JSON => $data,
+            RequestOptions::HTTP_ERRORS => $throwException
+        ]);
     }
 
     /**
