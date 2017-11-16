@@ -4,7 +4,8 @@ namespace MBH\Bundle\UserBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\BillingBundle\Lib\Model\Service;
+use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
+use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
 use MBH\Bundle\UserBundle\Form\ClientContactsType;
 use MBH\Bundle\UserBundle\Form\ClientServiceType;
 use MBH\Bundle\UserBundle\Form\PayerType;
@@ -27,7 +28,7 @@ class ProfileController extends Controller
      *
      * @Route("/profile", name="user_profile")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER_PROFILE')")
+     * @Security("is_granted('ROLE_PASSWORD')")
      * @Template()
      */
     public function profileAction()
@@ -44,7 +45,7 @@ class ProfileController extends Controller
      *
      * @Route("/profile", name="user_profile_update")
      * @Method("POST")
-     * @Security("is_granted('ROLE_USER_PROFILE')")
+     * @Security("is_granted('ROLE_PASSWORD')")
      * @Template("MBHUserBundle:Profile:profile.html.twig")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -74,7 +75,7 @@ class ProfileController extends Controller
     /**
      * @Template()
      * @Route("/contacts", name="user_contacts")
-     * @Security("is_granted('ROLE_MB_ACCOUNT')")
+     * @Security("is_granted('ROLE_PAYMENTS')")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws Exception
@@ -136,6 +137,7 @@ class ProfileController extends Controller
 
     /**
      * @Template()
+     * @Security("is_granted('ROLE_PAYMENTS')")
      * @Route("/services", name="user_services")
      */
     public function servicesAction()
@@ -147,6 +149,9 @@ class ProfileController extends Controller
             $services = [];
             $this->addBillingErrorFlash();
         } else {
+//            $services = array_filter($requestResult->getData(), function (ClientService $service) {
+//                return $service->getEndAsDateTime() > new \DateTime();
+//            });
             $services = $requestResult->getData();
         }
 
@@ -160,8 +165,11 @@ class ProfileController extends Controller
     }
 
     /**
+     * @Security("is_granted('ROLE_PAYMENTS')")
      * @Template()
      * @Route("/services/add", name="add_client_service")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function addClientServiceAction(Request $request)
     {
@@ -192,6 +200,7 @@ class ProfileController extends Controller
 
     /**
      * @Template()
+     * @Security("is_granted('ROLE_PAYMENTS')")
      * @Route("/payer", name="user_payer")
      * @param Request $request
      * @return array
@@ -204,6 +213,109 @@ class ProfileController extends Controller
 
         return [
             'form' => $form->createView()
+        ];
+    }
+
+    /**
+     * @Template()
+     * @Security("is_granted('ROLE_PAYMENTS')")
+     * @Route("/payment", name="user_payment")
+     * @return array
+     */
+    public function paymentAction()
+    {
+        $beginDate = new \DateTime('midnight - 1 month');
+        $endDate = new \DateTime('midnight');
+
+        return [
+            'beginDate' => $beginDate,
+            'endDate' => $endDate,
+        ];
+    }
+
+    /**
+     * @Route("/payments_list_json", name="payments_list_json", options={"expose"=true})
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function paymentsListAction(Request $request)
+    {
+        $formData = $request->request->get('form');
+        $beginDate = isset($formData['begin'])
+            ? $this->helper->getDateFromString($formData['begin'])
+            : new \DateTime('midnight - 300 days');
+
+        $endDate = isset($formData['end'])
+            ? $this->helper->getDateFromString($formData['end'])
+            : new \DateTime('midnight');
+
+        $paidStatus = isset($formData['paidStatus']) ? $formData['paidStatus'] : 'all';
+
+        $client = $this->get('mbh.client_manager')->getClient();
+
+        $requestResult = $this->get('mbh.billing.api')->getClientOrdersResultByCreationDate($client, $beginDate, $endDate);
+        if (!$requestResult->isSuccessful()) {
+            $orders = [];
+            $this->addBillingErrorFlash();
+        } else {
+            $orders = array_filter($requestResult->getData(), function (PaymentOrder $order) use ($beginDate, $endDate, $paidStatus) {
+                return $paidStatus === 'all'
+                    || ($order->getStatus() === 'paid' && $paidStatus  === 'paid')
+                    || ($order->getStatus() !== 'paid' && $paidStatus  === 'not-paid');
+            });
+        }
+
+        return $this->render('@MBHUser/Profile/paymentsList.json.twig', [
+            'orders' => $orders,
+            'draw' => $request->get('draw'),
+        ]);
+    }
+
+    /**
+     * @Template()
+     * @Security("is_granted('ROLE_PAYMENTS')")
+     * @Route("/payment_order/{orderId}", name="show_payment_order")
+     * @param $orderId
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function showPaymentOrderAction($orderId)
+    {
+        $client = $this->get('mbh.client_manager')->getClient();
+        $billingApi = $this->get('mbh.billing.api');
+        $order = $billingApi->getClientOrderById($orderId);
+        if ($client->getLogin() !== $order->getClient()) {
+            $this->addBillingErrorFlash();
+
+            return $this->redirectToRoute('user_payment');
+        }
+
+        $clientServices = [];
+        foreach ($order->getClient_services() as $serviceUrl) {
+            $clientServices[] = $billingApi->getBillingEntityByUrl($serviceUrl, ClientService::class);
+        }
+
+        return [
+            'order' => $order,
+            'services' => $clientServices
+        ];
+    }
+
+    /**
+     * @Template()
+     * @Security("is_granted('ROLE_PAYMENTS')")
+     * @Route("/payment_order/{orderId}/payment_systems", name="order_payment_systems", options={"expose"=true})
+     * @param $orderId
+     * @return array
+     */
+    public function payOrderModalAction($orderId)
+    {
+        $billingApi = $this->get('mbh.billing.api');
+        $order = $billingApi->getClientOrderById($orderId);
+        $paymentSystemsResult = $billingApi->getPaymentSystemsForOrder($order);
+
+        return [
+            'paymentTypes' => $paymentSystemsResult->getData(),
+            'order' => $order
         ];
     }
 

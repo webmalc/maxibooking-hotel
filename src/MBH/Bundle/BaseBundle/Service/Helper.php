@@ -631,10 +631,7 @@ class Helper
             $end->modify('+45 days');
         }
 
-        return [
-            'begin' => $begin,
-            'end' => $end
-        ];
+        return [$begin, $end];
     }
 
     /**

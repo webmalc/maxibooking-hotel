@@ -1,0 +1,20 @@
+<div class="panel-body">
+    {{ 'view.pay_order_modal.payment_sum'|trans({'%price%' : order.price ~ ' ' ~ order.price_currency, '%orderNumber%' : order.id})|raw }}
+    <hr>
+    {% for paymentType in paymentTypes %}
+        <div class="well">
+            <label class="">{{ paymentType.name|capitalize }}</label>
+            <div style="float: right;">
+                {% if paymentType.id == 'bill' %}
+                    <button type="button" id="bill-button" class="btn btn-primary">
+                        {{ 'view.pay_order_modal.open_bill'|trans}}
+                    </button>
+                    <input type="hidden" value="{{ paymentType.html }}" id="bill-content">
+                {% else %}
+                    {{ paymentType.html }}
+                {% endif %}
+            </div>
+            <p>{{ paymentType.description }}</p>
+        </div>
+    {% endfor %}
+</div>

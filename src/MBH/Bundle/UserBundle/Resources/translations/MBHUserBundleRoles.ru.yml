@@ -252,3 +252,6 @@ ROLE_RESTAURANT_TABLE_CATEGORY_EDIT: 'Редактировать категор�
 ROLE_RESTAURANT_TABLE_CATEGORY_DELETE: 'Удалить категорию'
 ROLE_DYNAMIC_SALES: Динамика продаж
 ROLE_DYNAMIC_SALES_VIEW: Отчет продаж
+ROLE_PERSONAL_ACCOUNT: 'Личный кабинет'
+ROLE_PASSWORD: 'Личный кабинет - Пароль'
+ROLE_PAYMENTS: 'Личный кабинет — Платежи'

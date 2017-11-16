@@ -8,6 +8,8 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -84,8 +86,7 @@ class PayerType extends AbstractType
             ->add('inn', TextType::class, [
                 'group' => 'form.payer_type.financial_information.label',
                 'label' => 'form.payer_type.inn.label'
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -93,6 +94,16 @@ class PayerType extends AbstractType
         $resolver->setDefaults([
 //            'data_class' => Client::class
         ]);
+    }
+
+    public function buildView(FormView $view, FormInterface $form, array $options)
+    {
+        $view->vars['nonDisplayGroups'] = [
+            'form.payer_type.address_group',
+            'form.payer_type.financial_information.label',
+            'form.payer_type.identification_group',
+            'form.payer_type.payer_type_group'
+        ];
     }
 
     public function getBlockPrefix()

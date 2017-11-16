@@ -184,9 +184,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
      */
     public function totalRoomsOverviewTableAction(Request $request)
     {
-        $reportDates = $this->helper->getReportDates($request);
-        $begin = $reportDates['begin'];
-        $end = $reportDates['end'];
+        list($begin, $end) = $this->helper->getReportDates($request);
 
         return [
             'availableNumberOfRooms' => $this->get('mbh.client_manager')->getAvailableNumberOfRooms(),

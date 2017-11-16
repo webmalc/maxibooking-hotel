@@ -54,6 +54,8 @@ $(document).ready(function () {
 
     handleClientServiceForm();
     handlePayerForm();
+    initPaymentsDataTable();
+    hangOnPayButtonHandler();
 });
 
 function handleClientServiceForm() {
@@ -75,10 +77,27 @@ function setPayerFormVisibility() {
     var $payerType = $('#mbhuser_bundle_payer_type_payerType');
     var $payerTypeFormGroup = $payerType.closest('.box');
     var $payerAddressGroup = $('#mbhuser_bundle_payer_type_address').closest('.box');
+    var $identificationGroup = $('#mbhuser_bundle_payer_type_documentType').closest('.box');
+    var $financialInformation = $('#mbhuser_bundle_payer_type_inn').closest('.box');
 
     selectedCountry ? $payerTypeFormGroup.show() : $payerTypeFormGroup.hide();
-    selectedCountry && $payerType.val() && $payerType.val() !== 'ru'  ? $payerAddressGroup.show() : $payerAddressGroup.hide();
+    if (selectedCountry && $payerType.val()) {
+        if (selectedCountry !== 'ru') {
+            $payerAddressGroup.show();
+            $identificationGroup.hide();
+            $financialInformation.hide();
+        } else {
+            $identificationGroup.show();
+            $payerAddressGroup.hide();
+            $financialInformation.show();
+        }
+    } else {
+        $payerAddressGroup.hide();
+        $identificationGroup.hide();
+        $financialInformation.hide();
+    }
 
+    $('select.select2:not(#ordeer-paid-status)').css('width', '100%');
 }
 
 function setClientServiceFormFieldsValues() {
@@ -108,4 +127,45 @@ function setClientServiceFormFieldsValues() {
             $('#mbhuser_bundle_client_service_type_cost').val(quantity * price * periodLength + ' ' + currency);
         }
     }
+}
+
+function initPaymentsDataTable() {
+    var $userPaymentForm = $('#user-payment-filter');
+    var $paymentsTable = $('#payments-table');
+    var $updateButton = $('#filter-button');
+
+    if ($paymentsTable.length  === 1) {
+        var getFilterData = function() {
+            return {
+                begin: $('#user-payment-filter-begin').val(),
+                end: $('#user-payment-filter-end').val(),
+                paidStatus: $('#order-paid-status').val()
+            };
+        };
+        var drawCallback = function () {
+            hangOnPayButtonHandler();
+        };
+
+        initDataTableUpdatedByCallbackWithDataFromForm($paymentsTable, $userPaymentForm, Routing.generate('payments_list_json'), $updateButton, getFilterData, drawCallback);
+    }
+}
+
+function hangOnPayButtonHandler() {
+    $('.show-payments-list').click(function () {
+        var orderId = this.getAttribute('data-order-id');
+        $.ajax({
+            url: Routing.generate('order_payment_systems', {orderId: orderId}),
+            success: function (paymentsListModalHtml) {
+                $('#payments-list-modal-body').html(paymentsListModalHtml);
+                $('#payments-list-modal').modal('show');
+                hangOnOpenBillButtonClick();
+            }
+        });
+    })
+}
+
+function hangOnOpenBillButtonClick() {
+    $('#bill-button').click(function () {
+        window.open('about:blank').document.body.innerText +=  $('#bill-content').val();
+    });
 }

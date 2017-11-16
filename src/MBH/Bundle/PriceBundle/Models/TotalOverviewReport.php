@@ -250,6 +250,6 @@ class TotalOverviewReport
             ->getQuery()
             ->execute();
 
-        return $this->helper->sortById($documents->toArray());
+        return $this->helper->sortByValue($documents->toArray());
     }
 }

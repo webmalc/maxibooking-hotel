@@ -1088,6 +1088,44 @@ function initSelect2TextForBilling(inputId, apiSettings) {
     });
 }
 
+function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $updateButton, filterDataCallback, drawCallback) {
+    var process = false;
+    $table.dataTable({
+        serverSide: true,
+        processing: true,
+        ordering: false,
+        "drawCallback": function() {
+            process = false;
+            if (drawCallback) {
+                drawCallback();
+            }
+        },
+        "ajax": {
+            "method": "POST",
+            "url": url,
+            "data": function (requestData) {
+                process = true;
+                requestData.form = filterDataCallback ? filterDataCallback() : $form.serializeObject();
+
+                return requestData;
+            }
+        }
+    });
+
+    if ($updateButton) {
+        $updateButton.click(function () {
+            if (!process) {
+                $table.dataTable().fnDraw();
+            }
+        });
+    } else {
+        $form.find('input, select').on('change switchChange.bootstrapSwitch', function () {
+            if (!process) {
+                $table.dataTable().fnDraw();
+            }
+        });
+    }
+}
 
 $(document).ready(function () {
     'use strict';

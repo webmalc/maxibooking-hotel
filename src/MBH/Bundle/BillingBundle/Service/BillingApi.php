@@ -7,6 +7,8 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
+use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
+use MBH\Bundle\BillingBundle\Lib\Model\PaymentSystem;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Lib\Model\Service;
 use Monolog\Logger;
@@ -17,10 +19,13 @@ class BillingApi
 {
     const BILLING_HOST = 'http://billing.maxibooking.ru';
     const RESULT_API_URL = '/result';
-    const CLIENTS_ENDPOINT = 'clients';
-    const CLIENT_PROPERTIES_ENDPOINT = 'property';
-    const CLIENT_SERVICES_ENDPOINT = 'client-services';
-    const SERVICES_ENDPOINT = 'services';
+    const CLIENTS_ENDPOINT_SETTINGS = ['endpoint' => 'clients', 'model' => Client::class, 'returnArray' => false];
+    const CLIENT_PROPERTIES_ENDPOINT_SETTINGS = 'property';
+    const CLIENT_SERVICES_ENDPOINT_SETTINGS = ['endpoint' => 'client-services', 'model' => ClientService::class, 'returnArray' => false];
+    const SERVICES_ENDPOINT_SETTINGS = ['endpoint' => 'services', 'model' => Service::class, 'returnArray' => false];
+    const ORDERS_ENDPOINT_SETTINGS = ['endpoint' => 'orders', 'model' => PaymentOrder::class, 'returnArray' => false];
+    const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
+
     const AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
     const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s.u\Z';
 
@@ -44,7 +49,7 @@ class BillingApi
         $this->serializer = $serializer;
     }
 
-    public function sendFalse(string $clientName): void
+    public function sendFalse(): void
     {
         $this->guzzle->post(self::BILLING_HOST.self::RESULT_API_URL, []);
     }
@@ -64,7 +69,7 @@ class BillingApi
      */
     public function getClient()
     {
-        return $this->getBillingEntityById(self::CLIENTS_ENDPOINT, $this->billingLogin, Client::class);
+        return $this->getBillingEntityById(self::CLIENTS_ENDPOINT_SETTINGS, $this->billingLogin);
     }
 
     /**
@@ -73,7 +78,7 @@ class BillingApi
      */
     public function getServiceById($serviceId)
     {
-        return $this->getBillingEntityById(self::SERVICES_ENDPOINT, $serviceId, Service::class);
+        return $this->getBillingEntityById(self::SERVICES_ENDPOINT_SETTINGS, $serviceId);
     }
 
     /**
@@ -82,7 +87,7 @@ class BillingApi
      */
     public function updateClient(Client $client)
     {
-        $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT, $client->getLogin());
+        $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT_SETTINGS['endpoint'], $client->getLogin());
         $clientData = $this->serializer->normalize($client);
         $clientData['url'] = null;
         $requestResult = new Result();
@@ -112,7 +117,7 @@ class BillingApi
         if (!$this->isClientServicesInit) {
             $queryData = ['client' => $client->getId()];
 
-            $this->clientServices = $this->getEntities(self::CLIENT_SERVICES_ENDPOINT, $queryData, ClientService::class);
+            $this->clientServices = $this->getEntities(self::CLIENT_SERVICES_ENDPOINT_SETTINGS, $queryData);
             $this->isClientServicesInit = true;
         }
 
@@ -134,7 +139,7 @@ class BillingApi
             'end' => (new \DateTime('+' . $serviceData['period'] . $serviceData['units']))->format(self::BILLING_DATETIME_FORMAT)
         ];
 
-        $response = $this->sendPost($this->getBillingUrl(self::CLIENT_SERVICES_ENDPOINT), $newClientServiceData);
+        $response = $this->sendPost($this->getBillingUrl(self::CLIENT_SERVICES_ENDPOINT_SETTINGS['endpoint']), $newClientServiceData);
         $requestResult = new Result();
 
         if ($response->getStatusCode() == 200) {
@@ -149,7 +154,50 @@ class BillingApi
      */
     public function getServices()
     {
-        return $this->getEntities(self::SERVICES_ENDPOINT, [], Service::class);
+        return $this->getEntities(self::SERVICES_ENDPOINT_SETTINGS);
+    }
+
+    /**
+     * @param Client $client
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return Result
+     */
+    public function getClientOrdersResultByCreationDate(Client $client, \DateTime $begin, \DateTime $end)
+    {
+        $queryData = [
+            'client__login' => $client->getLogin(),
+            'created__gte' => $begin->format(BillingApi::BILLING_DATETIME_FORMAT),
+            'created__lte' => $end->format(BillingApi::BILLING_DATETIME_FORMAT)
+        ];
+
+        return $this->getEntities(self::ORDERS_ENDPOINT_SETTINGS, $queryData);
+    }
+
+    /**
+     * @param $orderId
+     * @return PaymentOrder|object
+     */
+    public function getClientOrderById($orderId)
+    {
+        return $this->getBillingEntityById(self::ORDERS_ENDPOINT_SETTINGS, $orderId);
+    }
+
+    /**
+     * @return Result
+     */
+    public function getPaymentSystems()
+    {
+        return $this->getEntities(self::PAYMENT_SYSTEMS_ENDPOINT_SETTINGS);
+    }
+
+    /**
+     * @param PaymentOrder $order
+     * @return Result
+     */
+    public function getPaymentSystemsForOrder(PaymentOrder $order)
+    {
+        return $this->getEntities(self::PAYMENT_SYSTEMS_ENDPOINT_SETTINGS, ['order' => $order->getId()]);
     }
 
     /**
@@ -210,9 +258,7 @@ class BillingApi
     private function sendGet(string $uri)
     {
         return $this->guzzle->get($uri, [
-            RequestOptions::HEADERS => [
-                'Authorization' => 'Token ' . self::AUTH_TOKEN
-            ]
+            RequestOptions::HEADERS => $this->getAuthorizationHeaderAsArray(),
         ]);
     }
 
@@ -222,31 +268,27 @@ class BillingApi
      * @param bool $throwException
      * @return ResponseInterface
      */
-    public function sendPost(string $uri, array $data, $throwException = false)
+    private function sendPost(string $uri, array $data, $throwException = false)
     {
         return $this->guzzle->post($uri . '/', [
-            RequestOptions::HEADERS => [
-                'Authorization' => 'Token ' . self::AUTH_TOKEN,
-            ],
+            RequestOptions::HEADERS => $this->getAuthorizationHeaderAsArray(),
             RequestOptions::JSON => $data,
             RequestOptions::HTTP_ERRORS => $throwException
         ]);
     }
 
     /**
-     * @param string $endpoint
+     * @param $endpointSettings
      * @param array $queryData
-     * @param string $modelType
      * @return Result
      */
-    private function getEntities(string $endpoint, array $queryData, string $modelType)
+    private function getEntities($endpointSettings, array $queryData = [])
     {
+        $endpoint = $endpointSettings['endpoint'];
         $url = $this->getBillingUrl($endpoint, null, null, $queryData);
 
         $response = $this->guzzle->get($url, [
-            RequestOptions::HEADERS => [
-                'Authorization' => 'Token ' . self::AUTH_TOKEN,
-            ],
+            RequestOptions::HEADERS => $this->getAuthorizationHeaderAsArray(),
             RequestOptions::HTTP_ERRORS => false
         ]);
 
@@ -255,32 +297,46 @@ class BillingApi
             return Result::createErrorResult();
         }
 
-        $entitiesData = json_decode($response->getBody(), true)['results'];
+        $decodedResponse = json_decode($response->getBody(), true);
+        $entitiesData = $endpointSettings['returnArray'] ? $decodedResponse : $decodedResponse['results'];
 
         $entities = [];
         foreach ($entitiesData as $serviceData) {
-            $entities[] = $this->serializer->denormalize($serviceData, $modelType);
+            $entities[] = $this->serializer->denormalize($serviceData, $endpointSettings['model']);
         }
 
         return Result::createSuccessResult($entities);
     }
 
     /**
-     * @param $endpoint
+     * @param $endpointSettings
      * @param $id
-     * @param $modelType
      * @param null $locale
      * @return object
+     * @internal param $endpoint
      */
-    private function getBillingEntityById($endpoint, $id, $modelType, $locale = null)
+    private function getBillingEntityById($endpointSettings, $id, $locale = null)
     {
+        $endpoint = $endpointSettings['endpoint'];
         if (!isset($this->loadedEntities[$endpoint][$id])) {
             $response = $this->sendGet($this->getBillingUrl($endpoint, $id, $locale));
-            $entity = $this->serializer->deserialize($response->getBody(), $modelType, 'json');
+            $entity = $this->serializer->deserialize($response->getBody(), $endpointSettings['model'], 'json');
             $this->loadedEntities[$endpoint][$id] = $entity;
         }
 
         return $this->loadedEntities[$endpoint][$id];
+    }
+
+    /**
+     * @param $url
+     * @param $modelType
+     * @return object
+     */
+    public function getBillingEntityByUrl($url, $modelType)
+    {
+        $response = $this->sendGet($url);
+
+        return $this->serializer->deserialize($response->getBody(), $modelType, 'json');
     }
 
     /**
@@ -299,5 +355,13 @@ class BillingApi
             . '/' . $endpoint
             . ($identifier ? '/' . $identifier : '')
             . (count($queryParams) > 0 ? ('?' . http_build_query($queryParams)) : '');
+    }
+
+    /**
+     * @return array
+     */
+    private function getAuthorizationHeaderAsArray()
+    {
+        return ['Authorization' => 'Token ' . self::AUTH_TOKEN];
     }
 }
