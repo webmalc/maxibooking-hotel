@@ -21,6 +21,7 @@ use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
 use MBH\Bundle\PackageBundle\Form\UnwelcomeType;
+use MBH\Bundle\PackageBundle\Models\Billing\Country;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -29,6 +30,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/tourist")
@@ -401,7 +403,7 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $this->addFlash('success','controller.touristController.record_edited_success');
+                $this->addFlash('success', 'controller.touristController.record_edited_success');
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('tourist_edit_visa', ['id' => $entity->getId()]) :
@@ -561,7 +563,7 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $this->addFlash('success','controller.touristController.record_edited_success');
+                $this->addFlash('success', 'controller.touristController.record_edited_success');
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('tourist_edit_address', ['id' => $entity->getId()]) :
@@ -669,5 +671,61 @@ class TouristController extends Controller
         }
 
         return new JsonResponse(['results' => $data]);
+    }
+
+    /**
+     * @Route("/export_to_kontur", name="export_to_kontur", options={"expose"=true})
+     * @param Request $request
+     * @Security("is_granted('ROLE_TOURIST_REPORT')")
+     * @return Response
+     */
+    public function compileKonturFMSArchive(Request $request)
+    {
+        $touristQB = $this->get('mbh.tourist_manager')
+            ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected());
+
+        $zip = new \ZipArchive();
+        $zipName = 'kontur.zip';
+
+        $zip->open($zipName, \ZipArchive::CREATE);
+
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $zip->deleteIndex($i);
+        }
+
+        $packageCriteria = new PackageQueryCriteria();
+        $formData = $request->query->get('form');
+        $beginDate = $this->helper->getDateFromString($formData['begin']);
+        $endDate = $this->helper->getDateFromString($formData['end']);
+
+        $packageCriteria->begin = $beginDate;
+        $packageCriteria->end = $endDate;
+
+        /** @var Tourist $tourist */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        foreach ($touristQB->getQuery()->execute() as $tourist) {
+            $touristPackage = $packageRepository->findOneByTourist($tourist, $packageCriteria);
+            if (!is_null($touristPackage)) {
+                $viewFile = $tourist->getCitizenshipTld() === Country::RUSSIA_TLD
+                    ? '@MBHClient/Fms/fms_export_russian.xml.twig'
+                    : '@MBHClient/Fms/fms_export_foreign.xml.twig';
+                $xml = $this->renderView($viewFile, [
+                    'package' => $touristPackage,
+                    'tourist' => $tourist
+                ]);
+
+                $zip->addFromString($tourist->getName() . '.xml', $xml);
+            }
+        }
+
+        $zip->close();
+
+        $response = new Response(file_get_contents($zipName));
+        $response->headers->set('Content-Type', 'application/zip');
+        $attachedZipFileName = 'kontur-export ' . $this->helper->getDatePeriodString($beginDate, $endDate, 'Y.m.d') . '.zip';
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $attachedZipFileName . '"');
+        $response->headers->set('Content-length', filesize($zipName));
+
+        return $response;
     }
 }

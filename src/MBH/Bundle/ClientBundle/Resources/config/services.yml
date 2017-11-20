@@ -28,6 +28,12 @@ services:
         tags:
             - { name: twig.extension }
 
+    mbh.client_manager:
+        class: MBH\Bundle\ClientBundle\Service\ClientManager
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@session'
+            - '@mbh.billing.api'
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:

@@ -166,6 +166,7 @@ csv.type.adults: Взрослых
 csv.type.children: Детей
 mbhpackagebundle.form.packagemaintype.nomer.broni: 'Номер брони'
 tourist.visa.type_number: Номер
+tourist.visa.identifier: Идентификатор
 form.packageGuestType.find_guest: 'Найти гостя'
 form.packageGuestType.placeholder_fio: 'Иванов Иван Иванович'
 form.touristType.placeholder_surname: Иванов

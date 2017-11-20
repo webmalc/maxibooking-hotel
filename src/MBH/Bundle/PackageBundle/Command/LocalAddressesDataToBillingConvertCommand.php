@@ -46,10 +46,10 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
         $output->writeln('Tourists conversion completed!');
         $csvExporter->writeToCsv($this->convertUserVegaStateIdsToBillingCountryIds(), $this->getFilePath('missingUserData.csv'));
         $output->writeln('Users conversion completed!');
-//        $csvExporter->writeToCsv($this->convertOrganizationsAddressData(), $this->getFilePath('missingOrganizationsData.csv'));
-//        $output->writeln('Organizations conversion completed!');
-//        $csvExporter->writeToCsv($this->convertHotelAddressData(), $this->getFilePath('missingHotelData.csv'));
-//        $output->writeln('Hotels conversion completed!');
+        $csvExporter->writeToCsv($this->convertOrganizationsAddressData(), $this->getFilePath('missingOrganizationsData.csv'));
+        $output->writeln('Organizations conversion completed!');
+        $csvExporter->writeToCsv($this->convertHotelAddressData(), $this->getFilePath('missingHotelData.csv'));
+        $output->writeln('Hotels conversion completed!');
 
         $endTime = new \DateTime();
         $output->writeln('The conversion was completed in '
@@ -223,6 +223,9 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
             }
         }
         $relations['vega_russian_passport'] = FMSDictionaries::RUSSIAN_PASSPORT_ID;
+        $relations['vega_travel_passport'] = FMSDictionaries::TRAVEL_PASSPORT;
+        $relations['vega_passport_foreigner'] = 136359;
+        $relations['vega_residence'] = 135709;
 
         return $relations;
     }
@@ -426,9 +429,11 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
     {
         $resource = fopen($this->getFilePath('countries.csv'), 'r');
         $countryTldByNames = [];
+        $countryTldByAlternateNames = [];
         if ($resource) {
             while (($rowData = fgetcsv($resource, 1000, ";")) !== false) {
                 $countryTldByNames[strtolower($rowData[1])] = $rowData[2];
+                $countryTldByAlternateNames[strtolower($rowData[0])] = $rowData[2];
             }
             fclose($resource);
         }
@@ -441,10 +446,28 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
             $lowerVegaStateName = strtolower($vegaState->getName());
             if (isset($countryTldByNames[$lowerVegaStateName])) {
                 $billingCountryTldByVegaStateIds[$vegaState->getId()] = $countryTldByNames[$lowerVegaStateName];
+            } else {
+                $countryTld = $this->searchByAlternateNames($countryTldByAlternateNames, $lowerVegaStateName, 'vegaCountry');
+                if (!is_null($countryTld)) {
+                    $billingCountryTldByVegaStateIds[$vegaState->getId()] = $countryTld;
+                }
             }
         }
 
         return $billingCountryTldByVegaStateIds;
+    }
+
+    private $foundInAlternateNames;
+    private function searchByAlternateNames($valuesByAlternateNames, $needle, $type)
+    {
+        foreach ($valuesByAlternateNames as $alternateName => $value) {
+            if (strpos($alternateName, $needle) !== false) {
+                $this->foundInAlternateNames[$type][$needle] = $value;
+                return $value;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -489,11 +512,14 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
             $resource = fopen($this->getFilePath('regions.csv'), 'r');
             $regionIdsByNames = [];
             $regionNames = [];
+            $valuesByAlternateNames = [];
             if ($resource) {
                 while (($rowData = fgetcsv($resource, 1000, ";")) !== false) {
-                    $lowerBillingRegionName = mb_strtolower($rowData[1]);
+                    $lowerBillingRegionName = mb_strtolower($rowData[2]);
                     $regionNames[] = $lowerBillingRegionName;
-                    $regionIdsByNames[$lowerBillingRegionName] = $rowData[0];
+                    $regionId = $rowData[0];
+                    $regionIdsByNames[$lowerBillingRegionName] = $regionId;
+                    $valuesByAlternateNames[mb_strtolower($rowData[1])] = $regionId;
                 }
                 fclose($resource);
             }
@@ -507,6 +533,8 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
                     $this->billingRegionIdsByLocalRegionIds[$localRegion->getId()] = $regionIdsByNames[$lowerVegaRegionName];
                 } elseif (!is_null($regionName = $this->getBillingNameByLocalName($regionNames, $lowerVegaRegionName))) {
                     $this->billingRegionIdsByLocalRegionIds[$localRegion->getId()] = $regionIdsByNames[$regionName];
+                } elseif (!is_null($regionId = $this->searchByAlternateNames($valuesByAlternateNames, $lowerVegaRegionName, 'vegaRegion'))) {
+                    $this->billingRegionIdsByLocalRegionIds[$localRegion->getId()] = $regionId;
                 }
             }
             $this->isBillingRegionIdsByLocalRegionIdsInit = true;
@@ -524,11 +552,13 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
             $resource = fopen($this->getFilePath('cities.csv'), 'r');
             $citiesIdsByNames = [];
             $citiesNames = [];
+            $citiesIdsByAlternateNames = [];
             if ($resource) {
                 while (($rowData = fgetcsv($resource, 1000, ";")) !== false) {
-                    $lowerBillingRegionName = mb_strtolower($rowData[1]);
+                    $lowerBillingRegionName = mb_strtolower($rowData[2]);
                     $citiesNames[] = $lowerBillingRegionName;
                     $citiesIdsByNames[$lowerBillingRegionName] = $rowData[0];
+                    $citiesIdsByAlternateNames[mb_strtolower($rowData[1])] = $rowData[0];
                 }
                 fclose($resource);
             }
@@ -542,6 +572,11 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
                     $this->billingCityIdsByLocalCityIds[$localCity->getId()] = $citiesIdsByNames[$lowerVegaCityName];
                 } elseif (!is_null($regionName = $this->getBillingNameByLocalName($citiesNames, $lowerVegaCityName))) {
                     $this->billingCityIdsByLocalCityIds[$localCity->getId()] = $citiesIdsByNames[$regionName];
+                } else {
+                    $cityId = $this->searchByAlternateNames($citiesIdsByAlternateNames, $lowerVegaCityName, 'vegaCity');
+                    if (!is_null($cityId)) {
+                        $this->billingCityIdsByLocalCityIds[$localCity->getId()] = $cityId;
+                    }
                 }
             }
             $this->isBillingCityIdsByLocalCityIdsInit = true;

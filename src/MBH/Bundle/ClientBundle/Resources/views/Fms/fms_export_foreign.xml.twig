@@ -1,11 +1,16 @@
 ﻿<migst:case xmlns="http://umms.fms.gov.ru/replication/core" xmlns:mig="http://umms.fms.gov.ru/replication/migration"
             xmlns:fcc="http://umms.fms.gov.ru/replication/foreign-citizen-core" schemaVersion="1.0"
             xmlns:migst="http://umms.fms.gov.ru/replication/migration/staying">
-    <mig:notificationReceived>{{ package.arrivalTime|date('Y-m-d') }}</mig:notificationReceived>
+    {% if package.arrivalTime %}
+        <mig:notificationReceived>{{ package.arrivalTime|date('Y-m-d') }}</mig:notificationReceived>
+    {% endif %}
     <mig:stayPeriod>
-        {#Здесь должна быть дата въезда в РФ #}
-        <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
-        <dateTo>{{ package.departureTime|date('Y-m-d') }}</dateTo>
+        {% if tourist.visa and tourist.visa.arrivalTime %}
+            <dateFrom>{{ tourist.visa.arrivalTime|date('Y-m-d') }}</dateFrom>
+        {% endif %}
+        {% if package.departureTime %}
+            <dateTo>{{ package.departureTime|date('Y-m-d') }}</dateTo>
+        {% endif %}
     </mig:stayPeriod>
     <mig:personDataDocument>
         <person>
@@ -13,198 +18,225 @@
             <lastNameLat>{{ tourist.lastName|transToLat }}</lastNameLat>
             <firstName>{{ tourist.firstName }}</firstName>
             <firstNameLat>{{ tourist.firstName|transToLat }}</firstNameLat>
-            <middleName>{{ tourist.patronymic }}</middleName>
-            <middleNameLat>{{ tourist.patronymic|transToLat }}</middleNameLat>
+            {% if tourist.patronymic %}
+                <middleName>{{ tourist.patronymic }}</middleName>
+                <middleNameLat>{{ tourist.patronymic|transToLat }}</middleNameLat>
+            {% endif %}
             <gender>
                 <type>Gender</type>
                 <element>{{ tourist.sex == 'female' ? 'F' : 'M' }}</element>
             </gender>
-            <birthDate>{{ tourist.birthday|date('d.m.Y') }}</birthDate>
-            <citizenship>
-                <type>Citizenship</type>
-                <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
-            </citizenship>
-            <birthPlace>
-                <country>
-                    <type>Country</type>
-                    <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
-                </country>
-                <place3>{{ tourist.birthplace.city }}</place3>
-            </birthPlace>
+            {% if tourist.birthday %}
+                <birthDate>{{ tourist.birthday|date('d.m.Y') }}</birthDate>
+            {% endif %}
+            {% if tourist.citizenshipTld %}
+                <citizenship>
+                    <type>Citizenship</type>
+                    <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
+                </citizenship>
+            {% endif %}
+            {% if tourist.birthplace %}
+                <birthPlace>
+                    <country>
+                        <type>Country</type>
+                        <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
+                    </country>
+                    <place3>{{ tourist.birthplace.city }}</place3>
+                </birthPlace>
+            {% endif %}
         </person>
-        <document>
-            <type>
-                <type>DocumentType</type>
-                <element>{{ tourist.documentRelation.type }}</element>
-            </type>
-            <series>{{ tourist.documentRelation.series }}</series>
-            <number>{{ tourist.documentRelation.number }}</number>
-            <authority>МИД РФ</authority>
-            <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
-            <validFrom>{{ tourist.documentRelation.issued|date('Y-m-d') }}</validFrom>
-            <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
-        </document>
-        <entered>true</entered>
-    </mig:personDataDocument>
-    <mig:stayPlace>
-        <address>
-            <russianAddress>
-                <housing>
+        {% if tourist.documentRelation and tourist.documentRelation.relation == 'owner' %}
+            <document>
+                {% if tourist.documentRelation.type %}
                     <type>
-                        <type>addressObjectType</type>
-                        <element>1304</element>
+                        <type>DocumentType</type>
+                        <element>{{ tourist.documentRelation.type }}</element>
                     </type>
-                    {# Может быть не числом #}
-                    <value>{{ package.accommodation.accommodation.fullTitle }}</value>
-                </housing>
-            </russianAddress>
-        </address>
-    </mig:stayPlace>
-    <mig:arrivalFromPlaceAddress>
-        {# По идее данные из ФИАС #}
-        {#<addressObjectString>Свердловская обл$$Нижний Тагил г$$$Садовая ул</addressObjectString>#}
-        <housing>
-            <type>
-                <type>addressObjectType</type>
-                <element>1202</element>
-            </type>
-            <value>дом</value>
-        </housing>
-        <housing>
-            <type>
-                <type>addressObjectType</type>
-                <element>1304</element>
-            </type>
-            <value>квартира</value>
-        </housing>
-        <housing>
-            <type>
-                <type>addressObjectType</type>
-                <element>1203</element>
-            </type>
-            <value>корпус</value>
-        </housing>
-        <housing>
-            <type>
-                <type>addressObjectType</type>
-                <element>1204</element>
-            </type>
-            <value>строение</value>
-        </housing>
-    </mig:arrivalFromPlaceAddress>
-    <mig:docResidence>
-        <mig:visa>
-            <type>
-                <type>DocumentType</type>
-                {% if tourist.visa.type == 'visa' %}
-                    {% set residentDocTypeNumber = 139356 %}
-                {% elseif tourist.visa.type == 'residence' %}
-                    {% set residentDocTypeNumber = 135709 %}
-                {% elseif tourist.visa.type == 'temporary_residence_permit' %}
-                    {% set residentDocTypeNumber = 139373 %}
                 {% endif %}
-                <element>{{ residentDocTypeNumber }}</element>
-            </type>
-            <series>{{ tourist.visa.series }}</series>
-            <number>{{ tourist.visa.number }}</number>
-            <issued>{{ tourist.visa.issued|date('Y-m-d') }}</issued>
-            <validFrom>{{ tourist.visa.issued|date('Y-m-d') }}</validFrom>
-            <validTo>{{ tourist.visa.expiry|date('Y-m-d') }}</validTo>
-            <fcc:category>
-                <type>VisaCategory</type>
-                <element>{{ tourist.visa.visaCategory }}</element>
-            </fcc:category>
-            <fcc:multiplicity>
-                <type>VisaMultiplicity</type>
-                <element>{{ tourist.visa.multiplicityType }}</element>
-            </fcc:multiplicity>
-            {#Что за идентификатор? #}
-            <fcc:identitifier>876543</fcc:identitifier>
-            <fcc:visitPurpose>
-                <type>EntryGoal</type>
-                <element>{{ tourist.visa.entryGoal }}</element>
-            </fcc:visitPurpose>
-        </mig:visa>
+                {% if tourist.documentRelation.series %}
+                    <series>{{ tourist.documentRelation.series }}</series>
+                {% endif %}
+                {% if tourist.documentRelation.number %}
+                    <number>{{ tourist.documentRelation.number }}</number>
+                {% endif %}
+                <authority>МИД РФ</authority>
+                {% if tourist.documentRelation.issued %}
+                    <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
+                    <validFrom>{{ tourist.documentRelation.issued|date('Y-m-d') }}</validFrom>
+                {% endif %}
+                {% if tourist.documentRelation.expiry %}
+                    <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
+                {% endif %}
+            </document>
+            <entered>true</entered>
+        {% endif %}
+    </mig:personDataDocument>
+    {% if package.accommodation %}
+        <mig:stayPlace>
+            <address>
+                <russianAddress>
+                    <housing>
+                        <type>
+                            <type>addressObjectType</type>
+                            <element>1304</element>
+                        </type>
+                        {# Может быть не числом #}
+                        <value>{{ package.accommodation.accommodation.fullTitle }}</value>
+                    </housing>
+                </russianAddress>
+            </address>
+        </mig:stayPlace>
+    {% endif %}
+    {% if tourist.documentRelation and tourist.documentRelation.relation == 'inscribed' %}
+        <mig:representative>
+            <mig:personDataDocument>
+                <document>
+                    {% if tourist.documentRelation.type %}
+                        <type>
+                            <type>DocumentType</type>
+                            <element>{{ tourist.documentRelation.type }}</element>
+                        </type>
+                    {% endif %}
+                    {% if tourist.documentRelation.series %}
+                        <series>{{ tourist.documentRelation.series }}</series>
+                    {% endif %}
+                    {% if tourist.documentRelation.number %}
+                        <number>{{ tourist.documentRelation.number }}</number>
+                    {% endif %}
+                    <authority>МИД РФ</authority>
+                    {% if tourist.documentRelation.issued %}
+                        <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
+                        <validFrom>{{ tourist.documentRelation.issued|date('Y-m-d') }}</validFrom>
+                    {% endif %}
+                    {% if tourist.documentRelation.expiry %}
+                        <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
+                    {% endif %}
+                </document>
+                <entered>true</entered>
+            </mig:personDataDocument>
+        </mig:representative>
+    {% endif %}
+    {#<mig:arrivalFromPlaceAddress>#}
+    {# По идее данные из ФИАС #}
+    {#<addressObjectString>Свердловская обл$$Нижний Тагил г$$$Садовая ул</addressObjectString>#}
+    {#<housing>#}
+    {#<type>#}
+    {#<type>addressObjectType</type>#}
+    {#<element>1202</element>#}
+    {#</type>#}
+    {#<value>дом</value>#}
+    {#</housing>#}
+    {#<housing>#}
+    {#<type>#}
+    {#<type>addressObjectType</type>#}
+    {#<element>1304</element>#}
+    {#</type>#}
+    {#<value>квартира</value>#}
+    {#</housing>#}
+    {#<housing>#}
+    {#<type>#}
+    {#<type>addressObjectType</type>#}
+    {#<element>1203</element>#}
+    {#</type>#}
+    {#<value>корпус</value>#}
+    {#</housing>#}
+    {#<housing>#}
+    {#<type>#}
+    {#<type>addressObjectType</type>#}
+    {#<element>1204</element>#}
+    {#</type>#}
+    {#<value>строение</value>#}
+    {#</housing>#}
+    {#</mig:arrivalFromPlaceAddress>#}
+    <mig:docResidence>
+        {% if tourist.visa %}
+            <mig:visa>
+                {% if tourist.visa.type %}
+                    <type>
+                        <type>DocumentType</type>
+                        {% if tourist.visa.type == 'visa' %}
+                            {% set residentDocTypeNumber = 139356 %}
+                        {% elseif tourist.visa.type == 'residence' %}
+                            {% set residentDocTypeNumber = 135709 %}
+                        {% elseif tourist.visa.type == 'temporary_residence_permit' %}
+                            {% set residentDocTypeNumber = 139373 %}
+                        {% endif %}
+                        <element>{{ residentDocTypeNumber }}</element>
+                    </type>
+                {% endif %}
+                {% if tourist.visa.series %}
+                    <series>{{ tourist.visa.series }}</series>
+                {% endif %}
+                {% if tourist.visa.number %}
+                    <number>{{ tourist.visa.number }}</number>
+                {% endif %}
+                {% if tourist.visa.issued %}
+                    <issued>{{ tourist.visa.issued|date('Y-m-d') }}</issued>
+                    <validFrom>{{ tourist.visa.issued|date('Y-m-d') }}</validFrom>
+                {% endif %}
+                {% if tourist.visa.expiry %}
+                    <validTo>{{ tourist.visa.expiry|date('Y-m-d') }}</validTo>
+                {% endif %}
+                <fcc:category>
+                    <type>VisaCategory</type>
+                    <element>{{ tourist.visa.visaCategory }}</element>
+                </fcc:category>
+                <fcc:multiplicity>
+                    <type>VisaMultiplicity</type>
+                    <element>{{ tourist.visa.multiplicityType }}</element>
+                </fcc:multiplicity>
+                {% if tourist.visa.identifier %}
+                    <fcc:identitifier>{{ tourist.visa.identifier }}</fcc:identitifier>
+                {% endif %}
+                {% if tourist.visa.entryGoal %}
+                    <fcc:visitPurpose>
+                        <type>EntryGoal</type>
+                        <element>{{ tourist.visa.entryGoal }}</element>
+                    </fcc:visitPurpose>
+                {% endif %}
+            </mig:visa>
+        {% endif %}
         <mig:entered>{{ package.isCheckIn ? 'true' : 'false' }}</mig:entered>
     </mig:docResidence>
-    {% if tourist.visa.specialStatus %}
+    {% if tourist.visa and tourist.visa.specialStatus %}
         <mig:stateProgramMember>
             <type>mig.specialStatus</type>
             <element>{{ tourist.visa.specialStatus }}</element>
         </mig:stateProgramMember>
     {% endif %}
-    <mig:host>
-        {# Ответственное лицо #}
-        <mig:personDataDocument>
-            <person>
-                <lastName>Кожевина</lastName>
-                <firstName>Дарья</firstName>
-                <middleName>Михайловна</middleName>
-                <gender>
-                    <type>Gender</type>
-                    <element>F</element>
-                </gender>
-                <birthDate>28.12.1992</birthDate>
-                <citizenship>
-                    <type>Citizenship</type>
-                    <element>RUS</element>
-                </citizenship>
-                <birthPlace>
-                    <country>
-                        <type>Country</type>
-                        <element>RUS</element>
-                    </country>
-                    <place2>НОВОСИБИРСК</place2>
-                </birthPlace>
-            </person>
-            <document>
-                <type>
-                    <type>DocumentType</type>
-                    <element>103008</element>
-                </type>
-                <series>5013</series>
-                <number>076878</number>
-                <authorityOrgan>
+    {% if tourist.visa and tourist.visa.visitPurpose %}
+        <mig:entrancePurpose>
+            <type>VisitPurpose</type>
+            <element>{{ tourist.visa.visitPurpose }}</element>
+        </mig:entrancePurpose>
+    {% endif %}
+    {% if tourist.migration %}
+        <mig:migrationCard>
+            {% if tourist.migration.series %}
+                <fcc:series>{{ tourist.migration.series }}</fcc:series>
+            {% endif %}
+            {% if tourist.migration.number %}
+                <fcc:number>{{ tourist.migration.number }}</fcc:number>
+            {% endif %}
+            <fcc:stayPeriod>
+                <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
+                <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>
+            </fcc:stayPeriod>
+            {% if tourist.visa.arrivalTime %}
+                <fcc:entranceDate>{{ tourist.visa.arrivalTime|date('Y-m-d') }}</fcc:entranceDate>
+            {% endif %}
+            {% if tourist.visa.fmsKppId %}
+                <fcc:entranceCheckpoint>
                     <type>officialOrgan</type>
-                    <element>116340</element>
-                </authorityOrgan>
-                <issued>2013-01-21</issued>
-                <validFrom>2013-01-21</validFrom>
-            </document>
-        </mig:personDataDocument>
-        <mig:contactInfo>
-            <address>
-                <russianAddress>
-                    <addressObjectString>Новосибирская обл$$Новосибирск г$$$Ленина пл</addressObjectString>
-                    <housing>
-                        <type>
-                            <type>addressObjectType</type>
-                            <element>1202</element>
-                        </type>
-                        <value>3</value>
-                    </housing>
-                </russianAddress>
-            </address>
-            <phone>+7(982) 456-73-73</phone>
-        </mig:contactInfo>
-    </mig:host>
-    <mig:entrancePurpose>
-        <type>VisitPurpose</type>
-        <element>{{ tourist.visa.visitPurpose }}</element>
-    </mig:entrancePurpose>
-    <mig:migrationCard>
-        <fcc:series>{{ tourist.migration.series }}</fcc:series>
-        <fcc:number>{{ tourist.migration.number }}</fcc:number>
-        <fcc:stayPeriod>
-            <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
-            <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>
-        </fcc:stayPeriod>
-        <fcc:entranceDate>{{ tourist.visa.arrivalTime|date('Y-m-d') }}</fcc:entranceDate>arrivalTime
-        <fcc:entranceCheckpoint>
-            <type>officialOrgan</type>
-            <element>{{ tourist.visa.fmsKppId }}</element>
-        </fcc:entranceCheckpoint>
-        <fcc:departureDate>{{ tourist.visa.departureTime|date('Y-m-d') }}</fcc:departureDate>
-    </mig:migrationCard>
-    <mig:profession>{{ tourist.visa.profession }}</mig:profession>
+                    <element>{{ tourist.visa.fmsKppId }}</element>
+                </fcc:entranceCheckpoint>
+            {% endif %}
+            {% if tourist.visa.departureTime %}
+                <fcc:departureDate>{{ tourist.visa.departureTime|date('Y-m-d') }}</fcc:departureDate>
+            {% endif %}
+        </mig:migrationCard>
+    {% endif %}
+    {% if tourist.visa and tourist.visa.profession %}
+        <mig:profession>{{ tourist.visa.profession }}</mig:profession>
+    {% endif %}
 </migst:case>

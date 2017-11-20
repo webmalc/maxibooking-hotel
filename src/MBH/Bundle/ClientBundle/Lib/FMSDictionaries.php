@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Service\CsvReader;
 class FMSDictionaries
 {
     const RUSSIAN_PASSPORT_ID = 103008;
+    const TRAVEL_PASSPORT = 103007;
 
     /** @var  CsvReader */
     private $csvReader;
@@ -44,7 +45,7 @@ class FMSDictionaries
      */
     public function getEntryGoalOptions()
     {
-        return $this->readFMSDictionary('dict_entrygoal.csv');
+        return $this->readFMSDictionary('dict_entrygoal.csv', false);
     }
 
     /**

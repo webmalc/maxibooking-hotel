@@ -81,13 +81,18 @@ class TouristVisaType extends AbstractType
                 'label' => 'tourist.visa.type_number',
                 'required' => false,
             ])
+            ->add('identifier', TextType::class, [
+                'group' => 'visa',
+                'label' => 'tourist.visa.identifier',
+                'required' => false,
+            ])
             ->add('issued', DateType::class, [
                 'group' => 'visa',
                 'label' => 'tourist.visa.type_issued',
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'],
             ])
             ->add('expiry', DateType::class, [
                 'group' => 'visa',
@@ -95,7 +100,7 @@ class TouristVisaType extends AbstractType
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'],
             ])
             ->add('profession', TextType::class, [
                 'label' => 'tourist.visa.type_profession',
@@ -108,7 +113,7 @@ class TouristVisaType extends AbstractType
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'],
             ])
             ->add('departureTime', DateType::class, [
                 'group' => 'visa',
@@ -116,7 +121,7 @@ class TouristVisaType extends AbstractType
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'],
             ])
         ;
     }

@@ -36,6 +36,12 @@ class Visa extends Base
      */
     protected $number;
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Type(type="numeric")
+     */
+    protected $identifier;
+    /**
      * @var \DateTime
      * @ODM\Field(type="date")
      */
@@ -96,6 +102,25 @@ class Visa extends Base
      * @ODM\Field(type="int")
      */
     protected $entryGoal;
+
+    /**
+     * @return string
+     */
+    public function getIdentifier(): ?string
+    {
+        return $this->identifier;
+    }
+
+    /**
+     * @param string $identifier
+     * @return Visa
+     */
+    public function setIdentifier(?string $identifier): Visa
+    {
+        $this->identifier = $identifier;
+
+        return $this;
+    }
 
     /**
      * @return int

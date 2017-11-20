@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
@@ -611,5 +612,19 @@ class Helper
         $calculationEnd = (clone $calculationBegin)->add(new \DateInterval('P6M'));
 
         return [$calculationBegin, $calculationEnd];
+    }
+
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     * @param string $format
+     * @return string
+     * @throws Exception
+     */
+    public function getDatePeriodString(?\DateTime $begin, ?\DateTime $end, string $format = 'd.m.Y')
+    {
+        return (!is_null($begin) ? $begin->format($format) : '')
+            . (!is_null($begin) && !is_null($end) ? ' - ' : '')
+            . (!is_null($end) ? $end->format($format) : '');
     }
 }

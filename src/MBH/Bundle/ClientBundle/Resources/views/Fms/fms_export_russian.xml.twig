@@ -1,5 +1,6 @@
 <f5:form5 xmlns="http://umms.fms.gov.ru/replication/core" schemaVersion="1.0"
           xmlns:f5="http://umms.fms.gov.ru/replication/hotel/form5">
+    <number>{{ tourist.id }}</number>
     <f5:personDataDocument>
         <person>
             <lastName>{{ tourist.lastName }}</lastName>
@@ -34,7 +35,7 @@
             <number>{{ tourist.documentRelation.number }}</number>
 
             {% set passportType = 103008 %}
-            {% if tourist.documentRelation.type === passportType %}
+            {% if tourist.documentRelation.type == passportType %}
                 <authorityOrgan>
                     <type>officialOrgan</type>
                     <element>{{ tourist.documentRelation.authorityOrganId }}</element>
@@ -47,41 +48,42 @@
             <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
         </document>
     </f5:personDataDocument>
-    <f5:livingAddress>
-        <russianAddress>
-            {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
-            {#<addressObjectString>Новосибирская обл$$Новосибирск г$$$Саввы Кожевникова ул</addressObjectString>#}
-            <addressObjectString>Новосибирская обл$$Новосибирск г$$$Саввы Кожевникова ул</addressObjectString>
-            <housing>
-                <type>
-                    <type>addressObjectType</type>
-                    <element>1202</element>
-                </type>
-                <value>{{ tourist.addressObjectDecomposed.house }}</value>
-            </housing>
-            <housing>
-                <type>
-                    <type>addressObjectType</type>
-                    <element>1304</element>
-                </type>
-                <value>{{ tourist.addressObjectDecomposed.flat }}</value>
-            </housing>
-            <housing>
-                <type>
-                    <type>addressObjectType</type>
-                    <element>1203</element>
-                </type>
-                <value>{{ tourist.addressObjectDecomposed.corpus }}</value>
-            </housing>
-            <housing>
-                <type>
-                    <type>addressObjectType</type>
-                    <element>1204</element>
-                </type>
-                <value>{{ tourist.addressObjectDecomposed.structure }}</value>
-            </housing>
-        </russianAddress>
-    </f5:livingAddress>
+    {% if tourist.addressObjectDecomposed %}
+        <f5:livingAddress>
+            <russianAddress>
+                {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
+                <addressObjectString>{{ get_region(tourist.addressObjectDecomposed.regionId).name|replace({'область' : 'обл'}) }}$${{ tourist.addressObjectDecomposed.city }} г$$${{ tourist.addressObjectDecomposed.street|capitalize }} ул</addressObjectString>
+                <housing>
+                    <type>
+                        <type>addressObjectType</type>
+                        <element>1202</element>
+                    </type>
+                    <value>{{ tourist.addressObjectDecomposed.house }}</value>
+                </housing>
+                <housing>
+                    <type>
+                        <type>addressObjectType</type>
+                        <element>1304</element>
+                    </type>
+                    <value>{{ tourist.addressObjectDecomposed.flat }}</value>
+                </housing>
+                <housing>
+                    <type>
+                        <type>addressObjectType</type>
+                        <element>1203</element>
+                    </type>
+                    <value>{{ tourist.addressObjectDecomposed.corpus }}</value>
+                </housing>
+                <housing>
+                    <type>
+                        <type>addressObjectType</type>
+                        <element>1204</element>
+                    </type>
+                    <value>{{ tourist.addressObjectDecomposed.structure }}</value>
+                </housing>
+            </russianAddress>
+        </f5:livingAddress>
+    {% endif %}
     <f5:stayPeriod>
         <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
         <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>

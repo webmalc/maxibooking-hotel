@@ -2,6 +2,7 @@
 namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\PackageBundle\Models\Billing\Country;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -225,6 +226,22 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Client
+     */
+    public function getClient()
+    {
+        return $this->container->get('mbh.client_manager')->getClient();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRussianClient()
+    {
+        return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+    }
+
+    /**
      * @return array
      */
     public function getFunctions()
@@ -239,7 +256,9 @@ class Extension extends \Twig_Extension
             'get_authority_organ' => new \Twig_SimpleFunction('get_authority_organ', [$this, 'getAuthorityOrganById'], ['is_safe' => ['html']]),
             'get_country' => new \Twig_SimpleFunction('get_country', [$this, 'getCountryByTld'], ['is_safe' => ['html']]),
             'get_region' => new \Twig_SimpleFunction('get_region', [$this, 'getRegionById'], ['is_safe' => ['html']]),
-            'get_city' => new \Twig_SimpleFunction('get_city', [$this, 'getCityById'], ['is_safe' => ['html']])
+            'get_city' => new \Twig_SimpleFunction('get_city', [$this, 'getCityById'], ['is_safe' => ['html']]),
+            'get_client' => new \Twig_SimpleFunction('get_client', [$this, 'getClient'], ['is_safe' => ['html']]),
+            'is_russian_client' => new \Twig_SimpleFunction('is_russian_client', [$this, 'isRussianClient'], ['is_safe' => ['html']]),
         ];
     }
 

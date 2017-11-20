@@ -1,5 +1,6 @@
 /*global window, $, services, document, datepicker, deleteLink, Routing, mbh, Translator */
 var PASSPORT_DOCUMENT_TYPE_CODE = "103008";
+var LIMIT_OF_EXPORTED_TO_KONTUR_TOURISTS = 100;
 
 var docReadyTourists = function () {
     'use strict';
@@ -147,7 +148,8 @@ var docReadyTourists = function () {
     switchAuthOrganFieldsVisibility();
     $('#mbh_document_relation_type').change(function () {
         switchAuthOrganFieldsVisibility();
-    })
+    });
+    hangOnExportToKonturButtonClick();
 };
 
 /*global document, window, Routing, $ */
@@ -184,6 +186,22 @@ function getTouristFilterFormData($touristForm, $citizenshipSelect) {
         begin: $touristForm.find('#mbhpackage_bundle_tourist_filter_form_begin').val(),
         end: $touristForm.find('#mbhpackage_bundle_tourist_filter_form_end').val(),
         citizenship: $citizenshipSelect.val(),
-        _token: $touristForm.find('#mbhpackage_bundle_tourist_filter_form__token').val()
+        _token: $touristForm.find('#mbhpackage_bundle_tourist_filter_form__token').val(),
+        search: $('#tourist-table_filter').find('input[type="search"]').val()
     }
+}
+
+function hangOnExportToKonturButtonClick() {
+    var exportUrl = Routing.generate('export_to_kontur');
+    var $touristForm = $('#tourist-form');
+    var $citizenshipSelect = $('#mbhpackage_bundle_tourist_filter_form_citizenship');
+
+    $('#fms-export-button').click(function () {
+        var numberOfExportedTourists = $('#tourist-table').dataTable().fnGetData().length;
+        if (numberOfExportedTourists > LIMIT_OF_EXPORTED_TO_KONTUR_TOURISTS) {
+            $('#kontur-export-confirmation').modal('show');
+        } else {
+            window.open(exportUrl + '?' + $.param({'form': getTouristFilterFormData($touristForm, $citizenshipSelect)}));
+        }
+    });
 }
