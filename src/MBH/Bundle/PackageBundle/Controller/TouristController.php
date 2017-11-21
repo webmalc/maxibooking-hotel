@@ -682,16 +682,8 @@ class TouristController extends Controller
     public function compileKonturFMSArchive(Request $request)
     {
         $touristQB = $this->get('mbh.tourist_manager')
-            ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected());
-
-        $zip = new \ZipArchive();
-        $zipName = 'kontur.zip';
-
-        $zip->open($zipName, \ZipArchive::CREATE);
-
-        for ($i = 0; $i < $zip->numFiles; $i++) {
-            $zip->deleteIndex($i);
-        }
+            ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected())
+            ->limit(0);
 
         $packageCriteria = new PackageQueryCriteria();
         $formData = $request->query->get('form');
@@ -701,6 +693,7 @@ class TouristController extends Controller
         $packageCriteria->begin = $beginDate;
         $packageCriteria->end = $endDate;
 
+        $stringsToWriteByNames = [];
         /** @var Tourist $tourist */
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
         foreach ($touristQB->getQuery()->execute() as $tourist) {
@@ -714,18 +707,15 @@ class TouristController extends Controller
                     'tourist' => $tourist
                 ]);
 
-                $zip->addFromString($tourist->getName() . '.xml', $xml);
+                $stringsToWriteByNames[$tourist->getName() . '.xml'] =  $xml;
             }
         }
 
-        $zip->close();
-
-        $response = new Response(file_get_contents($zipName));
-        $response->headers->set('Content-Type', 'application/zip');
+        $zipManager = $this->get('mbh.zip_manager');
+        $zipName = 'kontur.zip';
+        $zipManager->writeToZip($stringsToWriteByNames, $zipName);
         $attachedZipFileName = 'kontur-export ' . $this->helper->getDatePeriodString($beginDate, $endDate, 'Y.m.d') . '.zip';
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . $attachedZipFileName . '"');
-        $response->headers->set('Content-length', filesize($zipName));
 
-        return $response;
+        return $this->get('mbh.zip_manager')->getAttachedZipResponse($zipName, $attachedZipFileName);
     }
 }

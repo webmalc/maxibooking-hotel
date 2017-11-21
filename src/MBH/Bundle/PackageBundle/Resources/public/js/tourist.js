@@ -197,7 +197,7 @@ function hangOnExportToKonturButtonClick() {
     var $citizenshipSelect = $('#mbhpackage_bundle_tourist_filter_form_citizenship');
 
     $('#fms-export-button').click(function () {
-        var numberOfExportedTourists = $('#tourist-table').dataTable().fnGetData().length;
+        var numberOfExportedTourists = $('#tourist-table').DataTable().page.info().recordsTotal;
         if (numberOfExportedTourists > LIMIT_OF_EXPORTED_TO_KONTUR_TOURISTS) {
             $('#kontur-export-confirmation').modal('show');
         } else {
