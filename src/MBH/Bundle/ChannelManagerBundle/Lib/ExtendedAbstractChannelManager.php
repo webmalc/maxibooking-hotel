@@ -242,10 +242,9 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
             $this->log('begin pulling orders for hotel "' . $config->getHotel()->getName() . '" with id "' . $config->getHotel()->getId() . '"');
-
             $requestData = $this->requestDataFormatter->formatGetBookingsData($config);
             $request = $this->requestFormatter->formatGetOrdersRequest($requestData);
-
+            $this->log($requestData);
             $response = $this->sendRequestAndGetResponse($request);
             $this->log($response);
             $this->handlePullOrdersResponse($response, $config, $result);
