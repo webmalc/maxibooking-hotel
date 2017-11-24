@@ -45,6 +45,11 @@ class BillingApi
 
     }
 
+    public function confirmClientEmail()
+    {
+        //TODO: Реализовать после мержа.
+    }
+
     private function sendGet()
     {
 
