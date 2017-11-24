@@ -8,6 +8,8 @@ security:
     providers:
         fos_userbundle:
             id: fos_user.user_provider.username_email
+        api_key_user_provider:
+            id: mbh.api_key_user_provider
 
     firewalls:
         dev:
@@ -31,6 +33,9 @@ security:
                 check_path:  /user/login_check
                 require_previous_session: true
                 remember_me: true
+            simple_preauth:
+                authenticator: mbh.api_key_authenticator
+                provider: api_key_user_provider
             logout:       
                 path:   /user/logout
                 target: /
@@ -40,7 +45,6 @@ security:
                 lifetime: 3600
                 path:     /
                 domain:   ~
-
 
     access_control:
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

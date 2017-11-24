@@ -5,6 +5,14 @@ services:
         tags:
             - { name: 'monolog.logger', channel: 'security' }
 
+    mbh.api_key_user_provider:
+        class: MBH\Bundle\UserBundle\Security\ApiKeyUserProvider
+        arguments: ['@doctrine.odm.mongodb.document_manager']
+
+    mbh.api_key_authenticator:
+        class: MBH\Bundle\UserBundle\Security\ApiKeyAuthenticator
+        arguments: ["%security.role_hierarchy.roles%"]
+
     mbh.user.group.type:
         class: MBH\Bundle\UserBundle\Form\GroupType
         tags:

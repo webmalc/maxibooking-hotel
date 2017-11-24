@@ -192,6 +192,13 @@ class User extends BaseUser implements RecipientInterface
      * @Assert\DateTime()
      */
     protected $expiresAt;
+
+    /**
+     * @var AuthorizationToken
+     * @ODM\EmbedOne(targetDocument="AuthorizationToken")
+     */
+    protected $apiToken;
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -213,6 +220,35 @@ class User extends BaseUser implements RecipientInterface
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * @return AuthorizationToken
+     */
+    public function getApiToken(): ?AuthorizationToken
+    {
+        return $this->apiToken;
+    }
+
+    /**
+     * @param AuthorizationToken $apiToken
+     * @return User
+     */
+    public function setApiToken(AuthorizationToken $apiToken): User
+    {
+        $this->apiToken = $apiToken;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function removeApiToken()
+    {
+        $this->apiToken = null;
+
+        return $this;
     }
 
     /**

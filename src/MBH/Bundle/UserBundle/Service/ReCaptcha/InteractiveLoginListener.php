@@ -1,10 +1,13 @@
 <?php
 namespace MBH\Bundle\UserBundle\Service\ReCaptcha;
 
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use \ReCaptcha\ReCaptcha;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
@@ -16,6 +19,8 @@ class InteractiveLoginListener
      * @var array
      */
     protected $params;
+    /** @var  BillingApi */
+    protected $billingApi;
     protected $clientManager;
     protected $session;
 
@@ -29,6 +34,7 @@ class InteractiveLoginListener
         $this->params = $params;
         $this->clientManager = $clientManager;
         $this->session = $session;
+        $this->billingApi = $billingApi;
     }
 
     /**
@@ -53,6 +59,14 @@ class InteractiveLoginListener
                     $this->session->getFlashBag()->add($type, $message);
                 }
             }
+        }
+        if ($event->getAuthenticationToken() instanceof UsernamePasswordToken
+            && !$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
+            throw new BadCredentialsException('Captcha is invalid');
+        }
+
+        if ($event->getAuthenticationToken() instanceof PreAuthenticatedToken) {
+            $this->billingApi->confirmClientEmail();
         }
     }
 
