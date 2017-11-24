@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
@@ -15,6 +16,7 @@ class ClientManager
     const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_contacts';
     const SESSION_CLIENT_FIELD = 'client';
+    const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
 
     private $dm;
     private $session;
@@ -133,7 +135,8 @@ class ClientManager
      */
     public function isClientActive()
     {
-        return $this->getClient()->getStatus() == Client::CLIENT_ACTIVE_STATUS;
+        return $this->getClient()->getStatus() == Client::CLIENT_ACTIVE_STATUS
+            || $this->session->get(self::IS_AUTHORIZED_BY_TOKEN) === true;
     }
 
     /**
@@ -177,7 +180,8 @@ class ClientManager
      */
     public function confirmClient(Client $client)
     {
-        $this->billingApi->confirmClient($client);
+//        $this->billingApi->confirmClient($client);
+        throw new Exception('sdf');
     }
 
     /**

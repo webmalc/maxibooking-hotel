@@ -26,7 +26,10 @@ class OnRequest
 
         $clientManager = $this->container->get('mbh.client_manager');
 
-        if (!$clientManager->isClientActive() && ClientManager::DEFAULT_ROUTE_FOR_INACTIVE_CLIENT !== $event->getRequest()->get('_route')) {
+        if (!$clientManager->isClientActive()
+            && ClientManager::DEFAULT_ROUTE_FOR_INACTIVE_CLIENT !== $event->getRequest()->get('_route')
+            && $this->container->get('security.authorization_checker')->isGranted('ROLE_PAYMENTS')
+        ) {
             $url = $this->container->get('router')->generate(ClientManager::DEFAULT_ROUTE_FOR_INACTIVE_CLIENT);
             $response = new RedirectResponse($url);
             $event->setResponse($response);

@@ -207,7 +207,7 @@ class BillingApi
      */
     public function confirmClient(Client $client)
     {
-        $response = $this->sendPost(self::BILLING_HOST . '/' . $this->locale . '/' . $client->getLogin() . '/confirm', [], true);
+        $response = $this->sendPost(self::BILLING_HOST . '/' . $this->locale . '/' . $client->getLogin() . '/confirm', [], false);
         $decodedResponse = json_decode((string)$response->getBody(), true);
         if ($decodedResponse['status'] === false) {
             throw new Exception($decodedResponse['message']);

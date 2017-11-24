@@ -17,16 +17,18 @@ class InteractiveLoginListener
      */
     protected $params;
     protected $clientManager;
+    protected $session;
 
     /**
      * InteractiveLoginListener constructor.
      * @param array $params
      * @param ClientManager $clientManager
      */
-    public function __construct(array $params, ClientManager $clientManager)
+    public function __construct(array $params, ClientManager $clientManager, Session $session)
     {
         $this->params = $params;
         $this->clientManager = $clientManager;
+        $this->session = $session;
     }
 
     /**
@@ -45,7 +47,11 @@ class InteractiveLoginListener
 
             $client = $this->clientManager->getClient();
             if ($client->getStatus() === 'not_confirmed') {
-                $this->clientManager->confirmClient($client);
+                try {
+                    $this->clientManager->confirmClient($client);
+                } catch (\Exception $exception) {
+                    $this->session->getFlashBag()->add($type, $message);
+                }
             }
         }
     }
