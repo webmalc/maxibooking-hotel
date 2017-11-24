@@ -173,6 +173,15 @@ class ClientManager
 
     /**
      * @param Client $client
+     * @return void
+     */
+    public function confirmClient(Client $client)
+    {
+        $this->billingApi->confirmClient($client);
+    }
+
+    /**
+     * @param Client $client
      * @param \DateTime $currentDateTime
      */
     public function updateSessionClientData(Client $client, \DateTime $currentDateTime)

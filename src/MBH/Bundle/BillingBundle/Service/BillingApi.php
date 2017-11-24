@@ -5,6 +5,7 @@ namespace MBH\Bundle\BillingBundle\Service;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
@@ -51,7 +52,7 @@ class BillingApi
 
     public function sendFalse(): void
     {
-        $this->guzzle->post(self::BILLING_HOST.self::RESULT_API_URL, []);
+        $this->guzzle->post(self::BILLING_HOST . self::RESULT_API_URL, []);
     }
 
     public function sendSuccess(string $json): void
@@ -198,6 +199,19 @@ class BillingApi
     public function getPaymentSystemsForOrder(PaymentOrder $order)
     {
         return $this->getEntities(self::PAYMENT_SYSTEMS_ENDPOINT_SETTINGS, ['order' => $order->getId()]);
+    }
+
+    /**
+     * @param Client $client
+     * @throws Exception
+     */
+    public function confirmClient(Client $client)
+    {
+        $response = $this->sendPost(self::BILLING_HOST . '/' . $this->locale . '/' . $client->getLogin() . '/confirm', [], true);
+        $decodedResponse = json_decode((string)$response->getBody(), true);
+        if ($decodedResponse['status'] === false) {
+            throw new Exception($decodedResponse['message']);
+        }
     }
 
     /**

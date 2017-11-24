@@ -6,6 +6,7 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use \ReCaptcha\ReCaptcha;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
@@ -15,17 +16,17 @@ class InteractiveLoginListener
      * @var array
      */
     protected $params;
-    protected $session;
+    protected $clientManager;
 
     /**
      * InteractiveLoginListener constructor.
      * @param array $params
-     * @param Session $session
+     * @param ClientManager $clientManager
      */
-    public function __construct(array $params, Session $session)
+    public function __construct(array $params, ClientManager $clientManager)
     {
         $this->params = $params;
-        $this->session = $session;
+        $this->clientManager = $clientManager;
     }
 
     /**
@@ -37,8 +38,15 @@ class InteractiveLoginListener
         $request = $event->getRequest();
 
         $reCaptcha = new ReCaptcha($this->params['secret']);
-        if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
-            throw new BadCredentialsException('Captcha is invalid');
+        if ($event->getAuthenticationToken() instanceof UsernamePasswordToken) {
+            if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
+                throw new BadCredentialsException('Captcha is invalid');
+            }
+
+            $client = $this->clientManager->getClient();
+            if ($client->getStatus() === 'not_confirmed') {
+                $this->clientManager->confirmClient($client);
+            }
         }
     }
 
