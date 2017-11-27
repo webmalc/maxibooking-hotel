@@ -86,12 +86,13 @@ services:
                 - { name: form.type, alias: mbh_address_object_decomposed }
 
     mbh.package.form.type.document_relation:
-            class: MBH\Bundle\PackageBundle\Form\DocumentRelationType
-            calls:
-                   - [setDictionaryProvider, ['@mbh.vega.dictionary_provider']]
-                   - [setManagerRegistry, ['@doctrine_mongodb']]
-            tags:
-                - { name: form.type, alias: mbh_document_relation }
+        class: MBH\Bundle\PackageBundle\Form\DocumentRelationType
+        arguments:
+           - '@mbh.vega.dictionary_provider'
+           - '@doctrine_mongodb'
+           - '@mbh.fms_dictionaries'
+        tags:
+            - { name: form.type, alias: mbh_document_relation }
     mbh.package.document_tempalte_factory:
             class: MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory
             calls:
@@ -179,6 +180,7 @@ services:
       arguments:
           - '@doctrine_mongodb.odm.document_manager'
           - '@translator'
+          - '@mbh.billing.api'
       tags:
           - {name: form.type}
 
@@ -208,3 +210,15 @@ services:
       class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
       arguments: ['@doctrine.odm.mongodb.document_manager']
       shared: false
+
+    mbh.organization_subscriber:
+        class: MBH\Bundle\PackageBundle\EventListener\OrganizationSubscriber
+        arguments: ['@mbh.billing.api']
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default }
+
+    mbh.tourist_visa_type:
+        class: MBH\Bundle\PackageBundle\Form\TouristVisaType
+        arguments: ['@mbh.fms_dictionaries']
+        tags:
+            - {name: form.type}

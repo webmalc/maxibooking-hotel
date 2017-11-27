@@ -10,6 +10,7 @@ use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
 use MBH\Bundle\ClientBundle\Document\Paypal;
 use MBH\Bundle\ClientBundle\Document\Rbk;
+use MBH\Bundle\ClientBundle\Document\RNKB;
 use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
@@ -227,6 +228,13 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $paypal = new Paypal();
                     $paypal->setPaypalLogin($form->get('paypalLogin')->getData());
                     $config->setPaypal($paypal);
+                    $entity->setPaypal($paypal);
+                    break;
+                case 'rnkb':
+                    $rnkb = new RNKB();
+                    $rnkb->setKey($form->get('rnkbKey')->getData());
+                    $rnkb->setRnkbShopIDP($form->get('rnkbShopIDP')->getData());
+                    $entity->setRnkb($rnkb);
                     break;
                 case 'invoice':
                     $invoice = (new Invoice())->setInvoiceDocument($form->get('invoiceDocument')->getData());

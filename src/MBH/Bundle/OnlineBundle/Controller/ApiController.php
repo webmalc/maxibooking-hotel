@@ -360,9 +360,9 @@ class ApiController extends Controller
         $query->setSave(true);
         $isViewTariff = false;
 
-        $query->setChildrenAges(
-            !empty($request->get('children-ages')) && $query->children > 0 ? $request->get('children-ages') : []
-        );
+        if (!empty($request->get('children-ages')) && $query->children > 0 && $formConfig->isIsDisplayChildrenAges()) {
+            $query->setChildrenAges($request->get('children-ages'));
+        }
 
         $hotels = $formConfig->getHotels();
         if (!count($hotels)) {
@@ -710,7 +710,6 @@ class ApiController extends Controller
                 'accommodation' => false,
                 'tariff' => $info->tariff->id,
                 'isOnline' => true,
-                'accommodation' => false,
             ];
         }
         foreach ($request->services as $info) {
@@ -730,10 +729,14 @@ class ApiController extends Controller
                         'birthday' => $request->user->birthday,
                         'email' => $request->user->email,
                         'phone' => $request->user->phone,
+                        'inn' => $request->user->inn,
+                        'patronymic' => $request->user->patronymic,
+                        'documentNumber' => $request->user->documentNumber
                     ],
                     'status' => 'online',
                     'order_note' => $request->note,
                     'confirmed' => false,
+                    'onlineFormId' => $request->configId
                 ],
                 null,
                 null,

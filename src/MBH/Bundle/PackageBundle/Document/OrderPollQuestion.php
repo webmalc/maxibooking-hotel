@@ -32,7 +32,7 @@ class OrderPollQuestion
 
     /**
      * @var boolean
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      */
     public $isQuestion = true;

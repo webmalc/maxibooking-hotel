@@ -3,9 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\HotelBundle\Document\Country;
-use MBH\Bundle\VegaBundle\Document\VegaRegion;
-use MBH\Bundle\VegaBundle\Document\VegaState;
 
 /**
  * @ODM\EmbeddedDocument
@@ -15,10 +12,10 @@ use MBH\Bundle\VegaBundle\Document\VegaState;
 class AddressObjectDecomposed
 {
     /**
-     * @var VegaState|null
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
+     * @var string
+     * @ODM\Field(type="string")
      */
-    protected $country;
+    protected $countryTld;
     /**
      * @var String
      * @ODM\Field(type="string") 
@@ -36,10 +33,10 @@ class AddressObjectDecomposed
     protected $district;
 
     /**
-     * @var VegaRegion
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaRegion")
+     * @var int
+     * @ODM\Field(type="int")
      */
-    protected $region;
+    protected $regionId;
 
     /**
      * Населенный пункт
@@ -77,25 +74,53 @@ class AddressObjectDecomposed
     protected $flat;
 
     /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $structure;
+
+    /**
      * @var string
      * @ODM\Field(type="string") 
      */
     protected $addressObject;
 
     /**
-     * @return VegaState|null
+     * @return int
      */
-    public function getCountry()
+    public function getStructure(): ?int
     {
-        return $this->country;
+        return $this->structure;
     }
 
     /**
-     * @param VegaState|null $country
+     * @param int $structure
+     * @return AddressObjectDecomposed
      */
-    public function setCountry(VegaState $country = null)
+    public function setStructure(int $structure): AddressObjectDecomposed
     {
-        $this->country = $country;
+        $this->structure = $structure;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryTld()
+    {
+        return $this->countryTld;
+    }
+
+    /**
+     * @param string
+     * @return AddressObjectDecomposed
+     */
+    public function setCountryTld($countryTld = null)
+    {
+        $this->countryTld = $countryTld;
+
+        return $this;
     }
 
     /**
@@ -147,19 +172,19 @@ class AddressObjectDecomposed
     }
 
     /**
-     * @return VegaRegion
+     * @return int
      */
-    public function getRegion()
+    public function getRegionId()
     {
-        return $this->region;
+        return $this->regionId;
     }
 
     /**
-     * @param VegaRegion $region
+     * @param int $regionId
      */
-    public function setRegion(VegaRegion $region = null)
+    public function setRegionId($regionId = null)
     {
-        $this->region = $region;
+        $this->regionId = $regionId;
     }
 
     /**
@@ -276,6 +301,6 @@ class AddressObjectDecomposed
 
     public function __toString()
     {
-        return strval($this->getCountry() . ' ' . $this->getCity());
+        return strval($this->getCountryTld() . ' ' . $this->getCity());
     }
 }

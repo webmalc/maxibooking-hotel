@@ -31,7 +31,7 @@
                         <input {% if formConfig.paymentTypes|length == 1 %}checked style="display:none;"{% endif %} type="radio" class="mbh-payment-types-radio" name="paymentType" value="{{ paymentType }}" id="{{ paymentType }}_radio" required><label for="{{ paymentType }}_radio" class="mbh-payment-type-label">{{ ('payment_types.' ~ paymentType)|trans }}</label>
                         {% if paymentType == 'in_hotel'%}
                             <div class="mbh-payment-type-row-total">{{ request.total }} {{ currency().text }}</div>
-                            <p> {{ 'views.api.getPaymentType.payment_fine'|trans({}, 'MBHOnlineBundle') }}</p>
+                            <p> {{ (paymentType == 'in_hotel' ? 'views.api.getPaymentType.payment_fine' : 'views.api.getPaymentType.reservation_guarantee_whole_sum')|trans({}, 'MBHOnlineBundle') }}</p>
                         {% endif %}
                         {% if paymentType == 'by_receipt_full' %}
                             <div class="mbh-payment-type-row-total">{{ request.total }} {{ currency().text }}</div>

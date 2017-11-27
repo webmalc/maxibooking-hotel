@@ -85,7 +85,7 @@ channelManager.hundredOneHotels.notification.error: '101hotels.ru order processi
 channelManager.hundredOneHotels.notification.subject.new: 'New 101hotels.ru order'
 channelManager.hundredOneHotels.notification.subject.edit: '101hotels.ru order changed'
 views.booking.actions.sync_old: Reservations
-views.booking.actions.sync_old_desc: 'Reservations for the last 2 weeks'
+views.booking.actions.sync_old_desc: 'For the last 2 weeks'
 channelManager.101Hotels.notification.subject.new: 'New 101hotels.ru order'
 channelManager.101Hotels.notification.subject.edit: '101hotels.ru order changed'
 channelManager.101Hotels.notification.subject.delete: '101hotels.ru order deleted'

@@ -35,6 +35,7 @@ class ClientPaymentSystemType extends AbstractType
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
         $unitellerIsWithFiscalization = $unitellerShopIDP = $unitellerPassword = $taxationSystemCode = $taxationRateCode = null;
+        $rnkbKey = $rnkbShopIDP = null;
         $rbkEshopId = $rbkSecretKey = null;
         $paypalLogin = null;
         $invoiceDocument = null;
@@ -60,6 +61,8 @@ class ClientPaymentSystemType extends AbstractType
             $rbkEshopId = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkEshopId() : '';
             $rbkSecretKey = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkSecretKey() : '';
             $paypalLogin = $clientConfig->getPaypal() ? $clientConfig->getPaypal()->getPaypalLogin() : '';
+            $rnkbShopIDP = $entity->getRnkb() ? $entity->getRnkb()->getRnkbShopIDP() : '';
+            $rnkbKey = $entity->getRnkb() ? $entity->getRnkb()->getKey() : '';
             $invoiceDocument = $clientConfig->getInvoice() ? $clientConfig->getInvoice()->getInvoiceDocument() : null;
         }
 
@@ -194,6 +197,30 @@ class ClientPaymentSystemType extends AbstractType
                     'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $unitellerPassword
+                ]
+            )
+            ->add(
+                'rnkbShopIDP',
+                TextType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.uniteller_shop_id',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params rnkb'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'mapped' => false,
+                    'data' => $rnkbShopIDP
+                ]
+            )
+            ->add(
+                'rnkbKey',
+                TextType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.key.label',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params rnkb', 'type' => 'password'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'mapped' => false,
+                    'data' => $rnkbKey
                 ]
             )
             ->add(

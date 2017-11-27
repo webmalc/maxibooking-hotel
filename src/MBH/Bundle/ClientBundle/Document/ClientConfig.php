@@ -59,7 +59,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -68,7 +68,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -97,7 +97,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -133,6 +133,12 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="Uniteller")
      */
     protected $uniteller;
+
+    /**
+     * @var RNKB
+     * @ODM\EmbedOne(targetDocument="RNKB")
+     */
+    protected $rnkb;
 
     /**
      * @var Rbk
@@ -171,7 +177,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -179,7 +185,7 @@ class ClientConfig extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Gedmo\Versioned
      * @Assert\Type(type="DateTime")
      */
@@ -215,7 +221,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -546,6 +552,25 @@ class ClientConfig extends Base
     public function getUniteller()
     {
         return $this->uniteller;
+    }
+
+    /**
+     * @return RNKB
+     */
+    public function getRnkb()
+    {
+        return $this->rnkb;
+    }
+
+    /**
+     * @param RNKB $rnkb
+     * @return ClientConfig
+     */
+    public function setRnkb(RNKB $rnkb): ClientConfig
+    {
+        $this->rnkb = $rnkb;
+
+        return $this;
     }
 
     /**

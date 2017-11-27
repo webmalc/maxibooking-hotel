@@ -2,8 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,20 +15,12 @@ class AddressObjectDecomposedType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('country', DocumentType::class, [
+            ->add('countryTld', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.country',
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                'query_builder' => function(DocumentRepository $repository) {
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
                 'required' => false,
             ])
-            ->add('region', DocumentType::class, [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+            ->add('regionId', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.region',
-                'query_builder' => function(DocumentRepository $repository) {
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
                 'required' => false,
             ])
             ->add('city', TextType::class, [
@@ -56,6 +46,13 @@ class AddressObjectDecomposedType extends AbstractType
             ->add('corpus', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.corpus',
                 'required' => false,
+            ])
+            ->add('structure', TextType::class, [
+                'required' => false,
+                'attr' => [
+                    'class' => 'spinner',
+                ],
+                'label' => 'form.AddressObjectDecomposedType.structure.label'
             ])
             ->add('flat', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.flat',

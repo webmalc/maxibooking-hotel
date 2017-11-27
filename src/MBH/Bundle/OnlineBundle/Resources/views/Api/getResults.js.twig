@@ -331,17 +331,19 @@ jQuery(document).ready(function() {
                             success: function(data) {
                                 wrapper.html('{{ styles|escape("js") }}' + data);
 
+                                jQuery(document).trigger('user-form-load-event');
+
                                 setSelect2();
                                 var prevUser = jQuery.cookie('mbh.user');
                                 var prevPackage = jQuery.cookie('mbh.package');
 
                                 if (prevUser) {
                                     prevUser = JSON.parse(prevUser);
-                                    jQuery('#mbh-user-form-firstName').val(prevUser.firstName),
-                                        jQuery('#mbh-user-form-lastName').val(prevUser.lastName),
-                                        jQuery('#mbh-user-form-phone').val(prevUser.phone),
-                                        jQuery('#mbh-user-form-email').val(prevUser.email),
-                                        jQuery('#mbh-user-form-birthday').val(prevUser.birthday)
+                                    jQuery('#mbh-user-form-firstName').val(prevUser.firstName);
+                                    jQuery('#mbh-user-form-lastName').val(prevUser.lastName);
+                                    jQuery('#mbh-user-form-phone').val(prevUser.phone);
+                                    jQuery('#mbh-user-form-email').val(prevUser.email);
+                                    jQuery('#mbh-user-form-birthday').val(prevUser.birthday);
                                 }
 
                                 if (prevPackage) {
@@ -356,12 +358,19 @@ jQuery(document).ready(function() {
                                 });
 
                                 var getUser = function() {
+                                    var $innInput = jQuery('#mbh-user-form-inn');
+                                    var $documentNumber = jQuery('#mbh-user-form-document-number');
+                                    var $patronymicInput = jQuery('#mbh-user-form-patronymic');
+
                                     return {
                                         firstName: jQuery('#mbh-user-form-firstName').val(),
                                         lastName: jQuery('#mbh-user-form-lastName').val(),
                                         phone: jQuery('#mbh-user-form-phone').val(),
                                         email: jQuery('#mbh-user-form-email').val(),
-                                        birthday: jQuery('#mbh-user-form-birthday').val()
+                                        birthday: jQuery('#mbh-user-form-birthday').val(),
+                                        inn: $innInput.length > 0 ? $innInput.val() : null,
+                                        documentNumber: $documentNumber.length > 0 ? $documentNumber.val() : null,
+                                        patronymic: $patronymicInput.length > 0 ? $patronymicInput.val() : null
                                     };
                                 };
                                 var getPackageInfo = function() {
@@ -442,6 +451,7 @@ jQuery(document).ready(function() {
                                     var $personalDataCheckbox = $('#mbh-form-personal-data');
                                     requestParams.isConfrmWithPersDataProcessing
                                         = $personalDataCheckbox.length == 1 && $personalDataCheckbox.is(':checked');
+                                    requestParams.configId = "{{ configId }}";
                                     waiting();
 
                                     // ------------------------------ STEP 3: load payment type -------------------------

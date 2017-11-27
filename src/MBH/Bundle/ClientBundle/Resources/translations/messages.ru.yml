@@ -30,6 +30,8 @@ form.clientPaymentSystemType.moneymail_key: Ключ магазина (Key)
 form.clientPaymentSystemType.uniteller_is_with_fiscalization.label: 'С фискализацией платежа?'
 form.clientPaymentSystemType.uniteller_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.uniteller_password: Пароль магазина (Password)
+form.clientPaymentSystemType.key.label: 'Ключ шифрования'
+form.clientPaymentSystemType.shop_id: 'ID магазина (Shop_IDP)'
 form.clientPaymentSystemType.uniteller.taxation_rate_code: Код ставки налогооблажения
 form.clientPaymentSystemType.uniteller.taxation_system_code: Код системы налогооблажения
 form.clientPaymentSystemType.rbk_eshop_id: ID магазина (eshopId)
@@ -75,6 +77,7 @@ form.clientConfigType.default_children_quantity.help: 'Количество де
 form.clientPaymentSystemType.payment_system_paypal_login: Логин
 form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
+clientbundle.controller.documentTemplateController.entry_successfully_eited: 'Запись успешно отредактирована.'
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
 form.clientConfigType.queryStat.label: Статистика запросов
 form.clientConfigType.queryStat.help: Включить/выключить сбор статистики запросов
