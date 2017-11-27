@@ -239,7 +239,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Hash()
+     * @ODM\Field(type="hash")
      * @Assert\Type(type="array")
      * @deprecated
      */
@@ -305,7 +305,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\DateTime()
      */
     protected $arrivalTime;
@@ -313,7 +313,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\DateTime()
      */
     protected $departureTime;
@@ -335,7 +335,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      */
     protected $isPercentDiscount = true;
@@ -343,7 +343,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isCheckIn = false;
@@ -351,7 +351,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isCheckOut = false;
@@ -359,7 +359,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isSmoking = false;
@@ -367,7 +367,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $corrupted = false;
@@ -375,7 +375,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isLocked = false;
@@ -383,14 +383,14 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isForceBooking = false;
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $childAges = [];
 

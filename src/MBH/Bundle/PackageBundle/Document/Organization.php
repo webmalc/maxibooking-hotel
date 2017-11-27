@@ -72,7 +72,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
 
     /**
      * @var \DateTime
-     * @ODM\Date
+     *@ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $registrationDate;
@@ -104,19 +104,19 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     protected $reason;
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Country")
+     * @ODM\Field(type="string")
      */
-    protected $country;
+    protected $countryTld;
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Region")
+     * @ODM\Field(type="int")
      */
-    protected $region;
+    protected $regionId;
     /**
      * @Assert\NotBlank
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\City")
+     * @ODM\Field(type="int")
      */
-    protected $city;
+    protected $cityId;
     /**
      * @var string
      * @ODM\Field(type="string")
@@ -317,7 +317,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
      */
     public function getLocation()
     {
-        return ($this->getCity() ? $this->getCity()->getTitle() : '').', '.$this->getStreet().' '.$this->getHouse();
+        return $this->getStreet() . ' ' . $this->getHouse();
     }
 
     /**
@@ -417,51 +417,51 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     }
 
     /**
-     * @return City
+     * @return int
      */
-    public function getCity()
+    public function getCityId()
     {
-        return $this->city;
+        return $this->cityId;
     }
 
     /**
-     * @param City|null $city
+     * @param City|null $cityId
      */
-    public function setCity(City $city = null)
+    public function setCityId($cityId = null)
     {
-        $this->city = $city;
+        $this->cityId = $cityId;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getCountry()
+    public function getCountryTld()
     {
-        return $this->country;
+        return $this->countryTld;
     }
 
     /**
-     * @param mixed $country
+     * @param string $countryTld
      */
-    public function setCountry($country)
+    public function setCountryTld($countryTld)
     {
-        $this->country = $country;
+        $this->countryTld = $countryTld;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getRegion()
+    public function getRegionId()
     {
-        return $this->region;
+        return $this->regionId;
     }
 
     /**
-     * @param mixed $region
+     * @param int $regionId
      */
-    public function setRegion($region)
+    public function setRegionId($regionId)
     {
-        $this->region = $region;
+        $this->regionId = $regionId;
     }
 
     /**
@@ -732,7 +732,6 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
      */
     public function prePersist()
     {
-        $this->fillLocationByCity();
         if (!$this->getShortName()) {
             $this->setShortName($this->getName());
         }
@@ -743,17 +742,8 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
      */
     public function preUpdate()
     {
-        $this->fillLocationByCity();
         if (!$this->getShortName()) {
             $this->setShortName($this->getName());
-        }
-    }
-
-    private function fillLocationByCity()
-    {
-        if ($this->getCity()) {
-            $this->setCountry($this->getCity()->getCountry());
-            $this->setRegion($this->getCity()->getRegion());
         }
     }
 

@@ -3,12 +3,10 @@
 namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -25,7 +23,7 @@ class HotelContactInformationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('city', TextType::class, [
+            ->add('cityId', TextType::class, [
                 'label' => 'form.hotelExtendedType.city',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => true,
@@ -124,8 +122,6 @@ class HotelContactInformationType extends AbstractType
                 'required' => false
             ])
         ;
-
-        $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }
 
     public function configureOptions(OptionsResolver $resolver)

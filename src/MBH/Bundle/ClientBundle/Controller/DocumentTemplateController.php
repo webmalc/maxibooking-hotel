@@ -52,6 +52,8 @@ class DocumentTemplateController extends BaseController
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_NEW')")
      * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function newAction(Request $request)
     {
@@ -64,7 +66,7 @@ class DocumentTemplateController extends BaseController
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('clientbundle.controller.documentTemplateController.entry_successfully_created'));
+            $this->addFlash('success', 'clientbundle.controller.documentTemplateController.entry_successfully_created');
             return $this->afterSaveRedirect('document_templates', $entity->getId());
         }
 
@@ -80,6 +82,9 @@ class DocumentTemplateController extends BaseController
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_EDIT')")
      * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
+     * @param DocumentTemplate $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAction(DocumentTemplate $entity, Request $request)
     {
@@ -90,6 +95,7 @@ class DocumentTemplateController extends BaseController
             if($form->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();
+                $this->addFlash('success', 'clientbundle.controller.documentTemplateController.entry_successfully_eited');
 
                 return $this->afterSaveRedirect('document_templates', $entity->getId());
             }
@@ -107,6 +113,7 @@ class DocumentTemplateController extends BaseController
      * @Method("GET")
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_VIEW')")
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
+     * @param DocumentTemplate $documentTemplate
      * @return Response
      * @deprecated
      */
@@ -206,8 +213,9 @@ class DocumentTemplateController extends BaseController
      * @Route("/delete/{id}", name="document_templates_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_DELETE')")
-     * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
+     * @param DocumentTemplate $entity
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(DocumentTemplate $entity)
     {
