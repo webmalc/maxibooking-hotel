@@ -66,7 +66,7 @@ class BillingApi
     }
 
     /**
-     * @return object
+     * @return object|Client
      */
     public function getClient()
     {

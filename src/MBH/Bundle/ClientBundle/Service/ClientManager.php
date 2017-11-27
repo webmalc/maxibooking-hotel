@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
@@ -15,6 +14,7 @@ class ClientManager
 {
     const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_contacts';
+    const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems'];
     const SESSION_CLIENT_FIELD = 'client';
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
 
@@ -136,7 +136,23 @@ class ClientManager
     public function isClientActive()
     {
         return $this->getClient()->getStatus() == Client::CLIENT_ACTIVE_STATUS
-            || $this->session->get(self::IS_AUTHORIZED_BY_TOKEN) === true;
+            || $this->session->get(self::IS_AUTHORIZED_BY_TOKEN) !== false;
+    }
+
+    public function confirmClient(Client $client)
+    {
+        $this->billingApi->confirmClient($client);
+        $client = $this->billingApi->getClient();
+        $this->updateSessionClientData($client, $currentDateTime);
+    }
+
+    /**
+     * @param $routeName
+     * @return bool
+     */
+    public function isRouteAccessibleForInactiveClient($routeName)
+    {
+        return in_array($routeName, self::ACCESSED_ROUTES_FOR_CLIENT);
     }
 
     /**
@@ -172,16 +188,6 @@ class ClientManager
         }
 
         return $clientResponse;
-    }
-
-    /**
-     * @param Client $client
-     * @return void
-     */
-    public function confirmClient(Client $client)
-    {
-//        $this->billingApi->confirmClient($client);
-        throw new Exception('sdf');
     }
 
     /**
