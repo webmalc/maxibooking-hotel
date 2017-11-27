@@ -6,6 +6,7 @@ form.clientConfigType.main_group: 'Основные параметры'
 form.clientConfigType.search_group: 'Параметры подбора броней'
 form.clientConfigType.search_windows: 'Использовать систему "окна"?'
 form.clientConfigType.search_windows_desc: 'Подбор номеров без создания "окон"'
+form.clientConfigType.time_zone.label: Временная зона
 form.clientConfigType.sms_notification: 'Смс оповещение?'
 form.clientConfigType.notice_unpaid: Уведомление
 form.clientConfigType.is_notice_unpaid: Отправлять уведомление о неоплаченной брони, через указанное колличество дней
@@ -29,6 +30,8 @@ form.clientPaymentSystemType.moneymail_key: Ключ магазина (Key)
 form.clientPaymentSystemType.uniteller_is_with_fiscalization.label: 'С фискализацией платежа?'
 form.clientPaymentSystemType.uniteller_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.uniteller_password: Пароль магазина (Password)
+form.clientPaymentSystemType.key.label: 'Ключ шифрования'
+form.clientPaymentSystemType.shop_id: 'ID магазина (Shop_IDP)'
 form.clientPaymentSystemType.uniteller.taxation_rate_code: Код ставки налогооблажения
 form.clientPaymentSystemType.uniteller.taxation_system_code: Код системы налогооблажения
 form.clientPaymentSystemType.rbk_eshop_id: ID магазина (eshopId)
@@ -54,9 +57,17 @@ mailer.notice.unpaid.phone: Телефон
 mailer.notice.unpaid.mobile.phone: 'Мобильный телефон'
 mailer.notice.unpaid.no.data: 'Нет данных'
 mailer.notice.unpaid.full_name: ФИО
+form.clientConfigType.round.label: Округление цены брони
+form.clientConfigType.round.help: Порядок дробной части, до которого будут производится округление. 0 - для отбрасывания дробной части.
 form.clientConfigType.search_tariffs: 'Количество тарифов'
 form.clientConfigType.search_tariffs_desc: 'Количество тарифов выводимое по умолчанию при подборе'
 form.clientConfigType.add_start_date: 'Начальная дата'
+form.clientConfigType.begin_date_offset.label: 'Смещение начальной даты'
+form.clientConfigType.begin_date_offset.help: 'Смещение начальной даты от текущего числа'
+form.clientConfigType.number_of_days_for_payment.label: 'Период оплаты брони'
+form.clientConfigType.number_of_days_for_payment.help: 'Период от создания брони до момента, когда отсутствие оплаты означает, что она просрочена'
+form.clientConfigType.currency_ratio_fix.label: 'Коэффициент корректировки курса валюты'
+form.clientConfigType.currency_ratio_fix.help: 'Коэффициент, на который умножается цена при преобразовании в другую валюту'
 form.clientConfigType.is_book_without_payer.label: 'Бронировать без плательщика?'
 form.clientConfigType.is_book_without_payer.help: 'Разрешено ли создавать заказы без указания плательщика?'
 form.clientConfigType.default_adults_quantity.label: 'Количество взрослых'
@@ -66,7 +77,10 @@ form.clientConfigType.default_children_quantity.help: 'Количество де
 form.clientPaymentSystemType.payment_system_paypal_login: Логин
 form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
+clientbundle.controller.documentTemplateController.entry_successfully_eited: 'Запись успешно отредактирована.'
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
+form.clientConfigType.queryStat.label: Статистика запросов
+form.clientConfigType.queryStat.help: Включить/выключить сбор статистики запросов
 
 controller.color_settings_action.config_successful_saved: Настройки успешно сохранены
 controller.color_settings_action.config_successful_reset: Установлены стандартные настройки

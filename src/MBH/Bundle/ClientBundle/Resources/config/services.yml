@@ -28,6 +28,12 @@ services:
         tags:
             - { name: twig.extension }
 
+    mbh.client_manager:
+        class: MBH\Bundle\ClientBundle\Service\ClientManager
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@session'
+            - '@mbh.billing.api'
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:
@@ -37,3 +43,13 @@ services:
             - '%mbh.taxation%'
         tags:
             - { name: form.type }
+
+    mbh.client_config_type:
+        class: MBH\Bundle\ClientBundle\Form\ClientConfigType
+        arguments: ['@mbh.helper']
+        tags:
+            - {name: form.type}
+
+    mbh.fms_dictionaries:
+        class: MBH\Bundle\ClientBundle\Lib\FMSDictionaries
+        arguments: ['@mbh.csv_reader']

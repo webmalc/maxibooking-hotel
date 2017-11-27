@@ -1,35 +1,3 @@
-mbhbasebundle.service.helper.sorok: сорок
-mbhbasebundle.service.helper.devyanosto: девяносто
-mbhbasebundle.service.helper.sto: сто
-mbhbasebundle.service.helper.dvesti: двести
-mbhbasebundle.service.helper.trista: триста
-mbhbasebundle.service.helper.chetyresta: четыреста
-mbhbasebundle.service.helper.miliarda: милиарда
-mbhbasebundle.service.helper.one: Один
-mbhbasebundle.service.helper.odna: Один
-mbhbasebundle.service.helper.dve: Два
-mbhbasebundle.service.helper.tri: Три
-mbhbasebundle.service.helper.chetire: Четыре
-mbhbasebundle.service.helper.piat: Пять
-mbhbasebundle.service.helper.shest: Шесть
-mbhbasebundle.service.helper.sem: Семь
-mbhbasebundle.service.helper.vosem: Восемь
-mbhbasebundle.service.helper.deviat: Девять
-mbhbasebundle.service.helper.ten: Десять
-mbhbasebundle.service.helper.eleven: Одинадцать
-mbhbasebundle.service.helper.twelve: Двенадцать
-mbhbasebundle.service.helper.thirteen: Тренадцать
-mbhbasebundle.service.helper.fourteen: Четырнадцать
-mbhbasebundle.service.helper.fifteen: Пятнадцать
-mbhbasebundle.service.helper.sixteen: Шестнадцать
-mbhbasebundle.service.helper.seventeen: Семнадцать
-mbhbasebundle.service.helper.eighteen: Восемнадцать
-mbhbasebundle.service.helper.nineteen: Девятнадцать
-mbhbasebundle.service.helper.million: миллион
-mbhbasebundle.service.helper.millionа: миллиона
-mbhbasebundle.service.helper.millionov: миллионов
-mbhbasebundle.service.helper.milliard: миллиард
-mbhbasebundle.service.helper.milliardov: миллиардов
 mbhbasebundle.view.partials.datepickerperiodselect.period: Период
 mbhbasebundle.view.pdftemplates.individual.izveshcheniye: Извещение
 mbhbasebundle.view.pdftemplates.individual.kassir: Кассир
@@ -105,6 +73,11 @@ mbhbasebundle.view.mailer.order.sposob: Способ
 mbhbasebundle.view.mailer.order.oplaty: оплаты
 services: услуга|услуги|услуг
 nights: ночь|ночи|ночей
+days: день|дня|дней
+children: реб|реб|дет
+children.full: ребенок|ребенка|детей
+adults.full: взрослый|взрослых|взрослых
+age.full: год|года|лет
 twig.extension.jan: янв
 twig.extension.feb: февр
 twig.extension.march: март
@@ -181,6 +154,8 @@ mailer.order.total_paid: Всего оплачено
 mailer.order.surcharges: 'Доплата составляет'
 mailer.order.phone: Телефон
 mailer.order.number: Номер
+mailer.order.arrival: 'Заезд'
+mailer.order.departure: 'Выезд'
 mailer.order.numbers: Номеров
 mailer.order.customer: Заказчик
 mailer.order.payment: Оплата
@@ -358,6 +333,7 @@ menu.label.reports.managers: Менеджеры
 menu.label.reports.invite: 'Визовые приглашения'
 menu.label.reports.analystics: Аналитика
 menu.label.reports.polls: Оценки
+menu.label.reports.daily_report: 'Денежные средства'
 menu.label.reports.windows: Окна
 menu.label.reports.work_shift: 'Рабочие смены'
 menu.label.reports.fms: 'Для ФМС'
@@ -382,7 +358,7 @@ menu.configs.warehouse: Склад
 menu.communication.label: Взаимодействие
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.your_hotel: ВашОтель
-menu.communication.label.onlineform: 'Онлайн форма'
+menu.communication.label.onlineform: 'Онлайн модуль'
 menu.communication.label.polls: Оценки
 menu.communication.label.invite: 'Визовое приглашение'
 menu.communication.label.hundred_one_hotels: '101 Отель'
@@ -456,7 +432,7 @@ basebundle.menu.warehouse: Склад
 basebundle.menu.interaction: Взаимодействие
 basebundle.menu.additional_channels: 'Дополнительные каналы'
 basebundle.menu.vashotel: ВашОтель
-basebundle.menu.onlineform: 'Онлайн форма'
+basebundle.menu.onlineform: 'Онлайн модуль'
 basebundle.menu.estimates: Оценки
 basebundle.menu.visa_invitation: 'Визовое приглашение'
 basebundle.menu.create_new_hotel: 'Создать новый отель'
@@ -526,9 +502,6 @@ forms.export_type.main_group: Настройки генерируемого до
 forms.export_type.fields.label: Названия полей
 forms.export_type.fields.help: Имена экспортируемых полей
 
-notifier.config.label.client: Почтовые уведомления клиентов
-notifier.config.label.stuff: Почтовые уведомления персонала
-
 notifier.config.label.cash_confirm: Оплата документа
 notifier.config.label.arrival: Прибытие
 notifier.config.label.feedback: Оценка
@@ -543,10 +516,87 @@ notifier.config.title.cash_confirm: Уведомление о подтвержд
 notifier.config.title.arrival: Уведомление о прибытии
 notifier.config.title.feedback: Письмо с просьбой об оценке
 notifier.config.title.online: Уведомление о брони из онлайн формы
-notifier.config.title.channel_manager: Уведомление брони от ChannelManager
+notifier.config.title.channel_manager_order: Уведомление брони от ChannelManager
 notifier.config.title.online_payment_confirm: Подтверждение онлайн оплаты
 notifier.config.title.confirm_order: Подтверждение заказа
 notifier.config.title.unpaid: Уведомление о заказе без оплаты
 notifier.config.title.online_order: Уведомление о брони сделанной онлайн (форма)
 notifier.config.title.task: Уведомления о задачах
 
+form.clientConfigType.notification_group: Настройка уведомлений
+form.clientConfigType.notification.label: Список уведомлений для клиентов
+form.clientConfigType.notification.help: Выберите тип уведомлений доступный для рассылки клиентам
+
+facilities.parking: 'Парковка'
+facilities.fitness: 'Фитнес-центр'
+facilities.swimming: 'Бассейн'
+facilities.sauna: 'Баня/Сауна'
+facilities.internet: 'Интернет-класс'
+facilities.shopping: 'Шопинг'
+facilities.restaurant: 'Ресторан'
+facilities.cafeteria: 'Кафетерий'
+facilities.fastfood: 'Закусочная'
+facilities.beach-bar: 'Бар на пляже'
+facilities.beer: 'Пивной бар'
+facilities.baggage-safe: 'Комната хранения'
+facilities.baggage-man: 'Носильщик'
+facilities.disc-floppy: 'Гостевой офис'
+facilities.spa: 'Спа-салон'
+facilities.lounge: 'Зона отдыха'
+facilities.skiing: 'Лыжная трасса'
+facilities.chapel: 'Часовня'
+facilities.animals: 'Разрешены животные'
+facilities.no-animals: 'Размещение с животными запрещено'
+facilities.credit-card: 'Кредитные карты принимаются'
+facilities.cc-nc: 'Иностранная валюта не принимается'
+facilities.breakfast: 'Завтрак включен'
+facilities.reception: 'Круглосуточная стойка регистрации'
+facilities.wifi: 'Wi-Fi'
+facilities.free-wifi: 'Бесплатный Wi-Fi'
+facilities.car-side: 'Прокат автомобиля'
+facilities.taxi: 'Заказ такси'
+facilities.menu: 'Заказ еды'
+facilities.travelling: 'Заказ экскурсий'
+facilities.lock: 'Контроль доступа'
+facilities.camera: 'Видеонаблюдение'
+facilities.keys: 'Электронные замки'
+facilities.metro: 'Близость метрополитена'
+facilities.disability: 'Доступ для маломобильных граждан'
+facilities.blind: 'Доступ для слепых граждан'
+facilities.maleroom: 'Мужская комната'
+facilities.femaleroom: 'Женская комната'
+facilities.ruby: 'Люкс'
+facilities.bed: 'Односпальная кровать'
+facilities.double-bed: 'Двуспальная кровать'
+facilities.sofa: 'Диван-кровать'
+facilities.armchair: 'Кресло'
+facilities.table: 'Стол'
+facilities.platen: 'Столик'
+facilities.chair: 'Стул'
+facilities.dresstable: 'Трюмо'
+facilities.wardrobe: 'Платяной шкаф'
+facilities.bookcase: 'Книжный шкаф'
+facilities.torchere: 'Торшер'
+facilities.safe: 'Сейф'
+facilities.kitchen: 'Кухня'
+facilities.bar: 'Минибар'
+facilities.teapot: 'Чайник'
+facilities.coffee: 'Кофе-машина'
+facilities.fridge: 'Холодильник'
+facilities.bath: 'Ванная'
+facilities.sink: 'Умывальник'
+facilities.shower: 'Душ'
+facilities.toilets: 'Туалет'
+facilities.ws: 'Унитаз'
+facilities.sign-in: 'Запасной выход'
+facilities.telephone: 'Телефон'
+facilities.fan: 'Вентилятор'
+facilities.conditioner: 'Кондиционер'
+facilities.modern-tv: 'Современный телевизор'
+facilities.old-tv: 'Телевизор'
+facilities.homecinema: 'Домашний кинотеатр'
+facilities.washmachine: 'Стиральная машина'
+facilities.radio: 'Радио'
+facilities.iron: 'Утюг'
+facilities.plug: 'Электророзетка'
+facilities.board-games: 'Настольные игры'

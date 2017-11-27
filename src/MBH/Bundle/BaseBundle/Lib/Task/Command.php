@@ -42,7 +42,7 @@ class Command
      * @param bool $logOutput
      * @internal param array $commandParams
      */
-    public function __construct(string $command, array $params = [], string $client, string $env, bool $debug, bool $async = false, bool $logOutput = true)
+    public function __construct(string $command, array $params = [], string $client = null, string $env, bool $debug, bool $async = false, bool $logOutput = true)
     {
         $this->command = $command;
         $this->commandParams = $params;

@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ClientBundle\Controller;
 
-
 use Liip\ImagineBundle\Templating\ImagineExtension;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
@@ -21,7 +20,7 @@ use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use Vich\UploaderBundle\Twig\Extension\UploaderExtension;
 
 /**
  * Class DocumentTemplateController
@@ -53,6 +52,8 @@ class DocumentTemplateController extends BaseController
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_NEW')")
      * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function newAction(Request $request)
     {
@@ -65,7 +66,7 @@ class DocumentTemplateController extends BaseController
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('clientbundle.controller.documentTemplateController.entry_successfully_created'));
+            $this->addFlash('success', 'clientbundle.controller.documentTemplateController.entry_successfully_created');
             return $this->afterSaveRedirect('document_templates', $entity->getId());
         }
 
@@ -81,6 +82,9 @@ class DocumentTemplateController extends BaseController
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_EDIT')")
      * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
+     * @param DocumentTemplate $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAction(DocumentTemplate $entity, Request $request)
     {
@@ -91,6 +95,7 @@ class DocumentTemplateController extends BaseController
             if($form->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();
+                $this->addFlash('success', 'clientbundle.controller.documentTemplateController.entry_successfully_eited');
 
                 return $this->afterSaveRedirect('document_templates', $entity->getId());
             }
@@ -108,6 +113,7 @@ class DocumentTemplateController extends BaseController
      * @Method("GET")
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_VIEW')")
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
+     * @param DocumentTemplate $documentTemplate
      * @return Response
      * @deprecated
      */
@@ -140,6 +146,7 @@ class DocumentTemplateController extends BaseController
         $env->addExtension(new AssetExtension($this->get('assets.packages')));
         $env->addExtension(new HttpFoundationExtension($this->get('request_stack')));
         $env->addExtension(new ImagineExtension($this->get('liip_imagine.cache.manager')));
+        $env->addExtension(new UploaderExtension($this->get('vich_uploader.templating.helper.uploader_helper')));
 
         $order = $package->getOrder();
         $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
@@ -151,8 +158,8 @@ class DocumentTemplateController extends BaseController
             'payer' => $order->getPayer(),
             'organization' => $organization,
             'user' => $this->getUser(),
-            'arrivalTimeDefault' => $this->getParameter('mbh_package_arrival_time'),
-            'departureTimeDefault' => $this->getParameter('mbh_package_departure_time')
+            'arrivalTimeDefault' => $hotel->getPackageArrivalTime(),
+            'departureTimeDefault' => $hotel->getPackageDepartureTime()
         ];
 
         $params = $this->addCalculatedParams($params, $package);
@@ -206,8 +213,9 @@ class DocumentTemplateController extends BaseController
      * @Route("/delete/{id}", name="document_templates_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_DELETE')")
-     * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
+     * @param DocumentTemplate $entity
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(DocumentTemplate $entity)
     {

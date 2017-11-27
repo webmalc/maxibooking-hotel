@@ -239,7 +239,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Hash()
+     * @ODM\Field(type="hash")
      * @Assert\Type(type="array")
      * @deprecated
      */
@@ -305,7 +305,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\DateTime()
      */
     protected $arrivalTime;
@@ -313,7 +313,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\DateTime()
      */
     protected $departureTime;
@@ -335,7 +335,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      */
     protected $isPercentDiscount = true;
@@ -343,7 +343,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isCheckIn = false;
@@ -351,7 +351,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isCheckOut = false;
@@ -359,7 +359,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isSmoking = false;
@@ -367,7 +367,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $corrupted = false;
@@ -375,7 +375,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isLocked = false;
@@ -383,17 +383,22 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isForceBooking = false;
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $childAges = [];
 
+    /**
+     * @var SearchQuery
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\SearchQuery")
+     */
+    protected $searchQuery;
     /**
      * Set tariff
      *
@@ -759,6 +764,7 @@ class Package extends Base implements \JsonSerializable
         $this->tourists = new ArrayCollection();
         $this->accommodations = new ArrayCollection();
         $this->prices = new ArrayCollection();
+        $this->searchQuery = new ArrayCollection();
     }
 
 
@@ -812,6 +818,14 @@ class Package extends Base implements \JsonSerializable
     public function getPaid()
     {
         return $this->getOrder()->getPaid();
+    }
+
+    /**
+     * @return float|int
+     */
+    public function getCalculatedPayment()
+    {
+        return $this->getOrder()->getPrice() == 0 ? 0 : round($this->getPrice() / $this->getOrder()->getPrice() * $this->getPaid(), 2);
     }
     
     /**
@@ -1782,5 +1796,24 @@ class Package extends Base implements \JsonSerializable
         }
 
         return null;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getSearchQuery()
+    {
+        return $this->searchQuery;
+    }
+
+    /**
+     * @param SearchQuery $searchQuery
+     * @return Package
+     */
+    public function addSearchQuery(SearchQuery $searchQuery): Package
+    {
+        $this->searchQuery->add($searchQuery);
+
+        return $this;
     }
 }

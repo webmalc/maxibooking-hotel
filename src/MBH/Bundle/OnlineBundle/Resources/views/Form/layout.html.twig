@@ -7,22 +7,31 @@
     {{ parent() }}
     <script src="{{ asset('assets/vendor/codemirror/lib/codemirror.js') }}"></script>
     <script src="{{ asset('assets/vendor/codemirror/mode/css/css.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/twig/twig.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/xml/xml.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/javascript/javascript.js') }}"></script>
     <script src="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.js') }}"></script>
     <script>
         var elements = [
             {
-                elementId : 'mbh_bundle_onlinebundle_form_type_css',
+                elementId: 'mbh_bundle_onlinebundle_form_type_css',
                 type: 'css'
             },
             {
-                elementId : 'mbh_bundle_onlinebundle_form_type_js',
-                type: 'js'
-            },
-            {
-                elementId : 'mbh_bundle_onlinebundle_form_type_formTemplate',
-                type: 'html'
+                elementId: 'mbh_bundle_onlinebundle_form_type_js',
+                type: 'javascript'
             }
+
         ];
+        if ($("#mbh_bundle_onlinebundle_form_type_formTemplate").length) {
+            elements.push(
+                {
+                    elementId: 'mbh_bundle_onlinebundle_form_type_formTemplate',
+                    type: 'xml'
+                }
+            )
+        }
+
         var applyCodeMirror = function (element, mode) {
             CodeMirror.fromTextArea(element, {
                 lineNumbers: true,

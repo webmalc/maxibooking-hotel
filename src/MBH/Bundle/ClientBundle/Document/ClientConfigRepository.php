@@ -52,4 +52,5 @@ class ClientConfigRepository extends DocumentRepository
         $this->fetchConfig()->setIsDisableableOn($disableMode);
         $this->dm->flush();
     }
+
 }

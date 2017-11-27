@@ -9,7 +9,8 @@ views.booking.service.service: Сервис
 views.booking.service.code: Код
 views.booking.service.cancel: Отмена
 views.booking.actions.sync_old: Брони
-views.booking.actions.sync_old_desc: 'Получить все брони за 2 недели'
+views.booking.actions.sync_old_desc: 'За 2 недели'
+views.booking.actions.sync_all_old_desc: 'Все'
 views.booking.tariff.cancel: Отмена
 views.channnelmanager.settings: Настройки
 views.oktogo.room.save: Сохранить
@@ -34,7 +35,11 @@ views.tabs.must_fill_main_settings: 'Необходимо заполнить о�
 views.ostrovok.layout.ostrovok: Ostrovok
 views.hundredOneHotels.layout.hundredOneHotels: '101 отель'
 views.hundredOneHotels.settings: Настройки
+views.expedia.actions.sync_old_orders: Брони
+views.expedia.actions.sync_old_orders.title: Синхронизировать брони
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия .'
+services.channel_manager.error.unexpected_modified_order: 'Поступила информация об изменении брони номер "%orderId%" из системы бронирования "%service_name%". Однако в программе "Максибукинг" информации о такой брони нет. Новая бронь с поступившими данными создана. Воспользуйтесь личным кабинетом системы бронирования "%service_name%" для уточнения информации об измененной брони. И сообщите, пожалуйста, об ошибке в службу поддержки программы Максибукинг.'
+services.channel_manager.error.unexpected_removed_order: 'Поступила информация об отмене брони номер "%orderId%" из системы бронирования "%service_name%". Однако в программе "Максибукинг" информации о такой брони нет. Воспользуйтесь личным кабинетом системы бронирования "%service_name%" для уточнения информации об отмененной брони. Сообщите, пожалуйста, об ошибке в службу поддержки программы Максибукинг.'
 
 channelManager.booking.notification.subject.new: 'Новый заказ Booking.com'
 channelManager.booking.notification.subject.edit: 'Изменен заказ Booking.com'
@@ -100,6 +105,8 @@ channelManager.hotels.notification.error.subject: Ошибка Hotels.com
 channelManager.hotels.notification.error: "Ошибка при обработке заказа Hotels.com. Информация: %info%"
 channelManager.booking.notification.bottom: 'Внимание! Требуется ручная обработка ситуации. Пожалуйста, свяжитесь с технической поддержкой.'
 channelmanager.empty.config: 'Ошибка синхронизации Channel manager'
+channelmanager.orders_not_fetched.error: 'Загрузите информацию об уже созданных на Booking.com бронях, нажав на кнопку'
+views.channelmanager.actions.sync_all: 'Загрузить'
 views.channelmanager.actions.sync: Синхронизировать
 channelManager.ostrovok.notification.subject.new: 'Новый заказ Ostrovok.ru'
 channelManager.ostrovok.notification.subject.edit: 'Изменен заказ Ostrovok.ru'

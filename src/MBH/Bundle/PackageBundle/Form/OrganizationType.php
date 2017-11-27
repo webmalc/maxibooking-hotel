@@ -163,14 +163,11 @@ class OrganizationType extends AbstractType
 
         $group = $isFull ? $locationGroup : $addGroup;
 
-        $builder->add('city', TextType::class, [ //'document', [
+        $builder->add('cityId', TextType::class, [
             'group' => $group,
             'label' => 'form.organizationType.city',
             'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location', 'class' => 'citySelect'],
         ]);
-
-        $builder->get('city')->addModelTransformer(new EntityToIdTransformer($this->documentManager,
-            'MBHHotelBundle:City'));
 
         $builder->add('street', TextType::class, [
             'group' => $group,

@@ -3,13 +3,13 @@
 namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Form\NotificationConfigType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ColorsConfig;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
 use MBH\Bundle\ClientBundle\Document\Paypal;
 use MBH\Bundle\ClientBundle\Document\Rbk;
+use MBH\Bundle\ClientBundle\Document\RNKB;
 use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
@@ -168,6 +168,12 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $paypal = new Paypal();
                     $paypal->setPaypalLogin($form->get('paypalLogin')->getData());
                     $entity->setPaypal($paypal);
+                    break;
+                case 'rnkb':
+                    $rnkb = new RNKB();
+                    $rnkb->setKey($form->get('rnkbKey')->getData());
+                    $rnkb->setRnkbShopIDP($form->get('rnkbShopIDP')->getData());
+                    $entity->setRnkb($rnkb);
                     break;
                 default:
                     break;

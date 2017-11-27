@@ -226,19 +226,27 @@ class DishOrderController extends BaseController implements CheckHotelController
         /** @var  DishOrderItemRepository $dishOrderRepository */
         $dishOrderRepository = $this->dm->getRepository('MBHRestaurantBundle:DishOrderItem');
         /* @var Cursor $dishorders */
-        $dishorders = $dishOrderRepository->findByQueryCriteria(
+        $qb = $dishOrderRepository->getQueryBuilderQueryCriteria(
             $criteria,
             $tableParams->getStart(),
             $tableParams->getLength(),
             $tableParams->getFirstSort(),
             $this->hotel
         );
-
+        $dishorders = $dishOrderRepository->fetchByQueryBuilder($qb);
+        //TODO: Rebuild to map reduce
+        /*$summary = $dishOrderRepository->getSummary($qb);*/
+        $dishOrderArray = $dishorders->toArray();
+        array_walk($dishOrderArray, function ($dishOrderItem) use (&$summary) {
+            /** @var DishOrderItem $dishOrderItem */
+            $summary += $dishOrderItem->getPrice();
+        });
         return [
             'dishorders' => $dishorders,
             'draw' => $request->get('draw'),
             'total' => count($dishorders->toArray()),
             'recordsFiltered' => count($dishorders),
+            'restaurant_order_total' => $summary
         ];
     }
 

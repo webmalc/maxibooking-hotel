@@ -6,7 +6,7 @@
             {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.begin }} - {{ request.end }}.</strong>
             {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.days }}/<span id="mbh-package-info-nights">{{ request.nights }}</span></strong>.
             {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.packages|length }}</strong><br />
-            {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }} <strong><span class="mbh-results-total-sum"><span id="mbh-package-info-total">{{ request.total }}</span>&nbsp;{{ currency().text }}</span></strong>&nbsp; {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }} <span class="mbh-results-total-sum"><span id="mbh-package-info-total-packages">{{ request.totalPackages }}</span>&nbsp;{{ currency().text }}</span>&nbsp; <span style="display: none;>{{ 'views.api.getPaymentType.services'|trans({}, 'MBHOnlineBundle') }} <span class="mbh-results-total-sum"><span id="mbh-package-info-total-services">{{ request.totalServices }}</span>&nbsp;{{ currency().text }}</span></span><br />
+            {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }} <strong><span class="mbh-results-total-sum"><span id="mbh-package-info-total">{{ request.total }}</span>&nbsp;{{ currency().text }}</span></strong>&nbsp; {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }} <span class="mbh-results-total-sum"><span id="mbh-package-info-total-packages">{{ request.totalPackages }}</span>&nbsp;{{ currency().text }}</span>&nbsp; <span style="display: none;">{{ 'views.api.getPaymentType.services'|trans({}, 'MBHOnlineBundle') }} <span class="mbh-results-total-sum"><span id="mbh-package-info-total-services">{{ request.totalServices }}</span>&nbsp;{{ currency().text }}</span></span><br />
             {% if request.tariff is defined %}
                 {{ 'views.api.getPaymentType.tariff'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.tariff.title }}</strong>
             {% endif %}
@@ -17,7 +17,7 @@
         </div>
 
             {% if services|length %}
-                
+
                 <div id="mbh-results-services-wrapper">
                     <div class="panel panel-primary spacer-top">
                         <div class="panel-heading">
@@ -49,7 +49,7 @@
                                             <span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span></td>
                                         <td class="mbh-right">
                                             <span class="mbh-results-services-prices" data-value="{{ service.price }}">
-                                                {{ service.price|number_format }} р.
+                                                {{ service.price|number_format ~ ' ' ~ currency()['text'] }}
                                             </span><br>
                                         </td>
                                         <td>
@@ -64,7 +64,7 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,6 +94,16 @@
                         </div>
                     </div>
 
+                    {% if config.requestPatronymic %}
+                        <div class="mbh-user-form-row form-group">
+                            <label for="mbh-user-form-patronymic" class="col-sm-2 control-label">{{ 'views.api.getUserForm.patronymic'|trans({}, 'MBHOnlineBundle') }}<sup>*</sup></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control input-sm" id="mbh-user-form-patronymic" name="patronymic"
+                                       required value="" placeholder="{{ 'views.api.get_user_form.default_patronymic'|trans({}, 'MBHOnlineBundle') }}">
+                            </div>
+                        </div>
+                    {% endif %}
+
                     <div class="mbh-user-form-row form-group">
                         <label for="mbh-user-form-phone" class="col-sm-2 control-label">{{ 'views.api.getUserForm.phone'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
                         <div class="col-sm-10">
@@ -116,33 +126,24 @@
                         </div>
                     </div>
 
-                    <div class="mbh-user-form-row form-group">
-                        <label for="mbh-user-form-arrival" class="col-sm-2 control-label">{{ 'views.api.getUserForm.check_in_time'|trans({}, 'MBHOnlineBundle') }}</label>
-                        <div class="col-sm-10">
-                        <select id="mbh-user-form-arrival" class="select2 input-sm" name="arrival">
-                            <option></option>
-                            {% for i in 0..23 %}
-                                <option value="{{ i }}"
-                                        {% if i == arrival %}selected="selected"{% endif %}>{{ "%02d"|format(i) }}:00
-                                </option>
-                            {% endfor %}
-                        </select>
+                    {% if config.requestInn %}
+                        <div class="mbh-user-form-row form-group">
+                            <label for="mbh-user-form-inn" class="col-sm-2 control-label">{{ 'views.api.getUserForm.inn'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control input-sm" maxlength="12" id="mbh-user-form-inn" name="inn" required>
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
 
-                    <div class="mbh-user-form-row form-group">
-                        <label for="mbh-user-form-departure" class="col-sm-2 control-label">{{ 'views.api.getUserForm.check_out_time'|trans({}, 'MBHOnlineBundle') }}</label>
-                        <div class="col-sm-10">
-                        <select id="mbh-user-form-departure" class="select2 input-sm" name="departure">
-                            <option></option>
-                            {% for i in 0..23 %}
-                                <option value="{{ i }}"
-                                        {% if i == departure %}selected="selected"{% endif %}>{{ "%02d"|format(i) }}:00
-                                </option>
-                            {% endfor %}
-                        </select>
+                    {% if config.requestTouristDocumentNumber %}
+                        <div class="mbh-user-form-row form-group"  style="margin-bottom: 0">
+                            <label for="mbh-user-form-document-number" class="col-sm-2 control-label">{{ 'views.api.getUserForm.document_number'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
+                            <div class="col-sm-10">
+                                <input style="margin-top: 26px;" type="text" class="form-control input-sm" id="mbh-user-form-document-number" name="documentNumber" required value="">
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
+                    <br>
 
                     <div class="mbh-user-form-row form-group">
                         <label for="mbh-user-form-note" class="col-sm-2 control-label">{{ 'views.api.getUserForm.comment'|trans({}, 'MBHOnlineBundle') }}</label>
@@ -151,6 +152,14 @@
                         </div>
                     </div>
 
+                    {% if config.personalDataPolicies is not empty %}
+                        <div id="personal-data-form-group" class="mbh-user-form-row form-group">
+                            <div class="col-sm-offset-2">
+                                <input type="checkbox" id="mbh-form-personal-data" required>&nbsp;<sup>*</sup>
+                                {{ 'views.api.getUserForm.personal_data_policies'|trans({url: config.personalDataPolicies}, 'MBHOnlineBundle')|raw}}
+                            </div>
+                        </div>
+                    {% endif %}
 
                     <div class="mbh-user-form-row form-group">
                         <div class="col-sm-8 col-sm-offset-2">
@@ -161,7 +170,6 @@
             </div>
         </div>
     </div>
-
 
         <div id="mbh-results-actions">
             <button id="mbh-user-form-previous" class="button btn btn-primary">

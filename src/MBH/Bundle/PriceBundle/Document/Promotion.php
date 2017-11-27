@@ -79,14 +79,14 @@ class Promotion extends Base implements ConditionsInterface
     protected $discount;
 
     /**
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @var bool
      * @Assert\Type(type="boolean")
      */
     protected $isPercentDiscount;
 
     /**
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @var bool
      * @Assert\Type(type="boolean")
      */

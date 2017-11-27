@@ -1,4 +1,6 @@
 /*global window, $, services, document, datepicker, deleteLink, Routing, mbh, Translator */
+var PASSPORT_DOCUMENT_TYPE_CODE = "103008";
+var LIMIT_OF_EXPORTED_TO_KONTUR_TOURISTS = 100;
 
 var docReadyTourists = function () {
     'use strict';
@@ -6,7 +8,7 @@ var docReadyTourists = function () {
     var $touristForm = $('#tourist-form');
     //roomType rooms datatables
     var $touristTable = $('#tourist-table');
-    var $citizenshipSelect = $touristForm.find('#form_citizenship');
+    var $citizenshipSelect = $touristForm.find('#mbhpackage_bundle_tourist_filter_form_citizenship');
     var touristFilterFormCallback = function () {
         return $.param({'form': getTouristFilterFormData($touristForm, $citizenshipSelect)});
     };
@@ -68,7 +70,7 @@ var docReadyTourists = function () {
         $guestForm.find('.guestPhone').val(data.phone);
         $guestForm.find('.guestEmail').val(data.email);
         $guestForm.find('select.guestCommunicationLanguage').select2('val', [data.communicationLanguage]);
-    }
+    };
     var $guestSelect = $guestForm.find('.findGuest');
     $guestSelect.change(function () {
         if (!$(this).val()) {
@@ -132,128 +134,74 @@ var docReadyTourists = function () {
         });
     }());
 
-    var $authorityOrganTextInput = $('#mbh_document_relation_authorityOrganText');
-    var $authorityOrganCodeInput = $('#mbh_document_relation_authorityOrganCode');
-    select2Text($('#mbh_document_relation_authorityOrgan')).select2({
-        minimumInputLength: 3,
-        placeholder: Translator.trans('tourist.make_a_choice'),
-        allowClear: true,
-        ajax: {
-            url: Routing.generate('authority_organ_json_list'),
-            dataType: 'json',
-            data: function (term) {
-                return {
-                    query: term // search term
-                };
-            },
-            processResults: function (data, request) {
-                if (data.results.length == 0) {
-                    data.results.push({
-                        id: request.term,
-                        text: request.term
-                    });
-                }
-                //console.log(data.results);
-                return data;
-            }
-        },
-        initSelection: function (element, callback) {
-            var id = $(element).val();
-            if (id.length == 24) { //mongoID
-                $.ajax(Routing.generate('ajax_authority_organ', {id: id}), {
-                    dataType: "json"
-                }).done(function (data) {
-                    callback(data);
-                    $authorityOrganTextInput.val('');
-
-                    $authorityOrganCodeInput.val(data.code);
-                    $authorityOrganCodeInput.attr('disabled', true);
-                });
-            } else if ($authorityOrganTextInput.val()) {
-                callback({
-                    id: $authorityOrganTextInput.val(),
-                    text: $authorityOrganTextInput.val()
-                });
-                $authorityOrganCodeInput.attr('disabled', false);
-            } else {
-                $authorityOrganCodeInput.attr('disabled', false);
-            }
-
-        },
-        dropdownCssClass: "bigdrop"
-    }).on('change', function (name, evt) {
-        var $this = $(this);
-        var value = $this.select2('val');
-        if (value && value.length == 24) { //mongoID
-            $authorityOrganCodeInput.attr('disabled', true);
-            $.ajax(Routing.generate('ajax_authority_organ', {id: value}), {
-                dataType: "json"
-            }).done(function (data) {
-                $authorityOrganCodeInput.val(data.code);
-            });
-        } else {
-            if (value) {
-                $authorityOrganTextInput.val(value);
-            }
-            $authorityOrganCodeInput.attr('disabled', false);
-        }
-    });
-
-    var $newCountryModal = $('#new-country-modal');
-    var $documentRelationCountry = $('#mbh_document_relation_country');
-    $('.add-country-button').click(function () {
-        $newCountryModal.modal('show');
-    });
-
-    $('#new-country-create').click(function () {
-        var $errorsBlock = $('#country-name-error');
-        $errorsBlock.html('');
-        var newCountryName = $('#new-country-name').val();
-        var $loader = $('#loader');
-        $loader.html(mbh.loader.html).show();
-        var $modalContent = $('#new-country-content');
-        $modalContent.hide();
-        $.ajax({
-            url: Routing.generate('new_vega_state'),
-            data: {countryName: newCountryName},
-            method: 'POST',
-            success: function (response) {
-                console.log(response);
-                $modalContent.show();
-                $loader.hide();
-                if (response.success) {
-                    $('#new-country-name').val('');
-                    var customCountryOption = document.createElement('option');
-                    customCountryOption.innerHTML = response.country.name;
-                    customCountryOption.value = response.country.id;
-                    $documentRelationCountry.append(customCountryOption);
-                    $documentRelationCountry.val(response.country.id);
-                    $newCountryModal.modal('hide');
-                } else {
-                    response.errors.forEach(function(error) {
-                        $errorsBlock.append(error + '<br>');
-                    });
-                }
-            }
-        });
+    $('#mbh_address_object_decomposed_structure').TouchSpin({
+        min: 1,
+        max: 999,
+        step: 1,
+        stepinterval: 1
     });
 
     new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
     new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
+
+    initSelect2TextFieldsForBilling();
+    switchAuthOrganFieldsVisibility();
+    $('#mbh_document_relation_type').change(function () {
+        switchAuthOrganFieldsVisibility();
+    });
+    hangOnExportToKonturButtonClick();
 };
 
 /*global document, window, Routing, $ */
 $(document).ready(function () {
     'use strict';
-
     docReadyTourists();
 });
+
+function switchAuthOrganFieldsVisibility() {
+    var isPassportSelected = $('#mbh_document_relation_type').val() === PASSPORT_DOCUMENT_TYPE_CODE;
+    var $authorityOrganIdFormGroup = $('#mbh_document_relation_authorityOrganId').parent().parent();
+    var $authorityOrganTextFormGroup = $('#mbh_document_relation_authorityOrganText').parent().parent();
+    if (isPassportSelected) {
+        $authorityOrganIdFormGroup.show();
+        $authorityOrganIdFormGroup.find('.select2-container').css('width', '100%');
+        $authorityOrganTextFormGroup.hide();
+    } else {
+        $authorityOrganIdFormGroup.hide();
+        $authorityOrganTextFormGroup.show();
+    }
+}
+
+function initSelect2TextFieldsForBilling() {
+    initSelect2TextForBilling('mbh_document_relation_citizenshipTld', BILLING_API_SETTINGS.countries);
+    initSelect2TextForBilling('mbh_document_relation_countryTld', BILLING_API_SETTINGS.countries);
+    initSelect2TextForBilling('mbh_document_relation_authorityOrganId', BILLING_API_SETTINGS.fms);
+    initSelect2TextForBilling('mbh_address_object_decomposed_countryTld', BILLING_API_SETTINGS.countries);
+    initSelect2TextForBilling('mbh_address_object_decomposed_regionId', BILLING_API_SETTINGS.regions);
+    initSelect2TextForBilling('form_visa_fmsKppId', BILLING_API_SETTINGS.fmsKpp);
+}
 
 function getTouristFilterFormData($touristForm, $citizenshipSelect) {
     return {
         begin: $touristForm.find('#mbhpackage_bundle_tourist_filter_form_begin').val(),
         end: $touristForm.find('#mbhpackage_bundle_tourist_filter_form_end').val(),
         citizenship: $citizenshipSelect.val(),
-        _token: $touristForm.find('#mbhpackage_bundle_tourist_filter_form__token').val()
+        _token: $touristForm.find('#mbhpackage_bundle_tourist_filter_form__token').val(),
+        search: $('#tourist-table_filter').find('input[type="search"]').val()
     }
+}
+
+function hangOnExportToKonturButtonClick() {
+    var exportUrl = Routing.generate('export_to_kontur');
+    var $touristForm = $('#tourist-form');
+    var $citizenshipSelect = $('#mbhpackage_bundle_tourist_filter_form_citizenship');
+
+    $('#fms-export-button').click(function () {
+        var numberOfExportedTourists = $('#tourist-table').DataTable().page.info().recordsTotal;
+        if (numberOfExportedTourists > LIMIT_OF_EXPORTED_TO_KONTUR_TOURISTS) {
+            $('#kontur-export-confirmation').modal('show');
+        } else {
+            window.open(exportUrl + '?' + $.param({'form': getTouristFilterFormData($touristForm, $citizenshipSelect)}));
+        }
+    });
 }

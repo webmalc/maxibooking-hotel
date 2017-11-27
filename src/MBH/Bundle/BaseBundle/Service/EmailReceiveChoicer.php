@@ -4,7 +4,6 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 
-use MBH\Bundle\BaseBundle\Document\NotificationConfig;
 use MBH\Bundle\BaseBundle\Document\NotificationConfigRepository;
 use MBH\Bundle\BaseBundle\Lib\ChoicerInterface;
 use MBH\Bundle\BaseBundle\Lib\NotifierChoicerException;

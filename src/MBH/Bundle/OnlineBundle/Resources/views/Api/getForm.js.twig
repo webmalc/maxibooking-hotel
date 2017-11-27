@@ -30,6 +30,18 @@ jQuery(document).ready(function() {
         }
     };
 
+    var resizeHandler = function () {
+        var formHeight = document.getElementById('mbh-form-wrapper').clientHeight;
+        window.parent.postMessage({
+            type: 'mbh',
+            action: 'formResize',
+            formHeight: formHeight
+        }, '*')
+    };
+    setInterval(function() {
+        resizeHandler();
+    }, 300);
+
     if (window.addEventListener) {
         window.addEventListener("message", processMessage, false);
     } else {
@@ -169,8 +181,8 @@ jQuery(document).ready(function() {
 });
 
 function setChildAgeForms(childrenCount) {
+    var $childAgesBlock = jQuery('.children-ages');
     if (isDisplayChildAges) {
-        var $childAgesBlock = jQuery('.children-ages');
         if (childrenCount > 0) {
             $childAgesBlock.show();
         } else if ($childAgesBlock) {
@@ -191,5 +203,7 @@ function setChildAgeForms(childrenCount) {
                 selectFormCount--;
             }
         }
+    } else {
+        $childAgesBlock.hide();
     }
 }

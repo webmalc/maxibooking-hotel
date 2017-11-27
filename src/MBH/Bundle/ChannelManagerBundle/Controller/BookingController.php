@@ -10,6 +10,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\BookingType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
+use MBH\Bundle\ChannelManagerBundle\Services\ChannelManager;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -55,12 +56,33 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     {
         $config = $this->hotel->getBookingConfig();
         if ($config) {
-            $this->get('mbh.channelmanager')->pullOrders('booking', true);
+            $this->get('mbh.channelmanager')->pullOrders('booking', ChannelManager::OLD_PACKAGES_PULLING_PARTLY_STATUS);
             $this->addFlash(
                 'warning',
                 $this->get('translator')->trans('controller.bookingController.packages_sync_start')
             );
         }
+
+        return $this->redirect($this->generateUrl('booking'));
+    }
+
+    /**
+     * Sync all old packages
+     * @Route("/packages/sync_all", name="booking_all_packages_sync")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_BOOKING')")
+     */
+    public function syncAllPackages()
+    {
+        $config = $this->hotel->getBookingConfig();
+        if ($config) {
+            $this->get('mbh.channelmanager')->pullOrders('booking', ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS);
+            $this->addFlash(
+                'warning',
+                $this->get('translator')->trans('controller.bookingController.packages_sync_start')
+            );
+        }
+
         return $this->redirect($this->generateUrl('booking'));
     }
     

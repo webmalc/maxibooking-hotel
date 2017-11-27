@@ -65,7 +65,7 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
             $tripRoute = new TripRoute();
             $tripRoute
                 ->setHotel($this->hotel->getTitle())
-                ->setAddress($this->hotel->getCity().' '.$this->hotel->getRegion().' '.$this->hotel->getStreet());
+                ->setAddress($this->hotel->getCityId().' '.$this->hotel->getRegionId().' '.$this->hotel->getStreet());
             $invite->addTripRoute($tripRoute);
             $form->setData($invite);
         }

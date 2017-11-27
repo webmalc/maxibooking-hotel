@@ -99,13 +99,13 @@ services:
       calls:
         - [attach, ["@mbh.system.messenger"]]
         - [attach, ["@mbh.mailer"]]
-      arguments: ['@service_container']
+      arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.notifier.mailer:
           class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
           calls:
             - [attach, ["@mbh.mailer"]]
-          arguments: ['@service_container']
+          arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.mailer:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Mailer
@@ -312,6 +312,9 @@ services:
             - '@mbh.export_data_handler'
             - '@translator'
 
+    mbh.zip_manager:
+        class: MBH\Bundle\BaseBundle\Service\Export\ZipManager
+
     mbh.command.image_migrate:
         class: MBH\Bundle\BaseBundle\Command\ImageMigrateCommand
         arguments: ['@mbh.service.ssh_commands', '@mbh.app.root_dir', '@mbh.client.name']
@@ -326,16 +329,6 @@ services:
         class: AppKernel
         factory: ['@kernel',getRootDir]
 
-    mbh.notification_config_repository:
-        class: MBH\Bundle\BaseBundle\Document\NotificationConfigRepository
-        factory: ["@doctrine_mongodb.odm.default_document_manager", getRepository]
-        arguments:
-            - MBH\Bundle\BaseBundle\Document\NotificationConfig
-
-    mbh.service.email_receive_choicer:
-        class: MBH\Bundle\BaseBundle\Service\EmailReceiveChoicer
-        arguments: ['@mbh.notification_config_repository']
-
     mbh.swiftmailer.array.logger:
         public: false
         class: MBH\Bundle\BaseBundle\Lib\SwiftMailerLogger
@@ -346,4 +339,13 @@ services:
         arguments: ["@mbh.swiftmailer.array.logger"]
         tags:
             - { name: 'swiftmailer.default.plugin' }
+    mbh.report:
+        class: MBH\Bundle\BaseBundle\Lib\Report\Report
+        shared: false
+        arguments:
+            - '@templating'
 
+    mbh.csv_reader:
+        class: MBH\Bundle\BaseBundle\Service\CsvReader
+        arguments:
+            - '@kernel'

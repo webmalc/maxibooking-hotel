@@ -3,7 +3,6 @@
 namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
@@ -24,7 +23,7 @@ class HotelContactInformationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('city', TextType::class, [
+            ->add('cityId', TextType::class, [
                 'label' => 'form.hotelExtendedType.city',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => true,
@@ -72,6 +71,33 @@ class HotelContactInformationType extends AbstractType
         ;
 
         $builder
+            ->add('aboutLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.about_link.label',
+                'required' => false,
+            ])
+            ->add('contactsLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.contacts_link.label',
+                'required' => false,
+            ])
+            ->add('mapLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.map_link.label',
+                'required' => false,
+            ])
+            ->add('roomsLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.rooms_link.label',
+                'required' => false,
+            ])
+            ->add('pollLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.poll_link.label',
+                'required' => false,
+            ]);
+
+        $builder
             ->add('latitude', TextType::class, [
                 'label' => 'form.hotelExtendedType.latitude',
                 'group' => 'form.hotelExtendedType.location',
@@ -96,8 +122,6 @@ class HotelContactInformationType extends AbstractType
                 'required' => false
             ])
         ;
-
-        $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }
 
     public function configureOptions(OptionsResolver $resolver)

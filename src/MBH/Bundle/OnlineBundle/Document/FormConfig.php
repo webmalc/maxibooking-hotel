@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\OnlineBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -78,7 +79,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
@@ -88,7 +89,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -97,7 +98,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -106,7 +107,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -115,7 +116,7 @@ class FormConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -174,6 +175,37 @@ class FormConfig extends Base
     private $maxPackages = 5;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    private $personalDataPolicies;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Gedmo\Versioned
+     * @Assert\NotNull()
+     */
+    private $requestInn = false;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Gedmo\Versioned
+     * @Assert\NotNull()
+     */
+    private $requestTouristDocumentNumber = false;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Gedmo\Versioned
+     * @Assert\NotNull()
+     */
+    private $requestPatronymic = false;
+
+    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="int")
@@ -215,6 +247,107 @@ class FormConfig extends Base
           * @Assert\Choice(callback = "getCssLibrariesList", multiple = true)
      */
     private $cssLibraries;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="boolean")
+     */
+    private $isHorizontal = false;
+
+    /**
+     * @return bool
+     */
+    public function isRequestPatronymic(): ?bool
+    {
+        return $this->requestPatronymic;
+    }
+
+    /**
+     * @param bool $requestPatronymic
+     * @return FormConfig
+     */
+    public function setRequestPatronymic(bool $requestPatronymic): FormConfig
+    {
+        $this->requestPatronymic = $requestPatronymic;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequestInn(): ?bool
+    {
+        return $this->requestInn;
+    }
+
+    /**
+     * @param bool $requestInn
+     * @return FormConfig
+     */
+    public function setRequestInn(bool $requestInn): FormConfig
+    {
+        $this->requestInn = $requestInn;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequestTouristDocumentNumber(): ?bool
+    {
+        return $this->requestTouristDocumentNumber;
+    }
+
+    /**
+     * @param bool $requestTouristDocumentNumber
+     * @return FormConfig
+     */
+    public function setRequestTouristDocumentNumber(bool $requestTouristDocumentNumber): FormConfig
+    {
+        $this->requestTouristDocumentNumber = $requestTouristDocumentNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPersonalDataPolicies(): ?string
+    {
+        return $this->personalDataPolicies;
+    }
+
+    /**
+     * @param string $personalDataPolicies
+     * @return FormConfig
+     */
+    public function setPersonalDataPolicies(string $personalDataPolicies)
+    {
+        $this->personalDataPolicies = $personalDataPolicies;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHorizontal(): ?bool
+    {
+        return $this->isHorizontal;
+    }
+
+    /**
+     * @param bool $isHorizontal
+     * @return FormConfig
+     */
+    public function setIsHorizontal(bool $isHorizontal): FormConfig
+    {
+        $this->isHorizontal = $isHorizontal;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -294,7 +427,7 @@ class FormConfig extends Base
 
     public function __construct()
     {
-        $this->hotels = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->hotels = new ArrayCollection();
     }
 
     /**
@@ -442,7 +575,7 @@ class FormConfig extends Base
      * Get paymentTypes
      *
      * @param boolean $online
-     * @return collection $paymentTypes
+     * @return array $paymentTypes
      */
     public function getPaymentTypes($online = true)
     {

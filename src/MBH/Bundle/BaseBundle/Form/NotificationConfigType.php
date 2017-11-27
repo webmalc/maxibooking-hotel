@@ -4,8 +4,6 @@
 namespace MBH\Bundle\BaseBundle\Form;
 
 
-use MBH\Bundle\BaseBundle\Document\NotificationConfig;
-use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;

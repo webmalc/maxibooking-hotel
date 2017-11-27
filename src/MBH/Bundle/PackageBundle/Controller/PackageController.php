@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
@@ -105,7 +106,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         //not_paid time count
         $count['not_paid_time'] = $repository->fetch(array_merge([
                 'paid' => 'not_paid',
-                'end' => new \DateTime($this->container->getParameter('mbh.package.notpaid.time')),
+                'end' => new \DateTime('-' . $this->clientConfig->getNumberOfDaysForPayment() . 'days'),
                 'dates' => 'createdAt'
             ], $data));
         //created_by count
@@ -197,7 +198,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     break;
 
                 case 'not-paid-time':
-                    $notPaidTime = new \DateTime($this->container->getParameter('mbh.package.notpaid.time'));
+                    /** @var ClientConfig $clientConfig */
+                    $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+                    $notPaidTime = new \DateTime('-' . $clientConfig->getNumberOfDaysForPayment().'days');
+
                     $data['paid'] = 'not_paid';
                     $data['dates'] = 'createdAt';
                     $data['end'] = $notPaidTime->format('d.m.Y');
@@ -451,7 +455,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'accommodation' => $request->get('accommodation'),
             'forceBooking' => $request->get('forceBooking'),
             'infants' => $request->get('infants'),
-            'childrenAges' => $request->get('children_age')
+            'childrenAges' => $request->get('children_age'),
+            'savedQueryId' => $request->get('query_id')
 
         ];
 
@@ -994,9 +999,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         });
 
         $this->dm->getFilterCollection()->enable('softdeleteable');
-        $currentDateTime = $this->getParameter('mbh.timezone') !== 'default'
-            ? new \DateTime('now', new \DateTimeZone($this->getParameter('mbh.timezone')))
-            : new \DateTime();
+        $timeZone = $this->helper->getTimeZone();
+        $currentDateTime = new \DateTime('now', new \DateTimeZone($timeZone));
 
         if (!$package->getArrivalTime()) {
             $package->setArrivalTime($currentDateTime);
@@ -1056,14 +1060,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             }
         }
 
-        $arrivalTime = $this->getParameter('mbh_package_arrival_time');
-
         return [
             'periodBegin' => $begin,
             'periodEnd' => $end,
             'emptyIntervalsAccommodation' => $accIntervals,
             'package' => $package,
-            'arrivalTime' => $arrivalTime,
+            'arrivalTime' => $this->hotel->getPackageArrivalTime(),
             'earlyCheckInServiceIsEnabled' => $earlyCheckInServiceIsEnabled,
             'lateCheckOutServiceIsEnabled' => $lateCheckOutServiceIsEnabled,
             'form' => $form->createView(),

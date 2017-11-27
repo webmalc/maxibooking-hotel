@@ -9,7 +9,8 @@
         {% block content %}
             {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'tourist-form'}}) }}
             <div class="form-group">
-                <label><i class="fa fa-calendar" title='{{ 'tourist.index.dates'|trans }}' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-calendar" title='{{ 'tourist.index.dates'|trans }}'
+                          data-toggle='tooltip'></i></label>
                 {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
                 {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
             </div>
@@ -17,7 +18,8 @@
                 {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
             </div>
             <div class="form-group">
-                <label><i class="fa fa-male" title="{{ 'tourist.index.foreign_citizens'|trans }}" data-toggle="tooltip"></i></label>
+                <label><i class="fa fa-male" title="{{ 'tourist.index.foreign_citizens'|trans }}"
+                          data-toggle="tooltip"></i></label>
                 {{ form_widget(form.citizenship) }}
                 {{ form_widget(form._token) }}
                 {{ form_rest(form.search) }}
@@ -32,17 +34,18 @@
         <tr>
             <th class="td-xxs"></th>
             <th class="td-xxs text-center">#</th>
-            <th>{{ 'tourist.index.fio'|trans}}</th>
-            <th class="td-md show-on-print">{{ 'tourist.index.main_document'|trans}}</th>
-            <th class="td-md show-on-print">{{ 'tourist.index.visa'|trans}}</th>
-            <th class="td-md show-on-print">{{ 'tourist.index.migration_card'|trans}}</th>
-            <th class="td-xxs hide-on-print"><i title="{{ 'tourist.index.documents'|trans }}" class="fa fa-book"></i></th>
-            <th class="td-md">{{ 'tourist.index.dates'|trans}}</th>
-            <th class="td-xs">{{ 'tourist.index.room'|trans}}</th>
-            <th class="td-md show-on-print">{{ 'tourist.index.purpose_of_arrival'|trans}}</th>
-            <th class="td-md show-on-print">{{ 'tourist.index.address'|trans}}</th>
-            <th class="td-md hide-on-print">{{ 'tourist.index.date_of_birth'|trans}}</th>
-            <th class="td-md">{{ 'tourist.index.contacts'|trans}}</th>
+            <th>{{ 'tourist.index.fio'|trans }}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.main_document'|trans }}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.visa'|trans }}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.migration_card'|trans }}</th>
+            <th class="td-xxs hide-on-print"><i title="{{ 'tourist.index.documents'|trans }}" class="fa fa-book"></i>
+            </th>
+            <th class="td-md">{{ 'tourist.index.dates'|trans }}</th>
+            <th class="td-xs">{{ 'tourist.index.room'|trans }}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.purpose_of_arrival'|trans }}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.address'|trans }}</th>
+            <th class="td-md hide-on-print">{{ 'tourist.index.date_of_birth'|trans }}</th>
+            <th class="td-md">{{ 'tourist.index.contacts'|trans }}</th>
             <th class="td-sm"></th>
         </tr>
         </thead>
@@ -52,6 +55,47 @@
 
 
     {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'tourist_new', 'role': 'tourist'} %}
-
+    {% embed "MBHBaseBundle:Actions:base_list.html.twig" %}
+        {% block left %}
+            {% if is_granted('ROLE_TOURIST_NEW') %}
+                <li>
+                    <button onclick="location.href = '{{ path('tourist_new') }}'" type="submit"
+                            class="btn btn-success navbar-btn"><i
+                                class="fa fa-plus"> </i> {{ 'views.actions.list.add'|trans({}, 'MBHBaseBundle') }}
+                    </button>
+                </li>
+                <li>
+                    <button type="button" id="fms-export-button" class="btn btn-warning navbar-btn"><i
+                                class="fa fa-upload" aria-hidden="true"></i>&nbsp;Контур ФМС
+                    </button>
+                </li>
+            {% endif %}
+        {% endblock %}
+        {% block right %}
+            <li id='list-export'></li>
+        {% endblock %}
+    {% endembed %}
+    {% if is_russian_client() %}
+        <div class="modal fade modal-danger" id="kontur-export-confirmation" tabindex="-1" role="dialog"
+             aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Подтверждение выгрузки</h4>
+                    </div>
+                    <div class="modal-body" id="kontur-export-confirmation-body">
+                        Количество туристов выгружаемых в Контур ФМС слишком большое.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline pull-right" data-dismiss="modal"><i
+                                    class="fa fa-ban"> </i> {{ 'views.partials.entityDeleteForm.cancel'|trans({}, 'MBHBaseBundle') }}
+                        </button>
+                        {#<button type="button" id="entity-delete-button" data-default="outline" class="btn btn-outline"><i id="entity-delete-button-icon" data-default="fa-trash-o"  class="fa fa-trash-o"></i>&nbsp;<span data-default="{{ delete_title|default('views.partials.disable_button.entity_delete_form.remove'|trans) }} " id="entity-delete-button-text">{{ delete_title|default('views.partials.disable_button.entity_delete_form.remove'|trans) }}</span></button>#}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %} 
 

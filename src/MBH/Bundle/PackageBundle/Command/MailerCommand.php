@@ -2,8 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Command;
 
-use MBH\Bundle\BaseBundle\Document\NotificationConfig;
-use MBH\Bundle\BaseBundle\Lib\MessageTypes;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -33,7 +32,6 @@ class MailerCommand extends ContainerAwareCommand
         $helper = $this->getContainer()->get('mbh.helper');
         $notifier = $this->getContainer()->get('mbh.notifier.mailer');
         $router = $this->getContainer()->get('router');
-        $linksParams = $this->getContainer()->getParameter('mailer_user_arrival_links');
 
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -68,6 +66,8 @@ class MailerCommand extends ContainerAwareCommand
             ]
         );
 
+//        $this->sendDailyReportMail();
+
         $packageTransfers = $this->dm->getRepository('MBHPackageBundle:PackageService')
             ->createQueryBuilder('s')
             ->field('begin')->gte($tomorrow)
@@ -92,8 +92,7 @@ class MailerCommand extends ContainerAwareCommand
                 ->setTemplate('MBHBaseBundle:Mailer:reportArrival.html.twig')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'))
-                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
-                ->setMessageType(MessageTypes::ARRIVAL)
+                ->setMessageType(NotificationType::ARRIVAL_TYPE)
             ;
             $notifier
                 ->setMessage($message)
@@ -121,7 +120,6 @@ class MailerCommand extends ContainerAwareCommand
                     ->setOrder($package->getOrder())
                     ->setAdditionalData([
                         'package' => $package,
-                        'links' => $this->getContainer()->getParameter('mailer_user_arrival_links'),
                         'fromText' => $package->getRoomType()->getHotel()
                     ])
                     ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
@@ -130,14 +128,12 @@ class MailerCommand extends ContainerAwareCommand
                     ->addRecipient($payer)
                     ->setLink('hide')
                     ->setSignature('mailer.online.user.signature')
-                    ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
-                    ->setMessageType(MessageTypes::ARRIVAL)
+                    ->setMessageType(NotificationType::ARRIVAL_TYPE)
                 ;
                 $notifier
                     ->setMessage($message)
                     ->notify()
                 ;
-
             }
         }
 
@@ -165,8 +161,8 @@ class MailerCommand extends ContainerAwareCommand
                     'payerId' => $order->getPayer()->getId()
                 ], $router::ABSOLUTE_URL);
 
-                if (!empty($linksParams['poll'])) {
-                    $link = $linksParams['poll'] . '?link=' . $link;
+                if (!empty($hotel->getPollLink())) {
+                    $link = $hotel->getPollLink() . '?link=' . $link;
                 }
 
                 $message
@@ -190,8 +186,7 @@ class MailerCommand extends ContainerAwareCommand
                     ->setLink($link)
                     ->setLinkText('mailer.online.user.poll.link')
                     ->setSignature('mailer.online.user.signature')
-                    ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
-                    ->setMessageType(MessageTypes::FEEDBACK)
+                    ->setMessageType(NotificationType::FEEDBACK_TYPE)
                 ;
                 $notifier
                     ->setMessage($message)
@@ -204,4 +199,34 @@ class MailerCommand extends ContainerAwareCommand
         $output->writeln('Installing complete. Elapsed time: ' . $time->format('%H:%I:%S'));
     }
 
+    private function sendDailyReportMail()
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        //TODO: Сменить
+        $begin = $clientConfig->getBeginDate() ?? new \DateTime('midnight');
+        $end = (clone $begin)->modify('+45 days');
+        $report = $this->getContainer()->get('mbh.packages_daily_report_compiler')
+            ->generate($begin, $end,  $hotels, true)
+            ->setTitle($this->getContainer()->get('translator')->trans('views.report.packages_daily_report.title'));
+
+        $notifier = $this->getContainer()->get('mbh.notifier.mailer');
+        $message = $notifier::createMessage();
+        $message
+            ->setFrom('report')
+            ->setSubject('views.report.packages_daily_report.mail_title')
+            ->setType('info')
+            ->setTemplate('MBHBaseBundle:Report:report_mail.html.twig')
+            ->setAdditionalData(['report' => $report])
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
+            ->setMessageType(NotificationType::DAILY_REPORT_TYPE)
+        ;
+
+        $notifier
+            ->setMessage($message)
+            ->notify()
+        ;
+    }
 }

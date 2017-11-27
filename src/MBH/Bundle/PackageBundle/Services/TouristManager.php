@@ -42,7 +42,6 @@ class TouristManager implements Searchable
     {
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $formData = (array)$request->get('form');
-        $formData['search'] = $tableParams->getSearch();
 
         $form = $this->formFactory->create(TouristFilterForm::class);
         $form->submit($formData);

@@ -98,6 +98,30 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     protected $services;
 
     /**
+     * @var bool
+     */
+    protected $isAllPackagesPulled = false;
+
+    /**
+     * @return bool
+     */
+    public function isAllPackagesPulled(): ?bool
+    {
+        return $this->isAllPackagesPulled;
+    }
+
+    /**
+     * @param bool $isAllPackagesPulled
+     * @return BookingConfig
+     */
+    public function setIsAllPackagesPulled(bool $isAllPackagesPulled): BookingConfig
+    {
+        $this->isAllPackagesPulled = $isAllPackagesPulled;
+
+        return $this;
+    }
+
+    /**
      * Set hotel
      *
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel

@@ -8,6 +8,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
@@ -18,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * @ODM\Document(collection="Users")
+ * @ODM\Document(collection="Users", repositoryClass="UserRepository")
  * @Gedmo\Loggable
  * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
@@ -29,6 +30,9 @@ class User extends BaseUser implements RecipientInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
     const TWO_FACTOR_TYPES = ['email', 'google'];
+    const SYSTEM_USER = 'mb';
+
+    use AllowNotificationTypesTrait;
 
     /**
      * @var string
@@ -84,16 +88,17 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     protected $notifications = true;
 
+
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -102,7 +107,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -112,7 +117,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -138,7 +143,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $defaultNoticeDoc = false;
@@ -146,7 +151,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

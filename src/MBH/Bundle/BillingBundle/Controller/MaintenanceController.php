@@ -5,6 +5,7 @@ namespace MBH\Bundle\BillingBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -66,5 +67,40 @@ class MaintenanceController extends BaseController
 //        }
 //
 //        return new JsonResponse($installer->toJson($answer), 200, [], true);
+    }
+
+    /**
+     * @return Response
+     * @Route("/test")
+     */
+    public function testAction()
+    {
+        $notifier = $this->get('mbh.notifier');
+        $message = $notifier::createMessage();
+        $message
+            ->setText('Alalala')
+            ->setFrom('online_form')
+            ->setSubject('mailer.order.confirm.user.subject')
+            ->setType('success')
+            ->setCategory('notification')
+            ->setAdditionalData([
+                'prependText' => 'mailer.order.confirm.user.prepend',
+                'appendText' => 'mailer.order.confirm.user.append',
+                'fromText' => 'alala'
+            ])
+            ->setHotel($this->hotel)
+            ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
+            ->setLink('hide')
+            ->setSignature('mailer.online.user.signature')
+            ->setMessageType(NotificationType::TASK_TYPE)
+        ;
+        $notifier
+            ->setMessage($message)
+            ->notify()
+        ;
+
+        return new Response('Alla');
     }
 }

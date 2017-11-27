@@ -27,8 +27,8 @@
             {% set logo = vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_130x110') %}
         {% endif %}
 
-        {% if hotel.city %}
-            {% set address = hotel.city %}
+        {% if hotel.cityId %}
+            {% set address = get_city(hotel.cityId).name %}
         {% endif %}
         {% if hotel.settlement %}
             {% set address = address ~ ', ' ~ hotel.settlement %}

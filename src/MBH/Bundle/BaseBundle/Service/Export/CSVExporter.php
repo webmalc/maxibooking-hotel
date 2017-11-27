@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 28.07.17
- * Time: 11:23
- */
 
 namespace MBH\Bundle\BaseBundle\Service\Export;
 
@@ -14,6 +8,8 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class CSVExporter
 {
+    const DEFAULT_DELIMITER = ';';
+
     /** @var  ExportDataHandler */
     private $dataHandler;
     /** @var  TranslatorInterface */
@@ -24,7 +20,13 @@ class CSVExporter
         $this->translator = $translator;
     }
 
-    public function exportToCSV(Builder $qb, $entityName, $exportedFields = null): Response
+    /**
+     * @param Builder $qb
+     * @param $entityName
+     * @param null $exportedFields
+     * @return Response
+     */
+    public function exportToCSVResponse(Builder $qb, $entityName, $exportedFields = null): Response
     {
         $rawMongoData = $qb
             ->limit(0)
@@ -45,13 +47,41 @@ class CSVExporter
         foreach ($handledData as $handledEntityData) {
             $rows[] = join(';', $handledEntityData);
         }
+
         $content = join("\n", $rows);
         $content =  mb_convert_encoding($content,'windows-1251', 'UTF-8');
+
+        return $this->getCsvAttachmentResponse($content);
+    }
+
+    /**
+     * @param $content
+     * @param string $fileName
+     * @return Response
+     */
+    public function getCsvAttachmentResponse($content, $fileName = 'export')
+    {
         $response = new Response($content);
         $response->setStatusCode(200);
         $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'. $fileName . '.csv"');
 
         return $response;
+    }
+
+    /**
+     * @param array $dataArray
+     * @param string $filePath
+     * @param string $delimiter
+     */
+    public function writeToCsv(array $dataArray, $filePath, $delimiter = self::DEFAULT_DELIMITER)
+    {
+        $fp = fopen($filePath, 'w');
+
+        foreach ($dataArray as $rowsData) {
+            fputcsv($fp, $rowsData, $delimiter);
+        }
+
+        fclose($fp);
     }
 }

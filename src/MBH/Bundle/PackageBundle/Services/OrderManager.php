@@ -6,18 +6,22 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Lib\Searchable;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
@@ -107,6 +111,7 @@ class OrderManager implements Searchable
         $query->setSpecial($new->getSpecial());
         $query->memcached = false;
         $query->setExcludePackage($new);
+        $query->setSave(true);
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -137,6 +142,10 @@ class OrderManager implements Searchable
             ;
 
             $new = $this->recalculateServices($new);
+            if ($searchQueryId = $results[0]->getQueryId()) {
+                $searchQuery = $this->dm->find(SearchQuery::class, $searchQueryId);
+                $new->addSearchQuery($searchQuery);
+            }
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
             return $new;
@@ -245,9 +254,11 @@ class OrderManager implements Searchable
             throw new Exception('The specified order is deleted.');
         }
 
+        $tourist = null;
         // create tourist
         if (!empty($data['tourist'])) {
             if (is_array($data['tourist'])) {
+                /** @var Tourist $tourist */
                 $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
                     $data['tourist']['lastName'],
                     $data['tourist']['firstName'],
@@ -265,6 +276,21 @@ class OrderManager implements Searchable
             }
         } elseif (!$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isCanBookWithoutPayer()) {
             throw new Exception('Can not create order without payer.');
+        }
+
+        if (isset($data['onlineFormId'])) {
+            $onlineFormId = $data['onlineFormId'];
+            $formConfig = $this->dm->find('MBHOnlineBundle:FormConfig', $onlineFormId);
+            if (is_null($formConfig)) {
+                throw new Exception('Order creation error: form config with ID = "' . $onlineFormId . '" not found!');
+            }
+
+            $touristData = $data['tourist'];
+            if ($this->isTouristDataFilled($formConfig, $touristData)) {
+                $this->fillTouristData($touristData, $formConfig, $tourist);
+            } else {
+                throw new Exception('Order creation error: mandatory tourist data not filled!');
+            }
         }
 
         // create order
@@ -337,6 +363,38 @@ class OrderManager implements Searchable
         }
 
         return $order;
+    }
+
+    /**
+     * @param FormConfig $config
+     * @param $touristData
+     * @return bool
+     */
+    private function isTouristDataFilled(FormConfig $config, $touristData)
+    {
+        return (!$config->isRequestInn() || isset($touristData['inn']))
+            && (!$config->isRequestPatronymic() || isset($touristData['patronymic']))
+            && (!$config->isRequestTouristDocumentNumber() || isset($touristData['documentNumber']));
+    }
+
+    /**
+     * @param array $touristRawData
+     * @param FormConfig $config
+     * @param Tourist $tourist
+     */
+    private function fillTouristData(array $touristRawData, FormConfig $config, Tourist $tourist)
+    {
+        if ($config->isRequestInn()) {
+            $tourist->setInn($touristRawData['inn']);
+        }
+        if ($config->isRequestTouristDocumentNumber()) {
+            $documentRelation = new DocumentRelation();
+            $documentRelation->setNumber($touristRawData['documentNumber']);
+            $tourist->setDocumentRelation($documentRelation);
+        }
+        if ($config->isRequestPatronymic()) {
+            $tourist->setPatronymic($touristRawData['patronymic']);
+        }
     }
 
     /**
@@ -569,6 +627,14 @@ class OrderManager implements Searchable
                 $this->dm->persist($infantService);
                 $this->dm->flush();
             }
+
+        }
+
+        //inject SearchQuery
+        if (isset($data['savedQueryId']) && (null !== $data['savedQueryId'])) {
+            $searchQuery = $this->dm->find('MBHPackageBundle:SearchQuery', $data['savedQueryId']);
+            $package->addSearchQuery($searchQuery);
+            $this->dm->flush();
         }
 
         return $package;
@@ -708,7 +774,9 @@ class OrderManager implements Searchable
                 break;
 
             case 'not-paid-time':
-                $notPaidTime = new \DateTime($this->container->getParameter('mbh.package.notpaid.time'));
+                /** @var ClientConfig $clientConfig */
+                $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+                $notPaidTime = new \DateTime('-' . $clientConfig->getNumberOfDaysForPayment().'days');
                 $data['paid'] = 'not_paid';
                 $data['dates'] = 'createdAt';
                 $data['end'] = $notPaidTime->format('d.m.Y');
@@ -736,5 +804,82 @@ class OrderManager implements Searchable
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
         return $packageRepository->fetchQuery($data);
+    }
+
+    /**
+     * @param Builder $qb
+     * @return array
+     */
+    public function calculateSummary(Builder $qb)
+    {
+        $packages = $qb
+            ->hydrate(false)
+            ->select(['order', '_id', 'adults', 'children', 'begin', 'end', 'price', 'totalOverwrite', 'servicesPrice', 'discount', 'isPercentDiscount'])
+            ->getQuery()
+            ->execute()
+            ->toArray()
+        ;
+
+        $orderIds = array_map(function ($package) {
+            return $package['order']['$id'];
+        }, $packages);
+        /** @var OrderRepository $orderRepository */
+        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
+        $orders = $orderRepository
+            ->createQueryBuilder()
+            ->field('id')->in($orderIds)
+            ->hydrate(false)
+            ->select(['id', 'paid', 'price'])
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $numberOfNights = 0;
+        $numberOfGuests = 0;
+        $totalSum = 0;
+        $paidSum = 0;
+        $debt = 0;
+        $oneDay = 24*60*60;
+        foreach ($packages as $rawPackageData) {
+            $numberOfGuests += $rawPackageData['children'] + $rawPackageData['adults'];
+
+            /** @var \MongoDate $mongoBegin */
+            $mongoBegin = $rawPackageData['begin'];
+            /** @var \MongoDate $mongoEnd */
+            $mongoEnd = $rawPackageData['end'];
+            $numberOfNights += round(($mongoEnd->sec - $mongoBegin->sec) / $oneDay);
+
+            if(isset($rawPackageData['totalOverwrite'])) {
+                $price = $rawPackageData['totalOverwrite'];
+            } else {
+                $price = $rawPackageData['price'];
+                if (isset($rawPackageData['servicesPrice'])) {
+                    $price += $rawPackageData['servicesPrice'];
+                }
+                if (isset($rawPackageData['discount'])) {
+                    $discount = isset($rawPackageData['isPercentDiscount']) && $rawPackageData['isPercentDiscount']
+                        ? $rawPackageData['price'] * $rawPackageData['discount']/100
+                        : $rawPackageData['discount'];
+                    $price -= $discount;
+                }
+            }
+            $totalSum += $price;
+
+            $rawOrderData = $orders[$rawPackageData['order']['$id']];
+            if ($rawOrderData['price'] != 0) {
+                $packagePriceToOrderPriceRelation = $price / $rawOrderData['price'];
+                $packagePayment = $rawOrderData['paid'] * $packagePriceToOrderPriceRelation;
+                $paidSum += $packagePayment;
+                $debt += ($price - $packagePayment);
+            }
+        }
+
+        return [
+            'total' => $totalSum,
+            'paid' => $paidSum,
+            'debt' => $debt,
+            'nights' => $numberOfNights,
+            'guests' => $numberOfGuests,
+        ];
     }
 }

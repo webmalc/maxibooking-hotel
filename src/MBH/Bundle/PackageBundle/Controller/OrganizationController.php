@@ -134,6 +134,7 @@ class OrganizationController extends Controller
                 $this->dm->flush();
 
                 $organization->upload($clientName);
+                $this->addFlash('success', 'controller.organization_controller.organization_successfully_created');
 
                 return $this->redirect($this->generateUrl('organizations', ['type' => $organization->getType()]));
             }
@@ -150,6 +151,9 @@ class OrganizationController extends Controller
      * @Security("is_granted('ROLE_ORGANIZATION_EDIT')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
      * @Template("@MBHPackage/Organization/edit.html.twig")
+     * @param Organization $organization
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAction(Organization $organization, Request $request)
     {
@@ -176,6 +180,7 @@ class OrganizationController extends Controller
                 $mode = ImageInterface::THUMBNAIL_OUTBOUND;
                 /** @var string|null $clientName */
                 $clientName = $this->container->get('kernel')->getClient();
+                $this->addFlash('success', 'controller.organization_controller.organization_successfully_edited');
 
                 if($stamp = $organization->getStamp($clientName) and $stamp instanceof UploadedFile) {
                     $imagine->open($stamp->getPathname())->thumbnail($size, $mode)->save($stamp->getPathname(), [
@@ -245,7 +250,7 @@ class OrganizationController extends Controller
             'inn',
         ];
 
-        $queryBuilder = $this->dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder('q')
+        $queryBuilder = $this->dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()
             ->field('type')->equals('contragents') // criteria only contragents type
         ;
 
@@ -273,8 +278,8 @@ class OrganizationController extends Controller
                 'phone' => $organization->getPhone(),
                 'inn' => $organization->getInn(),
                 'kpp' => $organization->getKpp(),
-                'city' => $organization->getCity()->getId(),
-                'city_name' => $organization->getCity(),
+                'city' => $organization->getCityId(),
+                'city_name' => $organization->getCityId(),
                 'street' => $organization->getStreet(),
                 'house' => $organization->getHouse(),
                 'index' => $organization->getIndex(),
