@@ -11,7 +11,7 @@ services:
         class: MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager
         calls:
             - [addMaintenance, ['@mbh.parameters.maintenance']]
-            - [addMaintenance, ['@mbh.nginx.maintenance']]
+#            - [addMaintenance, ['@mbh.nginx.maintenance']]
             - [addMaintenance, ['@mbh.mongo.maintenance']]
 
     mbh.maintenance.abstract:

@@ -465,3 +465,5 @@ dynamic.sales.show.title: Отображаемые категории
 dynamic.sales.type.room: Тип номера
 dynamic_sales.room_type_options.total: 'Итого'
 dynamic.sales.result: Итого
+
+order.index.summary.total: Сумма
