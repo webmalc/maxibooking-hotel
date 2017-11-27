@@ -66,6 +66,7 @@ class InteractiveLoginListener
                 try {
                     $this->billingApi->confirmClient($client);
                 } catch (\Exception $exception) {
+                    $this->session->set(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR, true);
                     $this->session->getFlashBag()->add('error',
                         $this->translator->trans('interactive_login_listener.error_by_client_confirmation', [
                             '%supportEmail%' => $this->supportEmail

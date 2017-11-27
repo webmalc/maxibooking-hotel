@@ -17,6 +17,7 @@ class ClientManager
     const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems'];
     const SESSION_CLIENT_FIELD = 'client';
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
+    const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
 
     private $dm;
     private $session;
