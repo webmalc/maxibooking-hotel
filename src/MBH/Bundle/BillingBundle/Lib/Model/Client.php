@@ -153,7 +153,7 @@ class Client
      * @param string $description
      * @return Client
      */
-    public function setDescription(string $description): Client
+    public function setDescription(?string $description): Client
     {
         $this->description = $description;
 
@@ -267,7 +267,7 @@ class Client
      * @param string $created
      * @return Client
      */
-    public function setCreated(string $created): Client
+    public function setCreated(?string $created): Client
     {
         $this->created = $created;
 
@@ -286,7 +286,7 @@ class Client
      * @param string $modified
      * @return Client
      */
-    public function setModified(string $modified): Client
+    public function setModified(?string $modified): Client
     {
         $this->modified = $modified;
 
@@ -305,7 +305,7 @@ class Client
      * @param string $created_by
      * @return Client
      */
-    public function setCreated_by(string $created_by): Client
+    public function setCreated_by(?string $created_by): Client
     {
         $this->created_by = $created_by;
 
@@ -375,7 +375,7 @@ class Client
     /**
      * @param string $password
      */
-    public function setPassword(string $password)
+    public function setPassword(?string $password)
     {
         $this->password = $password;
     }
