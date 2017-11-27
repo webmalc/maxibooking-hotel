@@ -19,6 +19,9 @@ use Symfony\Component\Process\Process;
  */
 class ChannelManager
 {
+    const OLD_PACKAGES_PULLING_NOT_STATUS = 'not';
+    const OLD_PACKAGES_PULLING_PARTLY_STATUS ='partly';
+    const OLD_PACKAGES_PULLING_ALL_STATUS = 'all';
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -331,10 +334,10 @@ class ChannelManager
     /**
      * Pull orders from services
      * @param string $serviceTitle service tile
-     * @param bool $old get old reservations
+     * @param string $pullOldStatus
      * @return bool
      */
-    public function pullOrders($serviceTitle = null, $old = false)
+    public function pullOrders($serviceTitle = null, $pullOldStatus = self::OLD_PACKAGES_PULLING_NOT_STATUS)
     {
         if (!$this->checkEnvironment()) {
             return false;
@@ -346,7 +349,7 @@ class ChannelManager
             }
             try {
                 $this->logger->info('Start pullOrders for '.$service['title']);
-                $noError = $result[$service['key']]['result'] = $service['service']->pullOrders($old);
+                $noError = $result[$service['key']]['result'] = $service['service']->pullOrders($pullOldStatus);
                 if (!$noError) {
                     $this->logger->error($serviceTitle.' error when pull orders');
                     $this->sendMessage($service, $service['service']->getErrors());
