@@ -9,7 +9,7 @@ views.booking.service.service: Сервис
 views.booking.service.code: Код
 views.booking.service.cancel: Отмена
 views.booking.actions.sync_old: Брони
-views.booking.actions.sync_old_desc: 'Получить все брони за 2 недели'
+views.booking.actions.sync_old_desc: 'За 2 недели'
 views.booking.tariff.cancel: Отмена
 views.channnelmanager.settings: Настройки
 views.oktogo.room.save: Сохранить

@@ -14,7 +14,23 @@
             {% embed 'MBHChannelManagerBundle::actions.html.twig' %}
                 {% block additional_actions %}
                     {% if doc %}
-                    <li><button type="button" onclick="location.href = '{{ path('booking_packages_sync') }}'" class="btn btn-default navbar-btn" data-toggle="tooltip" data-placement="top" title="{{ 'views.booking.actions.sync_old_desc'|trans({}, 'MBHChannelManagerBundle') }}"><i class="fa fa-paper-plane-o"> </i> {{ 'views.booking.actions.sync_old'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
+                    <li>
+                        <div class="dropup">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-paper-plane-o"> </i>
+                                {{ 'views.booking.actions.sync_old'|trans({}, 'MBHChannelManagerBundle') }}
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                <li><a href="{{ path('booking_packages_sync') }}">{{ 'views.booking.actions.sync_old_desc'|trans({}, 'MBHChannelManagerBundle') }}</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                        </div>
+                        {#<button type="button" onclick="location.href = '{{ path('booking_packages_sync') }}'" class="btn btn-default navbar-btn" data-toggle="tooltip" data-placement="top" title="{{ 'views.booking.actions.sync_old_desc'|trans({}, 'MBHChannelManagerBundle') }}"></button>#}
+                    </li>
                     {% endif %}
                 {% endblock %}
             {% endembed %}
