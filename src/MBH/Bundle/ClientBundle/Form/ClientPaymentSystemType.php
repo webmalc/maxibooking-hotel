@@ -61,8 +61,8 @@ class ClientPaymentSystemType extends AbstractType
             $rbkEshopId = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkEshopId() : '';
             $rbkSecretKey = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkSecretKey() : '';
             $paypalLogin = $clientConfig->getPaypal() ? $clientConfig->getPaypal()->getPaypalLogin() : '';
-            $rnkbShopIDP = $entity->getRnkb() ? $entity->getRnkb()->getRnkbShopIDP() : '';
-            $rnkbKey = $entity->getRnkb() ? $entity->getRnkb()->getKey() : '';
+            $rnkbShopIDP = $clientConfig->getRnkb() ? $clientConfig->getRnkb()->getRnkbShopIDP() : '';
+            $rnkbKey = $clientConfig->getRnkb() ? $clientConfig->getRnkb()->getKey() : '';
             $invoiceDocument = $clientConfig->getInvoice() ? $clientConfig->getInvoice()->getInvoiceDocument() : null;
         }
 

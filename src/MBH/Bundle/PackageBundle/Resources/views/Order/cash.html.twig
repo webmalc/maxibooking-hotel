@@ -52,9 +52,7 @@
                     </thead>
                     <tbody>
                     {% for cash in docs %}
-
-                        {% set data = clientConfig.getFormData(cash, null, url('online_form_check_order')) %}
-                        <tr class="{{ cash.isConfirmed is empty and cash.isPaid ? 'info' }} {{ cash.deletedAt ? 'danger' }} {{ cash.isPaid is empty ? 'transparent-tr' }} {% if cash.operation == 'in' and cash.deletedAt is empty and cash.method == 'electronic' and not cash.isPaid and not(data.disabled is defined and data.disabled) %} visa-tr {% endif %}">
+                        <tr class="{{ cash.isConfirmed is empty and cash.isPaid ? 'info' }} {{ cash.deletedAt ? 'danger' }} {{ cash.isPaid is empty ? 'transparent-tr' }} {% if cash.operation == 'in' and cash.deletedAt is empty and cash.method == 'electronic' and not cash.isPaid %} visa-tr {% endif %}">
                             <td class="text-center"><i class='{{ currency().icon }}'></i></td>
                             <td>
                             {{ cash.number }}</th>
