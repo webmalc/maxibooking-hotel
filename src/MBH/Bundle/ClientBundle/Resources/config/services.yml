@@ -53,3 +53,7 @@ services:
     mbh.fms_dictionaries:
         class: MBH\Bundle\ClientBundle\Lib\FMSDictionaries
         arguments: ['@mbh.csv_reader']
+
+    mbh.template_formatter:
+        class: MBH\Bundle\ClientBundle\Service\TemplateFormatter
+        arguments: ['@service_container']
