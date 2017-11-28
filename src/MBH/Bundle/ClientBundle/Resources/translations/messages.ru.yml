@@ -36,6 +36,7 @@ form.clientPaymentSystemType.uniteller.taxation_rate_code: Код ставки �
 form.clientPaymentSystemType.uniteller.taxation_system_code: Код системы налогооблажения
 form.clientPaymentSystemType.rbk_eshop_id: ID магазина (eshopId)
 form.clientPaymentSystemType.rbk_secret_key: Ключ магазина (secretKey)
+form.clientPaymentSystemType.invoice_document.label: 'Документ счета'
 form.clientPaymentSystemType.shop_login: Логин магазина
 form.clientPaymentSystemType.password_one: Пароль 1
 form.clientPaymentSystemType.password_two: Пароль 2

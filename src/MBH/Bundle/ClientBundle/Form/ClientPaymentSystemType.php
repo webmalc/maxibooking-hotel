@@ -56,8 +56,6 @@ class ClientPaymentSystemType extends AbstractType
             $unitellerShopIDP = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerShopIDP() : '';
             $unitellerPassword = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerPassword() : '';
             $unitellerIsWithFiscalization = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->isWithFiscalization() : true;
-            $rnkbShopIDP = $clientConfig->getRnkb() ? $clientConfig->getRnkb()->getRnkbShopIDP() : '';
-            $rnkbKey = $clientConfig->getRnkb() ? $clientConfig->getRnkb()->getKey() : '';
             $taxationRateCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationRateCode() : '';
             $taxationSystemCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationSystemCode() : '';
             $rbkEshopId = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkEshopId() : '';
@@ -276,6 +274,7 @@ class ClientPaymentSystemType extends AbstractType
                 ]
             )
             ->add('invoiceDocument', DocumentType::class, [
+                'label' => 'form.clientPaymentSystemType.invoice_document.label',
                 'class' => DocumentTemplate::class,
                 'mapped' => false,
                 'data' => $invoiceDocument,
