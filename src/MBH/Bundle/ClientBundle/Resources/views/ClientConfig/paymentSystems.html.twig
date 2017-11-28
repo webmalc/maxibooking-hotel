@@ -43,24 +43,15 @@
             </table>
 
             <div class="bg-gray color-palette alert">
-                {{ 'form.clientPaymentSystemType.successUrlDesc'|trans }}
+                <strong>{{ 'form.clientPaymentSystemType.successUrlDesc'|trans }}</strong>
                 : <span id="success-payment-url">{{ config.successUrl ? config.successUrl : 'client.views.payment_systems.url_not_specfied'|trans({}, 'MBHClientBundle') }}</span>
                 <br>
-                {{ 'form.clientPaymentSystemType.failUrlDesc'|trans }}
+                <strong>{{ 'form.clientPaymentSystemType.failUrlDesc'|trans }}</strong>
                 : <span id="fail-payment-url">{{ config.failUrl ? config.failUrl : 'client.views.payment_systems.url_not_specfied'|trans({}, 'MBHClientBundle') }}</span>
                 <br>
                 <button type="button" class="btn btn-primary navbar-btn" id="change-payment-urls-button">
                     <i class="fa fa-check-square-o"></i> {{ 'client.views.payment_systems.urls_change_button'|trans({}, 'MBHClientBundle') }}
                 </button>
-            </div>
-
-            <div class="bg-gray color-palette alert">
-                {{ 'client.viwes.clientConfig.paymentSystem.urlNotification'|trans({},'MBHClientBundle') }}
-                : {{ url('online_form_check_order') }}<br>
-                {{ 'client.viwes.clientConfig.paymentSystem.urlSuccesPayment'|trans({},'MBHClientBundle') }}
-                : {{ url('api_success_url') }}<br>
-                {{ 'client.viwes.clientConfig.paymentSystem.urlFailedPayment'|trans({},'MBHClientBundle') }}
-                : {{ url('api_fail_url') }}
             </div>
         </div>
     </div>

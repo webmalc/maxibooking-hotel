@@ -65,7 +65,6 @@
                 <div class="mbh-form-row form-group">
                 <label for="mbh-form-payment-system"> {{ 'views.api.getPaymentType.payment_systems.label'|trans({}, 'MBHOnlineBundle') }}</label>
                 <select id="mbh-form-payment-system" class="form-control input-sm" name="payment-system">
-                    <option></option>
                     {% for paymentSystem in clientConfig.paymentSystems%}
                         {% if paymentSystem != 'invoice' %}
                             <option value="{{ paymentSystem }}" {{ clientConfig.paymentSystems|length == 1 ? 'selected' }}>{{ paymentSystems[paymentSystem] }}</option>

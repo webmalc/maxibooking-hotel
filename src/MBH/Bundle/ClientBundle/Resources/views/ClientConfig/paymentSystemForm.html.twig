@@ -14,6 +14,17 @@
             {% endif %}
             {{ form_end(form) }}
 
+            {% if paymentSystemName and paymentSystemName != 'invoice' %}
+            <div class="bg-gray color-palette alert">
+                <strong>{{ 'client.viwes.clientConfig.paymentSystem.urlNotification'|trans({},'MBHClientBundle') }}</strong>
+                : {{ url('online_form_check_order', {'paymentSystemName': paymentSystemName}) }}<br>
+                <strong>{{ 'client.viwes.clientConfig.paymentSystem.urlSuccesPayment'|trans({},'MBHClientBundle') }}</strong>
+                : {{ url('api_success_url') }}<br>
+                <strong>{{ 'client.viwes.clientConfig.paymentSystem.urlFailedPayment'|trans({},'MBHClientBundle') }}</strong>
+                : {{ url('api_fail_url') }}
+            </div>
+            {% endif %}
+
             {% if entity %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
             {% endif %}

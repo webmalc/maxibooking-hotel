@@ -951,7 +951,8 @@ class ClientConfig extends Base
             "moneymail",
             "uniteller",
             "paypal",
-            "rbk"
+            "rbk",
+            "rnkb"
         ];
     }
 }
