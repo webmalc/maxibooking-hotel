@@ -81,3 +81,4 @@ clientbundle.controller.documentTemplateController.entry_successfully_eited: 'З
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
 form.clientConfigType.queryStat.label: Статистика запросов
 form.clientConfigType.queryStat.help: Включить/выключить сбор статистики запросов
+views.payment_systems.invoice.download_button.text: 'Скачать счет'
