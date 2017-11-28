@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="RoomCache already exist.")
+ * @ODM\Index(keys={"hotel"="asc","roomType"="asc","date"="asc"})
  */
 class RoomCache extends Base
 {
@@ -41,7 +42,7 @@ class RoomCache extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()
@@ -84,7 +85,7 @@ class RoomCache extends Base
 
     /**
      * @var boolean
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      * @Assert\NotNull()
      */

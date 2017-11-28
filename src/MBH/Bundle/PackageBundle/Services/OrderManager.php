@@ -2,16 +2,27 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BaseBundle\Lib\Searchable;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Lib\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
@@ -19,7 +30,7 @@ use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 /**
  *  OrderManager service
  */
-class OrderManager
+class OrderManager implements Searchable
 {
 
     /**
@@ -78,31 +89,6 @@ class OrderManager
             return $new;
         }
 
-        $oldPackageRoomIds = [];
-        foreach ($old->getAccommodations() as $accommodation) {
-            /** @var PackageAccommodation $accommodation */
-            $oldPackageRoomIds[] = $accommodation->getAccommodation()->getId();
-        }
-
-        //check accommodation
-        $accommodation = $old->getAccommodation();
-        /** @var PackageAccommodation $accommodation */
-        if ($accommodation) {
-            $rooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
-                $new->getBegin(),
-                $new->getEnd(),
-                $accommodation->getAccommodation()->getRoomType()->getHotel(),
-                $accommodation->getAccommodation()->getRoomType()->getId(),
-                $oldPackageRoomIds,
-                $old,
-                false
-            );
-
-            if (!count($rooms)) {
-                return 'controller.packageController.record_edited_fail_accommodation';
-            }
-        }
-
         //search for packages
         $tariff = $updateTariff ?? $new->getTariff();
         $promotion = $new->getPromotion() ? $new->getPromotion() : null;
@@ -125,6 +111,7 @@ class OrderManager
         $query->setSpecial($new->getSpecial());
         $query->memcached = false;
         $query->setExcludePackage($new);
+        $query->setSave(true);
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -153,7 +140,12 @@ class OrderManager
                 ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
                 ->setVirtualRoom($results[0]->getVirtualRoom())
             ;
+
             $new = $this->recalculateServices($new);
+            if ($searchQueryId = $results[0]->getQueryId()) {
+                $searchQuery = $this->dm->find(SearchQuery::class, $searchQueryId);
+                $new->addSearchQuery($searchQuery);
+            }
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
             return $new;
@@ -161,7 +153,68 @@ class OrderManager
 
         return 'controller.packageController.record_edited_fail';
     }
-    
+
+    public function tryUpdateAccommodations(Package $package, Package $oldPackage)
+    {
+        $isSuccessFull = true;
+        $dangerNotifications = [];
+        if ($package->getRoomType()->getId() !== $oldPackage->getRoomType()->getId()) {
+            foreach ($package->getAccommodations() as $accommodation) {
+                $this->dm->remove($accommodation);
+            }
+            $package->removeAccommodations();
+            $dangerNotifications[] = 'mbhpackagebundle.services.ordermanager.all_accommodations_removed';
+        } elseif ($package->getBegin() != $oldPackage->getBegin() || $package->getEnd() != $oldPackage->getEnd()) {
+            $sortedAccommodations = $package->getSortedAccommodations();
+            if ($sortedAccommodations->count() > 0) {
+                /** @var PackageAccommodation $firstAccommodation */
+                $firstAccommodation = $sortedAccommodations->first();
+                if ($firstAccommodation->getBegin() != $package->getBegin()) {
+                    $firstAccommodation->setBegin($package->getBegin());
+                    $errorMessage = $this->checkEditedAccommodation($firstAccommodation, $package);
+                    if (!empty($errorMessage)) {
+                        $isSuccessFull = false;
+                        $dangerNotifications[] = $errorMessage;
+                    }
+                }
+
+                /** @var PackageAccommodation $lastAccommodation */
+                $lastAccommodation = $sortedAccommodations->last();
+                if ($lastAccommodation->getEnd() != $package->getEnd()) {
+                    $lastAccommodation->setEnd($package->getEnd());
+                    $errorMessage = $this->checkEditedAccommodation($lastAccommodation, $package);
+                    if (!empty($errorMessage)) {
+                        $isSuccessFull = false;
+                        $dangerNotifications[] = $errorMessage;
+                    }
+                }
+            }
+        }
+
+
+        return [
+            'success' => $isSuccessFull,
+            'dangerNotifications' => $dangerNotifications
+        ];
+    }
+
+    private function checkEditedAccommodation(PackageAccommodation $accommodation, Package $package)
+    {
+        if (!$accommodation->isAutomaticallyChangeable()) {
+            return $this->container
+                ->get('translator')
+                ->trans('accommodation_manipulator.error.accommodation_is_not_moveable', [
+                    '%roomName%' => $accommodation->getName(),
+                    '%beginDate%' => $accommodation->getBegin()->format('d.m.Y'),
+                    '%endDate%' => $accommodation->getEnd()->format('d.m.Y')
+                ]);
+        }
+
+        return $this->container
+            ->get('mbh_bundle_package.services.package_accommodation_manipulator')
+            ->checkErrors($accommodation, $package);
+    }
+
     /**
      * recalculate services while package update
      *
@@ -183,7 +236,6 @@ class OrderManager
         return $package;
     }
 
-
     /**
      * @param array $data
      * @param Order|null $order
@@ -199,12 +251,14 @@ class OrderManager
         }
 
         if (!is_null($order) && !empty($order->getDeletedAt())) {
-                        throw new Exception('The specified order is deleted.');
+            throw new Exception('The specified order is deleted.');
         }
 
+        $tourist = null;
         // create tourist
         if (!empty($data['tourist'])) {
             if (is_array($data['tourist'])) {
+                /** @var Tourist $tourist */
                 $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
                     $data['tourist']['lastName'],
                     $data['tourist']['firstName'],
@@ -222,6 +276,21 @@ class OrderManager
             }
         } elseif (!$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isCanBookWithoutPayer()) {
             throw new Exception('Can not create order without payer.');
+        }
+
+        if (isset($data['onlineFormId'])) {
+            $onlineFormId = $data['onlineFormId'];
+            $formConfig = $this->dm->find('MBHOnlineBundle:FormConfig', $onlineFormId);
+            if (is_null($formConfig)) {
+                throw new Exception('Order creation error: form config with ID = "' . $onlineFormId . '" not found!');
+            }
+
+            $touristData = $data['tourist'];
+            if ($this->isTouristDataFilled($formConfig, $touristData)) {
+                $this->fillTouristData($touristData, $formConfig, $tourist);
+            } else {
+                throw new Exception('Order creation error: mandatory tourist data not filled!');
+            }
         }
 
         // create order
@@ -294,6 +363,38 @@ class OrderManager
         }
 
         return $order;
+    }
+
+    /**
+     * @param FormConfig $config
+     * @param $touristData
+     * @return bool
+     */
+    private function isTouristDataFilled(FormConfig $config, $touristData)
+    {
+        return (!$config->isRequestInn() || isset($touristData['inn']))
+            && (!$config->isRequestPatronymic() || isset($touristData['patronymic']))
+            && (!$config->isRequestTouristDocumentNumber() || isset($touristData['documentNumber']));
+    }
+
+    /**
+     * @param array $touristRawData
+     * @param FormConfig $config
+     * @param Tourist $tourist
+     */
+    private function fillTouristData(array $touristRawData, FormConfig $config, Tourist $tourist)
+    {
+        if ($config->isRequestInn()) {
+            $tourist->setInn($touristRawData['inn']);
+        }
+        if ($config->isRequestTouristDocumentNumber()) {
+            $documentRelation = new DocumentRelation();
+            $documentRelation->setNumber($touristRawData['documentNumber']);
+            $tourist->setDocumentRelation($documentRelation);
+        }
+        if ($config->isRequestPatronymic()) {
+            $tourist->setPatronymic($touristRawData['patronymic']);
+        }
     }
 
     /**
@@ -435,7 +536,7 @@ class OrderManager
                     $defaultService->isRecalcWithPackage()
                 )
                 ->setPackage($package)
-                ->setNote($this->container->get('translator')->trans('mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu'));
+                ->setNote($this->container->get('translator')->trans('order_manager.package_service_comment.default_service'));
 
             $package->addService($packageService);
             $this->dm->persist($packageService);
@@ -526,6 +627,14 @@ class OrderManager
                 $this->dm->persist($infantService);
                 $this->dm->flush();
             }
+
+        }
+
+        //inject SearchQuery
+        if (isset($data['savedQueryId']) && (null !== $data['savedQueryId'])) {
+            $searchQuery = $this->dm->find('MBHPackageBundle:SearchQuery', $data['savedQueryId']);
+            $package->addSearchQuery($searchQuery);
+            $this->dm->flush();
         }
 
         return $package;
@@ -571,22 +680,206 @@ class OrderManager
 
         return $order;
     }
-}
 
-/**
- * Class PackageCreationException
- */
-//TODO: Убрать в нужное место!
-class PackageCreationException extends Exception
-{
-    /**
-     * @var Order
-     */
-    public $order;
-
-    public function __construct(Order $order, $message = "", $code = 0, \Exception $previous = null)
+    public function updatePricesByDate(Package $package, ?Tariff $tariff)
     {
-        $this->order = $order;
-        parent::__construct($message, $code, $previous);
+        $newDailyPrice = $package->getPrice() / $package->getNights();
+        $newPricesByDate = [];
+        $begin = clone $package->getBegin();
+        $end = clone $package->getEnd();
+        /** @var \DateTime $day */
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+            $newPricesByDate[$day->format('d_m_Y')] = $newDailyPrice;
+            $packagePrice = $package->getPackagePriceByDate($day);
+            if (is_null($packagePrice)) {
+                $prices =  $package->getPrices()->toArray();
+                $firstPackagePrice = current($prices);
+                $packagePrice = clone $firstPackagePrice;
+                $packagePrice->setDate($day);
+                $package->addPackagePrice($packagePrice);
+            }
+            $packagePrice->setPrice($newDailyPrice);
+            if (!is_null($tariff)) {
+                $packagePrice->setTariff($tariff);
+            }
+        }
+        $package->setPricesByDate($newPricesByDate);
+    }
+
+    /**
+     * @param Request $request
+     * @param User $user
+     * @param Hotel $hotel
+     * @return Builder
+     */
+    public function getQueryBuilderByRequestData(Request $request, User $user, Hotel $hotel)
+    {
+        $data = [
+            'hotel' => $hotel,
+            'roomType' => $request->get('roomType'),
+            'status' => $request->get('status'),
+            'deleted' => $request->get('deleted'),
+            'begin' => $request->get('begin'),
+            'end' => $request->get('end'),
+            'dates' => $request->get('dates'),
+            'skip' => $request->get('start'),
+            'limit' => $request->get('length'),
+            'query' => $request->get('search')['value'],
+            'order' => $request->get('order')['0']['column'],
+            'dir' => $request->get('order')['0']['dir'],
+            'paid' => $request->get('paid'),
+            'confirmed' => $request->get('confirmed'),
+        ];
+
+        //quick links
+        switch ($request->get('quick_link')) {
+            case 'begin-today':
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $data['begin'] = $now->format('d.m.Y');
+                $data['end'] = $now->format('d.m.Y');
+                $data['checkOut'] = false;
+                $data['checkIn'] = false;
+                break;
+
+            case 'begin-tomorrow':
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $now->modify('+1 day');
+                $data['begin'] = $now->format('d.m.Y');
+                $data['end'] = $now->format('d.m.Y');
+                $data['checkOut'] = false;
+                $data['checkIn'] = false;
+                break;
+
+            case 'live-now':
+                $data['filter'] = 'live_now';
+                $data['checkIn'] = true;
+                $data['checkOut'] = false;
+                break;
+
+            case 'without-approval':
+                $data['confirmed'] = '0';
+                break;
+
+            case 'without-accommodation':
+                $data['filter'] = 'without_accommodation';
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $data['end'] = $now->format('d.m.Y');
+                break;
+
+            case 'not-paid':
+                $data['paid'] = 'not_paid';
+                break;
+
+            case 'not-paid-time':
+                /** @var ClientConfig $clientConfig */
+                $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+                $notPaidTime = new \DateTime('-' . $clientConfig->getNumberOfDaysForPayment().'days');
+                $data['paid'] = 'not_paid';
+                $data['dates'] = 'createdAt';
+                $data['end'] = $notPaidTime->format('d.m.Y');
+                break;
+
+            case 'not-check-in':
+                $data['checkIn'] = false;
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $data['end'] = $now->format('d.m.Y');
+                break;
+
+            case 'created-by':
+                $data['createdBy'] = $user->getUsername();
+                break;
+            default:
+        }
+
+        //List user package only
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW_ALL')) {
+            $data['createdBy'] = $user->getUsername();
+        }
+
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        return $packageRepository->fetchQuery($data);
+    }
+
+    /**
+     * @param Builder $qb
+     * @return array
+     */
+    public function calculateSummary(Builder $qb)
+    {
+        $packages = $qb
+            ->hydrate(false)
+            ->select(['order', '_id', 'adults', 'children', 'begin', 'end', 'price', 'totalOverwrite', 'servicesPrice', 'discount', 'isPercentDiscount'])
+            ->getQuery()
+            ->execute()
+            ->toArray()
+        ;
+
+        $orderIds = array_map(function ($package) {
+            return $package['order']['$id'];
+        }, $packages);
+        /** @var OrderRepository $orderRepository */
+        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
+        $orders = $orderRepository
+            ->createQueryBuilder()
+            ->field('id')->in($orderIds)
+            ->hydrate(false)
+            ->select(['id', 'paid', 'price'])
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $numberOfNights = 0;
+        $numberOfGuests = 0;
+        $totalSum = 0;
+        $paidSum = 0;
+        $debt = 0;
+        $oneDay = 24*60*60;
+        foreach ($packages as $rawPackageData) {
+            $numberOfGuests += $rawPackageData['children'] + $rawPackageData['adults'];
+
+            /** @var \MongoDate $mongoBegin */
+            $mongoBegin = $rawPackageData['begin'];
+            /** @var \MongoDate $mongoEnd */
+            $mongoEnd = $rawPackageData['end'];
+            $numberOfNights += round(($mongoEnd->sec - $mongoBegin->sec) / $oneDay);
+
+            if(isset($rawPackageData['totalOverwrite'])) {
+                $price = $rawPackageData['totalOverwrite'];
+            } else {
+                $price = $rawPackageData['price'];
+                if (isset($rawPackageData['servicesPrice'])) {
+                    $price += $rawPackageData['servicesPrice'];
+                }
+                if (isset($rawPackageData['discount'])) {
+                    $discount = isset($rawPackageData['isPercentDiscount']) && $rawPackageData['isPercentDiscount']
+                        ? $rawPackageData['price'] * $rawPackageData['discount']/100
+                        : $rawPackageData['discount'];
+                    $price -= $discount;
+                }
+            }
+            $totalSum += $price;
+
+            $rawOrderData = $orders[$rawPackageData['order']['$id']];
+            if ($rawOrderData['price'] != 0) {
+                $packagePriceToOrderPriceRelation = $price / $rawOrderData['price'];
+                $packagePayment = $rawOrderData['paid'] * $packagePriceToOrderPriceRelation;
+                $paidSum += $packagePayment;
+                $debt += ($price - $packagePayment);
+            }
+        }
+
+        return [
+            'total' => $totalSum,
+            'paid' => $paidSum,
+            'debt' => $debt,
+            'nights' => $numberOfNights,
+            'guests' => $numberOfGuests,
+        ];
     }
 }

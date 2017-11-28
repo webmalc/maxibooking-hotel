@@ -20,6 +20,16 @@ services:
           class: MBH\Bundle\PriceBundle\Services\RoomCache
           arguments: ['@service_container']
 
+  mbh.room_cache.logger:
+      class:     Symfony\Bridge\Monolog\Logger
+      arguments: [app]
+      calls:
+          - [pushHandler, ['@mbh.room_cache.logger_handler']]
+
+  mbh.room_cache.logger_handler:
+      class:     Monolog\Handler\StreamHandler
+      arguments: ['%kernel.logs_dir%/%kernel.environment%.room_cache_recalculation.log', 200]
+
   mbh.price.cache:
           class: MBH\Bundle\PriceBundle\Services\PriceCache
           arguments: ['@service_container']
@@ -72,6 +82,12 @@ services:
 
   mbh.tariff_services_type:
       class: MBH\Bundle\PriceBundle\Form\TariffServicesType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
+
+  mbh.tariff_inheritance_type:
+      class: MBH\Bundle\PriceBundle\Form\TariffInheritanceType
       arguments: ['@translator']
       tags:
           - {name: form.type}

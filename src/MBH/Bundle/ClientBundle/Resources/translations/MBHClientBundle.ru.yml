@@ -1,24 +1,18 @@
-views.clientConfig.index.editing: "редактирование"
-views.clientConfig.layout.parameters: "Параметры"
-client.tabs.params: 'Параметры'
+views.clientConfig.index.editing: Редактирование
+views.clientConfig.layout.parameters: Параметры
+client.tabs.params: Параметры
 client.tabs.payment_system: 'Платежная система'
-
-# Document Template Controller
-views.documentTempalte.index: "Шаблоны документов"
-views.documentTempalte.new: "Создание"
-views.documentTempalte.edit: "Редактирование"
-
-# Document Template
-documentTempalte.title: "Название"
-documentTempalte.enabled: "Включен"
-
-client.viwes.clientConfig.paymentSystem.urlNotification: "URL для уведомлений"
-client.viwes.clientConfig.paymentSystem.urlSuccesPayment: "URL успешной оплаты"
-client.viwes.clientConfig.paymentSystem.urlFailedPayment: "URL неуспешной оплаты"
-
-#index
-client.views.clientConfig.index.name: "Название"
-client.views.clientConfig.index.hotel: "Отель"
-client.views.clientConfig.index.allhotel: "Все отели"
-client.views.clientConfig.index.organization: "Организация"
-client.views.clientConfig.index.list: "Список"
+client.tabs.notification: 'Настройки уведомлений'
+views.documentTempalte.index: 'Шаблоны документов'
+views.documentTempalte.new: Создание
+views.documentTempalte.edit: Редактирование
+documentTempalte.title: Название
+documentTempalte.enabled: Включен
+client.viwes.clientConfig.paymentSystem.urlNotification: 'URL для уведомлений'
+client.viwes.clientConfig.paymentSystem.urlSuccesPayment: 'URL успешной оплаты'
+client.viwes.clientConfig.paymentSystem.urlFailedPayment: 'URL неуспешной оплаты'
+client.views.clientConfig.index.name: Название
+client.views.clientConfig.index.hotel: Отель
+client.views.clientConfig.index.allhotel: 'Все отели'
+client.views.clientConfig.index.organization: Организация
+client.views.clientConfig.index.list: Список

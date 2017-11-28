@@ -2,9 +2,14 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\UserBundle\Document\User;
 use Ob\HighchartsBundle\Highcharts\Highchart;
@@ -31,11 +36,10 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     public function indexAction()
     {
         $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->createQueryBuilder('q')
+            ->createQueryBuilder()
             ->sort('hotel.id', 'asc')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
         return [
             'types' => $this->container->getParameter('mbh.analytics.types'),
@@ -48,6 +52,8 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
      * @Route("/choose", name="analytics_choose", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_ANALYTICS')")
+     * @param Request $request
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function chooseAction(Request $request)
     {
@@ -76,8 +82,9 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
         foreach ($this->getPackages() as $package) {
 
+            /** @var PackageService $packageService */
             foreach ($package->getServices() as $packageService) {
-                $id  = $packageService->getService()->getId();
+                $id = $packageService->getService()->getId();
                 $day = $package->getCreatedAt()->format('d.m.Y');
                 $month = $package->getCreatedAt()->format('m.Y');
 
@@ -110,8 +117,9 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $data = $ids = [];
 
         foreach ($this->getPackages() as $package) {
-            $id  = $package->getRoomType()->getId();
+            $id = $package->getRoomType()->getId();
 
+            /** @var CashDocument $cashDocument */
             foreach ($package->getOrder()->getCashDocuments() as $cashDocument) {
 
                 if (in_array($cashDocument->getId(), $ids)) {
@@ -156,9 +164,9 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $data = $newData = $total = [];
 
         foreach ($this->getPackages() as $package) {
-            $id  = $package->getRoomType()->getId();
+            $id = $package->getRoomType()->getId();
 
-            if(!isset($total[$id])) {
+            if (!isset($total[$id])) {
                 $total[$id] = count($package->getRoomType()->getRooms());
             }
 
@@ -176,11 +184,11 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         }
 
         foreach ($data as $id => $values) {
-            if(!isset($total[$id])) {
+            if (!isset($total[$id])) {
                 continue;
             }
             foreach ($values as $dataId => $value) {
-                $newData[$id][$dataId] =  round($value/$total[$id] , 2)*100;
+                $newData[$id][$dataId] = round($value / $total[$id], 2) * 100;
             }
         }
 
@@ -202,7 +210,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
         foreach ($this->getPackages() as $package) {
 
-            $username  = $package->getCreatedBy();
+            $username = $package->getCreatedBy();
 
             if (empty($username)) {
                 continue;
@@ -248,23 +256,23 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $data = [];
 
         foreach ($this->getPackages() as $package) {
-                $source = $package->getSource();
-                if (!$source) {
-                    continue;
-                }
+            $source = $package->getSource();
+            if (!$source) {
+                continue;
+            }
 
-                $id  = $source->getId();
-                $day = $package->getCreatedAt()->format('d.m.Y');
-                $month = $package->getCreatedAt()->format('m.Y');
+            $id = $source->getId();
+            $day = $package->getCreatedAt()->format('d.m.Y');
+            $month = $package->getCreatedAt()->format('m.Y');
 
-                if (!isset($data[$id][$day])) {
-                    $data[$id][$day] = 0;
-                }
-                if (!isset($data[$id][$month])) {
-                    $data[$id][$month] = 0;
-                }
-                $data[$id][$day]++;
-                $data[$id][$month]++;
+            if (!isset($data[$id][$day])) {
+                $data[$id][$day] = 0;
+            }
+            if (!isset($data[$id][$month])) {
+                $data[$id][$month] = 0;
+            }
+            $data[$id][$day]++;
+            $data[$id][$month]++;
 
         }
 
@@ -285,7 +293,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $data = [];
 
         foreach ($this->getPackages() as $package) {
-            $id  = $package->getRoomType()->getId();
+            $id = $package->getRoomType()->getId();
             $day = $package->getCreatedAt()->format('d.m.Y');
             $month = $package->getCreatedAt()->format('m.Y');
 
@@ -316,7 +324,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $data = [];
 
         foreach ($this->getPackages() as $package) {
-            $id  = $package->getRoomType()->getId();
+            $id = $package->getRoomType()->getId();
             $day = $package->getCreatedAt()->format('d.m.Y');
             $month = $package->getCreatedAt()->format('m.Y');
 
@@ -327,7 +335,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
                 $data[$id][$month] = 0;
             }
             $data[$id][$day] += $package->getPrice();
-            $data[$id][$month]+= $package->getPrice();
+            $data[$id][$month] += $package->getPrice();
         }
 
         $chart = $this->getChart($this->get('translator')->trans('controller.analyticsController.proceeds'));
@@ -352,11 +360,11 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             $chart->chart->type('column');
         }
         $chart->chart->renderTo('analytics_filter_content');
-        $chart->title->text($this->container->getParameter('mbh.analytics.types')[$request->get('type')]);
-        $chart->yAxis->title(['text'  => $y]);
-        $chart->xAxis->title(['text'  => $this->get('translator')->trans('controller.analyticsController.sale_date')]);
+        $chart->title->text($this->get('translator')->trans('mbh.analytics.types.' . $request->get('type')));
+        $chart->yAxis->title(['text' => $y]);
+        $chart->xAxis->title(['text' => $this->get('translator')->trans('controller.analyticsController.sale_date')]);
         $chart->xAxis->type('datetime');
-        $chart->xAxis->dateTimeLabelFormats(['month' => '%e. %b','year' => '%b']);
+        $chart->xAxis->dateTimeLabelFormats(['month' => '%e. %b', 'year' => '%b']);
         $chart->chart->zoomType('x');
         $chart->tooltip->formatter('@function(){ return highchartsTooltip(this.series.name,this.x,this.y)}@');
 
@@ -392,7 +400,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         }
         if (!$end) {
             $end = new \DateTime();
-            $end->setTime(0 ,0 ,0);
+            $end->setTime(0, 0, 0);
         };
         if (!$begin) {
             $begin = clone $end;
@@ -412,20 +420,35 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         return $dm->getRepository('MBHPackageBundle:PackageSource')->createQueryBuilder('s')
             ->sort('fullTitle', 'asc')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
     }
 
     private function getServices()
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
+        $availableHotels = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->findAll();
+        $availableHotelsIds = $this->helper->toIds($availableHotels);
 
-        return $dm->getRepository('MBHPriceBundle:Service')->createQueryBuilder('s')
-            ->sort(['hotel.id' => 'asc', 'fullName' => 'desc'])
+        $categories = $this->dm
+            ->getRepository('MBHPriceBundle:ServiceCategory')
+            ->createQueryBuilder()
+            ->field('hotel.id')->in($availableHotelsIds)
             ->getQuery()
             ->execute()
-            ;
+            ->toArray();
+
+        $categoriesIds = $this->helper->toIds($categories);
+
+        return $dm
+            ->getRepository('MBHPriceBundle:Service')
+            ->createQueryBuilder()
+            ->field('category.id')->in($categoriesIds)
+            ->sort(['hotel.id' => 'asc', 'fullName' => 'desc'])
+            ->getQuery()
+            ->execute();
     }
 
     private function getManagers()
@@ -436,23 +459,33 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         return $dm->getRepository('MBHUserBundle:User')->createQueryBuilder('s')
             ->sort(['lastName' => 'desc', 'username' => 'desc'])
             ->getQuery()
-            ->execute()
-            ;
+            ->execute();
     }
 
     /**
-     * @param boolean $array
+     * @param boolean $asIds
      * @return array
      */
-    private function getRoomTypes($array = false)
+    private function getRoomTypes($asIds = false)
     {
         $request = $this->getRequest();
-
+        $requestedRoomTypesIds = $this->helper->getDataFromMultipleSelectField($request->get('roomType'));
+        if (empty($requestedRoomTypesIds)) {
+            $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+            foreach ($hotels as $hotel) {
+                $requestedRoomTypesIds[] = 'total_' . $hotel->getId();
+            }
+        }
         $roomTypesIds = [];
-        if(!empty($request->get('roomType')) && is_array($request->get('roomType'))) {
-            foreach ($request->get('roomType') as $id) {
-                if (mb_stripos($id, 'allrooms_') !== false) {
-                    $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find(str_replace('allrooms_', '', $id));
+        if (!empty($requestedRoomTypesIds)) {
+            foreach ($requestedRoomTypesIds as $id) {
+                if (mb_stripos($id, 'allrooms_') !== false || mb_stripos($id, 'total_') !== false) {
+                    $hotelId = mb_stripos($id, 'allrooms_') !== false
+                        ? str_replace('allrooms_', '', $id)
+                        : str_replace('total_', '', $id);
+
+                    /** @var Hotel $hotel */
+                    $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($hotelId);
 
                     if (!$hotel) {
                         continue;
@@ -467,13 +500,12 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             $roomTypesIds = array_unique($roomTypesIds);
         }
 
-        if ($array) {
+        if ($asIds) {
             return $roomTypesIds;
         }
         $qb = $this->dm->getRepository('MBHHotelBundle:RoomType')
-             ->createQueryBuilder('q')
-             ->sort(['hotel.id' => 'asc', 'fullName' => 'desc'])
-        ;
+            ->createQueryBuilder()
+            ->sort(['hotel.id' => 'asc', 'fullName' => 'desc']);
 
         if (count($roomTypesIds)) {
             $qb->field('id')->in($roomTypesIds);
@@ -501,7 +533,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             return $category->getName();
         }
 
-        return (string) $category;
+        return (string)$category;
     }
 
     /**
@@ -515,10 +547,20 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $request = $this->getRequest();
         $cumulative = $request->get('cumulative');
         $months = $request->get('months');
-        $series = $all = $allValues = [];
+        $requestedRoomTypes = $this->helper->getDataFromMultipleSelectField($request->get('roomType'));
+        if (empty($requestedRoomTypes)) {
+            $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+            foreach ($hotels as $hotel) {
+                $requestedRoomTypes[] = 'total_' . $hotel->getId();
+            }
+        }
+        $series = $totalValues = $allValues = [];
         $i = 0;
         foreach ($this->$categoryGetMethod() as $category) {
-            $series[$i]['name'] = $this->getCategoryName($category);
+            if ($this->isDisplayedCategory($category, $requestedRoomTypes, $categoryGetMethod)) {
+                $series[$i]['name'] = $this->getCategoryName($category);
+            }
+            /** @var \DateTime $date */
             foreach ($this->getInterval() as $date) {
                 $value = 0;
                 $prev = clone $date;
@@ -533,7 +575,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
                     $prevId = $prev->format('m.Y');
                 }
 
-                if (isset($values[$category->getId()][$dayId]))  {
+                if (isset($values[$category->getId()][$dayId])) {
                     $value = $values[$category->getId()][$dayId];
                 }
 
@@ -543,61 +585,97 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
                 $allValues[$category->getId()][$dayId] = $value;
 
-                if (!isset($all[$dayId]))  {
-                    $all[$dayId] = 0;
+                if (!isset($totalValues['byAll'][$dayId])) {
+                    $totalValues['byAll'][$dayId] = 0;
                 }
-                $all[$dayId] = $all[$dayId] + $value;
+                if ($categoryGetMethod == 'getRoomTypes') {
+                    $hotelTotalValueTitle = 'total_' . $category->getHotel()->getId();
+                    $totalValues[$hotelTotalValueTitle][$dayId] = isset($totalValues[$hotelTotalValueTitle][$dayId])
+                        ? $totalValues[$hotelTotalValueTitle][$dayId] + $value
+                        : $value;
+                }
+
+                $totalValues['byAll'][$dayId] = $totalValues['byAll'][$dayId] + $value;
+                if ($this->isDisplayedCategory($category, $requestedRoomTypes, $categoryGetMethod)) {
+                    if ($months) {
+                        if ($date->format('j') == 15) {
+                            $javascriptDate = '@Date.UTC(' . $date->format('Y') . ', ' . ($date->format('n') - 1) . ', 15)@';
+                            $series[$i]['data'][] = [$javascriptDate, $value];
+                        }
+                    } else {
+                        $javascriptDate = '@Date.UTC(' . $date->format('Y') . ', ' . ($date->format('n') - 1) . ', ' . $date->format('j') . ')@';
+                        $series[$i]['data'][] = [$javascriptDate, $value];
+                    }
+                }
+            }
+
+            if (isset($series[$i])) {
+                $i++;
+            }
+        }
+
+        $totalByHotelsOptions = [];
+        if ($categoryGetMethod == 'getRoomTypes') {
+            foreach ($this->$categoryGetMethod() as $category) {
+                $hotelTotalValueTitle = 'total_' . $category->getHotel()->getId();
+                if (!in_array($hotelTotalValueTitle, $totalByHotelsOptions)
+                    && (in_array($hotelTotalValueTitle, $requestedRoomTypes) || count($requestedRoomTypes) == 0)
+                ) {
+                    $totalByHotelsOptions[$hotelTotalValueTitle] = 'Итого ' . $category->getHotel()->getName();
+                }
+            }
+        }
+
+        if(count($series) <= 1 && count($totalByHotelsOptions) == 0) {
+            return $series;
+        }
+
+        $totalOptions = $totalByHotelsOptions;
+        if (!$withoutTotal) {
+            $totalOptions['byAll'] = $this->get('translator')->trans('controller.analyticsController.series_total_name');
+        }
+
+        foreach ($totalOptions as $totalOption => $totalOptionTitle) {
+            $series[$i]['name'] = $totalOptionTitle;
+            foreach ($this->getInterval() as $date) {
+                $value = 0;
+                $dayId = $date->format('d.m.Y');
+
+                if ($months && $date->format('j') == 15) {
+                    $dayId = $date->format('m.Y');
+                }
+
+                if (isset($totalValues[$totalOption][$dayId])) {
+                    $value = $totalValues[$totalOption][$dayId];
+                }
 
                 if ($months) {
                     if ($date->format('j') == 15) {
-                        $javascriptDate = '@Date.UTC(' . $date->format('Y'). ', ' . ($date->format('n') - 1) . ', 15)@';
+                        $javascriptDate = '@Date.UTC(' . $date->format('Y') . ', ' . ($date->format('n') - 1) . ', 15)@';
                         $series[$i]['data'][] = [$javascriptDate, $value];
                     }
                 } else {
-                    $javascriptDate = '@Date.UTC(' . $date->format('Y'). ', ' . ($date->format('n') - 1) . ', ' . $date->format('j'). ')@';
+                    $javascriptDate = '@Date.UTC(' . $date->format('Y') . ', ' . ($date->format('n') - 1) . ', ' . $date->format('j') . ')@';
                     $series[$i]['data'][] = [$javascriptDate, $value];
                 }
             }
             $i++;
         }
 
-        if(count($series) <= 1) {
-            return $series;
-        }
-
-        if ($withoutTotal) {
-            return array_reverse($series);
-        }
-
-        $series[$i]['name'] = 'Итог';
-        foreach ($this->getInterval() as $date) {
-            $value = 0;
-            $dayId = $date->format('d.m.Y');
-
-            if ($months && $date->format('j') == 15) {
-                $dayId = $date->format('m.Y');
-            }
-
-            if (isset($all[$dayId]))  {
-                $value = $all[$dayId];
-            }
-
-            if ($months) {
-                if ($date->format('j') == 15) {
-                    $javascriptDate = '@Date.UTC(' . $date->format('Y'). ', ' . ($date->format('n') - 1) . ', 15)@';
-                    $series[$i]['data'][] = [$javascriptDate, $value];
-                }
-            } else {
-                $javascriptDate = '@Date.UTC(' . $date->format('Y'). ', ' . ($date->format('n') - 1) . ', ' . $date->format('j'). ')@';
-                $series[$i]['data'][] = [$javascriptDate, $value];
-            }
-        }
-
         return array_reverse($series);
     }
 
+    private function isDisplayedCategory($category, $requestedRoomTypes, $categoryGetMethod)
+    {
+        return $categoryGetMethod !== 'getRoomTypes'
+            || (is_array($requestedRoomTypes)
+                && (count($requestedRoomTypes) == 0
+                    || in_array($category->getId(), $requestedRoomTypes)
+                    || in_array('allrooms_' . $category->getHotel()->getId(), $requestedRoomTypes)));
+    }
+
     /**
-     * @return array
+     * @return Package[]|Cursor
      */
     private function getPackages()
     {
@@ -613,8 +691,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             $qb->field('roomType.id')->in($roomTypesIds);
         }
         $qb->addOr($qb->expr()->field('createdAt')->range($begin, $end))
-           ->sort('begin', 'asc')
-        ;
+            ->sort('begin', 'asc');
 
         return $qb->getQuery()->execute();
     }

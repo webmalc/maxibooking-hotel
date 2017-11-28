@@ -20,9 +20,10 @@ services:
     mbh.tourists.messenger:
             class: MBH\Bundle\PackageBundle\Services\TouristsMessenger
             arguments: ['@service_container']
-        
+
     mbh.calculation:
             class: MBH\Bundle\PackageBundle\Services\Calculation
+            factory: ['MBH\Bundle\PackageBundle\Services\CalculationFactory', createCalculation]
             arguments: ['@service_container']
 
     mbh.order_manager:
@@ -85,12 +86,13 @@ services:
                 - { name: form.type, alias: mbh_address_object_decomposed }
 
     mbh.package.form.type.document_relation:
-            class: MBH\Bundle\PackageBundle\Form\DocumentRelationType
-            calls:
-                   - [setDictionaryProvider, ['@mbh.vega.dictionary_provider']]
-                   - [setManagerRegistry, ['@doctrine_mongodb']]
-            tags:
-                - { name: form.type, alias: mbh_document_relation }
+        class: MBH\Bundle\PackageBundle\Form\DocumentRelationType
+        arguments:
+           - '@mbh.vega.dictionary_provider'
+           - '@doctrine_mongodb'
+           - '@mbh.fms_dictionaries'
+        tags:
+            - { name: form.type, alias: mbh_document_relation }
     mbh.package.document_tempalte_factory:
             class: MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory
             calls:
@@ -131,6 +133,15 @@ services:
           class: MBH\Bundle\PackageBundle\Services\CsvGenerate
           arguments: ['@service_container']
 
+    mbh.package.dynamic.sales.generator:
+              class: MBH\Bundle\PackageBundle\Services\DynamicSalesGenerator
+              arguments:
+                  - '@doctrine.odm.mongodb.document_manager'
+                  - '@mbh.helper'
+                  - '@translator'
+                  - '%mbh_dynamic_sale_period%'
+                  - '@service_container'
+
     mbh.acl_document_owner_maker:
         class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
         arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']
@@ -147,7 +158,7 @@ services:
 
     mbh.chess_board.message_formatter:
         class: MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter
-        arguments: ['@translator']
+        arguments: ['@translator', '@doctrine.odm.mongodb.document_manager']
 
     mbh.chess_board_unit:
         class: MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit
@@ -157,3 +168,57 @@ services:
     task_notice_unpaid_order:
       class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
       arguments:  ["@mbh.notice.unpaid"]
+
+    mbh.tourist_manager:
+        class: MBH\Bundle\PackageBundle\Services\TouristManager
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@form.factory'
+
+    mbh.notice_stay_place_xls_type:
+      class: MBH\Bundle\PackageBundle\DocumentGenerator\Xls\Type\NoticeStayPlaceXlsType
+      arguments:
+          - '@doctrine_mongodb.odm.document_manager'
+          - '@translator'
+          - '@mbh.billing.api'
+      tags:
+          - {name: form.type}
+
+    mbh.organization_type:
+      class: MBH\Bundle\PackageBundle\Form\OrganizationType
+      arguments: ['@translator', '@doctrine.odm.mongodb.document_manager']
+      tags:
+          - {name: form.type}
+
+    mbh.packages_daily_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\PackagesDailyReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+            - '@mbh.calculation'
+
+    mbh.distribution_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\DistributionReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+
+
+    mbh.dynamic_sales_report.dynamic_sales_day:
+      class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
+      arguments: ['@doctrine.odm.mongodb.document_manager']
+      shared: false
+
+    mbh.organization_subscriber:
+        class: MBH\Bundle\PackageBundle\EventListener\OrganizationSubscriber
+        arguments: ['@mbh.billing.api']
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default }
+
+    mbh.tourist_visa_type:
+        class: MBH\Bundle\PackageBundle\Form\TouristVisaType
+        arguments: ['@mbh.fms_dictionaries']
+        tags:
+            - {name: form.type}

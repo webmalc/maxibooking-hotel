@@ -1,0 +1,96 @@
+views.booking.index.settings: Settings
+views.booking.index.booking_com_sync: 'Synchronize with Booking.com'
+views.booking.index.save: Save
+views.booking.index.cancel: Cansele
+views.booking.room.settings: 'Room settings'
+views.booking.room.room_type: 'Room type'
+views.booking.room.booking_com_sync: 'Synchronize with Booking.com'
+views.booking.service.service: Service
+views.booking.service.code: Code
+views.booking.service.cancel: Cancel
+views.booking.tariff.cancel: Cansel
+views.channnelmanager.settings: Settings
+views.oktogo.room.save: Save
+views.oktogo.room.get_room_ids_from_oktogo: 'Return ID numbers from Oktogo'
+views.oktogo.tariff.save: Save
+views.vashotel.layout.you_hotel_ru: VashHotel.RU
+views.vashotel.room.save: Save
+views.vashotel.room.get_room_ids_from_your_hotel_ru: 'Return ID numbers from VashHotel.RU'
+views.vashotel.room.cancel: Cancel
+views.vashotel.tariff.save: Save
+views.vashotel.tariff.get_tariff_ids: 'Return rates IDs from VashHotel.ru'
+views.vashotel.tariff.cancel: Cancel
+views.vashotel.service.service: Service
+views.vashotel.service.code: Code
+views.ostrovok.service.service: Service
+views.ostrovok.service.code: Code
+views.tabs.main_settings: 'Main settings'
+views.tabs.room_types: 'Room types'
+views.tabs.tariffs: Rates
+views.tabs.services: Services
+views.tabs.must_fill_main_settings: 'All required settings must be filled!'
+views.ostrovok.layout.ostrovok: Ostrovok
+views.hundredOneHotels.layout.hundredOneHotels: '101 Hotel'
+views.hundredOneHotels.settings: Settings
+services.channelManager.sync_error_check_interaction_settings: ': synchronization error.! Please check your settings.'
+channelManager.booking.notification.subject.new: 'New order from Booking.com'
+channelManager.booking.notification.subject.edit: 'Booking.com order changed'
+channelManager.booking.notification.subject.delete: 'Booking.com order deleted'
+channelManager.booking.notification.new: 'New order %order% from Booking.com. Reservation number %packages%'
+channelManager.booking.notification.edit: 'Booking.com order %order% changed. Reservation number %packages%'
+channelManager.booking.notification.delete: 'Booking.com order %order% deleted. Reservation number %packages%'
+channelManager.booking.notification.error.subject: 'Booking.com error'
+channelManager.booking.notification.error: 'Booking.com order processing error. Information: %info%'
+channelManager.myallocator.notification.subject.new: 'New order from Myallocator.com'
+channelManager.myallocator.notification.subject.edit: 'Myallocator order changed'
+channelManager.myallocator.notification.subject.delete: 'Myallocator order deleted'
+channelManager.myallocator.notification.new: 'New order %order%  from Myallocator.com. reservation number %packages%'
+channelManager.myallocator.notification.edit: 'Myallocator.com order %order% changed. reservation number %packages%'
+channelManager.myallocator.notification.delete: 'Myallocator.com order %order% deleted. reservation number %packages%'
+channelManager.myallocator.notification.error.subject: 'Myallocator.com error'
+channelManager.myallocator.notification.error: 'Myallocator.com order processing error. Information: %info%'
+channelManager.vashotel.notification.subject.new: 'New order from Vashotel.ru'
+channelManager.vashotel.notification.subject.edit: 'Vashotel.ru order changed'
+channelManager.vashotel.notification.subject.delete: 'Vashotel.ru order deleted'
+channelManager.vashotel.notification.new: 'New order %order% from Vashotel.ru. reservation number %packages%'
+channelManager.vashotel.notification.edit: 'Vashotel.ru order %order% changed. reservation number %packages%'
+channelManager.vashotel.notification.delete: 'Vashotel.ru order %order% deleted. reservation number %packages%'
+channelManager.vashotel.notification.error.subject: 'Vashotel.ru error'
+channelManager.vashotel.notification.error: 'Vashotel.ru order processing error. Information: %info%'
+channelManager.oktogo.notification.subject.new: 'New order from Oktogo.ru'
+channelManager.oktogo.notification.subject.edit: 'Oktogo.ru order changed'
+channelManager.oktogo.notification.subject.delete: 'Oktogo.ru order deleted'
+channelManager.oktogo.notification.new: 'New order %order% from Oktogo.ru. reservation number %packages%'
+channelManager.oktogo.notification.edit: 'Oktogo.ru order %order% changed. reservation number %packages%'
+channelManager.oktogo.notification.delete: 'Oktogo.ru order %order% deleted. reservation number %packages%'
+channelManager.oktogo.notification.error.subject: 'Oktogo.ru error'
+channelManager.oktogo.notification.error: 'Oktogo.ru order processing error. Information: %info%'
+channelManager.booking.notification.bottom: 'Warning! An error requires manual fixing. Please contact our techncal support.'
+channelmanager.empty.config: 'Channel manager synchronisation error'
+views.channelmanager.actions.sync: Syncronize
+channelManager.ostrovok.notification.subject.new: 'New Ostrovok.ru order'
+channelManager.ostrovok.notification.subject.edit: 'Ostrovok.ru order changed'
+channelManager.ostrovok.notification.subject.delete: 'Ostrovok.ru order deleted'
+channelManager.ostrovok.notification.new: 'New order %order% from Ostrovok.ru. reservation number %packages%'
+channelManager.ostrovok.notification.edit: 'Ostrovok.ru order %order% changed. reservation number %packages%'
+channelManager.ostrovok.notification.delete: 'Ostrovok.ru order %order% deleted. reservation number %packages%'
+channelManager.ostrovok.notification.error.subject: 'Ostrovok.ru error'
+channelManager.ostrovok.notification.error: 'Ostrovok.ru order processing error. Information: %info%'
+channelManager.hundredOneHotels.notification.subject.delete: '101hotels.ru order deleted'
+channelManager.hundredOneHotels.notification.new: 'New order %order% from 101hotels.ru. reservation number %packages%'
+channelManager.hundredOneHotels.notification.edit: '101hotels.ru order %order% changed. reservation number %packages%'
+channelManager.hundredOneHotels.notification.delete: '101hotels.ru order %order% deleted. reservation number %packages%'
+channelManager.hundredOneHotels.notification.error.subject: '101hotels.ru error'
+channelManager.hundredOneHotels.notification.error: '101hotels.ru order processing error. Information: %info%'
+channelManager.hundredOneHotels.notification.subject.new: 'New 101hotels.ru order'
+channelManager.hundredOneHotels.notification.subject.edit: '101hotels.ru order changed'
+views.booking.actions.sync_old: Reservations
+views.booking.actions.sync_old_desc: 'For the last 2 weeks'
+channelManager.101Hotels.notification.subject.new: 'New 101hotels.ru order'
+channelManager.101Hotels.notification.subject.edit: '101hotels.ru order changed'
+channelManager.101Hotels.notification.subject.delete: '101hotels.ru order deleted'
+channelManager.101Hotels.notification.new: 'New order %order% from 101hotels.ru. reservation number %packages%'
+channelManager.101Hotels.notification.edit: '101hotels.ru order %order% changed. reservation number %packages%'
+channelManager.101Hotels.notification.delete: '101hotels.ru order %order% deleted. reservation number %packages%'
+channelManager.101Hotels.notification.error.subject: '101hotels.ru error'
+channelManager.101Hotels.notification.error: '101hotels.ru order processing error. Information: %info%'

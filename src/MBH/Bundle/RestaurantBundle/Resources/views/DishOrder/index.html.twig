@@ -10,20 +10,20 @@
 
                 {% if form.begin is defined %}
                     <div class="form-group">
-                        <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                        <label><i class="fa fa-calendar" title='{{ 'dish_order.index.dates_filter'|trans }}' data-toggle='tooltip'></i></label>
                         {{ form_widget(form.begin) }} —
                         {{ form_widget(form.end) }}
                     </div>
                 {% endif %}
                 {% if form.money_begin is defined %}
                     <div class="form-group">
-                        <label><i class="fa fa-money" title="Цены" data-toggle="tooltip"></i></label>
+                        <label><i class="fa fa-money" title="{{ 'dish_order.index.prices_filter'|trans }}" data-toggle="tooltip"></i></label>
                         {{ form_widget(form.money_begin) }}—
                         {{ form_widget(form.money_end) }}
                     </div>
                 {% endif %}
                 <div class="form-group">
-                    <label><i class="fa fa-money" title="Оплачен" data-toggle="tooltip"></i></label>
+                    <label><i class="fa fa-money" title="{{ 'dish_order.index.paid'|trans }}" data-toggle="tooltip"></i></label>
                     &nbsp;{{ form_widget(form.is_freezed) }}
                     {{ form_widget(form._token) }}
                 </div>
@@ -53,11 +53,15 @@
             </thead>
 
             <tbody>
-
-
             </tbody>
         </table>
     </div> <!-- /.box-body -->
+    <div class="text-center bg-gray color-palette alert" id="order-summary">
+        <span class="package-summary-row"><b>{{ 'order.index.summary.total'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="order-summary-total">-</span>
+        </span>
+
+    </div>
     {% if isDishes %}
         {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'restaurant_dishorder_new', 'role': 'RESTAURANT_DISHORDER'} %}
     {% else %}

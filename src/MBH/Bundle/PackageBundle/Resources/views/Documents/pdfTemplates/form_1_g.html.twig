@@ -1,5 +1,53 @@
-{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
-{% block document %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Pdf</title>
+</head>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
+      rel='stylesheet' type='text/css'>
+<body>
+<style>
+    body {
+        font-family: "Open Sans"; /*Arial*/
+        font-size: 16px;
+    }
+
+    .document {
+        padding-top: 0px;
+        width: 900px;
+        margin: 0 auto;
+    }
+
+    .ib {
+        display: inline-block;
+    }
+
+    .area {
+        border-bottom: solid #000000 1px;
+    }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .indent {
+        text-indent: 1.5em;
+    }
+
+    .upper {
+        text-transform: uppercase;
+    }
+</style>
+<div class="document">
     <style>
         body {
             font-size: 15px;
@@ -22,7 +70,10 @@
             margin: 5px 0px;
         }
     </style>
-    {% for tourist in tourists %}
+    {% for tourist in package.tourists %}
+        {% if loop.index != 1 %}
+            <div style="page-break-after: always;"></div>
+        {% endif %}
         <div>
             <div style="float: right; margin-bottom: 20px">
                 {{ 'mbhpackagebundle.views.utverzhdena'|trans }}<br>
@@ -40,13 +91,13 @@
                         {{ 'mbhpackagebundle.views.anketa'|trans }}
                     </td>
                     <td style="width: 25%">
-                        {{ 'mbhpackagebundle.views.zakaz'|trans }} № {{ entity.order.id }}
+                        {{ 'mbhpackagebundle.views.zakaz'|trans }} № {{ package.order.id }}
                     </td>
                     <td style="width: 25%">
                         {{ 'mbhpackagebundle.views.auto'|trans }}
                     </td>
                     <td style="width: 25%">
-                        № {{ 'mbhpackagebundle.views.scheta'|trans }} {{ entity.numberWithPrefix }}
+                        № {{ 'mbhpackagebundle.views.scheta'|trans }} {{ package.numberWithPrefix }}
                     </td>
                 </tr>
                 </tbody>
@@ -76,9 +127,10 @@
                         {{ 'mbhpackagebundle.views.g'|trans }}.
                     </div>
                     <div>
-                        <div class="ib left ">5.{{ 'mbhpackagebundle.view.documents.pdftemplates.form_1_g.mesto.rozhdeniya'|trans }} </div>
+                        <div class="ib left ">
+                            5.{{ 'mbhpackagebundle.view.documents.pdftemplates.form_1_g.mesto.rozhdeniya'|trans }} </div>
                         <div style="width: 310px" class="area ib">
-                            &nbsp{% if tourist and tourist.birthplace %} {{ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.district ~ ' ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
+                            &nbsp{% if tourist and tourist.birthplace and tourist.birthplace.cityId %} {{ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.district ~ ' ' ~ get_city(tourist.birthplace.cityId).name ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
                     </div>
                     <div>
                         <div class="left">
@@ -113,11 +165,12 @@
                     <div>
                         <div style="width: 130px" class="ib left">{{ 'mbhpackagebundle.views.komnata'|trans }} №</div>
                         <div style="width: 220px"
-                             class="area ib">{% if entity.accommodation %} {{ entity.accommodation.fullTitle }} {% endif %}</div>
+                             class="area ib">{% if package.accommodation %} {{ package.accommodation.fullTitle }} {% endif %}</div>
                         <div style="clear:both;"></div>
                     </div>
                     <div>
-                        <div style="width: 150px" class="ib left">{{ 'mbhpackagebundle.view.documents.pdftemplates.form_1_g.indeks.poseleniya'|trans }} </div>
+                        <div style="width: 150px"
+                             class="ib left">{{ 'mbhpackagebundle.view.documents.pdftemplates.form_1_g.indeks.poseleniya'|trans }} </div>
                         <div style="width: 200px" class="area ib">&nbsp</div>
                         <div style="clear:both;"></div>
                     </div>
@@ -125,20 +178,20 @@
                     {% set arrival = null %}
                     {% set departure = null %}
 
-                    {% if entity.begin %}
-                        {% set arrival = entity.begin|date('d.m.Y 14:00') %}
+                    {% if package.begin %}
+                        {% set arrival = package.begin|date('d.m.Y 14:00') %}
                     {% endif %}
 
-                    {% if entity.end %}
-                        {% set departure = entity.end|date('d.m.Y 12:00') %}
+                    {% if package.end %}
+                        {% set departure = package.end|date('d.m.Y 12:00') %}
                     {% endif %}
 
-                    {% if entity.arrivalTime %}
-                        {% set arrival = entity.arrivalTime|date('d.m.Y  H:i') %}
+                    {% if package.arrivalTime %}
+                        {% set arrival = package.arrivalTime|date('d.m.Y  H:i') %}
                     {% endif %}
 
-                    {% if entity.departureTime %}
-                        {% set departure = entity.departureTime|date('d.m.Y H:i') %}
+                    {% if package.departureTime %}
+                        {% set departure = package.departureTime|date('d.m.Y H:i') %}
                     {% endif %}
 
                     <div>
@@ -156,7 +209,7 @@
                         <div class="ib left">{{ 'mbhpackagebundle.views.vibil'|trans }} &nbsp</div>
                         <div class="ib">
                             <div style="width: 290px" class="area ib left">
-                                &nbsp{% if departure  %} {{ departure }} {% endif %}</div>
+                                &nbsp{% if departure %} {{ departure }} {% endif %}</div>
                             <div class="center">
                                 <small>({{ 'mbhpackagebundle.views.data_chasi'|trans }})</small>
                             </div>
@@ -178,9 +231,11 @@
         <div class="center-block">
             <div>
                 <div style="width: 900px" class="area ib left">
-                    &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}</div>
+                    &nbsp{% if tourist and tourist.documentRelation %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}</div>
                 <div class="center">
-                    <small>({{ 'mbhpackagebundle.views.naimenovanie_organa_vnutrennih_del_vidavshego_document'|trans }})</small>
+                    <small>({{ 'mbhpackagebundle.views.naimenovanie_organa_vnutrennih_del_vidavshego_document'|trans }}
+                        )
+                    </small>
                 </div>
             </div>
 
@@ -190,7 +245,7 @@
                     <div style="width: 900px" class="area ib left">
                         &nbsp
                         {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %}
-                            {{ tourist.addressObjectDecomposed.region }},
+                            {{ get_region(tourist.addressObjectDecomposed.regionId).name }},
                             {{ 'mbhpackagebundle.views.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% if tourist.addressObjectDecomposed.street %},
                             {{ 'mbhpackagebundle.views.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }},
                             {% if tourist.addressObjectDecomposed.house %}
@@ -216,11 +271,11 @@
             <div>
                 8. {{ 'mbhpackagebundle.views.cel_priezda'|trans }}
                 <div style="width: 775px" class="area ib">
-                    &nbsp{% if entity.purposeOfArrival %}{{ ('mbh.package.arrivals.' ~ entity.purposeOfArrival)|trans({}, 'MBHPackageBundle') }}{% endif %}
+                    &nbsp{% if package.purposeOfArrival %}{{ ('mbh.package.arrivals.' ~ package.purposeOfArrival)|trans({}, 'MBHPackageBundle') }}{% endif %}
                 </div>
             </div>
             <div>
-                9. {{ 'mbhpackagebundle.views.srok_prozhivania_do'|trans }} {% if entity.end %} {{ entity.end|date('d.m.Y') }} {% endif %}
+                9. {{ 'mbhpackagebundle.views.srok_prozhivania_do'|trans }} {% if package.end %} {{ package.end|date('d.m.Y') }} {% endif %}
             </div>
             <div>
                 10. {{ 'mbhpackagebundle.views.prodlenie_prozhivania'|trans }}
@@ -265,18 +320,18 @@
 
             {% set location = '' %}
 
-            {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.street %}
-                {% set location = ' ' ~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ entity.accommodation.housing.city  ~ ', ' ~ entity.accommodation.housing.settlement ~ ' ' ~ entity.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.views.d'|trans ~ '.' ~ entity.accommodation.housing.house %}
+            {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.cityId and package.accommodation.housing.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ get_city(package.accommodation.housing.cityId).name  ~ ', ' ~ package.accommodation.housing.settlement ~ ' ' ~ package.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.views.d'|trans ~ '.' ~ package.accommodation.housing.house %}
             {% endif %}
 
-            {% if not location and entity.roomType.hotel.city and entity.roomType.hotel.street %}
-                {% set location = ' '~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ entity.roomType.hotel.city  ~ ', ' ~ entity.roomType.hotel.settlement ~ ', ' ~ entity.roomType.hotel.street %}
-                {% if entity.roomType.hotel.house %}
-                    {% set location = location ~ ', ' ~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ entity.roomType.hotel.house %}
-                    {% if entity.roomType.hotel.corpus %}
-                        {% set location = location ~ ', ' ~ 'mbhpackagebundle.views.korp'|trans ~ '. ' ~ entity.roomType.hotel.corpus %}
-                        {% if entity.roomType.hotel.flat %}
-                            {% set location = location ~  ', ' ~ 'mbhpackagebundle.views.ul' |trans~ '. ' ~ entity.roomType.hotel.flat %}
+            {% if not location and package.roomType.hotel.cityId and package.roomType.hotel.street %}
+                {% set location = ' '~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ get_city(package.roomType.hotel.cityId).name  ~ ', ' ~ package.roomType.hotel.settlement ~ ', ' ~ package.roomType.hotel.street %}
+                {% if package.roomType.hotel.house %}
+                    {% set location = location ~ ', ' ~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ package.roomType.hotel.house %}
+                    {% if package.roomType.hotel.corpus %}
+                        {% set location = location ~ ', ' ~ 'mbhpackagebundle.views.korp'|trans ~ '. ' ~ package.roomType.hotel.corpus %}
+                        {% if package.roomType.hotel.flat %}
+                            {% set location = location ~  ', ' ~ 'mbhpackagebundle.views.ul' |trans~ '. ' ~ package.roomType.hotel.flat %}
                         {% endif %}
                     {% endif %}
                 {% endif %}
@@ -292,12 +347,14 @@
             <div style="margin-top: 10px">
                 {{ 'mbhpackagebundle.views.gostinica'|trans }}
                 <div style="width: 810px" class="area ib">
-                    &nbsp{% if entity.roomType and entity.roomType.hotel %} {{ entity.roomType.hotel.name }} {% endif %}
+                    &nbsp{% if package.roomType and package.roomType.hotel %} {{ package.roomType.hotel.name }} {% endif %}
                 </div>
             </div>
 
             <div style="margin-top: 10px">
-                <div class="ib left">{{ 'mbhpackagebundle.views.na_dopolnitelnoe_mesto_v_nomere_soglasen'|trans }} &nbsp</div>
+                <div class="ib left">{{ 'mbhpackagebundle.views.na_dopolnitelnoe_mesto_v_nomere_soglasen'|trans }}
+                    &nbsp
+                </div>
                 <div class="ib">
                     <div style="width: 530px" class="area ib left">&nbsp</div>
                     <div class="center">
@@ -308,7 +365,9 @@
             </div>
 
             <div>
-                <div class="ib left">{{ 'mbhpackagebundle.views.soglasen_na_prozhivanie_v_nomere_s_oplatoi_vseh_mest'|trans }} &nbsp</div>
+                <div class="ib left">{{ 'mbhpackagebundle.views.soglasen_na_prozhivanie_v_nomere_s_oplatoi_vseh_mest'|trans }}
+                    &nbsp
+                </div>
                 <div class="ib">
                     <div style="width: 460px" class="area ib left">&nbsp</div>
                     <div class="center">
@@ -326,6 +385,7 @@
         {% if loop.index < tourists|length %}
             <div style="page-break-after: always;"></div>
         {% endif %}
-
     {% endfor %}
-{% endblock %}
+</div>
+</body>
+</html>

@@ -70,7 +70,7 @@ class PackageService extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -79,7 +79,7 @@ class PackageService extends Base
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -88,7 +88,7 @@ class PackageService extends Base
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -154,7 +154,7 @@ class PackageService extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      */
@@ -163,7 +163,7 @@ class PackageService extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\DateTime()
      */
     protected $time;
@@ -171,7 +171,7 @@ class PackageService extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $end;
@@ -186,7 +186,7 @@ class PackageService extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isCustomPrice = false;
@@ -646,7 +646,7 @@ class PackageService extends Base
      * @param bool $includeDeparture
      * @return self
      */
-    public function setIncludeDeparture(bool $includeDeparture): self
+    public function setIncludeDeparture(?bool $includeDeparture): self
     {
         $this->includeDeparture = $includeDeparture;
 
@@ -669,7 +669,7 @@ class PackageService extends Base
      * @param bool $includeArrival
      * @return self
      */
-    public function setIncludeArrival(bool $includeArrival): self
+    public function setIncludeArrival(?bool $includeArrival): self
     {
         $this->includeArrival = $includeArrival;
 

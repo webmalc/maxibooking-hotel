@@ -105,14 +105,14 @@ class Room extends Base
     protected $floor;
 
     /**
-     * @var RoomStatus
+     * @var RoomStatus[]|ArrayCollection
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomStatus")
      */
     protected $status;
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $facilities;
 
@@ -291,7 +291,7 @@ class Room extends Base
     }
 
     /**
-     * @return RoomStatus|null
+     * @return RoomStatus[]|ArrayCollection
      */
     public function getStatus()
     {

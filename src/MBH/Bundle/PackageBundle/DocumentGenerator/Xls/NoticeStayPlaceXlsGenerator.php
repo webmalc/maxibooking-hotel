@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls;
 
 
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterface;
@@ -34,11 +35,13 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
      * @var \PHPExcel
      */
     private $phpExcelObject;
+    /** @var  BillingApi */
+    private $billing;
 
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
-
+        $this->billing = $container->get('mbh.billing.api');
         $this->phpExcel = $this->container->get('phpexcel');
         $this->phpExcelObject = $this->phpExcel->createPHPExcelObject($this->getXlsPath());
     }
@@ -68,8 +71,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->write(mb_substr($tourist->getFirstName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W15');
         //$this->write('', 'W15');
 
-        if ($tourist->getCitizenship()) {
-            $this->write($tourist->getCitizenship()->getName(), 'AA18');
+        if ($tourist->getCitizenshipTld()) {
+            $this->write($this->billing->getCountryByTld($tourist->getCitizenshipTld())->getName(), 'AA18');
         }
         if ($birthday = $tourist->getBirthday()) {
             $this->write($birthday->format('d'), 'AE21');
@@ -82,8 +85,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         }
 
         if ($birthplace = $tourist->getBirthplace()) {
-            if ($birthplace->getCountry() && $birthplace->getMainRegion()) {
-                $city = $birthplace->getCountry()->getName() . ' ' . $birthplace->getMainRegion();
+            if ($birthplace->getCountryTld() && $birthplace->getMainRegion()) {
+                $city = $this->billing->getCountryByTld($birthplace->getCountryTld())->getName() . ' ' . $birthplace->getMainRegion();
                 // . ' ' . $birthplace->getCity() . ' ' . $tourist->getBirthplace()->getDistrict();
                 $this->write(mb_substr($city, 0, 33), 'AE24');
             }
@@ -183,7 +186,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         //$this->write($tourist->getPatronymic(), 'W73');
 
         //$this->write('', 'W71');
-        $this->write($tourist->getCitizenship(), 'AA74');
+        $this->write($this->billing->getCountryByTld($tourist->getCitizenshipTld())->getName(), 'AA74');
 
         if ($birthday = $tourist->getBirthday()) {
             $this->write($birthday->format('d'), 'AE77');
@@ -204,12 +207,12 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             $this->write($documentRelation->getNumber(), 'DW80');
         }
 
-        if($hotel->getRegion()) {
-            $this->write($hotel->getRegion()->getTitle(), 'AE83');
+        if($hotel->getRegionId()) {
+            $this->write($this->billing->getRegionById($hotel->getRegionId())->getName(), 'AE83');
         }
-        if ($hotel->getCity()) {
+        if ($hotel->getCityId()) {
             //$this->write($hotel->getCity()->getTitle(), 'W86');
-            $this->write($hotel->getCity()->getTitle() . ' ' . $hotel->getSettlement(), 'AE88');//Населенный пункт
+            $this->write($this->billing->getCityById($hotel->getCityId())->getName() . ' ' . $hotel->getSettlement(), 'AE88');//Населенный пункт
         }
         $this->write($hotel->getStreet(), 'W91');
 
@@ -226,15 +229,15 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         // two sheet
         $this->phpExcelObject->setActiveSheetIndex(1);
 
-        if ($hotel->getRegion()) {
-            $this->write($hotel->getRegion()->getTitle(), 'AE14');
+        if ($hotel->getRegionId()) {
+            $this->write($hotel->getRegionId()->getTitle(), 'AE14');
         }
 
         //Район
         //$this->write($hotel->getSettlement(), 'W17');
 
-        if ($hotel->getCity()) {
-            $this->write($hotel->getCity()->getTitle(), 'AE19');  // Город или другой населенный пункт
+        if ($hotel->getCityId()) {
+            $this->write($this->billing->getCityById($hotel->getCityId())->getName(), 'AE19');  // Город или другой населенный пункт
         }
         $this->write($hotel->getStreet(), 'W22');
         $this->write($hotel->getHouse(), 'S24');
@@ -272,7 +275,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         }
 
         if($addressObjectDecomposed = $user->getAddressObjectDecomposed()) {
-            if($region = $addressObjectDecomposed->getRegion()) {
+            if($region = $this->billing->getRegionById($addressObjectDecomposed->getRegionId())) {
                 $this->write($region->getName(), 'AE39');
             }
 
@@ -300,16 +303,25 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
 
         if ($organization = $hotel->getOrganization()) {
-            $this->write($organization->getName(), 'AA51');
-            $this->write($organization->getInn(), 'S60');
+            $firstLineLength = 23;
+            $secondLineLength = 27;
 
+            $organizationName = strlen($organization->getName()) > ($firstLineLength + $secondLineLength)
+                ? $organization->getShortName()
+                : $organization->getName();
+
+            $this->write(mb_substr($organizationName, 0, $firstLineLength), 'AA51');
+            if (strlen($organizationName) > $firstLineLength) {
+                $this->write(substr($organizationName, $firstLineLength), 'K54');
+            }
+            $this->write($organization->getInn(), 'S60');
         }
 
         if($hotel) {
             $address = [];
-            $city = $hotel->getCity();
+            $city = $this->billing->getCityById($hotel->getCityId());
             if($city) {
-                $address[] = $city->getTitle();
+                $address[] = $city->getName();
 
                 if($hotel->getStreet()) {
                     $address[] = 'ул '. $hotel->getStreet();

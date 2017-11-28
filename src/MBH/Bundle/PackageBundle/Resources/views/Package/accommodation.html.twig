@@ -16,6 +16,8 @@
     {% endif %}
     <input type="hidden" id="interval-begin-date" value="{{ periodBegin|date('d.m.Y') }}">
     <input type="hidden" id="interval-end-date" value="{{ periodEnd|date('d.m.Y') }}">
+    <input type="hidden" id="package-room-type" value="{{ package.roomType.id }}">
+    <input type="hidden" id="package-room-type-name" value="{{ package.roomType.name }}">
 
     <div class="tab-content">
         {% if package.accommodations|length %}
@@ -71,7 +73,7 @@
                                 <td>
                                     {% for facility in accommodation.room.allFacilities %}
                                         <i style="margin-left: 3px" data-toggle="tooltip"
-                                           data-title="{{ facilities[facility] }}"
+                                           data-title="{{ facilities[facility]|trans }}"
                                            class="fa mbf-{{ facility }}"></i>
                                     {% endfor %}
                                 </td>
@@ -88,6 +90,8 @@
                                         <div class="pull-right">
                                             <a data-accommodation-id="{{ accommodation.id }}"
                                                data-package-id="{{ package.id }}"
+                                               data-roomType-id="{{ accommodation.room.roomType.id }}"
+                                               data-roomType-name="{{ accommodation.room.roomType.name }}"
                                                class="btn btn-success btn-xs accommodation-edit-link"
                                                title="{{ 'package.accommodation.edit_record'|trans }}"
                                                style="margin-right: 5px;"
@@ -115,7 +119,8 @@
             {% if optGroupRooms|length %}
                 <div class="box box-default box-solid">
                     <div class="box-header with-border"><h3
-                                class="box-title">{{ 'package.accommodation.choose_accommodation_on_dates'|trans }} &emsp;&emsp;</h3>
+                                class="box-title">{{ 'package.accommodation.choose_accommodation_on_dates'|trans }}
+                            &emsp;&emsp;</h3>
                         <div class="btn-group">
                             {% for intervalNumber, interval in emptyIntervalsAccommodation %}
                                 {% set btnClass = app.request.attributes.get('begin')|date('Y-m-d') == interval.begin|date('Y-m-d') and app.request.attributes.get('end')|date('Y-m-d') == interval.end|date('Y-m-d') or (not app.request.attributes.get('begin') and intervalNumber == 0 ) ? 'btn-success':'btn-warning' %}
@@ -175,7 +180,10 @@
                                             {% endfor %}
                                         </td>
                                         <td class="text-center">
-                                            <a data-package-id="{{ package.id }}" data-room-id="{{ room.id }}"
+                                            <a data-package-id="{{ package.id }}"
+                                               data-room-id="{{ room.id }}"
+                                               data-roomType-id="{{ room.roomType.id }}"
+                                               data-roomType-name="{{ room.roomType.name }}"
                                                class="btn btn-success btn-xs accommodation-new-link"
                                                title="{{ 'package.accommodation.place_in_room' |trans }}"
                                                data-toggle="tooltip">

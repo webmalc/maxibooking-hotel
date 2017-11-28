@@ -2,26 +2,20 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\VegaBundle\Service\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Type;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 
 /**
  * Class DocumentRelationType
  * @package MBH\Bundle\PackageBundle\Form
-
  */
 class DocumentRelationType extends AbstractType
 {
@@ -35,48 +29,39 @@ class DocumentRelationType extends AbstractType
      */
     private $managerRegistry;
 
-    public function setDictionaryProvider(DictionaryProvider $dictionaryProvider)
-    {
-        $this->dictionaryProvider = $dictionaryProvider;
-    }
+    /** @var FMSDictionaries */
+    private $fmsDictionaries;
 
-    public function setManagerRegistry(ManagerRegistry $managerRegistry)
-    {
+    public function __construct(DictionaryProvider $dictionaryProvider, ManagerRegistry $managerRegistry, FMSDictionaries $fmsDictionaries) {
+        $this->dictionaryProvider = $dictionaryProvider;
         $this->managerRegistry = $managerRegistry;
+        $this->fmsDictionaries = $fmsDictionaries;
     }
 
     /**
-     * @todo replace documentTypes by VagaDocumentType
-     * @see \MBH\Bundle\VegaBundle\Document\VegaDocumentType
-     *
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $dictTypes = array_keys($this->dictionaryProvider->getDictTypes());
-        $documentTypes = array_map(['\MBH\Bundle\VegaBundle\Service\FriendlyFormatter', 'convertDocumentType'], $this->dictionaryProvider->getDocumentTypes());
-
-        asort($documentTypes);
+        $passportDocTypeId = 103008;
 
         //main
-        if($options['citizenship']) {
+        if ($options['citizenship']) {
             $builder
-                ->add('citizenship', DocumentType::class, [
-                    'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                ->add('citizenshipTld', TextType::class, [
                     'label' => 'form.TouristExtendedType.citizenship',
-                    'group' => 'form.DocumentRelation.citizenship',
-                    'query_builder' => function(DocumentRepository $repository){
-                        return $repository->createQueryBuilder()->sort(['name' => 1]);
-                    }
+                    'group' => 'form.DocumentRelation.citizenship'
                 ]);
         }
         $builder
-            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'choices' => $documentTypes,
+            ->add('type', InvertChoiceType::class, [
+                'choices' => $this->fmsDictionaries->getDocumentTypes(),
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.type',
-                'property_path' => 'documentRelation.type'
+                'property_path' => 'documentRelation.type',
+                'data' => $builder->getData()->getDocumentRelation()->getType() ?? $passportDocTypeId
             ])
             ->add('series', TextType::class, [
                 'group' => 'form.DocumentRelation.main',
@@ -92,47 +77,23 @@ class DocumentRelationType extends AbstractType
                 'constraints' => [
                     new Type(['type' => 'numeric'])
                 ]
-            ])
-        ;
+            ]);
+
         $builder
-            ->add('authorityOrgan', TextType::class, [
+            ->add('authorityOrganId', TextType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.authority',
+                'help' => 'form.DocumentRelation.authority.help',
                 'required' => false,
-                'property_path' => 'documentRelation.authorityOrgan'
+                'property_path' => 'documentRelation.authorityOrganId'
             ])
-            ->add('authorityOrganText', HiddenType::class, [
+            ->add('authorityOrganText', TextType::class, [
+                'group' => 'form.DocumentRelation.main',
+                'label' => 'form.DocumentRelation.authority',
                 'required' => false,
                 'property_path' => 'documentRelation.authorityOrganText'
             ])
         ;
-        $builder->get('authorityOrgan')->addModelTransformer(
-            new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS')
-        );
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event) {
-            $data = $event->getData();
-            $authorityOrgan = $data['authorityOrgan'];
-            if($authorityOrgan) {
-                if(\MongoId::isValid($authorityOrgan)) {
-                    $data['authorityOrganText'] = null;
-                } else {
-                    $data['authorityOrgan'] = null;
-                    $data['authorityOrganText'] = $authorityOrgan;
-                }
-                $event->setData($data);
-            }
-        });
-
-        $builder
-            ->add('authorityOrganCode', TextType::class, [
-                'group' => 'form.DocumentRelation.main',
-                'label' => 'form.DocumentRelation.authorityOrganCode',
-                'required' => false,
-                'property_path' => 'documentRelation.authorityOrganCode',
-                'attr' => [
-                    'style' =>  'width: 100px'
-                ]
-            ]);
 
         $builder
             ->add('issued', DateType::class, [
@@ -153,7 +114,7 @@ class DocumentRelationType extends AbstractType
                 'attr' => ['class' => 'input-small datepicker', 'data-date-format' => 'dd.mm.yyyy'],
                 'property_path' => 'documentRelation.expiry'
             ])
-            ->add('relation',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('relation', InvertChoiceType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.relation',
                 'choices' => array_combine($dictTypes, $dictTypes),
@@ -161,19 +122,13 @@ class DocumentRelationType extends AbstractType
                 'property_path' => 'documentRelation.relation'
             ]);
 
-        //birthplace
-        if($options['birthplace']) {
+        if ($options['birthplace']) {
             $builder
-                ->add('country', DocumentType::class, [
+                ->add('countryTld', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
                     'label' => 'form.BirthplaceType.country',
-                    'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                    'query_builder' => function(DocumentRepository $repository){
-                        return $repository->createQueryBuilder()->sort(['name' => 1]);
-                    },
-                    'placeholder' => '',
                     'required' => false,
-                    'property_path' => 'birthplace.country'
+                    'property_path' => 'birthplace.countryTld',
                 ])
                 ->add('main_region', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
@@ -184,17 +139,11 @@ class DocumentRelationType extends AbstractType
                 ])
                 ->add('district', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
-                    /*'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
-                    'query_builder' => function(DocumentRepository $repository){
-                        return $repository->createQueryBuilder()->sort(['name' => 1]);
-                    },
-                    'placeholder' => '',
-                    */
                     'label' => 'form.BirthplaceType.district',
                     'required' => false,
                     'property_path' => 'birthplace.district'
                 ])
-                ->add('city', TextType::class, [//'mbh_city'
+                ->add('city', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
                     'label' => 'form.BirthplaceType.city',
                     'required' => false,

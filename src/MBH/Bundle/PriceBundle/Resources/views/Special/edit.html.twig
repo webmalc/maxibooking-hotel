@@ -5,8 +5,8 @@
 
 {% block content %}
     <div class="bg-gray color-palette alert">
-        Продано: {{ entity.sold }} из {{ entity.limit }}. Осталось: {{ entity.remain }}
-        <div id="special-packages-list">Брони:
+        {{ 'special.edit.sold_from'|trans({"%soldAmount%" : entity.sold, "%soldLimit%" : entity.limit, "%remain%" : entity.remain})}}
+        <div id="special-packages-list">{{ 'special.edit.packages'|trans}}:
             {% for package in entity.packages %}
                 <a href="{{ path('package_edit', {'id': package.id, 'orderId': package.order.id}) }}">
                     <small>{{ package }}</small>

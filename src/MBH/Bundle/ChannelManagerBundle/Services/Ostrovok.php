@@ -13,7 +13,6 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -188,7 +187,7 @@ class Ostrovok extends Base
             }
         }
 
-        return $this->sendApiRequest($rna_request_data, __METHOD__);
+        return $this->sendApiRequest($rna_request_data, __METHOD__) && $result;
     }
 
     /**
@@ -258,9 +257,12 @@ class Ostrovok extends Base
                                 );
                                 $price = $price[$adults.'_'.$children]['total']??null;
                                 if (!$price) {
-                                    $message = 'Ошибка получения цены для номера '.$roomType->getFullTitle(
-                                    ).' для '.$adults.' вз.';
+                                    $message = $this->container->get('translator')->trans('services.ostrovok.error_getting_price_for_number', [
+                                        '%roomTypeName%' => $roomType->getFullTitle(),
+                                        '%numberOfAdults%' => $adults
+                                    ]);
                                     $this->log('Error! '.$message);
+                                    $result = false;
                                     continue;
                                     /*throw new \Exception($message);*/
                                 }
@@ -302,7 +304,7 @@ class Ostrovok extends Base
             }
         }
 
-        return $this->sendApiRequest($rna_request_data, __METHOD__);
+        return $this->sendApiRequest($rna_request_data, __METHOD__) && $result;
     }
 
     /**
@@ -339,13 +341,13 @@ class Ostrovok extends Base
 
 
             $configRoomTypes = $this->getRoomTypes($config);
-            $configTarrifs = $this->getTariffs($config);
+            $configTariffs = $this->getTariffs($config);
             $roomTypeRestrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
                 $begin,
                 $end,
                 $config->getHotel(),
                 $roomType ? [$roomType->getId()] : array_keys($configRoomTypes),
-                array_keys($configTarrifs),
+                array_keys($configTariffs),
                 true
             );
 
@@ -415,7 +417,7 @@ class Ostrovok extends Base
             }
         }
 
-        return $this->sendApiRequest($rna_request_data, __METHOD__);
+        return $this->sendApiRequest($rna_request_data, __METHOD__) && $result;
     }
 
     /**

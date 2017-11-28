@@ -86,10 +86,13 @@ abstract class AbstractCacheSource extends AbstractDashboardSource
                 $this->translator->trans('dashboard.messages.hotel.errors') . '<br>';
             foreach ($hotelData as $roomTypeId => $caches) {
                 $roomType = $roomTypeRepo->find($roomTypeId);
-                $message .= $roomType->getName() . ': ' .
-                    $this->translator->trans(static::ROOM_TYPE_CACHE_MESSAGE) . ' ' .
-                    implode(', ', $this->getPeriods($caches)) . '<br>'
-                ;
+                if ($roomType) {
+                    $message .= $roomType->getName() . ': ' .
+                        $this->translator->trans(static::ROOM_TYPE_CACHE_MESSAGE) . ' ' .
+                        implode(', ', $this->getPeriods($caches)) . '<br>'
+                    ;
+                }
+
             }
 
             $this->messages[] = $message;

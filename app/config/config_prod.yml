@@ -19,3 +19,4 @@ monolog:
             level: debug
         console:
             type:  console
+

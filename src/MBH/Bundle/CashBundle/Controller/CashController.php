@@ -119,7 +119,9 @@ class CashController extends Controller
             $params['noConfirmedTotalOut'] = $repository->total('out', $queryCriteria);
         }
 
-        $this->dm->getFilterCollection()->enable('softdeleteable');
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
 
         if ($isByDay) {
             return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', $params + ['data' => $results]);

@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="Hotels")
+ * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="validator.document.hotel.hotel_is_exist")
@@ -34,6 +34,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Hotel extends Base implements \JsonSerializable, AddressInterface
 {
+    const DEFAULT_ARRIVAL_TIME = 14;
+    const DEFAULT_DEPARTURE_TIME = 12;
 
     /**
      * Hook timestampable behavior
@@ -99,7 +101,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
@@ -137,21 +139,21 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $type = [];
 
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $theme = [];
 
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $facilities = [];
 
@@ -205,6 +207,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig", mappedBy="hotel") */
     protected $myallocatorConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig", mappedBy="hotel") */
+    protected $expediaConfig;
+
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig", mappedBy="hotel") */
     protected $hundredOneHotelsConfig;
 
@@ -221,24 +226,21 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="Country")
-     * @ODM\Index()
+     * @ODM\Field(type="int")
      */
-    protected $country;
+    protected $countryTld;
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="Region")
-     * @ODM\Index()
+     * @ODM\Field(type="int")
      */
-    protected $region;
+    protected $regionId;
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="City")
-     * @ODM\Index()
+     * @ODM\Field(type="int")
      */
-    protected $city;
+    protected $cityId;
 
     /**
      * @Gedmo\Versioned
@@ -289,6 +291,12 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @Gedmo\Versioned()
      */
     protected $zipCode;
+
+    /**
+     * @var Image
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\Image", cascade={"persist"})
+     */
+    protected $logoImage;
 
     /**
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\BaseBundle\Document\Image")
@@ -347,7 +355,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $supportedLanguages = [];
 
@@ -374,6 +382,52 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @ODM\Field(type="string")
      */
     protected $smokingPolicy;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     * @Assert\Range(max="23", min="0")
+     */
+    protected $packageArrivalTime = self::DEFAULT_ARRIVAL_TIME;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     * @Assert\Range(max="23", min="0")
+     */
+    protected $packageDepartureTime = self::DEFAULT_DEPARTURE_TIME;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $aboutLink;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $roomsLink;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $mapLink;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $contactsLink;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $pollLink;
 
     public function __construct()
     {
@@ -742,22 +796,22 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get country
      *
-     * @return \MBH\Bundle\HotelBundle\Document\Country $country
+     * @return string
      */
-    public function getCountry()
+    public function getCountryTld()
     {
-        return $this->country;
+        return $this->countryTld;
     }
 
     /**
      * Set country
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Country $country
+     * @param string $countryTld
      * @return self
      */
-    public function setCountry(\MBH\Bundle\HotelBundle\Document\Country $country)
+    public function setCountryTld($countryTld)
     {
-        $this->country = $country;
+        $this->countryTld = $countryTld;
 
         return $this;
     }
@@ -765,22 +819,22 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get region
      *
-     * @return \MBH\Bundle\HotelBundle\Document\Region $region
+     * @return int
      */
-    public function getRegion()
+    public function getRegionId()
     {
-        return $this->region;
+        return $this->regionId;
     }
 
     /**
      * Set region
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Region $region
+     * @param int $regionId
      * @return self
      */
-    public function setRegion(\MBH\Bundle\HotelBundle\Document\Region $region)
+    public function setRegionId($regionId)
     {
-        $this->region = $region;
+        $this->regionId = $regionId;
 
         return $this;
     }
@@ -1008,40 +1062,24 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @PreUpdate
-     */
-    public function preUpdate()
-    {
-        $this->fillLocationByCity();
-    }
-
-    private function fillLocationByCity()
-    {
-        if ($this->getCity()) {
-            $this->setCountry($this->getCity()->getCountry());
-            $this->setRegion($this->getCity()->getRegion());
-        }
-    }
-
-    /**
      * Get city
      *
-     * @return \MBH\Bundle\HotelBundle\Document\City $city
+     * @return int
      */
-    public function getCity()
+    public function getCityId()
     {
-        return $this->city;
+        return $this->cityId;
     }
 
     /**
      * Set city
      *
-     * @param \MBH\Bundle\HotelBundle\Document\City $city
+     * @param $cityId
      * @return self
      */
-    public function setCity(\MBH\Bundle\HotelBundle\Document\City $city)
+    public function setCityId($cityId)
     {
-        $this->city = $city;
+        $this->cityId = $cityId;
 
         return $this;
     }
@@ -1114,6 +1152,27 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         $this->flat = $flat;
     }
 
+
+    /**
+     * @return mixed
+     */
+    public function getExpediaConfig()
+    {
+        return $this->expediaConfig;
+    }
+
+    /**
+     * @param mixed $expediaConfig
+     * @return $this
+     */
+    public function setExpediaConfig($expediaConfig)
+    {
+        $this->expediaConfig = $expediaConfig;
+
+        return $this;
+    }
+
+
     /**
      * @return Housing[]
      */
@@ -1137,6 +1196,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     public function getLogoUrl()
     {
+
         if ($this->getFile() instanceof File) {
             return '/upload/hotelLogos/' . $this->getLogo();
         }
@@ -1266,7 +1326,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return [
             'id' => $this->getId(),
             'title' => $this->getFullTitle(),
-            'city' => $this->getCity() ? $this->getCity()->getTitle() : null,
+            'city' => $this->getCityId() ? $this->getCityId() : null,
         ];
     }
 
@@ -1558,6 +1618,27 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
+     * @return Image|null
+     */
+    public function getLogoImage(): ?Image
+    {
+        return $this->logoImage;
+    }
+
+    public function setLogoImage(Image $logoImage)
+    {
+        $this->logoImage = $logoImage;
+    }
+
+    public function removeLogoImage()
+    {
+        $this->logoImage = null;
+
+        return $this;
+    }
+
+
+    /**
      * @return mixed
      */
     public function getZipCode()
@@ -1625,4 +1706,137 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
         return $data;
     }
+
+    /**
+     * @return string
+     */
+    public function getAboutLink(): ?string
+    {
+        return $this->aboutLink;
+    }
+
+    /**
+     * @param string $aboutLink
+     * @return Hotel
+     */
+    public function setAboutLink(string $aboutLink): Hotel
+    {
+        $this->aboutLink = $aboutLink;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoomsLink(): ?string
+    {
+        return $this->roomsLink;
+    }
+
+    /**
+     * @param string $roomsLink
+     * @return Hotel
+     */
+    public function setRoomsLink(string $roomsLink): Hotel
+    {
+        $this->roomsLink = $roomsLink;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMapLink(): ?string
+    {
+        return $this->mapLink;
+    }
+
+    /**
+     * @param string $mapLink
+     * @return Hotel
+     */
+    public function setMapLink(string $mapLink): Hotel
+    {
+        $this->mapLink = $mapLink;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactsLink(): ?string
+    {
+        return $this->contactsLink;
+    }
+
+    /**
+     * @param string $contactsLink
+     * @return Hotel
+     */
+    public function setContactsLink(string $contactsLink): Hotel
+    {
+        $this->contactsLink = $contactsLink;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPollLink(): ?string
+    {
+        return $this->pollLink;
+    }
+
+    /**
+     * @param string $pollLink
+     * @return Hotel
+     */
+    public function setPollLink(string $pollLink): Hotel
+    {
+        $this->pollLink = $pollLink;
+
+        return $this;
+    }
+    /**
+     * @return int
+     */
+    public function getPackageArrivalTime(): ?int
+    {
+        return $this->packageArrivalTime;
+    }
+
+    /**
+     * @param int $packageArrivalTime
+     * @return Hotel
+     */
+    public function setPackageArrivalTime(?int $packageArrivalTime): Hotel
+    {
+        $this->packageArrivalTime = $packageArrivalTime;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPackageDepartureTime(): ?int
+    {
+        return $this->packageDepartureTime;
+    }
+
+    /**
+     * @param int $packageDepartureTime
+     * @return Hotel
+     */
+    public function setPackageDepartureTime(?int $packageDepartureTime): Hotel
+    {
+        $this->packageDepartureTime = $packageDepartureTime;
+
+        return $this;
+    }
+
 }

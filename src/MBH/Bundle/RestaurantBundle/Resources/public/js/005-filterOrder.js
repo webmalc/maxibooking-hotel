@@ -5,6 +5,15 @@ $(document).ready(function () {
         $dishOrderTable = $('#dishorder-table');
 
     $dishOrderTable.dataTable({
+        "drawCallback": function (settings) {
+            var html;
+            if (settings.json.restaurant_order_total) {
+                html = $.number(settings.json.restaurant_order_total, 2) + ' ';
+            } else {
+                html = false;
+            }
+            $('#order-summary-total').html( html || '-');
+        },
         processing: true,
         serverSide: true,
         ordering: true,
@@ -32,6 +41,7 @@ $(document).ready(function () {
             {"name": 'isFreezed'},
             {"orderable": false}
         ]
+
 
     });
 

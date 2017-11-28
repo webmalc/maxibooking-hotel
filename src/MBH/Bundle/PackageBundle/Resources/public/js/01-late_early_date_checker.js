@@ -1,3 +1,5 @@
+/*global Translator */
+
 /**
  * @author Arofikin Alexandr
  * @param {function} yesHandler
@@ -29,9 +31,9 @@ LateEarlyDateChecker.STATUS_DEPARTURE = 'departure';
 LateEarlyDateChecker.STATUS_BOTH = 'both';
 
 LateEarlyDateChecker.prototype.statusTexts = {};
-LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_ARRIVAL] = 'Гости заехали раньше назначенного времени'; //Добавить дополельную услугу "Ранний заезд" ?
-LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_DEPARTURE] = 'Гости выезжают позже назначенного времени'; //Добавить дополельную услугу "Поздний выезд" ?
-LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_BOTH] = 'Гости заехали раньше и выехали позже назначенного времени.'; // Добавить дополнительную услугу "Ранний заезд" и "Поздний выезд" ?
+LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_ARRIVAL] = Translator.trans("late_early_date_checker.guests_arrived_earlier");
+LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_DEPARTURE] = Translator.trans("late_early_date_checker.guests_departured_earlier");
+LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_BOTH] = Translator.trans("late_early_date_checker.guests_check_in_earlier");
 
 LateEarlyDateChecker.prototype.bindEventListeners = function() {
     var that = this;

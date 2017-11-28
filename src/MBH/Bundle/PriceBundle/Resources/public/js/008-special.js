@@ -4,8 +4,8 @@ $(document).ready(function () {
 
     $('#special-packages-list').readmore({
         collapsedHeight: 20,
-        lessLink: '<a class="text-right" href="#">скрыть брони</a>',
-        moreLink: '<a class="text-right" href="#">показать брони</a>'
+        lessLink: '<a class="text-right" href="#">'+ Translator.trans("008-special.hide_packages") + '</a>',
+        moreLink: '<a class="text-right" href="#">' + Translator.trans("008-special.show_packages") + '</a>'
     });
 
     var specialFilterForm = $('#special-filter-form'),

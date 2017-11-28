@@ -90,6 +90,9 @@ class SearchResult
 
     protected $infants = 0;
 
+    /** @var string */
+    protected $queryId;
+
     /**
      * @return \DateTime
      */
@@ -517,6 +520,25 @@ class SearchResult
     public function setVirtualRoom(Room $virtualRoom): SearchResult
     {
         $this->virtualRoom = $virtualRoom;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQueryId(): ?string
+    {
+        return $this->queryId;
+    }
+
+    /**
+     * @param mixed $queryId
+     * @return SearchResult
+     */
+    public function setQueryId(string $queryId)
+    {
+        $this->queryId = $queryId;
+
         return $this;
     }
 

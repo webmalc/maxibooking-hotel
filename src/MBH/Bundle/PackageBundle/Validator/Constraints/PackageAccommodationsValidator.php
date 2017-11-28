@@ -23,7 +23,11 @@ class PackageAccommodationsValidator extends ConstraintValidator
     public function validate($packageAccommodation, Constraint $constraint)
     {
         /** @var PackageAccommodation $packageAccommodation */
-        $package = $packageAccommodation->getPackage();
+        $package = !is_null($packageAccommodation->getPackageForValidator())
+            ? $packageAccommodation->getPackageForValidator()
+            : $this->dm->getRepository('MBHPackageBundle:Package')
+            ->getPackageByPackageAccommodationId($packageAccommodation->getId());
+
         if (is_null($package) || !empty($package->getDeletedAt())) {
             $this->context->buildViolation($constraint->packageIsCancelled)->addViolation();
         }

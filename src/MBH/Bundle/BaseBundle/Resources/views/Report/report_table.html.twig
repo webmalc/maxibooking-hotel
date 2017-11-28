@@ -1,0 +1,40 @@
+{% if withJson is not defined %}
+    {% set withJson = false %}
+{% endif %}
+
+{% if withJson %}
+    <script>
+        var jsonData = [];
+    </script>
+    {% for table in report.tables %}
+        <script>
+            jsonData.push(JSON.parse("{{ table.jsonEncodedData|raw }}"));
+
+        </script>
+    {% endfor %}
+{% endif %}
+
+{% for error in report.errors %}
+    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
+{% endfor %}
+{% if report.isSuccess %}
+    {% if report.title %}
+        <h2 style="text-align: center; margin:55px 0 30px;font-family:Tahoma,Arial;font-size:26px;line-height:30px;color:#000;font-weight:normal;">
+            {{ report.title }}
+        </h2>
+    {% endif %}
+    {% for table in report.tables %}
+        <table class="{{ table.classes|join(' ') }}" {{ table.getAttributesAsString()|raw }}>
+            {% for row in table.rows %}
+                <tr class="{{ row.classes|join(' ') }}" {{ row.getAttributesAsString()|raw }}>
+                    {% for cell in row.cells %}
+                        <td class="{{ cell.classes|join(' ') }}" {{ cell.getAttributesAsString()|raw }}
+                            colspan="{{ cell.colSpan }}" rowspan="{{ cell.rowSpan }}">
+                            {{ cell.displayedValue|raw }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% endfor %}
+{% endif %}

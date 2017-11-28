@@ -7,6 +7,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +20,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ClientConfig extends Base
 {
+    const DEFAULT_NUMBER_OF_DAYS_FOR_PAYMENT = 5;
+    const DEFAULT_BEGIN_DATE_OFFSET = -21;
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -38,9 +42,23 @@ class ClientConfig extends Base
     use BlameableDocument;
 
     /**
+     * List of notification types allow to client (not stuff)
+     */
+    use AllowNotificationTypesTrait;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     * @Assert\Choice(callback="getTimeZonesList")
+     */
+    protected $timeZone;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -49,7 +67,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -78,7 +96,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -88,7 +106,7 @@ class ClientConfig extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
-     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "paypal", "rbk"})
+     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "paypal", "rbk", "rnkb"})
      */
     protected $paymentSystem;
 
@@ -117,7 +135,13 @@ class ClientConfig extends Base
     protected $uniteller;
 
     /**
-     * @var Uniteller
+     * @var RNKB
+     * @ODM\EmbedOne(targetDocument="RNKB")
+     */
+    protected $rnkb;
+
+    /**
+     * @var Rbk
      * @ODM\EmbedOne(targetDocument="Rbk")
      */
     protected $rbk;
@@ -147,7 +171,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -155,12 +179,18 @@ class ClientConfig extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Gedmo\Versioned
      * @Assert\Type(type="DateTime")
      */
     protected $beginDate;
 
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     */
+    protected $beginDateOffset;
 
     /**
      * @var integer
@@ -171,6 +201,25 @@ class ClientConfig extends Base
      * @Assert\Range(min=0, max=365)
      */
     protected $noticeUnpaid = 0;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Field(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Type(type="integer", message="validate.type.integer")
+     * @Assert\Range(min=0, max=2, invalidMessage="")
+     */
+    protected $priceRoundSign = 2;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Field(type="boolean")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $queryStat = true;
 
     /**
      * @var bool
@@ -185,6 +234,96 @@ class ClientConfig extends Base
      * @ODM\Field(type="bool")
      */
     protected $canBookWithoutPayer = true;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $defaultAdultsQuantity = 1;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $defaultChildrenQuantity = 0;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     */
+    protected $isSendMailAtPaymentConfirmation = false;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     */
+    protected $numberOfDaysForPayment = self::DEFAULT_NUMBER_OF_DAYS_FOR_PAYMENT;
+
+    /**
+     * @var float
+     * @ODM\Field(type="float")
+     * @Assert\Type(type="float")
+     */
+    protected $currencyRatioFix = 1.015;
+
+    /**
+     * @return bool
+     */
+    public function isSendMailAtPaymentConfirmation(): bool
+    {
+        return $this->isSendMailAtPaymentConfirmation;
+    }
+
+    /**
+     * @param bool $isSendMailAtPaymentConfirmation
+     * @return ClientConfig
+     */
+    public function setIsSendMailAtPaymentConfirmation(bool $isSendMailAtPaymentConfirmation): ClientConfig
+    {
+        $this->isSendMailAtPaymentConfirmation = $isSendMailAtPaymentConfirmation;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultAdultsQuantity(): int
+    {
+        return $this->defaultAdultsQuantity;
+    }
+
+    /**
+     * @param int $defaultAdultsQuantity
+     * @return ClientConfig
+     */
+    public function setDefaultAdultsQuantity(int $defaultAdultsQuantity): ClientConfig
+    {
+        $this->defaultAdultsQuantity = $defaultAdultsQuantity;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultChildrenQuantity(): int
+    {
+        return $this->defaultChildrenQuantity;
+    }
+
+    /**
+     * @param int $defaultChildrenQuantity
+     * @return ClientConfig
+     */
+    public function setDefaultChildrenQuantity(int $defaultChildrenQuantity): ClientConfig
+    {
+        $this->defaultChildrenQuantity = $defaultChildrenQuantity;
+
+        return $this;
+    }
 
     /**
      * @return bool
@@ -387,7 +526,26 @@ class ClientConfig extends Base
     }
 
     /**
-     * @return Uniteller
+     * @return RNKB
+     */
+    public function getRnkb()
+    {
+        return $this->rnkb;
+    }
+
+    /**
+     * @param RNKB $rnkb
+     * @return ClientConfig
+     */
+    public function setRnkb(RNKB $rnkb): ClientConfig
+    {
+        $this->rnkb = $rnkb;
+
+        return $this;
+    }
+
+    /**
+     * @return Rbk
      */
     public function getRbk()
     {
@@ -395,7 +553,7 @@ class ClientConfig extends Base
     }
 
     /**
-     * @param Uniteller $rbk
+     * @param Rbk $rbk
      */
     public function setRbk($rbk)
     {
@@ -585,5 +743,136 @@ class ClientConfig extends Base
     public function setBeginDate(?\DateTime $beginDate)
     {
         $this->beginDate = $beginDate;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getPriceRoundSign()
+    {
+        return $this->priceRoundSign;
+    }
+
+    /**
+     * @param integer $priceRoundSign
+     */
+    public function setPriceRoundSign($priceRoundSign)
+    {
+        $this->priceRoundSign = $priceRoundSign;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getBeginDateOffset(): ?int
+    {
+        return $this->beginDateOffset;
+    }
+
+    /**
+     * @param int $beginDateOffset
+     * @return ClientConfig
+     */
+    public function setBeginDateOffset(?int $beginDateOffset): ClientConfig
+    {
+        $this->beginDateOffset = $beginDateOffset;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getActualBeginDate()
+    {
+        if (!empty($this->getBeginDate())) {
+            return $this->getBeginDate();
+        }
+
+        $beginDateOffset = !empty($this->getBeginDateOffset()) ? $this->getBeginDateOffset() : self::DEFAULT_BEGIN_DATE_OFFSET;
+
+        return (new \DateTime('midnight'))->modify($beginDateOffset . ' days');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isQueryStat()
+    {
+        return $this->queryStat;
+    }
+
+    /**
+     * @param bool $queryStat
+     * @return ClientConfig
+     */
+    public function setQueryStat($queryStat): ClientConfig
+    {
+        $this->queryStat = $queryStat;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTimeZone(): ?string
+    {
+        return $this->timeZone;
+    }
+
+    /**
+     * @param string $timeZone
+     * @return ClientConfig
+     */
+    public function setTimeZone(string $timeZone): ClientConfig
+    {
+        $this->timeZone = $timeZone;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfDaysForPayment(): ?int
+    {
+        return $this->numberOfDaysForPayment;
+    }
+
+    /**
+     * @param int $numberOfDaysForPayment
+     * @return ClientConfig
+     */
+    public function setNumberOfDaysForPayment(int $numberOfDaysForPayment): ClientConfig
+    {
+        $this->numberOfDaysForPayment = $numberOfDaysForPayment;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCurrencyRatioFix(): ?float
+    {
+        return $this->currencyRatioFix;
+    }
+
+    /**
+     * @param float $currencyRatioFix
+     * @return ClientConfig
+     */
+    public function setCurrencyRatioFix(float $currencyRatioFix): ClientConfig
+    {
+        $this->currencyRatioFix = $currencyRatioFix;
+
+        return $this;
+    }
+
+    public static function getTimeZonesList()
+    {
+        return \DateTimeZone::listIdentifiers();
     }
 }

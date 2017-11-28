@@ -1,7 +1,17 @@
-{% extends 'knp_menu.html.twig' %}
+{% extends '@KnpMenu/menu.html.twig' %}
+
+{% macro attributes(attributes) %}
+    {% for name, value in attributes %}
+        {%- if value is not none and value is not same as(false) -%}
+            {{- ' %s="%s"'|format(name, value is same as(true) ? name|e : value|e)|raw -}}
+        {%- endif -%}
+    {%- endfor -%}
+{% endmacro %}
+
+{% import _self as macros %}
+
 
 {% block item %}
-    {% import "knp_menu.html.twig" as macros %}
 
     {%- set attributes = item.attributes %}
     {%- set header = item.attributes.header|default(false) %}
@@ -79,7 +89,7 @@
         {%- endif %}
     {% endif %}
 {% endblock %}
- 
+
 {% block dividerElement %}
     {% if item.level == 1 %}
         <li class="divider-vertical"></li>
@@ -115,7 +125,7 @@
         {{ block('label') }}
     </a>
 {% endblock %}
- 
+
 {% block spanElement %}
     <span>{{ macros.attributes(item.labelAttributes) }}
         {% if item.attribute('icon') is not empty %}
@@ -124,7 +134,7 @@
         {{ block('label') }}
     </span>
 {% endblock %}
- 
+
 {% block label %}<span>{% if item.label == '&nbsp;' %}&nbsp;{% else %}{{ item.label|trans }}</span>
     {% if item.attribute('badge_left') is defined %}
         <small {% if item.attribute('badge_title_left') is defined %}data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_left') }}"{% endif %}  {% if item.attribute('badge_id_left') is defined %}id="{{ item.attribute('badge_id_left') }}"{% endif %}
