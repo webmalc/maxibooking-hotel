@@ -673,7 +673,7 @@ class ChessBoardManager {
 
         this.addDraggable(jQueryObj);
         jQueryObj.each(function (index, element) {
-            let intervalData = self.dataManager.getAccommodationIntervalById(this.id);
+            let intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             let $element = $(element);
             self.addResizable($element, intervalData);
             $element.dblclick(function () {
@@ -808,7 +808,7 @@ class ChessBoardManager {
                             ui.position.left = ui.originalPosition.left;
                             ui.position.top = ui.originalPosition.top;
                         } else {
-                            ui.position.top = self.getGriddedHeightValue(ui.position.top + styleConfigs[self.currentSizeConfigNumber].tableCellHeight / 2);
+                            ui.position.top = self.getGriddedHeightValue(ui.position.top + styleConfigs[self.currentSizeConfigNumber].tableCellHeight / 2) + subtrahend / 2 - 1;
                             if (!self.isPackageLocationCorrect(this)) {
                                 this.classList.add('red-package');
                             } else {
@@ -898,7 +898,7 @@ class ChessBoardManager {
     protected isPackageOnSpecifiedLine(lineClass, packageOffset) {
         let specifiedLine = document.getElementsByClassName(lineClass);
         return Array.prototype.some.call(specifiedLine, function (element) {
-            return ChessBoardManager.isOffsetsEqual(packageOffset.top, $(element).offset().top);
+            return ChessBoardManager.isOffsetsEqual(packageOffset.top, $(element).offset().top + subtrahend / 2);
         });
     }
 
@@ -1057,12 +1057,12 @@ class ChessBoardManager {
     /**
      * Получение данных о брони на основании данных о текущем положении элемента, отображающего бронь.
      * @param $packageElement
-     * @returns {{id, accommodation: any, roomType: string, begin: string, end: string, payer: any}}
+     * @returns
      */
     public getPackageData($packageElement) {
         let packageOffset = $packageElement.offset();
         let roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
-            return ChessBoardManager.isOffsetsEqual($(this).offset().top, packageOffset.top);
+            return ChessBoardManager.isOffsetsEqual($(this).offset().top + subtrahend / 2, packageOffset.top);
         });
         let roomTypeId = roomLine.parent().get(0).id || roomLine.get(0).getAttribute('data-roomtypeid');
         let accommodationId = roomLine.children().get(0).id;
@@ -1086,6 +1086,7 @@ class ChessBoardManager {
         } else {
             paidStatus = 'danger';
         }
+
         return {
             id: $packageElement.get(0).id,
             accommodation: accommodationId,
@@ -1104,6 +1105,8 @@ class ChessBoardManager {
             || (firstIntOffset === secondIntOffset + 1)
             || (firstIntOffset === secondIntOffset - 1);
     }
+
+    private
 
     private getDateStringByLeftOffset(dateElements, leftOffset) {
         let dateElement = dateElements.filter(function () {
@@ -1158,9 +1161,9 @@ class ChessBoardManager {
             let openedPopovers = $('.popover');
             openedPopovers.not(':last').remove();
 
-            let roomTypeId = this.parentNode.parentNode.parentNode.parentNode.id;
+            let roomTypeId = $(this).closest('.roomTypeRooms').attr('id');
             let currentDate = moment(this.getAttribute('data-date'), "DD.MM.YYYY");
-            let templatePackageElement = self.getTemplateElement();
+            let templatePackageElement = ChessBoardManager.getTemplateElement();
             let packageElementsContainer = document.createElement('div');
 
             let packagesByCurrentDate = self.dataManager.getNoAccommodationPackagesByDate(currentDate, roomTypeId);
@@ -1212,9 +1215,9 @@ class ChessBoardManager {
                             this.setAttribute('unplaced', true);
                             relocatablePackageData = self.dataManager.getNoAccommodationIntervalById(this.id);
                             let intervalStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
-                            this.style.left = self.getPackageLeftOffset(intervalStartDate) + 'px';
+                            this.style.left = self.getPackageLeftOffset(intervalStartDate, this) + 'px';
                             this.style.top = self.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
-                                + document.body.scrollTop - wrapperTopOffset + 'px';
+                                + document.body.scrollTop - wrapperTopOffset + subtrahend / 2 + 'px';
                             if (!self.isPackageLocationCorrect(relocatablePackage)) {
                                 relocatablePackage.classList.add('red-package');
                             }

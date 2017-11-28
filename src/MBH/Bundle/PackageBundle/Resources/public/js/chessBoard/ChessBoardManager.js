@@ -575,7 +575,7 @@ var ChessBoardManager = (function () {
         var self = this;
         this.addDraggable(jQueryObj);
         jQueryObj.each(function (index, element) {
-            var intervalData = self.dataManager.getAccommodationIntervalById(this.id);
+            var intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             var $element = $(element);
             self.addResizable($element, intervalData);
             $element.dblclick(function () {
@@ -706,7 +706,7 @@ var ChessBoardManager = (function () {
                             ui.position.top = ui.originalPosition.top;
                         }
                         else {
-                            ui.position.top = self.getGriddedHeightValue(ui.position.top + styleConfigs[self.currentSizeConfigNumber].tableCellHeight / 2);
+                            ui.position.top = self.getGriddedHeightValue(ui.position.top + styleConfigs[self.currentSizeConfigNumber].tableCellHeight / 2) + subtrahend / 2 - 1;
                             if (!self.isPackageLocationCorrect(this)) {
                                 this.classList.add('red-package');
                             }
@@ -788,7 +788,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.isPackageOnSpecifiedLine = function (lineClass, packageOffset) {
         var specifiedLine = document.getElementsByClassName(lineClass);
         return Array.prototype.some.call(specifiedLine, function (element) {
-            return ChessBoardManager.isOffsetsEqual(packageOffset.top, $(element).offset().top);
+            return ChessBoardManager.isOffsetsEqual(packageOffset.top, $(element).offset().top + subtrahend / 2);
         });
     };
     /**
@@ -941,12 +941,12 @@ var ChessBoardManager = (function () {
     /**
      * Получение данных о брони на основании данных о текущем положении элемента, отображающего бронь.
      * @param $packageElement
-     * @returns {{id, accommodation: any, roomType: string, begin: string, end: string, payer: any}}
+     * @returns
      */
     ChessBoardManager.prototype.getPackageData = function ($packageElement) {
         var packageOffset = $packageElement.offset();
         var roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
-            return ChessBoardManager.isOffsetsEqual($(this).offset().top, packageOffset.top);
+            return ChessBoardManager.isOffsetsEqual($(this).offset().top + subtrahend / 2, packageOffset.top);
         });
         var roomTypeId = roomLine.parent().get(0).id || roomLine.get(0).getAttribute('data-roomtypeid');
         var accommodationId = roomLine.children().get(0).id;
@@ -1031,9 +1031,9 @@ var ChessBoardManager = (function () {
             }
             var openedPopovers = $('.popover');
             openedPopovers.not(':last').remove();
-            var roomTypeId = this.parentNode.parentNode.parentNode.parentNode.id;
+            var roomTypeId = $(this).closest('.roomTypeRooms').attr('id');
             var currentDate = moment(this.getAttribute('data-date'), "DD.MM.YYYY");
-            var templatePackageElement = self.getTemplateElement();
+            var templatePackageElement = ChessBoardManager.getTemplateElement();
             var packageElementsContainer = document.createElement('div');
             var packagesByCurrentDate = self.dataManager.getNoAccommodationPackagesByDate(currentDate, roomTypeId);
             var isDragged = false;
@@ -1074,9 +1074,9 @@ var ChessBoardManager = (function () {
                             this.setAttribute('unplaced', true);
                             relocatablePackageData = self.dataManager.getNoAccommodationIntervalById(this.id);
                             var intervalStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
-                            this.style.left = self.getPackageLeftOffset(intervalStartDate) + 'px';
+                            this.style.left = self.getPackageLeftOffset(intervalStartDate, this) + 'px';
                             this.style.top = self.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
-                                + document.body.scrollTop - wrapperTopOffset + 'px';
+                                + document.body.scrollTop - wrapperTopOffset + subtrahend / 2 + 'px';
                             if (!self.isPackageLocationCorrect(relocatablePackage)) {
                                 relocatablePackage.classList.add('red-package');
                             }
