@@ -549,7 +549,7 @@ class ApiController extends Controller
             );
         }
         $packages = iterator_to_array($order->getPackages());
-        $this->sendNotifications($order);
+//        $this->sendNotifications($order);
 
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
@@ -576,8 +576,7 @@ class ApiController extends Controller
             $form = false;
         } elseif (in_array($requestJson->paymentType, ['by_receipt_full', 'by_receipt_half', 'by_receipt_first_day'])) {
             $form = $this->container->get('twig')->render('@MBHClient/PaymentSystem/invoice.html.twig', [
-                'packageId' => current($packages),
-                'docId' => $this->clientConfig->getInvoice()->getInvoiceDocument()->getId()
+                'packageId' => current($packages)->getId(),
             ]);
         } else {
             $paymentSystem = $requestJson->paymentSystem;
@@ -605,19 +604,18 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("payment/generate_invoice/{id}", name="generate_invoice")
+     * @Route("/payment/generate_invoice/{id}", name="generate_invoice")
      * @param Package $package
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return Response
      * @throws Exception
      */
     public function generateInvoiceAction(Package $package)
     {
-        if (($package->getCreatedAt()->diff(new \DateTime()))->m > 30) {
-            throw new Exception('Incorrect package id for invoice generator!');
-        }
-        return $this->redirectToRoute('document_templates_show', [
-            'id' => $this->clientConfig->getInvoice()->getInvoiceDocument()->getId(),
-            'packageId' => $package->getId()
+        $content =  $this->get('mbh.template_formatter')
+            ->generateDocumentTemplate($this->clientConfig->getInvoice()->getInvoiceDocument(), $package, $this->getUser());
+
+        return new Response($content, 200, [
+            'Content-Type' => 'application/pdf'
         ]);
     }
 
