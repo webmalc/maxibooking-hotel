@@ -210,7 +210,9 @@ class ExternalApiController extends BaseController
         foreach ($services as $serviceByCategory) {
             foreach ($serviceByCategory as $service) {
                 /** @var Service $service */
-                $responseData[] = $service->getJsonSerialized();
+                if ($service->getIsOnline()) {
+                    $responseData[] = $service->getJsonSerialized();
+                }
             }
         }
         $responseCompiler->setData($responseData);
@@ -289,9 +291,7 @@ class ExternalApiController extends BaseController
                     $query->addRoomType($roomTypeId);
                 }
             }
-        }
-
-        if (!is_null($hotelIds)) {
+        } elseif (!is_null($hotelIds)) {
             foreach ($hotelIds as $hotelId) {
                 $hotel = $this->dm->find('MBHHotelBundle:Hotel', $hotelId);
                 if (is_null($hotel)) {
@@ -305,6 +305,10 @@ class ExternalApiController extends BaseController
                 } else {
                     $query->addHotel($hotel);
                 }
+            }
+        } elseif (!is_null($formConfig)) {
+            foreach ($formConfig->getHotels() as $hotel) {
+                $query->addHotel($hotel);
             }
         }
 

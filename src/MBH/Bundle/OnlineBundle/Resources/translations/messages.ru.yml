@@ -116,7 +116,7 @@ payment_types.by_receipt_full: 'Оплата по счету через банк
 payment_types.by_receipt_half: 'Оплата по счету через банк (50%)'
 payment_types.by_receipt_first_day: 'Оплата по счету через банк (одни сутки)'
 
-external_api_controller.online_form_config.not_found: Онлайн формы с указанным ID не существует
+external_api_controller.online_form_config.not_found: 'Онлайн формы с ID = "%formId%" не существует'
 external_api_controller.online_form_config.not_enabled: Указанная онлайн-форма недоступна
 external_api_controller.missing_fields.error: 'Отсутствует обязательно поле "%field%"'
 external_api_controller.field_must_be_type_of_array: 'Поле "%field%" должно быть массивом'

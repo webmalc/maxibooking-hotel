@@ -43,3 +43,7 @@ services:
         arguments: ['@mbh.helper']
         tags:
             - {name: form.type}
+
+    mbh.template_formatter:
+        class: MBH\Bundle\ClientBundle\Service\TemplateFormatter
+        arguments: ['@service_container']

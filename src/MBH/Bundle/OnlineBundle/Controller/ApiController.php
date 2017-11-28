@@ -617,19 +617,18 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("payment/generate_invoice/{id}", name="generate_invoice")
+     * @Route("/payment/generate_invoice/{id}", name="generate_invoice")
      * @param Package $package
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return Response
      * @throws Exception
      */
     public function generateInvoiceAction(Package $package)
     {
-        if (($package->getCreatedAt()->diff(new \DateTime()))->m > 30) {
-            throw new Exception('Incorrect package id for invoice generator!');
-        }
-        return $this->redirectToRoute('document_templates_show', [
-            'id' => $this->clientConfig->getInvoice()->getInvoiceDocument()->getId(),
-            'packageId' => $package->getId()
+        $content =  $this->get('mbh.template_formatter')
+            ->generateDocumentTemplate($this->clientConfig->getInvoice()->getInvoiceDocument(), $package, $this->getUser());
+
+        return new Response($content, 200, [
+            'Content-Type' => 'application/pdf'
         ]);
     }
 

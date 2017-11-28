@@ -53,7 +53,7 @@ class ApiHandler
 
         if (is_null($formConfig)) {
             if (!is_null($onlineFormId)) {
-                $responseCompiler->addErrorMessage(ApiResponseCompiler::FORM_CONFIG_NOT_EXISTS);
+                $responseCompiler->addErrorMessage(ApiResponseCompiler::FORM_CONFIG_NOT_EXISTS, ['formId' => $onlineFormId]);
             }
         } else {
             if (!$formConfig->getIsEnabled()) {
