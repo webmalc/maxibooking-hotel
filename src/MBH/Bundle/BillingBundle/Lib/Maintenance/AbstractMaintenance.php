@@ -44,7 +44,6 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
         $this->options = $resolver->resolve($options);
-
     }
 
     protected function getContainer()

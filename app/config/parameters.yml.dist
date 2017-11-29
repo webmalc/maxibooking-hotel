@@ -10,8 +10,12 @@ parameters:
 
   #MongoBD
   mongodb_host: mbh-mongo
+  mongodb_primary_host: mbh-mongo
   mongodb_port: 27017
+  mongodb_options: ''
   mongodb_database: mbh
+  mongodb_admin_login: login
+  mongodb_admin_password: admin
 
   #Rabbitmq
   rabbitmq_user: 'rabbitmq'

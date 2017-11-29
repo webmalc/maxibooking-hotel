@@ -17,13 +17,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 final class MongoMaintenance extends AbstractMaintenance
 {
     const SAMPLE_DB = 'maxibooking';
+    const MONGODB_ADMIN_DATABASE = 'admin';
     /** @var string */
     protected $mongoClient;
 
     public function __construct(ContainerInterface $container, $options)
     {
         parent::__construct($container, $options);
-        $this->mongoClient = new MongoClient("mongodb://{$this->options['host']}:{$this->options['port']}");
+        $adminCredentials = $this->createAdminCredentials();
+        $host = $this->options['primary_host'];
+        $this->mongoClient = new MongoClient(
+            'mongodb://'.$adminCredentials.$host
+        );
     }
 
 
@@ -128,15 +133,44 @@ final class MongoMaintenance extends AbstractMaintenance
             throw new ClientMaintenanceException('No host or port  or sample DB of MONGODB found. Cancel installation');
         }
 
+
+        $admin_credentials = $this->createAdminCredentials();
+
         $command = sprintf(
-            'echo "db.copyDatabase(\"%s\", \"%s\")" | mongo --quiet --host=%s --port=%s',
+            'echo "db.copyDatabase(\"%s\", \"%s\")" | mongo "mongodb://%s%s/%s%s" --quiet',
             $sampleDb,
             $dbName,
+            $admin_credentials,
             $this->options['host'],
-            $this->options['port']
+            self::MONGODB_ADMIN_DATABASE,
+            $this->options['mongo_options']
         );
 
         return $this->executeCommand($command);
+    }
+
+    private function createAdminCredentials(): string {
+        $adminLogin = $this->options['admin_login'];
+        $adminPassword = $this->options['admin_password'];
+        $credentials = $this->isAdminCredentialsExists(
+            $adminLogin,
+            $adminPassword
+        ) ? $this->composeAdminCredentials(
+            $adminLogin,
+            $adminPassword
+        ) : '';
+
+        return $credentials;
+    }
+
+    private function isAdminCredentialsExists(string $login, string $password)
+    {
+        return $login && $password;
+    }
+
+    private function composeAdminCredentials(string $login, string $password): string
+    {
+        return sprintf("%s:%s@", $login, $password);
     }
 
     private function isDBExist(string $dbName): bool
@@ -162,6 +196,12 @@ final class MongoMaintenance extends AbstractMaintenance
         return $this->getClientConfig($clientName)['parameters']['mongodb_database'];
     }
 
+    /**
+     * This is temporary function for update clients
+     * @param string $clientName
+     * @param string $serverIp
+     * @return null|string
+     */
     protected function copyRemoteDb(string $clientName, string $serverIp): ?string
     {
         $dbName = $this->getCurrentDbName($clientName);
@@ -171,7 +211,8 @@ final class MongoMaintenance extends AbstractMaintenance
             $dbName,
             $dbName,
             $serverIp,
-            $this->options['host'].":".$this->options['port']);
+            $this->options['host'].":".$this->options['port']
+        );
 
         return $this->executeCommand($command);
     }
@@ -186,6 +227,10 @@ final class MongoMaintenance extends AbstractMaintenance
                 [
                     'host' => $this->mainConfig['parameters']['mongodb_host'],
                     'port' => $this->mainConfig['parameters']['mongodb_port'],
+                    'primary_host' => $this->mainConfig['parameters']['mongodb_primary_host'],
+                    'admin_login' => $this->mainConfig['parameters']['mongodb_admin_login'],
+                    'admin_password' => $this->mainConfig['parameters']['mongodb_admin_password'],
+                    'mongo_options' => $this->mainConfig['parameters']['mongodb_options'],
                     'sampleDbName' => self::SAMPLE_DB,
                     'copyDbScript' => $this->getContainer()->get('kernel')->getRootDir(
                         ).'/../scripts/deployScripts/mongoDbCopy.sh',

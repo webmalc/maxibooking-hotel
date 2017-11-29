@@ -4,6 +4,7 @@
 namespace MBH\Bundle\BillingBundle\Command;
 
 
+use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -104,9 +105,15 @@ class ClientInstallCommand extends ContainerAwareCommand
             $message = 'Client '.$clientName.' was installed';
             $this->addLogMessage($message);
         } catch (\Throwable $e) {
-            $maintenanceManager->rollBack($clientName);
-            $message = 'Client '.$clientName.'install error.'.$e->getMessage();
-            $this->addLogMessage($message, Logger::CRITICAL);
+            $message = 'Client '.$clientName.' install error.'.$e->getMessage();
+            try {
+                $maintenanceManager->rollBack($clientName);
+                $this->addLogMessage($message, Logger::CRITICAL);
+            } catch (ClientMaintenanceException $e) {
+                $message = $message.' RollBackError. '.$e->getMessage();
+                $this->addLogMessage($message, Logger::CRITICAL);
+            }
+
         }
 
         return $result;

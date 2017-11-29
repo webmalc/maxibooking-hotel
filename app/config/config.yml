@@ -105,7 +105,7 @@ swiftmailer:
 doctrine_mongodb:
     connections:
         default:
-            server: "mongodb://%mongodb_host%:%mongodb_port%/%mongodb_database%"
+            server: "mongodb://%mongodb_host%/%mongodb_database%%mongodb_options%"
             driver_options:
                 context: "mbh.mongodb.context_service"
             options:
