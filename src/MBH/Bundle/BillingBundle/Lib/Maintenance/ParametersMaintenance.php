@@ -84,6 +84,8 @@ final class ParametersMaintenance extends AbstractMaintenance
                 'mongodb_database' => self::DB_NAME_PREFIX.$clientName,
                 'secret' => $this->getContainer()->get('mbh.helper')->getRandomString(),
                 'router.request_context.host' => $clientName.'.maxibooking.ru',
+                'mongodb_login' => $clientName,
+                'mongodb_password' => $clientName,
                 'mbh_cache' => [
                     'prefix' => $clientName,
                 ],

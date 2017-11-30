@@ -14,8 +14,10 @@ parameters:
   mongodb_port: 27017
   mongodb_options: ''
   mongodb_database: mbh
-  mongodb_admin_login: login
-  mongodb_admin_password: admin
+  mongodb_login: clientName
+  mongodb_password: clientPassword
+  mongodb_admin_login: admin
+  mongodb_admin_password: adminpassword
 
   #Rabbitmq
   rabbitmq_user: 'rabbitmq'
