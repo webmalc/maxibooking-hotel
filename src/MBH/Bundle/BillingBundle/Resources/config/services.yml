@@ -45,7 +45,7 @@ services:
         class: MBH\Bundle\BillingBundle\Service\BillingApi
         arguments:
             - '@mbh.billing.logger'
-            - '%billing_login%'
+            - '%client%'
             - '@serializer'
             - '%locale%'
 

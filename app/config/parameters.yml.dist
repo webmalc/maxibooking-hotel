@@ -60,7 +60,6 @@ parameters:
 
   #client name for env
   client: ''
-  billing_login: valera
 
   #mongodb_ssl
   mongodb_ssl: false

@@ -1,7 +1,7 @@
 views.clientConfig.index.editing: "редактирование"
 views.clientConfig.layout.parameters: "Параметры"
 client.tabs.params: 'Параметры'
-client.tabs.payment_system: 'Платежная система'
+client.tabs.payment_system: 'Платежные системы'
 client.tabs.notification: 'Настройки уведомлений'
 views.documentTempalte.index: 'Шаблоны документов'
 views.documentTempalte.new: Создание
@@ -9,8 +9,8 @@ views.documentTempalte.edit: Редактирование
 documentTempalte.title: Название
 documentTempalte.enabled: Включен
 client.viwes.clientConfig.paymentSystem.urlNotification: 'URL для уведомлений'
-client.viwes.clientConfig.paymentSystem.urlSuccesPayment: 'URL успешной оплаты'
-client.viwes.clientConfig.paymentSystem.urlFailedPayment: 'URL неуспешной оплаты'
+client.viwes.clientConfig.paymentSystem.urlSuccesPayment: 'URL уведомлений об успешной оплате'
+client.viwes.clientConfig.paymentSystem.urlFailedPayment: 'URL уведомлений о неуспешной оплате'
 client.views.clientConfig.index.name: Название
 client.views.clientConfig.index.hotel: Отель
 client.views.clientConfig.index.allhotel: 'Все отели'
@@ -43,3 +43,14 @@ client.views.clientConfig.color_settings.small_title: Настройки цве�
 client.views.clientConfig.tabs.color_settings: Цвета
 client.views.clientConfig.reset_confirmation.text: Настройки цветов будут сброшены к стандартным
 client.views.clientConfig.reset_confirmation.button-text: Сбросить
+client.views.payment_systems.url_not_specfied: 'Не указан'
+client.views.payment_systems.urls_change_button: 'Изменить'
+client.views.payment_systems.urls.title: 'Ссылки'
+client.views.payment_systems.urls.save_changes: 'Сохранить'
+client.views.payment_systems.urls.cancel: 'Отмена'
+client.views.payment_systems.name: 'Название'
+client.views.payment_systems.edit: 'Редактировать'
+client.views.payment_systems.disable: 'Отключить'
+client.views.payment_systems.disable_button_text: 'Отключить'
+client.views.payment_systems.disable_text: 'Вы уверены, что хотите отключить эту платежную системы?'
+client.views.payment_systems.small_title: 'Список'
