@@ -163,7 +163,7 @@ class ChessBoardManager {
                 newPackage = self.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), wrapper);
                 newPackage.id = 'newPackage' + packages.length;
                 newPackage.style.zIndex = '999';
-                newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth + 'px';
+                newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth - (self.arrowWidth * 2) + 'px';
                 let newPackageStartXOffset = parseInt(newPackage.style.left, 10);
                 document.onmousemove = function (event) {
                     let scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
@@ -172,7 +172,7 @@ class ChessBoardManager {
                     let packageLengthRestriction = self.getPackageLengthRestriction(startDate, isLeftMouseShift, self.tableStartDate, self.tableEndDate);
                     let griddedOffset = self.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
                     let leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
-                    let packageWidth = griddedOffset;
+                    let packageWidth = griddedOffset - 2 * self.arrowWidth;
                     if (self.isPackageLocationCorrect(newPackage)) {
                         newPackage.classList.add('success');
                         newPackage.classList.remove('danger');
@@ -500,7 +500,7 @@ class ChessBoardManager {
     }
 
     private createPackageElementWithOffset(templatePackageElement, packageItem, wrapper) {
-        let differenceInDays = ChessBoardManager.getMomentDate(packageItem.begin).diff(this.tableEndDate, 'days');
+        let differenceInDays = ChessBoardManager.getMomentDate(packageItem.begin).diff(this.tableStartDate, 'days');
         const accommodationElementIndex = 150 - differenceInDays;
         let packageDiv = this.createPackageElement(packageItem, templatePackageElement, true, accommodationElementIndex);
         let packageStartDate = ChessBoardManager.getMomentDate(packageItem.begin);

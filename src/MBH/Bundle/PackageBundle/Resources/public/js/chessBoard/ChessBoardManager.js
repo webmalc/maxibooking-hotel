@@ -123,7 +123,7 @@ var ChessBoardManager = (function () {
                 newPackage = self.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), wrapper);
                 newPackage.id = 'newPackage' + packages.length;
                 newPackage.style.zIndex = '999';
-                newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth + 'px';
+                newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth - (self.arrowWidth * 2) + 'px';
                 var newPackageStartXOffset = parseInt(newPackage.style.left, 10);
                 document.onmousemove = function (event) {
                     var scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
@@ -132,7 +132,7 @@ var ChessBoardManager = (function () {
                     var packageLengthRestriction = self.getPackageLengthRestriction(startDate, isLeftMouseShift, self.tableStartDate, self.tableEndDate);
                     var griddedOffset = self.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
                     var leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
-                    var packageWidth = griddedOffset;
+                    var packageWidth = griddedOffset - 2 * self.arrowWidth;
                     if (self.isPackageLocationCorrect(newPackage)) {
                         newPackage.classList.add('success');
                         newPackage.classList.remove('danger');
@@ -424,7 +424,7 @@ var ChessBoardManager = (function () {
         return packageDiv;
     };
     ChessBoardManager.prototype.createPackageElementWithOffset = function (templatePackageElement, packageItem, wrapper) {
-        var differenceInDays = ChessBoardManager.getMomentDate(packageItem.begin).diff(this.tableEndDate, 'days');
+        var differenceInDays = ChessBoardManager.getMomentDate(packageItem.begin).diff(this.tableStartDate, 'days');
         var accommodationElementIndex = 150 - differenceInDays;
         var packageDiv = this.createPackageElement(packageItem, templatePackageElement, true, accommodationElementIndex);
         var packageStartDate = ChessBoardManager.getMomentDate(packageItem.begin);

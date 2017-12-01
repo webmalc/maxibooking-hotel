@@ -352,7 +352,8 @@
         </div>
         <!---------------------------- ROOM TYPES ------------------------->
         <div id="roomTypeColumn">
-            {% set roomTitleLength = ((headerWidth / titleSubFontSize) * 1.3)|round(1, 'floor') %}
+            {% set titleLength = ((headerWidth / titleSubFontSize) * 1.3)|round(1, 'floor') %}
+            {% set withoutAccommodationText = 'chessboard_manager.without_accommodation.tile.text'|trans %}
             {% for roomTypeId, roomTypeData in roomTypesData %}
                 {% if roomTypeData['rooms']|length > 0 %}
                     <div class="clearfix">
@@ -361,17 +362,18 @@
                                 style="width:{{ headerWidth }}px; background-color: white;">
                                 <div class="title">
                                     <strong {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %}
-                                            {% if roomTypeData.name|length > roomTitleLength %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ roomTypeData.name }}" {% endif %}
+                                            {% if roomTypeData.name|length > titleLength %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ roomTypeData.name }}" {% endif %}
                                             class="roomType-text">
 
-                                        <i class="fa fa-bed"></i> {{ roomTypeData.name[0:roomTitleLength] }}</strong>
+                                        <i class="fa fa-bed"></i> {{ roomTypeData.name[0:titleLength] }}</strong>
                                 </div>
                             </li>
                             <li class="tile tile-not-selected tile-free both not-standard-tile"
                                 style="width:{{ headerWidth }}px;">
                                 <div class="title-sub">
-                                    <div>
-                                        {{ 'chessboard_manager.without_accommodation.tile.text'|trans }}
+                                    {% set withoutAccommodationText = 'chessboard_manager.without_accommodation.tile.text'|trans %}
+                                    <div {% if withoutAccommodationText|length > titleLength %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ withoutAccommodationText }}" {% endif %}>
+                                        {{ withoutAccommodationText[0:titleLength] }}
                                     </div>
                                 </div>
                             </li>
