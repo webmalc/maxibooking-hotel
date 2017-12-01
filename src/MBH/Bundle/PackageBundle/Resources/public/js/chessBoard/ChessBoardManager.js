@@ -755,6 +755,7 @@ var ChessBoardManager = (function () {
                 intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             }
             var axisValue = ChessBoardManager.getDraggableAxisValue(intervalData, isDivide);
+            var elementStartZIndex = element.style.zIndex;
             if (axisValue != '') {
                 $(element).draggable({
                     containment: '#calendarWrapper',
@@ -762,6 +763,7 @@ var ChessBoardManager = (function () {
                     grid: [styleConfigs[self.currentSizeConfigNumber].tableCellWidth, 1],
                     scroll: true,
                     drag: function (event, ui) {
+                        element.style.zIndex = 200;
                         if (!self.isIntervalAvailable(intervalData, isDivide) || !self.canMoveAccommodation) {
                             ui.position.left = ui.originalPosition.left;
                             ui.position.top = ui.originalPosition.top;
@@ -777,6 +779,7 @@ var ChessBoardManager = (function () {
                         }
                     },
                     stop: function (event, ui) {
+                        element.style.zIndex = elementStartZIndex;
                         if (self.isDraggableRevert(this)) {
                             self.updatePackagesData();
                         }

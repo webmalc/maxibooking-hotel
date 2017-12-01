@@ -873,6 +873,7 @@ class ChessBoardManager {
             }
 
             let axisValue = ChessBoardManager.getDraggableAxisValue(intervalData, isDivide);
+            const elementStartZIndex = element.style.zIndex;
             if (axisValue != '') {
                 $(element).draggable({
                     containment: '#calendarWrapper',
@@ -880,6 +881,7 @@ class ChessBoardManager {
                     grid: [styleConfigs[self.currentSizeConfigNumber].tableCellWidth, 1],
                     scroll: true,
                     drag: function (event, ui) {
+                        element.style.zIndex = 200;
                         if (!self.isIntervalAvailable(intervalData, isDivide) || !self.canMoveAccommodation) {
                             ui.position.left = ui.originalPosition.left;
                             ui.position.top = ui.originalPosition.top;
@@ -893,6 +895,7 @@ class ChessBoardManager {
                         }
                     },
                     stop: function (event, ui) {
+                        element.style.zIndex = elementStartZIndex;
                         if (self.isDraggableRevert(this)) {
                             self.updatePackagesData();
                         } else {
