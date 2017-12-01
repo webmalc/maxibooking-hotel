@@ -712,7 +712,10 @@ class TouristController extends Controller
         }
 
         $zipManager = $this->get('mbh.zip_manager');
-        $zipName = 'kontur.zip';
+        $root = $this->get('kernel')->getBundle('MBHPackageBundle')->getPath();
+
+        $zipName = $root . '/Resources/data/kontur.zip';
+
         $zipManager->writeToZip($stringsToWriteByNames, $zipName);
         $attachedZipFileName = 'kontur-export ' . $this->helper->getDatePeriodString($beginDate, $endDate, 'Y.m.d') . '.zip';
 

@@ -5,6 +5,11 @@ body {
 .accommodation-chessBoard-pagination ul {
   margin: 5px;
 }
+#accommodation-chessBoard-content .tile .title .roomType-text {
+  font-size: 13px;
+  font-weight: bold;
+  color: #3C3C3C;
+}
 #accommodation-chessBoard-filter-floor {
   width: 120px !important;
 }
@@ -39,6 +44,7 @@ body {
   cursor: pointer;
 }
 .package .package-action-buttons {
+  display: none;
   position: absolute;
   right: 3px;
   top: -3px;
@@ -336,6 +342,7 @@ body {
   border-right: 1px solid #e3e3e3;
   font-size: 13px;
   font-weight: bold;
+  color: #3C3C3C;
   padding: 0 5px 0 9px;
   height: 30px;
   position: relative;
@@ -383,18 +390,6 @@ body {
   z-index: 20;
   overflow: hidden;
   white-space: nowrap;
-}
-#accommodation-chessBoard-content .tile-coming {
-  background-image: url('/bundles/mbhpackage/images/coming-cm.png');
-}
-#accommodation-chessBoard-content .tile-coming-out {
-  background-image: url('/bundles/mbhpackage/images/outcoming-cm.png');
-}
-#accommodation-chessBoard-content .tile-coming-out-in {
-  background-image: url('/bundles/mbhpackage/images/outcoming-coming-cm.png');
-}
-#accommodation-chessBoard-content .tile-coming-in-out {
-  background-image: url('/bundles/mbhpackage/images/coming-outcoming-cm.png');
 }
 #accommodation-chessBoard-content .fa-big-icon1 {
   font-size: 8px;

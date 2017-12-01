@@ -16,8 +16,15 @@ body {
   overflow-y: hidden !important;
   padding-bottom: 0 !important;
 }
+
 .accommodation-chessBoard-pagination ul {
   margin: 5px;
+}
+
+#accommodation-chessBoard-content .tile .title .roomType-text {
+  font-size: 13px;
+  font-weight: bold;
+  color: #3C3C3C;
 }
 
 #accommodation-chessBoard-filter-floor {
@@ -58,11 +65,13 @@ body {
   border-bottom: 1px solid white;
   cursor: pointer;
   .package-action-buttons {
+    display: none;
     position: absolute;
     right: 3px;
     top: -3px;
   }
 }
+
 .package-with-left-arrow:after, .package-with-right-arrow:before {
   content: ' ';
   position: absolute;
@@ -71,6 +80,7 @@ body {
   width: 0;
   height: 0;
 }
+
 .package-with-right-arrow:before {
   right: (@height / 2) * (-1);
 }
@@ -378,6 +388,7 @@ body {
     border-right: 1px solid #e3e3e3;
     font-size: @titleSubFontSize;
     font-weight: bold;
+    color: #3C3C3C;
     padding: @titleSubPadding 5px 0 9px;
     height: @height;
     position: relative;
@@ -427,16 +438,16 @@ body {
     white-space: nowrap;
   }
   .tile-coming {
-    background-image: url('/bundles/mbhpackage/images/coming-cm.png');
+    //background-image: url('/bundles/mbhpackage/images/coming-cm.png');
   }
   .tile-coming-out {
-    background-image: url('/bundles/mbhpackage/images/outcoming-cm.png');
+    //background-image: url('/bundles/mbhpackage/images/outcoming-cm.png');
   }
   .tile-coming-out-in {
-    background-image: url('/bundles/mbhpackage/images/outcoming-coming-cm.png');
+    //background-image: url('/bundles/mbhpackage/images/outcoming-coming-cm.png');
   }
   .tile-coming-in-out {
-    background-image: url('/bundles/mbhpackage/images/coming-outcoming-cm.png');
+    //background-image: url('/bundles/mbhpackage/images/coming-outcoming-cm.png');
   }
   .fa-big-icon1 {
     font-size: 8px;
@@ -509,15 +520,6 @@ body {
   }
 }
 
-.late-check-out-block, .early-checkin-block {
-  z-index: 150;
-  width: 7px;
-  height: @height;
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-}
-
 .ui-resizable-e, .ui-resizable-w {
   position: absolute;
   border-bottom: ((@height / 2) - 1) solid transparent;
@@ -526,10 +528,12 @@ body {
   top: 0;
   height: 0;
 }
+
 .ui-resizable-w {
   cursor: w-resize;
   z-index: 100;
 }
+
 .resizable-appendix {
   width: 4px;
   height: @height - 2;
@@ -538,16 +542,19 @@ body {
   left: 2px;
   top: 0;
 }
+
 .near-right-element > .ui-resizable-e, .near-left-element > .ui-resizable-w {
-    position: absolute;
-    border: 0 !important;
-    width: 5px;
-    top: 0;
-    height: @height - 2;
+  position: absolute;
+  border: 0 !important;
+  width: 5px;
+  top: 0;
+  height: @height - 2;
 }
+
 .near-right-element > .ui-resizable-e {
   right: 0;
 }
+
 .danger.near-right-element, .package.near-right-element {
   .ui-resizable-e {
     background-color: rgba(221, 75, 57, 0.6);
@@ -569,13 +576,14 @@ body {
 .ui-resizable-e {
   cursor: e-resize;
 }
+
 .package:not(.near-right-element) > .ui.resizable-e {
   right: (@height / 2) * (-1);
 }
 
 .right-inner-resizable-triangle {
   position: absolute;
-  z-index:200;
+  z-index: 200;
   border-bottom: ((@height / 2) - 1) solid transparent;
   border-top: (@height / 2) solid transparent;
   border-left: ceil((@height / 4)) solid white;
@@ -584,6 +592,7 @@ body {
   right: ceil((@height / 4)) * (-1);
   height: 0;
 }
+
 .left-inner-resizable-triangle {
   position: absolute;
   z-index: 150;
@@ -594,10 +603,6 @@ body {
   top: 0;
   left: 0;
   height: 0;
-}
-
-.late-check-out-block, .early-checkin-block {
-  background-color: #65619b !important;
 }
 
 .remove-package-button, .divide-package-button {

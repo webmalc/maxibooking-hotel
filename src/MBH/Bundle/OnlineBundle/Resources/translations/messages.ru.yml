@@ -19,7 +19,7 @@ form.formType.use_online_form: 'Использовать ли онлайн фо�
 form.formType.room_types: 'Показывать номера?'
 form.formType.should_we_use_room_type_field_in_online_form: 'Использовать ли поле "Тип номера" в онлайн форме?'
 form.formType.are_there_guests: 'Гости?'
-form.formType.should_we_use_guests_amount_field_in_online_form: 'Использовать ли поле "Количестов гостей" в онлайн форме?'
+form.formType.should_we_use_guests_amount_field_in_online_form: 'Использовать ли поле "Количество гостей" в онлайн форме?'
 form.formType.should_we_use_nights_field: 'Поле "ночи"?'
 form.formType.used_children_ages.label: 'Возраста детей'
 form.formType.used_children_ages.help: 'Показывать ли в онлайн форме поля возрастов детей'

@@ -2,27 +2,27 @@
 
 var BILLING_API_SETTINGS = {
     fms: {
-        url: 'http://billing.maxibooking.ru/ru/fms-fms',
+        url: 'http://billing.maxi-booking.com1/ru/fms-fms',
         id: 'internal_id',
         text: 'name'
     },
     countries: {
-        url: 'http://billing.maxibooking.ru/ru/countries',
+        url: 'http://billing.maxi-booking.com1/ru/countries',
         id: 'tld',
         text: 'name'
     },
     regions: {
-        url: 'http://billing.maxibooking.ru/ru/regions',
+        url: 'http://billing.maxi-booking.com1/ru/regions',
         id: 'id',
         text: 'name'
     },
     cities: {
-        url: 'http://billing.maxibooking.ru/ru/cities',
+        url: 'http://billing.maxi-booking.com1/ru/cities',
         id: 'id',
         text: 'display_name'
     },
     fmsKpp: {
-        url: 'http://billing.maxibooking.ru/ru/fms-kpp',
+        url: 'http://billing.maxi-booking.com1/ru/fms-kpp',
         id: 'internal_id',
         text: 'name'
     }
