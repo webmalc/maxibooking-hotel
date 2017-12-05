@@ -134,7 +134,7 @@ class Client
      * @param string $phone
      * @return Client
      */
-    public function setPhone(string $phone): Client
+    public function setPhone(?string $phone): Client
     {
         $this->phone = $phone;
 
