@@ -35,6 +35,7 @@ abstract class AbstractMaintenance implements MaintenanceInterface
      * AbstractInstaller constructor.
      * @param ContainerInterface $container
      * @param array $options
+     * @throws ClientMaintenanceException
      */
     public function __construct(ContainerInterface $container, array $options = [])
     {
@@ -51,6 +52,10 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->container;
     }
 
+    /**
+     * @return array
+     * @throws ClientMaintenanceException
+     */
     protected function getMainConfig(): array
     {
         if (!$this->mainConfig) {
@@ -62,6 +67,11 @@ abstract class AbstractMaintenance implements MaintenanceInterface
     }
 
 
+    /**
+     * @param string $clientName
+     * @return array
+     * @throws ClientMaintenanceException
+     */
     protected function getClientConfig(string $clientName): array
     {
         $fileName = $this->getClientConfigFileName($clientName);
@@ -69,6 +79,11 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->yamlParse($fileName);
     }
 
+    /**
+     * @param string $fileName
+     * @param string $file
+     * @throws ClientMaintenanceException
+     */
     protected function dumpFile(string $fileName, string $file)
     {
         try {
@@ -79,6 +94,10 @@ abstract class AbstractMaintenance implements MaintenanceInterface
 
     }
 
+    /**
+     * @param string $fileName
+     * @throws ClientMaintenanceException
+     */
     protected function removeFile(string $fileName)
     {
         try {
@@ -90,6 +109,11 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         }
     }
 
+    /**
+     * @param string $sourceFile
+     * @param string $targetFile
+     * @throws ClientMaintenanceException
+     */
     protected function copyFile(string $sourceFile, string $targetFile)
     {
         try {
@@ -99,6 +123,11 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         }
     }
 
+    /**
+     * @param string $source
+     * @param string $target
+     * @throws ClientMaintenanceException
+     */
     protected function createSymLink(string $source, string $target)
     {
         if (!$this->isFileExists($source)) {
@@ -112,6 +141,11 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->fileSystem->exists($fileName);
     }
 
+    /**
+     * @param string $fileName
+     * @return array
+     * @throws ClientMaintenanceException
+     */
     protected function yamlParse(string $fileName): array
     {
         if (!$this->isFileExists($fileName)) {
@@ -145,6 +179,13 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->options['backupDir'].'/'.$clientName;
     }
 
+    /**
+     * @param string $command
+     * @param string|null $cwd
+     * @param array|null $env
+     * @return null|string
+     * @throws ClientMaintenanceException
+     */
     protected function executeConsoleCommand(string $command, string $cwd = null, array $env = null): ?string
     {
         $cwd = $cwd??$this->container->get('mbh.kernel_root_dir').'/../bin';
@@ -156,6 +197,13 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->executeCommand($command, $cwd, $env);
     }
 
+    /**
+     * @param string $command
+     * @param string|null $cwd
+     * @param array|null $env
+     * @return null|string
+     * @throws ClientMaintenanceException
+     */
     protected function executeCommand(string $command, string $cwd = null, array $env = null): ?string
     {
 
