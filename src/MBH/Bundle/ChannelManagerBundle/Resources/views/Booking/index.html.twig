@@ -1,9 +1,19 @@
 {% extends 'MBHChannelManagerBundle:Booking:layout.html.twig' %}
 
-{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle') %}
 {% set layout = 'tabs' %}
 
 {% block content %}
+
+    {% if doc and (doc.rooms.count != 0 and doc.tariffs.count != 0 and doc.hotelId is not empty) and not doc.isAllPackagesPulled %}
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-circle"></i>&nbsp;
+            {{ 'channelmanager.orders_not_fetched.error'|trans({}, 'MBHChannelManagerBundle') }}
+            <button class="btn btn-primary" onclick="location.href = '{{ path('booking_all_packages_sync') }}'">
+                <i class="fa fa-cloud-download"></i>&nbsp;{{ 'views.channelmanager.actions.sync_all'|trans({}, 'MBHChannelManagerBundle') }}
+            </button>
+        </div>
+    {% endif %}
 
     {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': doc, 'base': 'booking'} %}
 
@@ -13,32 +23,33 @@
             {{ form_widget(form) }}
             {% embed 'MBHChannelManagerBundle::actions.html.twig' %}
                 {% block additional_actions %}
-                    {% if doc %}
-                    <li>
-                        <div class="dropup">
-                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-paper-plane-o"> </i>
-                                {{ 'views.booking.actions.sync_old'|trans({}, 'MBHChannelManagerBundle') }}
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                <li><a href="{{ path('booking_packages_sync') }}">{{ 'views.booking.actions.sync_old_desc'|trans({}, 'MBHChannelManagerBundle') }}</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                            </ul>
-                        </div>
-                        {#<button type="button" onclick="location.href = '{{ path('booking_packages_sync') }}'" class="btn btn-default navbar-btn" data-toggle="tooltip" data-placement="top" title="{{ 'views.booking.actions.sync_old_desc'|trans({}, 'MBHChannelManagerBundle') }}"></button>#}
-                    </li>
+                    {% if doc and (doc.rooms.count != 0 and doc.tariffs.count != 0 and doc.hotelId is not empty) %}
+                        <li>
+                            <div class="dropup">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-paper-plane-o"> </i>
+                                    {{ 'views.booking.actions.sync_old'|trans({}, 'MBHChannelManagerBundle') }}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                    <li>
+                                        <a href="{{ path('booking_packages_sync') }}">{{ 'views.booking.actions.sync_old_desc'|trans({}, 'MBHChannelManagerBundle') }}</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('booking_all_packages_sync') }}">{{ 'views.booking.actions.sync_all_old_desc'|trans({}, 'MBHChannelManagerBundle') }}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                     {% endif %}
                 {% endblock %}
             {% endembed %}
             {{ form_end(form) }}
 
-            {%  if doc %}
+            {% if doc %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
-            {%  endif %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

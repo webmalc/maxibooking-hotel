@@ -314,6 +314,9 @@ services:
             - '@mbh.raw_mongo_data_handler'
             - '@translator'
 
+    mbh.zip_manager:
+        class: MBH\Bundle\BaseBundle\Service\Export\ZipManager
+
     mbh.command.image_migrate:
         class: MBH\Bundle\BaseBundle\Command\ImageMigrateCommand
         arguments: ['@mbh.service.ssh_commands', '@mbh.app.root_dir', '@mbh.client.name']
@@ -343,3 +346,8 @@ services:
         shared: false
         arguments:
             - '@templating'
+
+    mbh.csv_reader:
+        class: MBH\Bundle\BaseBundle\Service\CsvReader
+        arguments:
+            - '@kernel'

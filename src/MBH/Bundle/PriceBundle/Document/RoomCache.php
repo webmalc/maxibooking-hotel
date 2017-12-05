@@ -85,7 +85,7 @@ class RoomCache extends Base
 
     /**
      * @var boolean
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      * @Assert\NotNull()
      */

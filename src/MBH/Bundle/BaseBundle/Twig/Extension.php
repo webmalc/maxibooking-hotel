@@ -2,6 +2,7 @@
 namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\PackageBundle\Models\Billing\Country;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -102,10 +103,47 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @param $authorityOrganId
+     * @return \MBH\Bundle\PackageBundle\Models\Billing\AuthorityOrgan
+     */
+    public function getAuthorityOrganById($authorityOrganId)
+    {
+        return $this->container->get('mbh.billing.api')->getAuthorityOrganById($authorityOrganId);
+    }
+
+    /**
+     * @param $countryTld
+     * @param null $locale
+     * @return \MBH\Bundle\PackageBundle\Models\Billing\Country
+     */
+    public function getCountryByTld($countryTld, $locale = null)
+    {
+        return $this->container->get('mbh.billing.api')->getCountryByTld($countryTld, $locale);
+    }
+
+    /**
+     * @param $regionId
+     * @param null $locale
+     * @return \MBH\Bundle\PackageBundle\Models\Billing\Region
+     */
+    public function getRegionById($regionId, $locale = null)
+    {
+        return $this->container->get('mbh.billing.api')->getRegionById($regionId, $locale);
+    }
+
+    /**
+     * @param $cityId
+     * @param null $locale
+     * @return \MBH\Bundle\PackageBundle\Models\Billing\City
+     */
+    public function getCityById($cityId, $locale = null)
+    {
+        return $this->container->get('mbh.billing.api')->getCityById($cityId, $locale);
+    }
+
+    /**
      * @param \MongoDate $mongoDate
      * @return \DateTime
-     *
-
      */
     public function convertMongoDate(\MongoDate $mongoDate)
     {
@@ -161,7 +199,7 @@ class Extension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            'mbh_format' => new \Twig_SimpleFilter('mbh_format', [$this, 'format'], ['is_safe' => array('html')]),
+            'mbh_format' => new \Twig_SimpleFilter('mbh_format', [$this, 'format'], ['is_safe' => ['html']]),
             'mbh_md5' => new \Twig_SimpleFilter('mbh_md5', [$this, 'md5']),
             'num2str' => new \Twig_SimpleFilter('num2str', [$this, 'num2str']),
             'num2enStr' => new \Twig_SimpleFilter('num2enStr', [$this, 'num2enStr']),
@@ -203,6 +241,22 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Client
+     */
+    public function getClient()
+    {
+        return $this->container->get('mbh.client_manager')->getClient();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRussianClient()
+    {
+        return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+    }
+
+    /**
      * @return array
      */
     public function getFunctions()
@@ -214,6 +268,12 @@ class Extension extends \Twig_Extension
             'filter_begin_date' => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
             'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
+            'get_authority_organ' => new \Twig_SimpleFunction('get_authority_organ', [$this, 'getAuthorityOrganById'], ['is_safe' => ['html']]),
+            'get_country' => new \Twig_SimpleFunction('get_country', [$this, 'getCountryByTld'], ['is_safe' => ['html']]),
+            'get_region' => new \Twig_SimpleFunction('get_region', [$this, 'getRegionById'], ['is_safe' => ['html']]),
+            'get_city' => new \Twig_SimpleFunction('get_city', [$this, 'getCityById'], ['is_safe' => ['html']]),
+            'get_client' => new \Twig_SimpleFunction('get_client', [$this, 'getClient'], ['is_safe' => ['html']]),
+            'is_russian_client' => new \Twig_SimpleFunction('is_russian_client', [$this, 'isRussianClient'], ['is_safe' => ['html']]),
             'get_service' => new \Twig_SimpleFunction('get_service', [$this, 'getBillingService'], ['is_safe' => ['html']]),
         ];
     }

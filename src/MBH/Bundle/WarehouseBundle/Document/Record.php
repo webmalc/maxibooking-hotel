@@ -27,7 +27,7 @@ class Record extends Base
 	
     /**
      * @var bool
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      */
     protected $isSystem;
     /**
