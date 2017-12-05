@@ -610,6 +610,7 @@ class ClientConfig extends Base
     public function removePaymentSystem($paymentSystem)
     {
         $this->paymentSystems = array_diff($this->paymentSystems, [$paymentSystem]);
+        $this->$paymentSystem = null;
 
         return $this;
     }

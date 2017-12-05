@@ -157,7 +157,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="begin")
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message= "validator.document.package.begin_not_specified")
      * @Assert\Date()
      * @ODM\Index()
@@ -167,7 +167,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="end")
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message= "validator.document.package.end_not_specified")
      * @Assert\Date()
      * @ODM\Index()

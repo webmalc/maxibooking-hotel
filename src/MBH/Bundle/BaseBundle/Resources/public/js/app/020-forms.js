@@ -2,27 +2,27 @@
 
 var BILLING_API_SETTINGS = {
     fms: {
-        url: 'http://billing.maxibooking.ru/ru/fms-fms',
+        url: 'https://billing.maxi-booking.com/ru/fms-fms',
         id: 'internal_id',
         text: 'name'
     },
     countries: {
-        url: 'http://billing.maxibooking.ru/ru/countries',
+        url: 'https://billing.maxi-booking.com/ru/countries',
         id: 'tld',
         text: 'name'
     },
     regions: {
-        url: 'http://billing.maxibooking.ru/ru/regions',
+        url: 'https://billing.maxi-booking.com/ru/regions',
         id: 'id',
         text: 'name'
     },
     cities: {
-        url: 'http://billing.maxibooking.ru/ru/cities',
+        url: 'https://billing.maxi-booking.com/ru/cities',
         id: 'id',
         text: 'display_name'
     },
     fmsKpp: {
-        url: 'http://billing.maxibooking.ru/ru/fms-kpp',
+        url: 'https://billing.maxi-booking.com/ru/fms-kpp',
         id: 'internal_id',
         text: 'name'
     }
@@ -991,7 +991,7 @@ function initSelect2TextForBilling(inputId, apiSettings) {
             headers: {
                 Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
             },
-            url: apiSettings['url'],
+            url: apiSettings['url'] + '/',
             dataType: 'json',
             data: function (params) {
                 return {
@@ -1012,7 +1012,7 @@ function initSelect2TextForBilling(inputId, apiSettings) {
         },
         initSelection: function (element, callback) {
             var id = $(element).val();
-            $.ajax(apiSettings['url'] + '/' + id, {
+            $.ajax(apiSettings['url'] + '/' + id + '/', {
                 dataType: "json",
                 headers: {
                     Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
