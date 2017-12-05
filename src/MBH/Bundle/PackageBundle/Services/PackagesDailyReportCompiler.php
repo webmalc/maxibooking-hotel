@@ -98,18 +98,19 @@ class PackagesDailyReportCompiler
         $cashDocCriteria->end = $end;
         $cashDocuments = $this->dm->getRepository('MBHCashBundle:CashDocument')->findByCriteria($cashDocCriteria);
 
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
         $cashDocumentsByCreationDate = [];
         $relatedOrdersIds = [];
         /** @var CashDocument $cashDocument */
         foreach ($cashDocuments as $cashDocument) {
-            $cashDocumentsByCreationDate[$cashDocument->getCreatedAt()->format('d.m.Y')][] = $cashDocument;
-            $relatedOrdersIds[] = $cashDocument->getOrder()->getId();
+            if ($cashDocument->getOrder()) {
+                $cashDocumentsByCreationDate[$cashDocument->getCreatedAt()->format('d.m.Y')][] = $cashDocument;
+                $relatedOrdersIds[] = $cashDocument->getOrder()->getId();
+            }
         }
         $relatedOrdersIds = array_unique($relatedOrdersIds);
-
-        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-            $this->dm->getFilterCollection()->disable('softdeleteable');
-        }
 
         $relatedPackages = $this->dm
             ->getRepository('MBHPackageBundle:Package')
