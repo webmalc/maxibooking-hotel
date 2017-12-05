@@ -58,7 +58,7 @@ final class MongoMaintenance extends AbstractMaintenance
         );
         $isDbCloned = $this->isDBExist($dbName);
         if ($isDbCloned) {
-            $this->createDBUser($dbName, $this->options['user_login'], $this->options['user_password']);
+            $this->createDBUser($dbName, $clientName);
         }
 
         if (is_array($cloneResult) && $cloneResult['ok'] !== 1 || !$isDbCloned) {
@@ -187,17 +187,21 @@ final class MongoMaintenance extends AbstractMaintenance
 
     /**
      * @param string $dbName
-     * @param string $name
-     * @param string $password
+     * @param string $clientName
      * @return null|string
      * @throws ClientMaintenanceException
      */
-    private function createDBUser(string $dbName, string $name, string $password) {
+    private function createDBUser(string $dbName, string $clientName) {
 
         if (!$this->options['host'] || !$this->options['port']) {
             throw new ClientMaintenanceException('No host or port  or sample DB of MONGODB found when create DB User. Cancel installation');
         }
-
+        $clientConfig = $this->getClientConfig($clientName);
+        $name = $clientConfig['parameters']['mongodb_login'];
+        $password = $clientConfig['parameters']['mongodb_password'];
+        if (!$name || !$password) {
+            throw new ClientMaintenanceException('No user name or password found in client config file');
+        }
         $commandString = sprintf('db=db.getSiblingDB(\"%s\"); db.createUser({user: \"%s\", pwd: \"%s\", roles: [\"readWrite\",\"dbAdmin\"]})', $dbName, $name, $password);
 
         return $this->execDbAsAdmin($commandString);
@@ -314,8 +318,6 @@ final class MongoMaintenance extends AbstractMaintenance
                     'primary_host' => $this->mainConfig['parameters']['mongodb_primary_host'],
                     'admin_login' => $this->mainConfig['parameters']['mongodb_admin_login'],
                     'admin_password' => $this->mainConfig['parameters']['mongodb_admin_password'],
-                    'user_login' => $this->mainConfig['parameters']['mongodb_login'],
-                    'user_password' => $this->mainConfig['parameters']['mongodb_password'],
                     'mongo_options' => $this->mainConfig['parameters']['mongodb_options'],
                     'sampleDbName' => self::SAMPLE_DB,
                     'copyDbScript' => $this->getContainer()->get('kernel')->getRootDir(
