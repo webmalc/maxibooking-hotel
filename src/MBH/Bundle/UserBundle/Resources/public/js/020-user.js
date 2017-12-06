@@ -1,4 +1,6 @@
 /*global window, $, console, document, Routing */
+var PASSPORT_DOCUMENT_TYPE_CODE = "103008";
+
 $(document).ready(function () {
     'use strict';
 
@@ -22,10 +24,7 @@ $(document).ready(function () {
     handlePayerForm();
     initPaymentsDataTable();
     hangOnPayButtonHandler();
-
-    initSelect2TextForBilling('mbh_document_relation_authorityOrganId', BILLING_API_SETTINGS.fms);
-    initSelect2TextForBilling('mbh_address_object_decomposed_countryTld', BILLING_API_SETTINGS.countries);
-    initSelect2TextForBilling('mbh_address_object_decomposed_regionId', BILLING_API_SETTINGS.regions);
+    handleAuthOrganFieldVisibility();
 });
 
 function handleClientServiceForm() {
@@ -35,39 +34,53 @@ function handleClientServiceForm() {
     });
 }
 
+function handleAuthOrganFieldVisibility() {
+    var $documentRelationField = $('#mbh_document_relation_type');
+    if ($documentRelationField.length > 0) {
+        switchAuthOrganFieldsVisibility();
+        $documentRelationField.change(function () {
+            switchAuthOrganFieldsVisibility();
+        });
+    }
+}
+
 function handlePayerForm() {
-    setPayerFormVisibility();
-    $('#mbhuser_bundle_payer_type_country, #mbhuser_bundle_payer_type_payerType').change(function () {
+    if ($('#client-payer-type').length === 1) {
         setPayerFormVisibility();
-    });
+        $('#mbhuser_bundle_payer_type_country, #mbhuser_bundle_payer_type_payerType').change(function () {
+            setPayerFormVisibility();
+        });
+    }
 }
 
 function setPayerFormVisibility() {
-    var selectedCountry = $('#mbhuser_bundle_payer_type_country').val();
-    var $payerType = $('#mbhuser_bundle_payer_type_payerType');
-    var $payerTypeFormGroup = $payerType.closest('.box');
-    var $payerAddressGroup = $('#mbhuser_bundle_payer_type_address').closest('.box');
-    var $identificationGroup = $('#mbhuser_bundle_payer_type_documentType').closest('.box');
-    var $financialInformation = $('#mbhuser_bundle_payer_type_inn').closest('.box');
+    var $countryField = $('#mbhuser_bundle_payer_type_country');
+    var selectedCountry = $countryField.val();
+    var $countryBox = $countryField.closest('.box');
 
-    selectedCountry ? $payerTypeFormGroup.show() : $payerTypeFormGroup.hide();
-    if (selectedCountry && $payerType.val()) {
-        if (selectedCountry !== 'ru') {
-            $payerAddressGroup.show();
-            $identificationGroup.hide();
-            $financialInformation.hide();
-        } else {
-            $identificationGroup.show();
-            $payerAddressGroup.hide();
-            $financialInformation.show();
+    var $payerType = $('#mbhuser_bundle_payer_type_payerType');
+    var $payerTypeBox = $payerType.closest('.box');
+
+    var firstFieldsOfGroupsByCategories = {
+        'ru_legal': ['mbhuser_bundle_payer_type_organizationName', 'mbhuser_bundle_payer_type_position', 'mbhuser_bundle_payer_type_checkingAccount'],
+        'ru_natural': ['mbhuser_bundle_payer_type_documentType', 'mbhuser_bundle_payer_type_financeInn'],
+        'en_legal': ['mbhuser_bundle_payer_type_foreignOrgName', 'mbhuser_bundle_payer_type_foreignBankIban'],
+        'en_natural': ['mbhuser_bundle_payer_type_address']
+    };
+
+    $('.box').not($countryBox).hide();
+    if (selectedCountry) {
+        $payerTypeBox.show();
+        if ($payerType.val()) {
+            var categoryAbbr = (selectedCountry === 'ru' ? 'ru' : 'en') + '_' + $payerType.val();
+            var firstFieldsOfShownGroups = firstFieldsOfGroupsByCategories[categoryAbbr];
+            firstFieldsOfShownGroups.forEach(function (fieldId) {
+                $('#' + fieldId).closest('.box').show();
+            });
         }
-    } else {
-        $payerAddressGroup.hide();
-        $identificationGroup.hide();
-        $financialInformation.hide();
     }
 
-    $('select.select2:not(#ordeer-paid-status)').css('width', '100%');
+    $('select.select2:not(#order-paid-status), span.select2:not(#order-paid-status)').css('width', '100%');
 }
 
 function setClientServiceFormFieldsValues() {
@@ -104,8 +117,8 @@ function initPaymentsDataTable() {
     var $paymentsTable = $('#payments-table');
     var $updateButton = $('#filter-button');
 
-    if ($paymentsTable.length  === 1) {
-        var getFilterData = function() {
+    if ($paymentsTable.length === 1) {
+        var getFilterData = function () {
             return {
                 begin: $('#user-payment-filter-begin').val(),
                 end: $('#user-payment-filter-end').val(),
@@ -136,6 +149,20 @@ function hangOnPayButtonHandler() {
 
 function hangOnOpenBillButtonClick() {
     $('#bill-button').click(function () {
-        window.open('about:blank').document.body.innerText +=  $('#bill-content').val();
+        window.open('about:blank').document.body.innerHTML += $('#bill-content').val();
     });
+}
+
+function switchAuthOrganFieldsVisibility() {
+    var isPassportSelected = $('#mbh_document_relation_type').val() === PASSPORT_DOCUMENT_TYPE_CODE;
+    var $authorityOrganIdFormGroup = $('#mbh_document_relation_authorityOrganId').parent().parent();
+    var $authorityOrganTextFormGroup = $('#mbh_document_relation_authorityOrganText').parent().parent();
+    if (isPassportSelected) {
+        $authorityOrganIdFormGroup.show();
+        $authorityOrganIdFormGroup.find('.select2-container').css('width', '100%');
+        $authorityOrganTextFormGroup.hide();
+    } else {
+        $authorityOrganIdFormGroup.hide();
+        $authorityOrganTextFormGroup.show();
+    }
 }

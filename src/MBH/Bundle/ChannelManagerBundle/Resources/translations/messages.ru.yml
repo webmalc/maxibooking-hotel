@@ -78,6 +78,15 @@ form.myallocatorType.should_we_use_in_channel_manager: 'Использовать
 form.myallocatorType.hotels: Отели
 controller.myallocatorController.settings_saved_success: Настройки успешно сохранены
 controller.myallocatorController.invalid_credentials: Неверные логин/пароль для от личного кабинета
+view.myallocator.tariff.need_fill_main_settings: 'Необходимо сначала заполнить основные настройки.'
+view.myallocator.tariff.need_bind_to_mb: 'Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".'
+view.myallocator.layout.additional_channels: 'Дополнительные каналы'
+view.myallocator.index.cm_bind_tomb: 'Сhannelmanager успешно привязан к MaxiBooking'
+view.myallocator.index.remove_user: 'Удалить пользователя'
+view.myallocator.index.choose_hotel: 'Выберите соотвествующий отель на форме ниже для ассоциации с MaxiBooking'
+view.myallocator.index.enter_login_and_pass: 'Введите логин и пароль от кабинета для первичной привязки channelmanager`а к MaxiBooking'
+view.myallocator.room.need_fill_main_settings: 'Необходимо сначала заполнить основные настройки.'
+view.myallocator.room.need_bind_to_mb: 'Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".'
 
 #expedia
 controller.expediaController.settings_saved_success: 'Настройки успешно сохранены.'

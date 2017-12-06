@@ -37,7 +37,7 @@ class BillingApi
     const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
 
     const AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
-    const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s.u\Z';
+    const BILLING_DATETIME_FORMAT = \DateTime::ATOM;
 
     /** @var GuzzleClient */
     private $guzzle;

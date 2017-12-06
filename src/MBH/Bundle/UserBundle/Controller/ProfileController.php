@@ -207,9 +207,24 @@ class ProfileController extends Controller
      */
     public function payerAction(Request $request)
     {
-        //TODO: Функционал пока не реализован
         $client = $this->get('mbh.client_manager')->getClient();
-        $form = $this->createForm(PayerType::class);
+        $form = $this->createForm(PayerType::class, null, [
+            'client' => $client
+        ]);
+
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $errors = $this->get('mbh.client_payer_manager')->saveClientPayerAndReturnErrors($form->getData());
+                if (!empty($errors)) {
+                    foreach ($errors as $fieldName => $errorMessages) {
+                        foreach ($errorMessages as $errorMessage) {
+                            $form->get($fieldName)->addError(new FormError($errorMessage));
+                        }
+                    }
+                }
+            }
+        }
 
         return [
             'form' => $form->createView()

@@ -113,3 +113,13 @@ services:
       arguments: ['@translator', '@doctrine_mongodb.odm.default_document_manager']
       tags:
           - {name: form.type}
+
+    mbh.account_payer_type:
+        class: MBH\Bundle\UserBundle\Form\PayerType
+        arguments: ['@mbh.fms_dictionaries']
+        tags:
+            - {name: form.type}
+
+    mbh.client_payer_manager:
+        class: MBH\Bundle\UserBundle\Service\ClientPayerManager
+        arguments: ['@mbh.form_data_checker', '@mbh.client_manager', '@serializer', '@translator']

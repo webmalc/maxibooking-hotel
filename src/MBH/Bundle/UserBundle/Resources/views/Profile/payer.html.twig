@@ -7,7 +7,7 @@
 {% block content %}
     {{ parent() }}
     <div class="tab-content">
-        {{ form_start(form, {'action': path('user_payer'),  'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_start(form, {'action': path('user_payer'),  'attr': {'class': 'form-horizontal', 'id' : 'client-payer-type'}}) }}
         {{ form_widget(form) }}
         {% include 'MBHBaseBundle:Actions:new.html.twig' %}
         {{ form_end(form) }}

@@ -38,6 +38,12 @@ class Client
     private $created_by;
     /** @var  string */
     private $modified_by;
+    /** @var  array */
+    private $ruPayerData;
+    private $region;
+    private $city;
+    private $address;
+    private $postal_code;
 
     /** @var  string
      * @Assert\NotNull(groups={"installation"})
@@ -415,6 +421,101 @@ class Client
     public function setResponseUrl($responseUrl)
     {
         $this->responseUrl = $responseUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRu()
+    {
+        return $this->ruPayerData;
+    }
+
+    /**
+     * @param $ruPayerData
+     * @return Client
+     */
+    public function setRu($ruPayerData)
+    {
+        $this->ruPayerData = $ruPayerData;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRegion()
+    {
+        return $this->region;
+    }
+
+    /**
+     * @param mixed $region
+     * @return Client
+     */
+    public function setRegion($region)
+    {
+        $this->region = $region;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param mixed $city
+     * @return Client
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param mixed $address
+     * @return Client
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostal_code()
+    {
+        return $this->postal_code;
+    }
+
+    /**
+     * @param mixed $postal_code
+     * @return Client
+     */
+    public function setPostal_code($postal_code)
+    {
+        $this->postal_code = $postal_code;
 
         return $this;
     }

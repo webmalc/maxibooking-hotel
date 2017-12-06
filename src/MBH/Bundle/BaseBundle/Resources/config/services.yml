@@ -351,3 +351,6 @@ services:
         class: MBH\Bundle\BaseBundle\Service\CsvReader
         arguments:
             - '@kernel'
+
+    mbh.form_data_checker:
+        class: MBH\Bundle\BaseBundle\Service\FormDataHandler
