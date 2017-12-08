@@ -14,7 +14,7 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
 use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
-use MBH\Bundle\PackageBundle\Models\Billing\Country;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;

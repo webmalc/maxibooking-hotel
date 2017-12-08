@@ -122,4 +122,9 @@ services:
 
     mbh.client_payer_manager:
         class: MBH\Bundle\UserBundle\Service\ClientPayerManager
-        arguments: ['@mbh.form_data_checker', '@mbh.client_manager', '@serializer', '@translator']
+        arguments:
+            - '@mbh.billing_payer_form_handler'
+            - '@mbh.client_manager'
+            - '@serializer'
+            - '@mbh.billing.api'
+            - '@mbh.billing_response_handler'

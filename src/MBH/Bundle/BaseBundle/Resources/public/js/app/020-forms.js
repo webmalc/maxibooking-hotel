@@ -1010,7 +1010,10 @@ function onHideCheckboxChange() {
 }
 
 function initSelect2TextForBilling(inputId, apiSettings) {
-    select2Text($('#' + inputId)).select2({
+    var $select2Field = select2Text($('#' + inputId));
+    var selectedValue = $select2Field.val();
+    
+    $select2Field.select2({
         minimumInputLength: 3,
         placeholder: Translator.trans('tourist.make_a_choice'),
         allowClear: true,
@@ -1027,10 +1030,18 @@ function initSelect2TextForBilling(inputId, apiSettings) {
             },
             processResults: function (data) {
                 var options = [];
-                data.results.forEach(function(fmsOrgan) {
+
+                data.results.forEach(function(option) {
+                    var optionId = option[apiSettings['id']];
+
+                    //fix error because of empty text in default option
+                    if (optionId === selectedValue) {
+                        $select2Field.find('option[value="' + optionId +'"]').first().remove();
+                    }
+
                     options.push({
-                        id: fmsOrgan[apiSettings['id']],
-                        text: fmsOrgan[apiSettings['text']]
+                        id: optionId,
+                        text: option[apiSettings['text']]
                     });
                 });
 

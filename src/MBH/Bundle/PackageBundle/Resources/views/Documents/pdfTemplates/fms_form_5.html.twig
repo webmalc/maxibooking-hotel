@@ -340,7 +340,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="area" style="margin-left: 0px">
-                                            &nbsp{% if tourist and tourist.documentRelation %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}
+                                            &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrganId %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}
                                         </div>
                                     </div>
                                 </td>
@@ -713,7 +713,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="area" style="margin-left: 0px">
-                                                &nbsp{% if tourist and tourist.documentRelation %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}
+                                                &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrganId %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}
                                             </div>
                                         </div>
                                     </td>

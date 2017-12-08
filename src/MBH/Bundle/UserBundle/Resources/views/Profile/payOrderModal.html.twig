@@ -11,7 +11,7 @@
                     </button>
                     <input type="hidden" value="{{ paymentType.html }}" id="bill-content">
                 {% else %}
-                    {{ paymentType.html }}
+                    {{ paymentType.html|raw }}
                 {% endif %}
             </div>
             <p>{{ paymentType.description }}</p>

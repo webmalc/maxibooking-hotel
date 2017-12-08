@@ -76,3 +76,11 @@ services:
 
     mbh.service.ssh_commands:
         class: MBH\Bundle\BillingBundle\Service\SshCommands
+
+    mbh.billing_response_handler:
+        class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler
+        arguments: ['%support%', '@mbh.billing_payer_form_handler']
+
+    mbh.billing_payer_form_handler:
+        class: MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler
+        shared: false

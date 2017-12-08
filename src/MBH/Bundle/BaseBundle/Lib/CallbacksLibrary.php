@@ -5,7 +5,7 @@ namespace MBH\Bundle\BaseBundle\Lib;
 
 class CallbacksLibrary
 {
-    public static function getDateTimeFormCallback($format)
+    public static function getDateTimeFormatCallback($format)
     {
         return function (\DateTime $dateTime) use ($format) {
             return $dateTime->format($format);

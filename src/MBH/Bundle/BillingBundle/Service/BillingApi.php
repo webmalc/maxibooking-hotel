@@ -6,16 +6,18 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\IncorrectRequestParameterException;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
+use MBH\Bundle\BillingBundle\Lib\Model\Company;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentSystem;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Lib\Model\Service;
-use MBH\Bundle\PackageBundle\Models\Billing\AuthorityOrgan;
-use MBH\Bundle\PackageBundle\Models\Billing\City;
-use MBH\Bundle\PackageBundle\Models\Billing\Country;
-use MBH\Bundle\PackageBundle\Models\Billing\Region;
+use MBH\Bundle\BillingBundle\Lib\Model\AuthorityOrgan;
+use MBH\Bundle\BillingBundle\Lib\Model\City;
+use MBH\Bundle\BaseBundle\Models\Billing\Country;
+use MBH\Bundle\BaseBundle\Models\Billing\Region;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Serializer\Serializer;
@@ -35,6 +37,7 @@ class BillingApi
     const SERVICES_ENDPOINT_SETTINGS = ['endpoint' => 'services', 'model' => Service::class, 'returnArray' => false];
     const ORDERS_ENDPOINT_SETTINGS = ['endpoint' => 'orders', 'model' => PaymentOrder::class, 'returnArray' => false];
     const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
+    const PAYER_COMPANY_ENDPOINT_SETTINGS = ['endpoint' => 'companies', 'model' => Company::class, 'returnArray' => false];
 
     const AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
     const BILLING_DATETIME_FORMAT = \DateTime::ATOM;
@@ -49,12 +52,14 @@ class BillingApi
     private $loadedEntities = [];
     private $clientServices;
     private $isClientServicesInit = false;
+    private $clientCompanies;
+    private $isClientCompaniesInit = false;
 
     public function __construct(Logger $logger, $billingLogin, Serializer $serializer, $locale)
     {
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
-        $this->billingLogin = $billingLogin;
+        $this->billingLogin = 'danya';
         $this->locale = $locale;
         $this->serializer = $serializer;
     }
@@ -100,10 +105,34 @@ class BillingApi
         $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT_SETTINGS['endpoint'], $client->getLogin());
         $clientData = $this->serializer->normalize($client);
         $clientData['url'] = null;
+
+        return $this->updateEntity($url, $clientData, Client::class);
+    }
+
+    /**
+     * @param Company $company
+     * @return Result
+     */
+    public function updateClientPayerCompany(Company $company)
+    {
+        $url = $this->getBillingUrl(self::PAYER_COMPANY_ENDPOINT_SETTINGS['endpoint'], $company->getId());
+        $companyData = $this->serializer->normalize($company);
+
+        return $this->updateEntity($url, $companyData, Company::class);
+    }
+
+    /**
+     * @param Company $company
+     * @return Result
+     */
+    public function createClientPayerCompany(Company $company)
+    {
+        $url = $this->getBillingUrl(self::PAYER_COMPANY_ENDPOINT_SETTINGS['endpoint']);
+        $companyData = $this->serializer->normalize($company);
         $requestResult = new Result();
 
         try {
-            $response = $this->sendPatch($url, $clientData);
+            $response = $this->sendPost($url, $companyData, true);
         } catch (RequestException $exception) {
             $requestResult->setIsSuccessful(false);
 
@@ -113,7 +142,7 @@ class BillingApi
             return $requestResult;
         }
 
-        $requestResult = $this->tryDeserializeObject($response, $requestResult, Client::class);
+        $requestResult = $this->tryDeserializeObject($response, $requestResult, Company::class);
 
         return $requestResult;
     }
@@ -132,6 +161,23 @@ class BillingApi
         }
 
         return $this->clientServices;
+    }
+
+    /**
+     * @param Client $client
+     * @return array
+     */
+    public function getClientCompanies(Client $client)
+    {
+        if (!$this->isClientCompaniesInit) {
+            $queryData = ['client' => $client->getId()];
+
+            $this->clientCompanies = $this->getEntities(self::PAYER_COMPANY_ENDPOINT_SETTINGS, $queryData)->getData();
+
+            $this->isClientCompaniesInit = true;
+        }
+
+        return $this->clientCompanies;
     }
 
     /**
@@ -211,22 +257,6 @@ class BillingApi
     }
 
     /**
-     * @param string $uri
-     * @param array $data
-     * @return ResponseInterface
-     */
-    private function sendPatch(string $uri, array $data)
-    {
-        return $this->guzzle->patch($uri . '/', [
-            RequestOptions::HEADERS => [
-                'Authorization' => 'Token ' . self::AUTH_TOKEN,
-                'Content-type' => 'application/json',
-            ],
-            RequestOptions::JSON => $data,
-        ]);
-    }
-
-    /**
      * @param ResponseInterface $response
      * @param Result $requestResult
      * @param $modelType
@@ -259,17 +289,6 @@ class BillingApi
         }
 
         return $requestResult;
-    }
-
-    /**
-     * @param string $uri
-     * @return ResponseInterface
-     */
-    private function sendGet(string $uri)
-    {
-        return $this->guzzle->get($uri, [
-            RequestOptions::HEADERS => $this->getAuthorizationHeaderAsArray(),
-        ]);
     }
 
     /**
@@ -332,6 +351,32 @@ class BillingApi
     }
 
     /**
+     * @param string $url
+     * @param array $requestData
+     * @param $model
+     * @return Result
+     */
+    private function updateEntity(string $url, array $requestData, $model)
+    {
+        $requestResult = new Result();
+
+        try {
+            $response = $this->sendPatch($url, $requestData);
+        } catch (RequestException $exception) {
+            $requestResult->setIsSuccessful(false);
+
+            $response = $exception->getResponse();
+            $this->handleErrorResponse($response, $requestResult);
+
+            return $requestResult;
+        }
+
+        $requestResult = $this->tryDeserializeObject($response, $requestResult, $model);
+
+        return $requestResult;
+    }
+
+    /**
      * @param $endpointSettings
      * @param array $queryData
      * @return Result
@@ -341,6 +386,7 @@ class BillingApi
         $endpoint = $endpointSettings['endpoint'];
         $url = $this->getBillingUrl($endpoint, null, null, $queryData);
 
+        //TODO: Переделать с возвратом exception-а
         $response = $this->guzzle->get($url, [
             RequestOptions::HEADERS => $this->getAuthorizationHeaderAsArray(),
             RequestOptions::HTTP_ERRORS => false
@@ -367,10 +413,15 @@ class BillingApi
      * @param $id
      * @param null $locale
      * @return object
+     * @throws IncorrectRequestParameterException
      * @internal param $endpoint
      */
     private function getBillingEntityById($endpointSettings, $id, $locale = null)
     {
+        if (is_null($id)) {
+            throw new \InvalidArgumentException('ID is not specified');
+        }
+
         $endpoint = $endpointSettings['endpoint'];
         if (!isset($this->loadedEntities[$endpoint][$id])) {
             $response = $this->sendGet($this->getBillingUrl($endpoint, $id, $locale));
@@ -443,6 +494,33 @@ class BillingApi
             RequestOptions::HEADERS => $this->getAuthorizationHeaderAsArray(),
             RequestOptions::JSON => $data,
             RequestOptions::HTTP_ERRORS => $throwException
+        ]);
+    }
+
+    /**
+     * @param string $uri
+     * @return ResponseInterface
+     */
+    private function sendGet(string $uri)
+    {
+        return $this->guzzle->get($uri, [
+            RequestOptions::HEADERS => $this->getAuthorizationHeaderAsArray(),
+        ]);
+    }
+
+    /**
+     * @param string $uri
+     * @param array $data
+     * @return ResponseInterface
+     */
+    private function sendPatch(string $uri, array $data)
+    {
+        return $this->guzzle->patch($uri . '/', [
+            RequestOptions::HEADERS => [
+                'Authorization' => 'Token ' . self::AUTH_TOKEN,
+                'Content-type' => 'application/json',
+            ],
+            RequestOptions::JSON => $data,
         ]);
     }
 

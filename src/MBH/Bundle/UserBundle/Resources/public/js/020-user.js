@@ -25,6 +25,7 @@ $(document).ready(function () {
     initPaymentsDataTable();
     hangOnPayButtonHandler();
     handleAuthOrganFieldVisibility();
+    handleVisibilityOfBossBaseRelatedFields();
 });
 
 function handleClientServiceForm() {
@@ -62,10 +63,22 @@ function setPayerFormVisibility() {
     var $payerTypeBox = $payerType.closest('.box');
 
     var firstFieldsOfGroupsByCategories = {
-        'ru_legal': ['mbhuser_bundle_payer_type_organizationName', 'mbhuser_bundle_payer_type_position', 'mbhuser_bundle_payer_type_checkingAccount'],
+        'ru_legal': ['mbhuser_bundle_payer_type_organizationName', 'mbhuser_bundle_payer_type_surname', 'mbhuser_bundle_payer_type_checkingAccount'],
         'ru_natural': ['mbhuser_bundle_payer_type_documentType', 'mbhuser_bundle_payer_type_financeInn'],
-        'en_legal': ['mbhuser_bundle_payer_type_foreignOrgName', 'mbhuser_bundle_payer_type_foreignBankIban'],
+        'en_legal': ['mbhuser_bundle_payer_type_organizationName', 'mbhuser_bundle_payer_type_checkingAccount'],
         'en_natural': ['mbhuser_bundle_payer_type_address']
+    };
+
+    var specificFieldsFromCommonCategories = {
+        'en_legal': ['mbhuser_bundle_payer_type_swift'],
+        'ru_legal': [
+            'mbhuser_bundle_payer_type_form',
+            'mbhuser_bundle_payer_type_inn',
+            'mbhuser_bundle_payer_type_ogrn',
+            'mbhuser_bundle_payer_type_kpp',
+            'mbhuser_bundle_payer_type_bik',
+            'mbhuser_bundle_payer_type_correspondentAccount'
+        ]
     };
 
     $('.box').not($countryBox).hide();
@@ -77,10 +90,42 @@ function setPayerFormVisibility() {
             firstFieldsOfShownGroups.forEach(function (fieldId) {
                 $('#' + fieldId).closest('.box').show();
             });
+
+            for (var iteratedCategory in specificFieldsFromCommonCategories) {
+                if (specificFieldsFromCommonCategories.hasOwnProperty(iteratedCategory)) {
+                    specificFieldsFromCommonCategories[iteratedCategory].forEach(function (fieldId) {
+                        var $iteratedFieldFormGroup = $('#' + fieldId).closest('.form-group');
+                        if (categoryAbbr === iteratedCategory) {
+                            $iteratedFieldFormGroup.show();
+                        } else {
+                            $iteratedFieldFormGroup.hide();
+                        }
+                    })
+                }
+            }
         }
     }
 
     $('select.select2:not(#order-paid-status), span.select2:not(#order-paid-status)').css('width', '100%');
+}
+
+function handleVisibilityOfBossBaseRelatedFields() {
+    var $bossBaseField = $('#mbhuser_bundle_payer_type_base');
+    if ($bossBaseField.length > 0) {
+        setVisibilityOfBossBaseRelatedFields();
+        $bossBaseField.change(function () {
+            setVisibilityOfBossBaseRelatedFields();
+        });
+    }
+}
+
+function setVisibilityOfBossBaseRelatedFields() {
+    var $hideShowFieldsGroup = $('#mbhuser_bundle_payer_type_proxy, #mbhuser_bundle_payer_type_proxyDate').closest('.form-group');
+    if ($('#mbhuser_bundle_payer_type_base').val() === 'proxy') {
+        $hideShowFieldsGroup.show();
+    } else {
+        $hideShowFieldsGroup.hide()
+    }
 }
 
 function setClientServiceFormFieldsValues() {

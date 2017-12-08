@@ -2,7 +2,7 @@
 namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
-use MBH\Bundle\PackageBundle\Models\Billing\Country;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -104,7 +104,7 @@ class Extension extends \Twig_Extension
 
     /**
      * @param $authorityOrganId
-     * @return \MBH\Bundle\PackageBundle\Models\Billing\AuthorityOrgan
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\AuthorityOrgan
      */
     public function getAuthorityOrganById($authorityOrganId)
     {
@@ -114,7 +114,7 @@ class Extension extends \Twig_Extension
     /**
      * @param $countryTld
      * @param null $locale
-     * @return \MBH\Bundle\PackageBundle\Models\Billing\Country
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Country
      */
     public function getCountryByTld($countryTld, $locale = null)
     {
@@ -124,7 +124,7 @@ class Extension extends \Twig_Extension
     /**
      * @param $regionId
      * @param null $locale
-     * @return \MBH\Bundle\PackageBundle\Models\Billing\Region
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Region
      */
     public function getRegionById($regionId, $locale = null)
     {
@@ -134,7 +134,7 @@ class Extension extends \Twig_Extension
     /**
      * @param $cityId
      * @param null $locale
-     * @return \MBH\Bundle\PackageBundle\Models\Billing\City
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\City
      */
     public function getCityById($cityId, $locale = null)
     {

@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
+use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use MBH\Bundle\UserBundle\Form\ClientContactsType;
 use MBH\Bundle\UserBundle\Form\ClientServiceType;
 use MBH\Bundle\UserBundle\Form\PayerType;
@@ -207,9 +208,11 @@ class ProfileController extends Controller
      */
     public function payerAction(Request $request)
     {
-        $client = $this->get('mbh.client_manager')->getClient();
+        $payerCompany = $this->get('mbh.client_payer_manager')->getClientPayerCompany();
+
         $form = $this->createForm(PayerType::class, null, [
-            'client' => $client
+            'client' => $this->get('mbh.client_manager')->getClient(),
+            'company' => $payerCompany
         ]);
 
         if ($request->isMethod('POST')) {
@@ -219,9 +222,15 @@ class ProfileController extends Controller
                 if (!empty($errors)) {
                     foreach ($errors as $fieldName => $errorMessages) {
                         foreach ($errorMessages as $errorMessage) {
-                            $form->get($fieldName)->addError(new FormError($errorMessage));
+                            if ($form->has($fieldName)) {
+                                $form->get($fieldName)->addError(new FormError($errorMessage));
+                            } elseif ($fieldName === BillingResponseHandler::NON_FIELD_ERRORS) {
+                                $form->addError(new FormError($errorMessage));
+                            }
                         }
                     }
+                } else {
+                    $this->addFlash('success', 'controller.profileController.payer_successfull_saved');
                 }
             }
         }

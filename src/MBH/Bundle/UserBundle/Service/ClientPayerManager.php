@@ -2,50 +2,32 @@
 
 namespace MBH\Bundle\UserBundle\Service;
 
-
-use MBH\Bundle\BaseBundle\Lib\CallbacksLibrary;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\BaseBundle\Service\FormDataHandler;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\Company;
+use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler;
+use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
-use MBH\Bundle\PackageBundle\Models\Billing\Country;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Translation\TranslatorInterface;
 
 class ClientPayerManager
 {
-    const NATURAL_ENTITY_ID = 'natural';
-    const LEGAL_ENTITY_ID = 'legal';
-    const FIELD_NOT_FILLED_MESSAGE_ID = 'form.payer_type.field_not_filled';
-    const BILLING_FIELDS_BY_FORM_FIELDS = [
-        'ru_natural' => [
-            'series' => 'passport_serial',
-            'number' => 'passport_number',
-            'issueDate' => 'passport_date',
-            'issuedBy' => 'passport_issued_by',
-            'financeInn' => 'inn'
-        ],
-        'foreign_natural' => [
-            'address' => 'address',
-            'city' => 'city',
-            'state' => 'region',
-            'postalCode' => 'postal_code'
-        ],
-    ];
-
-    private $formDataHandler;
+    private $payerFormHandler;
     private $clientManager;
     private $serializer;
-    private $translator;
+    private $billingApi;
+    private $responseHandler;
 
-    public function __construct(FormDataHandler $formDataHandler, ClientManager $clientManager, Serializer $serializer, TranslatorInterface $translator)
+    public function __construct(BillingPayerFormHandler $payerFormHandler, ClientManager $clientManager, Serializer $serializer, BillingApi $billingApi, BillingResponseHandler $responseHandler)
     {
-        $this->formDataHandler = $formDataHandler;
+        $this->payerFormHandler = $payerFormHandler;
         $this->clientManager = $clientManager;
         $this->serializer = $serializer;
-        $this->translator = $translator;
+        $this->billingApi = $billingApi;
+        $this->responseHandler = $responseHandler;
     }
 
     /**
@@ -55,88 +37,69 @@ class ClientPayerManager
      */
     public function saveClientPayerAndReturnErrors(array $formPayerData): array
     {
-        $payerType = $formPayerData['payerType'];
-        $isRussianPayer = $formPayerData['country'] === Country::RUSSIA_TLD;
-
-        $relationshipsAbbrString = ($isRussianPayer ? 'ru' : 'foreign') . '_' . $payerType;
-        $billingFieldsByFormFields = self::BILLING_FIELDS_BY_FORM_FIELDS[$relationshipsAbbrString];
-
-        if ($payerType !== self::NATURAL_ENTITY_ID && $payerType !== self::LEGAL_ENTITY_ID) {
-            throw new Exception('Incorrect payer type "' . $payerType . '"!');
+        $this->payerFormHandler->setInitData($formPayerData);
+        if ($this->payerFormHandler->hasErrors()) {
+            return $this->payerFormHandler->getErrors();
         }
 
-        if (!empty($unsetFields = $this->formDataHandler->getUnsetFields($formPayerData, array_keys($billingFieldsByFormFields)))) {
-            return $this->getUnsetFieldsErrors($unsetFields);
-        }
+        $client = $this->clientManager->getClient();
+        $payerDataByBillingKeys = $this->payerFormHandler->getRequestPayerData();
 
-        $fieldCallbacks = [
-            'issueDate' => CallbacksLibrary::getDateTimeFormCallback(BillingApi::BILLING_DATETIME_FORMAT)
-        ];
-        $payerData = $this->formDataHandler->fillArrayByKeys($formPayerData, $billingFieldsByFormFields, $fieldCallbacks);
-
-        if ($payerType === self::NATURAL_ENTITY_ID) {
-            $client = $this->clientManager->getClient();
-
-            if ($isRussianPayer) {
-                $client->setRu($ruNaturalPayerData);
+        if ($this->payerFormHandler->isNaturalEntityPayer()) {
+            if ($this->payerFormHandler->isRussianPayer()) {
+                $client->setRu($payerDataByBillingKeys);
             } else {
-                $this->serializer->denormalize($payerData, Client::class, null, [AbstractNormalizer::OBJECT_TO_POPULATE => $client]);
+                $this->serializer->denormalize($payerDataByBillingKeys, Client::class, null, [AbstractNormalizer::OBJECT_TO_POPULATE => $client]);
             }
 
             $requestResult = $this->clientManager->updateClient($client);
         } else {
-            if ($isRussianPayer) {
+            /** @var Company $company */
+            $company = $this->getClientPayerCompany();
+            $companyId = !is_null($company) ? $company->getId() : null;
+            $company = $this->serializer->denormalize($payerDataByBillingKeys, Company::class, $company);
+            $company->setClient($client->getLogin());
 
-            } else {
+            $company->setRu(array_intersect_key($payerDataByBillingKeys, array_flip(Company::getRuPaymentFields())));
+            $company->setWorld(array_intersect_key($payerDataByBillingKeys, array_flip(Company::getWorldPaymentFields())));
 
-            }
+            $company->setId($companyId);
+
+            $requestResult = !is_null($companyId) ? $this->updateClientPayerCompany($company) : $this->createClientPayerCompany($company);
         }
 
-        return $this->handleRequestResult($requestResult);
+        $billingFieldsByFormFields = array_flip($this->payerFormHandler->getBillingFieldsByFormFields());
+        $requestErrors = $this->responseHandler->getErrorsByRequestResult($requestResult);
+
+        return $this->payerFormHandler->fillArrayByKeys($requestErrors, $billingFieldsByFormFields, [BillingResponseHandler::NON_FIELD_ERRORS]);
     }
 
     /**
-     * @param $responseResult
-     * @return array
-     * @throws Exception
+     * @param Company $company
+     * @return Result
      */
-    private function handleErrorBillingRequestResult($responseResult): array
+    public function createClientPayerCompany(Company $company)
     {
-        if (isset($responseResult->getErrors()['ru'])) {
-            $errors = $responseResult->getErrors()['ru'];
-
-            return $this->formDataHandler->fillArrayByKeys($errors, array_flip(self::RU_NATURAL_PAYER_FIELDS_BY_FORM_FIELDS));
-        }
-
-        throw new Exception('Billing return error by incorrect fields!. Errors: ' . json_encode($responseResult->getErrors()));
+        return $this->billingApi->createClientPayerCompany($company);
     }
 
     /**
-     * @param $requestResult
-     * @return array
+     * @param Company $company
+     * @return Result
      */
-    private function handleRequestResult($requestResult): array
+    public function updateClientPayerCompany(Company $company)
     {
-        if (!$requestResult->isSuccessful()) {
-            return $this->handleErrorBillingRequestResult($requestResult);
-        }
-
-        return [];
+        return $this->billingApi->updateClientPayerCompany($company);
     }
 
     /**
-     * Return errors for unfilled fields
-     *
-     * @param $unsetFields
-     * @return array
+     * @return Company|null
      */
-    private function getUnsetFieldsErrors($unsetFields): array
+    public function getClientPayerCompany()
     {
-        $formErrors = [];
-        foreach ($unsetFields as $unsetField) {
-            $formErrors[$unsetField] = [$this->translator->trans(self::FIELD_NOT_FILLED_MESSAGE_ID)];
-        }
+        $client = $this->clientManager->getClient();
+        $clientCompanies = $this->billingApi->getClientCompanies($client);
 
-        return $formErrors;
+        return empty($clientCompanies) ? null : current($clientCompanies);
     }
 }
