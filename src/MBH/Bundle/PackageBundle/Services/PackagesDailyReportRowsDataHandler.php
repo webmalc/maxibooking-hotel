@@ -278,7 +278,7 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
                     $result += $package->getPrice();
                 }
             } catch (DocumentNotFoundException $exception) {
-
+                // Unexpected error when document is deleted from db
             }
         }
 
@@ -363,25 +363,5 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
         }
 
         return $orderPrice != 0 ? ($hotelPackagesPrice / $orderPrice) : 0;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCreatedIncomingCashDocumentsByOrderIds() {
-        if (!$this->isCreatedCashDocumentsByOrderIdInit) {
-            foreach ($this->createdCashDocuments as $cashDocument) {
-                if ($cashDocument->getPai) {
-                    ;
-                }
-                isset($this->createdIncomingCashDocumentsByOrderIds[$cashDocument->getOrder()->getId()])
-                    ? $this->createdIncomingCashDocumentsByOrderIds[$cashDocument->getOrder()->getId()][] = $cashDocument
-                    : $this->createdIncomingCashDocumentsByOrderIds[$cashDocument->getOrder()->getId()] = [$cashDocument];
-            }
-
-            $this->isCreatedCashDocumentsByOrderIdInit = true;
-        }
-
-        return $this->createdIncomingCashDocumentsByOrderIds;
     }
 }
