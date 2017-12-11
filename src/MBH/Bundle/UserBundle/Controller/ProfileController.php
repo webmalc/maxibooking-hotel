@@ -220,6 +220,7 @@ class ProfileController extends Controller
             if ($form->isSubmitted() && $form->isValid()) {
                 $errors = $this->get('mbh.client_payer_manager')->saveClientPayerAndReturnErrors($form->getData());
                 if (!empty($errors)) {
+                    $this->addFlash('error', 'controller.profileController.payer_failed_saved');
                     foreach ($errors as $fieldName => $errorMessages) {
                         foreach ($errorMessages as $errorMessage) {
                             if ($form->has($fieldName)) {

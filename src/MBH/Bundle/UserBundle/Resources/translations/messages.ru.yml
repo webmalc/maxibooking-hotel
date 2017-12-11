@@ -35,6 +35,7 @@ controller.profileController.client_successful_updated: 'Данные успеш
 controller.profileController.phone_successful_updated: 'Телефонный номер успешно изменен на "%newPhoneNumber%"'
 controller.profileController.request_error: 'При сохранении данных возникла ошибка. Обратитесь в службу поддержки по адресу: %supportEmail%'
 controller.profileController.payer_successfull_saved: 'Данные о плательщике успешно сохранены'
+controller.profileController.payer_failed_saved: 'Некорректные или неполные данные о плательщике'
 controller.group.create_success: 'Группа успешно создана'
 controller.group.update_success: 'Группа успешно обновлена.'
 form.groupType.group.main: 'Общая информация'

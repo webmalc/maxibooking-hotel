@@ -59,12 +59,13 @@ class ClientPayerManager
             $companyId = !is_null($company) ? $company->getId() : null;
             $company = $this->serializer->denormalize($payerDataByBillingKeys, Company::class, $company);
             $company->setClient($client->getLogin());
-
-            $company->setRu(array_intersect_key($payerDataByBillingKeys, array_flip(Company::getRuPaymentFields())));
-            $company->setWorld(array_intersect_key($payerDataByBillingKeys, array_flip(Company::getWorldPaymentFields())));
+            if ($this->payerFormHandler->isRussianPayer()) {
+                $company->setRu(array_intersect_key($payerDataByBillingKeys, array_flip(Company::getRuPaymentFields())));
+            } else {
+                $company->setWorld(array_intersect_key($payerDataByBillingKeys, array_flip(Company::getWorldPaymentFields())));
+            }
 
             $company->setId($companyId);
-
             $requestResult = !is_null($companyId) ? $this->updateClientPayerCompany($company) : $this->createClientPayerCompany($company);
         }
 

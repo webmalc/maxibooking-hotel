@@ -104,7 +104,7 @@ class BillingPayerFormHandler extends FormDataHandler
 
     public function getRequestPayerData()
     {
-        $billingFieldsByFormFields = $this->getBillingFieldsByFormFields(true);
+        $billingFieldsByFormFields = $this->getBillingFieldsByFormFields();
         $payerDataByBillingKeys = $this->fillArrayByKeys($this->payerDataWithoutExtraFields, $billingFieldsByFormFields);
 
         return $payerDataByBillingKeys;
@@ -163,7 +163,7 @@ class BillingPayerFormHandler extends FormDataHandler
      */
     private function getPayerDataWithoutExtraFields($payerData): array
     {
-        $billingFieldsByFormFields = $this->getBillingFieldsByFormFields(true);
+        $billingFieldsByFormFields = $this->getBillingFieldsByFormFields();
         $extraFields = array_diff(array_keys($payerData), array_keys($billingFieldsByFormFields));
 
         $extraFields = array_merge($extraFields, ['country', 'payerType']);

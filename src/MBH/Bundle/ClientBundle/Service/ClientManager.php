@@ -5,10 +5,10 @@ namespace MBH\Bundle\ClientBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
-use MBH\Bundle\BillingBundle\Lib\Model\Company;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class ClientManager
@@ -24,12 +24,14 @@ class ClientManager
     private $dm;
     private $session;
     private $billingApi;
+    private $logger;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger)
     {
         $this->dm = $dm;
         $this->session = $session;
         $this->billingApi = $billingApi;
+        $this->logger = $logger;
     }
 
     /**
@@ -169,9 +171,15 @@ class ClientManager
         if (is_null($dataReceiptTime)
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
-            /** @var Client $client */
-            $client = $this->billingApi->getClient();
-            $this->updateSessionClientData($client, $currentDateTime);
+            try {
+                /** @var Client $client */
+                $client = $this->billingApi->getClient();
+            } catch (\Exception $exception) {
+                $client = $this->session->get(self::SESSION_CLIENT_FIELD);
+                $this->logger->err($exception->getMessage());
+            } finally {
+                $this->updateSessionClientData($client, $currentDateTime);
+            }
         } else {
             $client = $this->session->get(self::SESSION_CLIENT_FIELD);
         }
