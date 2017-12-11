@@ -1,1 +1,3 @@
-<a target="_blank" href="{{ path('generate_invoice', {'id': packageId}) }}" class="btn btn-info"><i class="fa fa-cc-visa"></i>&nbsp;Скачать счет</a>
+<form action="{{ path('generate_invoice', {'id': packageId}) }}" target="_blank">
+    <button class="btn btn-info"><i class="fa fa-cc-visa"></i>&nbsp;{{ 'views.payment_systems.invoice.download_button.text'|trans}}</button>
+</form>

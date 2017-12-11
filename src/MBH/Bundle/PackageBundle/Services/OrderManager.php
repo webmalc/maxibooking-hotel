@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
 /**
  *  OrderManager service
@@ -693,12 +694,16 @@ class OrderManager implements Searchable
             $packagePrice = $package->getPackagePriceByDate($day);
             if (is_null($packagePrice)) {
                 $prices =  $package->getPrices()->toArray();
-                $firstPackagePrice = current($prices);
-                $packagePrice = clone $firstPackagePrice;
-                $packagePrice->setDate($day);
+                if (!empty($prices)) {
+                    $firstPackagePrice = current($prices);
+                    $packagePrice = clone $firstPackagePrice;
+                    $packagePrice->setDate($day);
+                    $packagePrice->setPrice($newDailyPrice);
+                } else {
+                    $packagePrice = new PackagePrice($day, $newDailyPrice, $tariff ? $tariff : $package->getTariff());
+                }
                 $package->addPackagePrice($packagePrice);
             }
-            $packagePrice->setPrice($newDailyPrice);
             if (!is_null($tariff)) {
                 $packagePrice->setTariff($tariff);
             }
