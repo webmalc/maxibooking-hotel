@@ -1196,7 +1196,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     public function getLogoUrl()
     {
-
         if ($this->getFile() instanceof File) {
             return '/upload/hotelLogos/' . $this->getLogo();
         }
@@ -1677,37 +1676,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @param bool $isFull
-     * @return array
-     */
-    public function getJsonSerialized($isFull = false)
-    {
-        $data = [
-            'id' => $this->getId(),
-            'title' => $this->getName(),
-        ];
-
-        if ($isFull) {
-            $comprehensiveData = [
-                'isEnabled' => $this->getIsEnabled(),
-                'isDefault' => $this->getIsDefault(),
-                'isHostel' => $this->getIsHostel(),
-                'facilities' => $this->getFacilities(),
-            ];
-            if (!is_null($this->latitude)) {
-                $comprehensiveData['latitude'] = $this->latitude;
-            }
-            if (!is_null($this->longitude)) {
-                $comprehensiveData['longitude'] = $this->longitude;
-            }
-
-            $data = array_merge($data, $comprehensiveData);
-        }
-
-        return $data;
-    }
-
-    /**
      * @return string
      */
     public function getAboutLink(): ?string
@@ -1839,4 +1807,35 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
+
+    /**
+     * @param bool $isFull
+     * @return array
+     */
+    public function getJsonSerialized($isFull = false)
+    {
+        $data = [
+            'id' => $this->getId(),
+            'title' => $this->getName(),
+        ];
+
+        if ($isFull) {
+            $comprehensiveData = [
+                'isEnabled' => $this->getIsEnabled(),
+                'isDefault' => $this->getIsDefault(),
+                'isHostel' => $this->getIsHostel(),
+                'facilities' => $this->getFacilities(),
+            ];
+            if (!is_null($this->latitude)) {
+                $comprehensiveData['latitude'] = $this->latitude;
+            }
+            if (!is_null($this->longitude)) {
+                $comprehensiveData['longitude'] = $this->longitude;
+            }
+
+            $data = array_merge($data, $comprehensiveData);
+        }
+
+        return $data;
+    }
 }

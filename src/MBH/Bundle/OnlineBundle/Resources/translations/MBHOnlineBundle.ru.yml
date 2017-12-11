@@ -21,6 +21,7 @@ views.api.getPaymentType.payment_fine: 'Оплата по прибытию в г
 views.api.getPaymentType.reservation_guarantee_whole_sum: 'Гарантированное бронирование, предоплата 100% всей стоимости проживания до заезда в отель'
 views.api.getPaymentType.reservation_guarantee_first_night: 'Гарантированное бронирование, предоплата стоимости проживания первых суток до заезда в отель'
 views.api.getPaymentType.reservation_guarantee_half: 'Гарантированное бронирование, предоплата 50% всей стоимости проживания до заезда в отель'
+views.api.getPaymentType.payment_systems.label: 'Платежная система'
 views.api.getPaymentType.choose_other_rooms: 'Выбрать другие номера'
 views.api.getPaymentType.reservate: Бронировать
 views.api.getPaymentType.reservation_error_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'

@@ -16,6 +16,7 @@ use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 /**
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
@@ -703,63 +704,6 @@ class RoomType extends Base implements RoomTypeInterface
     }
 
     /**
-     * @param $domainName
-     * @return array
-     */
-    public function getRoomTypePhotoData($domainName)
-    {
-        $imagesData = [];
-        foreach ($this->getImages() as $image) {
-            $roomTypeImageData = [];
-            /** @var RoomTypeImage $image */
-            $roomTypeImageData['url'] = 'https://' . $domainName . '/' . $image->getPath();
-            if ($image->getWidth()) {
-                $roomTypeImageData['width'] = (int)$image->getWidth();
-            }
-            if ($image->getHeight()) {
-                $roomTypeImageData['height'] = (int)$image->getHeight();
-            }
-            $imagesData[] = $roomTypeImageData;
-        }
-
-        return $imagesData;
-    }
-
-    /**
-     * @param bool $isFull
-     * @param null $domainName
-     * @return array
-     */
-    public function getJsonSerialized($isFull = false, $domainName = null)
-    {
-        $data = [
-            'id' => $this->getId(),
-            'isEnabled' => $this->getIsEnabled(),
-            'hotelId' => $this->getHotel()->getId(),
-            'title' => $this->getName(),
-            'description' => $this->getDescription() ?? '',
-            'numberOfPlaces' => $this->getPlaces(),
-            'numberOfAdditionalPlaces' => $this->getAdditionalPlaces()
-        ];
-        if ($isFull) {
-            $comprehensiveData = [
-                'isSmoking' => $this->isIsSmoking(),
-                'isHostel' => $this->getIsHostel(),
-                'facilities' => $this->getFacilities(),
-            ];
-            if ($this->getRoomSpace()) {
-                $comprehensiveData['roomSpace'] = $this->getRoomSpace();
-            }
-            if (!is_null($domainName)) {
-                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($domainName);
-            }
-            $data = array_merge($data, $comprehensiveData);
-        }
-
-        return $data;
-    }
-
-    /**
      * @return \Doctrine\Common\Collections\Collection|Image[]
      */
     public function getOnlineImages()
@@ -809,5 +753,65 @@ class RoomType extends Base implements RoomTypeInterface
         return $result;
     }
 
+    /**
+     * @param UploaderHelper $helper
+     * @param $domain
+     * @return array
+     */
+    public function getRoomTypePhotoData(UploaderHelper $helper, $domain)
+    {
+        $imagesData = [];
+        /** @var Image $image */
+        foreach ($this->getOnlineImages() as $image) {
+            $roomTypeImageData = ['isMain' => $image->getIsDefault()];
+            $roomTypeImageData['url'] = 'http://' . $domain . '/' . $helper->asset($image, 'imageFile');
+            if ($image->getWidth()) {
+                $roomTypeImageData['width'] = (int)$image->getWidth();
+            }
+            if ($image->getHeight()) {
+                $roomTypeImageData['height'] = (int)$image->getHeight();
+            }
+            $imagesData[] = $roomTypeImageData;
+        }
 
+        return $imagesData;
+    }
+
+    /**
+     * @param bool $isFull
+     * @param null $domain
+     * @param UploaderHelper|null $helper
+     * @return array
+     */
+    public function getJsonSerialized($isFull = false, $domain = null, UploaderHelper $helper = null)
+    {
+        $data = [
+            'id' => $this->getId(),
+            'isEnabled' => $this->getIsEnabled(),
+            'hotel' => $this->getHotel()->getId(),
+            'title' => $this->getFullTitle(),
+            'internalTitle' => $this->getTitle(),
+            'description' => $this->getDescription() ?? '',
+            'numberOfPlaces' => $this->getPlaces(),
+            'numberOfAdditionalPlaces' => $this->getAdditionalPlaces(),
+            'places' => $this->getPlaces(),
+            'additionalPlaces' => $this->getAdditionalPlaces()
+        ];
+        if ($isFull) {
+            $comprehensiveData = [
+                'isSmoking' => $this->isIsSmoking(),
+                'isHostel' => $this->getIsHostel(),
+                'facilities' => $this->getFacilities(),
+            ];
+            if ($this->getRoomSpace()) {
+                $comprehensiveData['roomSpace'] = $this->getRoomSpace();
+            }
+            if (!is_null($helper)) {
+                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($helper, $domain);
+            }
+            $data = array_merge($data, $comprehensiveData);
+        }
+
+        return $data;
+    }
 }

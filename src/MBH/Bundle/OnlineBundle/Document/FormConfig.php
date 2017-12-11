@@ -21,7 +21,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 class FormConfig extends Base
 {
     const paymentTypesList = [
-        "in_hotel", "in_office", "by_receipt", "online_full", "online_first_day", "online_half"
+        "in_hotel",
+        "in_office",
+        "by_receipt",
+        "online_full",
+        "online_first_day",
+        "online_half",
+        "by_receipt_full",
+        "by_receipt_first_day",
+        "by_receipt_half"
     ];
 
     const THEMES = [
@@ -738,8 +746,4 @@ class FormConfig extends Base
 
         return $this;
     }
-
-
-
-
 }

@@ -50,6 +50,10 @@ services:
         tags:
             - {name: form.type}
 
+    mbh.template_formatter:
+        class: MBH\Bundle\ClientBundle\Service\TemplateFormatter
+        arguments: ['@service_container']
+
     mbh.fms_dictionaries:
         class: MBH\Bundle\ClientBundle\Lib\FMSDictionaries
         arguments: ['@mbh.csv_reader']
