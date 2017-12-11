@@ -26,8 +26,8 @@ class Client
     private $country;
     /** @var  string */
     private $installation;
-    /** @var  int */
-    private $rooms_limit;
+    /** @var  array */
+    private $restrictions;
     /** @var  string */
     private $disabled_at;
     /** @var  string */
@@ -224,20 +224,28 @@ class Client
     }
 
     /**
-     * @return int
+     * @return array|null
      */
-    public function getRooms_limit(): ?int
+    public function getRestrictions(): ?array
     {
-        return $this->rooms_limit;
+        return $this->restrictions;
     }
 
     /**
-     * @param int $rooms_limit
+     * @return int
+     */
+    public function getRoomsLimit()
+    {
+        return $this->getRestrictions()['rooms_limit'];
+    }
+
+    /**
+     * @param array $restrictions
      * @return Client
      */
-    public function setRooms_limit(int $rooms_limit): Client
+    public function setRestrictions(array $restrictions): Client
     {
-        $this->rooms_limit = $rooms_limit;
+        $this->restrictions = $restrictions;
 
         return $this;
     }
