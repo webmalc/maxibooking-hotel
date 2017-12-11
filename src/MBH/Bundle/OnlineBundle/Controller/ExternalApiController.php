@@ -36,7 +36,6 @@ class ExternalApiController extends BaseController
      */
     public function getRoomTypesAction(Request $request)
     {
-
         $requestHandler = $this->get('mbh.api_handler');
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $queryData = $request->query;
@@ -208,8 +207,8 @@ class ExternalApiController extends BaseController
 
         $responseData = [];
         foreach ($services as $serviceByCategory) {
+            /** @var Service $service */
             foreach ($serviceByCategory as $service) {
-                /** @var Service $service */
                 if ($service->getIsOnline()) {
                     $responseData[] = $service->getJsonSerialized();
                 }
@@ -227,20 +226,35 @@ class ExternalApiController extends BaseController
      */
     public function addCashDocumentAndRedirectToPayment(Order $order)
     {
-        $cashDocument = new CashDocument();
-        $cashDocument->setIsConfirmed(false)
-            ->setIsPaid(false)
-            ->setMethod('electronic')
-            ->setOperation('in')
-            ->setOrder($order)
-            ->setTouristPayer($order->getMainTourist())
-            ->setTotal($order->getPrice());
+        if ($order->getCashDocuments()->count() == 0) {
+            $cashDocument = new CashDocument();
+            $cashDocument->setIsConfirmed(false)
+                ->setIsPaid(false)
+                ->setMethod('electronic')
+                ->setOperation('in')
+                ->setOrder($order)
+                ->setTouristPayer($order->getMainTourist())
+                ->setTotal($order->getPrice());
 
-        $order->addCashDocument($cashDocument);
-        $this->dm->persist($cashDocument);
-        $this->dm->flush();
+            $order->addCashDocument($cashDocument);
+            $this->dm->persist($cashDocument);
+            $this->dm->flush();
+        } else {
+            $cashDocument = $order->getCashDocuments()->toArray()[0];
+        }
 
-        return $this->redirect('https://yandex.ru');
+        $formData = $this->clientConfig->getRnkb()->getFormData($cashDocument);
+        $url = $formData['action'] . '?Shop_IDP=' . $formData['shopId']
+            . '&Subtotal_P=' . $formData['total']
+            . '&Order_IDP=' . $formData['orderId']
+            . '&URL_RETURN=' . urlencode('http://livadia.madgentle.ru/')
+            . '&Email=' . $formData['touristEmail']
+            . '&Phone=' . $formData['touristPhone']
+            . '&Comment=' . urlencode($formData['comment'])
+            . '&Signature=' . $formData['signature']
+            . '&Currency=RUB';
+
+        return $this->redirect($url);
     }
 
     /**
@@ -254,7 +268,7 @@ class ExternalApiController extends BaseController
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
 
-        $responseCompiler = $requestHandler->checkIsArrayFields($queryData, ['hotelIds', 'roomTypeIds'], $responseCompiler);
+        $responseCompiler = $requestHandler->checkIsArrayFields($queryData, ['hotelIds', 'roomTypeIds', 'childrenAges'], $responseCompiler);
         $responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['begin', 'end'], $responseCompiler);
 
         $onlineFormId = $queryData->get('onlineFormId');
@@ -270,12 +284,11 @@ class ExternalApiController extends BaseController
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
 
         $query = new SearchQuery();
-        $query->isOnline = true;
+        $query->isOnline = false;
         $query->begin = $this->helper->getDateFromString($request->get('begin'));
         $query->end = $this->helper->getDateFromString($request->get('end'));
         $query->adults = (int)$request->get('adults');
-        $query->children = (int)$request->get('children');
-        $query->tariff = $request->get('tariff');
+        $query->childrenAges = !is_null($request->get('children')) ? $request->get('children') : [];
 
         if (!is_null($roomTypeIds)) {
             foreach ($roomTypeIds as $roomTypeId) {
@@ -320,13 +333,28 @@ class ExternalApiController extends BaseController
             return $responseCompiler->getResponse();
         }
 
-        $results = $this->get('mbh.package.search')->search($query);
-
         $responseData = [];
-        /** @var SearchResult $searchResult */
-        foreach ($results as $searchResult) {
-            $responseData[] = $searchResult->getJsonSerialized();
+        $requestedTariffs = $request->get('tariffIds');
+
+        if (!is_null($requestedTariffs)) {
+            foreach ($requestedTariffs as $tariffId) {
+                $query->tariff = $tariffId;
+                $results = $this->get('mbh.package.search')->search($query);
+                /** @var SearchResult $searchResult */
+                foreach ($results as $searchResult) {
+                    $responseData[] = $searchResult->getJsonSerialized();
+                }
+            };
+        } else {
+            $resultsByRoomTypes = $this->get('mbh.package.search')->setWithTariffs()->search($query);
+            foreach ($resultsByRoomTypes as $resultsByRoomType) {
+                foreach ($resultsByRoomType['results'] as $searchResult) {
+                    /** @var SearchResult $searchResult */
+                    $responseData[] = $searchResult->getJsonSerialized();
+                }
+            }
         }
+
         $responseCompiler->setData($responseData);
 
         return $responseCompiler->getResponse();

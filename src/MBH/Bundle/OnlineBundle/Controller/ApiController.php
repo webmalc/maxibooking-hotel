@@ -555,7 +555,7 @@ class ApiController extends Controller
             );
         }
         $packages = iterator_to_array($order->getPackages());
-//        $this->sendNotifications($order);
+        $this->sendNotifications($order);
 
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);

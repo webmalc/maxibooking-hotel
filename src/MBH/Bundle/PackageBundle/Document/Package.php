@@ -1817,6 +1817,9 @@ class Package extends Base implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return array]
+     */
     public function getJsonSerialized()
     {
         $services = array_map(function (PackageService $packageService) {
