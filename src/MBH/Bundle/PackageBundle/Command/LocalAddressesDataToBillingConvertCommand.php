@@ -227,6 +227,7 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
         $relations['vega_passport_foreigner'] = 136359;
         $relations['vega_residence'] = 135709;
         $relations['vega_national_id_republic_of_kazakhstan\''] = 139384;
+        $relations['vega_national_id_republic_of_kazakhstan'] = 139384;
         $relations['vega_birth_certificate'] = 102974;
         $relations['vega_st_of_birth_foreigner'] = 103014;
         $relations['vega_refugee_certificate'] = 103000;
