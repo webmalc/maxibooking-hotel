@@ -5,10 +5,12 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
 
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -222,11 +224,14 @@ class ApiController extends Controller
 
     /**
      * Results js
-     * @Route("/order/check", name="online_form_check_order")
+     * @Route("/order/check/{paymentSystemName}", name="online_form_check_order")
      * @Method({"POST", "GET"})
      * @Template()
+     * @param Request $request
+     * @param $paymentSystemName
+     * @return Response
      */
-    public function checkOrderAction(Request $request)
+    public function checkOrderAction(Request $request, $paymentSystemName)
     {
         /** @var DocumentManager $dm */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -242,7 +247,7 @@ class ApiController extends Controller
             $logger->info('FAIL. '.$logText.' .Not found config');
             throw $this->createNotFoundException();
         }
-        $response = $clientConfig->checkRequest($request);
+        $response = $clientConfig->checkRequest($request, $paymentSystemName);
 
         if (!$response) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
@@ -358,9 +363,9 @@ class ApiController extends Controller
         $query->setSave(true);
         $isViewTariff = false;
 
-        $query->setChildrenAges(
-            !empty($request->get('children-ages')) && $query->children > 0 ? $request->get('children-ages') : []
-        );
+        if (!empty($request->get('children-ages')) && $query->children > 0 && $formConfig->isIsDisplayChildrenAges()) {
+            $query->setChildrenAges($request->get('children-ages'));
+        }
 
         $hotels = $formConfig->getHotels();
         if (!count($hotels)) {
@@ -518,6 +523,7 @@ class ApiController extends Controller
             'formConfig' => $formConfig,
             'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig(),
             'request' => $requestJson,
+            'paymentSystems' => $this->getParameter('mbh.payment_systems')
         ];
     }
 
@@ -546,7 +552,7 @@ class ApiController extends Controller
             );
         }
         $packages = iterator_to_array($order->getPackages());
-        $this->sendNotifications($order);
+//        $this->sendNotifications($order);
 
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
@@ -569,11 +575,16 @@ class ApiController extends Controller
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        if ($requestJson->paymentType == 'in_hotel' || $requestJson->paymentType == 'by_receipt' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
+        if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystems()) {
             $form = false;
+        } elseif (in_array($requestJson->paymentType, ['by_receipt_full', 'by_receipt_half', 'by_receipt_first_day'])) {
+            $form = $this->container->get('twig')->render('@MBHClient/PaymentSystem/invoice.html.twig', [
+                'packageId' => current($packages)->getId(),
+            ]);
         } else {
+            $paymentSystem = $requestJson->paymentSystem;
             $form = $this->container->get('twig')->render(
-                'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig',
+                'MBHClientBundle:PaymentSystem:'.$paymentSystem.'.html.twig',
                 [
                     'data' => array_merge(
                         [
@@ -586,13 +597,29 @@ class ApiController extends Controller
                                 'MBHOnlineBundle'
                             ),
                         ],
-                        $clientConfig->getFormData($order->getCashDocuments()[0])
+                        $clientConfig->getFormData($order->getCashDocuments()[0], $paymentSystem)
                     ),
                 ]
             );
         }
 
         return new JsonResponse(['success' => true, 'message' => $message, 'form' => $form]);
+    }
+
+    /**
+     * @Route("/payment/generate_invoice/{id}", name="generate_invoice")
+     * @param Package $package
+     * @return Response
+     * @throws Exception
+     */
+    public function generateInvoiceAction(Package $package)
+    {
+        $content =  $this->get('mbh.template_formatter')
+            ->generateDocumentTemplate($this->clientConfig->getInvoice()->getInvoiceDocument(), $package, $this->getUser());
+
+        return new Response($content, 200, [
+            'Content-Type' => 'application/pdf'
+        ]);
     }
 
     /**

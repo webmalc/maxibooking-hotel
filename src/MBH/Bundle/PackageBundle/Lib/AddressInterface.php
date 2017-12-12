@@ -14,17 +14,17 @@ interface AddressInterface
     /**
      * @return string
      */
-    public function getCountry();
+    public function getCountryTld();
 
     /**
      * @return string
      */
-    public function getRegion();
+    public function getRegionId();
 
     /**
      * @return string
      */
-    public function getCity();
+    public function getCityId();
 
     /**
      * @return string

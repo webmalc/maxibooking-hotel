@@ -3,20 +3,17 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\VegaBundle\Document\VegaRegion;
-use MBH\Bundle\VegaBundle\Document\VegaState;
 
 /**
  * @ODM\EmbeddedDocument
-
  */
 class BirthPlace
 {
     /**
-     * @var VegaState
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
+     * @var string
+     * @ODM\Field(type="string")
      */
-    protected $country;
+    protected $countryTld;
 
     /**
      * @var string
@@ -43,19 +40,19 @@ class BirthPlace
     protected $settlement;
 
     /**
-     * @return VegaState
+     * @return string
      */
-    public function getCountry()
+    public function getCountryTld()
     {
-        return $this->country;
+        return $this->countryTld;
     }
 
     /**
-     * @param VegaState $country
+     * @param string $countryTld
      */
-    public function setCountry(VegaState $country = null)
+    public function setCountryTld(string $countryTld = null)
     {
-        $this->country = $country;
+        $this->countryTld = $countryTld;
     }
     /**
      * @return String
@@ -123,6 +120,6 @@ class BirthPlace
 
     public function __toString()
     {
-        return strval($this->getCountry() . ' ' . $this->getCity());
+        return strval($this->getCountryTld() . ' ' . $this->getCity());
     }
 }

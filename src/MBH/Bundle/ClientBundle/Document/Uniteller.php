@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class Uniteller implements PaymentSystemInterface
 {
-
     const COMMISSION = 0.035;
 
     const DO_CHECK_URL = 'https://wpay.uniteller.ru/api/1/iacheck';
@@ -190,8 +189,8 @@ class Uniteller implements PaymentSystemInterface
         $createdAt->modify('+30 minutes');
 
         return [
-            'action' => 'https://fpay.uniteller.ru/v1/pay',
-            'testAction' => 'https://fpaytest.uniteller.ru/v1/pay',
+            'action' => $this->isWithFiscalization() ?  'https://fpay.uniteller.ru/v1/pay' : 'https://wpay.uniteller.ru/pay/',
+            'testAction' => $this->isWithFiscalization() ? 'https://fpaytest.uniteller.ru/v1/pay' : 'https://test.wpay.uniteller.ru/pay/',
             'shopId' => $this->getUnitellerShopIDP(),
             'total' => $cashDocument->getTotal(),
             'orderId' => $cashDocument->getId(),

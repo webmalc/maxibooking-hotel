@@ -32,13 +32,13 @@ class RecordFilter extends Base
 	
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $recordDateFrom;    
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $recordDateTo;    

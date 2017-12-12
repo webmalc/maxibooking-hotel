@@ -36,13 +36,19 @@ class Visa extends Base
      */
     protected $number;
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Type(type="numeric")
+     */
+    protected $identifier;
+    /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $issued;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $expiry;
     /**
@@ -52,14 +58,183 @@ class Visa extends Base
     protected $profession;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $arrivalTime;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $departureTime;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $multiplicityType;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $visitPurpose;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $visaCategory;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $specialStatus;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $fmsKppId;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $entryGoal;
+
+    /**
+     * @return string
+     */
+    public function getIdentifier(): ?string
+    {
+        return $this->identifier;
+    }
+
+    /**
+     * @param string $identifier
+     * @return Visa
+     */
+    public function setIdentifier(?string $identifier): Visa
+    {
+        $this->identifier = $identifier;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getEntryGoal(): ?int
+    {
+        return $this->entryGoal;
+    }
+
+    /**
+     * @param int $entryGoal
+     * @return Visa
+     */
+    public function setEntryGoal(int $entryGoal): Visa
+    {
+        $this->entryGoal = $entryGoal;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFmsKppId(): ?string
+    {
+        return $this->fmsKppId;
+    }
+
+    /**
+     * @param string $fmsKppId
+     * @return Visa
+     */
+    public function setFmsKppId(string $fmsKppId): Visa
+    {
+        $this->fmsKppId = $fmsKppId;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSpecialStatus()
+    {
+        return $this->specialStatus;
+    }
+
+    /**
+     * @param int $specialStatus
+     * @return Visa
+     */
+    public function setSpecialStatus($specialStatus)
+    {
+        $this->specialStatus = $specialStatus;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVisaCategory(): ?int
+    {
+        return $this->visaCategory;
+    }
+
+    /**
+     * @param int $visaCategory
+     * @return Visa
+     */
+    public function setVisaCategory(int $visaCategory): Visa
+    {
+        $this->visaCategory = $visaCategory;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVisitPurpose(): ?int
+    {
+        return $this->visitPurpose;
+    }
+
+    /**
+     * @param int $visitPurpose
+     * @return Visa
+     */
+    public function setVisitPurpose(int $visitPurpose): Visa
+    {
+        $this->visitPurpose = $visitPurpose;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMultiplicityType(): ?int
+    {
+        return $this->multiplicityType;
+    }
+
+    /**
+     * @param int $multiplicityType
+     * @return Visa
+     */
+    public function setMultiplicityType(int $multiplicityType): Visa
+    {
+        $this->multiplicityType = $multiplicityType;
+
+        return $this;
+    }
 
     /**
      * @return string
