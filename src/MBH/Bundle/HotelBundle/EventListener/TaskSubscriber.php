@@ -66,7 +66,7 @@ class TaskSubscriber implements EventSubscriber
         $taskRoomStatus = $task->getType()->getRoomStatus();
         $room = $task->getRoom();
 
-        if (array_key_exists('status', $changeSet)) {
+        if (!is_null($taskRoomStatus) && array_key_exists('status', $changeSet)) {
 
             /** @var ArrayCollection $currentRoomStatuses */
             $currentRoomStatuses = $room->getStatus();
