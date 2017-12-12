@@ -173,16 +173,17 @@ class UserController extends Controller
             $form->handleRequest($request);
             if($form->isValid()) {
                 $this->get('fos_user.user_manager')->updateUser($entity);
+                $this->addFlash('success', 'controller.profileController.record_edited_success');
 
                 return $this->redirectToRoute('user_document_edit', ['id' => $entity->getId()]);
             }
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -200,6 +201,7 @@ class UserController extends Controller
 
         if ($form->isValid()) {
             $this->get('fos_user.user_manager')->updateUser($entity);
+            $this->addFlash('success', 'controller.profileController.record_edited_success');
 
             return $this->redirectToRoute('user_security_edit', ['id' => $entity->getId()]);
         }
@@ -228,6 +230,7 @@ class UserController extends Controller
             $form->handleRequest($request);
             if($form->isValid()) {
                 $this->get('fos_user.user_manager')->updateUser($entity);
+                $this->addFlash('success', 'controller.profileController.record_edited_success');
 
                 return $this->redirectToRoute('user_address_edit', ['id' => $entity->getId()]);
             }

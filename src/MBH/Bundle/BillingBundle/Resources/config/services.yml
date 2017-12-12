@@ -43,7 +43,11 @@ services:
 
     mbh.billing.api:
         class: MBH\Bundle\BillingBundle\Service\BillingApi
-        arguments: ['@mbh.billing.logger']
+        arguments:
+            - '@mbh.billing.logger'
+            - '%client%'
+            - '@serializer'
+            - '%locale%'
 
     mbh.billing.logger:
         class:     Symfony\Bridge\Monolog\Logger

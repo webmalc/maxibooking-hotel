@@ -119,7 +119,7 @@ class ExportController extends BaseController
             }
             if ($format === 'csv') {
                 return $this->get('mbh.entities_exporter')
-                    ->exportToCSV($qb, $entityData['className'], $form->get('fields')->getData());
+                    ->exportToCSVResponse($qb, $entityData['className'], $form->get('fields')->getData());
             }
         }
 

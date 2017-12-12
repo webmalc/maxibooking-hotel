@@ -112,7 +112,7 @@ class Room extends Base
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $facilities;
 

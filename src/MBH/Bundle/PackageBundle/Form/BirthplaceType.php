@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
@@ -12,20 +11,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class BirthplaceType
-
  */
 class BirthplaceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('country', DocumentType::class, [
+            ->add('countryTld', TextType::class, [
                 'label' => 'form.BirthplaceType.country',
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                'query_builder' => function(DocumentRepository $repository){
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
-                'placeholder' => '',
                 'required' => false,
             ])
             ->add('city', TextType::class, [//'mbh_city'
@@ -36,13 +29,8 @@ class BirthplaceType extends AbstractType
                 'label' => 'form.BirthplaceType.main_region',
                 'required' => false,
             ])
-            ->add('district', DocumentType::class, [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+            ->add('district', TextType::class, [
                 'label' => 'form.BirthplaceType.district',
-                'query_builder' => function(DocumentRepository $repository){
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
-                'placeholder' => '',
                 'required' => false,
             ])
             ->add('settlement', TextType::class, [
