@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
@@ -13,7 +12,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class HousingType
-
  */
 class HousingType extends AbstractType
 {
@@ -38,7 +36,7 @@ class HousingType extends AbstractType
                 'label' => 'views.corpus.internal_name',
                 'translation_domain' => 'MBHHotelBundle'
             ])
-            ->add('city', TextType::class, [
+            ->add('cityId', TextType::class, [
                 'required' => false,
                 'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.city',
@@ -81,8 +79,6 @@ class HousingType extends AbstractType
                 'group' => 'views.form.corpus.group.config',
                 'required' => false
         ]);
-
-        $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }
 
     public function configureOptions(OptionsResolver $resolver)

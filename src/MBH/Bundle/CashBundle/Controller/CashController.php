@@ -428,13 +428,13 @@ class CashController extends Controller
         $order = $entity->getOrder();
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         if ($entity->getHotel() && !$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()) || !$order->getCreditCard()
-            || !$clientConfig || $clientConfig->getPaymentSystem() != 'uniteller'
+            || !$clientConfig || $clientConfig->getPaymentSystems() != 'uniteller'
         ) {
             throw $this->createNotFoundException();
         }
 
         /** @var Uniteller $uniteller */
-        $uniteller = $clientConfig->getPaymentSystemDoc();
+        $uniteller = $clientConfig->getPaymentSystemDocs();
 
         try {
 

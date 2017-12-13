@@ -55,7 +55,7 @@ class PriceCache extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()
@@ -83,7 +83,7 @@ class PriceCache extends Base
 
     /**
      * @var boolean
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      * @Assert\NotNull()
      * @ODM\Index()
@@ -101,7 +101,7 @@ class PriceCache extends Base
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      * @Assert\Type(type="array")
      */
     protected $additionalPrices = [];
@@ -117,7 +117,7 @@ class PriceCache extends Base
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      * @Assert\Type(type="array")
      */
     protected $additionalChildrenPrices = [];
@@ -142,7 +142,7 @@ class PriceCache extends Base
     /**
      * @var \DateTime
      * @Gedmo\Timestampable(on="create")
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      */

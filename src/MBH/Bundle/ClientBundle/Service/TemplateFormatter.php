@@ -2,16 +2,28 @@
 
 namespace MBH\Bundle\ClientBundle\Service;
 
+use Liip\ImagineBundle\Templating\ImagineExtension;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
+use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\UserBundle\Document\User;
+use Psr\Container\ContainerInterface;
+use Symfony\Bridge\Twig\Extension\AssetExtension;
+use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
+use Vich\UploaderBundle\Twig\Extension\UploaderExtension;
 
-/**
- * Class TemplateFormatter
- *
-
- */
 class TemplateFormatter
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
     /**
      * Get document html from DocumentTemplate
      *
@@ -53,5 +65,74 @@ class TemplateFormatter
         }, $html);
 
         return $html;
+    }
+
+    public function generateDocumentTemplate(DocumentTemplate $doc, Package $package, ?User $user)
+    {
+        $loader = new \Twig_Loader_Array(['template' => $doc->getContent()]);
+        $env = new \Twig_Environment($loader);
+        $env->addExtension($this->container->get('mbh.twig.extension'));
+        $env->addExtension(new TranslationExtension($this->container->get('translator')));
+        $env->addExtension(new AssetExtension($this->container->get('assets.packages')));
+        $env->addExtension(new HttpFoundationExtension($this->container->get('request_stack')));
+        $env->addExtension(new ImagineExtension($this->container->get('liip_imagine.cache.manager')));
+        $env->addExtension(new UploaderExtension($this->container->get('vich_uploader.templating.helper.uploader_helper')));
+
+        $order = $package->getOrder();
+        $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
+        $organization = $doc->getOrganization() ? $doc->getOrganization() : $hotel->getOrganization();
+        $params = [
+            'package' => $package,
+            'order' => $order,
+            'hotel' => $hotel,
+            'payer' => $order->getPayer(),
+            'organization' => $organization,
+            'user' => $user,
+            'arrivalTimeDefault' => $hotel->getPackageArrivalTime(),
+            'departureTimeDefault' => $hotel->getPackageDepartureTime()
+        ];
+
+        $params = $this->addCalculatedParams($params, $package);
+        $renderedTemplate = $env->render('template', $params);
+
+        return  $this->container->get('knp_snappy.pdf')->getOutputFromHtml($renderedTemplate);
+    }
+
+    /**
+     * @param $params
+     * @param Package $package
+     * @return array
+     */
+    private function addCalculatedParams(array $params, Package $package)
+    {
+        /** @var PackageService[] $packageServices */
+        $packageServices = [];
+
+        /** @var PackageServiceGroupByService[] $packageServicesByType */
+        $packageServicesByType = [];
+
+        $total = 0;
+        $packages = $package->getOrder()->getPackages();
+
+        /** @var Package $package */
+        foreach($packages as $package) {
+            $packageServices = array_merge(iterator_to_array($package->getServices()), $packageServices);
+            $total += $package->getPackagePrice(true);
+        }
+
+        foreach($packageServices as $ps) {
+            $service = $ps->getService();
+            $groupBy = $ps->getPrice().$service->getId();
+            if(!array_key_exists($groupBy, $packageServicesByType)) {
+                $packageServicesByType[$groupBy] = new PackageServiceGroupByService($service, $ps->getPrice());
+            }
+            $packageServicesByType[$groupBy]->add($ps);
+            $total += $ps->getTotal();
+        }
+
+        return $params + [
+                'total' => $total,
+                'packageServicesByType' => $packageServicesByType
+            ];
     }
 }

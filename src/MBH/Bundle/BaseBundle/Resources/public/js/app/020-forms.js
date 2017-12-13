@@ -1,5 +1,33 @@
 /*global window, document, Routing, fole, str, $, select2, localStorage, mbh */
 
+var BILLING_API_SETTINGS = {
+    fms: {
+        url: 'https://billing.maxi-booking.com/ru/fms-fms',
+        id: 'internal_id',
+        text: 'name'
+    },
+    countries: {
+        url: 'https://billing.maxi-booking.com/ru/countries',
+        id: 'tld',
+        text: 'name'
+    },
+    regions: {
+        url: 'https://billing.maxi-booking.com/ru/regions',
+        id: 'id',
+        text: 'name'
+    },
+    cities: {
+        url: 'https://billing.maxi-booking.com/ru/cities',
+        id: 'id',
+        text: 'display_name'
+    },
+    fmsKpp: {
+        url: 'https://billing.maxi-booking.com/ru/fms-kpp',
+        id: 'internal_id',
+        text: 'name'
+    }
+};
+
 mbh.datarangepicker = {
     options: {
         'dateLimit': 365,
@@ -469,43 +497,12 @@ var docReadyForms = function () {
         });
     }());
 
-    //city select
     (function () {
         var citySelect = $('.citySelect');
         if (citySelect.length !== 1) {
             return;
         }
-
-        select2Text(citySelect)
-            .select2({
-                minimumInputLength: 3,
-                allowClear: true,
-                placeholder: Translator.trans("020-forms.select_city"),
-                ajax: {
-                    url: Routing.generate('hotel_city'),
-                    dataType: 'json',
-                    data: function (params) {
-                        return {
-                            query: params.term // search term
-                        };
-                    },
-                    results: function (data) {
-                        return {results: data};
-                    }
-                },
-                initSelection: function (element, callback) {
-                    var id = $(element).val();
-                    if (id !== "") {
-                        $.ajax(Routing.generate('hotel_city') + '/' + id, {
-                            dataType: "json"
-                        }).done(function (data) {
-                            callback(data);
-                        });
-                    }
-                },
-
-                dropdownCssClass: "bigdrop"
-            });
+        initSelect2TextForBilling(citySelect.get(0).id, BILLING_API_SETTINGS.cities);
     }());
 
     //order select
@@ -982,6 +979,54 @@ function onHideCheckboxChange() {
 
     $boxHideableCheckbox.on('switchChange.bootstrapSwitch', function () {
         setVisibility(this);
+    });
+}
+
+function initSelect2TextForBilling(inputId, apiSettings) {
+    select2Text($('#' + inputId)).select2({
+        minimumInputLength: 3,
+        placeholder: Translator.trans('tourist.make_a_choice'),
+        allowClear: true,
+        ajax: {
+            headers: {
+                Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+            },
+            url: apiSettings['url'],
+            dataType: 'json',
+            data: function (params) {
+                return {
+                    search: params.term
+                };
+            },
+            processResults: function (data) {
+                var options = [];
+                data.results.forEach(function(fmsOrgan) {
+                    options.push({
+                        id: fmsOrgan[apiSettings['id']],
+                        text: fmsOrgan[apiSettings['text']]
+                    });
+                });
+
+                return {results: options};
+            }
+        },
+        initSelection: function (element, callback) {
+            var id = $(element).val();
+            $.ajax(apiSettings['url'] + '/' + id, {
+                dataType: "json",
+                headers: {
+                    Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+                }
+            }).done(function (data) {
+                var selectedOrgan = {
+                    id: data[apiSettings['id']],
+                    text: data[apiSettings['text']]
+                };
+                callback(selectedOrgan);
+            });
+        },
+
+        dropdownCssClass: "bigdrop"
     });
 }
 

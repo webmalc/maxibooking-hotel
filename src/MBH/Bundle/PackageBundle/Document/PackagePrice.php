@@ -15,7 +15,7 @@ class PackagePrice
 {
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\NotNull()
      * @Assert\Date()
      */

@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Lib;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
+use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
@@ -541,5 +542,23 @@ class SearchResult
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function getJsonSerialized()
+    {
+        $data = [
+            'begin' => $this->getBegin()->format(ApiHandler::DATE_FORMAT),
+            'end' => $this->getEnd()->format(ApiHandler::DATE_FORMAT),
+            'adults' => $this->getAdults(),
+            'children' => $this->getChildren(),
+            'roomType' => $this->getRoomType()->getId(),
+            'tariff' => $this->getTariff()->getId(),
+            'prices' => $this->prices,
+            'roomsCount' => $this->getRoomsCount(),
+            'nights' => $this->getNights()
+        ];
 
+        return $data;
+    }
 }

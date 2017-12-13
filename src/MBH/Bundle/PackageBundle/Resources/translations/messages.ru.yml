@@ -37,6 +37,7 @@ mbhpackagebundle.view.report.invite.tip.vizy: 'Тип визы'
 mbhpackagebundle.view.report.roomtypestable.mest: мест
 mbhpackagebundle.view.report.fillingtable.itog: Итог
 form.AddressObjectDecomposedType.corpus: Корпус
+form.AddressObjectDecomposedType.structure.label: 'Строение'
 mbhpackagebundle.view.package.accommodation.etazh: Этаж
 mbhpackagebundle.view.package.index.status.oplaty: 'Статус оплаты'
 mbhpackagebundle.view.report.usertable.itogo: Итого
@@ -165,6 +166,7 @@ csv.type.adults: Взрослых
 csv.type.children: Детей
 mbhpackagebundle.form.packagemaintype.nomer.broni: 'Номер брони'
 tourist.visa.type_number: Номер
+tourist.visa.identifier: Идентификатор
 form.packageGuestType.find_guest: 'Найти гостя'
 form.packageGuestType.placeholder_fio: 'Иванов Иван Иванович'
 form.touristType.placeholder_surname: Иванов
@@ -363,6 +365,8 @@ controller.documentsController.action_view: Просмотр
 controller.documentsController.confirm_remove: 'Вы действительно хотите удалить файл "%filename%"?'
 controller.documentsController.alert_no_documents: 'Не загружено ни одного документа.'
 controller.generated_document_controller.document_modal_form.package_has_not_foreign: 'В данной брони нет иностранных граждан'
+controller.organization_controller.organization_successfully_created: 'Огранизация успешно создана.'
+controller.organization_controller.organization_successfully_edited: 'Организация успешно отредактирована.'
 form.organizationType.short_name: 'Краткое название'
 form.organizationType.director_fio: 'ФИО руководителя'
 form.organizationType.accountant_fio: 'ФИО бухгалтера'
@@ -442,6 +446,7 @@ tourist.index.foreign_citizens: 'Иностранные граждане'
 tourist.index.dates: Даты
 tourist.index.fio: ФИО
 tourist.index.main_document: 'Основной документ'
+tourist.index.button.export_to_kontur.text: 'Контур ФМС'
 tourist.index.visa: Виза
 tourist.index.migration_card: 'Миграционная карта'
 tourist.index.documents: Документы
@@ -489,7 +494,7 @@ tourist.edit.small_title: 'Редактирование гостя #'
 form.DocumentRelation.type: 'Тип документа'
 form.DocumentRelation.authority_organ: 'Код подразделения ФМС'
 form.DocumentRelation.authority: 'Орган выдачи документа'
-form.DocumentRelation.authorityOrganCode: 'Код подразделения'
+form.DocumentRelation.authority.help: 'Название или код органа выдачи документа'
 form.DocumentRelation.series: Серия
 form.DocumentRelation.number: Номер
 form.DocumentRelation.issued: 'Дата выдачи'
@@ -527,6 +532,7 @@ report.filling_table_rows.number_of_rooms: 'Номерной фонд'
 report.filling_table_rows.number_of_busy_rooms: 'Забронировано номеров'
 report.filling_table_rows.balance_on_sale: 'Остаток (в продаже)'
 report.filling_table_rows.balanse_number_of_rooms: 'Остаток (номерной фонд)'
+report.filling_table_rows.reserved_rooms_from_room_fund: 'Заполненность ном. фонда'
 report.filling_table_rows.reserved_rooms: 'Забронировано номеров %'
 report.filling_table_rows.number_of_rooms_without_payment: 'Номера без оплаты (брони)'
 report.filling_table_rows.total_number_of_guests: 'Гостей всего'
@@ -610,6 +616,13 @@ tourist.migration.type_series: Серия
 tourist.migration.type_representative: 'Сведения о законных представителях'
 tourist.migration.type_address: 'Адрес прежнего места пребывания'
 tourist.visa.type_type: Тип
+tourist.visa.multiplicity_type.label: 'Кратность'
+tourist.visa.visa_category.label: 'Категория визы'
+tourist.visa.visit_purpose.label: 'Цель поездки'
+tourist.visa.special_status.label: 'Участник гос. программы'
+tourist.visa.entry_goal.label: 'Цель въезда'
+tourist.visa.fms_kpp_id.label: 'КПП въезда'
+tourist.visa.fms_kpp_id.help: 'Название или код КПП'
 tourist.visa.type_series: Серия
 tourist.visa.type_profession: Профессия
 tourist.visa.arrival_time: 'Дата въезда'
@@ -872,6 +885,8 @@ report.filling.filling_table.total: Итог
 report.filling.filling_table.number_of_places: мест
 report.filling.filling.dates: Даты
 report.filling.filling.room_types: 'Тип номера'
+report.filling.filling.room_status: 'Статус комнаты'
+report.filling.filling.only_enabled: 'Только влюченные?'
 report.polls_view.number_of_order: Заказ
 report.polls_view.hotel: Отель
 report.polls: Даты
