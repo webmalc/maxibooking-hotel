@@ -22,9 +22,10 @@ use Symfony\Component\Serializer\Serializer;
 class BillingApi
 {
     const BILLING_QUERY_PARAM_NAME = 'search';
-    const BILLING_HOST = 'http://billing.maxibooking.ru';
+    const BILLING_HOST = 'https://billing.maxi-booking.com';
     const RESULT_API_URL = '/result';
     const CLIENT_PROPERTY_URL = '/property';
+    const CLIENT_INSTALL_RESULT_URL_END = '/install_result';
     const FMS_ORGANS_ENDPOINT_SETTINGS = ['endpoint' => 'fms-fms', 'model' => AuthorityOrgan::class, 'returnArray' => false];
     const COUNTRIES_ENDPOINT_SETTINGS = ['endpoint' => 'countries', 'model' => Country::class, 'returnArray' => false];
     const REGIONS_ENDPOINT_SETTINGS = ['endpoint' => 'regions', 'model' => Region::class, 'returnArray' => false];
@@ -36,7 +37,7 @@ class BillingApi
     const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
 
     const AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
-    const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s.u\Z';
+    const BILLING_DATETIME_FORMAT = \DateTime::ATOM;
 
     /** @var GuzzleClient */
     private $guzzle;
@@ -66,6 +67,12 @@ class BillingApi
     public function sendSuccess(string $json): void
     {
 
+    }
+
+    public function sendClientInstallationResult(Result $result, $clientName)
+    {
+        $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT_SETTINGS['endpoint'], $clientName) . self::CLIENT_INSTALL_RESULT_URL_END;
+        $this->sendPost($url, $result->getApiResponse(true), true);
     }
 
     public function getClientProperties()
@@ -332,7 +339,6 @@ class BillingApi
         return $this->getBillingEntityById(self::CITIES_ENDPOINT_SETTINGS, $cityId, $locale);
     }
 
-
     /**
      * @param $endpointSettings
      * @param array $queryData
@@ -369,7 +375,6 @@ class BillingApi
      * @param $id
      * @param null $locale
      * @return object
-     * @internal param $endpoint
      */
     private function getBillingEntityById($endpointSettings, $id, $locale = null)
     {

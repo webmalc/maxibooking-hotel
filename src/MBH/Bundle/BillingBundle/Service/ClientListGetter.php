@@ -57,6 +57,15 @@ class ClientListGetter
         return array_intersect($clients, $allClients);
     }
 
+    /**
+     * @param string $clientName
+     * @return bool
+     */
+    public function isClientInstalled(string $clientName)
+    {
+        return in_array($clientName, $this->getClientsList());
+    }
+
     public function getNotInstalledClients(array $clients): array
     {
         $allClients = $this->getClientsList();

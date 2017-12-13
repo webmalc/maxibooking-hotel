@@ -386,10 +386,19 @@ class Client
     public function getUrl(): ?string
     {
         if (!$this->url) {
-            $this->url = $this->getName().'.'.self::DEFAULT_MAXIBOOKING_DOMAIN_NAME;
+            $this->url = self::compileClientUrl($this->getName());
         }
 
         return $this->url;
+    }
+
+    /**
+     * @param $login
+     * @return string
+     */
+    public static function compileClientUrl($login)
+    {
+        return $login . '.' . self::DEFAULT_MAXIBOOKING_DOMAIN_NAME;
     }
 
     /**

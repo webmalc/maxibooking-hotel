@@ -1,8 +1,6 @@
 <?php
 
-
 namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
-
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -75,8 +73,6 @@ final class ParametersMaintenance extends AbstractMaintenance
         return $backupFileName;
     }
 
-
-
     private function generateConfigOverrides(string $clientName, array $newConfig = []): array
     {
         $overrides = $newConfig ?: [
@@ -106,5 +102,4 @@ final class ParametersMaintenance extends AbstractMaintenance
         parent::configureOptions($resolver);
 
     }
-
 }

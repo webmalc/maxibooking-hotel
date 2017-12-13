@@ -1,8 +1,6 @@
 <?php
 
-
 namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
-
 
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Lib\Exception;
@@ -12,7 +10,7 @@ class MaintenanceManager
     /** @var  MaintenanceInterface[] */
     private $maintenances;
 
-public function __construct()
+    public function __construct()
     {
         $this->maintenances = new ArrayCollection();
     }

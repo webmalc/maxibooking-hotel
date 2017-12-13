@@ -76,3 +76,14 @@ services:
 
     mbh.service.ssh_commands:
         class: MBH\Bundle\BillingBundle\Service\SshCommands
+
+    mbh.client_instance_manager:
+        class: MBH\Bundle\BillingBundle\Service\ClientInstanceManager
+        arguments:
+            - '@mbh.maintenance.manager'
+            - '@mbh.billing.logger'
+            - '@mbh.service.client_list_getter'
+            - '@mbh.helper'
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@kernel'
+            - '@mbh.billing.api'
