@@ -532,6 +532,7 @@ report.filling_table_rows.number_of_rooms: 'Номерной фонд'
 report.filling_table_rows.number_of_busy_rooms: 'Забронировано номеров'
 report.filling_table_rows.balance_on_sale: 'Остаток (в продаже)'
 report.filling_table_rows.balanse_number_of_rooms: 'Остаток (номерной фонд)'
+report.filling_table_rows.reserved_rooms_from_room_fund: 'Заполненность ном. фонда'
 report.filling_table_rows.reserved_rooms: 'Забронировано номеров %'
 report.filling_table_rows.number_of_rooms_without_payment: 'Номера без оплаты (брони)'
 report.filling_table_rows.total_number_of_guests: 'Гостей всего'
@@ -884,6 +885,8 @@ report.filling.filling_table.total: Итог
 report.filling.filling_table.number_of_places: мест
 report.filling.filling.dates: Даты
 report.filling.filling.room_types: 'Тип номера'
+report.filling.filling.room_status: 'Статус комнаты'
+report.filling.filling.only_enabled: 'Только влюченные?'
 report.polls_view.number_of_order: Заказ
 report.polls_view.hotel: Отель
 report.polls: Даты

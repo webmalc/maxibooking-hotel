@@ -9,6 +9,8 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -53,7 +55,7 @@ class FormConfig extends Base
     const CSS_LIBRARIES = [
         "font_awesome" => "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
     ];
-    
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -79,7 +81,7 @@ class FormConfig extends Base
     protected $hotels;
 
     /**
-     * @var array
+     * @var RoomType[]|ArrayCollection
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
     protected $roomTypeChoices;
@@ -435,6 +437,7 @@ class FormConfig extends Base
 
     public function __construct()
     {
+        $this->roomTypeChoices = new ArrayCollection();
         $this->hotels = new ArrayCollection();
     }
 
@@ -617,7 +620,7 @@ class FormConfig extends Base
     }
 
     /**
-     * @return array
+     * @return array|ArrayCollection|Hotel[]
      */
     public function getHotels()
     {
@@ -635,7 +638,7 @@ class FormConfig extends Base
     }
     
     /**
-     * @return array
+     * @return ArrayCollection|RoomType[]
      */
     public function getRoomTypeChoices()
     {

@@ -231,7 +231,7 @@
         <div class="center-block">
             <div>
                 <div style="width: 900px" class="area ib left">
-                    &nbsp{% if tourist and tourist.documentRelation %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}</div>
+                    &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrganId %} {{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }} {% endif %}</div>
                 <div class="center">
                     <small>({{ 'mbhpackagebundle.views.naimenovanie_organa_vnutrennih_del_vidavshego_document'|trans }}
                         )
