@@ -17,3 +17,4 @@ client.views.clientConfig.index.organization: Company
 client.views.clientConfig.index.list: List
 client.views.payment_systems.urls_change_button: Change
 client.views.payment_systems.urls.save_changes: Save
+client.views.payment_systems.urls.cancel: Cancel
