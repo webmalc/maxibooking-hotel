@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7639f0a79209b3831092dc55bae14f59",
+    "content-hash": "46df2d74cb16dd3257a2953cabd9ca94",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -225,7 +225,7 @@
             "support": {
                 "source": "https://github.com/webmalc/MongoDBAclBundle/tree/master"
             },
-            "time": "2017-06-28T10:42:05+00:00"
+            "time": "2017-06-28 10:42:05"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1150,7 +1150,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2017-08-09T13:56:03+00:00"
+            "time": "2017-08-09 13:56:03"
         },
         {
             "name": "doctrine/mongodb-odm",
@@ -1233,7 +1233,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2017-08-17T07:43:06+00:00"
+            "time": "2017-08-17 07:43:06"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -1307,7 +1307,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2017-08-15T12:49:26+00:00"
+            "time": "2017-08-15 12:49:26"
         },
         {
             "name": "egulias/email-validator",
@@ -2927,7 +2927,7 @@
                 "i18n",
                 "translation"
             ],
-            "time": "2017-07-16T15:18:56+00:00"
+            "time": "2017-07-16 15:18:56"
         },
         {
             "name": "liip/imagine-bundle",
@@ -3095,6 +3095,58 @@
                 "xls"
             ],
             "time": "2016-06-20T17:11:22+00:00"
+        },
+        {
+            "name": "maennchen/zipstream-php",
+            "version": "v0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maennchen/ZipStream-PHP.git",
+                "reference": "14c3eb6d9599294edbe8c2331c6a00b2a2dc6e40"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/14c3eb6d9599294edbe8c2331c6a00b2a2dc6e40",
+                "reference": "14c3eb6d9599294edbe8c2331c6a00b2a2dc6e40",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">= 7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ZipStream\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Paul Duncan",
+                    "email": "pabs@pablotron.org"
+                },
+                {
+                    "name": "Jesse Donat",
+                    "email": "donatj@gmail.com"
+                },
+                {
+                    "name": "Jonatan Männchen",
+                    "email": "jonatan@maennchen.ch"
+                }
+            ],
+            "description": "ZipStream is a library for dynamically streaming dynamic zip files from PHP without writing to the disk at all on the server.",
+            "keywords": [
+                "stream",
+                "zip"
+            ],
+            "time": "2017-08-28T13:31:56+00:00"
         },
         {
             "name": "mongodb/mongodb",
@@ -3278,7 +3330,7 @@
                 "manager",
                 "myallocator"
             ],
-            "time": "2017-02-06T23:10:05+00:00"
+            "time": "2017-02-06 23:10:05"
         },
         {
             "name": "nikic/php-parser",
@@ -3446,7 +3498,7 @@
                 "templating",
                 "twig"
             ],
-            "time": "2016-02-09T14:23:53+00:00"
+            "time": "2016-02-09 14:23:53"
         },
         {
             "name": "paragonie/random_compat",
@@ -4488,7 +4540,7 @@
                 "translatable",
                 "tree"
             ],
-            "time": "2017-01-13T18:32:32+00:00"
+            "time": "2017-01-13 18:32:32"
         },
         {
             "name": "swiftmailer/swiftmailer",
