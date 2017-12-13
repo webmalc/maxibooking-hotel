@@ -43,9 +43,13 @@
             {% else %}
                 <authority>{{ tourist.documentRelation.authorityOrganText }}</authority>
             {% endif %}
-            <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
-            <validFrom>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validFrom>
-            <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
+            {% if tourist.documentRelation.issued %}
+                <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
+            {% endif %}
+            {% if tourist.documentRelation.expiry %}
+                <validFrom>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validFrom>
+                <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
+            {% endif %}
         </document>
     </f5:personDataDocument>
     {% if tourist.addressObjectDecomposed %}
