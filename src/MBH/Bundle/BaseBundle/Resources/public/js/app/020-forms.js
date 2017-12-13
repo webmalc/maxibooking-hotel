@@ -991,7 +991,7 @@ function initSelect2TextForBilling(inputId, apiSettings) {
             headers: {
                 Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
             },
-            url: apiSettings['url'],
+            url: apiSettings['url'] + '/',
             dataType: 'json',
             data: function (params) {
                 return {
@@ -1012,7 +1012,7 @@ function initSelect2TextForBilling(inputId, apiSettings) {
         },
         initSelection: function (element, callback) {
             var id = $(element).val();
-            $.ajax(apiSettings['url'] + '/' + id, {
+            $.ajax(apiSettings['url'] + '/' + id + '/', {
                 dataType: "json",
                 headers: {
                     Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"

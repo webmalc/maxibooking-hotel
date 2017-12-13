@@ -373,7 +373,7 @@ form.organizationType.accountant_fio: 'ФИО бухгалтера'
 form.organizationType.inn: ИНН
 form.organizationType.kpp: КПП
 form.organizationType.registration_date: 'Дата гос.регистрации'
-form.organizationType.registration_number: 'Регистраиционный номер в ПФР'
+form.organizationType.registration_number: 'Регистрационный номер в ПФР'
 form.organizationType.activity_code: 'Код основной деятельности'
 form.organizationType.okpo_code: 'Код по ОКПО'
 form.organizationType.writer_fio: 'ФИО подписанта в род. падеже'
