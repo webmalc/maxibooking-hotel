@@ -81,11 +81,14 @@ class BillingApi
     }
 
     /**
-     * @return object
+     * @param $login
+     * @return object|Client
      */
-    public function getClient()
+    public function getClient($login = null)
     {
-        return $this->getBillingEntityById(self::CLIENTS_ENDPOINT_SETTINGS, $this->billingLogin);
+        $login = $login ?? $this->billingLogin;
+
+        return $this->getBillingEntityById(self::CLIENTS_ENDPOINT_SETTINGS, $login);
     }
 
     /**

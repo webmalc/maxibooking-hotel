@@ -47,8 +47,9 @@ class MaintenanceController extends BaseController
      */
     public function installPropertiesAction(Request $request)
     {
-        $properties = [];
-        $result = $this->get('mbh.client_instance_manager')->installFixtures($properties);
+        //TODO: Или как там данные передаются
+        $login = $request->get('login');
+        $result = $this->get('mbh.client_instance_manager')->installFixtures($login);
         if ($result->isSuccessful()) {
             $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
             $result->setData([

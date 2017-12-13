@@ -162,12 +162,14 @@ class ClientInstanceManager
     }
 
     /**
-     * @param array $propertiesUrls
+     * @param string $login
      * @return Result
      */
-    public function installFixtures(array $propertiesUrls)
+    public function installFixtures(string $login)
     {
-        foreach ($propertiesUrls as $propertyNumber => $propertyUrl) {
+        $client = $this->billingApi->getClient($login);
+
+        foreach ($client->getProperties() as $propertyNumber => $propertyUrl) {
             /** @var BillingProperty $property */
             try {
                 $property = $this->billingApi->getBillingEntityByUrl($propertyUrl, BillingProperty::class);
@@ -176,18 +178,18 @@ class ClientInstanceManager
             }
 
             $isHotelDefault = $propertyNumber === 0;
-            $hotel = $this->hotelManager->createByBillingProperty($property, $isHotelDefault);
-
-            foreach ($property->getRooms() as $roomUrl) {
-                try {
-                    /** @var BillingRoom $billingRoom */
-                    $billingRoom = $this->billingApi->getBillingEntityByUrl($roomUrl, BillingRoom::class);
-                } catch (\Throwable $exception) {
-                    return Result::createErrorResult([$exception->getMessage()]);
-                }
-
-                $this->roomTypeManager->createByBillingRoom($billingRoom, $hotel, true);
-            }
+//            $hotel = $this->hotelManager->createByBillingProperty($property, $isHotelDefault);
+//
+//            foreach ($property->getRooms() as $roomUrl) {
+//                try {
+//                    /** @var BillingRoom $billingRoom */
+//                    $billingRoom = $this->billingApi->getBillingEntityByUrl($roomUrl, BillingRoom::class);
+//                } catch (\Throwable $exception) {
+//                    return Result::createErrorResult([$exception->getMessage()]);
+//                }
+//
+//                $this->roomTypeManager->createByBillingRoom($billingRoom, $hotel, true);
+//            }
 
             $manager->flush();
         }

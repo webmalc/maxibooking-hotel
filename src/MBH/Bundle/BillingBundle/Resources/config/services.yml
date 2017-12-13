@@ -87,3 +87,5 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@kernel'
             - '@mbh.billing.api'
+            - '@mbh.hotel.room_type_manager'
+            - '@mbh.hotel.hotel_manager'
