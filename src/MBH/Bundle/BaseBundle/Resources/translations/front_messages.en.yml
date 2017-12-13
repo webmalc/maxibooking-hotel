@@ -171,3 +171,6 @@ cash.not_confirmed: 'Not confirmed'
 004-calculate-orderprice.make_a_choice: 'Select one'
 001-add_dish_item.first_add_dishes: 'First add dishes to %hrefTagStart%'
 views.task.index.before: Before
+tourist.inn: AccountID
+app.bootstrap_switch_config.yes: 'Yes'
+app.bootstrap_switch_config.no: 'No'
