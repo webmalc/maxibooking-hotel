@@ -592,8 +592,7 @@ class ApiController extends Controller
                     'data' => array_merge(
                         [
                             'test' => false,
-                            'currency' => strtoupper($this->getParameter('locale.currency')),
-
+                            'currency' => $this->clientConfig->getCurrency(),
                             'buttonText' => $this->get('translator')->trans(
                                 'views.api.make_payment_for_order_id',
                                 ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],

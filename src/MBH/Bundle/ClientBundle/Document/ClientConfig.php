@@ -285,7 +285,7 @@ class ClientConfig extends Base
      */
     public function getCurrency(): ?string
     {
-        return $this->currency;
+        return $this->currency ? $this->currency : ($this->timeZone === 'Europe/Moscow' ? 'rub' : 'usd');
     }
 
     /**

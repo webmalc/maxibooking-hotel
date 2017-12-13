@@ -77,9 +77,7 @@ class Cash
             ->getRepository('MBHClientBundle:ClientConfig')
             ->fetchConfig();
 
-        $localCurrency = $clientConfig->getCurrency()
-            ? $clientConfig->getCurrency()
-            : $this->container->getParameter('locale.currency');
+        $localCurrency = $clientConfig->getCurrency();
 
         $currencyText = $this->container->getParameter('mbh.currency.data')[$localCurrency]['text'];
         $sumString = '<strong>' . $cashDocument->getTotal() . ' ' . $currencyText . '</strong>';
