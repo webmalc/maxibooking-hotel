@@ -275,6 +275,31 @@ class ClientConfig extends Base
     protected $currencyRatioFix = 1.015;
 
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $currency;
+
+    /**
+     * @return string
+     */
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     * @return ClientConfig
+     */
+    public function setCurrency(string $currency): ClientConfig
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
      * @return Invoice
      */
     public function getInvoice(): ?Invoice
