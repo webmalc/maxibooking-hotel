@@ -31,8 +31,7 @@ services:
 
     mbh.mongo.maintenance:
         public: true
-        arguments: ["@service_container", {sampleDbName: "%mongodb_database%"}]
-
+        arguments: ["@service_container", "@mbh.billing_mongo_client"]
         class: MBH\Bundle\BillingBundle\Lib\Maintenance\MongoMaintenance
 
     mbh.billing.client.converter:
@@ -76,3 +75,7 @@ services:
 
     mbh.service.ssh_commands:
         class: MBH\Bundle\BillingBundle\Service\SshCommands
+
+    mbh.billing_mongo_client:
+        class: MBH\Bundle\BillingBundle\Service\BillingMongoClient
+        arguments: ["%mongodb_admin_login%","%mongodb_admin_password%","%mongodb_host%","admin","%mongodb_options%"]
