@@ -79,8 +79,8 @@
                                     </a>
                                 {% endif %}
                             </td>
-                            <td>{{ operations[cash.operation] }}<br>
-                                <small>{{ methods[cash.method] }}</small>
+                            <td>{{ operations[cash.operation]|trans }}<br>
+                                <small>{{ methods[cash.method]|trans }}</small>
                             </td>
                             <td>{{ cash.documentDate|date('d.m.Y') }}</td>
                             <td class="text-center">{% if cash.isPaid is empty %}<span

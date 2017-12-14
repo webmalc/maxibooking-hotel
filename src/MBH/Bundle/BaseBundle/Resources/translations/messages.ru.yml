@@ -600,3 +600,45 @@ facilities.radio: 'Радио'
 facilities.iron: 'Утюг'
 facilities.plug: 'Электророзетка'
 facilities.board-games: 'Настольные игры'
+currency.rub.text: 'руб.'
+currency.rub.small: 'коп.'
+currency.uah.text: 'грн.'
+currency.uah.small: 'коп.'
+currency.kzt.text: 'тенге'
+currency.kzt.small: 'тиын'
+mbh.weekdays.sun: Воскресенье
+mbh.weekdays.mon: Понедельник
+mbh.weekdays.tue: Вторник
+mbh.weekdays.wed: Среда
+mbh.weekdays.thu: Четверг
+mbh.weekdays.fri: Пятница
+mbh.weekdays.sat: Суббота
+mbh.services.calcTypes.per_stay: 'за весь срок'
+mbh.services.calcTypes.per_night: 'за cутки'
+mbh.services.calcTypes.not_applicable: 'за услугу'
+mbh.services.calcTypes.day_percent: 'за услугу (% от цены за сутки)'
+mbh.package.statuses.offline.title: 'Обычная'
+mbh.package.statuses.online.title: 'Онлайн'
+mbh.package.arrivals.service: Служебная
+mbh.package.arrivals.tourism: Туризм
+mbh.package.arrivals.business: Деловая
+mbh.package.arrivals.study: Учеба
+mbh.package.arrivals.work: Работа
+mbh.package.arrivals.private: Частная
+mbh.package.arrivals.residence: Транзит
+mbh.package.arrivals.humanitarian: Гуманитарная
+mbh.package.arrivals.other: Другая
+mbh.mailer.subject.text: 'Сообщение от MaxiBooking'
+mbh.task.statuses.open.title: 'Открыта'
+mbh.task.statuses.process.title: 'В процессе'
+mbh.task.statuses.closed.title: 'Закрыта'
+mbh.cash.operations.in: "Поступление"
+mbh.cash.operations.out: "Расход"
+mbh.cash.operations.fee: "Комиссия"
+mbh.gender.types.male: "Мужчина"
+mbh.gender.types.female: "Женщина"
+mbh.gender.types.unknown: "Неизвестно"
+mbh.organization.types.contragents: 'Контрагенты'
+mbh.organization.types.my: 'Мои организации'
+mbh.warehouse.operations.in: "Приход"
+mbh.warehouse.operations.out: "Расход"

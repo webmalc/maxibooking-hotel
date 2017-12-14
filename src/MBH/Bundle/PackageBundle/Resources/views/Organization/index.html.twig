@@ -16,7 +16,7 @@
         {% for t, name in types %}
             <li {% if t == type %} class="active" {% endif %}>
                 <a href="{{ path('organizations', {type: t}) }}">
-                    <i class="fa fa-users"></i> {{ name }}
+                    <i class="fa fa-users"></i> {{ name|trans }}
                 </a>
             </li>
         {% endfor %}

@@ -67,7 +67,7 @@
                                     <strong>{{ 'order.touristEdit.gender'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
-                                    {{ genders[order.mainTourist.sex]|default('-') }}
+                                    {{ genders[order.mainTourist.sex]|default('-')|trans }}
                                 </td>
                             </tr>
                             <tr>
