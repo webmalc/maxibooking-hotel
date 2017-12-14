@@ -222,6 +222,9 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         $resolver
             ->setRequired(['backupDir', 'clientConfigDir'])
             ->setDefault('backupDir', self::BACKUP_DIR)
-            ->setDefault('clientConfigDir', $this->getContainer()->get('kernel')->getClientConfigFolder());
+//            ->setDefault('clientConfigDir', $this->getContainer()->get('kernel')->getClientConfigFolder())
+            ->setDefault('clientConfigDir', 'app/config')
+
+        ;
     }
 }
