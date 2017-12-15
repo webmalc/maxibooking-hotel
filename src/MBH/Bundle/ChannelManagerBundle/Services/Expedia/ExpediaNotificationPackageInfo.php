@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
+use function GuzzleHttp\Psr7\str;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -149,8 +150,10 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
                 $rateNode = $roomRateNode->Rates->Rate;
                 $currentDate = \DateTime::createFromFormat('Y-m-d', $rateNode->attributes()['EffectiveDate']);
                 $price = (float)$rateNode->Base->attributes()['AmountBeforeTax'];
-                foreach ($rateNode->AdditionalGuestAmounts->AdditionalGuestAmount as $additionalGuestAmountNode) {
-                    $price += $additionalGuestAmountNode->Amount->attributes()['AmountBeforeTax'];
+                if ((string)$rateNode->AdditionalGuestAmounts !== '') {
+                    foreach ($rateNode->AdditionalGuestAmounts->AdditionalGuestAmount as $additionalGuestAmountNode) {
+                        $price += $additionalGuestAmountNode->Amount->attributes()['AmountBeforeTax'];
+                    }
                 }
 
                 $this->prices[] = new PackagePrice($currentDate, $price, $this->getTariff());

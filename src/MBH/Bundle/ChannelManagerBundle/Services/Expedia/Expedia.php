@@ -89,6 +89,178 @@ class Expedia extends ExtendedAbstractChannelManager
      */
     public function handleNotificationOrder($xmlString)
     {
+        $xmlString  = '<soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap-env:Header>
+        <Interface xmlns="http://www.newtrade.com/expedia/R14/header" Name="ExpediaDirectConnect" Version="4.0">
+            <PayloadInfo ExpirationDateTime="2017-12-14T17:06:22+00:00" Location="Body" RequestId="39C070CF4E66E18252EA"
+                         RequestorId="Expedia.com" ResponderId="EQCMaxibooking">
+                <CommDescriptor DestinationId="EQCMaxibooking" RetryIndicator="false" SourceId="ExpediaDC"/>
+                <PayloadDescriptor Name="OTA_HotelResNotifRQ" Version="2003A">
+                    <PayloadReference DistributorHotelId="17093320" SupplierChainCode="2131"
+                                      SupplierHotelCode="sdfasdfasdf"/>
+                </PayloadDescriptor>
+            </PayloadInfo>
+        </Interface>
+    </soap-env:Header>
+    <soap-env:Body>
+        <OTA_HotelResNotifRQ xmlns="http://www.opentravel.org/OTA/2003/05" EchoToken="39C070CF4E66E18252EA"
+                             PrimaryLangID="en-us" ResStatus="Commit" Target="Production"
+                             TimeStamp="2017-12-14T14:36:22+00:00" Version="1.000">
+            <POS>
+                <Source>
+                    <RequestorID ID="A-Hotwire" Type="18"/>
+                    <BookingChannel Primary="true" Type="2">
+                        <CompanyName>Expedia</CompanyName>
+                    </BookingChannel>
+                </Source>
+            </POS>
+            <HotelReservations>
+                <HotelReservation CreateDateTime="2017-12-14T14:36:22+00:00" CreatorID="Expedia"
+                                  RoomStayReservation="true">
+                    <UniqueID ID="123752645" Type="14"/>
+                    <RoomStays>
+                        <RoomStay>
+                            <RoomTypes>
+                                <RoomType IsRoom="true" RoomTypeCode="202202547"/>
+                            </RoomTypes>
+                            <RatePlans>
+                                <RatePlan EffectiveDate="2017-12-17" ExpireDate="2017-12-18" RatePlanCode="209753354A"/>
+                                <RatePlan EffectiveDate="2017-12-18" ExpireDate="2017-12-19" RatePlanCode="209753354A"/>
+                                <RatePlan EffectiveDate="2017-12-19" ExpireDate="2017-12-20" RatePlanCode="209753354A"/>
+                                <RatePlan EffectiveDate="2017-12-20" ExpireDate="2017-12-21" RatePlanCode="209753354A"/>
+                                <RatePlan EffectiveDate="2017-12-21" ExpireDate="2017-12-22" RatePlanCode="209753354A"/>
+                            </RatePlans>
+                            <RoomRates>
+                                <RoomRate EffectiveDate="2017-12-17" ExpireDate="2017-12-18" NumberOfUnits="1"
+                                          RatePlanCode="209753354A" RoomTypeCode="202202547">
+                                    <Rates>
+                                        <Rate EffectiveDate="2017-12-17" ExpireDate="2017-12-18" RateTimeUnit="Day"
+                                              UnitMultiplier="1">
+                                            <Base AmountBeforeTax="123" CurrencyCode="USD"/>
+                                            <Fees>
+                                                <Fee Amount="0.00" Code="1" CurrencyCode="USD" TaxInclusive="false"
+                                                     Type="Exclusive"/>
+                                            </Fees>
+                                        </Rate>
+                                    </Rates>
+                                </RoomRate>
+                                <RoomRate EffectiveDate="2017-12-18" ExpireDate="2017-12-19" NumberOfUnits="1"
+                                          RatePlanCode="209753354A" RoomTypeCode="202202547">
+                                    <Rates>
+                                        <Rate EffectiveDate="2017-12-18" ExpireDate="2017-12-19" RateTimeUnit="Day"
+                                              UnitMultiplier="1">
+                                            <Base AmountBeforeTax="123" CurrencyCode="USD"/>
+                                            <Fees>
+                                                <Fee Amount="0.00" Code="1" CurrencyCode="USD" TaxInclusive="false"
+                                                     Type="Exclusive"/>
+                                            </Fees>
+                                        </Rate>
+                                    </Rates>
+                                </RoomRate>
+                                <RoomRate EffectiveDate="2017-12-19" ExpireDate="2017-12-20" NumberOfUnits="1"
+                                          RatePlanCode="209753354A" RoomTypeCode="202202547">
+                                    <Rates>
+                                        <Rate EffectiveDate="2017-12-19" ExpireDate="2017-12-20" RateTimeUnit="Day"
+                                              UnitMultiplier="1">
+                                            <Base AmountBeforeTax="123" CurrencyCode="USD"/>
+                                            <Fees>
+                                                <Fee Amount="0.00" Code="1" CurrencyCode="USD" TaxInclusive="false"
+                                                     Type="Exclusive"/>
+                                            </Fees>
+                                        </Rate>
+                                    </Rates>
+                                </RoomRate>
+                                <RoomRate EffectiveDate="2017-12-20" ExpireDate="2017-12-21" NumberOfUnits="1"
+                                          RatePlanCode="209753354A" RoomTypeCode="202202547">
+                                    <Rates>
+                                        <Rate EffectiveDate="2017-12-20" ExpireDate="2017-12-21" RateTimeUnit="Day"
+                                              UnitMultiplier="1">
+                                            <Base AmountBeforeTax="123" CurrencyCode="USD"/>
+                                            <Fees>
+                                                <Fee Amount="0.00" Code="1" CurrencyCode="USD" TaxInclusive="false"
+                                                     Type="Exclusive"/>
+                                            </Fees>
+                                        </Rate>
+                                    </Rates>
+                                </RoomRate>
+                                <RoomRate EffectiveDate="2017-12-21" ExpireDate="2017-12-22" NumberOfUnits="1"
+                                          RatePlanCode="209753354A" RoomTypeCode="202202547">
+                                    <Rates>
+                                        <Rate EffectiveDate="2017-12-21" ExpireDate="2017-12-22" RateTimeUnit="Day"
+                                              UnitMultiplier="1">
+                                            <Base AmountBeforeTax="123" CurrencyCode="USD"/>
+                                            <Fees>
+                                                <Fee Amount="0.00" Code="1" CurrencyCode="USD" TaxInclusive="false"
+                                                     Type="Exclusive"/>
+                                            </Fees>
+                                        </Rate>
+                                    </Rates>
+                                </RoomRate>
+                            </RoomRates>
+                            <GuestCounts IsPerRoom="true">
+                                <GuestCount AgeQualifyingCode="10" Count="2"/>
+                            </GuestCounts>
+                            <TimeSpan End="2017-12-22" Start="2017-12-17"/>
+                            <Guarantee>
+                                <GuaranteesAccepted>
+                                    <GuaranteeAccepted>
+                                        <PaymentCard CardCode="MC" CardNumber="5555555555554444" CardType="1"
+                                                     ExpireDate="0418">
+                                            <CardHolderName>Naveen Vorugantii</CardHolderName>
+                                        </PaymentCard>
+                                    </GuaranteeAccepted>
+                                </GuaranteesAccepted>
+                            </Guarantee>
+                            <Total AmountAfterTax="626" CurrencyCode="USD">
+                                <Taxes Amount="11" CurrencyCode="USD">
+                                    <Tax Amount="11" Code="27" CurrencyCode="USD" Type="Exclusive"/>
+                                </Taxes>
+                            </Total>
+                            <BasicPropertyInfo ChainCode="2131" HotelCode="sdfasdfasdf"/>
+                            <ResGuestRPHs>
+                                <ResGuestRPH RPH="1"/>
+                            </ResGuestRPHs>
+                            <SpecialRequests>
+                                <SpecialRequest Language="en-us" RequestCode="1.15">
+                                    <Text Formatted="false" Language="en-us">1 queen</Text>
+                                </SpecialRequest>
+                                <SpecialRequest Language="en-us" RequestCode="2.2">
+                                    <Text Formatted="false" Language="en-us">Smoking</Text>
+                                </SpecialRequest>
+                                <SpecialRequest Language="en-us" RequestCode="4">
+                                    <Text Formatted="false" Language="en-us">sdfsadfasdfasd</Text>
+                                </SpecialRequest>
+                            </SpecialRequests>
+                        </RoomStay>
+                    </RoomStays>
+                    <ResGuests>
+                        <ResGuest AgeQualifyingCode="10" ResGuestRPH="1">
+                            <Profiles>
+                                <ProfileInfo>
+                                    <Profile ProfileType="1">
+                                        <Customer>
+                                            <PersonName>
+                                                <GivenName>sadfasdf</GivenName>
+                                                <Surname>asdfasdf</Surname>
+                                            </PersonName>
+                                            <Telephone AreaCityCode="555" CountryAccessCode="1" PhoneNumber="555-5555"/>
+                                        </Customer>
+                                    </Profile>
+                                </ProfileInfo>
+                            </Profiles>
+                        </ResGuest>
+                    </ResGuests>
+                    <ResGlobalInfo>
+                        <HotelReservationIDs>
+                            <HotelReservationID ResID_Date="2017-12-14T14:36:22+00:00" ResID_Source="Expedia"
+                                                ResID_Type="8" ResID_Value="123752645"/>
+                        </HotelReservationIDs>
+                    </ResGlobalInfo>
+                </HotelReservation>
+            </HotelReservations>
+        </OTA_HotelResNotifRQ>
+    </soap-env:Body>
+</soap-env:Envelope>';
         //TODO: Добавить обработку ошибок
         /** @var ExpediaResponseHandler $responseHandler */
         $responseHandler = $this->getResponseHandler($xmlString);

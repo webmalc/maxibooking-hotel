@@ -28,6 +28,8 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
     private $config;
     private $tariffs;
     private $roomTypes;
+    private $requestorId;
+    private $isSmoking = false;
 
     private $isPackagesDataInit = false;
     private $packagesData = [];
@@ -41,16 +43,20 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
         $this->notificationElement = $notificationElement;
         if ($this->isOrderCreated()) {
             $this->orderInfoElement = $notificationElement->Body->OTA_HotelResNotifRQ->HotelReservations->HotelReservation;
+            $this->requestorId = (string)$notificationElement->Body->OTA_HotelResNotifRQ->POS->Source->RequestorID->attributes()['ID'];
         } elseif ($this->isOrderModified()) {
             $this->orderInfoElement = $notificationElement->Body->OTA_HotelResModifyNotifRQ->HotelResModifies->HotelResModify;
+            $this->requestorId = (string)$notificationElement->Body->OTA_HotelResModifyNotifRQ->POS->Source->RequestorID->attributes()['ID'];
         } else {
             $this->orderInfoElement = $notificationElement->Body->OTA_CancelRQ;
+            $this->requestorId = (string)$notificationElement->Body->OTA_CancelRQ7->POS->Source->RequestorID->attributes()['ID'];
         }
 
         $this->roomStayElement = $this->orderInfoElement->RoomStays->RoomStay;
         $this->config = $config;
         $this->tariffs = $tariffs;
         $this->roomTypes = $roomTypes;
+        $this->handleSpecialRequests();
 
         return $this;
     }
@@ -111,19 +117,22 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
         /** @var \SimpleXMLElement $pricesNode */
         $pricesNode = $this->roomStayElement->Total;
         $sumOfTaxes = 0;
-        if (!is_null($this->getCreditCard())) {
+        if (!is_null($this->getCreditCard()) && !($this->requestorId[0] == 'A')) {
             /** @var \SimpleXMLElement $taxNode */
             foreach ($pricesNode->Taxes as $taxNode) {
                 $taxCashDocument = new CashDocument();
                 $taxSum = (float)$taxNode->attributes()['Amount'];
                 $sumOfTaxes += $taxSum;
-                $cashDocuments[] = $taxCashDocument
-                    ->setIsPaid(true)
-                    ->setMethod('electronic')
-                    ->setOperation('out')
-                    ->setOrder($order)
-                    ->setTouristPayer($this->getPayer())
-                    ->setTotal($taxSum);
+                if ($taxSum > 0) {
+                    $cashDocuments[] = $taxCashDocument
+                        ->setIsPaid(true)
+                        ->setMethod('electronic')
+                        ->setOperation('out')
+                        ->setOrder($order)
+                        ->setTouristPayer($this->getPayer())
+                        ->setTotal($taxSum);
+
+                }
             }
 
             $cashDocument = new CashDocument();
@@ -175,17 +184,7 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
      */
     public function getIsSmoking(): bool
     {
-        $isSmokingElement = $this->roomStayElement->xpath('SpecialRequest[starts-with(@RequestCode, "2")]');
-        $isSmoking = false;
-        if ($isSmokingElement) {
-            $isSmokingString = (string)$isSmokingElement[0];
-            //2.2 Smoking
-            if ($isSmokingString === 'Smoking') {
-                $isSmoking = true;
-            }
-        }
-
-        return $isSmoking;
+        return $this->isSmoking;
     }
 
     /**
@@ -223,8 +222,19 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
         return $card;
     }
 
+    /**
+     * @return string
+     */
     public function getChannelManagerName(): string
     {
+        $prefix = 'A-';
+        $prefixPosition = strpos($this->requestorId, $prefix);
+        $requestorName = $prefixPosition === false ? $this->requestorId : substr($this->requestorId, strlen($prefix));
+
+        if (in_array($requestorName, ['Hotels', 'Venere'])) {
+            return strtolower($requestorName);
+        }
+
         return 'expedia';
     }
 
@@ -273,47 +283,18 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
         return $this->isOrderCancelled() && $order;
     }
 
+    /**
+     * @return string
+     */
     public function getNote(): string
     {
-        if (!empty((string)$this->roomStayElement->SpecialRequest)) {
-            foreach ($this->roomStayElement->SpecialRequest as $specialRequest) {
-                $codeString = (string)$specialRequest->attributes()['code'][0];
-                $specialRequestString = (string)$specialRequest->Text;
-                /**
-                 * 1.xx : bedding preferences, different codes for beddings
-                 * 2.1 Non-smoking
-                 * 2.2 Smoking
-                 * 3 Multi room booking and Mixed Rate Bookings
-                 * 4 Free text
-                 * 5 payment instruction
-                 * 6 Value Add Promotions
-                 */
-                switch (substr($codeString, 0, 1)) {
-                    case "1":
-                        $preface = 'order_info.expedia.bedding_preferences';
-                        break;
-                    case "3":
-                        $preface = 'order_info.expedia.multi_room_booking_info';
-                        break;
-                    case "4":
-                        $preface = 'order_info.expedia.user_comment';
-                        break;
-                    case "5":
-                        $preface = 'order_info.expedia.payment_instructions';
-                        break;
-                    case "6":
-                        $preface = 'order_info.expedia.add_promotion';
-                        break;
-                }
-                if (!empty($preface)) {
-                    $this->addOrderNote($specialRequestString, $preface);
-                }
-            }
-        }
-
         return $this->orderNote;
     }
 
+    /**
+     * @param $cardAbbreviation
+     * @return string
+     */
     private function getCardTypeByAbbreviation($cardAbbreviation)
     {
         $cardAbbreviationToFullNameRelations = [
@@ -331,5 +312,50 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
     private function getOrderDataNodeName()
     {
         return (string)$this->notificationElement->Header->Interface->PayloadInfo->PayloadDescriptor->attributes()['Name'];
+    }
+
+
+    private function handleSpecialRequests(): void
+    {
+        if (!empty((string)$this->roomStayElement->SpecialRequests)) {
+            foreach ($this->roomStayElement->SpecialRequests->SpecialRequest as $specialRequest) {
+                $preface = '';
+                $codeString = (string)$specialRequest->attributes()['RequestCode'][0];
+                $specialRequestString = (string)$specialRequest->Text;
+                /**
+                 * 1.xx : bedding preferences, different codes for beddings
+                 * 2.1 Non-smoking
+                 * 2.2 Smoking
+                 * 3 Multi room booking and Mixed Rate Bookings
+                 * 4 Free text
+                 * 5 payment instruction
+                 * 6 Value Add Promotions
+                 */
+                switch (substr($codeString, 0, 1)) {
+                    case "1":
+                        $preface = 'order_info.expedia.bedding_preferences';
+                        break;
+                    case "2":
+                        $this->isSmoking = $specialRequestString === 'Smoking';
+                        break;
+                    case "3":
+                        $preface = 'order_info.expedia.multi_room_booking_info';
+                        break;
+                    case "4":
+                        $preface = 'order_info.expedia.user_comment';
+                        break;
+                    case "5":
+                        $preface = 'order_info.expedia.payment_instructions';
+                        break;
+                    case "6":
+                        $preface = 'order_info.expedia.add_promotion';
+                        break;
+                }
+
+                if (!empty($preface)) {
+                    $this->addOrderNote($specialRequestString, $preface);
+                }
+            }
+        }
     }
 }
