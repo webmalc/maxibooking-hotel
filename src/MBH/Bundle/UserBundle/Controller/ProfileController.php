@@ -344,6 +344,16 @@ class ProfileController extends Controller
         ];
     }
 
+    /**
+     * @Route("/client_successful_payment", name="client_successful_payment", options={"expose"=true})
+     * @Template()
+     * @return array
+     */
+    public function paymentSuccessfulPageAction()
+    {
+        return [];
+    }
+
     private function addBillingErrorFlash()
     {
         $this->addFlash('error',

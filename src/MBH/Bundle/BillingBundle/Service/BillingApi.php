@@ -59,7 +59,7 @@ class BillingApi
     {
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
-        $this->billingLogin = 'danya';
+        $this->billingLogin = 'valera228';
         $this->locale = $locale;
         $this->serializer = $serializer;
     }

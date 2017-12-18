@@ -181,18 +181,10 @@ function initPaymentsDataTable() {
 function hangOnPayButtonHandler() {
     $('.show-payments-list').click(function () {
         var $modalBody = $('#payments-list-modal-body');
-        $modalBody.html(mbh.loader.html);
         $('#payments-list-modal').modal('show');
 
         var orderId = this.getAttribute('data-order-id');
-        $.ajax({
-            url: Routing.generate('order_payment_systems', {orderId: orderId}),
-            success: function (paymentsListModalHtml) {
-                $modalBody.html(paymentsListModalHtml);
-                $('.billing-payment-button').addClass('btn').addClass('btn-primary');
-                hangOnOpenBillButtonClick();
-            }
-        });
+        $modalBody.find('iFrame').prop('src', Routing.generate('order_payment_systems', {orderId: orderId}));
     })
 }
 

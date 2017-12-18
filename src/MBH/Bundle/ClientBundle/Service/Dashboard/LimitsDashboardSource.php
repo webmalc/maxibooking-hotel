@@ -40,7 +40,10 @@ class LimitsDashboardSource extends AbstractDashboardSource
         $end = new \DateTime('midnight + 1 year');
         $messages = [];
         if ($this->clientManager->isLimitOfRoomsExceeded()) {
-            $messages[] = $this->translator->trans('room_controller.limit_of_rooms_exceeded');
+            $messages[] = $this->translator->trans('room_controller.limit_of_rooms_exceeded', [
+                '%availableNumberOfRooms%' => $this->clientManager->getAvailableNumberOfRooms(),
+                '%overviewUrl%' => $this->router->generate('total_rooms_overview')
+            ]);
         }
 
         $outOfLimitRoomsDays = $this->clientManager->getDaysWithExceededLimitNumberOfRoomsInSell($begin, $end);
@@ -49,7 +52,7 @@ class LimitsDashboardSource extends AbstractDashboardSource
                 ->trans('room_cache_controller.limit_of_rooms_exceeded', [
                     '%busyDays%' => join(', ', $outOfLimitRoomsDays),
                     '%availableNumberOfRooms%' => $this->clientManager->getAvailableNumberOfRooms(),
-                    '%overviewUrl%' => $this->generateUrl('total_rooms_overview')
+                    '%overviewUrl%' => $this->router->generate('total_rooms_overview')
                 ]);
         }
 

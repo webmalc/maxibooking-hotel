@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class ClientManager
 {
     //TODO: Уточнить и изменить для прода
-    const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 120;
+    const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_contacts';
     const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems'];
     const SESSION_CLIENT_FIELD = 'client';

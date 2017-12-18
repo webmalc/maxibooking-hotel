@@ -67,7 +67,7 @@
                 <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
                     {{ package.departureTime ? package.departureTime|date('H:i') : package.hotel.packageDepartureTime ~ ':00' }}
                 </td>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">{{ package.packagePrice|number_format(2) }}</td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">{{ package.getPackagePrice(true)|number_format(2) }}</td>
             </tr>
 
             {% if services is empty and package.services is not empty %}

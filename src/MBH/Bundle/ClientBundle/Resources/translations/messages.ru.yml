@@ -83,6 +83,6 @@ clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошиб
 form.clientConfigType.queryStat.label: Статистика запросов
 form.clientConfigType.queryStat.help: Включить/выключить сбор статистики запросов
 
-room_controller.limit_of_rooms_exceeded: 'Количество номеров в номерном фонде превышает максимально разрешенное по тарифу. Доступно по тарифу %availableNumberOfRooms%. Подробнее <a target="_blank" href="%overviewUrl%">информация по номерам</a>'
+room_controller.limit_of_rooms_exceeded: 'Количество номеров в номерном фонде превышает максимально разрешенное по тарифу. Доступно по тарифу: %availableNumberOfRooms%. Подробнее <a target="_blank" href="%overviewUrl%">информация по номерам</a>'
 
 views.payment_systems.invoice.download_button.text: 'Скачать счет'
