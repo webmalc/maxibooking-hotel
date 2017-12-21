@@ -2,32 +2,32 @@
 
 var BILLING_API_SETTINGS = {
     fms: {
-        url: 'https://billing.maxi-booking.com/ru/fms-fms',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/fms-fms',
         id: 'internal_id',
         text: 'name'
     },
     countries: {
-        url: 'https://billing.maxi-booking.com/ru/countries',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/countries',
         id: 'tld',
         text: 'name'
     },
     regions: {
-        url: 'https://billing.maxi-booking.com/ru/regions',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/regions',
         id: 'id',
         text: 'name'
     },
     cities: {
-        url: 'https://billing.maxi-booking.com/ru/cities',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/cities',
         id: 'id',
         text: 'display_name'
     },
     fmsKpp: {
-        url: 'https://billing.maxi-booking.com/ru/fms-kpp',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/fms-kpp',
         id: 'internal_id',
         text: 'name'
     },
     services: {
-        url: 'https://billing.maxi-booking.com/ru/services/',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/services/',
         id: 'id',
         text: 'title'
     }
@@ -520,14 +520,16 @@ var docReadyForms = function () {
 
     (function () {
         $('.mbh-spinner').each(function (index, element) {
-            var min = element.getAttribute('spinner-min') ? element.getAttribute('spinner-min') : 0;
-            var max = element.getAttribute('spinner-max') ? element.getAttribute('spinner-max') : 100000000;
-            var step = element.getAttribute('step') ? element.getAttribute('step') : 1;
+            var min = element.getAttribute('spinner-min') ? parseFloat(element.getAttribute('spinner-min')) : 0;
+            var max = element.getAttribute('spinner-max') ? parseFloat(element.getAttribute('spinner-max')) : 100000000;
+            var step = element.getAttribute('step') ? parseFloat(element.getAttribute('step')) : 1;
+            var decimals = element.getAttribute('decimals') ? parseInt(element.getAttribute('decimals'), 10) : 0;
 
             $(element).TouchSpin({
                 min: min,
                 max: max,
-                step: step
+                step: step,
+                decimals: decimals
             });
         });
     }());

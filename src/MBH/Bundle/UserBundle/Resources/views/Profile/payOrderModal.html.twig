@@ -21,7 +21,10 @@
     {% endfor %}
 </div>
 <script>
-    document.getElementById('bill-button').onclick = function () {
-        window.open('about:blank').document.body.innerHTML += document.getElementById('bill-content').innerHTML;
-    };
+    var billButton = document.getElementById('bill-button');
+    if (billButton) {
+        document.getElementById('bill-button').onclick = function () {
+            window.open('about:blank').document.body.innerHTML += document.getElementById('bill-content').innerHTML;
+        };
+    }
 </script>

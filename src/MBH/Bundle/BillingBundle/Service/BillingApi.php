@@ -59,7 +59,7 @@ class BillingApi
     {
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
-        $this->billingLogin = 'valera228';
+        $this->billingLogin = 'danya';
         $this->locale = $locale;
         $this->serializer = $serializer;
     }
@@ -386,7 +386,6 @@ class BillingApi
         $endpoint = $endpointSettings['endpoint'];
         $url = $this->getBillingUrl($endpoint, null, null, $queryData);
 
-        //TODO: Переделать с возвратом exception-а
         $response = $this->guzzle->get($url, [
             RequestOptions::HEADERS => $this->getAuthorizationHeaderAsArray(),
             RequestOptions::HTTP_ERRORS => false

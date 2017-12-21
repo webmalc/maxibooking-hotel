@@ -527,7 +527,7 @@ mbhpricebundle.form.tariffinheritancetype.nasledovatʹlitsenyotroditelʹskogotar
 mbhpricebundle.form.tariffinheritancetype.nasledovatʹliusloviyaiogranicheniyaotroditelʹskogotarifa: 'Наследовать ли условия и ограничения от родительского тарифа'
 mbhpricebundle.form.tariffinheritancetype.nasledovatʹlikvotynomerovotroditelʹskogotarif: 'Наследовать ли квоты номеров от родительского тариф'
 
-room_cache_controller.limit_of_rooms_exceeded: '%busyDays% количество номеров в продаже превышает максимально разрешенное по тарифу. Доступно по тарифу %availableNumberOfRooms%. Подробнее <a href="%overviewUrl%" target="_blank">информация по номерам</a>'
+room_cache_controller.limit_of_rooms_exceeded: 'Количество номеров в продаже превышает максимально разрешенное по тарифу количество номеров в продаже в следующие даты: %busyDays% . Доступно по тарифу %availableNumberOfRooms%. Подробнее <a href="%overviewUrl%" target="_blank">информация по номерам</a>'
 
 total_rooms_overview_table.available_number_of_rooms: 'Доступно номеров по тарифу'
 total_rooms_overview_table.by_all_hotels: 'По всем отелям'
