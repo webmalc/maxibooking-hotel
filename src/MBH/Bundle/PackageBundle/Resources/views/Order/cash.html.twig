@@ -80,7 +80,7 @@
                                 {% endif %}
                             </td>
                             <td>{{ operations[cash.operation]|trans }}<br>
-                                <small>{{ methods[cash.method]|trans }}</small>
+                                <small>{{ methods[cash.method]|trans({}, 'MBHCashBundle') }}</small>
                             </td>
                             <td>{{ cash.documentDate|date('d.m.Y') }}</td>
                             <td class="text-center">{% if cash.isPaid is empty %}<span

@@ -78,7 +78,7 @@ class DishMenuItemType extends AbstractType
                 'group' => 'restaurant.collectprice'
             ])
             ->add('is_margin', CheckboxType::class, [
-                'label' => 'restaurant.dishmenu.item.form.is_margin.label',
+                'label' => 'restaurant.dishmenu.item.form.is_marging.label',
                 'required' => false,
                 'attr' => [
                     'class' => 'is_margin'

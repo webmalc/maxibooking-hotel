@@ -4,6 +4,7 @@ namespace MBH\Bundle\CashBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -58,8 +59,13 @@ class CashDocumentType extends AbstractType
             $payers[$prefix . '_' . $payer->getId()] = $text;
         }
 
+        $translatedMethods = [];
+        foreach ($options['methods'] as $index => $methodName) {
+            $translatedMethods[$index] = $this->translator->trans($methodName, [], 'MBHCashBundle');
+        }
+
         $builder
-            ->add('payer_select', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('payer_select', InvertChoiceType::class, [
                 'label' => 'form.cashDocumentType.payer',
                 'required' => true,
                 'mapped' => false,
@@ -78,7 +84,7 @@ class CashDocumentType extends AbstractType
             ->add('touristPayer', HiddenType::class, [
                 'required' => false,
             ])
-            ->add('operation', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('operation', InvertChoiceType::class, [
                 'label' => 'form.cashDocumentType.operation_type',
                 'required' => true,
                 'multiple' => false,
@@ -92,13 +98,13 @@ class CashDocumentType extends AbstractType
                 'group' => $options['groupName'],
                 'attr' => ['class' => 'price-spinner'],
             ])
-            ->add('method', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('method', InvertChoiceType::class, [
                 'label' => 'form.cashDocumentType.payment_way',
                 'required' => true,
                 'multiple' => false,
                 'expanded' => true,
                 'group' => $options['groupName'],
-                'choices' => $options['methods']
+                'choices' => $translatedMethods
             ])
             ->add('document_date', DateType::class, [
                 'label' => 'form.cashDocumentType.document_date',

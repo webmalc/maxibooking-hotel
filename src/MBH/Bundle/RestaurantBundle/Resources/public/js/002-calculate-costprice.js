@@ -76,7 +76,7 @@ $(function () {
         },
         select2Activate = function ($selectedField) {
             $selectedField.select2({
-                placeholder: "Сделайте выбор",
+                placeholder: Translator.trans('020-forms.make_choice'),
                 allowClear: false,
                 width: 'resolve'
             });
