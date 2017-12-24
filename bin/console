@@ -23,8 +23,9 @@ if ($debug) {
     Debug::enable();
 }
 
-$client = getenv(AppKernel::CLIENT_VARIABLE) ?: 'default';
+$client = getenv(AppKernel::CLIENT_VARIABLE) ?: AppKernel::DEFAULT_CLIENT;
 $dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/../app/config/database.env');
 $dotenv->load(__DIR__.'/../app/config/clients/'.$client.'.env');
 
 $kernel = new AppKernel($env, $debug, $client);

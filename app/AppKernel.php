@@ -11,6 +11,8 @@ class AppKernel extends Kernel
     const CLIENT_VARIABLE = 'MB_CLIENT';
     /** @var string */
     const CLIENTS_CONFIG_FOLDER = '/app/config/clients';
+    /** @var string */
+    const DEFAULT_CLIENT = 'maxibooking';
 
     /** @var  string */
     protected $client;
@@ -78,7 +80,6 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
             $bundles[] = new Fidry\PsyshBundle\PsyshBundle();
-//            $bundles[] = new MBHTestBundle();
         }
 
         return $bundles;
