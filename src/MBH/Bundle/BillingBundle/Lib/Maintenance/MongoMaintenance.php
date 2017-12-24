@@ -29,8 +29,8 @@ final class MongoMaintenance extends AbstractMaintenance
      */
     public function __construct(ContainerInterface $container,  BillingMongoClient $mongoClient, array $options = [])
     {
-        parent::__construct($container, $options);
         $this->mongoClient = $mongoClient;
+        parent::__construct($container, $options);
     }
 
 
@@ -186,8 +186,8 @@ final class MongoMaintenance extends AbstractMaintenance
     private function createDBUser(string $dbName, string $clientName): void
     {
         $clientConfig = $this->getClientConfig($clientName);
-        $dbUserName = $clientConfig['parameters']['mongodb_login'];
-        $dbPassword = $this->getClientConfig($clientName)['parameters']['mongodb_password'];
+        $dbUserName = $clientConfig['MONGODB_LOGIN'];
+        $dbPassword = $clientConfig['MONGODB_PASSWORD'];
         $this->mongoClient->createDbUser($dbName, $dbUserName, $dbPassword);
     }
 
@@ -212,7 +212,7 @@ final class MongoMaintenance extends AbstractMaintenance
      */
     protected function getCurrentDbName(string $clientName)
     {
-        return $this->getClientConfig($clientName)['parameters']['mongodb_database'];
+        return $this->getClientConfig($clientName)['MONGODB_DATABASE'];
     }
 
     /**
@@ -246,12 +246,12 @@ final class MongoMaintenance extends AbstractMaintenance
             ->setRequired(['host', 'port'])
             ->setDefaults(
                 [
-                    'host' => $this->mainConfig['parameters']['mongodb_host'],
-                    'port' => $this->mainConfig['parameters']['mongodb_port'],
-                    'primary_db_host' => $this->mainConfig['parameters']['mongodb_primary_host'],
-                    'admin_login' => $this->mainConfig['parameters']['mongodb_admin_login'],
-                    'admin_password' => $this->mainConfig['parameters']['mongodb_admin_password'],
-                    'mongo_options' => $this->mainConfig['parameters']['mongodb_options'],
+                    'host' => $this->mongoClient->getHost(),
+                    'port' => 27017,
+                    'primary_db_host' => $this->mongoClient->getHost(),
+                    'admin_login' => $this->mongoClient->getAdminLogin(),
+                    'admin_password' => $this->mongoClient->getAdminPassword(),
+                    'mongo_options' => $this->mongoClient->getOptions(),
                     'sampleDbName' => self::SAMPLE_DB,
                     'admin_database' => 'admin',
                     'copyDbScript' => $this->getContainer()->get('kernel')->getRootDir(

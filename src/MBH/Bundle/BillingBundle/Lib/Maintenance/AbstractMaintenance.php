@@ -6,6 +6,7 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,7 +28,9 @@ abstract class AbstractMaintenance implements MaintenanceInterface
     protected $options;
     /** @var  Filesystem */
     private $fileSystem;
-    /** @var  array */
+    /** @var  array
+     * @deprecated MUST REMOVE cause ENV file as config
+     */
     protected $mainConfig;
 
 
@@ -76,7 +79,23 @@ abstract class AbstractMaintenance implements MaintenanceInterface
     {
         $fileName = $this->getClientConfigFileName($clientName);
 
-        return $this->yamlParse($fileName);
+        return $this->dotEnvParse($fileName);
+    }
+
+    protected function dotEnvParse(string $fileName)
+    {
+        if (!$this->isFileExists($fileName)) {
+            throw new ClientMaintenanceException('Config file not found. '.$fileName);
+        }
+        try {
+            $dotEnv = new Dotenv();
+
+            $result = $dotEnv->parse(file_get_contents($fileName));
+        } catch (ParseException $e) {
+            throw new ClientMaintenanceException($e->getMessage());
+        }
+
+        return $result;
     }
 
     /**
@@ -169,7 +188,7 @@ abstract class AbstractMaintenance implements MaintenanceInterface
 
     protected function getConfigName(string $clientName): string
     {
-        $configName = 'parameters_'.$clientName.'.yml';
+        $configName = $clientName.'.env';
 
         return $configName;
     }
@@ -222,8 +241,7 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         $resolver
             ->setRequired(['backupDir', 'clientConfigDir'])
             ->setDefault('backupDir', self::BACKUP_DIR)
-//            ->setDefault('clientConfigDir', $this->getContainer()->get('kernel')->getClientConfigFolder())
-            ->setDefault('clientConfigDir', 'app/config')
+            ->setDefault('clientConfigDir', $this->getContainer()->get('kernel')->getRootDir().'/..'.\AppKernel::CLIENTS_CONFIG_FOLDER)
 
         ;
     }

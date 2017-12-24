@@ -15,8 +15,7 @@ $request = Request::createFromGlobals();
 $client = $request->server->get(AppKernel::CLIENT_VARIABLE) ?: AppKernel::DEFAULT_CLIENT;
 
 $dotenv = new Dotenv();
-$dotenv->load(__DIR__.'/../app/config/database.env');
-$dotenv->load(__DIR__.'/../app/config/clients/'.$client.'.env');
+$dotenv->load(__DIR__.'/../app/config/database.env', __DIR__.'/../app/config/clients/'.$client.'.env');
 
 $kernel = new AppKernel('prod', false, $client);
 if (PHP_VERSION_ID < 70000) {

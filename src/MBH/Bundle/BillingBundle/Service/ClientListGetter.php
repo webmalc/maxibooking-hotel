@@ -31,20 +31,15 @@ class ClientListGetter
     /**
      * Returns list of clients in system
      * @return array
-     * @throws ClientListGetterException
      */
     public function getClientsList(): array
     {
         $configDir = $this->rootDir.'/..'.\AppKernel::CLIENTS_CONFIG_FOLDER;
         $finder = new Finder();
-        $finder->in($configDir)->files()->name('*.yml');
+        $finder->in($configDir)->files()->name('*.env');
         $clients = [];
         foreach ($finder as $fileInfo) {
-            $yaml = Yaml::parse($fileInfo->getContents());
-            if (!isset($yaml['parameters']['client'])) {
-                throw new ClientListGetterException('No client parameter in config file '.$fileInfo->getPath());
-            }
-            $clients[] = $yaml['parameters']['client'];
+            $clients[] = $fileInfo->getBasename('.env');
         }
 
         return $clients;

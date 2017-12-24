@@ -13,6 +13,12 @@ bin/console mbh:cache:clear --clients=client1,client2 --env=prod
 ``` 
 
 
+dotenv style
+-------
+1. database.env
+2. create default env - maxibooking.env
+
+
 
 
 scripts

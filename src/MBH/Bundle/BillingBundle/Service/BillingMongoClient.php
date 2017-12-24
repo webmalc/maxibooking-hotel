@@ -18,6 +18,23 @@ class BillingMongoClient
     protected $manager;
     /** @var string */
     protected $adminDatabase;
+    /**
+     * @var string
+     */
+    private $adminLogin;
+    /**
+     * @var string
+     */
+    private $adminPassword;
+    /**
+     * @var string
+     */
+    private $host;
+    /**
+     * @var string
+     */
+    private $options;
+
 
     public function __construct(
         string $adminLogin,
@@ -29,7 +46,44 @@ class BillingMongoClient
         $this->adminDatabase = $adminDatabase;
         $this->client = new Client("mongodb://${adminLogin}:${adminPassword}@${host}/${adminDatabase}${options}");
         $this->manager = $this->client->getManager();
+        $this->adminLogin = $adminLogin;
+        $this->adminPassword = $adminPassword;
+        $this->host = $host;
+        $this->options = $options;
     }
+
+    /**
+     * @return string
+     */
+    public function getAdminLogin(): string
+    {
+        return $this->adminLogin;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminPassword(): string
+    {
+        return $this->adminPassword;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOptions(): string
+    {
+        return $this->options;
+    }
+
 
     public function copyDatabase(string $templateDBName, string $newDbName): bool
     {
@@ -67,7 +121,7 @@ class BillingMongoClient
             [
                 "createUser" => $userName,
                 "pwd" => $password,
-                "roles" => ["dbAdmin", "readWrite"]
+                "roles" => ["dbAdmin", "readWrite"],
             ]
 
         );
@@ -80,7 +134,7 @@ class BillingMongoClient
         if ($this->checkUserExists($dbName, $userName)) {
             $command = new Command(
                 [
-                    "dropUser" => $userName
+                    "dropUser" => $userName,
                 ]
             );
             $this->executeMongoCommand($command, $dbName);
@@ -88,7 +142,8 @@ class BillingMongoClient
 
     }
 
-    public function purgeAllDbUsers($dbName) {
+    public function purgeAllDbUsers($dbName)
+    {
         $command = new Command(
             [
                 "dropAllUsersFromDatabase" => 1,
@@ -100,10 +155,12 @@ class BillingMongoClient
     private function checkUserExists(string $dbName, string $userName): bool
     {
         $command = new Command(
-            ["usersInfo" => [
-                "user" => $userName,
-                "db" => $dbName
-            ]]
+            [
+                "usersInfo" => [
+                    "user" => $userName,
+                    "db" => $dbName,
+                ],
+            ]
         );
         $result = $this->executeMongoCommand($command, $dbName);
 
@@ -113,7 +170,7 @@ class BillingMongoClient
 
     private function executeMongoCommand(Command $command, string $dbName = null): Cursor
     {
-        return $this->manager->executeCommand($dbName??$this->adminDatabase, $command);
+        return $this->manager->executeCommand($dbName ?? $this->adminDatabase, $command);
     }
 
 
