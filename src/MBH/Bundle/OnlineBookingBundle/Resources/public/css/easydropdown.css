@@ -109,17 +109,17 @@
 }
 
 .booking-date input {
-    background: url('http://azovsky.ru/images/calendar/calendar.jpg') no-repeat scroll right center / 30px 100%, #f0f0f0 !important;
+    background: url('https://azovsky.ru/images/calendar/calendar.jpg') no-repeat scroll right center / 30px 100%, #f0f0f0 !important;
     padding: 0px 30px 0 10px;
 }
 
 .booking-group select, .booking-number select {
-    background: url('http://azovsky.ru/images/form-arrow.png') no-repeat scroll right center / 30px 100%, #f0f0f0;
+    background: url('https://azovsky.ru/images/form-arrow.png') no-repeat scroll right center / 30px 100%, #f0f0f0;
     padding: 0 30px 0 4px;
 }
 
 .booking-age select {
-    background: url('http://azovsky.ru/images/age-arrow.png') no-repeat scroll right center / 30px 100%;
+    background: url('https://azovsky.ru/images/age-arrow.png') no-repeat scroll right center / 30px 100%;
 }
 
 .booking-child-age {
@@ -130,7 +130,7 @@
 }
 
 .booking-child-age select {
-    background: url('http://azovsky.ru/images/age-arrow.png') no-repeat scroll 100% 10px / 13px 6px, #f0f0f0;
+    background: url('https://azovsky.ru/images/age-arrow.png') no-repeat scroll 100% 10px / 13px 6px, #f0f0f0;
     padding-left: 4px;
 }
 
@@ -217,7 +217,7 @@
     right: 0px;
     top: 0%;
     height: 100%;
-    background: url('http://azovsky.ru/images/form-arrow.png') no-repeat scroll right center / 30px 100%, #f0f0f0;
+    background: url('https://azovsky.ru/images/form-arrow.png') no-repeat scroll right center / 30px 100%, #f0f0f0;
     padding: 0;
 }
 
@@ -262,7 +262,7 @@
 
 .dropdown .selected,
 .dropdown li {
-    background: url('http://azovsky.ru/images/form-arrow.png') no-repeat scroll right center / 30px 100%;
+    background: url('https://azovsky.ru/images/form-arrow.png') no-repeat scroll right center / 30px 100%;
     display: block;
 
     /*	*/
