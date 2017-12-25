@@ -9,7 +9,6 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class RoomStatus
@@ -37,14 +36,37 @@ class RoomStatus extends Base
      * @var string
      * @ODM\Field(type="string")
      * @ODM\Index()
+     * @Gedmo\Translatable
      */
     public $title;
 
     /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
+
+    /**
      * @return string
      */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
 
+    /**
+     * @param string $locale
+     * @return RoomStatus
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
 
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getCode()
     {
         return $this->code;
@@ -83,7 +105,7 @@ class RoomStatus extends Base
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
-
 }

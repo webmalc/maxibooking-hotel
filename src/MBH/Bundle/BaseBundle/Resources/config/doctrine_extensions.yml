@@ -6,4 +6,3 @@ services:
         calls:
             - [ setAnnotationReader, [ '@annotation_reader' ] ]
             - [ setTranslationFallback, [ true ] ]
-            - [ setDefaultLocale, [ en_EN ] ]

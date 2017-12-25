@@ -6,10 +6,13 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\RoomViewType;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Yaml\Yaml;
 
 class RoomViewTypeData extends AbstractFixture implements OrderedFixtureInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Load data fixtures with the passed EntityManager
      *
@@ -26,10 +29,10 @@ class RoomViewTypeData extends AbstractFixture implements OrderedFixtureInterfac
             $roomViewType->setCodeName(RoomViewType::getRoomViewTypes()[$code]);
             if (!$this->isRoomViewTypeExists($existingRoomViews, $roomViewType)) {
                 $roomViewType->setTitle($roomViewTypeData['ru']);
-                $roomViewType->setLocale('ru_RU');
+                $roomViewType->setLocale('ru');
                 $translationRepository
-                    ->translate($roomViewType, 'title', 'ru_RU', $roomViewTypeData['ru'])
-                    ->translate($roomViewType, 'title', 'en_EN', $roomViewTypeData['en']);
+                    ->translate($roomViewType, 'title', 'ru', $roomViewTypeData['ru'])
+                    ->translate($roomViewType, 'title', 'en', $roomViewTypeData['en']);
 
                 $manager->persist($roomViewType);
 
@@ -59,9 +62,13 @@ class RoomViewTypeData extends AbstractFixture implements OrderedFixtureInterfac
         return false;
     }
 
+    /**
+     * @return array
+     */
     private function getRoomViewData()
     {
-        $value = Yaml::parse(file_get_contents(__DIR__.'/../../../BaseBundle/Resources/translations/fixtures_data.yml'));
+        $root = $this->container->get('kernel')->getBundle('MBHBaseBundle')->getPath();
+        $value = Yaml::parse(file_get_contents($root . '/Resources/translations/fixtures_data.yml'));
 
         return $value['room_view_types'];
     }
