@@ -46,7 +46,7 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
             'Late check-out'  => ['name' => 'price.datafixtures.mongodb.servicedata.late_check-out', 'calcType' => 'day_percent', 'enabled' => true],
         ],
         'price.datafixtures.mongodb.servicedata.options' => [
-            'WiFi' => ['name' => 'WiFi', 'calcType' => 'per_night', 'enabled' => false],
+            'WiFi' => ['name' => 'price.datafixtures.mongodb.servicedata.wifi', 'calcType' => 'per_night', 'enabled' => false],
             'Internet' => ['name' => 'price.datafixtures.mongodb.servicedata.internet', 'calcType' => 'per_night', 'enabled' => false],
             'Parking space' => ['name' => 'price.datafixtures.mongodb.servicedata.parking', 'calcType' => 'per_night', 'enabled' => false],
             'Babycot' => ['name' => 'price.datafixtures.mongodb.servicedata.children_bed', 'calcType' => 'per_night', 'enabled' => false],
