@@ -4,7 +4,7 @@ views.actions.new.save: Save
 views.actions.saveButtons.save_and_close: 'Save and close'
 views.actions.saveButtons.save: Save
 views.actions.saveButtons.cancel: Cancel
-views.actions.saveButtons.log: Log
+views.actions.saveButtons.log: Logs
 views.actions.update.save: Save
 views.actions.update.delete: Delete
 views.partials.entityDeleteForm.confirm_delete_quote: 'Confirm deletion'

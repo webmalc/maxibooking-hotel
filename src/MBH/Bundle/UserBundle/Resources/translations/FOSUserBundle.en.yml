@@ -1,5 +1,5 @@
 'Bad credentials': 'Login or password are not correct'
-'User account is disabled.': 'Your profile is blocked'
+'User account is disabled.': 'Your profile is disabled'
 'User account is locked.': 'Your profile is blocked'
 views.profile.layout.profile: Profile
 resetting.request.invalid_username: 'User "%username%" does not exist.'
@@ -15,11 +15,15 @@ index.permissions: Permissions
 index.fio: 'Full name'
 index.status: Status
 index.disabled: Disabled
-record.index.edit: 'Edit record'
-record.index.remove: 'Delete record'
+record.index.edit: Edit
+record.index.remove: Delete
 layout.users: Users
 new.create: 'Add new'
 views.profile.layout.user: User
 views.profile.profile.change_password: 'Password change'
-views.profile.profile.password_error: 'Password should have at least 8 characters including one digit and one upper case letter!'
+views.profile.profile.password_error: 'Password should contain at least 8 characters including one digit and one upper case letter!'
 views.security.login.enter_in: 'Log in'
+security.login.forgot_password: 'Forgot password?'
+resetting.password_already_requested: 'New password for this user has already been requested within 24 hours.'
+resetting.error.enter_captcha: 'CAPTCHA required.'
+resetting.error.user_not_exists: 'User with this login or email "%username%" does not exist.'

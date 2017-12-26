@@ -1,7 +1,7 @@
-form.cashDocumentType.number: Room
+form.cashDocumentType.number: Number
 form.cashDocumentType.sum: Sum
 form.cashDocumentType.payer: Payer
-form.cashDocumentType.organization: Organisation
+form.cashDocumentType.organization: Company
 form.cashDocumentType.tourist: Client
 form.cashDocumentType.article: Article
 form.cashDocumentType.placeholder_fio: 'Full name'
@@ -17,3 +17,83 @@ cashDocumentCriteria.type.order: 'With Order number'
 cashDocumentCriteria.type.other: 'Without Order number'
 mbhcashbundle.service.onecexporter.vidplatezha: 'Payment type'
 mbhcashbundle.view.cash.index.ostatok.po.kasse: 'Cashdesk balance'
+mbhcashbundle.service.onecexporter.sektsiyadokument: 'Document section'
+mbhcashbundle.service.onecexporter.platezhnoe.poruchenie: 'Payment order'
+form.cashDocumentType.platelshikBank1: 'Payer bank'
+mbhcashbundle.service.onecexporter.platelshchikbank: 'Payer bank'
+mbhcashbundle.service.onecexporter.sektsiyaraschschet: 'Account number section'
+form.cashDocumentType.is_send_mail.help: 'Notify about payment document confirmation?'
+mbhcashbundle.service.onecexporter.ot: from
+mbhcashbundle.service.onecexporter.kod: Code
+mbhcashbundle.service.onecexporter.summa: Sum
+mbhcashbundle.view.cash.jsonbuttons.data: Date
+mbhcashbundle.service.onecexporter.fio: 'Full name'
+mbhcashbundle.service.onecexporter.contact: Contact
+mbhcashbundle.service.onecexporter.adres: Address
+form.cashDocumentType.inn: TIN
+mbhcashbundle.view.cash.index.1c_export: Export
+mbhcashbundle.form.searchtype.sortirova: Sorting
+mbhcashbundle.form.searchtype.po: To
+mbhcashbundle.service.onecexporter.nomer: Number
+mbhcashbundle.service.onecexporter.data: Date
+mbhcashbundle.service.onecexporter.schet: Invoice
+mbhcashbundle.service.onecexporter.platelshchik: Payer
+mbhcashbundle.service.onecexporter.platelshchikschet: 'Payer order'
+mbhcashbundle.service.onecexporter.dataspisano: 'Date Written off'
+mbhcashbundle.service.onecexporter.poluchatelbank1: 'Recepient bank'
+mbhcashbundle.service.onecexporter.platelshchikinn: 'Payer TIN'
+mbhcashbundle.service.onecexporter.platelshchikkpp: 'Payer Registry Number'
+mbhcashbundle.service.onecexporter.platelshchikraschschet: 'Payer account number'
+mbhcashbundle.service.onecexporter.platelshchikbik: 'SWIFT / BIC'
+mbhcashbundle.service.onecexporter.platelshchikkorschet: 'IBAN/ABA/IFSC/Routing code'
+mbhcashbundle.service.onecexporter.poluchatelʹschet: 'Recepient  account number'
+mbhcashbundle.service.onecexporter.datapostupilo: 'Date of receipt'
+mbhcashbundle.service.onecexporter.poluchatel: Recepient
+mbhcashbundle.service.onecexporter.poluchatelinn: 'Recepient TIN'
+mbhcashbundle.service.onecexporter.poluchatelkpp: 'Recepient Registry Number'
+mbhcashbundle.service.onecexporter.poluchatelraschschet: 'Recepient account number'
+mbhcashbundle.service.onecexporter.poluchatelbank: 'Recepient bank'
+mbhcashbundle.service.onecexporter.poluchatelbik: 'SWIFT / BIC'
+mbhcashbundle.service.onecexporter.poluchatelkorschet: 'Recepient IBAN/ABA/IFSC/Routing code'
+mbhcashbundle.service.onecexporter.vidoplaty: 'Payment type'
+mbhcashbundle.service.onecexporter.statussostavitelya: 'Status of the Compiler'
+mbhcashbundle.service.onecexporter.pokazatelosnovaniya: 'Base indicator'
+mbhcashbundle.service.onecexporter.pokazatelperioda: 'Period indicator'
+mbhcashbundle.service.onecexporter.pokazatelnomera: 'Number indicator'
+mbhcashbundle.service.onecexporter.pokazateldaty: 'Date indicator'
+mbhcashbundle.service.onecexporter.pokazateltipa: 'Type indicator'
+mbhcashbundle.service.onecexporter.ocherednost: Priority
+mbhcashbundle.service.onecexporter.naznacheniyeplatezha: 'Purpose of payment'
+mbhcashbundle.service.onecexporter.konetsdokumenta: 'End of document'
+mbhcashbundle.service.onecexporter.versiyaformata: 'Format version'
+mbhcashbundle.service.onecexporter.kodirovka: Encoding
+mbhcashbundle.service.onecexporter.otpravitel: Sender
+mbhcashbundle.service.onecexporter.datasozdaniya: 'Creation date'
+mbhcashbundle.service.onecexporter.vremyasozdaniya: 'Creation time'
+mbhcashbundle.service.onecexporter.datanachala: 'Beginning date'
+mbhcashbundle.service.onecexporter.datakontsa: 'Ending date'
+mbhcashbundle.service.onecexporter.raschschet: 'Account number'
+mbhcashbundle.service.onecexporter.nachalnyyostatok: 'Beginning remain'
+mbhcashbundle.service.onecexporter.vsegospisano: 'Total written off'
+mbhcashbundle.service.onecexporter.vsegopostupilo: 'Total received'
+mbhcashbundle.service.onecexporter.konechnyyostatok: 'Total remain'
+mbhcashbundle.service.onecexporter.konetsraschschet: 'Ending IBAN/ABA/IFSC/Routing code'
+mbhcashbundle.service.onecexporter.konetsfayla: 'File ending'
+mbhcashbundle.form.searchtype.vid.platezha: 'Payment type'
+mbhcashbundle.view.cash.index.upload_clearing: 'Export non cash'
+form.cashDocumentType.is_send_mail.label: 'Notify about payment confirmation?'
+controller.cashController.beznal.v.tom.chisle.electronnie: 'Non cash (incl. electronic transactions)'
+cashDocumentSubscriber.document.dlia.pechati.ne.sozdan: 'Document for printing is generated.'
+cashDocumentSubscriber.ne.naidena.organizacia.dlia.etogo.otela: 'Companies from My companies sections are not found for this hotel'
+cashDocumentSubscriber.ne.ustanovlen.bank.polichatela: 'Recepient bank not found'
+cashDocumentSubscriber.ne.ustanovlen.bik.polichatela: 'SWIFT / BIC is not specified'
+cashDocumentSubscriber.ot: from
+cashDocumentSubscriber.schet: Invoice
+cashDocumentSubscriber.ne.ustanovlen.kor.shet: 'IBAN/ABA/IFSC/Routing code is not specified'
+cashDocumentSubscriber.ne.ustanovlen.inn: 'TIN is not specified'
+cashDocumentSubscriber.ne.ustanovlen.kpp: 'Registry Number is not specified'
+cashDocumentSubscriber.ne.ustanovlen.raschetnii.shet: 'Account number not specified'
+cashDocumentSubscriber.ne.ustanovleno.nazvanie.organizacii: 'Organization name is not specified'
+cashDocumentSubscriber.schet.na.oplatu: 'Invoice for payment'
+mbhcashbundle.service.onecexporter.okato: 'OKATO (All-Russian Classifier of Administrative- Territorial Division)'
+mbhcashbundle.service.onecexporter.pokazatelkbk: 'Budgetary classification code'

@@ -1,0 +1,30 @@
+translations.domain: Domain
+translations.key: Key
+translations.grid_caption: 'Translations list'
+translations.cache_removed: 'Cache files have been removed'
+translations.new_translation: 'New translation'
+translations.add_translation: 'Add a translation'
+translations.save: Save
+translations.save_add: 'Save and Add'
+translations.page_title: Translations
+translations.show_hide_columns: 'Show/Hide columns'
+translations.toggle_all_columns: 'Show/Hide all columns'
+translations.save_row: 'Save current row'
+translations.successfully_updated: 'Translations for key #%id% has been successfully updated.'
+translations.successfully_added: 'Translations have been successfully added.'
+translations.successfully_deleted: 'Translations have been successfully deleted.'
+translations.update_failed: 'Failed to update translations for key #%id%.'
+translations.delete_failed: 'Failed to delete translations for key #%id%.'
+translations.back_to_list: Back
+translations.all_translations: All
+translations.no_translations: 'No translations'
+translations.profiler: Profiler
+translations.data_source: 'Data source'
+translations.latest_profiles: 'Latest profiles'
+translations.profile: Profile
+overview.page_title: Overview
+overview.show_grid: 'Translation grid'
+overview.msg_latest_translation: 'Latest translation date: %date% UTC.'
+overview.domain: Domain
+overview.no_stats: 'No data to display.'
+translations.invalidate_cache: 'Clear cache'
