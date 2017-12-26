@@ -2,25 +2,17 @@
 
 namespace MBH\Bundle\ClientBundle\Controller;
 
-use Liip\ImagineBundle\Templating\ImagineExtension;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\ClientBundle\Form\DocumentTemplateType;
-use MBH\Bundle\ClientBundle\Service\TemplateFormatter;
-use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Document\PackageService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bridge\Twig\Extension\AssetExtension;
-use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
-use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Vich\UploaderBundle\Twig\Extension\UploaderExtension;
 
 /**
  * Class DocumentTemplateController

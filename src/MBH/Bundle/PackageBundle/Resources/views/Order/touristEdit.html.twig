@@ -83,7 +83,7 @@
                                     <strong>{{ 'order.touristEdit.document'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
-                                    {% if order.mainTourist and order.mainTourist.documentRelation and order.mainTourist.documentRelation.type %}{% autoescape false %}{{ vegaDocumentTypes[order.mainTourist.documentRelation.type]|capitalize|nl2br|default('-') }}{% endautoescape %}{% endif %}
+                                    {% if order.mainTourist and order.mainTourist.documentRelation and order.mainTourist.documentRelation.type %}{% autoescape false %}{{ documentTypes[order.mainTourist.documentRelation.type]|capitalize|nl2br|default('-') }}{% endautoescape %}{% endif %}
                                 </td>
                             </tr>
                         </tbody>
