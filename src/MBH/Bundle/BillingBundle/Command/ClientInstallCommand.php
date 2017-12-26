@@ -83,7 +83,7 @@ class ClientInstallCommand extends ContainerAwareCommand
             try {
                 $maintenanceManager->rollBack($clientName);
                 $this->addLogMessage($message, Logger::CRITICAL);
-            } catch (ClientMaintenanceException $e) {
+            } catch (\Throwable $e) {
                 $message = $message.' RollBackError. '.$e->getMessage();
                 $this->addLogMessage($message, Logger::CRITICAL);
             }

@@ -1,4 +1,6 @@
 <?php
+
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
 
 mb_internal_encoding('utf-8');
@@ -10,7 +12,10 @@ if (PHP_VERSION_ID < 70000) {
 }
 Request::setTrustedProxies(['127.0.0.1', '127.0.1.1', '176.192.20.30'], Request::HEADER_X_FORWARDED_ALL);
 $request = Request::createFromGlobals();
-$client = $request->server->get(AppKernel::CLIENT_VARIABLE);
+$client = $request->server->get(AppKernel::CLIENT_VARIABLE) ?: AppKernel::DEFAULT_CLIENT;
+
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/../app/config/database.env', __DIR__.'/../app/config/clients/'.$client.'.env');
 
 $kernel = new AppKernel('prod', false, $client);
 if (PHP_VERSION_ID < 70000) {

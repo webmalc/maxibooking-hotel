@@ -33,9 +33,12 @@ mbh-redis:
      - "6378:6379"
 
 mbh-mongo:
-  image: mongo:latest
+  image: mongo:3.4
   container_name: mbh-mongo
   command: mongod --setParameter failIndexKeyTooLong=false
+  environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=maxibooking
   volumes:
       - ./mongodb/mongodb.conf:/etc/mongodb.conf
       - mongo_data:/data/db

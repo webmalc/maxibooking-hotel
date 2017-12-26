@@ -2,7 +2,6 @@
 
 use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
 use MBH\Bundle\BillingBundle\MBHBillingBundle;
-use MBH\Bundle\TestBundle\MBHTestBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
@@ -12,6 +11,8 @@ class AppKernel extends Kernel
     const CLIENT_VARIABLE = 'MB_CLIENT';
     /** @var string */
     const CLIENTS_CONFIG_FOLDER = '/app/config/clients';
+    /** @var string */
+    const DEFAULT_CLIENT = 'maxibooking';
 
     /** @var  string */
     protected $client;
@@ -42,7 +43,7 @@ class AppKernel extends Kernel
             new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
             new Dinhkhanh\MongoDBAclBundle\MongoDBAclBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
-            new JMS\DiExtraBundle\JMSDiExtraBundle($this),
+            new JMS\DiExtraBundle\JMSDiExtraBundle(),
             new JMS\AopBundle\JMSAopBundle(),
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
             new Ornicar\GravatarBundle\OrnicarGravatarBundle(),
@@ -79,7 +80,6 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
             $bundles[] = new Fidry\PsyshBundle\PsyshBundle();
-//            $bundles[] = new MBHTestBundle();
         }
 
         return $bundles;
@@ -92,9 +92,7 @@ class AppKernel extends Kernel
 
     public function getCacheDir()
     {
-        return dirname(
-                __DIR__
-            ).'/var/'.($this->client ? 'clients/'.$this->client.'/' : '').'cache/'.$this->getEnvironment();
+        return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
     }
 
     public function getLogDir()
@@ -105,11 +103,6 @@ class AppKernel extends Kernel
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
-        if ($this->client) {
-            $loader->load($this->getClientConfigFolder().'/parameters_'.$this->client.'.yml');
-        } else {
-            $loader->load($this->getRootDir().'/config/parameters.yml');
-        }
     }
 
     public function getClient(): ?string
@@ -117,8 +110,5 @@ class AppKernel extends Kernel
         return $this->client;
     }
 
-    public function getClientConfigFolder(): string
-    {
-        return $this->getRootDir().'/..'.self::CLIENTS_CONFIG_FOLDER;
-    }
+
 }

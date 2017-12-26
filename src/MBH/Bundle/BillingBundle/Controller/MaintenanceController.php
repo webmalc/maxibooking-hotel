@@ -5,8 +5,13 @@ namespace MBH\Bundle\BillingBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MongoDB\Driver\Command;
+use MongoDB\Driver\Manager;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -88,32 +93,50 @@ class MaintenanceController extends BaseController
      */
     public function testAction()
     {
-        $notifier = $this->get('mbh.notifier');
-        $message = $notifier::createMessage();
-        $message
-            ->setText('Alalala')
-            ->setFrom('online_form')
-            ->setSubject('mailer.order.confirm.user.subject')
-            ->setType('success')
-            ->setCategory('notification')
-            ->setAdditionalData([
-                'prependText' => 'mailer.order.confirm.user.prepend',
-                'appendText' => 'mailer.order.confirm.user.append',
-                'fromText' => 'alala'
-            ])
-            ->setHotel($this->hotel)
-            ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
-            ->setAutohide(false)
-            ->setEnd(new \DateTime('+1 minute'))
-            ->setLink('hide')
-            ->setSignature('mailer.online.user.signature')
-            ->setMessageType(NotificationType::TASK_TYPE)
-        ;
-        $notifier
-            ->setMessage($message)
-            ->notify()
-        ;
+//        $notifier = $this->get('mbh.notifier');
+//        $message = $notifier::createMessage();
+//        $message
+//            ->setText('Alalala')
+//            ->setFrom('online_form')
+//            ->setSubject('mailer.order.confirm.user.subject')
+//            ->setType('success')
+//            ->setCategory('notification')
+//            ->setAdditionalData([
+//                'prependText' => 'mailer.order.confirm.user.prepend',
+//                'appendText' => 'mailer.order.confirm.user.append',
+//                'fromText' => 'alala'
+//            ])
+//            ->setHotel($this->hotel)
+//            ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
+//            ->setAutohide(false)
+//            ->setEnd(new \DateTime('+1 minute'))
+//            ->setLink('hide')
+//            ->setSignature('mailer.online.user.signature')
+//            ->setMessageType(NotificationType::TASK_TYPE)
+//        ;
+//        $notifier
+//            ->setMessage($message)
+//            ->notify()
+//        ;
+//
+//        return new Response('Alla');
+//        $manager = new Manager('mongodb://admin:maxibooking@mbh-mongo:27017/admin');
+//        $command = new Command(['authenticate' => ['admin', 'maxibooking']]);
 
-        return new Response('Alla');
+//        $client = new \MongoDB\Client('mongodb://admin:maxibooking@mbh-mongo:27017/admin');
+//        $manager = $client->getManager();
+
+//        $command = new Command(['copydb' => 1, 'fromdb' => 'maxibooking', 'todb' => 'mbh_maxibooking']);
+
+//        $cursor = $manager->executeCommand('admin', $command);
+//        dump($cursor->toArray());
+//        dump($client->listDatabases());
+        $mongo = $this->get('mbh.billing_mongo_client');
+//        $mongo->copyDatabase('maxibooking', 'mbh_test');
+//        $mongo->dropDatabase('mbh_test');
+        $mongo->createDbUser('mbh_test', 'mbhtest', 'mbhtestpassword');
+
+
+        return new Response('Alala');
     }
 }

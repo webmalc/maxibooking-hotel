@@ -6,7 +6,9 @@ scripts/deploy_to_test.sh
 /scripts/upload
 /web/bundles/
 /app/config/parameters.yml
-/app/config/clients/
+/app/config/clients/*
+!app/config/clients/.gitkeep
+app/config/database.env
 /var/bootstrap.php.cache
 /var/cache/*
 /var/logs/*

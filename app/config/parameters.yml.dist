@@ -9,15 +9,15 @@ parameters:
   mailer_encryption: ssl
 
   #MongoBD
-  mongodb_host: mbh-mongo
-  mongodb_primary_host: mbh-mongo
-  mongodb_port: 27017
-  mongodb_options: ''
-  mongodb_database: mbh
-  mongodb_login: clientName
-  mongodb_password: clientPassword
-  mongodb_admin_login: admin
-  mongodb_admin_password: adminpassword
+  mongodb_host: '%env(MONGODB_HOST)%'
+  mongodb_primary_host: '%env(MONGODB_PRIMARY_HOST)%'
+  mongodb_port: '%env(MONGODB_PORT)%'
+  mongodb_options: '%env(MONGODB_OPTIONS)%'
+  mongodb_database: '%env(MONGODB_DATABASE)%'
+  mongodb_login: '%env(MONGODB_LOGIN)%'
+  mongodb_password: '%env(MONGODB_PASSWORD)%'
+  mongodb_admin_login: '%env(MONGODB_ADMIN_LOGIN)%'
+  mongodb_admin_password: '%env(MONGODB_ADMIN_PASSWORD)%'
 
   #Rabbitmq
   rabbitmq_user: 'rabbitmq'

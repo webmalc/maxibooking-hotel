@@ -1,3 +1,8 @@
+2.5.0
+============
+* Change config for clients. Now use .env files and the same cache.
+* Change install (not fully)
+
 2.4.0
 ============
 * Bug fixes
