@@ -3,7 +3,7 @@ form.clientConfigType.search_group: 'Reservation selection parameters'
 form.clientConfigType.search_windows: 'Use "windows" in search?'
 form.clientConfigType.search_windows_desc: 'Try to fill "windows" while selecting a room'
 form.clientConfigType.sms_notification: 'SMS notification?'
-form.clientConfigType.notice_unpaid: Notification
+form.clientConfigType.notice_unpaid: 'Unpaid notification'
 form.clientConfigType.is_notice_unpaid: 'Send unpaid reservation notification in N days'
 form.clientConfigType.search_dates: 'Additional dates in search results'
 form.clientConfigType.search_dates_desc: 'Number of additional dates when searching for available rooms'
@@ -19,33 +19,67 @@ form.clientPaymentSystemType.robokassa_service: RoboKassa
 form.clientPaymentSystemType.payanyway_service: PayAnyWay
 form.clientPaymentSystemType.moneymail_service: MoneyMail
 form.clientPaymentSystemType.moneymail_shop_id: 'Shop IDP'
-form.clientPaymentSystemType.moneymail_key: Key
+form.clientPaymentSystemType.moneymail_key: 'Shop key'
 form.clientPaymentSystemType.uniteller_shop_id: 'Shop IDP'
-form.clientPaymentSystemType.uniteller_password: Password
-form.clientPaymentSystemType.rbk_eshop_id: eshopId
-form.clientPaymentSystemType.rbk_secret_key: secretKey
-form.clientPaymentSystemType.shop_login: Login
+form.clientPaymentSystemType.uniteller_password: 'Shop password'
+form.clientPaymentSystemType.rbk_eshop_id: 'Eshop ID'
+form.clientPaymentSystemType.rbk_secret_key: SecretKey
+form.clientPaymentSystemType.shop_login: 'Shop login'
 form.clientPaymentSystemType.password_one: 'Password 1'
 form.clientPaymentSystemType.password_two: 'Password 2'
 form.clientPaymentSystemType.extended_account_number: 'Extended account number'
 form.clientPaymentSystemType.data_integrity_code: 'Data integrity check code'
 controller.clientConfig.params_success_save: 'Settings successfully saved'
-form.clientPaymentSystemType.successUrl: 'Successful payment URI'
-form.clientPaymentSystemType.failUrl: 'Unsuccessful payment URI'
-form.clientPaymentSystemType.successUrlDesc: 'Redirection URI for successful payment'
-form.clientPaymentSystemType.failUrlDesc: 'Redirection URI for payment denial'
+form.clientPaymentSystemType.successUrl: 'Successful payment URL'
+form.clientPaymentSystemType.failUrl: 'Unsuccessful payment URL'
+form.clientPaymentSystemType.successUrlDesc: 'Redirection URL for successful payments'
+form.clientPaymentSystemType.failUrlDesc: 'Redirection URL for unsuccessful payments'
 form.clientPaymentSystemType.payment_system_group: 'Payment system'
 form.clientPaymentSystemType.payment_system_group_links: Links
-mailer.notice.unpaid.order.list: 'List of reservations with overdue payment'
+mailer.notice.unpaid.order.list: 'List of reservations with overdue payments'
 form.clientConfigType.search_tariffs: 'Number of rates'
 form.clientConfigType.search_tariffs_desc: 'Default number of rates shown while booking'
 form.clientConfigType.add_start_date: 'Start date'
 mbhclientbundle.form.documenttemplatetype.nazvaniye: Title
 mbhclientbundle.form.documenttemplatetype.shablon: Template
 mbhclientbundle.form.documenttemplatetype.oriyentatsiya: Orientation
-mbhclientbundle.form.documenttemplatetype.organizatsiya: Organisation
+mbhclientbundle.form.documenttemplatetype.organizatsiya: Company
 form.clientConfigType.is_book_without_payer.label: 'Reserve with no payer'
-form.clientConfigType.is_book_without_payer.help: 'Allow adding reservation when payer is not specified'
+form.clientConfigType.is_book_without_payer.help: 'Allow adding reservations when payer is not specified'
 form.clientPaymentSystemType.payment_system_paypal_login: Login
 form.documentTemplateType.hotel: Hotel
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Entry successfully added.'
+form.clientConfigType.time_zone.label: 'Time Zone'
+form.clientConfigType.is_send_mail_at_payment_confirmation.label: 'Send a confirmation about a payment?'
+form.clientConfigType.is_send_mail_at_payment_confirmation.help: 'Send a notification by default after receiving a payment document?'
+form.clientPaymentSystemType.uniteller_is_with_fiscalization.label: 'With payment fiscalization?'
+form.clientPaymentSystemType.key.label: 'Encryption key'
+form.clientPaymentSystemType.shop_id: 'Shop ID'
+form.clientPaymentSystemType.uniteller.taxation_rate_code: 'Code of the tax rate'
+form.clientPaymentSystemType.uniteller.taxation_system_code: 'Code of the taxation system'
+form.clientPaymentSystemType.invoice_document.label: 'Invoice document'
+mailer.notice.unpaid.packages: 'Non paid reservations'
+mailer.notice.unpaid.no.data: 'No data'
+mailer.notice.unpaid.package.list: 'Order #'
+mailer.notice.unpaid.paid: Paid
+mailer.notice.unpaid.phone: 'Phone number'
+mailer.notice.unpaid.full_name: 'Full name'
+mailer.notice.unpaid.need.price: 'Amount to be paid'
+mailer.notice.unpaid.mobile.phone: 'Mobile phone number'
+form.clientConfigType.round.label: 'Reservation price rounding'
+form.clientConfigType.currency_ratio_fix.label: 'Rate of currency exchange'
+form.clientConfigType.round.help: 'Fractional part rounding. If you put 0 there will be no a fractional part in prices'
+form.clientConfigType.begin_date_offset.label: 'Start date offset'
+form.clientConfigType.begin_date_offset.help: 'The offset of the start date from the current date'
+form.clientConfigType.number_of_days_for_payment.label: 'Reservation payment period'
+form.clientConfigType.number_of_days_for_payment.help: 'Period of time after which the resevation payment is considered overdue'
+form.clientConfigType.currency_ratio_fix.help: 'The coefficient by which the price is multiplied by when converted to another currency'
+form.clientConfigType.default_adults_quantity.label: 'Number of adults'
+form.clientConfigType.default_adults_quantity.help: 'Number of adults in the search form'
+form.clientConfigType.default_children_quantity.label: 'Number of children'
+form.clientConfigType.default_children_quantity.help: 'Number of children in the search form'
+clientbundle.controller.documentTemplateController.entry_successfully_eited: 'The entry is successfully edited'
+clientbundle.service.mbhs.sms_not_send: 'SMS message was not sent. Error:'
+form.clientConfigType.queryStat.label: 'Query statistics'
+form.clientConfigType.queryStat.help: 'Turn on/off query statistics collection'
+views.payment_systems.invoice.download_button.text: 'Download invoice'
