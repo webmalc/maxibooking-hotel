@@ -410,6 +410,7 @@ price.datafixtures.mongodb.servicedata.extra_bed: 'Additional bed'
 price.datafixtures.mongodb.servicedata.infant: Infant
 price.datafixtures.mongodb.servicedata.early_check-in: 'Early arrival'
 price.datafixtures.mongodb.servicedata.late_check-out: 'Late departure'
+price.datafixtures.mongodb.servicedata.wifi: WiFi
 price.datafixtures.mongodb.servicedata.internet: Internet
 price.datafixtures.mongodb.servicedata.parking: Parking
 price.datafixtures.mongodb.servicedata.children_bed: 'Childrens bed'

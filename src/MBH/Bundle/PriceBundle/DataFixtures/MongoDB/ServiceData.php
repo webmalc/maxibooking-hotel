@@ -66,6 +66,8 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
         $trans = $this->container->get('translator');
+        $locales = $this->container->getParameter('mbh.languages');
+        $translationRepository = $manager->getRepository('GedmoTranslatable:Translation');
 
         foreach ($hotels as $hotel) {
             foreach (self::SERVICES as $catName => $services) {
@@ -73,16 +75,20 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
                     'system' => true,
                     'fullTitle' => $trans->trans($catName),
                     'hotel.id' => $hotel->getId()
-                ])
-                ;
+                ]);
 
                 if (empty($category)) {
                     $category = new ServiceCategory();
                     $category->setSystem(true)
                         ->setFullTitle($trans->trans($catName))
                         ->setHotel($hotel)
-                        ->setIsEnabled(true)
-                    ;
+                        ->setIsEnabled(true);
+
+                    foreach ($locales as $locale) {
+                        $translationRepository
+                            ->translate($category, 'title', $locale, $trans->trans($catName, [], null, $locale));
+                    }
+
                     $manager->persist($category);
                     $manager->flush();
                 }
@@ -92,8 +98,7 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
                         'system' => true,
                         'code' => $code,
                         'category.id' => $category->getId()
-                    ])
-                    ;
+                    ]);
 
                     if (empty($service)) {
                         $service = new Service();
@@ -111,6 +116,11 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
                         ;
                         $manager->persist($service);
                         $manager->flush();
+
+                        foreach ($locales as $locale) {
+                            $translationRepository
+                                ->translate($service, 'title', $locale, $trans->trans($title, [], null, $locale));
+                        }
                     }
                 }
             }
