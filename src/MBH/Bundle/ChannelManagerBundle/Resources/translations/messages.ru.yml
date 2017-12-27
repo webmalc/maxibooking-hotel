@@ -111,6 +111,7 @@ order_info.expedia.multi_room_booking_info: 'Доп.информация о мн
 expedia_request_data_formatter.max_stay.error: 'В сервисе Expedia.com по умолачнию установлен максимальный срок брони %count% дней'
 expedia_request_data_formatter.min_stay.error: 'В сервисе Expedia.com по умолачнию установлен минимальный срок брони %count% дней'
 package_info.expedia.child_age: Возраст ребенка
+package_info.expedia.promoName: '%dateString% по акции:'
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkIn.help: Задачи, создаваемые при заезде гостя
 form.roomTypeTasks.checkOut: При выезде

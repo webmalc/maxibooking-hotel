@@ -227,15 +227,7 @@ class ExpediaNotificationOrderInfo extends AbstractOrderInfo
      */
     public function getChannelManagerName(): string
     {
-        $prefix = 'A-';
-        $prefixPosition = strpos($this->requestorId, $prefix);
-        $requestorName = $prefixPosition === false ? $this->requestorId : substr($this->requestorId, strlen($prefix));
-
-        if (in_array($requestorName, ['Hotels', 'Venere'])) {
-            return strtolower($requestorName);
-        }
-
-        return 'expedia';
+        return ExpediaOrderInfo::removeChannelManagerNamePrefix($this->requestorId);
     }
 
     public function isOrderModified(): bool

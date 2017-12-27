@@ -129,3 +129,12 @@ channelManager.hundredOneHotels.notification.error.subject: 'Ошибка 101hot
 channelManager.hundredOneHotels.notification.error: 'Ошибка при обработке заказа 101hotels.ru. Информация: %info%'
 channelManager.hundredOneHotels.notification.subject.new: 'Новый заказ 101hotels.ru'
 channelManager.hundredOneHotels.notification.subject.edit: 'Изменен заказ 101hotels.ru'
+
+channelManager.commonCM.notification.subject.new: 'Новый заказ %channelManagerName%'
+channelManager.commonCM.notification.subject.edit: 'Изменен заказ %channelManagerName%'
+channelManager.commonCM.notification.subject.delete: 'Удален заказ %channelManagerName%'
+channelManager.commonCM.notification.new: "Новый заказ %order% из %channelManagerName%. Номера броней: %packages%"
+channelManager.commonCM.notification.edit: "Изменен заказ %order% из %channelManagerName%. Номера броней: %packages%"
+channelManager.commonCM.notification.delete: "Удален заказ %order% из %channelManagerName%. Номера броней: %packages%"
+channelManager.commonCM.notification.error.subject: 'Ошибка %channelManagerName%'
+channelManager.commonCM.notification.error: "Ошибка при обработке заказа %channelManagerName%. Информация: %info%"

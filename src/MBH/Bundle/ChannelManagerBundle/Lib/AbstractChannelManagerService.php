@@ -664,7 +664,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         }
 
-        //TODO: ИСПРАВИТЬ ДЛЯ ПРОДА!!!
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if ($headers) {
@@ -720,9 +719,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     /**
      * @param $service
      * @param null $info
+     * @param array $transParams
      * @return bool|\MBH\Bundle\BaseBundle\Service\Messenger\Notifier
      */
-    public function notifyError($service, $info = null)
+    public function notifyError($service, $info = null, $transParams = [])
     {
         try {
             $notifier = $this->container->get('mbh.notifier');
@@ -737,6 +737,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                     $tr->trans($text, ['%info%' => $info], 'MBHChannelManagerBundle') . '<br>' .
                     $tr->trans('channelManager.booking.notification.bottom', [], 'MBHChannelManagerBundle')
                 )
+                ->setTranslateParams($transParams)
                 ->setFrom('channelmanager')
                 ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
                 ->setType('danger')
@@ -752,7 +753,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
     }
 
-    public function notify(Order $order, $service, $type = 'new')
+    public function notify(Order $order, $service, $type = 'new', $transParams = [])
     {
         try {
             $notifier = $this->container->get('mbh.notifier');
@@ -766,27 +767,28 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 $this->dm->getFilterCollection()->enable('softdeleteable');
             }
 
-            $packages = [];
+            $packageNumbers = [];
             $hotel = null;
 
             foreach ($order->getPackages() as $package) {
                 if ($package->getDeletedAt() && $type != 'delete') {
                     continue;
                 }
-                $packages[] = $package->getNumberWithPrefix();
+                $packageNumbers[] = $package->getNumberWithPrefix();
                 if (!$hotel) {
                     $hotel = $package->getRoomType()->getHotel();
                 }
             }
 
             $message
-                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packages)], 'MBHChannelManagerBundle'))
+                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packageNumbers)], 'MBHChannelManagerBundle'))
                 ->setFrom('channelmanager')
                 ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
                 ->setType($type == 'delete' ? 'danger' : 'info')
                 ->setCategory('notification')
                 ->setAutohide(false)
                 ->setHotel($hotel)
+                ->setTranslateParams($transParams)
                 ->setOrder($order)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))

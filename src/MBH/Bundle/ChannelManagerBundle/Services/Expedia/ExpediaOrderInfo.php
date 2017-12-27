@@ -219,14 +219,6 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     }
 
     /**
-     * @return string
-     */
-    private function getOrderStatus()
-    {
-        return (string)$this->getCommonOrderData('status');
-    }
-
-    /**
      * @return mixed
      */
     public function getPrice()
@@ -399,12 +391,19 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     {
         $sourceString = (string)$this->getCommonOrderData('source');
 
-        if (strpos($sourceString, 'Hotels') !== false) {
-            return 'hotels';
-        } elseif (strpos($sourceString, 'Venere') !== false) {
-            return 'venere';
-        }
+        return self::removeChannelManagerNamePrefix($sourceString);
+    }
 
-        return 'expedia';
+    /**
+     * @param $sourceString
+     * @return string
+     */
+    public static function removeChannelManagerNamePrefix($sourceString)
+    {
+        $prefix = 'A-';
+        $prefixPosition = strpos($sourceString, $prefix);
+        $requestorName = $prefixPosition === false ? $sourceString : substr($sourceString, strlen($prefix));
+
+        return strtolower($requestorName);
     }
 }

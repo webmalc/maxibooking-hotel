@@ -67,7 +67,15 @@ class ExpediaPackageInfo extends AbstractPackageInfo
             foreach ($this->packageDataXMLElement->PerDayRates->PerDayRate as $perDayRate) {
                 /** @var \SimpleXMLElement $perDayRate */
                 $currentDate = \DateTime::createFromFormat('Y-m-d', $perDayRate->attributes()['stayDate']);
-                $price = (float)$perDayRate->attributes()['baseRate'];
+                $baseRate = (float)$perDayRate->attributes()['baseRate'];
+                $extraPersonFee = isset($perDayRate->attributes()['extraPersonFees'])
+                    ? (float)$perDayRate->attributes()['extraPersonFees']
+                    : 0;
+                $hotelServicesFees = isset($perDayRate->attributes()['hotelServiceFees'])
+                    ? (float)$perDayRate->attributes()['hotelServiceFees']
+                    : 0;
+
+                $price = $baseRate + $extraPersonFee + $hotelServicesFees;
                 $this->prices[] = new PackagePrice($currentDate, $price, $this->getTariff());
             }
             $this->isPricesInit = true;
@@ -171,10 +179,20 @@ class ExpediaPackageInfo extends AbstractPackageInfo
 
     public function getNote()
     {
+        foreach ($this->packageDataXMLElement->PerDayRates->PerDayRate as $perDayRate) {
+            if (isset($perDayRate->attributes()['promoName'])) {
+                $promoName = (string)$perDayRate->attributes()['promoName'];
+                $this->addPackageNote($promoName,
+                    $this->translator->trans('package_info.expedia.promoName',
+                        ['%dateString%' => (string)$perDayRate->attributes()['stayDate']]));
+            }
+        }
+
         foreach ($this->packageDataXMLElement->GuestCount->Child as $childNode) {
             /** @var \SimpleXMLElement $childNode */
             $this->addPackageNote($childNode->attributes()['age'], $this->translator->trans('package_info.expedia.child_age'));
         }
+
         return $this->note;
     }
 

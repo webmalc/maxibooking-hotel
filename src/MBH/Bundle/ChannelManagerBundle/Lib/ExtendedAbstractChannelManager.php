@@ -284,7 +284,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         //new
         if ($orderInfo->isHandledAsNew($order) || $isFirstPulling) {
             $result = $orderHandler->createOrder($orderInfo, $order);
-            $this->notify($result, $orderInfo->getChannelManagerName(), 'new');
+            $this->notify($result, 'commonCM', 'new', ['%channelManagerName%' => $orderInfo->getSource()->getFullTitle()]);
         }
 
         //edited
@@ -293,14 +293,14 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             if ($orderInfo->getModifiedDate()) {
                 $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
             }
-            $this->notify($result, $orderInfo->getChannelManagerName(), 'edit');
+            $this->notify($result, 'commonCM', 'edit', ['%channelManagerName%' => $orderInfo->getSource()->getFullTitle()]);
         }
 
         //delete
         if ($orderInfo->isHandledAsCancelled($order)) {
             $this->dm->persist($order);
             $this->dm->flush();
-            $this->notify($order, $orderInfo->getChannelManagerName(), 'delete');
+            $this->notify($result, 'commonCM', 'delete', ['%channelManagerName%' => $orderInfo->getSource()->getFullTitle()]);
             $this->dm->remove($order);
             $this->dm->flush();
             $result = $order;
@@ -309,12 +309,10 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         if (($orderInfo->isOrderModified() || $orderInfo->isOrderCancelled()) && !$order && !$isFirstPulling) {
             if ($orderInfo->isOrderModified()) {
                 $result = $orderHandler->createOrder($orderInfo, $order);
-                $this->notifyError($orderInfo->getChannelManagerName(), $this->getUnexpectedOrderError($result, true));
             }
-
-            if ($orderInfo->isOrderCancelled()) {
-                $this->notifyError($orderInfo->getChannelManagerName(), $this->getUnexpectedOrderError($result, false));
-            }
+            $this->notifyError('commonCM',
+                $this->getUnexpectedOrderError($result, $orderInfo->isOrderModified()),
+                ['%channelManagerName%' => $orderInfo->getSource()->getFullTitle()]);
         }
     }
 

@@ -24,6 +24,24 @@ class Expedia extends ExtendedAbstractChannelManager
         'minGuest' => null,
     ];
 
+    const BOOKING_SOURCES = [
+        'Expedia',
+        'Hotels.com',
+        'Expedia Affiliate Network',
+        'Egencia',
+        'Travelocity',
+        'Orbitz',
+        'Wotif',
+        'Hotwire',
+        'CheapTickets',
+        'ebookers',
+        'MrJet',
+        'Lastminute.au',
+        'American Express Travel',
+        'Amex The Hotel Collection',
+        'Amex FINE HOTELS AND RESORTS'
+    ];
+
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
@@ -65,8 +83,8 @@ class Expedia extends ExtendedAbstractChannelManager
         }
 
         $this->logger->info('Confirmation response for order #'
-            . $orderInfo->getChannelManagerOrderId()
-            . 'is ' . $responseHandler->isResponseCorrect() ? 'correct' : 'incorrect');
+        . $orderInfo->getChannelManagerOrderId()
+        . 'is ' . $responseHandler->isResponseCorrect() ? 'correct' : 'incorrect');
 
     }
 
@@ -95,7 +113,7 @@ class Expedia extends ExtendedAbstractChannelManager
      */
     public function handleNotificationOrder($xmlString)
     {
-        $xmlString  = '<soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+        $xmlString = '<soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
     <soap-env:Header>
         <Interface xmlns="http://www.newtrade.com/expedia/R14/header" Name="ExpediaDirectConnect" Version="4.0">
             <PayloadInfo ExpirationDateTime="2017-12-14T17:06:22+00:00" Location="Body" RequestId="39C070CF4E66E18252EA"
