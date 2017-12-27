@@ -54,6 +54,7 @@ class Expedia extends ExtendedAbstractChannelManager
         $requestData = $this->requestDataFormatter->formatNotifyServiceData($orderInfo, $config);
         $requestInfo = $this->requestFormatter->formatBookingConfirmationRequest($requestData);
 
+        $this->logger->info('Send confirmation request to expedia for order #' . $orderInfo->getChannelManagerOrderId());
         $response = $this->sendRequestAndGetResponse($requestInfo);
         $responseHandler = $this->getResponseHandler($response);
 
@@ -62,6 +63,11 @@ class Expedia extends ExtendedAbstractChannelManager
                 $this->container->get('translator')->trans('services.expedia.booking_notification.error') . ' #'
                 . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName());
         }
+
+        $this->logger->info('Confirmation response for order #'
+            . $orderInfo->getChannelManagerOrderId()
+            . 'is ' . $responseHandler->isResponseCorrect() ? 'correct' : 'incorrect');
+
     }
 
     /**
