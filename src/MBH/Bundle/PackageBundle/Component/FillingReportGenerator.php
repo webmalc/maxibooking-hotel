@@ -99,6 +99,7 @@ class FillingReportGenerator
         $emptyPackageRowData = [
             'packagePrice' => 0,
             'servicePrice' => 0,
+            'averagePriceForRoom' => 0,
             'price' => 0,
             'paid' => 0,
             'paidPercent' => 0,
@@ -379,8 +380,8 @@ class FillingReportGenerator
             $totals['packagesCountPercent'] = isset($totals['packagesCountPercent']) ? $totals['packagesCountPercent'] / $roomTypeCount : 0;
             $totals['paidPercent'] =  isset($totals['paidPercent']) ? $totals['paidPercent'] / $roomTypeCount : 0;
             $totals['maxIncomePercent'] = isset($totals['maxIncomePercent']) ? $totals['maxIncomePercent'] / $roomTypeCount : 0;
-            $totals['numberOfPackagesToRoomFundRelation'] = isset($totals['numberOfPackagesToRoomFundRelation']) ?
-                $totals['numberOfPackagesToRoomFundRelation']
+            $totals['numberOfPackagesToRoomFundRelation'] = isset($totals['numberOfPackagesToRoomFundRelation'])  ?
+                $totals['numberOfPackagesToRoomFundRelation'] / $roomTypeCount
                 : 0;
         }
 
