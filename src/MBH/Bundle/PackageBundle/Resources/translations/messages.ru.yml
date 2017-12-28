@@ -427,6 +427,7 @@ package.document.type_train_tickets: 'Ж/д билеты'
 package.document.type_info: Информация
 package.document.type_letter: Письмо
 package.document.type_other: Прочее
+package.document_type.tourist_age: 'возраст'
 tourist.json.clients_in_black_list: 'Клиент в черном списке'
 tourist.json.client_not_in_black_list: 'Клиент не в черном списке'
 tourist.json.issued_date: выдан
