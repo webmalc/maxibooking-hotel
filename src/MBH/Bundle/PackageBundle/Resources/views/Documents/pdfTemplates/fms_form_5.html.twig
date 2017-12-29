@@ -271,7 +271,7 @@
                                         <div class="title" style="width: 120px">
                                             7. {{ 'package.resources.views.grazhdanstvo'|trans }}
                                         </div>
-                                        <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenship }}</div>
+                                        <div class="area" style="margin-left: 121px">&nbsp{{ get_country(tourist.citizenshipTld).name }}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -644,7 +644,7 @@
                                             <div class="title" style="width: 120px">
                                                 7. {{ 'package.resources.views.grazhdanstvo'|trans }}
                                             </div>
-                                            <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenship }}</div>
+                                            <div class="area" style="margin-left: 121px">&nbsp{{ get_country(tourist.citizenshipTld).name }}</div>
                                         </div>
                                     </td>
                                 </tr>

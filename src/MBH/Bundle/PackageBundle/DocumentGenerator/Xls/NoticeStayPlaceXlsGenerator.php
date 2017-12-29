@@ -64,7 +64,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             throw new \LogicException();
         }
 
-        $documentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        $documentTypes = $this->container->get('mbh.fms_dictionaries')->getDocumentTypes();
         $hotel = $package->getRoomType()->getHotel();
 
         $this->write($tourist->getLastName(), 'W13');
