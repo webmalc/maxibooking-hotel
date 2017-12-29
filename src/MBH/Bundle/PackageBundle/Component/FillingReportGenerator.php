@@ -289,7 +289,7 @@ class FillingReportGenerator
             $totals['paidPercent'] = $totals['paidPercent'] / $columnCount;
             $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $columnCount;
             $totals['hotelRooms'] = $roomTypeRooms * $columnCount;
-            $totals['roomGuests'] = $totals['guests'] / $totals['packagesCount'];
+            $totals['roomGuests'] = $totals['packagesCount'] != 0 ? $totals['guests'] / $totals['packagesCount'] : 0;
 
             $tableDataByRoomType[$roomTypeID] = [
                 'rows' => $rows,

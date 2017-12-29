@@ -48,11 +48,9 @@ class TouristController extends Controller
     public function indexAction()
     {
         $form = $this->createForm(TouristFilterForm::class);
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
 
         return [
             'form' => $form->createView(),
-            'vegaDocumentTypes' => $vegaDocumentTypes
         ];
     }
 

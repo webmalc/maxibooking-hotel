@@ -67,7 +67,7 @@
 
                 <p>
                     {{ 'package.resources.views.document_view'|trans }} <span class="area"
-                                                                              style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</span>
+                                                                              style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ documentTypes[tourist.documentRelation.type] }}{% endif %}</span>
                     {{ 'package.resources.views.series'|trans }} <span class="area"
                                                                        style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</span>
                     {{ 'package.resources.views.number'|trans }} <span class="area"
