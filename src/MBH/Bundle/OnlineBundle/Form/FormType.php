@@ -20,10 +20,12 @@ use MBH\Bundle\OnlineBundle\Document\FormConfig;
 class FormType extends AbstractType
 {
     private $countryType;
+    private $paymentTypes;
 
-    public function __construct($countryType)
+    public function __construct($countryType, $onlineFormParams)
     {
         $this->countryType = $countryType;
+        $this->paymentTypes = $onlineFormParams['payment_types'];
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -173,7 +175,10 @@ class FormType extends AbstractType
                 InvertChoiceType::class,
                 [
                     'group' => 'form.formType.payment',
-                    'choices' => $options['paymentTypes'],
+                    'choices' => $this->paymentTypes,
+                    'choice_label' => function ($value) {
+                        return 'payment_types.' . $value;
+                    },
                     'label' => 'form.formType.payment_type',
                     'multiple' => true,
                     'help' => 'form.formType.reservation_payment_types_with_online_form'
@@ -266,7 +271,6 @@ class FormType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'MBH\Bundle\OnlineBundle\Document\FormConfig',
-                'paymentTypes' => [],
                 'user' => null
             )
         );

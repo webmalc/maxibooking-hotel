@@ -88,7 +88,6 @@ class TouristController extends Controller
             $touristPackages[$tourist->getId()] = $packageRepository->findOneByTourist($tourist, $packageCriteria);
         }
 
-        $vegaDocumentTypes = $this->container->get('mbh.fms_dictionaries')->getDocumentTypes();
         $arrivals = $this->container->getParameter('mbh.package.arrivals');
 
         return [
@@ -96,7 +95,7 @@ class TouristController extends Controller
             'total' => count($tourists),
             'draw' => $request->get('draw'),
             'touristPackages' => $touristPackages,
-            'vegaDocumentTypes' => $vegaDocumentTypes,
+            'documentTypes' => $this->get('mbh.fms_dictionaries')->getDocumentTypes(),
             'arrivals' => $arrivals,
         ];
     }
