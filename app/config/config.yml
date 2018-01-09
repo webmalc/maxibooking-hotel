@@ -239,12 +239,35 @@ lexik_translation:
     storage:
         type: mongodb
 
+#knp_gaufrette:
+#    stream_wrapper: ~
+#    adapters:
+#        images_adapter_localfs:
+#            local:
+#                directory: '%kernel.root_dir%/../web/clients/%client%/upload/images'
+#        images_adapter_amazon_s3:
+#            aws_s3:
+#                service_id: 'mbh.aws_s3.client'
+#                bucket_name: 'mb-client-upload-files'
+#                detect_content_type: true
+#                options:
+#                    directory: 'upload/%client%'
+#
+#    filesystems:
+#        local_filesystem:
+#            adapter:  images_adapter_localfs
+#        aws_s3_filesystem:
+#            adapter: images_adapter_amazon_s3
+
+
 vich_uploader:
     db_driver: mongodb
+    storage:  gaufrette
     mappings:
         upload_image:
             uri_prefix:         '/clients/%client%/upload/images'
-            upload_destination: '%kernel.root_dir%/../web/clients/%client%/upload/images'
+#            upload_destination: aws_s3_filesystem
+            upload_destination: local_filesystem
 
 liip_imagine:
     resolvers:

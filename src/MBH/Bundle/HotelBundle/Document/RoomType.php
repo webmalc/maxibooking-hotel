@@ -157,6 +157,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @var string
+     * @deprecated
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */
