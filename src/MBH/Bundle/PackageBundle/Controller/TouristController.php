@@ -93,6 +93,7 @@ class TouristController extends Controller
             'total' => count($tourists),
             'draw' => $request->get('draw'),
             'touristPackages' => $touristPackages,
+            'documentTypes' => $this->get('mbh.fms_dictionaries')->getDocumentTypes(),
             'arrivals' => $arrivals,
         ];
     }

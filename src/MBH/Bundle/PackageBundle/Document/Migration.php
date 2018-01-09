@@ -15,12 +15,12 @@ class Migration extends Base
 {
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="string")
      */
     protected $series;
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="string")
      */
     protected $number;
 

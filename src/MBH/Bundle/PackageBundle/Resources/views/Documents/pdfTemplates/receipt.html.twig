@@ -91,7 +91,7 @@
 
                 <p>
                     {{ 'package.resources.views.citizenship'|trans }} <span class="area"
-                                                                            style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship }}{% endif %}</span>
+                                                                            style="display: inline-block; width: 300px">{% if tourist %}{{ get_country(tourist.citizenshipTld).name }}{% endif %}</span>
                 </p>
                 <div>
                     <div style="float: left; width: 240px">
