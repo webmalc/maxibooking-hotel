@@ -3,9 +3,16 @@
 namespace MBH\Bundle\BaseBundle\Service\Export;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use ZipStream\ZipStream;
 
 class ZipManager
 {
+    /**
+     * @param $zipFileName
+     * @param $attachedFileName
+     * @return Response
+     */
     public function getAttachedZipResponse($zipFileName, $attachedFileName)
     {
         $response = new Response(file_get_contents($zipFileName));
@@ -16,22 +23,25 @@ class ZipManager
         return $response;
     }
 
-    public function writeToZip($stringsToWriteByNames, $zipName)
+    /**
+     * @param $stringsToWriteByNames
+     * @param $zipName
+     * @return StreamedResponse
+     */
+    public function writeToStreamedResponse($stringsToWriteByNames, $zipName)
     {
-        $zip = new \ZipArchive();
+        $response = new StreamedResponse(function () use ($stringsToWriteByNames, $zipName) {
+            $zipStream = new ZipStream($zipName, [
+                'content_type' => 'application/octet-stream'
+            ]);
 
-        $zip->open($zipName, \ZipArchive::CREATE);
+            foreach ($stringsToWriteByNames as $fileName => $stringToWrite) {
+                $zipStream->addFile($fileName, $stringToWrite);
+            }
 
-        for ($i = 0; $i < $zip->numFiles; $i++) {
-            $zip->deleteIndex($i);
-        }
+            $zipStream->finish();
+        });
 
-        foreach ($stringsToWriteByNames as $fileName => $stringToWrite) {
-            $zip->addFromString($fileName, $stringToWrite);
-        }
-
-        $zip->close();
-
-        return $zip;
+        return $response;
     }
 }

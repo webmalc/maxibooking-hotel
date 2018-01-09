@@ -536,9 +536,10 @@ class Calculation
         /** @var \DateTime $date */
         foreach ($period as $date) {
             $dateString = $date->format('d.m.Y');
+            $dateToCompare = (clone $date)->add(new \DateInterval('P1D'));
             /** @var Order $order */
             foreach ($ordersByIds as $orderId => $order) {
-                if ($order->getCreatedAt() > $date) {
+                if ($order->getCreatedAt() > $dateToCompare) {
                     continue;
                 }
                 /** @var CashDocument[] $cashDocuments */
@@ -549,7 +550,7 @@ class Calculation
                 $cashlessIncoming = 0;
                 $refunds = 0;
                 foreach ($cashDocuments as $cashDocument) {
-                    if ($cashDocument->getPaidDate() <= $date) {
+                    if ($cashDocument->getPaidDate() < $dateToCompare) {
                         if ($cashDocument->getOperation() == 'in') {
                             $cashDocument->getMethod() == 'cash'
                                 ? $cashIncoming += $cashDocument->getTotal()
@@ -624,7 +625,7 @@ class Calculation
             if (isset($packagePricesByDates[$dateString][$package->getId()])) {
                 $datePackagePrice = $packagePricesByDates[$dateString][$package->getId()];
                 $priceOfAllOrderPackages += $datePackagePrice;
-                if (empty($package->getDeletedAt()) || $package->getDeletedAt()->modify('midnight') > $date) {
+                if (empty($package->getDeletedAt()) || $package->getDeletedAt() > $date) {
                     $priceOfNotDeletedPackages += $datePackagePrice;
                 }
             }

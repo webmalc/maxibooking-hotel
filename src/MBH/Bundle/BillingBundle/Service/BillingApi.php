@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Serializer;
 class BillingApi
 {
     const BILLING_QUERY_PARAM_NAME = 'search';
-    const BILLING_HOST = 'http://billing.maxibooking.ru';
+    const BILLING_HOST = 'https://billing.maxi-booking.com';
     const RESULT_API_URL = '/result';
     const CLIENT_PROPERTY_URL = '/property';
     const FMS_ORGANS_ENDPOINT_SETTINGS = ['endpoint' => 'fms-fms', 'model' => AuthorityOrgan::class, 'returnArray' => false];

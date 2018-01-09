@@ -1816,4 +1816,25 @@ class Package extends Base implements \JsonSerializable
 
         return $this;
     }
+
+    /**
+     * @return array]
+     */
+    public function getJsonSerialized()
+    {
+        $services = array_map(function (PackageService $packageService) {
+            return $packageService->getService()->getJsonSerialized();
+        }, $this->getServices()->toArray());
+
+        return [
+            'id' => $this->getId(),
+            'roomTypeId' => $this->getRoomType()->getId(),
+            'tariffId' => $this->getTariff()->getId(),
+            'adults' => $this->getAdults(),
+            'children' => $this->getChildren(),
+            'begin' => $this->getBegin()->format('d.m.Y'),
+            'end' => $this->getEnd()->format('d.m.Y'),
+            'services' => $services
+        ];
+    }
 }

@@ -226,6 +226,16 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
         $relations['vega_travel_passport'] = FMSDictionaries::TRAVEL_PASSPORT;
         $relations['vega_passport_foreigner'] = 136359;
         $relations['vega_residence'] = 135709;
+        $relations['vega_national_id_republic_of_kazakhstan\''] = 139384;
+        $relations['vega_national_id_republic_of_kazakhstan'] = 139384;
+        $relations['vega_birth_certificate'] = 102974;
+        $relations['vega_st_of_birth_foreigner'] = 103014;
+        $relations['vega_refugee_certificate'] = 103000;
+        $relations['vega_travel_passport biometrics'] = 136336;
+        $relations['vega_non_citizen_passport'] = 102969;
+        $relations['vega_visa']= 139356;
+        $relations['vega_military_id_soldier'] = 102990;
+        $relations['vega_seaman'] = 103021;
 
         return $relations;
     }

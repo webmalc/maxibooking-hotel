@@ -534,12 +534,15 @@ class ApiController extends Controller
      */
     public function createPackagesAction(Request $request)
     {
+//        $this->addAccessControlAllowOriginHeaders();
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $requestJson = json_decode($request->getContent());
 
         //Create packages
-        $order = $this->createPackages($requestJson, ($requestJson->paymentType != 'in_hotel' || $requestJson->paymentType != 'by_receipt'));
+        $isWithCashCashDocument = $requestJson->paymentType != 'in_hotel'
+            || (substr($requestJson->paymentType, 0, strlen('by_receipt')) === 'by_receipt');
+        $order = $this->createPackages($requestJson, $isWithCashCashDocument);
 
         if (empty($order)) {
             return new JsonResponse(
@@ -552,7 +555,7 @@ class ApiController extends Controller
             );
         }
         $packages = iterator_to_array($order->getPackages());
-//        $this->sendNotifications($order);
+        $this->sendNotifications($order);
 
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
@@ -602,8 +605,15 @@ class ApiController extends Controller
                 ]
             );
         }
+        $this->dm->refresh($order->getFirstPackage());
 
-        return new JsonResponse(['success' => true, 'message' => $message, 'form' => $form]);
+        return new JsonResponse(['success' => true,
+            'message' => $message,
+            'form' => $form,
+            'order' => $order->getJsonSerialized(),
+            'invoiceUrl' => $this->generateUrl('generate_invoice',
+                ['id' => $order->getFirstPackage()->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL)]);
     }
 
     /**
