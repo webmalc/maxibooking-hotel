@@ -48,11 +48,9 @@ class TouristController extends Controller
     public function indexAction()
     {
         $form = $this->createForm(TouristFilterForm::class);
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
 
         return [
             'form' => $form->createView(),
-            'vegaDocumentTypes' => $vegaDocumentTypes
         ];
     }
 
@@ -88,7 +86,6 @@ class TouristController extends Controller
             $touristPackages[$tourist->getId()] = $packageRepository->findOneByTourist($tourist, $packageCriteria);
         }
 
-        $vegaDocumentTypes = $this->container->get('mbh.fms_dictionaries')->getDocumentTypes();
         $arrivals = $this->container->getParameter('mbh.package.arrivals');
 
         return [
@@ -96,7 +93,6 @@ class TouristController extends Controller
             'total' => count($tourists),
             'draw' => $request->get('draw'),
             'touristPackages' => $touristPackages,
-            'vegaDocumentTypes' => $vegaDocumentTypes,
             'arrivals' => $arrivals,
         ];
     }

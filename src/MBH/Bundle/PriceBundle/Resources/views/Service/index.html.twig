@@ -63,7 +63,7 @@
                                         <span class="hidden">{{ entry.price }}</span>
                                         <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="{{ 'mbhpricebundle.view.service.index.service_not_used'|trans }}" value="{{ entry.price }}">
                                     </td>
-                                    <td class="text-center">{{ config.calcTypes[entry.calcType]|default('mbhpricebundle.view.service.index.thing'|trans) }}</td>
+                                    <td class="text-center">{{ config.calcTypes[entry.calcType]|default('mbhpricebundle.view.service.index.thing')|trans }}</td>
                                     <td class="text-center">{% if entry.date %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                                     <td class="text-center">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">

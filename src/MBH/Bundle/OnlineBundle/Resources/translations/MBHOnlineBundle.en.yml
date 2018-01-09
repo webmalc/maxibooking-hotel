@@ -11,15 +11,15 @@ views.api.form.online_reservation_system: 'online booking system'
 views.api.getPaymentType.dates: 'Date:'
 views.api.getPaymentType.days_and_nights: 'Days/nights:'
 views.api.getPaymentType.nomerov: 'Rooms total:'
-views.api.getPaymentType.order_result: 'Booking for:'
+views.api.getPaymentType.order_result: 'Sum:'
 views.api.getPaymentType.nomera: 'Rooms:'
 views.api.getPaymentType.services: 'Services:'
 views.api.getPaymentType.tariff: 'Rate:'
 views.api.getPaymentType.choose_payment_way: 'Select payment method'
-views.api.getPaymentType.payment_fine: 'To pay on arrival at the reception desk (no fine for cancellation).'
+views.api.getPaymentType.payment_fine: 'Pay on arrival at the reception desk (no fine for cancellation).'
 views.api.getPaymentType.reservation_guarantee_whole_sum: 'Guaranteed availability, full prepayment before arrival'
 views.api.getPaymentType.reservation_guarantee_first_night: 'Guaranteed availability, prepayment for the first night before arrival'
-views.api.getPaymentType.choose_other_rooms: 'Select another room'
+views.api.getPaymentType.choose_other_rooms: 'Select other rooms'
 views.api.getPaymentType.reservate: Book
 views.api.getPaymentType.reservation_error_try_again: 'An error occured while booking. Please refresh a page and try again.'
 views.api.getResultsTable.hotel_rooms_for: 'Rooms for'
@@ -43,13 +43,13 @@ views.api.getResultsTable.result: 'Total:'
 views.api.getResultsTable.continue: Next
 views.api.getResultsTable.nothing_found_for_your_query: 'No results found.'
 views.api.getUserForm.enter_data_to_continue: 'Fill required fields to proceed'
-views.api.getUserForm.surname: Surname
-views.api.getUserForm.placeholder_surname: Surname
-views.api.getUserForm.name: Name
+views.api.getUserForm.surname: 'Last Name'
+views.api.getUserForm.placeholder_surname: Smith
+views.api.getUserForm.name: 'First Name'
 views.api.getUserForm.phone: 'Phone number'
-views.api.getUserForm.email: E-mail
+views.api.getUserForm.email: Email
 views.api.getUserForm.placeholder_email: mail@example.com
-views.api.getUserForm.birth_date: 'Date of birth'
+views.api.getUserForm.birth_date: 'Birth Date'
 views.api.getUserForm.check_in_time: 'Check in time'
 views.api.getUserForm.check_out_time: 'Check out time'
 views.api.getUserForm.comment: Comment
@@ -58,26 +58,26 @@ views.api.getUserForm.choose_other_rooms: 'Select other rooms'
 views.api.getUserForm.continue: Next
 views.api.getUserForm.reservation_error: 'An error occured during reservation process.'
 views.api.getUserForm.refresh_page_and_try_again: 'Please refresh the page and try again.'
-views.api.notification.new_reservations_made_with_online_form: 'New reservations from web form.'
+views.api.notification.new_reservations_made_with_online_form: 'New reservations from the web form.'
 views.api.notification.hotel: Hotel
 views.api.notification.dates: Date
 views.api.notification.room_type: 'Room type'
 views.api.notification.client: 'Client:'
-views.api.notification.phone: 'Phone number:'
+views.api.notification.phone: 'Phone Number'
 views.api.make_payment_for_order_id: 'Total payment: %total%. Booking number: %order_id%'
 views.api.tariffs.base_tariff: '(basic rate)'
 views.api.tariffs.tariffs_and_special_offers: 'Rates and special offers'
-views.form.index.settings_in_quotes: settings
+views.form.index.settings_in_quotes: Settings
 views.form.index.settings: Settings
-views.form.index.site_embed_code: 'Website embed code'
+views.form.index.site_embed_code: 'Embed code'
 views.form.index.settings_required: 'Please fill all the required settings'
-views.form.index.site_embed_form_code: 'Website form embed code'
-views.form.index.to_form_place: 'To place form:'
-views.form.index.before_closing_tag: 'Before closing tag'
-views.form.index.search_page_embed_code: 'Page search embed code:'
-views.form.index.to_results_place: 'To place results:'
+views.form.index.site_embed_form_code: 'Embed code for a website'
+views.form.index.to_form_place: 'Place where the form must be:'
+views.form.index.before_closing_tag: 'Place before closing tag'
+views.form.index.search_page_embed_code: 'Search page embed code:'
+views.form.index.to_results_place: 'Place where results must be:'
 views.form.layout.online_form: 'Online module'
-views.form.period_is_not_filled: 'Period is empty'
+views.form.period_is_not_filled: 'Check in and check out dates are not selected!'
 views.api.getPaymentType.reservation_guarantee_half: 'Guaranteed availability, prepayment of 50% total sum before arrival'
 views.api.getResultsTable.facilities: Facilities
 views.form.index.list: List
@@ -85,6 +85,13 @@ views.form.index.edit: Edit
 views.form.index.new: New
 views.form.layout.online_polls: Ratings
 views.form.layout.invite: 'Visa invitation'
-online_form.notification: 'New reservations from web form'
+online_form.notification: 'New reservations from the web form'
 views.api.form.children_ages.label: 'Children age'
-views.api.getResultsTable.room_cache_count: Number
+views.api.getResultsTable.room_cache_count: Available
+views.api.getPaymentType.payment_systems.label: 'Payment System'
+views.api.getUserForm.patronymic: 'Middle Name'
+views.api.getUserForm.inn: KIP
+views.api.get_user_form.default_patronymic: James
+views.api.getUserForm.document_number: 'ID/Passport number'
+views.api.getUserForm.personal_data_policies: 'Confirm that I have read <a target="_blank" href="url">Data Policy/a> and agree with the terms.'
+views.form.index.edit_templates: 'Template tweaking'

@@ -48,7 +48,7 @@
                                 <strong>{{ 'order.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong>
                             </td>
                             <td>
-                                <span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}
+                                <span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title|trans }}
                                     <small>
                                         {{ entity.channelManagerType ? '(' ~ entity.channelManagerType ~ ' #' ~ entity.channelManagerId    ~ ' - ' ~ entity.channelManagerStatus ~')' }}
                                         {{ entity.onlinePaymentType ? '(' ~ online_payments[entity.onlinePaymentType] ~')' }}
