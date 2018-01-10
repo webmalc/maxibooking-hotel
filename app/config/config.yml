@@ -239,28 +239,101 @@ lexik_translation:
     storage:
         type: mongodb
 
+#images
+knp_gaufrette:
+    stream_wrapper: ~
+    adapters:
+        images_adapter_amazon_s3:
+            aws_s3:
+                service_id: 'mbh.aws_s3.client'
+                bucket_name: 'mb-client-upload-files'
+                detect_content_type: true
+                options:
+                    directory: 'upload/%client%'
+        protected_adapter_amazon_s3:
+            aws_s3:
+                service_id: 'mbh.aws_s3.client'
+                bucket_name: 'mb-client-upload-files'
+                detect_content_type: true
+                options:
+                    directory: 'protectedUpload/%client%'
+
+    filesystems:
+        aws_s3_filesystem:
+            adapter: images_adapter_amazon_s3
+        protected_aws_s3_filesystem:
+            adapter: protected_adapter_amazon_s3
+
 vich_uploader:
     db_driver: mongodb
+    storage:  gaufrette
     mappings:
         upload_image:
-            uri_prefix:         '/clients/%client%/upload/images'
-            upload_destination: '%kernel.root_dir%/../web/clients/%client%/upload/images'
+            namer: vich_uploader.namer_uniqid
+            upload_destination: aws_s3_filesystem
+            uri_prefix:         ''
+        protected_upload:
+            namer: vich_uploader.namer_uniqid
+            upload_destination: protected_aws_s3_filesystem
+            uri_prefix:         ''
+#Не работает с vichUploader
+oneup_flysystem:
+    adapters:
+        aws_s3_adapter:
+            awss3v3:
+                client: mbh.aws_s3.client
+                bucket: 'mb-client-upload-files'
+                prefix: 'upload/%client%'
+        aws_s3_cache_adapter:
+            awss3v3:
+                client: mbh.aws_s3.client
+                bucket: 'mb-client-upload-files'
+                prefix: ''
 
-liip_imagine:
-    resolvers:
-        default:
-            web_path:
-                cache_prefix: "clients/%client%/media/cache"
+    filesystems:
+        aws_filesystem:
+            adapter: aws_s3_adapter
+            mount:  aws_filesystem
+        aws_filesystem_cache:
+            adapter: aws_s3_cache_adapter
+            mount:  aws_filesystem_cache
+
+
+
+#liip_imagine:
+#    resolvers:
+#        default:
+#            web_path:
+#                cache_prefix: "clients/%client%/media/cache"
 
     #dont touch data_root. Must be point to root web in our case
+#    loaders:
+#        default:
+#            filesystem:
+#                data_root: "%kernel.root_dir%/../web"
+#    loaders:
+#        protected:
+#            filesystem:
+#                data_root: "%kernel.root_dir%/../protectedUpload"
+liip_imagine:
     loaders:
-        default:
-            filesystem:
-                data_root: "%kernel.root_dir%/../web"
-    loaders:
-        protected:
-            filesystem:
-                data_root: "%kernel.root_dir%/../protectedUpload"
+        aws_loader:
+            flysystem:
+                filesystem_service: oneup_flysystem.aws_filesystem_filesystem
+    data_loader: aws_loader
+
+    resolvers:
+        flysystem_cache:
+            flysystem:
+                filesystem_service: oneup_flysystem.aws_filesystem_cache_filesystem
+                cache_prefix: "cache/%client%"
+                root_url: "https://s3-eu-west-1.amazonaws.com/mb-client-upload-files"
+#        default:
+#            web_path:
+#                web_root:     "%kernel.root_dir%/../web"
+#                cache_prefix: "media/cache"
+    cache: flysystem_cache
+
 
     filter_sets:
         cache: ~

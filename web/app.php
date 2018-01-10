@@ -10,10 +10,11 @@ $loader = require __DIR__.'/../app/autoload.php';
 if (PHP_VERSION_ID < 70000) {
     include_once __DIR__.'/../var/bootstrap.php.cache';
 }
-Request::setTrustedProxies(['127.0.0.1', '127.0.1.1', '176.192.20.30'], Request::HEADER_X_FORWARDED_ALL);
+Request::setTrustedProxies(['127.0.0.1', '127.0.1.1'], Request::HEADER_X_FORWARDED_ALL);
 $request = Request::createFromGlobals();
-$client = $request->server->get(AppKernel::CLIENT_VARIABLE) ?: AppKernel::DEFAULT_CLIENT;
 
+//Note! Default client comes  here from NGINX config
+$client = $request->server->get(AppKernel::CLIENT_VARIABLE);
 $dotenv = new Dotenv();
 $dotenv->load(__DIR__.'/../app/config/database.env', __DIR__.'/../app/config/clients/'.$client.'.env');
 

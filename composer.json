@@ -59,9 +59,13 @@
     "willdurand/js-translation-bundle": "^2.6",
     "vich/uploader-bundle": "^1.4",
     "theofidry/psysh-bundle": "3.0.0",
-    "maennchen/zipstream-php": "^0.5.0",
     "mongodb/mongodb": "^1.1",
-    "symfony/dotenv": "^4.0"
+    "symfony/dotenv": "^4.0",
+    "maennchen/zipstream-php": "^0.5.1",
+    "aws/aws-sdk-php": "^3.48",
+    "oneup/flysystem-bundle": "@stable",
+    "league/flysystem-aws-s3-v3": "^1.0",
+    "knplabs/knp-gaufrette-bundle": "~0.5"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
