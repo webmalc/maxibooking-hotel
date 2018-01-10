@@ -400,7 +400,7 @@ chessboard_manager.size_slider.title: Scale
 chessboard_manager.room_type.title: 'Room type'
 chessboard_manager.housing.title: Wing
 chessboard_manager.floor.title: Floor
-chessboard_manager.filter.button.text: Select
+chessboard_manager.filter.button.text: Apply
 chessboard_manager.without_accommodation.tile.text: 'No accommodation'
 package.accommodation.rooms: Rooms
 package.accommodation.room_type: 'Room type'

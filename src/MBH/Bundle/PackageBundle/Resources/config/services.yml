@@ -222,3 +222,9 @@ services:
         arguments: ['@mbh.fms_dictionaries']
         tags:
             - {name: form.type}
+
+    mbh.unwelcome_type:
+        class: MBH\Bundle\PackageBundle\Form\UnwelcomeType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}
