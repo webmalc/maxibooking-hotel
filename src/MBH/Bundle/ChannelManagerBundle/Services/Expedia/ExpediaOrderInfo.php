@@ -312,21 +312,6 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     }
 
     /**
-     * Возвращает значение, необходимое для подтверждения получения брони с сервера
-     * @return null|string
-     */
-    public function getConfirmNumber()
-    {
-        $confirmNumberElement = $this->orderDataXMLElement->xpath("/Booking/@confirmNumber");
-        if ($confirmNumberElement) {
-
-            return (string)$confirmNumberElement[0];
-        }
-
-        return self::DEFAULT_CONFIRM_NUMBER;
-    }
-
-    /**
      * @return string
      */
     public function getNote(): string

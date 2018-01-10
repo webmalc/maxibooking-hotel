@@ -345,10 +345,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
         $confirmTime = new \DateTime('now', new \DateTimeZone("UTC"));
         $confirmNumberElement->addAttribute('confirmTime', $confirmTime->format(self::CONFIRMATION_DATE_FORMAT_STRING));
-
-        if ($orderInfo->getConfirmNumber()) {
-            $confirmNumberElement->addAttribute('confirmNumber', $orderInfo->getConfirmNumber());
-        }
+        $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(['channelManagerId' => $orderInfo->getChannelManagerOrderId()]);
+        $confirmNumberElement->addAttribute('confirmNumber', $order->getId());
 
         return $this->formatTemplateRequest([$confirmNumbersElement], $config,
             'BookingConfirmRQ', self::CONFIRM_REQUEST_NAMESPACE);
