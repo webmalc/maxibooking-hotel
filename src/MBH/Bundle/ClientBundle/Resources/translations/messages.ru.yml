@@ -88,6 +88,30 @@ form.clientConfigType.queryStat.help: Включить/выключить сбо
 
 room_controller.limit_of_rooms_exceeded: 'Количество номеров в номерном фонде превышает максимально разрешенное по тарифу. Доступно по тарифу: %availableNumberOfRooms%. Подробнее <a target="_blank" href="%overviewUrl%">информация по номерам</a>'
 
+controller.color_settings_action.config_successful_saved: Настройки успешно сохранены
+controller.color_settings_action.config_successful_reset: Установлены стандартные настройки
+form.colors_type.group.packages: Брони
+form.colors_type.success_color.label: Оплаченная
+form.colors_type.success_color.help: Цвет оплаченной брони
+form.colors_type.success_additional_color.label: Оплаченная(доп.)
+form.colors_type.success_additional_color.help: Дополнительный цвет оплаченной брони
+form.colors_type.warning_color.label: Частично оплаченная
+form.colors_type.warning_color.help: Цвет частино оплаченной брони
+form.colors_type.warning_additional_color.label: Частично оплаченная(доп.)
+form.colors_type.warning_additional_color.help: Дополнительный цвет частично оплаченной брони
+form.colors_type.danger_color.label: Неоплаченная
+form.colors_type.danger_color.help: Цвет неоплаченной брони
+form.colors_type.danger_additional_color.label: Неоплаченная(доп.)
+form.colors_type.danger_additional_color.help: Дополнительный цвет неоплаченной брони
+form.colors_type.group.chessboard: Шахматка
+form.colors_type.left_rooms_positive.label: Положительное кол-во
+form.colors_type.left_rooms_positive.help: Цвет ячеек таблицы, отображающих положительное число оставшихся номеров
+form.colors_type.left_rooms_zero.label: Нулевое кол-во
+form.colors_type.left_rooms_zero.help: Цвет ячеек таблицы, отображающих нулевое количество оставшихся номеров
+form.colors_type.left_rooms_negative.label: Отрицательное кол-во
+form.colors_type.left_rooms_negative.help: Цвет ячеек таблицы, отображающих отрицательное количество оставшихся номеров
+form.colors_type.unplaced_color.label: Неразмещенные
+form.colors_type.unplaced_color.help: Цвет ячеек таблицы, отображающих количество неразмещенных броней за день
 views.payment_systems.invoice.download_button.text: 'Скачать счет'
 mbh.payment_systems.by_invoice: 'По счету'
 views.uniteller.pay_button.text: 'Оплатить %amount% %currency%'
