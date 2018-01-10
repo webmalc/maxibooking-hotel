@@ -12,6 +12,7 @@ use MBH\Bundle\ClientBundle\Document\Paypal;
 use MBH\Bundle\ClientBundle\Document\Rbk;
 use MBH\Bundle\ClientBundle\Document\RNKB;
 use MBH\Bundle\ClientBundle\Document\Robokassa;
+use MBH\Bundle\ClientBundle\Document\Stripe;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
@@ -238,6 +239,12 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                 case 'invoice':
                     $invoice = (new Invoice())->setInvoiceDocument($form->get('invoiceDocument')->getData());
                     $config->setInvoice($invoice);
+                    break;
+                case 'stripe':
+                    $stripe = (new Stripe())
+                        ->setPublishableToken($form->get('stripePubToken')->getData())
+                        ->setSecretKey($form->get('stripeSecretKey')->getData());
+                    $config->setStripe($stripe);
                     break;
                 default:
                     throw new Exception('Incorrect name of payment system!');

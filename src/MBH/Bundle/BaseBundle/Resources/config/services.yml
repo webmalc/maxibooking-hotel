@@ -23,6 +23,12 @@ services:
       tags:
         - { name: validator.constraint_validator, alias: doctrine_odm.mongodb.unique }
 
+    mbh.base_on_request_listener:
+        class: MBH\Bundle\BaseBundle\EventListener\OnRequest
+        arguments: ['@service_container']
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
     mbh.base_on_controller_listener:
         class: MBH\Bundle\BaseBundle\EventListener\OnController
         arguments: ['@service_container']
@@ -303,13 +309,15 @@ services:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.image_migrate.log", 200]
 
-    mbh.export_data_handler:
-        class: MBH\Bundle\BaseBundle\Service\Export\ExportDataHandler
+    mbh.raw_mongo_data_handler:
+        class: MBH\Bundle\BaseBundle\Service\Export\RawMongoDataHandler
+        arguments:
+            - '@mbh.helper'
 
     mbh.entities_exporter:
         class: MBH\Bundle\BaseBundle\Service\Export\CSVExporter
         arguments:
-            - '@mbh.export_data_handler'
+            - '@mbh.raw_mongo_data_handler'
             - '@translator'
 
     mbh.zip_manager:
@@ -361,3 +369,7 @@ services:
                   key: '%s3_id%'
                   secret: '%s3_secret%'
 
+
+
+    mbh.form_data_checker:
+        class: MBH\Bundle\BaseBundle\Service\FormDataHandler

@@ -49,6 +49,16 @@ price.views.overview.layout.small_title: 'Номера и цены'
 price.views.overview.index.small_title: обзор
 price.views.overview.index.date: Даты
 price.views.overview.index.type: 'Тип номера'
+price.views.overview.index.rate: 'Тариф'
+price.views.overview.index.tab_name: 'Обзор'
+
+price.views.overview.limits.tab_name: Лимиты
+
+#/ tariff filter
+tariff.filter.status: Статус тарифа
+tariff.filter.state: Показывать выключенные?
+
+#/ tariff-table
 price.views.overview.index.rate: Тариф
 tariff.filter.status: 'Статус тарифа'
 tariff.filter.state: 'Показывать выключенные?'

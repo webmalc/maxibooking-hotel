@@ -5,7 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Criteria\TouristQueryCriteria;
-use MBH\Bundle\PackageBundle\Models\Billing\Country;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 
 class TouristRepository extends DocumentRepository
 {

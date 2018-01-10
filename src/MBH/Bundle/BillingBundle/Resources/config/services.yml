@@ -79,3 +79,12 @@ services:
     mbh.billing_mongo_client:
         class: MBH\Bundle\BillingBundle\Service\BillingMongoClient
         arguments: ["%mongodb_admin_login%","%mongodb_admin_password%","%mongodb_host%","admin","%mongodb_options%"]
+
+
+    mbh.billing_response_handler:
+        class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler
+        arguments: ['%support%', '@mbh.billing_payer_form_handler']
+
+    mbh.billing_payer_form_handler:
+        class: MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler
+        shared: false

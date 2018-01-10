@@ -37,6 +37,9 @@ form.clientPaymentSystemType.uniteller.taxation_system_code: Код систем
 form.clientPaymentSystemType.rbk_eshop_id: ID магазина (eshopId)
 form.clientPaymentSystemType.rbk_secret_key: Ключ магазина (secretKey)
 form.clientPaymentSystemType.invoice_document.label: 'Документ счета'
+form.clientPaymentSystemType.stripe_pub_token.label: 'Публичный ключ'
+form.clientPaymentSystemType.stripe_secret_key.label: 'Секретный ключ'
+form.clientPaymentSystemType.stripe_commission.label: 'Размер комиссии (в процентах)'
 form.clientPaymentSystemType.shop_login: Логин магазина
 form.clientPaymentSystemType.password_one: Пароль 1
 form.clientPaymentSystemType.password_two: Пароль 2
@@ -82,4 +85,9 @@ clientbundle.controller.documentTemplateController.entry_successfully_eited: 'З
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
 form.clientConfigType.queryStat.label: Статистика запросов
 form.clientConfigType.queryStat.help: Включить/выключить сбор статистики запросов
+
+room_controller.limit_of_rooms_exceeded: 'Количество номеров в номерном фонде превышает максимально разрешенное по тарифу. Доступно по тарифу: %availableNumberOfRooms%. Подробнее <a target="_blank" href="%overviewUrl%">информация по номерам</a>'
+
 views.payment_systems.invoice.download_button.text: 'Скачать счет'
+mbh.payment_systems.by_invoice: 'По счету'
+views.uniteller.pay_button.text: 'Оплатить %amount% %currency%'

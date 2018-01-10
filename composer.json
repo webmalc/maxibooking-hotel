@@ -65,7 +65,8 @@
     "aws/aws-sdk-php": "^3.48",
     "oneup/flysystem-bundle": "@stable",
     "league/flysystem-aws-s3-v3": "^1.0",
-    "knplabs/knp-gaufrette-bundle": "~0.5"
+    "knplabs/knp-gaufrette-bundle": "~0.5",
+    "stripe/stripe-php": "^5.7"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

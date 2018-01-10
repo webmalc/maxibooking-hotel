@@ -69,7 +69,11 @@ class TouristVisaType extends AbstractType
                 'label' => 'tourist.visa.fms_kpp_id.label',
                 'help' => 'tourist.visa.fms_kpp_id.help',
                 'group' => 'visa',
-                'required' => false
+                'required' => false,
+                'attr' => [
+                    'class' => 'billing-text-select',
+                    'data-endpoint-name' => 'fmsKpp'
+                ],
             ])
             ->add('series', TextType::class, [
                 'group' => 'visa',

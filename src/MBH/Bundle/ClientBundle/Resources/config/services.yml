@@ -12,6 +12,7 @@ services:
       calls:
         - [attach, ["@mbh.dashboard.room_cache"]]
         - [attach, ["@mbh.dashboard.price_cache"]]
+        - [attach, ["@mbh.dashboard.limits"]]
       arguments: ['@doctrine_mongodb']
 
     mbh.dashboard.price_cache:
@@ -21,6 +22,16 @@ services:
     mbh.dashboard.room_cache:
       class: MBH\Bundle\ClientBundle\Service\Dashboard\RoomCacheSource
       arguments: ['@doctrine_mongodb', '@validator', '@translator', '@mbh.helper']
+
+    mbh.dashboard.limits:
+        class: MBH\Bundle\ClientBundle\Service\Dashboard\LimitsDashboardSource
+        arguments:
+            - '@doctrine_mongodb'
+            - '@validator'
+            - '@translator'
+            - '@mbh.helper'
+            - '@mbh.client_manager'
+            - '@router'
 
     mbh_bundle_client.twig.dashboard_extension:
         class: MBH\Bundle\ClientBundle\Twig\DashboardExtension
@@ -34,6 +45,7 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@session'
             - '@mbh.billing.api'
+            - '@mbh.billing.logger'
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:

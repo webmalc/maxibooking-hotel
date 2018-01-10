@@ -6,6 +6,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\Stripe;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -18,9 +20,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Stripe\Charge;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\Translator;
 
@@ -254,6 +258,20 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
+        if ($paymentSystemName === 'stripe') {
+            \Stripe\Stripe::setApiKey($clientConfig->getStripe()->getSecretKey());
+
+            $charge = Charge::create([
+                "amount" => $request->request->get('amount') * 100,
+                "currency" => $request->request->get('currency'),
+                "description" => "Charge for order #" . $response['doc'] ,
+                "source" => $request->get('stripeToken'),
+            ]);
+            if ($charge->status !== 'succeeded') {
+                throw new BadRequestHttpException('Stripe charge is not successful');
+            }
+        }
+
         //save cashDocument
         $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
 
@@ -330,7 +348,7 @@ class ApiController extends Controller
 
         $logger->info('OK. '.$logText);
 
-        return new Response($response['text']);
+        return $paymentSystemName === Stripe::NAME ? $this->redirectToRoute('successful_payment') : new Response($response['text']);
     }
 
     /**
@@ -630,6 +648,33 @@ class ApiController extends Controller
         return new Response($content, 200, [
             'Content-Type' => 'application/pdf'
         ]);
+    }
+
+    /**
+     * @Template()
+     * @Route("/payment/stripe/{id}", name="stripe_payment_page")
+     * @param CashDocument $cashDocument
+     * @return array
+     */
+    public function showStripePaymentPageAction(CashDocument $cashDocument)
+    {
+        $checkUrl = $this->generateUrl('successful_payment', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $formData = $this->clientConfig->getFormData($cashDocument, Stripe::NAME, $checkUrl);
+
+        return [
+            'data' => $formData,
+            'isOrderPaid' => $cashDocument->getIsPaid(),
+            'currency' => $this->getParameter('locale.currency')
+        ];
+    }
+
+    /**
+     * @Template("@MBHUser/Profile/paymentSuccessfulPage.html.twig")
+     * @Route("/payment/success", name="successful_payment")
+     */
+    public function showSuccessfulPaymentPageAction()
+    {
+        return [];
     }
 
     /**

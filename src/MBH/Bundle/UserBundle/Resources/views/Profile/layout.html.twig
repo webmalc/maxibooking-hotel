@@ -1,4 +1,27 @@
 {% extends "MBHUserBundle::layout.html.twig" %}
 
-{% set title = 'views.profile.layout.profile'|trans({}, 'FOSUserBundle')%}
 {% set title_url = path('user_profile') %}
+{% set layout = 'tabs' %}
+
+{% set menu = [
+{'route': 'user_profile', 'title': '<i class="fa fa-cog"></i> '~ 'views.profile.profile.change_password'|trans({}, 'FOSUserBundle')},
+] %}
+{% if is_granted('ROLE_PAYMENTS') %}
+    {% set menu = menu|merge([
+        {'route': 'user_contacts', 'title': '<i class="fa fa-book"></i> '~ 'view.personal_account.contacts.small_title'|trans},
+        {'route': 'user_services', 'title': '<i class="fa fa-plug"></i> '~ 'view.personal_account.services.small_title'|trans},
+        {'route': 'user_payer', 'title': '<i class="' ~ currency().icon ~ '"></i> '~ 'view.personal_account.payer.small_title'|trans},
+        {'route': 'user_payment', 'title': '<i class="fa fa-credit-card"></i> '~ 'view.personal_account.orders.small_title'|trans}
+    ]) %}
+{% endif %}
+
+{% block content %}
+    <ul class="nav nav-tabs" role="tablist">
+        {% for item in menu %}
+            <li {% if loop.index == active %}class="active"{% endif %}>
+                <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"
+                   {% else %}href="{{ path(item.route) }}"{% endif %}>{{ item.title|raw }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -170,7 +170,6 @@ class RoomCache
         return ['total' => $num, 'numberOfInconsistencies' => $numberOfInconsistencies];
     }
 
-
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -180,6 +179,7 @@ class RoomCache
      * @param array $availableRoomTypes
      * @param array $tariffs
      * @param array $weekdays
+     * @return string
      */
     public function update(
         \DateTime $begin,
@@ -190,14 +190,13 @@ class RoomCache
         array $availableRoomTypes = [],
         array $tariffs = [],
         array $weekdays = []
-    ) {
-
+    )
+    {
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];
 
-        (empty($availableRoomTypes)) ? $roomTypes = $hotel->getRoomTypes()->toArray(
-        ) : $roomTypes = $availableRoomTypes;
+        $roomTypes = empty($availableRoomTypes) ? $hotel->getRoomTypes()->toArray() : $availableRoomTypes;
 
         // find && group old caches
         $oldRoomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
@@ -209,13 +208,13 @@ class RoomCache
                 empty($tariffs) ? null : $this->helper->toIds($tariffs)
             );
 
+        /** @var \MBH\Bundle\PriceBundle\Document\RoomCache $oldRoomCache */
         foreach ($oldRoomCaches as $oldRoomCache) {
             if (!empty($weekdays) && !in_array($oldRoomCache->getDate()->format('w'), $weekdays)) {
                 continue;
             }
 
-            $updateCaches[$oldRoomCache->getTariff() ? $oldRoomCache->getTariff()->getId() : 0][$oldRoomCache->getDate(
-            )->format('d.m.Y')][$oldRoomCache->getRoomType()->getId()] = $oldRoomCache;
+            $updateCaches[$oldRoomCache->getTariff() ? $oldRoomCache->getTariff()->getId() : 0][$oldRoomCache->getDate()->format('d.m.Y')][$oldRoomCache->getRoomType()->getId()] = $oldRoomCache;
 
             if ($rooms == -1) {
                 if ($oldRoomCache->getPackagesCount() <= 0) {
@@ -268,6 +267,19 @@ class RoomCache
         if ($rooms == -1) {
             $this->container->get('mbh.mongo')->remove('RoomCache', $remove);
         } else {
+            $limitsManager = $this->container->get('mbh.client_manager');
+            $outOfLimitRoomsDays = $limitsManager
+                ->getDaysWithExceededLimitNumberOfRoomsInSell($begin, $end, $roomCaches, $updates);
+            if (count($outOfLimitRoomsDays) > 0) {
+                return $this->container
+                    ->get('translator')
+                    ->trans('room_cache_controller.limit_of_rooms_exceeded', [
+                        '%busyDays%' => join(', ', $outOfLimitRoomsDays),
+                        '%availableNumberOfRooms%' => $limitsManager->getAvailableNumberOfRooms(),
+                        '%overviewUrl%' => $this->container->get('router')->generateUrl('total_rooms_overview')
+                    ]);
+            }
+
             $this->container->get('mbh.mongo')->batchInsert('RoomCache', $roomCaches);
             $this->container->get('mbh.mongo')->update('RoomCache', $updates);
             /** @var \AppKernel $kernel */
@@ -290,5 +302,7 @@ class RoomCache
                 )
             );
         }
+
+        return '';
     }
 }

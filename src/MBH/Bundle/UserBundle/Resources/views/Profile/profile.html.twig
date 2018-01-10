@@ -1,15 +1,19 @@
 {% extends 'MBHUserBundle:Profile:layout.html.twig' %}
 
-{% set small_title = 'views.profile.profile.change_password'|trans({}, 'FOSUserBundle')%}
-{% set layout = "box" %}
+{% set title = 'views.profile.layout.profile'|trans({}, 'FOSUserBundle')%}
+{% set small_title = 'views.profile.profile.change_password'|trans({}, 'FOSUserBundle') %}
+{% set active = 1 %}
 
 {% block content %}
+    {{ parent() }}
+    <div class="tab-content">
+        <div class="bg-gray color-palette alert"><i
+                    class="fa fa-lock"> </i> {{ 'views.profile.profile.password_error'|trans({}, 'FOSUserBundle') }}
+        </div>
 
-    <div class="bg-gray color-palette alert"><i class="fa fa-lock"> </i> {{ 'views.profile.profile.password_error'|trans({}, 'FOSUserBundle') }}</div>
-
-    {{ form_start(form, {'action': path('user_profile_update'),  'attr': {'class': 'form-horizontal'}}) }}
-    {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'view.profile.change_pass'|trans } %}
-    {{ form_end(form) }}
-
+        {{ form_start(form, {'action': path('user_profile_update'),  'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'view.profile.change_pass'|trans } %}
+        {{ form_end(form) }}
+    </div>
 {% endblock %}

@@ -1,16 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 28.07.17
- * Time: 11:36
- */
 
 namespace MBH\Bundle\BaseBundle\Service\Export;
 
-class ExportDataHandler
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Lib\Exportable;
+use MBH\Bundle\BaseBundle\Service\Helper;
+
+class RawMongoDataHandler
 {
     const DEFAULT_DATE_FORMAT = 'd.m.Y H:i';
+
+    /** @var  Helper */
+    private $helper;
+
+    public function __construct(Helper $helper) {
+        $this->helper = $helper;
+    }
 
     /**
      * @param array $mongoData
@@ -18,9 +23,10 @@ class ExportDataHandler
      * @param $entityName
      * @return array
      */
-    public function handleRawMongoData(array $mongoData, $fieldNames = null, $entityName)
+    public function handleRawMongoData(array $mongoData, $entityName, $fieldNames = null)
     {
         $resultData = [];
+        /** @var Exportable $entityName */
         $columnData = $entityName::getExportableFieldsData();
         foreach ($mongoData as $id => $entityData) {
             $handledData = [];
@@ -54,7 +60,7 @@ class ExportDataHandler
             if (isset($entityData[$columnData['field']])) {
                 $fieldData = $entityData[$columnData['field']];
                 if ($fieldData instanceof \MongoDate) {
-                    return $fieldData->toDateTime()->format(self::DEFAULT_DATE_FORMAT);
+                    return date(self::DEFAULT_DATE_FORMAT, $fieldData->sec);
                 } elseif ($fieldData instanceof \MongoId) {
                     return $fieldData->serialize();
                 }

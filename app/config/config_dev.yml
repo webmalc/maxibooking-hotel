@@ -35,4 +35,4 @@ assetic:
     use_controller: "%use_assetic_controller%"
 
 swiftmailer:
-    delivery_address: ['mb-error@maxi-booking.ru']
+    delivery_address: ['faainttt@gmail.com']

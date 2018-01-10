@@ -2,7 +2,7 @@
 namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
-use MBH\Bundle\PackageBundle\Models\Billing\Country;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -94,8 +94,17 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @param $serviceId
+     * @return string
+     */
+    public function getBillingService($serviceId)
+    {
+        return $this->container->get('mbh.billing.api')->getServiceById($serviceId);
+    }
+
+    /**
      * @param $authorityOrganId
-     * @return \MBH\Bundle\PackageBundle\Models\Billing\AuthorityOrgan
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\AuthorityOrgan
      */
     public function getAuthorityOrganById($authorityOrganId)
     {
@@ -105,7 +114,7 @@ class Extension extends \Twig_Extension
     /**
      * @param $countryTld
      * @param null $locale
-     * @return \MBH\Bundle\PackageBundle\Models\Billing\Country
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Country
      */
     public function getCountryByTld($countryTld, $locale = null)
     {
@@ -115,7 +124,7 @@ class Extension extends \Twig_Extension
     /**
      * @param $regionId
      * @param null $locale
-     * @return \MBH\Bundle\PackageBundle\Models\Billing\Region
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Region
      */
     public function getRegionById($regionId, $locale = null)
     {
@@ -125,7 +134,7 @@ class Extension extends \Twig_Extension
     /**
      * @param $cityId
      * @param null $locale
-     * @return \MBH\Bundle\PackageBundle\Models\Billing\City
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\City
      */
     public function getCityById($cityId, $locale = null)
     {
@@ -167,6 +176,11 @@ class Extension extends \Twig_Extension
         return $this->clientConfig;
     }
 
+    public function stringToDate($dateString, $dateFormat = 'd.m.Y')
+    {
+        return \DateTime::createFromFormat($dateFormat, $dateString);
+    }
+
     public function getFilterBeginDate()
     {
         $now = new \DateTime("midnight");
@@ -193,6 +207,7 @@ class Extension extends \Twig_Extension
             'convertMongoDate' => new \Twig_SimpleFilter('convertMongoDate', [$this, 'convertMongoDate']),
             'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
+            'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate'])
         ];
     }
 
@@ -261,6 +276,7 @@ class Extension extends \Twig_Extension
             'get_city' => new \Twig_SimpleFunction('get_city', [$this, 'getCityById'], ['is_safe' => ['html']]),
             'get_client' => new \Twig_SimpleFunction('get_client', [$this, 'getClient'], ['is_safe' => ['html']]),
             'is_russian_client' => new \Twig_SimpleFunction('is_russian_client', [$this, 'isRussianClient'], ['is_safe' => ['html']]),
+            'get_service' => new \Twig_SimpleFunction('get_service', [$this, 'getBillingService'], ['is_safe' => ['html']]),
         ];
     }
 

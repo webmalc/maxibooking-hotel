@@ -26,8 +26,8 @@ class Client
     private $country;
     /** @var  string */
     private $installation;
-    /** @var  int */
-    private $rooms_limit;
+    /** @var  array */
+    private $restrictions;
     /** @var  string */
     private $disabled_at;
     /** @var  string */
@@ -38,6 +38,12 @@ class Client
     private $created_by;
     /** @var  string */
     private $modified_by;
+    /** @var  array */
+    private $ruPayerData;
+    private $region;
+    private $city;
+    private $address;
+    private $postal_code;
 
     /** @var  string
      * @Assert\NotNull(groups={"installation"})
@@ -134,7 +140,7 @@ class Client
      * @param string $phone
      * @return Client
      */
-    public function setPhone(string $phone): Client
+    public function setPhone(?string $phone): Client
     {
         $this->phone = $phone;
 
@@ -218,20 +224,28 @@ class Client
     }
 
     /**
-     * @return int
+     * @return array|null
      */
-    public function getRooms_limit(): ?int
+    public function getRestrictions(): ?array
     {
-        return $this->rooms_limit;
+        return $this->restrictions;
     }
 
     /**
-     * @param int $rooms_limit
+     * @return int
+     */
+    public function getRoomsLimit()
+    {
+        return $this->getRestrictions()['rooms_limit'];
+    }
+
+    /**
+     * @param array $restrictions
      * @return Client
      */
-    public function setRooms_limit(int $rooms_limit): Client
+    public function setRestrictions(array $restrictions): Client
     {
-        $this->rooms_limit = $rooms_limit;
+        $this->restrictions = $restrictions;
 
         return $this;
     }
@@ -415,6 +429,101 @@ class Client
     public function setResponseUrl($responseUrl)
     {
         $this->responseUrl = $responseUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRu()
+    {
+        return $this->ruPayerData;
+    }
+
+    /**
+     * @param $ruPayerData
+     * @return Client
+     */
+    public function setRu($ruPayerData)
+    {
+        $this->ruPayerData = $ruPayerData;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRegion()
+    {
+        return $this->region;
+    }
+
+    /**
+     * @param mixed $region
+     * @return Client
+     */
+    public function setRegion($region)
+    {
+        $this->region = $region;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param mixed $city
+     * @return Client
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param mixed $address
+     * @return Client
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostal_code()
+    {
+        return $this->postal_code;
+    }
+
+    /**
+     * @param mixed $postal_code
+     * @return Client
+     */
+    public function setPostal_code($postal_code)
+    {
+        $this->postal_code = $postal_code;
 
         return $this;
     }

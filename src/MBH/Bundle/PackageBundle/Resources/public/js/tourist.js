@@ -143,13 +143,7 @@ var docReadyTourists = function () {
 
     new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
     new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
-
-    initSelect2TextFieldsForBilling();
-    switchAuthOrganFieldsVisibility();
-    $('#mbh_document_relation_type').change(function () {
-        switchAuthOrganFieldsVisibility();
-    });
-    hangOnExportToKonturButtonClick();
+    handleAuthOrganFieldVisibility();
 };
 
 /*global document, window, Routing, $ */
@@ -157,6 +151,16 @@ $(document).ready(function () {
     'use strict';
     docReadyTourists();
 });
+
+function handleAuthOrganFieldVisibility() {
+    var $documentRelationField = $('#mbh_document_relation_type');
+    if ($documentRelationField.length > 0) {
+        switchAuthOrganFieldsVisibility();
+        $documentRelationField.change(function () {
+            switchAuthOrganFieldsVisibility();
+        });
+    }
+}
 
 function switchAuthOrganFieldsVisibility() {
     var isPassportSelected = $('#mbh_document_relation_type').val() === PASSPORT_DOCUMENT_TYPE_CODE;
@@ -170,15 +174,6 @@ function switchAuthOrganFieldsVisibility() {
         $authorityOrganIdFormGroup.hide();
         $authorityOrganTextFormGroup.show();
     }
-}
-
-function initSelect2TextFieldsForBilling() {
-    initSelect2TextForBilling('mbh_document_relation_citizenshipTld', BILLING_API_SETTINGS.countries);
-    initSelect2TextForBilling('mbh_document_relation_countryTld', BILLING_API_SETTINGS.countries);
-    initSelect2TextForBilling('mbh_document_relation_authorityOrganId', BILLING_API_SETTINGS.fms);
-    initSelect2TextForBilling('mbh_address_object_decomposed_countryTld', BILLING_API_SETTINGS.countries);
-    initSelect2TextForBilling('mbh_address_object_decomposed_regionId', BILLING_API_SETTINGS.regions);
-    initSelect2TextForBilling('form_visa_fmsKppId', BILLING_API_SETTINGS.fmsKpp);
 }
 
 function getTouristFilterFormData($touristForm, $citizenshipSelect) {

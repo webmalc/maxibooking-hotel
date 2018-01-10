@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Models\Billing;
+namespace MBH\Bundle\BillingBundle\Lib\Model;
 
 class FMSKpp
 {

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Maxibooking</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/featherlight/1.7.6/featherlight.min.css">
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/featherlight/1.7.6/featherlight.min.js"></script>
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script type="text/javascript" src="https://checkout.stripe.com/checkout.js"></script>
+</head>
+
+<body>
+{% if isOrderPaid %}
+    <div class="panel-body">
+        <div class="container">
+            <div id="alert-message" style="font-size: 1.3em;" class="text-center alert alert-danger">
+                Order already paid!
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary btn-lg" onclick="window.close()">
+                    ОК
+                </button>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="panel-body">
+        <div class="container">
+            <div class="well"><h1 class="text-center">Payment</h1>
+            </div>
+            <div id="processing" style="display: none">
+                <p class="text-center alert alert-info">Processing...</p>
+            </div>
+            <div id="alert-message" style="display: none;font-size: 1.3em;" class="alert alert-danger">
+            </div>
+            {#<div class="text-center">#}
+                {#<button class="btn btn-primary btn-lg" onclick="window.close()">#}
+                   {#Close#}
+                {#</button>#}
+            {#</div>#}
+        </div>
+    </div>
+    <form action="{{ path('online_form_check_order', {'paymentSystemName' : 'stripe'}) }}" class="form-horizontal"
+          id="charge-form" method="POST">
+        <input name="orderId" value="{{ data.orderId }}" type="hidden">
+        <input type="hidden" name="signature" value="{{ data.signature }}">
+        <input name="email" value="{{ data.email }}" type="hidden">
+        <input type="hidden" name="amount" value="{{ data.amount }}">
+        <input type="hidden" name="currency" value="{{ currency }}">
+    </form>
+
+    <script>
+        //    var stripePublishableKey = 'pk_live_YtAnapBNz9pS6TFwBiFH1su1';
+        var stripePublishableKey = '{{ data.token }}';
+        var amount = parseInt('{{ data.amount }}', 10) * 100;
+        var currency = '{{ currency }}';
+        var email = '{{ data.email }}';
+
+        Stripe.setPublishableKey(stripePublishableKey);
+
+        var handler = StripeCheckout.configure({
+            key: stripePublishableKey,
+            email: email,
+            image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
+            locale: 'auto',
+            allowRememberMe: true,
+            token: function (token) {
+                Stripe.source.create({
+                    type: 'card',
+                    token: token.id
+                }, stripeCardResponseHandler);
+                displayProcessing();
+            }
+        });
+
+        function displayProcessing() {
+            $("#processing").show();
+            $("#alert-message").hide();
+        }
+
+        function displayResult(resultText) {
+            $("#processing").hide();
+            $("#alert-message").show();
+            document.getElementById("alert-message").innerHTML = 'ERROR: ' + resultText;
+        }
+
+        function stripeTokenHandler(token) {
+            var form = document.getElementById('charge-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            form.submit();
+        }
+
+        function stripe3DSecureResponseHandler(status, response) {
+
+            if (response.error) {
+                var message = response.error.message;
+                displayResult("Unexpected 3DS source creation response status: " + status + ". Error: " + message);
+                return;
+            }
+
+            if (response.status == 'chargeable') {
+                stripeTokenHandler(response);
+                return;
+            } else if (response.status != 'pending') {
+                displayResult("Unexpected 3D Secure status: " + response.status);
+                return;
+            }
+
+            Stripe.source.poll(
+                response.id,
+                response.client_secret,
+                stripe3DSStatusChangedHandler
+            );
+
+            $.featherlight({
+                iframe: response.redirect.url,
+                iframeWidth: '800',
+                iframeHeight: '600',
+                loading: 'Processing...',
+            });
+        }
+
+        function stripe3DSStatusChangedHandler(status, source) {
+            if (source.status == 'chargeable') {
+                $.featherlight.current().close();
+                stripeTokenHandler(source);
+            } else if (source.status == 'failed') {
+                $.featherlight.current().close();
+                var msg = '3D Secure authentication failed.';
+                displayResult(msg);
+            } else if (source.status != 'pending') {
+                $.featherlight.current().close();
+                var msg = "Unexpected 3D Secure status: " + source.status;
+                displayResult(msg);
+            }
+        }
+
+        function stripeCardResponseHandler(status, response) {
+            if (response.error) {
+                var message = response.error.message;
+                displayResult("Unexpected card source creation response status: " + status + ". Error: " + message);
+                return;
+            }
+
+            if (response.card.three_d_secure == 'not_supported') {
+                displayResult("This card does not support 3D Secure.");
+                return;
+            }
+
+            var returnURL = "{{ data.returnUrl }}";
+
+            Stripe.source.create({
+                type: 'three_d_secure',
+                amount: amount,
+                currency: currency,
+                three_d_secure: {
+                    card: response.id
+                },
+                redirect: {
+                    return_url: returnURL
+                }
+            }, stripe3DSecureResponseHandler);
+        }
+
+        $(window).on('popstate', function () {
+            handler.close();
+        });
+
+        handler.open({
+            name: 'Maxi-booking.com',
+            description: '{{ data.description }}',
+            amount: amount,
+            currency: currency
+        });
+    </script>
+{% endif %}
+</body>
+</html>

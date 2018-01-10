@@ -39,6 +39,7 @@ class ClientPaymentSystemType extends AbstractType
         $rbkEshopId = $rbkSecretKey = null;
         $paypalLogin = null;
         $invoiceDocument = null;
+        $stripePubToken = null;
 
         $paymentSystemName = $options['paymentSystemName'] ?? $this->paymentSystemsDefault;
         $paymentSystemsChoices = array_filter($this->paymentSystems, function ($paymentSystemName) use ($clientConfig, $options) {
@@ -64,8 +65,12 @@ class ClientPaymentSystemType extends AbstractType
             $rnkbShopIDP = $clientConfig->getRnkb() ? $clientConfig->getRnkb()->getRnkbShopIDP() : '';
             $rnkbKey = $clientConfig->getRnkb() ? $clientConfig->getRnkb()->getKey() : '';
             $invoiceDocument = $clientConfig->getInvoice() ? $clientConfig->getInvoice()->getInvoiceDocument() : null;
+            $stripePubToken = $clientConfig->getStripe() ? $clientConfig->getStripe()->getPublishableToken() : null;
+            $stripeSecretKey = $clientConfig->getStripe() ? $clientConfig->getStripe()->getSecretKey() : null;
+            $stripeCommission = $clientConfig->getStripe() ? $clientConfig->getStripe()->getCommissionInPercents() : null;
         }
 
+        $isPaymentSystemChanged = isset($options['paymentSystemName']);
         $builder
             ->add(
                 'paymentSystem',
@@ -78,7 +83,7 @@ class ClientPaymentSystemType extends AbstractType
                     'data' => $paymentSystemName,
                     'required' => true,
                     'mapped' => false,
-                    'attr' => ['disabled' => isset($options['paymentSystemName'])]
+                    'attr' => ['disabled' => $isPaymentSystemChanged]
                 ]
             );
 
@@ -280,6 +285,35 @@ class ClientPaymentSystemType extends AbstractType
                 'data' => $invoiceDocument,
                 'required' => false,
                 'attr' => ['class' => 'payment-system-params invoice'],
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+            ])
+            ->add('stripePubToken', TextType::class, [
+                'label' => 'form.clientPaymentSystemType.stripe_pub_token.label',
+                'mapped' => false,
+                'data' => $stripePubToken,
+                'required' => false,
+                'attr' => ['class' => 'payment-system-params stripe'],
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+            ])
+            ->add('stripeSecretKey', TextType::class, [
+                'label' => 'form.clientPaymentSystemType.stripe_secret_key.label',
+                'mapped' => false,
+                'data' => $stripeSecretKey,
+                'required' => false,
+                'attr' => ['class' => 'payment-system-params stripe'],
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+            ])
+            ->add('commission', TextType::class, [
+                'label' => 'form.clientPaymentSystemType.stripe_commission.label',
+                'mapped' => false,
+                'data' => $stripeCommission,
+                'required' => false,
+                'attr' => [
+                    'class' => 'payment-system-params stripe mbh-spinner',
+                    'spinner-max' => 100,
+                    'step' => 0.05,
+                    'decimals' => 2
+                ],
                 'group' => 'form.clientPaymentSystemType.payment_system_group',
             ])
             ->add(

@@ -8,23 +8,30 @@ use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class ClientManager
 {
+    //TODO: Уточнить и изменить для прода
     const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_contacts';
+    const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems'];
     const SESSION_CLIENT_FIELD = 'client';
+    const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
+    const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
 
     private $dm;
     private $session;
     private $billingApi;
+    private $logger;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger)
     {
         $this->dm = $dm;
         $this->session = $session;
         $this->billingApi = $billingApi;
+        $this->logger = $logger;
     }
 
     /**
@@ -125,7 +132,7 @@ class ClientManager
      */
     public function getAvailableNumberOfRooms()
     {
-        return $this->getClient()->getRooms_limit();
+        return $this->getClient()->getRoomsLimit();
     }
 
     /**
@@ -133,7 +140,24 @@ class ClientManager
      */
     public function isClientActive()
     {
-        return $this->getClient()->getStatus() == Client::CLIENT_ACTIVE_STATUS;
+        return $this->getClient()->getStatus() == Client::CLIENT_ACTIVE_STATUS
+            || $this->session->get(self::IS_AUTHORIZED_BY_TOKEN) !== false;
+    }
+
+    public function confirmClient(Client $client)
+    {
+        $this->billingApi->confirmClient($client);
+        $client = $this->billingApi->getClient();
+        $this->updateSessionClientData($client, $currentDateTime);
+    }
+
+    /**
+     * @param $routeName
+     * @return bool
+     */
+    public function isRouteAccessibleForInactiveClient($routeName)
+    {
+        return in_array($routeName, self::ACCESSED_ROUTES_FOR_CLIENT);
     }
 
     /**
@@ -147,9 +171,15 @@ class ClientManager
         if (is_null($dataReceiptTime)
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
-            /** @var Client $client */
-            $client = $this->billingApi->getClient();
-            $this->updateSessionClientData($client, $currentDateTime);
+            try {
+                /** @var Client $client */
+                $client = $this->billingApi->getClient();
+            } catch (\Exception $exception) {
+                $client = $this->session->get(self::SESSION_CLIENT_FIELD);
+                $this->logger->err($exception->getMessage());
+            } finally {
+                $this->updateSessionClientData($client, $currentDateTime);
+            }
         } else {
             $client = $this->session->get(self::SESSION_CLIENT_FIELD);
         }
@@ -206,7 +236,7 @@ class ClientManager
         foreach ($servicesRequestResult->getData() as $service) {
             //TODO: Временно для тестов
 //            if (!in_array($service->getId(), $clientServicesIds)) {
-            $services[] = $service;
+                $services[] = $service;
 //            }
         }
 

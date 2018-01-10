@@ -52,7 +52,11 @@ class DocumentRelationType extends AbstractType
             $builder
                 ->add('citizenshipTld', TextType::class, [
                     'label' => 'form.TouristExtendedType.citizenship',
-                    'group' => 'form.DocumentRelation.citizenship'
+                    'group' => 'form.DocumentRelation.citizenship',
+                    'attr' => [
+                        'class' => 'billing-text-select',
+                        'data-endpoint-name' => 'countries'
+                    ],
                 ]);
         }
         $builder
@@ -85,7 +89,11 @@ class DocumentRelationType extends AbstractType
                 'label' => 'form.DocumentRelation.authority',
                 'help' => 'form.DocumentRelation.authority.help',
                 'required' => false,
-                'property_path' => 'documentRelation.authorityOrganId'
+                'property_path' => 'documentRelation.authorityOrganId',
+                'attr' => [
+                    'class' => 'billing-text-select',
+                    'data-endpoint-name' => 'fms'
+                ],
             ])
             ->add('authorityOrganText', TextType::class, [
                 'group' => 'form.DocumentRelation.main',
@@ -129,6 +137,10 @@ class DocumentRelationType extends AbstractType
                     'label' => 'form.BirthplaceType.country',
                     'required' => false,
                     'property_path' => 'birthplace.countryTld',
+                    'attr' => [
+                        'class' => 'billing-text-select',
+                        'data-endpoint-name' => 'countries'
+                    ],
                 ])
                 ->add('main_region', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',

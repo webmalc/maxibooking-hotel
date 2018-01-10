@@ -1,0 +1,55 @@
+{% extends 'MBHUserBundle:Profile:layout.html.twig' %}
+{% set active = 5 %}
+
+{% block content %}
+    {{ parent() }}
+    <div class="tab-content">
+        {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'user-payment-filter-widget'} %}
+        {% block content %}
+        <form method="post" id="user-payment-filter" class="form-inline filter-form" role="form">
+            <div class="input">
+                <i class="fa fa-calendar" title='{{ 'view.personal_account.orders.begin_date.title'|trans }}'
+                   data-toggle='tooltip'></i>&nbsp;
+                <input type="text" name="begin" id="user-payment-filter-begin"
+                       class="datepicker form-control input-sm"
+                       data-date-format="dd.mm.yyyy" value="{{ beginDate|date('d.m.Y') }}">
+            </div>
+            <div class="input">
+                <i class="fa fa-calendar" title='{{ 'view.personal_account.orders.end_date.title'|trans }}'
+                   data-toggle='tooltip'></i>&nbsp;
+                <input type="text" name="end" id="user-payment-filter-end"
+                       class="datepicker form-control input-sm"
+                       data-date-format="dd.mm.yyyy" value="{{ endDate|date('d.m.Y') }}">
+            </div>
+            <div class="input">
+                <select style="width: 120px !important;" name="paidStatus" id="order-paid-status">
+                    <option value="all">{{ 'view.personal_account.orders.paid_status.all'|trans}}</option>
+                    <option value="paid">{{ 'view.personal_account.orders.paid_status.paid'|trans}}</option>
+                    <option value="not-paid">{{ 'view.personal_account.orders.paid_status.not-paid'|trans}}</option>
+                </select>
+            </div>
+            <div class="input">
+                <button type="button" class="btn btn-primary navbar-btn"
+                        id="filter-button">{{ 'view.personal_account.orders.apply_button.title'|trans }}</button>
+            </div>
+            {% endblock %}
+            {% endembed %}
+        </form>
+
+        <table class="table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable" id="payments-table">
+            <thead>
+            <tr>
+                <th class="td-md text-center">{{ 'view.personal_account.orders.creation_date'|trans }}</th>
+                <th class="td-md text-center">{{ 'view.personal_account.orders.payment_date'|trans }}</th>
+                <th class="td-md text-center">{{ 'view.personal_account.orders.sum'|trans }}</th>
+                <th class="td-md text-center">{{ 'view.personal_account.orders.payment_status'|trans }}</th>
+                <th class="td-sm"></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    {% include 'MBHUserBundle:Profile:payment_systems_modal.html.twig' %}
+{% endblock %}

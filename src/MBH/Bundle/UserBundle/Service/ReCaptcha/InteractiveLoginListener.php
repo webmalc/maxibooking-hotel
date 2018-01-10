@@ -1,12 +1,16 @@
 <?php
+
 namespace MBH\Bundle\UserBundle\Service\ReCaptcha;
 
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\ClientBundle\Service\ClientManager;
 use \ReCaptcha\ReCaptcha;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class InteractiveLoginListener
 {
@@ -16,16 +20,28 @@ class InteractiveLoginListener
     protected $params;
     /** @var  BillingApi */
     protected $billingApi;
+    protected $clientManager;
+    protected $session;
+    protected $supportEmail;
+    protected $translator;
 
     /**
      * InteractiveLoginListener constructor.
      * @param array $params
+     * @param ClientManager $clientManager
+     * @param Session $session
      * @param BillingApi $billingApi
+     * @param TranslatorInterface $translator
+     * @param $supportInfo
      */
-    public function __construct(array $params, BillingApi $billingApi)
+    public function __construct(array $params, ClientManager $clientManager, Session $session, BillingApi $billingApi, TranslatorInterface $translator, $supportInfo)
     {
         $this->params = $params;
+        $this->clientManager = $clientManager;
+        $this->session = $session;
         $this->billingApi = $billingApi;
+        $this->translator = $translator;
+        $this->supportEmail = $supportInfo['email'];
     }
 
     /**
@@ -37,14 +53,26 @@ class InteractiveLoginListener
         $request = $event->getRequest();
 
         $reCaptcha = new ReCaptcha($this->params['secret']);
-        if ($event->getAuthenticationToken() instanceof UsernamePasswordToken
-            && !$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
-            throw new BadCredentialsException('Captcha is invalid');
-        }
+        $isAuthorizedByToken = $event->getAuthenticationToken() instanceof PreAuthenticatedToken;
+        $this->session->set(ClientManager::IS_AUTHORIZED_BY_TOKEN, $isAuthorizedByToken);
 
-        if ($event->getAuthenticationToken() instanceof PreAuthenticatedToken) {
-            $this->billingApi->confirmClientEmail();
+        if ($event->getAuthenticationToken() instanceof UsernamePasswordToken) {
+            if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
+                throw new BadCredentialsException('Captcha is invalid');
+            }
+
+            $client = $this->clientManager->getClient();
+            if ($client->getStatus() === 'not_confirmed') {
+                try {
+                    $this->billingApi->confirmClient($client);
+                } catch (\Exception $exception) {
+                    $this->session->set(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR, true);
+                    $this->session->getFlashBag()->add('error',
+                        $this->translator->trans('interactive_login_listener.error_by_client_confirmation', [
+                            '%supportEmail%' => $this->supportEmail
+                        ]));
+                }
+            }
         }
     }
-
 }

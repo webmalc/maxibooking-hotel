@@ -2,29 +2,34 @@
 
 var BILLING_API_SETTINGS = {
     fms: {
-        url: 'https://billing.maxi-booking.com/ru/fms-fms',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/fms-fms',
         id: 'internal_id',
         text: 'name'
     },
     countries: {
-        url: 'https://billing.maxi-booking.com/ru/countries',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/countries',
         id: 'tld',
         text: 'name'
     },
     regions: {
-        url: 'https://billing.maxi-booking.com/ru/regions',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/regions',
         id: 'id',
         text: 'name'
     },
     cities: {
-        url: 'https://billing.maxi-booking.com/ru/cities',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/cities',
         id: 'id',
         text: 'display_name'
     },
     fmsKpp: {
-        url: 'https://billing.maxi-booking.com/ru/fms-kpp',
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/fms-kpp',
         id: 'internal_id',
         text: 'name'
+    },
+    services: {
+        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/services/',
+        id: 'id',
+        text: 'title'
     }
 };
 
@@ -505,6 +510,30 @@ var docReadyForms = function () {
         initSelect2TextForBilling(citySelect.get(0).id, BILLING_API_SETTINGS.cities);
     }());
 
+    (function () {
+        var $billingTextSelect = $('.billing-text-select');
+        $billingTextSelect.each(function (index, element) {
+            var endpointName = element.getAttribute('data-endpoint-name');
+            initSelect2TextForBilling(element.id, BILLING_API_SETTINGS[endpointName]);
+        });
+    }());
+
+    (function () {
+        $('.mbh-spinner').each(function (index, element) {
+            var min = element.getAttribute('spinner-min') ? parseFloat(element.getAttribute('spinner-min')) : 0;
+            var max = element.getAttribute('spinner-max') ? parseFloat(element.getAttribute('spinner-max')) : 100000000;
+            var step = element.getAttribute('step') ? parseFloat(element.getAttribute('step')) : 1;
+            var decimals = element.getAttribute('decimals') ? parseInt(element.getAttribute('decimals'), 10) : 0;
+
+            $(element).TouchSpin({
+                min: min,
+                max: max,
+                step: step,
+                decimals: decimals
+            });
+        });
+    }());
+
     //order select
     (function () {
         var orderSelect = $('.order-select');
@@ -983,7 +1012,10 @@ function onHideCheckboxChange() {
 }
 
 function initSelect2TextForBilling(inputId, apiSettings) {
-    select2Text($('#' + inputId)).select2({
+    var $select2Field = select2Text($('#' + inputId));
+    var selectedValue = $select2Field.val();
+
+    $select2Field.select2({
         minimumInputLength: 3,
         placeholder: Translator.trans('tourist.make_a_choice'),
         allowClear: true,
@@ -1000,10 +1032,18 @@ function initSelect2TextForBilling(inputId, apiSettings) {
             },
             processResults: function (data) {
                 var options = [];
-                data.results.forEach(function(fmsOrgan) {
+
+                data.results.forEach(function(option) {
+                    var optionId = option[apiSettings['id']];
+
+                    //fix error because of empty text in default option
+                    if (optionId === selectedValue) {
+                        $select2Field.find('option[value="' + optionId +'"]').first().remove();
+                    }
+
                     options.push({
-                        id: fmsOrgan[apiSettings['id']],
-                        text: fmsOrgan[apiSettings['text']]
+                        id: optionId,
+                        text: option[apiSettings['text']]
                     });
                 });
 
@@ -1012,24 +1052,67 @@ function initSelect2TextForBilling(inputId, apiSettings) {
         },
         initSelection: function (element, callback) {
             var id = $(element).val();
-            $.ajax(apiSettings['url'] + '/' + id + '/', {
-                dataType: "json",
-                headers: {
-                    Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
-                }
-            }).done(function (data) {
-                var selectedOrgan = {
-                    id: data[apiSettings['id']],
-                    text: data[apiSettings['text']]
-                };
-                callback(selectedOrgan);
-            });
+            if (id) {
+                $.ajax(apiSettings['url'] + '/' + id + '/', {
+                    dataType: "json",
+                    headers: {
+                        Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+                    }
+                }).done(function (data) {
+                    var optionId = data[apiSettings['id']];
+                    var optionTitle = data[apiSettings['text']];
+
+                    var selectedOrgan = {
+                        id: optionId,
+                        text: optionTitle
+                    };
+                    callback(selectedOrgan);
+                });
+            }
         },
 
         dropdownCssClass: "bigdrop"
     });
 }
 
+function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $updateButton, filterDataCallback, drawCallback) {
+    var process = false;
+    $table.dataTable({
+        serverSide: true,
+        processing: true,
+        ordering: false,
+        "drawCallback": function() {
+            process = false;
+            if (drawCallback) {
+                drawCallback();
+            }
+        },
+        "ajax": {
+            "method": "POST",
+            "url": url,
+            "data": function (requestData) {
+                process = true;
+                requestData.form = filterDataCallback ? filterDataCallback() : $form.serializeObject();
+
+                return requestData;
+            }
+        }
+    });
+
+    if ($updateButton) {
+        $updateButton.click(function () {
+            if (!process) {
+                $table.dataTable().fnDraw();
+            }
+        });
+    } else {
+        $form.find('input, select').on('change switchChange.bootstrapSwitch', function () {
+            if (!process) {
+                $table.dataTable().fnDraw();
+            }
+        });
+    }
+}
 
 $(document).ready(function () {
     'use strict';

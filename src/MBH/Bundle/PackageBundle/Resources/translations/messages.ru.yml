@@ -1222,6 +1222,19 @@ mbhpackagebundle.view.report.workshift.status: Статус
 mbhpackagebundle.view.report.workshiftlist.daty: Даты
 mbhpackagebundle.view.report.workshiftlist.gosti: Гости
 mbhpackagebundle.view.report.workshiftlist.status: Статус
+mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny: Не найдено ни одной рабочей смены
+mbhpackagebundle.view.report.workshiftlist.rabochaya_smena: Рабочая смена
+
+mbhpackagebundle.view.tourist.index.daty: Даты
+mbhpackagebundle.view.tourist.index.fio: ФИО
+mbhpackagebundle.view.tourist.index.osnovnoy.dokument: Основной документ
+mbhpackagebundle.view.tourist.index.komnata: Комната
+mbhpackagebundle.view.tourist.index.adres: Адрес
+mbhpackagebundle.view.tourist.index.data.rozhdeniya: Дата рождения
+mbhpackagebundle.view.tourist.jsonbuttons.udaleniye.zapisi: Удаленные записи
+windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'
+controller.packageController.record_edited_success_services: 'Даты услуг изменены вместе с бронью'
+
 mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny: 'Не найдено ни одной рабочей смены'
 mbhpackagebundle.view.report.workshiftlist.rabochaya_smena: 'Рабочая смена'
 mbhpackagebundle.view.tourist.jsonbuttons.udaleniye.zapisi: 'Удаленные записи'

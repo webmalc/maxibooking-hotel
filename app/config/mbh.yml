@@ -1,4 +1,7 @@
 parameters:
+    support:
+        email: 'support@maxi-booking.ru'
+
     #currencies
     mbh.currency.data:
       rub: {text: 'currency.rub.text', small: 'currency.rub.small', icon: 'fa fa-ruble'}
@@ -195,7 +198,8 @@ parameters:
       rbk: 'Rbk'
       paypal: 'PayPal'
       rnkb: 'Rnkb'
-      invoice: 'По счету'
+      invoice: 'mbh.payment_systems.by_invoice'
+      stripe: 'Stripe'
     mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: "%mbh_payment_systems_change%"
 

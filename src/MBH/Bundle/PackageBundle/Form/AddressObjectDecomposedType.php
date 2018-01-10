@@ -18,10 +18,18 @@ class AddressObjectDecomposedType extends AbstractType
             ->add('countryTld', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.country',
                 'required' => false,
+                'attr' => [
+                    'class' => 'billing-text-select',
+                    'data-endpoint-name' => 'countries'
+                ],
             ])
             ->add('regionId', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.region',
                 'required' => false,
+                'attr' => [
+                    'class' => 'billing-text-select',
+                    'data-endpoint-name' => 'regions'
+                ],
             ])
             ->add('city', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.city',

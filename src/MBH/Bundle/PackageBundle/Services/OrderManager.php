@@ -192,7 +192,6 @@ class OrderManager implements Searchable
             }
         }
 
-
         return [
             'success' => $isSuccessFull,
             'dangerNotifications' => $dangerNotifications

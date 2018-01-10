@@ -159,6 +159,12 @@ class ClientConfig extends Base
     protected $invoice;
 
     /**
+     * @var Stripe
+     * @ODM\EmbedOne(targetDocument="Stripe")
+     */
+    protected $stripe;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
@@ -273,6 +279,25 @@ class ClientConfig extends Base
      * @Assert\Type(type="float")
      */
     protected $currencyRatioFix = 1.015;
+
+    /**
+     * @return Stripe
+     */
+    public function getStripe(): ?Stripe
+    {
+        return $this->stripe;
+    }
+
+    /**
+     * @param Stripe $stripe
+     * @return ClientConfig
+     */
+    public function setStripe(Stripe $stripe): ClientConfig
+    {
+        $this->stripe = $stripe;
+
+        return $this;
+    }
 
     /**
      * @return Invoice
