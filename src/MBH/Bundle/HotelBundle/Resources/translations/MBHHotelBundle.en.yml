@@ -1,4 +1,4 @@
-views.tasktype.index.name: Name
+views.tasktype.index.name: Title
 views.tasktype.index.status: Status
 views.tasktype.index.default_role: 'Default executor'
 views.tasktype.index.created: Created
@@ -13,7 +13,7 @@ views.task.index.deleted: Deleted
 views.task.index.roomType: 'Room type'
 views.task.index.room: Room
 views.task.index.users: Executant
-views.task.index.assign: Assigned
+views.task.index.assign: 'Assigned to'
 views.task.index.guest: Guest
 views.task.index.role: Role
 views.task.index.groups: Groups
@@ -65,8 +65,8 @@ views.hotel.extended.copy_coordinates_like_this: 'Copy coordinates (For example:
 views.hotel.extended.yandex_maps: 'Yandex maps'
 views.hotel.extended.right_click_on_hotel_on_map: 'Click hotel location with right mouse button and select "What''s here?" to open the left panel with detailed information about the location and coordinates.'
 views.hotel.extended.yandex_copy_coordinates_like_this: 'Copy the coordianes'
-views.hotel.index.name: Name
-views.hotel.index.prefix: Prefix
+views.hotel.index.name: Title
+views.hotel.index.prefix: 'Legal name'
 views.hotel.index.sale_dates: 'Sales dates'
 views.hotel.index.chosen_by_default: Default
 views.hotel.index.edit_record: Edit
@@ -108,7 +108,7 @@ views.roomType.index.delete_room_type: 'Delete room type'
 views.roomType.index.delete: Delete
 views.roomType.index.room_fund: Rooms
 views.roomType.index.beds: Beds
-views.roomType.index.name: Name
+views.roomType.index.name: Title
 views.roomType.index.housing: Housing
 views.roomType.index.floor: Floor
 views.roomType.index.status: Status
@@ -122,7 +122,7 @@ views.roomType.help.empty_facilities: 'Use room amenities from room type'
 views.hotel.index.confirm_delete: 'Are you sure you want to delete hotel "%hotelname%"?'
 views.task.layout.tasks: Tasks
 views.corpus.name: Title
-views.corpus.internal_name: 'Internal label'
+views.corpus.internal_name: 'Internal title'
 views.corpus.city: City
 views.corpus.settlement: 'Town (settlement)'
 views.corpus.address: Address

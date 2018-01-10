@@ -22,14 +22,14 @@ form.hotelExtendedType.hotel_theme: 'Hotel theme'
 form.hotelExtendedType.hotel_amenities: 'Hotel facilities'
 form.hotelType.name: Title
 form.hotelType.general_info: 'General information'
-form.taskType.general_info: 'Add type'
+form.taskType.general_info: 'Add task'
 form.taskType.general_info_edit: 'Edit type'
 form.hotelType.placeholder_my_hotel: 'My hotel'
 form.hotelType.inner_name: 'Internal name'
 form.hotelType.international_title: 'International title'
 form.hotelType.placeholder_hotel: Hоtel
 form.hotelType.maxibooking_inner_name: 'Title only visible inside MaxiBooking system'
-form.hotelType.prefix: Prefix
+form.hotelType.prefix: 'Legal name'
 form.hotelType.description: Description
 form.hotelType.document_use_name: 'Title used in documents'
 form.hotelType.sale_days_amount: 'Sale days'
@@ -64,7 +64,7 @@ form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: 'Incorre
 form.roomTypeGenerateRoomsType.too_many_generation_numbers: 'Too many entries to generate'
 form.roomTypeGenerateRoomsType.housing: Wing
 form.roomTypeGenerateRoomsType.floor: Floor
-form.roomTypeType.name: Name
+form.roomTypeType.name: Title
 form.roomTypeType.general_info: 'General information'
 form.roomTypeType.comfort_plus: 'Comfort plus'
 form.roomTypeType.inner_name: 'Internal title'
@@ -73,7 +73,7 @@ form.roomTypeType.comport_plus_rooms_in_new_housing: 'Comfort plus. Rooms in the
 form.roomTypeType.description: Description
 form.roomTypeType.color: Color
 form.roomTypeType.online_reservation_room_description: 'Room type description for online reservation'
-form.roomTypeType.chess_room_type_color: 'Room type color on chessboard'
+form.roomTypeType.chess_room_type_color: 'Room type color in Reservation Calendar'
 form.roomTypeType.image: Image
 form.roomTypeType.main_places: 'Number of beds'
 form.roomTypeType.settings: Settings

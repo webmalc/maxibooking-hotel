@@ -20,7 +20,7 @@ price.views.restriction.table.closedOnDeparture: 'No check out'
 price.views.restriction.table.closed: Closed
 price.views.promotion.edit.small_title: 'Edit Sales'
 price.views.promotion.layout.small_title: Sales
-price.views.promotion.index.name: Name
+price.views.promotion.index.name: Title
 price.views.promotion.index.individual: Individual
 price.views.promotion.index.discount: Discount
 price.views.promotion.index.adults: 'Adults free of charge'
@@ -52,7 +52,7 @@ price.views.overview.index.type: 'Room type'
 price.views.overview.index.rate: Rate
 tariff.filter.status: 'Rate status'
 tariff.filter.state: 'Show disabled?'
-tariff.table.name: Name
+tariff.table.name: Title
 tariff.table.base: Default
 tariff.table.children: Child
 tariff.table.infant: Infant

@@ -1275,3 +1275,4 @@ mbh.analytics.types.sales_sources: "Источники продаж"
 mbh.analytics.types.hotel_occupancy: "Заполняемость отеля"
 mbh.analytics.types.sales_services: "Динамика реализации услуг"
 mbh.analytics.types.sales_managers: "Менеджеры и брони"
+package.document_type.tourist_age: 'возраст'
