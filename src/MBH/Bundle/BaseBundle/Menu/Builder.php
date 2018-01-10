@@ -173,7 +173,7 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'menu.label.reports.polls'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['reports']->addChild('dynamic_sale', ['route' => 'dynamic_sales', 'label' => 'Динамика продаж'])
+        $menu['reports']->addChild('dynamic_sale', ['route' => 'dynamic_sales', 'label' => 'menu.label.reports.dynamic_sales'])
             ->setAttributes(['icon' => 'fa fa-bar-chart']);
         $menu['reports']->addChild('packages_daily_report', ['route' => 'packages_daily_report', 'label' => 'menu.label.reports.daily_report'])
             ->setAttributes(['icon' => 'fa fa-money']);

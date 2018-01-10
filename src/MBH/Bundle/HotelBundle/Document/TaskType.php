@@ -30,6 +30,7 @@ class TaskType extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="title")
      * @Assert\NotBlank()
+     * @Gedmo\Translatable
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.taskType.min_title",
@@ -72,6 +73,11 @@ class TaskType extends Base
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomStatus")
      */
     protected $roomStatus;
+
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
 
     /**
      * Get title

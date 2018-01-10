@@ -51,6 +51,7 @@ class Service extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
+     * @Gedmo\Translatable
      * @Assert\Length(
      *      min=2,
      *      minMessage="mbhpricebundle.document.so_short_name",
@@ -173,6 +174,30 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     private $includeDeparture;
+
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     * @return Service
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
 
     /**
      * Set category

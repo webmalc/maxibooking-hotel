@@ -13,18 +13,18 @@ form.userType.hotels: Hotels
 form.userType.hotels_user_has_access_to: 'Hotels available to this user'
 form.userType.is_included: 'Enabled?'
 form.userType.expires_at: 'Valid until'
-form.userType.surname: Surname
-form.userType.two_factor: 'Two-factor autentification'
+form.userType.surname: 'Last name'
+form.userType.two_factor: 'Two factor authentification?'
 form.userType.general_info: 'General information'
 form.userType.placeholder_surname: Smith
-form.userType.name: Name
+form.userType.name: 'First name'
 form.userType.patronymic: 'Middle name'
-form.userType.birth_date: 'Date of birth'
+form.userType.birth_date: 'Birth date'
 form.userType.placeholder_name: John
 form.userType.placeholder_patronymic: Michael
 controller.profileController.new_password_saved_success: 'New password successfully saved'
 controller.profileController.record_saved_success: 'User successfully added'
-controller.profileController.record_edited_success: 'Entry successfully edited.'
+controller.profileController.record_edited_success: 'Entry successfully edited'
 controller.group.create_success: 'Group successfully added'
 controller.group.update_success: 'Group successfully updated'
 form.groupType.group.main: 'General information'
@@ -32,22 +32,50 @@ form.groupType.group.roles: Permissions
 form.groupType.name: Title
 form.groupType.name.placeholder: 'Senior manager'
 form.userType.notifications_fieldset: Notifications
-form.userType.notifications: 'Bookings?'
+form.userType.notifications: 'Reservations?'
 form.userType.taskNotify: 'Tasks?'
-form.userType.notifications_help: 'Receive notifications on email?'
+form.userType.notifications_help: 'Receive email notifications?'
 form.userType.reports: 'Analytics?'
 form.userType.reports_help: 'Receive analytics on email?'
 form.userType.errors: 'Errors?'
-form.userType.errors_help: 'Receive notification about errors on email?'
-views.user.tabs.main_info_required: 'Necessary to fill out main data'
-views.user.tabs.main_info: 'Main data'
+form.userType.errors_help: 'Receive email notification about errors?'
+views.user.tabs.main_info_required: 'Must fill out general information!'
+views.user.tabs.main_info: 'General information'
 views.user.tabs.address: Address
 views.user.tabs.security: Security
 workShift.statuses.open: Open
 workShift.statuses.locked: Blocked
 workShift.statuses.closed: Closed
-workShift.notification.work_shift_expired: 'Work shift is lasting for more than 12 hours. Please close it'
-form.userType.expires_at.help: 'If not selected, this user does not expire'
+workShift.notification.work_shift_expired: 'Work shift lasts for more than 12 hours. Please close it'
+form.userType.expires_at.help: 'If not specifed, this user will not expire'
 form.userType.need_at_least_one_hotel: 'For shifts to take place, at least one hotel must be selected'
 view.google.enter_code: 'Please enter Google Autentificator code'
 view.google.check_mail: 'If your Google Authentificator isn''t set up, please check your e-mail for instructions'
+restaurantbundle.controller.manager: Manager
+restaurantbundle.controller.little_manager: 'Junior manager'
+restaurantbundle.controller.servive_staff: 'Service staff'
+restaurantbundle.controller.warehouse: Stock
+restaurantbundle.controller.portie: Porter
+restaurantbundle.controller.turagent: 'Tour agent'
+restaurantbundle.controller.buhgalter: Accountant
+mbhuserbundle.view.workshift.index.vyyti: Exit
+form.userType.locale: Language
+restaurantbundle.controller.analitic: Analytic
+mbhuserbundle.view.twofactor.email.vam.na.pochtu.vyslan.kod.dlya.vkhoda: 'A login code was sent to your email'
+mbhuserbundle.view.workshift.index.nachat.novuyu.smenu: 'Start new shift'
+views.user.tabs.document_relation: ID
+restaurantbundle.controller.system_administrator: 'System administrator'
+restaurantbundle.controller.hotel_administrator: 'Hotel administrator'
+restaurantbundle.controller.senior_manager: 'Senior manager'
+restaurantbundle.controller.restoran_senior_manager: 'Restaurant senior manager'
+restaurantbundle.controller.restoran_manager: 'Restaurant manager'
+view.wait.your_shift_is_blocked: 'Your shift is blocked and awaits for handing over'
+view.profile.change_pass: 'Change password'
+view.wait.resume: Resume
+view.wait.cash: Checkdesk
+view.wait.duration: Duration
+mbhuserbundle.view.workshift.wait.vyyti: Exit
+view.wait.time: '%hourst% hours %minutes% minutes'
+views.add_guest_modal.add_guest: 'Add guest'
+form.clientConfigType.notification.staff.label: 'Notification list for a user'
+form.clientConfigType.notification.staff.help: 'What type of notifications will be available to a user'

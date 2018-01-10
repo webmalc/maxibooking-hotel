@@ -48,7 +48,7 @@ class RoomCacheSubscriber implements EventSubscriber
                 new Command(
                     'mbh:cache:recalculate',
                     [
-                        '--roomTypes' => $doc->getId(),
+                        '--roomTypes' => $doc->getRoomType()->getId(),
                         '--begin' => $doc->getDate()->format('d.m.Y'),
                         '--end' => $doc->getDate()->format('d.m.Y'),
                     ],

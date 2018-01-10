@@ -71,7 +71,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'query_builder' => function (DocumentRepository $dr) use ($options) {
                         return $dr->fetchChildTariffsQuery($options['hotel'], 'rooms');
                     },
-                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.kvot',
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot',
                     'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.kvoty.ne.budut.sgenerirovany'),
                 ])
                 ->add('rooms', TextType::class, [

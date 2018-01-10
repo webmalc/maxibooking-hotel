@@ -90,7 +90,7 @@ class OneCExporter
 ' . $this->container->get('translator')->trans('mbhcashbundle.service.onecexporter.poluchatelbank1') . '=' . $hotelOrganization->getBank() . '
 ' . $this->container->get('translator')->trans('mbhcashbundle.service.onecexporter.poluchatelbik') . '=' . $hotelOrganization->getBankBik() . '
 ' . $this->container->get('translator')->trans('mbhcashbundle.service.onecexporter.poluchatelkorschet') . '=' . $hotelOrganization->getCorrespondentAccount() . '
-' . $this->container->get('translator')->trans('mbhcashbundle.service.onecexporter.vidplatezha') . '=' . $this->container->getParameter('mbh.cash.methods')[$cashDocument->getMethod()] . '
+' . $this->container->get('translator')->trans('mbhcashbundle.service.onecexporter.vidplatezha') . '=' . $this->container->get('translator')->trans($this->container->getParameter('mbh.cash.methods')[$cashDocument->getMethod()]) . '
 ' . $this->container->get('translator')->trans('mbhcashbundle.service.onecexporter.vidoplaty') . '=01
 ' . $this->container->get('translator')->trans('mbhcashbundle.service.onecexporter.kod') . '=
 ' . $this->container->get('translator')->trans('mbhcashbundle.service.onecexporter.statussostavitelya') . '=

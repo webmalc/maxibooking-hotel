@@ -380,6 +380,7 @@ price.datafixtures.mongodb.servicedata.extra_bed: 'Дополнительная 
 price.datafixtures.mongodb.servicedata.infant: Инфант
 price.datafixtures.mongodb.servicedata.early_check-in: 'Ранний заезд'
 price.datafixtures.mongodb.servicedata.late_check-out: 'Поздний выезд'
+price.datafixtures.mongodb.servicedata.wifi: WiFi
 price.datafixtures.mongodb.servicedata.internet: Интернет
 price.datafixtures.mongodb.servicedata.parking: Парковка
 price.datafixtures.mongodb.servicedata.children_bed: 'Детская кровать'
