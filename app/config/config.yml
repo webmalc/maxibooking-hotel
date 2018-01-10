@@ -272,19 +272,15 @@ vich_uploader:
         upload_image:
             namer: vich_uploader.namer_uniqid
             upload_destination: aws_s3_filesystem
-            uri_prefix:         ''
+            uri_prefix:         'upload/%client%'
+
         protected_upload:
             namer: vich_uploader.namer_uniqid
             upload_destination: protected_aws_s3_filesystem
-            uri_prefix:         ''
+            uri_prefix:         'protectedUpload/%client%'
 #Не работает с vichUploader
 oneup_flysystem:
     adapters:
-        aws_s3_adapter:
-            awss3v3:
-                client: mbh.aws_s3.client
-                bucket: 'mb-client-upload-files'
-                prefix: 'upload/%client%'
         aws_s3_cache_adapter:
             awss3v3:
                 client: mbh.aws_s3.client
@@ -292,49 +288,30 @@ oneup_flysystem:
                 prefix: ''
 
     filesystems:
-        aws_filesystem:
-            adapter: aws_s3_adapter
-            mount:  aws_filesystem
         aws_filesystem_cache:
             adapter: aws_s3_cache_adapter
             mount:  aws_filesystem_cache
 
-
-
-#liip_imagine:
-#    resolvers:
-#        default:
-#            web_path:
-#                cache_prefix: "clients/%client%/media/cache"
-
-    #dont touch data_root. Must be point to root web in our case
-#    loaders:
-#        default:
-#            filesystem:
-#                data_root: "%kernel.root_dir%/../web"
-#    loaders:
-#        protected:
-#            filesystem:
-#                data_root: "%kernel.root_dir%/../protectedUpload"
 liip_imagine:
     loaders:
         aws_loader:
             flysystem:
-                filesystem_service: oneup_flysystem.aws_filesystem_filesystem
-    data_loader: aws_loader
+                filesystem_service: oneup_flysystem.aws_filesystem_cache_filesystem
 
+    data_loader: aws_loader
     resolvers:
         flysystem_cache:
             flysystem:
                 filesystem_service: oneup_flysystem.aws_filesystem_cache_filesystem
                 cache_prefix: "cache/%client%"
                 root_url: "https://s3-eu-west-1.amazonaws.com/mb-client-upload-files"
-#        default:
-#            web_path:
-#                web_root:     "%kernel.root_dir%/../web"
-#                cache_prefix: "media/cache"
-    cache: flysystem_cache
+        protected_flysystem_cache:
+            flysystem:
+                filesystem_service: oneup_flysystem.aws_filesystem_cache_filesystem
+                cache_prefix: "protectedCache/%client%"
+                root_url: "https://s3-eu-west-1.amazonaws.com/mb-client-upload-files"
 
+    cache: flysystem_cache
 
     filter_sets:
         cache: ~
@@ -359,7 +336,7 @@ liip_imagine:
             filters:
               thumbnail: { size: [95, 80], mode: outbound, allow_upscale: true }
         stamp:
-            data_loader: protected
+            cache: protected_flysystem_cache
             quality: 80
             filters:
               thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }

@@ -5,20 +5,18 @@ namespace MBH\Bundle\PackageBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\BaseBundle\Form\ProtectedFileType;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Date as ConstrainDate;
-use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
@@ -287,18 +285,10 @@ class OrganizationType extends AbstractType
                 'constraints' => [new Length(['min' => 2, 'max' => 300])]
             ]);
 
-            $builder->add('stamp', FileType::class, [
+            $builder->add('stamp', ProtectedFileType::class, [
                 'group' => $additionalGroup,
                 'label' => 'form.organizationType.stamp',
                 'required' => false,
-                'constraints' => [
-                    new Image([
-                        /*'minWidth' => 400,
-                        'maxWidth' => 400,
-                        'maxHeight' => 200,
-                        'minHeight' => 200,*/
-                    ])
-                ],
                 'help' => $this->translator->trans('form.organization_type.scan', ['%size%' => '400x200']) . $logoHelp
             ]);
         }

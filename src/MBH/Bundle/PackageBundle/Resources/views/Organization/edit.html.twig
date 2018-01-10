@@ -1,5 +1,5 @@
 {% extends 'MBHPackageBundle:Organization:layout.html.twig' %}
-
+{% form_theme form.stamp _self %}
 {% block scripts %}
     {{ parent() }}
     {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/organizations/create.js' %}
@@ -13,6 +13,15 @@
 {% block content %}
     {{ form_start(form, {'action': path('organization_edit', {id: organization.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
+
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': organization, 'delete_route': 'organization_delete', confirm_text: 'organizations.confirm_delete'|trans({'%organization_name%': organization.name}, 'MBHPackageBundle')} %}
     {{ form_end(form) }}
+
+{% endblock %}
+
+{% block _organization_stamp_widget %}
+    {{ block('form_widget') }}
+    {% if stamp is defined and stamp is not null %}
+        <a href="{{ vich_uploader_asset(stamp, 'imageFile')|imagine_filter('stamp') }}" class="fancybox"> {{ 'form.organizationType.view_image'|trans }} </a>
+    {% endif %}
 {% endblock %}

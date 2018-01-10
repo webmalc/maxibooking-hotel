@@ -330,15 +330,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             ]);
         }
 
-
         $images = $roomType->getOnlineImagesByPriority();
-
-        if ($images) {
-            /** @var Image $image */
-            $image = $images[0];
-            dump($image);
-        }
-
 
         $imagePriorityForm = $this->createForm(ImagePriorityType::class, null, ['action' => '']);
 

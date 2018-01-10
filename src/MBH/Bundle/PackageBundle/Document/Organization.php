@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\ProtectedFile;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\HotelBundle\Document\City;
@@ -15,8 +16,6 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -186,7 +185,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     protected $comment;
 
     /**
-     * @var File
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\ProtectedFile", cascade={"persist"})
      */
     protected $stamp;
 
@@ -678,53 +677,18 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     }
 
     /**
-     * @return File
+     * @return ProtectedFile
      */
-    public function getStamp(string $client = null)
+    public function getStamp()
     {
-        if (!$this->stamp && $this->getId() && is_file($this->getPath($client))) {
-            $this->stamp = new File($this->getPath($client), $this->getId());
-        }
-
         return $this->stamp;
     }
 
-    /**
-     * @param UploadedFile $stamp
-     */
-    public function setStamp(UploadedFile $stamp = null)
+
+
+    public function setStamp($stamp)
     {
         $this->stamp = $stamp;
-    }
-
-    /**
-     * The absolute directory path where uploaded
-     * documents should be saved
-     * @return string
-     */
-    public function getUploadRootDir(string $client = null)
-    {
-        return realpath(
-            __DIR__.'/../../../../../protectedUpload'.($client ? '/clients/'.$client : '').'/orderDocuments'
-        );
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath(string $client = null)
-    {
-        return $this->getUploadRootDir($client).DIRECTORY_SEPARATOR.$this->getId();
-    }
-
-    /**
-     * @return File
-     */
-    public function upload(string $client = null)
-    {
-        if ($this->getStamp($client) and $this->getStamp($client) instanceof UploadedFile) {
-            return $this->getStamp($client)->move($this->getUploadRootDir($client), $this->getId());
-        }
     }
 
     /**

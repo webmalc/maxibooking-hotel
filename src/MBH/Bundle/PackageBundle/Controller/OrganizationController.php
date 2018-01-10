@@ -157,15 +157,11 @@ class OrganizationController extends Controller
      */
     public function editAction(Organization $organization, Request $request)
     {
-        $clientName = $this->get('kernel')->getClient();
-        $imageUrl = $organization->getStamp($clientName) ? $this->generateUrl('stamp', ['id' => $organization->getId()]) : null;
-
         $form = $this->createForm(OrganizationType::class, $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
             'id' => $organization->getId(),
             'type' => $organization->getType(),
             'scenario' => OrganizationType::SCENARIO_EDIT,
-            'imageUrl' => $imageUrl,
             'dm' => $this->dm
         ]);
 
@@ -173,23 +169,8 @@ class OrganizationController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $this->dm->persist($organization);
                 $this->dm->flush();
-                $imagine = new Imagine();
-                $size = new Box(400, 200);
-                $mode = ImageInterface::THUMBNAIL_OUTBOUND;
-                /** @var string|null $clientName */
-                $clientName = $this->container->get('kernel')->getClient();
                 $this->addFlash('success', 'controller.organization_controller.organization_successfully_edited');
-
-                if($stamp = $organization->getStamp($clientName) and $stamp instanceof UploadedFile) {
-                    $imagine->open($stamp->getPathname())->thumbnail($size, $mode)->save($stamp->getPathname(), [
-                        'format' => $stamp->getClientOriginalExtension()
-                    ]);
-
-                    $organization->upload($clientName);
-                }
-
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('organization_edit', ['id' => $organization->getId()]) :
                     $this->redirectToRoute('organizations');
