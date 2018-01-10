@@ -360,3 +360,4 @@ services:
               credentials:
                   key: '%s3_id%'
                   secret: '%s3_secret%'
+

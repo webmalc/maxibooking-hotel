@@ -3,6 +3,7 @@
 use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
 use Knp\Bundle\GaufretteBundle\KnpGaufretteBundle;
 use MBH\Bundle\BillingBundle\MBHBillingBundle;
+use Oneup\FlysystemBundle\OneupFlysystemBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
@@ -72,6 +73,10 @@ class AppKernel extends Kernel
             new MBH\Bundle\WarehouseBundle\MBHWarehouseBundle(),
             new MBH\Bundle\RestaurantBundle\MBHRestaurantBundle(),
             new MBHBillingBundle(),
+            new KnpGaufretteBundle(),
+            new OneupFlysystemBundle()
+
+
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
