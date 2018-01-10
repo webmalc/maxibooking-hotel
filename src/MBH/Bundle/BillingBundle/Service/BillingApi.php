@@ -28,6 +28,7 @@ class BillingApi
     const BILLING_HOST = 'https://billing.maxi-booking.com';
     const RESULT_API_URL = '/result';
     const CLIENT_PROPERTY_URL = '/property';
+    const CLIENT_INSTALL_RESULT_URL_END = '/install_result';
     const FMS_ORGANS_ENDPOINT_SETTINGS = ['endpoint' => 'fms-fms', 'model' => AuthorityOrgan::class, 'returnArray' => false];
     const COUNTRIES_ENDPOINT_SETTINGS = ['endpoint' => 'countries', 'model' => Country::class, 'returnArray' => false];
     const REGIONS_ENDPOINT_SETTINGS = ['endpoint' => 'regions', 'model' => Region::class, 'returnArray' => false];
@@ -59,7 +60,7 @@ class BillingApi
     {
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
-        $this->billingLogin = 'danya';
+        $this->billingLogin = $billingLogin;
         $this->locale = $locale;
         $this->serializer = $serializer;
     }
@@ -74,17 +75,26 @@ class BillingApi
 
     }
 
+    public function sendClientInstallationResult(Result $result, $clientName)
+    {
+        $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT_SETTINGS['endpoint'], $clientName) . self::CLIENT_INSTALL_RESULT_URL_END;
+        $this->sendPost($url, $result->getApiResponse(true), true);
+    }
+
     public function getClientProperties()
     {
 
     }
 
     /**
+     * @param $login
      * @return object|Client
      */
-    public function getClient()
+    public function getClient($login = null)
     {
-        return $this->getBillingEntityById(self::CLIENTS_ENDPOINT_SETTINGS, $this->billingLogin);
+        $login = $login ?? $this->billingLogin;
+
+        return $this->getBillingEntityById(self::CLIENTS_ENDPOINT_SETTINGS, $login);
     }
 
     /**

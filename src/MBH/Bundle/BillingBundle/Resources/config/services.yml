@@ -81,6 +81,19 @@ services:
         arguments: ["%mongodb_admin_login%","%mongodb_admin_password%","%mongodb_host%","admin","%mongodb_options%"]
 
 
+    mbh.client_instance_manager:
+        class: MBH\Bundle\BillingBundle\Service\ClientInstanceManager
+        arguments:
+            - '@mbh.maintenance.manager'
+            - '@mbh.billing.logger'
+            - '@mbh.service.client_list_getter'
+            - '@mbh.helper'
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@kernel'
+            - '@mbh.billing.api'
+            - '@mbh.hotel.room_type_manager'
+            - '@mbh.hotel.hotel_manager'
+
     mbh.billing_response_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler
         arguments: ['%support%', '@mbh.billing_payer_form_handler']

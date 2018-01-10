@@ -1,20 +1,21 @@
 <?php
 
-
 namespace MBH\Bundle\BillingBundle\Controller;
-
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MongoDB\Driver\Command;
 use MongoDB\Driver\Manager;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -23,31 +24,46 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class MaintenanceController extends BaseController
 {
-
     /**
      * @Route(
      *     "/install",
      *     requirements={"_format":"json"}
      * )
-     * @param string $client
-     * @ParamConverter()
-     * @return Response
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function installAction(Client $client = null)
+    public function installAction(Request $request)
     {
-        $application = new Application($this->container->get('kernel'));
-        $application->setAutoExit(true);
-        $input = new ArrayInput(
-            [
-                'command' => 'mbh:client:install',
-                '--clients' => $client->getName(),
-                '--billing'
-            ]
-        );
-        $output = new NullOutput();
-        $application->run($input, $output);
+        $clientLogin = $request->get('client_login');
+        $token = $request->get('token');
+        if ($token !== BillingApi::AUTH_TOKEN) {
+            throw new UnauthorizedHttpException('Incorrect token!');
+        }
 
-        return new JsonResponse(['status' => 'command started']);
+        $result = $this->get('mbh.client_instance_manager')->runClientInstallationCommand($clientLogin);
+
+        return new JsonResponse($result->getApiResponse());
+    }
+
+    /**
+     * @Route("/install_properties")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function installPropertiesAction(Request $request)
+    {
+        //TODO: Или как там данные передаются
+        $login = $request->get('login');
+        $result = $this->get('mbh.client_instance_manager')->installFixtures($login);
+        if ($result->isSuccessful()) {
+            $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
+            $result->setData([
+                'token' => $admin->getApiToken()->getToken(),
+                'url' => Client::compileClientUrl($this->getParameter('client'))
+            ]);
+        }
+
+        return new JsonResponse($result->getApiResponse(true));
     }
 
     /**

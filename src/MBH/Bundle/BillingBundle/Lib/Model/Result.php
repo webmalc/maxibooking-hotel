@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BillingBundle\Lib\Model;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 
 class Result
 {
@@ -66,12 +67,28 @@ class Result
         return $this;
     }
 
+    public function addError($error)
+    {
+        $this->isSuccessful = false;
+        if (!is_array($this->errors)) {
+            $this->errors = [];
+        }
+        $this->errors[] = $error;
+
+        return $this;
+    }
+
     /**
+     * @param array $errors
      * @return Result
      */
-    public static function createErrorResult()
+    public static function createErrorResult($errors = [])
     {
-        return (new self())->setIsSuccessful(false);
+        $result = (new self())
+            ->setIsSuccessful(false)
+            ->setErrors($errors);
+
+        return $result;
     }
 
     /**
@@ -86,5 +103,32 @@ class Result
         }
 
         return $result;
+    }
+
+    /**
+     * @param bool $dataAsSeparatedFields
+     * @return array
+     * @throws Exception
+     */
+    public function getApiResponse($dataAsSeparatedFields = false)
+    {
+        $response = [
+            'status' => $this->isSuccessful(),
+            'errors' => $this->getErrors()
+        ];
+
+        $responseData = $this->getData();
+        if ($this->isSuccessful() && $responseData) {
+            if ($dataAsSeparatedFields) {
+                if (!is_array($responseData)) {
+                    throw new Exception('Data in response with separated data fields should be type of array ');
+                }
+                array_merge($response, $responseData);
+            } else {
+                $response['data'] = $responseData;
+            }
+        }
+
+        return $response;
     }
 }

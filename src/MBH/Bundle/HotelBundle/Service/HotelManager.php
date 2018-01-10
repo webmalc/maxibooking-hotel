@@ -2,15 +2,14 @@
 
 namespace MBH\Bundle\HotelBundle\Service;
 
-
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 
 /**
  * Class HotelManager
-
  */
 class HotelManager
 {
@@ -43,5 +42,26 @@ class HotelManager
         $process->run();
 
         return true;
+    }
+
+    /**
+     * @param BillingProperty $billingProperty
+     * @param bool $isDefault
+     * @return Hotel
+     */
+    public function createByBillingProperty(BillingProperty $billingProperty, bool $isDefault)
+    {
+        $hotel = (new Hotel())
+            ->setFullTitle($billingProperty->getName())
+            ->setIsDefault($isDefault)
+            ->setCityId($billingProperty->getCity());
+
+        if (!empty($billingProperty->getUrl())) {
+            $hotel->setAboutLink($billingProperty->getUrl());
+        }
+
+        $this->dm->persist($hotel);
+
+        return $hotel;
     }
 }
