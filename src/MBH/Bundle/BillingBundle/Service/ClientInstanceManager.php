@@ -77,13 +77,10 @@ class ClientInstanceManager
         $command = sprintf('php console %s --env=%s %s',$command, $kernelEnv, $isDebug ?'': '--no-debug');
         $process = new Process($command, $cwd, null, null, 60*10);
         try {
-            $process->run();
+            $process->start();
         } catch (ProcessFailedException|ProcessTimedOutException $e) {
             throw new ClientMaintenanceException($e->getMessage());
         }
-
-        var_dump($process->getOutput());
-
 
         return $result;
     }
