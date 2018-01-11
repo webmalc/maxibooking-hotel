@@ -89,6 +89,7 @@ class PackagesDailyReportCompiler
     ) {
         $table = $this->report->addReportTable($forEmail);
         $table->addClass('daily-report-table');
+        $table->addClass('text-center');
         $this->addTitleRows($table, $hotels, $begin, $end);
 
         $cashDocCriteria = new CashDocumentQueryCriteria();
@@ -97,18 +98,19 @@ class PackagesDailyReportCompiler
         $cashDocCriteria->end = $end;
         $cashDocuments = $this->dm->getRepository('MBHCashBundle:CashDocument')->findByCriteria($cashDocCriteria);
 
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
         $cashDocumentsByCreationDate = [];
         $relatedOrdersIds = [];
         /** @var CashDocument $cashDocument */
         foreach ($cashDocuments as $cashDocument) {
-            $cashDocumentsByCreationDate[$cashDocument->getCreatedAt()->format('d.m.Y')][] = $cashDocument;
-            $relatedOrdersIds[] = $cashDocument->getOrder()->getId();
+            if ($cashDocument->getOrder()) {
+                $cashDocumentsByCreationDate[$cashDocument->getCreatedAt()->format('d.m.Y')][] = $cashDocument;
+                $relatedOrdersIds[] = $cashDocument->getOrder()->getId();
+            }
         }
         $relatedOrdersIds = array_unique($relatedOrdersIds);
-
-        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-            $this->dm->getFilterCollection()->disable('softdeleteable');
-        }
 
         $relatedPackages = $this->dm
             ->getRepository('MBHPackageBundle:Package')
@@ -265,6 +267,7 @@ class PackagesDailyReportCompiler
         $cashDocuments = $this->dm
             ->getRepository('MBHCashBundle:CashDocument')
             ->createQueryBuilder()
+            ->field('isPaid')->equals(true)
             ->field('order.id')->in($orderIds)
             ->getQuery()
             ->execute();
@@ -305,7 +308,7 @@ class PackagesDailyReportCompiler
     private function addTitleRows(ReportTable $table, $hotels, \DateTime $begin, \DateTime $end)
     {
         $titleRow = $table->addRow(null, true);
-        $titleRow->addClass('title-cell');
+        $titleRow->addClass('title-row');
         $titleRow->addClass('info');
 
         $beginYearString = $begin->format('Y');
@@ -313,7 +316,8 @@ class PackagesDailyReportCompiler
         $yearsString = $beginYearString === $endYearString
             ? $beginYearString
             : $beginYearString.' - '.$endYearString;
-        $titleRow->createAndAddCell($yearsString, 1, 3)->addClass(Report::HORIZONTAL_SCROLLABLE_CLASS);
+        $firstCell = $titleRow->createAndAddCell($yearsString, 1, 3)->addClass(Report::HORIZONTAL_SCROLLABLE_CLASS);
+        $firstCell->addStyle('min-width:70px');
 
         $numberOfHotels = count($hotels);
         $titleRow->createAndAddCell(
@@ -388,15 +392,14 @@ class PackagesDailyReportCompiler
         $numberOfColumnsByHotels = 7;
         for ($i = 0; $i < $numberOfColumnsByHotels; $i++) {
             foreach ($hotels as $hotel) {
-                $cell = $secondTitleRow->createAndAddCell($hotel->getName(), 1, 2);
-                if ($i == 2) {
-                    $cell->addClass('title-cell');
-                }
+                $secondTitleRow->createAndAddCell($hotel->getName(), 1, 2);
             }
         }
 
         $thirdTitleRow = $table->addRow(null, true);
         $thirdTitleRow->addClass('warning');
+        $thirdTitleRow->addClass('title-row');
+
         for ($i = 0; $i < 6; $i++) {
             foreach ($hotels as $hotel) {
                 $thirdTitleRow->createAndAddCell($hotel->getName());

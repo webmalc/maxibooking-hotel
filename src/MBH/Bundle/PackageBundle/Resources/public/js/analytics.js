@@ -96,11 +96,14 @@ $(document).ready(function () {
                         $(analytics_filter_content).highcharts().series[seriesNumber].hide();
                         var $chart = $(analytics_filter_content).highcharts();
                         var series = $chart.series;
+
+                        var numberOfVisibleSeries = getNumberOfVisibleSeries(series);
+                        var showAllSeries = numberOfVisibleSeries === 0 || numberOfVisibleSeries === 1;
                         series.forEach(function (elem, index) {
-                            if (index !== seriesNumber) {
-                                elem.setVisible(false, false);
-                            } else {
+                            if (index === seriesNumber || showAllSeries) {
                                 elem.setVisible(true, false);
+                            } else {
+                                elem.setVisible(false, false);
                             }
                         });
                         $chart.redraw();
@@ -130,3 +133,14 @@ $(document).ready(function () {
         chartGet();
     });
 });
+
+function getNumberOfVisibleSeries(series) {
+    var numberOfVisibleSeries = 0;
+    series.forEach(function (line) {
+        if (line.visible) {
+            numberOfVisibleSeries++;
+        }
+    });
+
+    return numberOfVisibleSeries;
+}

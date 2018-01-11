@@ -9,5 +9,18 @@ services:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.online.log", 200]
 
-    mbh.payment_systems_helper:
-        class: MBH\Bundle\OnlineBundle\Services\PaymentSystemsHelper
+    mbh.api_response_compiler:
+        class: MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler
+        arguments:
+            - '@translator'
+
+    mbh.api_handler:
+        class: MBH\Bundle\OnlineBundle\Services\ApiHandler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+
+    mbh.form_type:
+        class: MBH\Bundle\OnlineBundle\Form\FormType
+        arguments: ['%country_type%']
+        tags:
+            {name: form.type}

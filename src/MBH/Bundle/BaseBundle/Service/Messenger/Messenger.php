@@ -37,12 +37,10 @@ class Messenger implements \SplObserver
         /** @var NotifierMessage $message */
         /** @var Notifier $notifier */
         $message = $notifier->getMessage();
-        $text = empty($message->getTranslateParams())
-            ? $message->getText()
-            : $this->container->get('translator')->trans($message->getText(), $message->getTranslateParams());
+        $messageText = $this->container->get('translator')->trans($message->getText(), $message->getTranslateParams());
 
         $this->send(
-            $text,
+            $messageText,
             $message->getFrom(),
             $message->getType(),
             $message->getAutohide(),

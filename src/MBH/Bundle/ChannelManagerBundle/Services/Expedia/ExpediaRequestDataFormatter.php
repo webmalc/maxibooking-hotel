@@ -90,7 +90,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $priceList = [];
                     if (!is_null($priceCache)) {
                         $priceList = $priceCalculator->calcPrices($priceCache->getRoomType(), $priceCache->getTariff(), $periodBegin, $periodBegin);
-                        $hasPriceList = count($priceList) > 0;
+                        $hasPriceList = is_array($priceList) && count($priceList) > 0;
                     }
 
                     $ratePlanElement = $roomTypeElement->addChild('RatePlan');

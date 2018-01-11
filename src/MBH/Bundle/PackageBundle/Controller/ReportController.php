@@ -554,6 +554,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         }
 
         $roomTypeList = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
+        $roomStatuses = $this->dm
+            ->getRepository('MBHHotelBundle:RoomStatus')
+            ->findBy([
+                'hotel' => $this->hotel,
+                'isEnabled' => true
+            ]);
 
         if (!$roomTypes) {
             $roomTypes = $roomTypeList;
@@ -563,9 +569,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $end = new \DateTime('midnight +6 day');
 
         $generator = $this->get('mbh.package.report.filling_report_generator');
-        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes);
+        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes, [], false);
 
         return [
+                'roomStatusOptions' => array_merge(['withoutStatus' => 'Без статуса'], $this->helper->sortByValue($roomStatuses)),
                 'roomTypes' => $roomTypes,
                 'roomTypeList' => $roomTypeList,
                 'begin' => $begin,
@@ -616,9 +623,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $begin = new \DateTime('midnight -1 day');
             $end = new\DateTime('midnight +6 day');
         }
+        $roomStatusOptions = $this->helper->getDataFromMultipleSelectField($request->get('roomStatus'));
 
         $generator = $this->get('mbh.package.report.filling_report_generator');
-        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes);
+        $isEnabled = $request->get('isEnabled') === 'true';
+        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes, $roomStatusOptions, $isEnabled);
 
         return $result + ['roomTypes' => $roomTypes];
     }
@@ -826,8 +835,16 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     public function packagesDailyReportAction()
     {
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $begin = new \DateTime('midnight - 30 days');
+        $end = new \DateTime('midnight');
+
+        list($calculationBegin, $calculationEnd) = $this->helper->getDefaultDatesOfSettlement();
 
         return [
+            'begin' => $begin,
+            'end' => $end,
+            'calculationBegin' => $calculationBegin,
+            'calculationEnd' => $calculationEnd,
             'hotels' => $hotels,
         ];
     }
@@ -840,15 +857,18 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function packagesDailyReportTableAction(Request $request)
     {
-        $defaultBeginDate = $this->clientConfig->getActualBeginDate();
+        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
 
         $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
         $end = $this->helper->getDateFromString($request->query->get('end'))
             ?? (clone $defaultBeginDate)->modify('+45 days');
+
+        list($defaultCalculationBegin, $defaultCalculationEnd) = $this->helper->getDefaultDatesOfSettlement();
         $calculationBegin = $this->helper->getDateFromString($request->query->get('calcBegin'))
-            ?? new \DateTime('first day of January ' . date('Y'));
+            ?? $defaultCalculationBegin;
         $calculationEnd = $this->helper->getDateFromString($request->query->get('calcEnd'))
-            ?? new \DateTime('1st January Next Year');
+            ?? $defaultCalculationEnd;
+
         $hotels = $this->dm
             ->getRepository('MBHHotelBundle:Hotel')
             ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')));

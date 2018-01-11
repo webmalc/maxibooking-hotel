@@ -376,4 +376,43 @@ class RoomRepository extends AbstractBaseRepository
 
         return $docs;
     }
+
+    /**
+     * @param array|null $statusIds
+     * @param bool $includeWithoutStatuses
+     * @param bool $isOnlyEnabled
+     * @return array
+     */
+    public function getNumberOfRoomsByRoomTypeIds($statusIds = null, $includeWithoutStatuses = true, $isOnlyEnabled = false)
+    {
+        $qb = $this->createQueryBuilder();
+        if ($isOnlyEnabled) {
+            $qb->field('isEnabled')->equals(true);
+        }
+        if ($includeWithoutStatuses) {
+            $qb->addOr($qb->expr()->field('status.0')->exists(false));
+        }
+        if (!is_null($statusIds)) {
+            $qb->addOr($qb->expr()->field('status.id')->in($statusIds));
+        }
+        
+        $roomsQuantityByRoomTypeIds = $qb
+            ->map('function() {
+                var roomTypeId = this.roomType.$id;
+                emit(roomTypeId.valueOf(), this);
+            }')
+            ->reduce('function(key, values) {
+                return values.length;
+            }')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $result = [];
+        foreach ($roomsQuantityByRoomTypeIds as $roomsQuantityData) {
+            $result[$roomsQuantityData['_id']] = (int)$roomsQuantityData['value'];
+        }
+
+        return $result;
+    }
 }

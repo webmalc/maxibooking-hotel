@@ -31,6 +31,19 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="form-group input">
+                <label for="filling-report-filter-status"><i class="fa fa-server" title='{{ 'report.filling.filling.room_status'|trans }}' data-toggle='tooltip'></i></label>
+                <select style="width: 250px;" name="roomStatus[]" multiple data-placeholder='{{ 'report.filling.filling.room_status'|trans }}' id="filling-report-filter-status" class="form-control input-sm">
+                    <option></option>
+                    {% for roomStatusId, roomStatus in roomStatusOptions %}
+                        <option value="{{ roomStatusId }}">{{ roomStatus }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group input">
+                <label for="filling-report-filter-isEnabled"><i class="fa fa-toggle-on" title="{{ 'report.filling.filling.only_enabled'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>&nbsp;</label>
+                <input type="checkbox" id="filling-report-filter-isEnabled">
+            </div>
         </form>
         {% endblock content %}
     {% endembed %}

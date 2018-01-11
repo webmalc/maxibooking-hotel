@@ -11,6 +11,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PriceBundle\Document\Traits\ConditionsTrait;
 use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
@@ -26,7 +27,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Tariff extends Base implements ConditionsInterface
 {
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -120,7 +120,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="begin")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @ODM\Index()
      */
@@ -129,7 +129,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="end")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @ODM\Index()
      */
@@ -233,7 +233,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -405,7 +405,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * Get begin
      *
-     * @return date $begin
+     * @return \DateTime $begin
      */
     public function getBegin()
     {
@@ -427,7 +427,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * Get end
      *
-     * @return date $end
+     * @return \DateTime $end
      */
     public function getEnd()
     {
@@ -735,5 +735,58 @@ class Tariff extends Base implements ConditionsInterface
         $this->minPerPrepay = $minPerPrepay;
 
         return $this;
+    }
+
+    /**
+     * @param bool $isFull
+     * @return array
+     */
+    public function getJsonSerialized($isFull = false)
+    {
+        $data = [
+            'id' => $this->getId(),
+            'title' => $this->getName(),
+            'description' => $this->getDescription() ?? '',
+            'hotel' => $this->getHotel()->getId()
+        ];
+        if ($isFull) {
+            $comprehensiveData = [
+                'isEnabled' => $this->getIsEnabled(),
+                'isDefault' => $this->getIsDefault(),
+                'isOnline' => $this->getIsOnline(),
+                'childAge' => $this->getChildAge(),
+                'infantAge' => $this->getInfantAge(),
+            ];
+
+            if (!is_null($this->getParent())) {
+                $comprehensiveData['parentTariffId'] = $this->getParent()->getId();
+            }
+            if (!is_null($this->getBegin())) {
+                $comprehensiveData['begin'] = $this->getBegin()->format(ApiHandler::DATE_FORMAT);
+            }
+            if (!is_null($this->getEnd())) {
+                $comprehensiveData['end'] = $this->getEnd()->format(ApiHandler::DATE_FORMAT);
+            }
+            $defaultServicesData = [];
+            foreach ($this->defaultServices as $defaultService) {
+                $defaultServicesData[] = [
+                    'service' => $defaultService->getService()->getJsonSerialized(),
+                    'amount' => $defaultService->getAmount(),
+                    'persons' => $defaultService->getPersons(),
+                    'nights' => $defaultService->getNights()
+                ];
+            }
+            $comprehensiveData['defaultServices'] = $defaultServicesData;
+
+            $availableServiceData = [];
+            foreach ($this->getServices() as $service) {
+                $availableServiceData[] = $service->getJsonSerialized();
+            }
+            $comprehensiveData['availableServices'] = $availableServiceData;
+
+            $data = array_merge($data, $comprehensiveData);
+        }
+
+        return $data;
     }
 }

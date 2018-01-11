@@ -80,7 +80,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="birthday")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $birthday;
@@ -88,7 +88,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -98,7 +98,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -107,7 +107,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -117,7 +117,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -143,7 +143,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $defaultNoticeDoc = false;
@@ -151,7 +151,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

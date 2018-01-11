@@ -70,7 +70,9 @@
                             <td>
                                 {% if unwelcome.hotel %}
                                     <div>{{ unwelcome.hotel.title }}</div>
-                                    <small>{{ unwelcome.hotel.city }}</small>
+                                    {% if unwelcome.hotel.cityId %}
+                                        <small>{{ get_city(unwelcome.hotel.cityId).name }}</small>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                             <td>

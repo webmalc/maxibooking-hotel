@@ -43,6 +43,7 @@ $(document).ready(function() {
 
         e.preventDefault();
         guestModal.modal('show');
+        guestModal.find('.select2-container').css('width', '100%');
         button.click(function() {
             errors.hide();
             $.ajax({

@@ -157,24 +157,6 @@ final class MongoMaintenance extends AbstractMaintenance
         return count($cloneDbResult) > 0;
     }
 
-    protected function configureOptions(OptionsResolver $resolver)
-    {
-        parent::configureOptions($resolver);
-
-        $resolver
-            ->setRequired(['host', 'port'])
-            ->setDefaults(
-                [
-                    'host' => $this->mainConfig['parameters']['mongodb_host'],
-                    'port' => $this->mainConfig['parameters']['mongodb_port'],
-                    'sampleDbName' => self::SAMPLE_DB,
-                    'copyDbScript' => $this->getContainer()->get('kernel')->getRootDir(
-                        ).'/../scripts/deployScripts/mongoDbCopy.sh',
-
-                ]
-            );
-    }
-
     protected function getCurrentDbName(string $clientName)
     {
         return $this->getClientConfig($clientName)['parameters']['mongodb_database'];
@@ -193,5 +175,24 @@ final class MongoMaintenance extends AbstractMaintenance
 
         return $this->executeCommand($command);
     }
+
+    protected function configureOptions(OptionsResolver $resolver)
+    {
+        parent::configureOptions($resolver);
+
+        $resolver
+            ->setRequired(['host', 'port'])
+            ->setDefaults(
+                [
+                    'host' => $this->mainConfig['parameters']['mongodb_host'],
+                    'port' => $this->mainConfig['parameters']['mongodb_port'],
+                    'sampleDbName' => self::SAMPLE_DB,
+                    'copyDbScript' => $this->getContainer()->get('kernel')->getRootDir(
+                        ).'/../scripts/deployScripts/mongoDbCopy.sh',
+
+                ]
+            );
+    }
+
 
 }

@@ -18,37 +18,7 @@ $(document).ready(function () {
         }
     });
 
-    var $authorityOrgan = $('#mbh_document_relation_authorityOrgan');
-    select2Text($authorityOrgan).select2({
-        minimumInputLength: 3,
-        placeholder: Translator.trans("020_user.make_a_choice"),
-        allowClear: true,
-        ajax: {
-            url: Routing.generate('authority_organ_json_list'),
-            dataType: 'json',
-            data: function (term) {
-                return {
-                    query: term // search term
-                };
-            },
-            results: function (data) {
-                var results = [];
-                $.each(data, function (k, v) {
-                    results.push({id: k, text: v});
-                });
-                return {results: results};
-            }
-        },
-        initSelection: function (element, callback) {
-            var id = $(element).val();
-            if (id !== "") {
-                $.ajax(Routing.generate('ajax_authority_organ', {id: id}), {
-                    dataType: "json"
-                }).done(function (data) {
-                    callback(data);
-                });
-            }
-        },
-        dropdownCssClass: "bigdrop"
-    });
-})
+    initSelect2TextForBilling('mbh_document_relation_authorityOrganId', BILLING_API_SETTINGS.fms);
+    initSelect2TextForBilling('mbh_address_object_decomposed_countryTld', BILLING_API_SETTINGS.countries);
+    initSelect2TextForBilling('mbh_address_object_decomposed_regionId', BILLING_API_SETTINGS.regions);
+});

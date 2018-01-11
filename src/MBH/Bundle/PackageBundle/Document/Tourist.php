@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -13,7 +14,6 @@ use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
-use MBH\Bundle\VegaBundle\Document\VegaState;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -107,7 +107,7 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="birthday")
+     * @ODM\Field(type="date")
      * @ODM\Index
      * @Assert\Date()
      */
@@ -177,10 +177,10 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
      */
     protected $note;
     /**
-     * @var VegaState|null
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
+     * @var string
+     * @ODM\Field(type="string")
      */
-    protected $citizenship;
+    protected $citizenshipTld;
     /**
      * @ODM\EmbedOne(targetDocument="BirthPlace")
      * @var BirthPlace
@@ -221,21 +221,20 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
 
     /**
      * @var bool
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @ODM\Index()
      */
     protected $isUnwelcome = false;
 
     /**
-     *
      * @ODM\ReferenceMany(targetDocument="RestarauntSeat", mappedBy="tourist")
      */
     protected $restarauntSeat;
 
     public function __construct()
     {
-        $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->restarauntSeat = new ArrayCollection();
+        $this->packages = new ArrayCollection();
     }
 
     public function getShortName()
@@ -769,19 +768,19 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
     }
 
     /**
-     * @return VegaState
+     * @return string
      */
-    public function getCitizenship()
+    public function getCitizenshipTld()
     {
-        return $this->citizenship;
+        return $this->citizenshipTld;
     }
 
     /**
-     * @param VegaState $citizenship
+     * @param string $citizenshipTld
      */
-    public function setCitizenship(VegaState $citizenship = null)
+    public function setCitizenshipTld(string $citizenshipTld = null)
     {
-        $this->citizenship = $citizenship;
+        $this->citizenshipTld = $citizenshipTld;
     }
 
     /**
@@ -798,17 +797,6 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
     public function setBirthplace(BirthPlace $birthplace = null)
     {
         $this->birthplace = $birthplace;
-    }
-
-    /**
-     * @ODM\PrePersist
-     * @ODM\PreUpdate
-     */
-    public function preSave()
-    {
-        if ($this->getAddressObjectDecomposed() && $this->getAddressObjectDecomposed()->getCountry() && $this->getAddressObjectDecomposed()->getRegion()) {
-            $this->fillAddressObject();
-        }
     }
 
     /**
@@ -908,25 +896,6 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
         $this->isUnwelcome = $isUnwelcome;
     }
 
-    private function fillAddressObject()
-    {
-        $chain = [
-            $this->getAddressObjectDecomposed()->getCountry()->getName(),
-            $this->getAddressObjectDecomposed()->getRegion()->getName(),
-            $this->getAddressObjectDecomposed()->getCity(),
-            $this->getAddressObjectDecomposed()->getStreet(),
-            $this->getAddressObjectDecomposed()->getHouse(),
-            $this->getAddressObjectDecomposed()->getCorpus(),
-            $this->getAddressObjectDecomposed()->getFlat()
-        ];
-
-        $chain = array_map('strval', $chain);
-        if (($lastKey = array_search('', $chain)) !== false)
-            $chain = array_slice($chain, 0, $lastKey);
-
-        $this->setAddressObjectCombined(implode(' ', $chain));
-    }
-
     public function jsonSerialize()
     {
         return [
@@ -937,7 +906,7 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
             'phone' => $this->phone,
             'email' => $this->email,
             'communicationLanguage' => $this->communicationLanguage,
-            'citizenship' => $this->getCitizenship() ? $this->getCitizenship()->getName() : null,
+            'citizenshipTld' => $this->getCitizenshipTld() ? $this->getCitizenshipTld() : null,
             'documentRelation' => $this->getDocumentRelation() ? $this->getDocumentRelation() : null
         ];
     }
