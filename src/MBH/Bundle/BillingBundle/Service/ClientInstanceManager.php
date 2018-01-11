@@ -77,26 +77,10 @@ class ClientInstanceManager
         $command = sprintf('php console %s --env=%s %s',$command, $kernelEnv, $isDebug ?'': '--no-debug');
         $process = new Process($command, $cwd, null, null, 60*10);
         try {
-            $process->mustRun();
+            $process->run();
         } catch (ProcessFailedException|ProcessTimedOutException $e) {
             throw new ClientMaintenanceException($e->getMessage());
         }
-
-
-//        $consoleFolder = $this->kernel->getRootDir() . '/../bin';
-//        $commandLine = 'php console mbhbilling:billing_client_install_command --client=' . $clientName;
-//
-//        $process = new Process($commandLine, $consoleFolder, null, null, 60);
-//        $process->start();
-//        $application = new Application($this->kernel);
-//        $application->setAutoExit(false);
-//        $input = new ArrayInput([
-//            'command' => 'mbhbilling:billing_client_install_command',
-//            '--client' => $clientName
-//        ]);
-//
-//        $output = new BufferedOutput();
-//        $application->run($input, $output);
 
         var_dump($process->getOutput());
 
