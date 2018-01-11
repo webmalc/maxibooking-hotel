@@ -18,6 +18,11 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+/**
+ * Class BillingInstallCommand
+ * @package MBH\Bundle\BillingBundle\Command
+ * @deprecated
+ */
 class BillingInstallCommand extends Command
 {
 

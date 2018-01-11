@@ -4,6 +4,7 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 
 class MaintenanceManager
 {
@@ -38,7 +39,7 @@ class MaintenanceManager
         }
     }
 
-
+    /** @throws ClientMaintenanceException */
     public function rollBack(string $clientName)
     {
         foreach (array_reverse($this->getMaintenances()->toArray()) as $maintenance) {

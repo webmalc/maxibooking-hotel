@@ -5,6 +5,7 @@ namespace MBH\Bundle\BillingBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Exception\RequestException;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingRoom;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
@@ -65,7 +66,7 @@ class ClientInstanceManager
         $consoleFolder = $this->kernel->getRootDir() . '/../bin';
         $commandLine = 'php console mbhbilling:billing_client_install_command --client=' . $clientName;
 
-        $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $client], null, 60);
+        $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $clientName], null, 60);
         $process->mustRun();
 
         return $result;
@@ -88,7 +89,7 @@ class ClientInstanceManager
             $message = 'Client ' . $clientName . ' install error.' . $e->getMessage();
             try {
                 $this->maintenanceManager->rollBack($clientName);
-                $this->addLogMessage($message, Logger::CRITICAL);
+                $this->logger->addRecord(Logger::CRITICAL,$message);
                 $result->addError($message);
             } catch (ClientMaintenanceException $e) {
                 $message = $message . ' RollBackError. ' . $e->getMessage();
@@ -178,20 +179,20 @@ class ClientInstanceManager
             }
 
             $isHotelDefault = $propertyNumber === 0;
-//            $hotel = $this->hotelManager->createByBillingProperty($property, $isHotelDefault);
-//
-//            foreach ($property->getRooms() as $roomUrl) {
-//                try {
-//                    /** @var BillingRoom $billingRoom */
-//                    $billingRoom = $this->billingApi->getBillingEntityByUrl($roomUrl, BillingRoom::class);
-//                } catch (\Throwable $exception) {
-//                    return Result::createErrorResult([$exception->getMessage()]);
-//                }
-//
-//                $this->roomTypeManager->createByBillingRoom($billingRoom, $hotel, true);
-//            }
+            $hotel = $this->hotelManager->createByBillingProperty($property, $isHotelDefault);
 
-            $manager->flush();
+            foreach ($property->getRooms() as $roomUrl) {
+                try {
+                    /** @var BillingRoom $billingRoom */
+                    $billingRoom = $this->billingApi->getBillingEntityByUrl($roomUrl, BillingRoom::class);
+                } catch (\Throwable $exception) {
+                    return Result::createErrorResult([$exception->getMessage()]);
+                }
+
+                $this->roomTypeManager->createByBillingRoom($billingRoom, $hotel, true);
+            }
+
+            $this->dm->flush();
         }
 
         return Result::createSuccessResult();
@@ -212,4 +213,6 @@ class ClientInstanceManager
     {
         return $this->helper->getRandomString();
     }
+
+
 }

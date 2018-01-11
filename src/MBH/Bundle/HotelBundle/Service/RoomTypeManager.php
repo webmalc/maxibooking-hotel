@@ -79,11 +79,11 @@ class RoomTypeManager
             ->setHotel($hotel)
             ->setFullTitle($billingRoom->getName())
             //TODO: Узнать про кол-во мест
-//            ->setPlaces($data['places'])
-//            ->setAdditionalPlaces($data['additionalPlaces'])
+            ->setPlaces(2)
+            ->setAdditionalPlaces(0)
         ;
 
-        $manager->persist($roomType);
+        $this->dm->persist($roomType);
 
         if ($withRooms) {
             for ($i = 1; $i <= $billingRoom->getRooms(); $i ++) {
@@ -92,7 +92,7 @@ class RoomTypeManager
                     ->setHotel($hotel)
                     ->setFullTitle($i);
 
-                $manager->persist($room);
+                $this->dm->persist($room);
             }
         }
 

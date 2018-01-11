@@ -6,18 +6,17 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\BillingBundle\Lib\Exceptions\IncorrectRequestParameterException;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\Company;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentSystem;
+use MBH\Bundle\BillingBundle\Lib\Model\Region;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Lib\Model\Service;
 use MBH\Bundle\BillingBundle\Lib\Model\AuthorityOrgan;
 use MBH\Bundle\BillingBundle\Lib\Model\City;
-use MBH\Bundle\BaseBundle\Models\Billing\Country;
-use MBH\Bundle\BaseBundle\Models\Billing\Region;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Serializer\Serializer;
@@ -70,21 +69,12 @@ class BillingApi
         $this->guzzle->post(self::BILLING_HOST . self::RESULT_API_URL, []);
     }
 
-    public function sendSuccess(string $json): void
-    {
-
-    }
-
     public function sendClientInstallationResult(Result $result, $clientName)
     {
         $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT_SETTINGS['endpoint'], $clientName) . self::CLIENT_INSTALL_RESULT_URL_END;
         $this->sendPost($url, $result->getApiResponse(true), true);
     }
 
-    public function getClientProperties()
-    {
-
-    }
 
     /**
      * @param $login
@@ -422,7 +412,6 @@ class BillingApi
      * @param $id
      * @param null $locale
      * @return object
-     * @throws IncorrectRequestParameterException
      * @internal param $endpoint
      */
     private function getBillingEntityById($endpointSettings, $id, $locale = null)

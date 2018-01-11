@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Client
 {
     const CLIENT_DATA_RECEIPT_DATETIME = 'client-data-receipt-time';
-    const DEFAULT_MAXIBOOKING_DOMAIN_NAME = 'maxibooking.ru';
+    const DEFAULT_MAXIBOOKING_DOMAIN_NAME = 'aws.maxibooking.ru';
     const CLIENT_ACTIVE_STATUS = 'active';
 
     /** @var  int */

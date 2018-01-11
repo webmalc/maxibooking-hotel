@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\BillingBundle\Controller;
 
+use http\Exception\InvalidArgumentException;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MongoDB\Driver\Command;
 use MongoDB\Driver\Manager;
@@ -31,6 +33,7 @@ class MaintenanceController extends BaseController
      * )
      * @param Request $request
      * @return JsonResponse
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
     public function installAction(Request $request)
     {
@@ -39,6 +42,10 @@ class MaintenanceController extends BaseController
         if ($token !== BillingApi::AUTH_TOKEN) {
             throw new UnauthorizedHttpException('Incorrect token!');
         }
+        if (!$clientLogin) {
+            throw new InvalidArgumentException('No login in request');
+        }
+
 
         $result = $this->get('mbh.client_instance_manager')->runClientInstallationCommand($clientLogin);
 
@@ -49,6 +56,7 @@ class MaintenanceController extends BaseController
      * @Route("/install_properties")
      * @param Request $request
      * @return JsonResponse
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
     public function installPropertiesAction(Request $request)
     {
@@ -87,12 +95,12 @@ class MaintenanceController extends BaseController
 //        return new JsonResponse($installer->toJson($answer), 200, [], true);
     }
 
-    /**
-     * @return Response
-     * @Route("/test")
-     */
-    public function testAction()
-    {
+//    /**
+//     * @return Response
+//     * @Route("/test")
+//     */
+//    public function testAction()
+//    {
 //        $notifier = $this->get('mbh.notifier');
 //        $message = $notifier::createMessage();
 //        $message
@@ -131,12 +139,12 @@ class MaintenanceController extends BaseController
 //        $cursor = $manager->executeCommand('admin', $command);
 //        dump($cursor->toArray());
 //        dump($client->listDatabases());
-        $mongo = $this->get('mbh.billing_mongo_client');
+//        $mongo = $this->get('mbh.billing_mongo_client');
 //        $mongo->copyDatabase('maxibooking', 'mbh_test');
 //        $mongo->dropDatabase('mbh_test');
-        $mongo->createDbUser('mbh_test', 'mbhtest', 'mbhtestpassword');
+//        $mongo->createDbUser('mbh_test', 'mbhtest', 'mbhtestpassword');
 
 
-        return new Response('Alala');
-    }
+//        return new Response('Alala');
+//    }
 }
