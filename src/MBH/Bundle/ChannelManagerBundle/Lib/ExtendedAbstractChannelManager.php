@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
@@ -128,7 +127,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * Pull rooms from service server
      * @param ChannelManagerConfigInterface $config
      * @return array
-     * @throws ChannelManagerException
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
@@ -143,8 +141,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             if ($responseHandler->isResponseCorrect()) {
                 $roomTypesData = $responseHandler->getRoomTypesData();
                 $roomTypes += $roomTypesData;
-            } else {
-                throw new ChannelManagerException($responseHandler->getErrorMessage());
             }
         }
 
@@ -155,7 +151,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * Pull tariffs from service server
      * @param ChannelManagerConfigInterface $config
      * @return array
-     * @throws ChannelManagerException
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
@@ -168,12 +163,8 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         foreach ($requestInfoList as $requestInfo) {
             $response = $this->sendRequestAndGetResponse($requestInfo);
             $responseHandler = $this->getResponseHandler($response, $config);
-            if ($responseHandler->isResponseCorrect()) {
-                $tariffsData = $responseHandler->getTariffsData($roomTypes);
-                $tariffs += $tariffsData;
-            } else {
-                throw new ChannelManagerException($responseHandler->getErrorMessage());
-            }
+            $tariffsData = $responseHandler->getTariffsData($roomTypes);
+            $tariffs += $tariffsData;
         }
 
         return $tariffs;
@@ -242,9 +233,10 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
             $this->log('begin pulling orders for hotel "' . $config->getHotel()->getName() . '" with id "' . $config->getHotel()->getId() . '"');
+
             $requestData = $this->requestDataFormatter->formatGetBookingsData($config);
             $request = $this->requestFormatter->formatGetOrdersRequest($requestData);
-            $this->log($requestData);
+
             $response = $this->sendRequestAndGetResponse($request);
             $this->log($response);
             $this->handlePullOrdersResponse($response, $config, $result);
@@ -284,7 +276,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         //new
         if ($orderInfo->isHandledAsNew($order) || $isFirstPulling) {
             $result = $orderHandler->createOrder($orderInfo, $order);
-            $this->notify($result, 'commonCM', 'new', ['%channelManagerName%' => $orderInfo->getSource()->getFullTitle()]);
+            $this->notify($result, 'commonCM', 'new', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
         }
 
         //edited
@@ -293,14 +285,14 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             if ($orderInfo->getModifiedDate()) {
                 $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
             }
-            $this->notify($result, 'commonCM', 'edit', ['%channelManagerName%' => $orderInfo->getSource()->getFullTitle()]);
+            $this->notify($result, 'commonCM', 'edit', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
         }
 
         //delete
         if ($orderInfo->isHandledAsCancelled($order)) {
             $this->dm->persist($order);
             $this->dm->flush();
-            $this->notify($result, 'commonCM', 'delete', ['%channelManagerName%' => $orderInfo->getSource()->getFullTitle()]);
+            $this->notify($order, 'commonCM', 'delete', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
             $this->dm->remove($order);
             $this->dm->flush();
             $result = $order;
@@ -312,7 +304,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             }
             $this->notifyError('commonCM',
                 $this->getUnexpectedOrderError($result, $orderInfo->isOrderModified()),
-                ['%channelManagerName%' => $orderInfo->getSource()->getFullTitle()]);
+                ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
         }
     }
 

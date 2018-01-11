@@ -32,12 +32,12 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     public function getOrderInfos() {
 
         if (!$this->isOrderInfosInit) {
-            $response = $this->removeNamespaceString($this->response);
+            $response = $this->removeXmlnsString($this->response);
             $responseXML = new \SimpleXMLElement($response);
             $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
             $tariffsSyncData = $channelManagerHelper->getTariffsSyncData($this->config, true);
             $roomTypesSyncData = $channelManagerHelper->getRoomTypesSyncData($this->config, true);
-            
+
             foreach ($responseXML->Bookings->Booking as $bookingElement) {
                 $this->orderInfos[] = $this->container->get('mbh.channelmanager.expedia_order_info')
                     ->setInitData($bookingElement, $this->config, $tariffsSyncData, $roomTypesSyncData);
@@ -52,7 +52,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     public function isResponseCorrect()
     {
         if ($this->isXMLResponse()) {
-            $xmlResponse = new \SimpleXMLElement($this->removeNamespaceString($this->response));
+            $xmlResponse = new \SimpleXMLElement($this->removeXmlnsString($this->response));
 
             return $xmlResponse->xpath('//Error') ? false: true;
         }
@@ -69,7 +69,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     public function getErrorMessage()
     {
         if ($this->isXMLResponse()) {
-            $xmlResponse = new \SimpleXMLElement($this->removeNamespaceString($this->response));
+            $xmlResponse = new \SimpleXMLElement($this->removeXmlnsString($this->response));
 
             return (string)$xmlResponse->xpath('//Error')[0];
         }
@@ -131,13 +131,13 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         $roomTypeIdStartPosition = strpos($url, 'roomTypes/') + strlen('roomTypes/');
         $roomTypeIdEndPosition = strpos($url, '/ratePlans');
         $roomTypeIdStringLength = $roomTypeIdEndPosition - $roomTypeIdStartPosition;
-        
+
         return substr($url, $roomTypeIdStartPosition, $roomTypeIdStringLength);
     }
 
-    private function removeNamespaceString($xmlString, $namespace = 'xmlns')
+    private function removeXmlnsString($xmlString)
     {
-        $xmlnsStringStartPosition = strpos($xmlString, $namespace);
+        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns');
         $firstQuotesPosition = $xmlnsStringStartPosition + 8;
         $xmlnsStringEndPosition = strpos($xmlString, '"', $firstQuotesPosition) + 1;
         $xmlnsString = substr($xmlString, $xmlnsStringStartPosition, $xmlnsStringEndPosition - $xmlnsStringStartPosition);
@@ -146,6 +146,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     }
 
     /**
+     * @param NotificationRequestData $requestData
      * @return ExpediaNotificationOrderInfo
      */
     public function getNotificationOrderInfo()
@@ -201,7 +202,6 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     private function getSimpleXmlByRequestXml()
     {
         $requestXml = str_replace("soap-env:", '', $this->response);
-        $requestXml = $this->removeNamespaceString($requestXml, 'xmlns:soap-env');
 
         return new \SimpleXMLElement($requestXml);
     }

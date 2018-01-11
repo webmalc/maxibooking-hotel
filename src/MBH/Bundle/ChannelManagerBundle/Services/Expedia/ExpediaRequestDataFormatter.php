@@ -346,8 +346,13 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $confirmTime = new \DateTime('now', new \DateTimeZone("UTC"));
         $confirmNumberElement->addAttribute('confirmTime', $confirmTime->format(self::CONFIRMATION_DATE_FORMAT_STRING));
 
-        if ($orderInfo->getConfirmNumber()) {
-            $confirmNumberElement->addAttribute('confirmNumber', $orderInfo->getConfirmNumber());
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
+        $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(['channelManagerId' => $orderInfo->getChannelManagerOrderId()]);
+        $confirmNumberElement->addAttribute('confirmNumber', $order->getId());
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
         }
 
         return $this->formatTemplateRequest([$confirmNumbersElement], $config,

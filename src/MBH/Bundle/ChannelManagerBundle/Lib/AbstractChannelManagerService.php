@@ -32,7 +32,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     const TEST = true;
 
     const UNAVAIBLE_PRICES = [];
-    
+
     const UNAVAIBLE_RESTRICTIONS = [];
 
     /**
@@ -82,7 +82,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     protected $currency;
 
     protected $roomManager;
-    
+
     /**
      * @var array
      */
@@ -108,7 +108,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     {
         return $this->errors;
     }
-    
+
     /**
      * {{ @inheritDoc }}
      */
@@ -432,7 +432,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             return $element->getRoomType()->getId();
         }, $config->getRooms()->toArray()));
     }
-    
+
     /**
      * Get tariffIds from config
      *
@@ -526,7 +526,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
         return $builder->getQuery()->execute();
     }
-    
+
     /**
      * Get prices by config and type
      *
@@ -562,7 +562,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         foreach ($types as $type => $val) {
             $builder->addOr($builder->expr()->field($type)->notEqual($val));
         }
-        
+
         return $builder->getQuery()->count();
     }
 

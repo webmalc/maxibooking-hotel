@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
-use function GuzzleHttp\Psr7\str;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;

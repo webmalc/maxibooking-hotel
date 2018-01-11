@@ -117,6 +117,8 @@ class ExpediaPackageInfo extends AbstractPackageInfo
             $serviceTariffId = $this->getPackageCommonData('ratePlanID');
             if (isset($this->tariffs[$serviceTariffId])) {
                 $this->tariff = $this->tariffs[$serviceTariffId]['doc'];
+            } elseif (isset($this->tariffs[$serviceTariffId . 'A'])) {
+                $this->tariff = $this->tariffs[$serviceTariffId . 'A']['doc'];
             } else {
                 $this->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
                     [

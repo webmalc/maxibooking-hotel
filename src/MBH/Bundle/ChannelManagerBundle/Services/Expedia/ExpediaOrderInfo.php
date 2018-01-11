@@ -219,6 +219,14 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     }
 
     /**
+     * @return string
+     */
+    private function getOrderStatus()
+    {
+        return (string)$this->getCommonOrderData('status');
+    }
+
+    /**
      * @return mixed
      */
     public function getPrice()
@@ -306,21 +314,6 @@ class ExpediaOrderInfo extends AbstractOrderInfo
 
         throw new ChannelManagerException($this->translator->trans('order_info.expedia.required_data_missing',
             ['%elementDescription%' => $exceptionMessage]));
-    }
-
-    /**
-     * Возвращает значение, необходимое для подтверждения получения брони с сервера
-     * @return null|string
-     */
-    public function getConfirmNumber()
-    {
-        $confirmNumberElement = $this->orderDataXMLElement->xpath("/Booking/@confirmNumber");
-        if ($confirmNumberElement) {
-
-            return (string)$confirmNumberElement[0];
-        }
-
-        return self::DEFAULT_CONFIRM_NUMBER;
     }
 
     /**
