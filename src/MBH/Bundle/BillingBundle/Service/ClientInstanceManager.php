@@ -16,7 +16,13 @@ use MBH\Bundle\UserBundle\Document\AuthorizationToken;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager;
 use Monolog\Logger;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class ClientInstanceManager
@@ -63,11 +69,37 @@ class ClientInstanceManager
     {
         $result = new Result();
 
-        $consoleFolder = $this->kernel->getRootDir() . '/../bin';
-        $commandLine = 'php console mbhbilling:billing_client_install_command --client=' . $clientName;
+        $command = 'mbh:client:installation --client=' . $clientName;
+//        $command = 'mbhbilling:billing_client_install_command --client=' . $clientName;
+        $cwd = $this->kernel->getRootDir().'/../bin';
+        $isDebug = $this->kernel->isDebug();
+        $kernelEnv = $this->kernel->getEnvironment();
+        $command = sprintf('php console %s --env=%s %s',$command, $kernelEnv, $isDebug ?'': '--no-debug');
+        $process = new Process($command, $cwd, null, null, 60*10);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException|ProcessTimedOutException $e) {
+            throw new ClientMaintenanceException($e->getMessage());
+        }
 
-        $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $clientName], null, 60);
-        $process->mustRun();
+
+//        $consoleFolder = $this->kernel->getRootDir() . '/../bin';
+//        $commandLine = 'php console mbhbilling:billing_client_install_command --client=' . $clientName;
+//
+//        $process = new Process($commandLine, $consoleFolder, null, null, 60);
+//        $process->start();
+//        $application = new Application($this->kernel);
+//        $application->setAutoExit(false);
+//        $input = new ArrayInput([
+//            'command' => 'mbhbilling:billing_client_install_command',
+//            '--client' => $clientName
+//        ]);
+//
+//        $output = new BufferedOutput();
+//        $application->run($input, $output);
+
+        var_dump($process->getOutput());
+
 
         return $result;
     }

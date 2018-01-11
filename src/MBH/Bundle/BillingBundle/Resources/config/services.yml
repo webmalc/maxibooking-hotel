@@ -73,6 +73,11 @@ services:
         arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger"]
         tags: ['console.command']
 
+    mbh.console.billing_client_install:
+        class: MBH\Bundle\BillingBundle\Command\BillingClientInstallationCommand
+        arguments: ['@mbh.client_instance_manager']
+        tags: ['console.command']
+
     mbh.service.ssh_commands:
         class: MBH\Bundle\BillingBundle\Service\SshCommands
 

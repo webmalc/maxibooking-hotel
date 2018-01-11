@@ -4,16 +4,9 @@ namespace MBH\Bundle\BillingBundle\Controller;
 
 use http\Exception\InvalidArgumentException;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\BaseBundle\Document\NotificationType;
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
-use MongoDB\Driver\Command;
-use MongoDB\Driver\Manager;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
