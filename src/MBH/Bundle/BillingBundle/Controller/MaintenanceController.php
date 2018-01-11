@@ -30,11 +30,9 @@ class MaintenanceController extends BaseController
      */
     public function installAction(Request $request)
     {
+        $this->checkToken($request);
+
         $clientLogin = $request->get('client_login');
-        $token = $request->get('token');
-        if ($token !== BillingApi::AUTH_TOKEN) {
-            throw new UnauthorizedHttpException('Incorrect token!');
-        }
         if (!$clientLogin) {
             throw new InvalidArgumentException('No login in request');
         }
@@ -53,6 +51,7 @@ class MaintenanceController extends BaseController
      */
     public function installPropertiesAction(Request $request)
     {
+        $this->checkToken($request);
         //TODO: Или как там данные передаются
         $login = $request->get('login');
         $result = $this->get('mbh.client_instance_manager')->installFixtures($login);
@@ -86,6 +85,14 @@ class MaintenanceController extends BaseController
 //        }
 //
 //        return new JsonResponse($installer->toJson($answer), 200, [], true);
+    }
+
+    private function checkToken(Request $request)
+    {
+        $token = $request->get('token');
+        if ($token !== BillingApi::AUTH_TOKEN) {
+            throw new UnauthorizedHttpException('Incorrect token!');
+        }
     }
 
 //    /**
@@ -140,4 +147,6 @@ class MaintenanceController extends BaseController
 
 //        return new Response('Alala');
 //    }
+
+
 }

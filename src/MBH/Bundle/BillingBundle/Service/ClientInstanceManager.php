@@ -70,7 +70,6 @@ class ClientInstanceManager
         $result = new Result();
 
         $command = 'mbh:client:installation --client=' . $clientName;
-//        $command = 'mbhbilling:billing_client_install_command --client=' . $clientName;
         $cwd = $this->kernel->getRootDir().'/../bin';
         $isDebug = $this->kernel->isDebug();
         $kernelEnv = $this->kernel->getEnvironment();
@@ -181,6 +180,10 @@ class ClientInstanceManager
      */
     public function installFixtures(string $login)
     {
+        if ($login !== $this->kernel->getClient()) {
+            return Result::createErrorResult(['Client name differ with kernel name']);
+        }
+
         $client = $this->billingApi->getClient($login);
 
         foreach ($client->getProperties() as $propertyNumber => $propertyUrl) {
