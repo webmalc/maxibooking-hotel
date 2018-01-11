@@ -20,20 +20,32 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
 
     public function load(ObjectManager $manager)
     {
+        $locales = $this->container->getParameter('mbh.languages');
+        $translationRepository = $manager->getRepository('GedmoTranslatable:Translation');
+        $translator = $this->container->get('translator');
+        $sourceTitlesForTranslation = ['online', 'offline', 'regular_customer', 'recommendet_friend'];
+
         foreach ($this->getSource() as $titleId => $value) {
-            $title = in_array($value, ['online', 'offline', 'regular_customer', 'recommendet_friend'])
-                ? $this->container->get('translator')->trans($titleId)
+            $title = in_array($value, $sourceTitlesForTranslation)
+                ? $translator->trans($titleId)
                 : $titleId;
 
-            if ($manager->getRepository('MBHPackageBundle:PackageSource')->findBy(['fullTitle' => $title, 'code' => $value])) {
-                continue;
-            }
+//            if ($manager->getRepository('MBHPackageBundle:PackageSource')->findBy(['fullTitle' => $title, 'code' => $value])) {
+//                continue;
+//            }
 
             $packageSource = new PackageSource();
             $packageSource
                 ->setFullTitle($title)
                 ->setCode($value)
                 ->setSystem(true);
+
+            if (in_array($value, $sourceTitlesForTranslation)) {
+                foreach ($locales as $locale) {
+                    $translationRepository
+                        ->translate($packageSource, 'fullTitle', $locale, $translator->trans($titleId, [], null, $locale));
+                }
+            }
 
             $manager->persist($packageSource);
             $manager->flush();
