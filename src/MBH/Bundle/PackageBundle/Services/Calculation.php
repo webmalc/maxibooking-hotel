@@ -481,6 +481,7 @@ class Calculation
         $cashDocs = $this->dm
             ->getRepository('MBHCashBundle:CashDocument')
             ->createQueryBuilder()
+            ->field('isPaid')->equals(true)
             ->field('order.id')->in($ordersIds)
             ->getQuery()
             ->execute()
@@ -527,10 +528,11 @@ class Calculation
 
         /** @var \DateTime $date */
         foreach ($period as $date) {
+            $dateToCompare = (clone $date)->add(new \DateInterval('P1D'));
             $dateString = $date->format('d.m.Y');
             /** @var Order $order */
             foreach ($ordersByIds as $orderId => $order) {
-                if ($order->getCreatedAt() > $date) {
+                if ($order->getCreatedAt() > $dateToCompare) {
                     continue;
                 }
                 /** @var CashDocument[] $cashDocuments */
@@ -541,7 +543,8 @@ class Calculation
                 $cashlessIncoming = 0;
                 $refunds = 0;
                 foreach ($cashDocuments as $cashDocument) {
-                    if ($cashDocument->getPaidDate() <= $date) {
+                    if ($cashDocument->getPaidDate() < $dateToCompare
+                        && (empty($cashDocument->getDeletedAt()) || $cashDocument->getDeletedAt() > $dateToCompare)) {
                         if ($cashDocument->getOperation() == 'in') {
                             $cashDocument->getMethod() == 'cash'
                                 ? $cashIncoming += $cashDocument->getTotal()
@@ -616,7 +619,7 @@ class Calculation
             if (isset($packagePricesByDates[$dateString][$package->getId()])) {
                 $datePackagePrice = $packagePricesByDates[$dateString][$package->getId()];
                 $priceOfAllOrderPackages += $datePackagePrice;
-                if (empty($package->getDeletedAt()) || $package->getDeletedAt()->modify('midnight') > $date) {
+                if (empty($package->getDeletedAt()) || $package->getDeletedAt() > $date) {
                     $priceOfNotDeletedPackages += $datePackagePrice;
                 }
             }
@@ -735,11 +738,11 @@ class Calculation
                     $isPercentDiscount = $package->getIsPercentDiscount();
                     $discount = $package->getDiscount();
                 } else {
-                    $price = $getDailyValue('price', $packageId, $dateString, $previousValue);
-                    $totalOverWrite = $getDailyValue('totalOverwrite', $packageId, $dateString, $previousValue);
-                    $servicesPrice = $getDailyValue('servicesPrice', $packageId, $dateString, $previousValue);
-                    $isPercentDiscount = $getDailyValue('isPercentDiscount', $packageId, $dateString, $previousValue);
-                    $discount = $getDailyValue('discount', $packageId, $dateString, $previousValue);
+                    $price = (float)$getDailyValue('price', $packageId, $dateString, $previousValue);
+                    $totalOverWrite = (float)$getDailyValue('totalOverwrite', $packageId, $dateString, $previousValue);
+                    $servicesPrice = (float)$getDailyValue('servicesPrice', $packageId, $dateString, $previousValue);
+                    $isPercentDiscount = (float)$getDailyValue('isPercentDiscount', $packageId, $dateString, $previousValue);
+                    $discount = (float)$getDailyValue('discount', $packageId, $dateString, $previousValue);
                 }
 
                 $priceData = [

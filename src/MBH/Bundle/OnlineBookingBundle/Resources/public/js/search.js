@@ -105,10 +105,12 @@ RoomTypeRow.prototype.handleChartData = function (data) {
 RoomTypeRow.prototype.fancyInit = function () {
     this.$row
         .find('.fancybox')
-        .fancybox()
-        .on('click', function (e) {
-            e.stopPropagation();
-        });
+        .each(function () {
+            $(this).fancybox()
+                .on('click', function (e) {
+                    e.stopPropagation();
+                });
+        })
 
     this.$row
         .find(".imghotel")

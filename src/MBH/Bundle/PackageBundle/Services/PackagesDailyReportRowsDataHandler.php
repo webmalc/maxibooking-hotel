@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use MBH\Bundle\BaseBundle\Lib\Report\ReportDataHandler;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -77,7 +78,8 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
      */
     private function getCashlessReceiptsSum(Hotel $hotel)
     {
-        return $this->getSumByCashDocuments($hotel, 'in', 'cashless');
+        return $this->getSumByCashDocuments($hotel, 'in', 'cashless')
+            + $this->getSumByCashDocuments($hotel, 'in', 'electronic');
     }
 
     /**
@@ -95,7 +97,8 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
      */
     private function getSumForCancelledPackagesCashless(Hotel $hotel)
     {
-        return $this->getSumForCancelledPackages($hotel, 'cashless');
+        return $this->getSumForCancelledPackages($hotel, 'cashless')
+            + $this->getSumForCancelledPackages($hotel, 'electronic');
     }
 
     /**
@@ -125,7 +128,8 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
 
     private function getCashlessReceiptsSumOut(Hotel $hotel)
     {
-        return $this->getSumByCashDocuments($hotel, 'out', 'cashless', self::PACKAGE_NOT_DELETED_TYPE);
+        return $this->getSumByCashDocuments($hotel, 'out', 'cashless', self::PACKAGE_NOT_DELETED_TYPE)
+            + $this->getSumByCashDocuments($hotel, 'out', 'electronic', self::PACKAGE_NOT_DELETED_TYPE);
     }
 
     private function getCashReceiptsSumOut(Hotel $hotel)
@@ -259,8 +263,21 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
         $hotelId = $hotel->getId();
 
         foreach ($this->deletedPackages as $package) {
-            if ($package->getHotel()->getId() == $hotelId && $package->getPrice() > $package->getOrder()->getPaid()) {
-                $result += $package->getPrice();
+            try {
+                $isPackagePaid = false;
+                if (isset($this->cashDocumentsForRemovedPackages[$package->getOrder()->getId()])) {
+                    /** @var CashDocument $cashDocument */
+                    foreach ($this->cashDocumentsForRemovedPackages[$package->getOrder()->getId()] as $cashDocument) {
+                        if ($cashDocument->getOperation() === 'in') {
+                            $isPackagePaid = true;
+                        }
+                    };
+                }
+                if ($package->getHotel()->getId() == $hotelId && $package->getPrice() > $package->getOrder()->getPaid() && !$isPackagePaid) {
+                    $result += $package->getPrice();
+                }
+            } catch (DocumentNotFoundException $exception) {
+
             }
         }
 
