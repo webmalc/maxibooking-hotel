@@ -257,6 +257,16 @@ class BillingApi
     }
 
     /**
+     * @param array $newTariffData
+     * @return Result
+     */
+    public function changeTariff(array $newTariffData)
+    {
+        //TODO: Реализовать когда будет готов функционал
+        return Result::createSuccessResult();
+    }
+
+    /**
      * @param ResponseInterface $response
      * @param Result $requestResult
      * @param $modelType

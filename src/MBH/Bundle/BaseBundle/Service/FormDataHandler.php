@@ -2,6 +2,9 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormError;
+
 class FormDataHandler
 {
     /**
@@ -37,6 +40,19 @@ class FormDataHandler
         }
 
         return $result;
+    }
+
+    public function fillFormByBillingErrors(Form $form, array $errors)
+    {
+        foreach ($errors as $fieldName => $errorMessages) {
+            foreach ($errorMessages as $errorMessage) {
+                if ($form->has($fieldName)) {
+                    $form->get($fieldName)->addError(new FormError($errorMessage));
+                } elseif ($fieldName === BillingResponseHandler::NON_FIELD_ERRORS) {
+                    $form->addError(new FormError($errorMessage));
+                }
+            }
+        }
     }
 
     /**

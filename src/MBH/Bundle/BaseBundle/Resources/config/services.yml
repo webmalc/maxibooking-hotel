@@ -352,5 +352,5 @@ services:
         arguments:
             - '@kernel'
 
-    mbh.form_data_checker:
+    mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler

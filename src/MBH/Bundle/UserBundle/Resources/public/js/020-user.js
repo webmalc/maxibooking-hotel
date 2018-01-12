@@ -26,6 +26,7 @@ $(document).ready(function () {
     hangOnPayButtonHandler();
     handleAuthOrganFieldVisibility();
     handleVisibilityOfBossBaseRelatedFields();
+    initTariffPage();
 });
 
 function handleClientServiceForm() {
@@ -205,5 +206,18 @@ function switchAuthOrganFieldsVisibility() {
     } else {
         $authorityOrganIdFormGroup.hide();
         $authorityOrganTextFormGroup.show();
+    }
+}
+
+function initTariffPage() {
+    var $changeTariffShowModalButton = $('#change-tariff-modal-show');
+    if ($changeTariffShowModalButton.length = 1) {
+        $changeTariffShowModalButton.click(function () {
+            $('#change-tariff-modal').modal('show');
+        });
+        $('#change-tariff-button').click(function () {
+            $('#change-tariff-form').submit();
+        });
+        $('.select2-container').css('width', '150px');
     }
 }
