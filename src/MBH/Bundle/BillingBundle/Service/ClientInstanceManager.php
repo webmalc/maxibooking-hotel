@@ -16,10 +16,6 @@ use MBH\Bundle\UserBundle\Document\AuthorizationToken;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager;
 use Monolog\Logger;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
@@ -64,6 +60,7 @@ class ClientInstanceManager
     /**
      * @param string $clientName
      * @return Result
+     * @throws ClientMaintenanceException
      */
     public function runClientInstallationCommand(string $clientName)
     {
@@ -160,6 +157,7 @@ class ClientInstanceManager
         $isSent = false;
         try {
             $this->billingApi->sendClientInstallationResult($installationResult, $clientName);
+            $this->logger->info('Installation result sent to billing');
             $isSent = true;
         } catch (RequestException $exception) {
             $this->logger->err($exception);
@@ -180,7 +178,9 @@ class ClientInstanceManager
      */
     public function installFixtures(string $login)
     {
+        $this->logger->info('Start installation of fixtures');
         if ($login !== $this->kernel->getClient()) {
+            $this->logger->err('Kernel name differ from passed client name');
             return Result::createErrorResult(['Client name differ with kernel name']);
         }
 
@@ -191,25 +191,32 @@ class ClientInstanceManager
             try {
                 $property = $this->billingApi->getBillingEntityByUrl($propertyUrl, BillingProperty::class);
             } catch (\Throwable $exception) {
+                $this->logger->err('Error pulling of hotel by url "' . $propertyUrl . '". Message:' . $exception->getMessage());
+
                 return Result::createErrorResult([$exception->getMessage()]);
             }
 
             $isHotelDefault = $propertyNumber === 0;
+            $this->logger->info('Start creation of hotel "' . $property->getName() . '"');
             $hotel = $this->hotelManager->createByBillingProperty($property, $isHotelDefault);
+            $this->logger->info('Hotel "' . $property->getName() . '" created. Start creation of rooms');
 
             foreach ($property->getRooms() as $roomUrl) {
                 try {
                     /** @var BillingRoom $billingRoom */
                     $billingRoom = $this->billingApi->getBillingEntityByUrl($roomUrl, BillingRoom::class);
                 } catch (\Throwable $exception) {
+                    $this->logger->err('Error pulling of room by url "' . $roomUrl . '". Message:' . $exception->getMessage());
+
                     return Result::createErrorResult([$exception->getMessage()]);
                 }
 
                 $this->roomTypeManager->createByBillingRoom($billingRoom, $hotel, true);
             }
-
+            $this->logger->info('Rooms creation for hotel "' . $property->getName() . '" finished');
             $this->dm->flush();
         }
+        $this->logger->info('End installation of fixtures');
 
         return Result::createSuccessResult();
     }
