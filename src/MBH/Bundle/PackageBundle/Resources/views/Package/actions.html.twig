@@ -11,7 +11,7 @@
     {% set searchQuery = searchQuery|merge({'tariff': entity.tariff.id}) %}
 {% endif %}
 
-{% set save_buttons = false %}
+{% set save_buttons = save_buttons is defined ? save_buttons : false %}
 {% if role is defined and is_granted(role) and entity.deletedAt is empty and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
     {% set save_buttons = true %}
 {% endif %}

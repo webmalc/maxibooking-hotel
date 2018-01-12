@@ -102,7 +102,7 @@ class PackagesDailyReportCompiler
         $relatedOrdersIds = [];
         /** @var CashDocument $cashDocument */
         foreach ($cashDocuments as $cashDocument) {
-            $cashDocumentsByCreationDate[$cashDocument->getCreatedAt()->format('d.m.Y')][] = $cashDocument;
+            $cashDocumentsByCreationDate[$cashDocument->getPaidDate()->format('d.m.Y')][] = $cashDocument;
             $relatedOrdersIds[] = $cashDocument->getOrder()->getId();
         }
         $relatedOrdersIds = array_unique($relatedOrdersIds);
@@ -266,6 +266,7 @@ class PackagesDailyReportCompiler
         $cashDocuments = $this->dm
             ->getRepository('MBHCashBundle:CashDocument')
             ->createQueryBuilder()
+            ->field('isPaid')->equals(true)
             ->field('order.id')->in($orderIds)
             ->getQuery()
             ->execute();
