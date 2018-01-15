@@ -467,6 +467,7 @@ class ApiController extends Controller
      */
     public function getUserFormAction(Request $request)
     {
+        $this->setLocaleByRequest();
         $requestJson = json_decode($request->getContent());
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);

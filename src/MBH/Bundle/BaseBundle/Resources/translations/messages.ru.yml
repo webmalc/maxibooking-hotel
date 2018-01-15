@@ -191,7 +191,6 @@ mailer.base.rate.perfect: Отлично
 mailer.resetting_mail.reset_pass_button.text: 'Сбросить пароль'
 mailer.recipient.empty.email: 'Пустая почта у получателя %guest%'
 mailer.image.not.exists: 'Не существует файла %path%. Возмжожно не создан кеш файла'
-mailer.resetting_mail.reset_pass_button.text: Сбросить пароль
 debt: Долг
 partially_paid: Частично
 paid: Оплачено
