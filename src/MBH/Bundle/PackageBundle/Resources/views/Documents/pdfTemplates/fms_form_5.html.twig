@@ -221,7 +221,7 @@
                                         <div class="title" style="width : 130px;">
                                             6. {{ 'package.resources.views.birthday_place'|trans }}
                                         </div>
-                                        &nbsp{% if tourist and tourist.birthplace and tourist.birthplace and tourist.birthplace.countryTld %}<!--<div class="area" style="margin-left: 130px">{{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ get_city(tourist.birthplace.cityId).name }}</div>-->{% endif %}
+                                        &nbsp{% if tourist and tourist.birthplace and tourist.birthplace and tourist.birthplace.countryTld %}<!--<div class="area" style="margin-left: 130px">{{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -251,7 +251,7 @@
                                         <div class="title" style="width: 70px">
                                             {{ 'package.resources.views.city'|trans }}
                                         </div>
-                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace and tourist.birthplace.cityId %}{{ get_city(tourist.birthplace.cityId).name }}{% endif %}</div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace and tourist.birthplace.city %}{{ tourist.birthplace.city}}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -440,7 +440,7 @@
                                 <td colspan="3">
                                     <div class="field ib" style="width:49%">
                                         <div class="title" style="width: 70px">
-                                           10. {{ 'package.resources.views.pribil'|trans }}
+                                            10. {{ 'package.resources.views.pribil'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{{ arrival }}</div>
                                     </div>
@@ -594,7 +594,7 @@
                                             <div class="title" style="width : 130px;">
                                                 6. {{ 'package.resources.views.birthday_place'|trans }}
                                             </div>
-                                            &nbsp{% if tourist and tourist.birthplace and tourist.birthplace.cityId and tourist.birthplace.countryTld %}<!--<div class="area" style="margin-left: 130px">{{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ get_city(tourist.birthplace.cityId).name }}</div>-->{% endif %}
+                                            &nbsp{% if tourist and tourist.birthplace and tourist.birthplace.city and tourist.birthplace.countryTld %}<!--<div class="area" style="margin-left: 130px">{{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
                                         </div>
                                     </td>
                                 </tr>
@@ -624,7 +624,7 @@
                                             <div class="title" style="width: 70px">
                                                 {{ 'package.resources.views.city'|trans }}
                                             </div>
-                                            <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace and tourist.birthplace.cityId %}{{ get_city(tourist.birthplace.cityId).name }}{% endif %}</div>
+                                            <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace and tourist.birthplace.city %}{{ tourist.birthplace.city }}{% endif %}</div>
                                         </div>
                                     </td>
                                 </tr>
