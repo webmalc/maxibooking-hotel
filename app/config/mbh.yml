@@ -1,11 +1,10 @@
 parameters:
     #currencies
     mbh.currency.data:
-      usd: {text: '$', small: '$', icon: 'fa fa-usd'}
+      rub: {text: 'currency.rub.text', small: 'currency.rub.small', icon: 'fa fa-ruble'}
       eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
-      rub: {text: 'руб.', small: 'коп.', icon: 'fa fa-ruble'}
-      uah: {text: 'грн.', small: 'коп.', icon: 'fa fa-money'}
-      kzt: {text: 'тенге', small: 'тиын', icon: 'fa fa-money'}
+      uah: {text: 'currency.uah.text', small: 'currency.uah.small', icon: 'fa fa-money'}
+      kzt: {text: 'currency.kzt.text', small: 'currency.kzt.small', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
 
     # ReCaptcha
@@ -13,7 +12,7 @@ parameters:
       site: '6Lev6AYUAAAAADL-WFxyHoaaGfya4uFBCUh09FWx'
       secret: '6Lev6AYUAAAAAIk51IMnRdGS4Im_-1h3pk-cM87a'
 
-    mbh.weekdays: {1: 'Понедельник', 2: 'Вторник', 3: 'Среда', 4: 'Четверг', 5: 'Пятница', 6: 'Суббота', 0: 'Воскресенье'}
+    mbh.weekdays: {1: 'mbh.weekdays.mon', 2: 'mbh.weekdays.tue', 3: 'mbh.weekdays.wed', 4: 'mbh.weekdays.thu', 5: 'mbh.weekdays.fri', 6: 'mbh.weekdays.sat', 0: 'mbh.weekdays.sun'}
 
     mbh.mongodb:
       url: "mongodb://%mongodb_host%:%mongodb_port%/%mongodb_database%"
@@ -24,38 +23,38 @@ parameters:
     #mbh hotel config
     mbh.hotel:
       types:
-        apartments: 'Апартаменты'
-        recreation_center: 'База отдыха'
-        guest_house: 'Гостевой дом'
-        pension: 'Пансионат'
-        sanatorium: 'Санаторий'
-        country_club: 'Загородный клуб'
-        hostel: 'Хостел'
-        hotel: 'Отель'
-        motel: 'Мотель'
-        resort: 'Курортный отель'
-        mini_hotel: 'Мини-отель'
+        apartments: 'mbh.hotel.types.apartments'
+        recreation_center: 'mbh.hotel.types.recreation_center'
+        guest_house: 'mbh.hotel.types.guest_house'
+        pension: 'mbh.hotel.types.pension'
+        sanatorium: 'mbh.hotel.types.sanatorium'
+        country_club: 'mbh.hotel.types.country_club'
+        hostel: 'mbh.hotel.types.hostel'
+        hotel: 'mbh.hotel.types.hotel'
+        motel: 'mbh.hotel.types.motel'
+        resort: 'mbh.hotel.types.resort'
+        mini_hotel: 'mbh.hotel.types.mini_hotel'
       themes:
-        сity_tour: 'Экскурсия по городу'
-        budget_travel: 'Бюджетные и молодежные поездки'
-        shoping: 'Шопинг'
-        family_trip: 'Семейная поездка'
-        international: 'Международный'
-        business_trip: 'Деловая поездка'
-        romantic_vacation: 'Романтический отпуск/Медовый месяц'
-        interior_design: 'Дизайнерский интерьер'
-        luxury_holidays: 'Отдых класса люкс'
-        haute_cuisine: 'Изысканная кухня'
-        country_holidays: 'Загородный отдых'
-        homestead: 'Усадьба'
-        nature: 'Природа/Дикая флора и фауна'
-        spa: 'Спа/Оздоровительные процедуры'
-        ecological: 'Экологический'
-        ski: 'Горы/лыжи'
-        adventure: 'Приключение'
-        sport: 'Спорт'
-        beach: 'Пляж/Побережье'
-        city: 'Городской'
+        сity_tour: 'mbh.hotel.themes.сity_tour'
+        budget_travel: 'mbh.hotel.themes.budget_travel'
+        shoping: 'mbh.hotel.themes.shoping'
+        family_trip: 'mbh.hotel.themes.family_trip'
+        international: 'mbh.hotel.themes.international'
+        business_trip: 'mbh.hotel.themes.business_trip'
+        romantic_vacation: 'mbh.hotel.themes.romantic_vacation'
+        interior_design: 'mbh.hotel.themes.interior_design'
+        luxury_holidays: 'mbh.hotel.themes.luxury_holidays'
+        haute_cuisine: 'mbh.hotel.themes.haute_cuisine'
+        country_holidays: 'mbh.hotel.themes.country_holidays'
+        homestead: 'mbh.hotel.themes.homestead'
+        nature: 'mbh.hotel.themes.nature'
+        spa: 'mbh.hotel.themes.spa'
+        ecological: 'mbh.hotel.themes.ecological'
+        ski: 'mbh.hotel.themes.ski'
+        adventure: 'mbh.hotel.themes.adventure'
+        sport: 'mbh.hotel.themes.sport'
+        beach: 'mbh.hotel.themes.beach'
+        city: 'mbh.hotel.themes.city'
       facilities:
         # Здание
         building:
@@ -162,16 +161,16 @@ parameters:
     #mbh services
     mbh.services:
       calcTypes:
-        per_stay: 'за весь срок'
-        per_night: 'за cутки'
-        not_applicable: 'за услугу'
-        day_percent: 'за услугу (% от цены за сутки)'
+        per_stay: 'mbh.services.calcTypes.per_stay'
+        per_night: 'mbh.services.calcTypes.per_night'
+        not_applicable: 'mbh.services.calcTypes.not_applicable'
+        day_percent: 'mbh.services.calcTypes.day_percent'
 
     #mailer
     mbh.mailer:
       fromText: 'MaxiBooking'
       fromMail:  "%from_email%"
-      subject: 'Сообщение от MaxiBooking'
+      subject: 'mbh.mailer.subject.text'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
     #параметры онлайн формы
@@ -269,28 +268,28 @@ parameters:
 
     #Цели приезда
     mbh.package.arrivals:
-        service: Служебная
-        tourism: Туризм
-        business: Деловая
-        study: Учеба
-        work: Работа
-        private: Частная
-        residence: Транзит
-        humanitarian: Гуманитарная
-        other: Другая
+        service: 'mbh.package.arrivals.service'
+        tourism: 'mbh.package.arrivals.tourism'
+        business: 'mbh.package.arrivals.business'
+        study: 'mbh.package.arrivals.study'
+        work: 'mbh.package.arrivals.work'
+        private: 'mbh.package.arrivals.private'
+        residence: 'mbh.package.arrivals.residence'
+        humanitarian: 'mbh.package.arrivals.humanitarian'
+        other: 'mbh.package.arrivals.other'
 
     #Цели приезда
     mbh.package.statuses:
-        offline: { title: "Обычная", class: "info", icon: "fa fa-paper-plane-o"}
-        online: { title: "Онлайн", class: "success", icon: "fa fa-globe"}
+        offline: { title: "mbh.package.statuses.offline.title", class: "info", icon: "fa fa-paper-plane-o"}
+        online: { title: "mbh.package.statuses.online.title", class: "success", icon: "fa fa-globe"}
         channel_manager: { title: "Channel manager", class: "danger", icon: "fa fa-cloud-download"}
 
 
     #Статусы задач
     mbh.task.statuses:
-        open: { title: "Открыта", class: "success"}
-        process: { title: "В процессе", class: "info"}
-        closed: { title: "Закрыта", class: "danger"}
+        open: { title: "mbh.task.statuses.open.title", class: "success"}
+        process: { title: "mbh.task.statuses.process.title", class: "info"}
+        closed: { title: "mbh.task.statuses.closed.title", class: "danger"}
 
     #Приоритет задач
     mbh.tasktype.priority:
@@ -321,26 +320,26 @@ parameters:
 
     #Виды способов оплаты
     mbh.cash.methods:
-        cash: "Наличные"
-        cashless: "Безнал"
-        electronic: "Электронный"
+        cash: "cashDocument.method.cash"
+        cashless: "cashDocument.method.cashless"
+        electronic: "cashDocument.method.electronic"
     
     #Типы операций с кассой
     mbh.cash.operations:
-        in: "Поступление"
-        out: "Расход"
+        in: "mbh.cash.operations.in"
+        out: "mbh.cash.operations.out"
         #fine: "Штраф"
-        fee: "Комиссия"
+        fee: "mbh.cash.operations.fee"
 
     #М/Ж
     mbh.gender.types:
-        male: "Мужчина"
-        female: "Женщина"
-        unknown: "Неизвестно"
+        male: "mbh.gender.types.male"
+        female: "mbh.gender.types.female"
+        unknown: "mbh.gender.types.unknown"
 
     mbh.organization.types:
-        contragents: 'Контрагенты'
-        my: 'Мои организации'
+        contragents: 'mbh.organization.types.contragents'
+        my: 'mbh.organization.types.my'
 
     mbh.payer_organization:
         name: 'ООО "Наличные средства"'
@@ -364,8 +363,8 @@ parameters:
         - ru
         
     mbh.warehouse.operations:
-        in: "Приход"
-        out: "Расход"
+        in: "mbh.warehouse.operations.in"
+        out: "mbh.warehouse.operations.out"
 
     #Указаны идентификаторы для переводов. Переводы хранятся в HotelBundle
     mbh.smoking_policy:

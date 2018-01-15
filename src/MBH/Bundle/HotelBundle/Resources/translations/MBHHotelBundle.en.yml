@@ -1,19 +1,19 @@
-views.tasktype.index.name: Name
+views.tasktype.index.name: Title
 views.tasktype.index.status: Status
-views.tasktype.index.default_role: 'Default role'
+views.tasktype.index.default_role: 'Default executor'
 views.tasktype.index.created: Created
 views.task.index.status: Status
 views.task.index.tasktype: 'Task type'
 views.task.index.task: Task
 views.task.index.priority: Priority
-views.task.index.performer: Performer
+views.task.index.performer: Executor
 views.task.index.group: Group
 views.task.index.isDeleted: Deleted
 views.task.index.deleted: Deleted
 views.task.index.roomType: 'Room type'
 views.task.index.room: Room
 views.task.index.users: Executant
-views.task.index.assign: Assigned
+views.task.index.assign: 'Assigned to'
 views.task.index.guest: Guest
 views.task.index.role: Role
 views.task.index.groups: Groups
@@ -35,11 +35,11 @@ views.task.index.info: Information
 views.task.index.cancel: Cancel
 views.task.index.view: View
 views.task.index.close: Close
-views.task.index.take_in_process: 'Confirm progress'
+views.task.index.take_in_process: 'Take the task'
 views.task.index.tasks_empaty: 'Task is empty'
 views.task.index.detail.role: Role
 views.task.index.detail.type: Task
-views.task.index.detail.performer: Performer
+views.task.index.detail.performer: Executor
 views.task.index.detail.room: Room
 views.task.index.detail.priority: Priority
 views.task.index.detail.status: Status
@@ -65,12 +65,12 @@ views.hotel.extended.copy_coordinates_like_this: 'Copy coordinates (For example:
 views.hotel.extended.yandex_maps: 'Yandex maps'
 views.hotel.extended.right_click_on_hotel_on_map: 'Click hotel location with right mouse button and select "What''s here?" to open the left panel with detailed information about the location and coordinates.'
 views.hotel.extended.yandex_copy_coordinates_like_this: 'Copy the coordianes'
-views.hotel.index.name: Name
-views.hotel.index.prefix: Prefix
+views.hotel.index.name: Title
+views.hotel.index.prefix: 'Legal name'
 views.hotel.index.sale_dates: 'Sales dates'
 views.hotel.index.chosen_by_default: Default
-views.hotel.index.edit_record: 'Edit record'
-views.hotel.index.delete_record: 'Delete record'
+views.hotel.index.edit_record: Edit
+views.hotel.index.delete_record: Delete
 views.hotel.layout.hotels: Hotels
 views.hotel.notFound.no_hotel_created: 'No hotest created'
 views.hotel.notFound.create_new_hotel_to_continue: 'Create a new hotel please'
@@ -80,7 +80,7 @@ views.hotel.notFound.ask_admin: 'Ask your account administrator for permission'
 views.hotel.tabs.main_info: 'Main information'
 views.hotel.tabs.additional_settings: 'Additional settings'
 views.hotel.tabs.birthplace: 'Birth place'
-views.hotel.tabs.document_relation: 'ID / Passport number'
+views.hotel.tabs.document_relation: 'ID / Passport'
 views.hotel.tabs.address: Address
 views.hotel.tabs.visa: Visa
 views.hotel.tabs.unwelcome: 'Black list'
@@ -108,7 +108,7 @@ views.roomType.index.delete_room_type: 'Delete room type'
 views.roomType.index.delete: Delete
 views.roomType.index.room_fund: Rooms
 views.roomType.index.beds: Beds
-views.roomType.index.name: Name
+views.roomType.index.name: Title
 views.roomType.index.housing: Housing
 views.roomType.index.floor: Floor
 views.roomType.index.status: Status
@@ -116,21 +116,21 @@ views.roomType.layout.rooms: Rooms
 views.roomType.layout.create_room_type: 'New room type'
 views.roomType.newRoom.create_bed_for_room_type: 'Create bed for room type'
 views.roomType.newRoom.create_room_for_room_type: 'Create room for room type'
-views.roomType.roomListButtons.edit_record: 'Edit record'
-views.roomType.roomListButtons.delete_record: 'Delete record'
+views.roomType.roomListButtons.edit_record: Edit
+views.roomType.roomListButtons.delete_record: Delete
 views.roomType.help.empty_facilities: 'Use room amenities from room type'
 views.hotel.index.confirm_delete: 'Are you sure you want to delete hotel "%hotelname%"?'
 views.task.layout.tasks: Tasks
-views.corpus.name: Name
-views.corpus.internal_name: 'Internal label'
+views.corpus.name: Title
+views.corpus.internal_name: 'Internal title'
 views.corpus.city: City
 views.corpus.settlement: 'Town (settlement)'
 views.corpus.address: Address
 views.corpus.street: Street
 views.corpus.house: House
-views.corpus.flat: Appartment
-views.corpus.corpus: Corpus
-views.corpus: Corpus
+views.corpus.flat: Apartment
+views.corpus.corpus: Wing
+views.corpus: Wing
 view.create_task_type_categoty: 'New category'
 views.roomTypeCaterory.layout.index: 'Room category'
 views.hotel.contact_info.editing_number: 'Editing #'

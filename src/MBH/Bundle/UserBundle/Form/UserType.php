@@ -50,12 +50,12 @@ class UserType extends AbstractType
             ->add('username', TextType::class, [
                 'label' => 'form.userType.login',
                 'group' => 'form.userType.authentication_data',
-                'attr' => array('placeholder' => 'ivan'),
+                'attr' => array('placeholder' => 'login'),
             ])
             ->add('email', EmailType::class, [
                 'label' => 'E-mail',
                 'group' => 'form.userType.authentication_data',
-                'attr' => ['placeholder' => 'ivan@example.com']
+                'attr' => ['placeholder' => 'login@example.com']
             ]);
 
         if ($this->isNew) {

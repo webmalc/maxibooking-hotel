@@ -478,6 +478,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
     public function pullOrders($pullOldStatus = ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS)
     {
         $result = true;
+        $isPulledAllPackages = $pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS;
         /** @var BookingConfig $config */
         foreach ($this->getConfig() as $config) {
             $request = $this->templating->render(
@@ -485,10 +486,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ['config' => $config, 'params' => $this->params, 'pullOldStatus' => $pullOldStatus]
             );
 
-            $endpointUrl = static::BASE_SECURE_URL
-                . ($pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS
-                    ? 'reservationssummary'
-                    : 'reservations');
+            $endpointUrl = static::BASE_SECURE_URL . ($isPulledAllPackages ? 'reservationssummary' : 'reservations');
 
             $sendResult = $this->sendXml($endpointUrl, $request, null, true);
             $this->log('Reservations: ' . $sendResult->asXml());
@@ -498,7 +496,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
             };
 
             foreach ($sendResult->reservation as $reservation) {
-                if ((string)$reservation->status == 'modified') {
+                if ((string)$reservation->status == 'modified' || $isPulledAllPackages) {
                     if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->disable('softdeleteable');
                     }
@@ -510,14 +508,14 @@ class Booking extends Base implements ChannelManagerServiceInterface
                         'channelManagerType' => 'booking'
                     ]
                 );
-                if ((string)$reservation->status == 'modified') {
+                if ((string)$reservation->status == 'modified' || $isPulledAllPackages) {
                     if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->enable('softdeleteable');
                     }
                 }
 
                 //new
-                if ((string)$reservation->status == 'new' && !$order) {
+                if (((string)$reservation->status == 'new' && !$order) || ($isPulledAllPackages && !$order)) {
                     $result = $this->createPackage($reservation, $config);
                     $this->notify($result, 'booking', 'new');
                 }
@@ -545,8 +543,9 @@ class Booking extends Base implements ChannelManagerServiceInterface
                     );
                 }
             };
-            if ($result) {
+            if ($result && $isPulledAllPackages) {
                 $config->setIsAllPackagesPulled(true);
+                $this->dm->flush();
             }
         }
 

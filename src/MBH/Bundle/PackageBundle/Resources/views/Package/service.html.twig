@@ -74,7 +74,7 @@
                                 {{ service.service.time ? service.time|date('H:i') : ''  }}
                             </td>
                             <td class="text-right text-success">{{ service.price|number_format(2) }}</td>
-                            <td>{{ config.calcTypes[service.calcType] }}</td>
+                            <td>{{ config.calcTypes[service.calcType]|trans }}</td>
                             <td class="text-right text-success">{{ service.total|number_format(2) }}</td>
                             <td>{{ service.note }}</td>
                             <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>

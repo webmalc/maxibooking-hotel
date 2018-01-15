@@ -335,6 +335,7 @@ menu.label.reports.managers: Менеджеры
 menu.label.reports.invite: 'Визовые приглашения'
 menu.label.reports.analystics: Аналитика
 menu.label.reports.polls: Оценки
+menu.label.reports.dynamic_sales: 'Динамика продаж'
 menu.label.reports.daily_report: 'Денежные средства'
 menu.label.reports.windows: Окна
 menu.label.reports.work_shift: 'Рабочие смены'
@@ -602,3 +603,81 @@ facilities.radio: 'Радио'
 facilities.iron: 'Утюг'
 facilities.plug: 'Электророзетка'
 facilities.board-games: 'Настольные игры'
+currency.rub.text: 'руб.'
+currency.rub.small: 'коп.'
+currency.uah.text: 'грн.'
+currency.uah.small: 'коп.'
+currency.kzt.text: 'тенге'
+currency.kzt.small: 'тиын'
+mbh.weekdays.sun: Воскресенье
+mbh.weekdays.mon: Понедельник
+mbh.weekdays.tue: Вторник
+mbh.weekdays.wed: Среда
+mbh.weekdays.thu: Четверг
+mbh.weekdays.fri: Пятница
+mbh.weekdays.sat: Суббота
+mbh.services.calcTypes.per_stay: 'за весь срок'
+mbh.services.calcTypes.per_night: 'за cутки'
+mbh.services.calcTypes.not_applicable: 'за услугу'
+mbh.services.calcTypes.day_percent: 'за услугу (% от цены за сутки)'
+mbh.package.statuses.offline.title: 'Обычная'
+mbh.package.statuses.online.title: 'Онлайн'
+mbh.package.arrivals.service: Служебная
+mbh.package.arrivals.tourism: Туризм
+mbh.package.arrivals.business: Деловая
+mbh.package.arrivals.study: Учеба
+mbh.package.arrivals.work: Работа
+mbh.package.arrivals.private: Частная
+mbh.package.arrivals.residence: Транзит
+mbh.package.arrivals.humanitarian: Гуманитарная
+mbh.package.arrivals.other: Другая
+mbh.mailer.subject.text: 'Сообщение от MaxiBooking'
+mbh.task.statuses.open.title: 'Открыта'
+mbh.task.statuses.process.title: 'В процессе'
+mbh.task.statuses.closed.title: 'Закрыта'
+mbh.cash.operations.in: "Поступление"
+mbh.cash.operations.out: "Расход"
+mbh.cash.operations.fee: "Комиссия"
+mbh.gender.types.male: "Мужчина"
+mbh.gender.types.female: "Женщина"
+mbh.gender.types.unknown: "Неизвестно"
+mbh.organization.types.contragents: 'Контрагенты'
+mbh.organization.types.my: 'Мои организации'
+mbh.warehouse.operations.in: "Приход"
+mbh.warehouse.operations.out: "Расход"
+
+mbh.hotel.types.apartments: 'Апартаменты'
+mbh.hotel.types.recreation_center: 'База отдыха'
+mbh.hotel.types.guest_house: 'Гостевой дом'
+mbh.hotel.types.pension: 'Пансионат'
+mbh.hotel.types.sanatorium: 'Санаторий'
+mbh.hotel.types.country_club: 'Загородный клуб'
+mbh.hotel.types.hostel: 'Хостел'
+mbh.hotel.types.hotel: 'Отель'
+mbh.hotel.types.motel: 'Мотель'
+mbh.hotel.types.resort: 'Курортный отель'
+mbh.hotel.types.mini_hotel: 'Мини-отель'
+
+mbh.hotel.themes.сity_tour: 'Экскурсия по городу'
+mbh.hotel.themes.budget_travel: 'Бюджетные и молодежные поездки'
+mbh.hotel.themes.shoping: 'Шопинг'
+mbh.hotel.themes.family_trip: 'Семейная поездка'
+mbh.hotel.themes.international: 'Международный'
+mbh.hotel.themes.business_trip: 'Деловая поездка'
+mbh.hotel.themes.romantic_vacation: 'Романтический отпуск/Медовый месяц'
+mbh.hotel.themes.interior_design: 'Дизайнерский интерьер'
+mbh.hotel.themes.luxury_holidays: 'Отдых класса люкс'
+mbh.hotel.themes.haute_cuisine: 'Изысканная кухня'
+mbh.hotel.themes.country_holidays: 'Загородный отдых'
+mbh.hotel.themes.homestead: 'Усадьба'
+mbh.hotel.themes.nature: 'Природа/Дикая флора и фауна'
+mbh.hotel.themes.spa: 'Спа/Оздоровительные процедуры'
+mbh.hotel.themes.ecological: 'Экологический'
+mbh.hotel.themes.ski: 'Горы/лыжи'
+mbh.hotel.themes.adventure: 'Приключение'
+mbh.hotel.themes.sport: 'Спорт'
+mbh.hotel.themes.beach: 'Пляж/Побережье'
+mbh.hotel.themes.city: 'Городской'
+mailer.order.subject_text: 'Подтверждение оплаты бронирования отеля'
+mailer.order.prepend_text: 'От Вас получена оплата в размере %paymentSum%!'
+mailer.order.header_text: 'Вас приветствует %hotelName%'

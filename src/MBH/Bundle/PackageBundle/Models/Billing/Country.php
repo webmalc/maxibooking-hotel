@@ -9,6 +9,7 @@ namespace MBH\Bundle\PackageBundle\Models\Billing;
 class Country
 {
     const RUSSIA_TLD = 'ru';
+    const KAZAKHSTAN_TLD = 'kz';
     /** @var  int */
     private $id;
     /** @var  string */

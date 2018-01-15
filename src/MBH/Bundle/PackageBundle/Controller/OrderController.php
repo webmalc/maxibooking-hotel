@@ -210,7 +210,6 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         return [
             'entity' => $entity,
             'logs' => $this->logs($entity),
-            'genders' => $this->container->getParameter('mbh.gender.types'),
             'form' => $form->createView(),
             'package' => $package
         ];

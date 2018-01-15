@@ -897,11 +897,11 @@ class Package extends Base implements \JsonSerializable
     {
         $title = $this->getNumberWithPrefix();
         if ($accommodation && $this->getAccommodation()) {
-            $title .=' Номер: '.$this->getAccommodation()->getName().'. ';
+            $title .=' '.$this->getAccommodation()->getName().'. ';
         }
         /** @var Tourist|Organization $name */
         if ($payer && $name = $this->getOrder()->getPayer()) {
-            $title .= ' Плательщик: '.$name.'. ';
+            $title .= ' '.$name.'. ';
         }
         return $title;
     }
