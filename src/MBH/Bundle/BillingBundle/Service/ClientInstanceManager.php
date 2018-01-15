@@ -107,7 +107,7 @@ class ClientInstanceManager
         } else {
             $this->logger->addRecord(
                 Logger::WARNING,
-                'There is task  for installation client '. $clientName . ' but workflow statis is '. $installProcess->getCurrentPlace()
+                'Install task was canceled! There is task  for installation client '. $clientName . ' but workflow statis is '. $installProcess->getCurrentPlace()
             );
         }
 
