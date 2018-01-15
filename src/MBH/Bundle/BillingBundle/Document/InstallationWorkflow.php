@@ -28,18 +28,18 @@ class InstallationWorkflow
      * @ODM\Field(type="string", name="clientName")
      * @MongoDBUnique(fields="clientName")
      */
-    protected $clientName = '';
+    protected $clientName;
     /**
      * @var string
      * @ODM\Field(type="string", name="currentPlace")
      * @Assert\Length(max=32)
      */
-    protected $currentPlace = '';
+    protected $currentPlace;
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -56,7 +56,7 @@ class InstallationWorkflow
     /**
      * @return string
      */
-    public function getClientName(): string
+    public function getClientName(): ?string
     {
         return $this->clientName;
     }
@@ -72,7 +72,7 @@ class InstallationWorkflow
     /**
      * @return string
      */
-    public function getCurrentPlace(): string
+    public function getCurrentPlace(): ?string
     {
         return $this->currentPlace;
     }

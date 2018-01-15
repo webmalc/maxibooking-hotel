@@ -79,8 +79,10 @@ class ClientInstanceManager
             $installProcess = InstallationWorkflow::createInstallationWorkflow($clientName);
             $this->dm->persist($installProcess);
         }
+
+        $result = new Result();
+
         if ($this->workflow->can($installProcess, 'install')) {
-            $result = new Result();
             $command = 'mbh:client:installation --client=' . $clientName;
             $cwd = $this->kernel->getRootDir().'/../bin';
             $isDebug = $this->kernel->isDebug();
@@ -113,7 +115,7 @@ class ClientInstanceManager
         return $result;
     }
 
-    private function getInstallProcess(string $clientName = '')
+    private function getInstallProcess(string $clientName)
     {
         return $this->dm->getRepository('MBHBillingBundle:InstallationWorkflow')->findOneBy(['clientName' => $clientName]);
     }
