@@ -162,31 +162,26 @@ class ClientInstanceManager
     {
         $this->logger->addRecord(Logger::INFO, 'After install started');
         if ($result->isSuccessful()) {
-            $admin = $this->updateAdminUser();
-            $result->setData([
-                'password' => $admin->getPlainPassword(),
-                'token' => $admin->getApiToken()->getToken(),
-                'url' => Client::compileClientUrl($clientName)
-            ]);
-            $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created');
+            try {
+                $admin = $this->updateAdminUser();
+                $result->setData(
+                    [
+                        'password' => $admin->getPlainPassword(),
+                        'token' => $admin->getApiToken()->getToken(),
+                        'url' => Client::compileClientUrl($clientName),
+                    ]
+                );
+                $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created');
+            } catch (\Throwable $e) {
+                $this->logger->addRecord(Logger::CRITICAL, $e->getMessage());
+            }
+
         }
         $this->logger->addRecord(Logger::INFO, 'Try to send data for billing');
 
         return $this->sendInstallationResult($result, $clientName);
     }
 
-    private function changeInstallProcessStatus(string $client, string $status)
-    {
-        $installProcess = $this->getInstallProcess($client);
-        if ($installProcess && $this->workflow->can($installProcess, $status)) {
-            $this->workflow->apply($installProcess, $status);
-            $this->logger->addRecord(
-                Logger::INFO,
-                'Change install process to state '.$installProcess->getCurrentPlace()
-            );
-            $this->dm->flush($installProcess);
-        }
-    }
 
 
     /**
@@ -296,6 +291,20 @@ class ClientInstanceManager
     {
         return $this->helper->getRandomString();
     }
+
+    private function changeInstallProcessStatus(string $client, string $status)
+    {
+        $installProcess = $this->getInstallProcess($client);
+        if ($installProcess && $this->workflow->can($installProcess, $status)) {
+            $this->workflow->apply($installProcess, $status);
+            $this->logger->addRecord(
+                Logger::INFO,
+                'Change install process to state '.$installProcess->getCurrentPlace()
+            );
+            $this->dm->flush($installProcess);
+        }
+    }
+
 
 
 }
