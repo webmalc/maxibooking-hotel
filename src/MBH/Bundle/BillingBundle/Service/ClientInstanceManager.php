@@ -5,6 +5,7 @@ namespace MBH\Bundle\BillingBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Exception\RequestException;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BillingBundle\Document\InstallationWorkflow;
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingRoom;
@@ -20,6 +21,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Workflow\Workflow;
 
 class ClientInstanceManager
 {
@@ -34,6 +36,8 @@ class ClientInstanceManager
     private $billingApi;
     private $roomTypeManager;
     private $hotelManager;
+    private $workflow;
+
 
     public function __construct(
         MaintenanceManager $maintenanceManager,
@@ -44,7 +48,8 @@ class ClientInstanceManager
         KernelInterface $kernel,
         BillingApi $billingApi,
         RoomTypeManager $roomTypeManager,
-        HotelManager $hotelManager
+        HotelManager $hotelManager,
+        Workflow $workflow
     ) {
         $this->maintenanceManager = $maintenanceManager;
         $this->logger = $logger;
@@ -55,6 +60,7 @@ class ClientInstanceManager
         $this->billingApi = $billingApi;
         $this->roomTypeManager = $roomTypeManager;
         $this->hotelManager = $hotelManager;
+        $this->workflow = $workflow;
     }
 
     /**
@@ -64,21 +70,52 @@ class ClientInstanceManager
      */
     public function runClientInstallationCommand(string $clientName)
     {
-        $result = new Result();
-
-        $command = 'mbh:client:installation --client=' . $clientName;
-        $cwd = $this->kernel->getRootDir().'/../bin';
-        $isDebug = $this->kernel->isDebug();
-        $kernelEnv = $this->kernel->getEnvironment();
-        $command = sprintf('php console %s --env=%s %s',$command, $kernelEnv, $isDebug ?'': '--no-debug');
-        $process = new Process($command, $cwd, null, null, 60*10);
-        try {
-            $process->start();
-        } catch (ProcessFailedException|ProcessTimedOutException $e) {
-            throw new ClientMaintenanceException($e->getMessage());
+        $this->logger->addRecord(
+            Logger::INFO,
+            'Get installation task for client '.$clientName.' in service '.static::class
+        );
+        $installProcess = $this->getInstallProcess($clientName);
+        if (!$installProcess) {
+            $installProcess = InstallationWorkflow::createInstallationWorkflow($clientName);
+            $this->dm->persist($installProcess);
+        }
+        if ($this->workflow->can($installProcess, 'install')) {
+            $result = new Result();
+            $command = 'mbh:client:installation --client=' . $clientName;
+            $cwd = $this->kernel->getRootDir().'/../bin';
+            $isDebug = $this->kernel->isDebug();
+            $kernelEnv = $this->kernel->getEnvironment();
+            $command = sprintf('php console %s --env=%s %s',$command, $kernelEnv, $isDebug ?'': '--no-debug');
+            $process = new Process($command, $cwd, null, null, 60*10);
+            try {
+                $this->workflow->apply($installProcess, 'install');
+                $this->dm->flush($installProcess);
+                $this->logger->addRecord(
+                    Logger::INFO,
+                    'Workflow changed status to '.$installProcess->getCurrentPlace()
+                );
+                $this->logger->addRecord(
+                    Logger::INFO,
+                    'Starting console command '. $command
+                );
+                $process->start();
+            } catch (ProcessFailedException|ProcessTimedOutException $e) {
+                throw new ClientMaintenanceException($e->getMessage());
+            }
+        } else {
+            $this->logger->addRecord(
+                Logger::WARNING,
+                'There is task  for installation client '. $clientName . ' but workflow statis is '. $installProcess->getCurrentPlace()
+            );
         }
 
+
         return $result;
+    }
+
+    private function getInstallProcess(string $clientName = '')
+    {
+        return $this->dm->getRepository('MBHBillingBundle:InstallationWorkflow')->findOneBy(['clientName' => $clientName]);
     }
 
     /**
@@ -88,18 +125,22 @@ class ClientInstanceManager
     public function installClient(string $clientName): Result
     {
         $result = new Result();
+
         try {
             $this->logger->addRecord(Logger::INFO, 'Try to install ' . $clientName);
             $this->maintenanceManager->install($clientName);
             $message = 'Client ' . $clientName . ' was installed';
             $this->logger->addRecord(Logger::INFO, $message);
+            $this->changeInstallProcessStatus('installed');
         } catch (\Throwable $e) {
+            $this->changeInstallProcessStatus('error');
             $result->addError($e->getMessage());
             $message = 'Client ' . $clientName . ' install error.' . $e->getMessage();
             try {
                 $this->maintenanceManager->rollBack($clientName);
                 $this->logger->addRecord(Logger::CRITICAL,$message);
                 $result->addError($message);
+                $this->changeInstallProcessStatus('rollback');
             } catch (ClientMaintenanceException $e) {
                 $message = $message . ' RollBackError. ' . $e->getMessage();
                 $this->logger->addRecord(Logger::CRITICAL, $message);
@@ -108,6 +149,19 @@ class ClientInstanceManager
         }
 
         return $result;
+    }
+
+    private function changeInstallProcessStatus(string $status)
+    {
+        $installProcess = $this->getInstallProcess();
+        if ($installProcess && $this->workflow->can($installProcess, $status)) {
+            $this->workflow->apply($installProcess, $status);
+            $this->logger->addRecord(
+                Logger::INFO,
+                'Change install process to state '.$installProcess->getCurrentPlace()
+            );
+            $this->dm->flush($installProcess);
+        }
     }
 
     /**

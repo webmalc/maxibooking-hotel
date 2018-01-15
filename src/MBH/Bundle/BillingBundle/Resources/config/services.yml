@@ -75,7 +75,7 @@ services:
 
     mbh.console.billing_client_install:
         class: MBH\Bundle\BillingBundle\Command\BillingClientInstallationCommand
-        arguments: ['@mbh.client_instance_manager']
+        arguments: ['@mbh.client_instance_manager', '@mbh.billing.logger']
         tags: ['console.command']
 
     mbh.service.ssh_commands:
@@ -98,6 +98,7 @@ services:
             - '@mbh.billing.api'
             - '@mbh.hotel.room_type_manager'
             - '@mbh.hotel.hotel_manager'
+            - '@workflow.installation'
 
     mbh.billing_response_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler

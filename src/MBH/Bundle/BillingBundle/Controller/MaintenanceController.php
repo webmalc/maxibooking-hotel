@@ -4,6 +4,7 @@ namespace MBH\Bundle\BillingBundle\Controller;
 
 use http\Exception\InvalidArgumentException;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BillingBundle\Document\InstallationWorkflow;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -30,13 +31,12 @@ class MaintenanceController extends BaseController
      */
     public function installAction(Request $request)
     {
-        $this->checkToken($request);
-
-        $clientLogin = $request->get('client_login');
+        $requestData = json_decode($request->getContent(), true);
+        $this->checkToken($requestData['token']);
+        $clientLogin = $requestData['client_login'];
         if (!$clientLogin) {
             throw new InvalidArgumentException('No login in request');
         }
-
 
         $result = $this->get('mbh.client_instance_manager')->runClientInstallationCommand($clientLogin);
 
@@ -51,9 +51,9 @@ class MaintenanceController extends BaseController
      */
     public function installPropertiesAction(Request $request)
     {
-        $this->checkToken($request);
-        //TODO: Или как там данные передаются
-        $login = $request->get('login');
+        $requestData = json_decode($request->getContent(), true);
+        $this->checkToken($requestData['token']);
+        $login = $requestData['login'];
         $result = $this->get('mbh.client_instance_manager')->installFixtures($login);
         if ($result->isSuccessful()) {
             $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
@@ -87,9 +87,8 @@ class MaintenanceController extends BaseController
 //        return new JsonResponse($installer->toJson($answer), 200, [], true);
     }
 
-    private function checkToken(Request $request)
+    private function checkToken(string $token)
     {
-        $token = $request->get('token');
         if ($token !== BillingApi::AUTH_TOKEN) {
             throw new UnauthorizedHttpException('Incorrect token!');
         }

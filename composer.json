@@ -16,7 +16,7 @@
   "require": {
     "php": ">=7.1.0",
     "alcaeus/mongo-php-adapter": "1.*@stable",
-    "symfony/symfony": "3.*@stable",
+    "symfony/symfony": "3.3.*@stable",
     "twig/twig": "*@stable",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
@@ -66,7 +66,8 @@
     "oneup/flysystem-bundle": "@stable",
     "league/flysystem-aws-s3-v3": "^1.0",
     "knplabs/knp-gaufrette-bundle": "~0.5",
-    "stripe/stripe-php": "^5.7"
+    "stripe/stripe-php": "^5.7",
+    "symfony/workflow": "3.4.*@stable"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
