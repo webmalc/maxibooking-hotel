@@ -89,7 +89,7 @@
                         {% if price.val %}
                             <br>
                             <small style="color:#888;">
-                                {{ price.val > 0 ? 'mailer.reportArrival.duty'|trans : 'mailer.reportArrival.overpayment'|trans }}: {{ price.val|number_format(2) }}  {{ currency().text }}
+                                {{ price.val > 0 ? 'mailer.reportArrival.duty'|trans : 'mailer.reportArrival.overpayment'|trans }}: {{ price.val|number_format(2) }}  {{ currency().text|trans }}
                             </small>
                         {% endif %}
                     </td>
@@ -105,7 +105,7 @@
                 <b>{{ 'mailer.reportArrival.guests'|trans }}:</b>  {{ guests }}
             </div>
             <div style="width:33%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;">
-                <b>{{ 'mailer.reportArrival.duty'|trans }}:</b> {{ debt|number_format(2) }} {{ currency().text }}
+                <b>{{ 'mailer.reportArrival.duty'|trans }}:</b> {{ debt|number_format(2) }} {{ currency().text|trans }}
             </div>
         </div>
         <br>
