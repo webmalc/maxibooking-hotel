@@ -146,6 +146,9 @@ class PackageCsvType extends AbstractType
             ->add('confirmed', HiddenType::class, [
                 'required' => false,
             ])
+            ->add('query', HiddenType::class, [
+                'required' => false
+            ])
             ->add('quick_link', HiddenType::class, [
                 'required' => false,
             ]);

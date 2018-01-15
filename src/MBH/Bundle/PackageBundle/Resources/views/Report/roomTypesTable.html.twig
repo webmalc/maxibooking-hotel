@@ -187,8 +187,8 @@
                         </a>
                         <small>
                             <br>
-                            {% if package.mainTourist and package.mainTourist.citizenship %}
-                                {{ package.mainTourist.citizenship }} /
+                            {% if package.mainTourist and package.mainTourist.citizenshipTld %}
+                                {{ get_country(package.mainTourist.citizenshipTld).name }} /
                             {% endif %}
                             {% if package.adults > 0 %}
                                 {{ package.adults }} {{ 'report.room_types_table.number_of_adults'|trans}}

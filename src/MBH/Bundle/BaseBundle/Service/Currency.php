@@ -114,6 +114,12 @@ class Currency
      */
     public function info()
     {
-        return $this->container->getParameter('mbh.currency.data')[$this->container->getParameter('locale.currency')];
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $this->container
+            ->get('doctrine.odm.mongodb.document_manager')
+            ->getRepository('MBHClientBundle:ClientConfig')
+            ->fetchConfig();
+
+        return $this->container->getParameter('mbh.currency.data')[$clientConfig->getCurrency()];
     }
 }

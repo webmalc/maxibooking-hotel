@@ -1,0 +1,1 @@
+validator.document.order_sum_less_zero: 'Order sum cannot be below 0'

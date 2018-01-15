@@ -39,14 +39,13 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
-        // iterate hotels
         foreach ($this->getConfig() as $config) {
-
             $serviceTariffs = $this->pullTariffs($config);
             $pricesData = $this->requestDataFormatter->formatPriceRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdatePricesRequest($pricesData);
             foreach ($requestInfoArray as $requestInfo) {
                 $this->log('begin update prices');
+                $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
                 $this->log('response for update prices request:');
@@ -69,7 +68,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
-        // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomsData = $this->requestDataFormatter->formatRoomRequestData($begin, $end, $roomType, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdateRoomsRequest($roomsData);
@@ -98,13 +96,13 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
-        // iterate hotels
         foreach ($this->getConfig() as $config) {
             $serviceTariffs = $this->pullTariffs($config);
             $restrictionsData = $this->requestDataFormatter->formatRestrictionRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdateRestrictionsRequest($restrictionsData);
             foreach ($requestInfoArray as $requestInfo) {
                 $this->log('begin update restrictions');
+                $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
                 $this->log('response for update restrictions request:');
@@ -247,70 +245,77 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         return $result;
     }
 
+    /**
+     * @param AbstractOrderInfo $orderInfo
+     * @param $result
+     * @param $isFirstPulling
+     */
+    public function handleOrderInfo(AbstractOrderInfo $orderInfo, &$result, $isFirstPulling = false)
+    {
+        $orderHandler = $this->container->get('mbh.channelmanager.order_handler');
+        /** @var AbstractOrderInfo $orderInfo */
+        if ($orderInfo->isOrderModified()) {
+            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
+        }
+
+        $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
+            [
+                'channelManagerId' => $orderInfo->getChannelManagerOrderId(),
+                'channelManagerType' => $orderInfo->getChannelManagerName(),
+            ]
+        );
+
+        if ($orderInfo->isOrderModified()) {
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+        }
+
+        //new
+        if ($orderInfo->isHandledAsNew($order) || $isFirstPulling) {
+            $result = $orderHandler->createOrder($orderInfo, $order);
+            $this->notify($result, 'commonCM', 'new', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
+        }
+
+        //edited
+        if ($orderInfo->isHandledAsModified($order)) {
+            $result = $orderHandler->createOrder($orderInfo, $order);
+            if ($orderInfo->getModifiedDate()) {
+                $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
+            }
+            $this->notify($result, 'commonCM', 'edit', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
+        }
+
+        //delete
+        if ($orderInfo->isHandledAsCancelled($order)) {
+            $this->dm->persist($order);
+            $this->dm->flush();
+            $this->notify($order, 'commonCM', 'delete', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
+            $this->dm->remove($order);
+            $this->dm->flush();
+            $result = $order;
+        };
+
+        if (($orderInfo->isOrderModified() || $orderInfo->isOrderCancelled()) && !$order && !$isFirstPulling) {
+            if ($orderInfo->isOrderModified()) {
+                $result = $orderHandler->createOrder($orderInfo, $order);
+            }
+            $this->notifyError('commonCM',
+                $this->getUnexpectedOrderError($result, $orderInfo->isOrderModified()),
+                ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
+        }
+    }
+
     public function handlePullOrdersResponse($response, $config, &$result, $isFirstPulling = false)
     {
         $responseHandler = $this->getResponseHandler($response, $config);
-        $orderHandler = $this->container->get('mbh.channelmanager.order_handler');
         if (!$this->checkResponse($response)) {
             $result = false;
         } else {
             foreach ($responseHandler->getOrderInfos() as $orderInfo) {
-                /** @var AbstractOrderInfo $orderInfo */
-                if ($orderInfo->isOrderModified()) {
-                    if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                        $this->dm->getFilterCollection()->disable('softdeleteable');
-                    }
-                }
-
-                //old order
-                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
-                    [
-                        'channelManagerId' => $orderInfo->getChannelManagerOrderId(),
-                        'channelManagerType' => $orderInfo->getChannelManagerName(),
-                    ]
-                );
-
-                if ($orderInfo->isOrderModified()) {
-                    if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                        $this->dm->getFilterCollection()->enable('softdeleteable');
-                    }
-                }
-
-                //new
-                if ($orderInfo->isHandledAsNew($order) || $isFirstPulling) {
-                    $result = $orderHandler->createOrder($orderInfo, $order);
-                    $this->notify($result, $orderInfo->getChannelManagerName(), 'new');
-                }
-
-                //edited
-                if ($orderInfo->isHandledAsModified($order)) {
-                    $result = $orderHandler->createOrder($orderInfo, $order);
-                    if ($orderInfo->getModifiedDate()) {
-                        $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
-                    }
-                    $this->notify($result, $orderInfo->getChannelManagerName(), 'edit');
-                }
-
-                //delete
-                if ($orderInfo->isHandledAsCancelled($order)) {
-                    $this->dm->persist($order);
-                    $this->dm->flush();
-                    $this->notify($order, $orderInfo->getChannelManagerName(), 'delete');
-                    $this->dm->remove($order);
-                    $this->dm->flush();
-                    $result = true;
-                };
-
-                if (($orderInfo->isOrderModified() || $orderInfo->isOrderCancelled()) && !$order && !$isFirstPulling) {
-                    if ($orderInfo->isOrderModified()) {
-                        $result = $orderHandler->createOrder($orderInfo, $order);
-                        $this->notifyError($orderInfo->getChannelManagerName(), $this->getUnexpectedOrderError($result, true));
-                    }
-
-                    if ($orderInfo->isOrderCancelled()) {
-                        $this->notifyError($orderInfo->getChannelManagerName(), $this->getUnexpectedOrderError($result, false));
-                    }
-                }
+                $this->handleOrderInfo($orderInfo, $result, $isFirstPulling);
                 $this->notifyServiceAboutReservation($orderInfo, $config);
             };
         }

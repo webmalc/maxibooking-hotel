@@ -17,7 +17,9 @@ $(document).ready(function () {
     }());
 
     var $unitellerFiscalizationFieldsSwitcher = $('#mbh_bundle_clientbundle_client_payment_system_type_isUnitellerWithFiscalization');
-    setUnitellerSpecialFieldsVisibility($unitellerFiscalizationFieldsSwitcher.bootstrapSwitch('state'));
+    var isUnitellerSpecFieldsVisible = $unitellerFiscalizationFieldsSwitcher.bootstrapSwitch('state')
+        && $('#mbh_bundle_clientbundle_client_payment_system_type_paymentSystem').val() === 'uniteller';
+    setUnitellerSpecialFieldsVisibility(isUnitellerSpecFieldsVisible);
     $unitellerFiscalizationFieldsSwitcher.on('switchChange.bootstrapSwitch', function (event, state) {
         setUnitellerSpecialFieldsVisibility(state);
     });

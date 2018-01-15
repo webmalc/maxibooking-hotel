@@ -22,8 +22,6 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/")
  * @Method("GET")
- *
-
  */
 class DocumentsController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {
@@ -55,10 +53,10 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
         }
 
         $orderDocumentTypes = $this->container->getParameter('mbh.order.document.types');
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
-        $docTypes = $orderDocumentTypes + $vegaDocumentTypes;
+        $documentTypes = $this->container->get('mbh.fms_dictionaries')->getDocumentTypes();
+        $docTypes = $orderDocumentTypes + $documentTypes;
 
-        $groupDocTypes = ['' => $orderDocumentTypes, 'Vega' => $vegaDocumentTypes];
+        $groupDocTypes = ['' => $orderDocumentTypes, 'Vega' => $documentTypes];
         $scanTypes = $this->container->get('mbh.vega.dictionary_provider')->getScanTypes();
 
         $form = $this->createForm(OrderDocumentType::class, $orderDocument, [

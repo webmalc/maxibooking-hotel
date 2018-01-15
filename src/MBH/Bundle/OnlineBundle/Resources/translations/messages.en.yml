@@ -1,71 +1,123 @@
 form.formType.is_turned_on: 'Enabled?'
 form.formType.parameters: Parameters
 form.formType.use_online_form: 'Use web form?'
-form.formType.room_types: 'Room types?'
-form.formType.should_we_use_room_type_field_in_online_form: 'Show "room type" field on web form?'
-form.formType.are_there_guests: 'Guests?'
-form.formType.should_we_use_guests_amount_field_in_online_form: 'Show "number of guests" field on web form?'
-form.formType.should_we_use_nights_field: 'Show "nights" field on online form?'
-form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: 'Show "check in date" and "number of nights" fields or both "check in" cnd "check out" dates?'
+form.formType.room_types: 'Show room types?'
+form.formType.should_we_use_room_type_field_in_online_form: 'Show "room type" field in web form?'
+form.formType.are_there_guests: 'Show guests?'
+form.formType.should_we_use_guests_amount_field_in_online_form: 'Show "number of guests" field in web form?'
+form.formType.should_we_use_nights_field: 'Show "nights" field in online form?'
+form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: 'Show "number of nights" field instead of  "check in date" and "number of nights" fields in web form?'
 form.formType.payment: Payment
-form.formType.payment_type: 'Payment method'
-form.formType.reservation_payment_types_with_online_form: 'Payment method on web form'
-controller.apiController.reservation_error_occured_refresh_page_and_try_again: controller.apiController.reservation_error_occured_refresh_page_and_try_again
-controller.apiController.reservations_made_success: controller.apiController.reservations_made_success
-controller.apiController.your_reservations_numbers: controller.apiController.your_reservations_numbers
-controller.apiController.room_reservation_made_success: controller.apiController.room_reservation_made_success
-controller.apiController.your_reservation_number: controller.apiController.your_reservation_number
-controller.apiController.thank_you: controller.apiController.thank_you
+form.formType.payment_type: 'Payment options'
+form.formType.reservation_payment_types_with_online_form: 'Payment options available in web form'
+controller.apiController.reservation_error_occured_refresh_page_and_try_again: 'An error occured while booking. Please refresh the page and try again.'
+controller.apiController.reservations_made_success: 'A room is successfully booked.'
+controller.apiController.your_reservations_numbers: 'Your reservation numbers are'
+controller.apiController.room_reservation_made_success: 'A room is successfully reserved'
+controller.apiController.your_reservation_number: 'Your reservation number is'
+controller.apiController.thank_you: 'Thank you!'
 controller.apiController.we_will_call_you_back_soon: 'We will contact you as soon as possible'
-controller.apiController.your_order_number: controller.apiController.your_order_number
+controller.apiController.your_order_number: 'Your order number:'
 controller.formController.settings_saved_success: 'Settings saved successfully'
-form.inviteType.type.single: form.inviteType.type.single
-form.inviteType.type.twice: form.inviteType.type.twice
+form.inviteType.type.single: Single
+form.inviteType.type.twice: Double
 payment_types.in_hotel: 'In hotel'
-payment_types.online_full: '100 percents'
-payment_types.online_first_day: 'per first day'
-payment_types.online_half: half
+payment_types.online_full: '100% prepayment'
+payment_types.online_first_day: 'For first night'
+payment_types.online_half: '50% prepayment'
 form.formType.hotels: Hotels
-form.formType.hotels_desc: 'Hotels in use on web form'
+form.formType.hotels_desc: 'Hotels used in web form'
 form.formType.hotels_placeholder: 'All hotels'
 mbhonlinebundle.form.triproutetype.gostinitsa: Hotel
 mbhonlinebundle.form.triproutetype.gorod: City
-mbhonlinebundle.form.invitedtouristtype.imya: Name
-mbhonlinebundle.form.invitedtouristtype.familiya: Surname
-mbhonlinebundle.form.invitedtouristtype.obrashcheniye: 'Title (Mr./Mrs.)'
+mbhonlinebundle.form.invitedtouristtype.imya: 'First name'
+mbhonlinebundle.form.invitedtouristtype.familiya: 'Last name'
+mbhonlinebundle.form.invitedtouristtype.obrashcheniye: 'Title (Mr. or Mrs.)'
 mbhonlinebundle.form.invitedtouristtype.data.rozhdeniya: 'Birth date'
 mbhonlinebundle.form.invitedtouristtype.mesto.rozhdeniya: 'Birth place'
 mbhonlinebundle.form.invitedtouristtype.grazhdanstvo: Citizenship
 mbhonlinebundle.form.invitedtouristtype.pasport: Document
-mbhonlinebundle.form.invitedtouristtype.deystvuyet.do: 'Vatid until'
+mbhonlinebundle.form.invitedtouristtype.deystvuyet.do: 'Valid until'
 form.formType.used_children_ages.label: 'Children age'
 form.formType.used_children_ages.help: 'Show children age field on web form'
-online_invite.voting_code: 'Websorm vote code'
-form.formType.css_label: css
+online_invite.voting_code: 'Voting web form embeded code'
+form.formType.css_label: CSS
 form.formType.css: Editing
-form.formType.css_help: 'Additional themes for web form'
+form.formType.css_help: 'Additional css-styles for web form'
 form.formType.theme_label: Theme
 form.formType.resultsUrl_label: 'Result page'
 form.formType.resultsUrl_help: 'Search result page URL'
 onlinebundle.resources.views.all_hotels: 'All hotels'
 mbhonlinebundle.form.invitedtouristtype.mister: Mr.
 mbhonlinebundle.form.invitedtouristtype.mistress: Mrs.
-invite.form.info_about_guests_and_visa: 'Guests and visa info'
+invite.form.info_about_guests_and_visa: 'Guests and visa information'
 invite.form.places_to_visit: 'Places to visit'
-invite.form.payment: Payment
+invite.form.payment: 'Order payment'
 invite.form.receiving_of_invitation: 'Invitation acception'
 invite.form.dates_of_trip: 'Trip dates'
 invite.form.number_of_days: '%number_of_days% days'
 invite.form.visa_type: 'Visa type'
-invite.form.number_of_persons: '%number_of_persons% person(s)'
+invite.form.number_of_persons: '%number_of_persons% person'
 invite.form.add: Add
-invite.form.route_of_trip: 'Trip rout'
+invite.form.route_of_trip: 'Trip route'
 invite.form.city: city
 invite.form.back: Previous
 invite.form.continue: Next
 invite.form.tab: tab
 invite.form.person: person
 views.api.get_form_iframe.online_booking_system: 'Online booking system'
-views.api.get_user_form.default_name: Name
+views.api.get_user_form.default_name: John
 views.api.get_user_form.services: Services
-views.poll.config.voting_code: 'Webform vote code'
+views.poll.config.voting_code: 'Poll web form code'
+form.formType.pers_data_policies_url.help: 'URL link to your personal data processing policy page'
+form.formType.room_type_choices_desc: 'Room types available for booking'
+form.formType.room_type_choices: 'Room types'
+form.formType.max_packages.help: 'Maximum amount of bookings available for one order'
+form.formType.is_request_inn.label: 'TIN information'
+form.formType.is_request_inn.kaz.label: TIN
+form.formType.max_packages.label: 'Maximum amount of reservations'
+form.formType.pers_data_policies_url.label: 'Personal data processing policy page'
+form.formType.is_request_inn.help: 'Do you want to ask TIN number in the web form?'
+form.formType.is_request_inn.kaz.help: 'Do you want to ask TIN in the web form?'
+form.formType.is_request_tourist_document_number.label: 'Document number'
+form.formType.is_request_tourist_document_number.help: 'Do you want to ask ID information in the web form?'
+form.formType.is_request_tourist_patronymic.label: 'Middle name'
+form.formType.is_request_tourist_patronymic.help: 'Do you want to ask a middle name in the web form?'
+form.formType.js_group: Javascript
+form.formType.js_label: javascript
+form.formType.frame_width.label: Width
+form.formType.frame_width.help: 'Frame width'
+form.formType.frame_height.label: Height
+form.formType.frame_height.help: 'Frame height'
+form.formType.template: Templates
+form.formType.template_label: 'Form templates'
+onlinebundle.resources.views.hotels: Hotels
+onlinebundle.resources.views.guests: Guests
+onlinebundle.resources.views.on: Enabled
+onlinebundle.resources.da: 'Yes'
+onlinebundle.resources.net: 'No'
+views.api.getResultsTable.number_of_adults: Adults
+views.api.getResultsTable.number_of_children: Children
+controller.formController.frame_sizes_changed: 'The size of the online form has been changed. Please, update the form on your website.'
+form.formType.is_horizontal.label: 'Horizontal?'
+form.formType.is_horizontal.help: 'Will the fields be situatied horizontally in the form?'
+form.formType.frame_width.is_full_width.label: 'Full width?'
+form.formType.frame_width.is_full_width.help: 'The form will take all the screen width'
+form.formType.label.css_libraries: 'CSS libraries'
+form.formType.help.css_libraries: 'Connect additional CSS libraries'
+form.formType.template_help: 'Search form templates'
+onlinebundle.resources.views.room_types: 'Room types'
+invite.form.persons_information: 'Personal information'
+views.api.notification: 'New reservations from online form'
+payment_types.by_receipt_full: 'Payment via bank account (100%)'
+payment_types.by_receipt_half: 'Payment via bank account (50%)'
+payment_types.by_receipt_first_day: 'Payment via bank account (for one night)'
+external_api_controller.error.specified_room_type_not_contains_in_form_config: 'Room type with ID = "%roomTypeId%" is not specified in the list of online form settings'
+external_api_controller.error.hotel_with_specified_id_not_exists: 'Hotel with ID = "%hotelId%" does not exist'
+external_api_controller.error.specified_hotel_not_contains_in_form_config: 'Hotel with ID = "%hotelId%" is not specified in the list of online form settings'
+external_api_controller.error.room_type_with_specified_id_not_exists: 'Room type with ID = "%roomTypeId%" does not exist'
+payment_types.by_receipt: 'Bank transfer'
+external_api_controller.online_form_config.not_enabled: 'This online form is unavailable'
+external_api_controller.field_must_be_type_of_array: '"%field%" must be an array data structure'
+external_api_controller.online_form_config.not_found: 'Online form with ID = "%formId%" does not exist'
+external_api_controller.missing_fields.error: 'Mondatory field "%field%" missing'

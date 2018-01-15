@@ -28,12 +28,11 @@ class DefaultTemplateGenerator extends TemplateGenerator
      */
     protected function prepareParams(array $formData)
     {
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
-        $vegaDocumentTypes = array_map(['\MBH\Bundle\VegaBundle\Service\FriendlyFormatter', 'convertDocumentType'], $vegaDocumentTypes);
+        $documentTypes = $this->container->get('mbh.fms_dictionaries')->getDocumentTypes();
 
         $formData['entity'] = $formData['package'];
         $formData['formParams'] = $formData;
-        $formData['vegaDocumentTypes'] = $vegaDocumentTypes;
+        $formData['documentTypes'] = $documentTypes;
 
         return $formData;
     }

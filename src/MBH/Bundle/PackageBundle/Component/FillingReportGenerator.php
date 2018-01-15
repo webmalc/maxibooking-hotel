@@ -99,6 +99,7 @@ class FillingReportGenerator
         $emptyPackageRowData = [
             'packagePrice' => 0,
             'servicePrice' => 0,
+            'averagePriceForRoom' => 0,
             'price' => 0,
             'paid' => 0,
             'paidPercent' => 0,
@@ -288,6 +289,7 @@ class FillingReportGenerator
             $totals['paidPercent'] = $totals['paidPercent'] / $columnCount;
             $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $columnCount;
             $totals['hotelRooms'] = $roomTypeRooms * $columnCount;
+            $totals['roomGuests'] = $totals['packagesCount'] != 0 ? $totals['guests'] / $totals['packagesCount'] : 0;
 
             $tableDataByRoomType[$roomTypeID] = [
                 'rows' => $rows,
@@ -379,9 +381,10 @@ class FillingReportGenerator
             $totals['packagesCountPercent'] = isset($totals['packagesCountPercent']) ? $totals['packagesCountPercent'] / $roomTypeCount : 0;
             $totals['paidPercent'] =  isset($totals['paidPercent']) ? $totals['paidPercent'] / $roomTypeCount : 0;
             $totals['maxIncomePercent'] = isset($totals['maxIncomePercent']) ? $totals['maxIncomePercent'] / $roomTypeCount : 0;
-            $totals['numberOfPackagesToRoomFundRelation'] = isset($totals['numberOfPackagesToRoomFundRelation']) ?
-                $totals['numberOfPackagesToRoomFundRelation']
+            $totals['numberOfPackagesToRoomFundRelation'] = $totals['hotelRooms'] != 0  ?
+                $totals['packagesCount'] / $totals['hotelRooms'] * 100
                 : 0;
+            $totals['roomGuests'] = $totals['packagesCount'] != 0 ? $totals['guests'] / $totals['packagesCount'] : 0;
         }
 
         $totalTableData = [
