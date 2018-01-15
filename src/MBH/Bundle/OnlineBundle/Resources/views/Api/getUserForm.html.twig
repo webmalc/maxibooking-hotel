@@ -156,7 +156,9 @@
                         <div id="personal-data-form-group" class="mbh-user-form-row form-group">
                             <div class="col-sm-offset-2">
                                 <input type="checkbox" id="mbh-form-personal-data" required>&nbsp;<sup>*</sup>
-                                {{ 'views.api.getUserForm.personal_data_policies'|trans({url: config.personalDataPolicies}, 'MBHOnlineBundle')|raw}}
+                                <div id="pers-data-text" style="display: inline-block;">
+                                    {{ 'views.api.getUserForm.personal_data_policies'|trans({url: config.personalDataPolicies}, 'MBHOnlineBundle')|raw}}
+                                </div>
                             </div>
                         </div>
                     {% endif %}
