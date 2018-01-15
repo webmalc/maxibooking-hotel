@@ -131,18 +131,17 @@ class ClientInstanceManager
         try {
             $this->logger->addRecord(Logger::INFO, 'Try to install ' . $clientName);
             $this->maintenanceManager->install($clientName);
-            $message = 'Client ' . $clientName . ' was installed';
-            $this->logger->addRecord(Logger::INFO, $message);
-            $this->changeInstallProcessStatus('installed');
+            $this->logger->addRecord(Logger::INFO, 'Client ' . $clientName . ' was installed');
+            $this->changeInstallProcessStatus($clientName, 'installed');
         } catch (\Throwable $e) {
-            $this->changeInstallProcessStatus('error');
+            $this->changeInstallProcessStatus($clientName, 'error');
             $result->addError($e->getMessage());
             $message = 'Client ' . $clientName . ' install error.' . $e->getMessage();
             try {
                 $this->maintenanceManager->rollBack($clientName);
                 $this->logger->addRecord(Logger::CRITICAL,$message);
                 $result->addError($message);
-                $this->changeInstallProcessStatus('rollback');
+                $this->changeInstallProcessStatus($clientName, 'rollback');
             } catch (ClientMaintenanceException $e) {
                 $message = $message . ' RollBackError. ' . $e->getMessage();
                 $this->logger->addRecord(Logger::CRITICAL, $message);
@@ -153,9 +152,32 @@ class ClientInstanceManager
         return $result;
     }
 
-    private function changeInstallProcessStatus(string $status)
+
+    /**
+     * @param Result $result
+     * @param $clientName
+     * @return bool
+     */
+    public function afterInstall(Result $result, $clientName)
     {
-        $installProcess = $this->getInstallProcess();
+        $this->logger->addRecord(Logger::INFO, 'After install started');
+        if ($result->isSuccessful()) {
+            $admin = $this->updateAdminUser();
+            $result->setData([
+                'password' => $admin->getPlainPassword(),
+                'token' => $admin->getApiToken()->getToken(),
+                'url' => Client::compileClientUrl($clientName)
+            ]);
+            $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created');
+        }
+        $this->logger->addRecord(Logger::INFO, 'Try to send data for billing');
+
+        return $this->sendInstallationResult($result, $clientName);
+    }
+
+    private function changeInstallProcessStatus(string $client, string $status)
+    {
+        $installProcess = $this->getInstallProcess($client);
         if ($installProcess && $this->workflow->can($installProcess, $status)) {
             $this->workflow->apply($installProcess, $status);
             $this->logger->addRecord(
@@ -166,24 +188,6 @@ class ClientInstanceManager
         }
     }
 
-    /**
-     * @param Result $result
-     * @param $clientName
-     * @return bool
-     */
-    public function afterInstall(Result $result, $clientName)
-    {
-        if ($result->isSuccessful()) {
-            $admin = $this->updateAdminUser();
-            $result->setData([
-                'password' => $admin->getPlainPassword(),
-                'token' => $admin->getApiToken()->getToken(),
-                'url' => Client::compileClientUrl($clientName)
-            ]);
-        }
-
-        return $this->sendInstallationResult($result, $clientName);
-    }
 
     /**
      * @return User

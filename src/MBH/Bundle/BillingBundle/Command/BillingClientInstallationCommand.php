@@ -42,6 +42,7 @@ class BillingClientInstallationCommand extends Command
         }
         $this->logger->addRecord(Logger::INFO, 'Try to start installClient()');
         $installationResult = $this->instanceManager->installClient($clientName);
+        $this->logger->addRecord(Logger::INFO, 'Try to start afterInstall()');
         $this->instanceManager->afterInstall($installationResult, $clientName);
     }
 
