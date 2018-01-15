@@ -60,11 +60,12 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $roomTypes,
         $serviceTariffs,
         ChannelManagerConfigInterface $config
-    )
-    {
+    ) {
         $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $xmlElements = [];
         $priceCalculator = $this->container->get('mbh.calculation');
+        $localCurrency = $this->dm->getRepository('MBHClientBundle:Client')->fetchConfig()->getCurrency();
+
         foreach ($requestDataArray as $roomTypeId => $pricesByTariffs) {
             foreach ($pricesByTariffs as $tariffId => $pricesByDates) {
                 $cmHelper = $this->container->get('mbh.channelmanager.helper');
@@ -98,8 +99,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $ratePlanElement->addAttribute('closed', $hasPriceList ? 'false' : 'true');
 
                     $rateElement = $ratePlanElement->addChild('Rate');
-                    $rateElement->addAttribute('currency',
-                        strtoupper($this->container->getParameter('locale.currency')));
+                    $rateElement->addAttribute('currency', $localCurrency);
                     if ($hasPriceList) {
                         foreach ($priceList as $price) {
                             if (!isset($price['children']) || $price['children'] == 0) {
