@@ -581,27 +581,4 @@ class Service extends Base
 
         return $data;
     }
-
-    /**
-     * @unused
-     * @param int $numberOfPeople
-     * @param int $lengthOfStay
-     * @param null $priceForDay
-     * @return int
-     */
-    public function calcFullPrice(int $numberOfPeople, int $lengthOfStay, $priceForDay = null)
-    {
-        switch ($this->getCalcType()) {
-            case 'per_stay':
-                return $this->getPrice() * $numberOfPeople;
-            case 'per_night':
-                return $numberOfPeople * $lengthOfStay * $this->getPrice();
-            case 'not_applicable':
-                return  $this->getPrice();
-            case 'day_percent':
-                return $this->getPrice() * $priceForDay;
-            default:
-                throw new \InvalidArgumentException('Incorrect service calculation type');
-        }
-    }
 }
