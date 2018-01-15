@@ -37,7 +37,7 @@
                         placeholder="{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}">
                     <option></option>
                     {% for type, name in methods %}
-                        <option value="{{ type }}">{{ name|trans }}</option>
+                        <option value="{{ type }}">{{ name|trans({}, 'MBHCashBundle') }}</option>
                     {% endfor %}
                 </select>
             </div>

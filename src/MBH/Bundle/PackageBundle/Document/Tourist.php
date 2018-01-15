@@ -596,14 +596,6 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
     }
 
     /**
-     * @return string
-     */
-    public function generateFullNameWithAge()
-    {
-        return $this->generateFullName() . ($this->getBirthday() ? ' (' . $this->getBirthday()->format('d.m.Y') . '), возраст: ' . $this->getAge() : '');
-    }
-
-    /**
      * Get birthday
      *
      * @return \DateTime|null $birthday

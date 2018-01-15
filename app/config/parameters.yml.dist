@@ -28,7 +28,6 @@ parameters:
   #System
   locale: ru
   country_type: ru
-  locale.currency: rub
   debug_toolbar: true
   debug_redirects: false
   use_assetic_controller: false

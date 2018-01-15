@@ -276,7 +276,7 @@ class Uniteller implements PaymentSystemInterface
     {
         $lineItems = [];
 
-        $priceFraction = $cashDocument->getTotal() / $order->getPrice();
+        $priceFraction = $order->getPrice() != 0 ? ($cashDocument->getTotal() / $order->getPrice()) : 0;
         $beginText = $priceFraction === 1
             ? 'Услуга '
             : (round($priceFraction, 2) * 100) . '% от стоимости услуги ';
@@ -285,12 +285,12 @@ class Uniteller implements PaymentSystemInterface
             $packageLineName = $beginText . 'проживания в номере категории "'
                 . $package->getRoomType()->getName()
                 . ' объекта размещения "' . $package->getHotel()->getName() . '"';
-            $packageLinePrice = ($package->getPackagePrice() * $cashDocument->getTotal()) / $order->getPrice();
+            $packageLinePrice =  $order->getPrice() != 0 ? (($package->getPackagePrice() * $cashDocument->getTotal()) / $order->getPrice()) : 0;
             $this->addLineItem($packageLineName, $packageLinePrice, 1, $lineItems);
 
             foreach ($package->getServices() as $service) {
                 $serviceLineName = $beginText . ' "' . $service->getService()->getName() . '"';
-                $serviceLinePrice = ($service->getPrice() * $cashDocument->getTotal()) / $order->getPrice();
+                $serviceLinePrice =  $order->getPrice() != 0 ? (($service->getPrice() * $cashDocument->getTotal()) / $order->getPrice()) : 0;
                 $this->addLineItem($serviceLineName, $serviceLinePrice, $service->getTotalAmount(), $lineItems);
             }
         }

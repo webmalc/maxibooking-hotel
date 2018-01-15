@@ -69,8 +69,6 @@ twig:
           7: 'online.online-calendar.sun_abbr_min'
         environment: "%mbh.environment%"
         version: "%mbh.version%"
-        currency: "%locale.currency%"
-
 
 # Assetic Configuration
 assetic:

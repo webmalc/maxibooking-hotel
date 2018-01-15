@@ -46,7 +46,6 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
         $entity = new FormConfig();
 
         $form = $this->createForm(FormType::class, $entity, [
-            'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types'],
             'user' => $this->getUser()->getUserName()
         ]);
 
@@ -82,7 +81,6 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
         $onFullWidth = $entity->isFullWidth();
 
         $form = $this->createForm(FormType::class, $entity, [
-            'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types'],
             'user' => $this->getUser()->getUserName()
         ]);
 

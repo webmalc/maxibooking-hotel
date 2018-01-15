@@ -95,6 +95,9 @@ portrait: альбомная
 controller.baseController.delete_record_success: 'Запись успешно удалена'
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Нельзя удалить запись с существующими бронями'
 mailer.to_order: 'Перейти к заказу'
+mailer.order.subject_text: 'Подтверждение оплаты бронирования отеля'
+mailer.order.prepend_text: 'От Вас получена оплата в размере %paymentSum%!'
+mailer.order.header_text: 'Вас приветствует %hotelName%'
 mailer.to_package: 'Перейти к брони'
 mailer.base.linkText: 'Перейти в «МаксиБукинг»'
 cancel: отмена

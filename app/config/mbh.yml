@@ -6,7 +6,6 @@ parameters:
       uah: {text: 'currency.uah.text', small: 'currency.uah.small', icon: 'fa fa-money'}
       kzt: {text: 'currency.kzt.text', small: 'currency.kzt.small', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
-      usd: {text: '$', small: '$', icon: 'fa fa-usd'}
 
     # ReCaptcha
     mbh.recaptcha:
