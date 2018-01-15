@@ -222,3 +222,9 @@ services:
         arguments: ['@mbh.fms_dictionaries']
         tags:
             - {name: form.type}
+
+    mbh.order_document_type:
+        class: MBH\Bundle\PackageBundle\Form\OrderDocumentType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}

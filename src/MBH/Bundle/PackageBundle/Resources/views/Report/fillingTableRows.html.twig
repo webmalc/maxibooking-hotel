@@ -58,7 +58,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.totalRooms|default(0)|number_format(2) - tableData.totals.packagesCount|default(0)|number_format(2) }}
+            {{ tableData.totals.totalRooms|default(0) - tableData.totals.packagesCount|default(0) }}
         </strong>
     </td>
 </tr>
@@ -74,7 +74,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.hotelRooms|default(0)|number_format(2) - tableData.totals.packagesCount|default(0)|number_format(2) }}
+            {{ tableData.totals.hotelRooms|default(0) - tableData.totals.packagesCount|default(0) }}
         </strong>
     </td>
 </tr>
@@ -153,7 +153,7 @@
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
         <td class="content">
-            {{ row.roomGuests|default(0) }}
+            {{ row.roomGuests|default(0)|number_format(2) }}
         </td>
     {% endfor %}
     <td class="content-total">
@@ -176,6 +176,22 @@
     <td class="content-total">
         <strong>
             {{ tableData.totals.packagePrice|default(0)|number_format(2) }}
+        </strong>
+    </td>
+</tr>
+<tr class="info">
+    <td>
+        <small>{{ 'report.filling_table_rows.average_price_for_room_night_realtion'|trans}}</small>
+    </td>
+    {% for date in rangeDateList %}
+        {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+        <td class="content">
+            {{ (row.packagesCount != 0 ? (row.packagePrice|default(0) / row.packagesCount) : 0)|number_format(2) }}
+        </td>
+    {% endfor %}
+    <td class="content-total">
+        <strong>
+            {{ (tableData.totals.packagesCount != 0 ? (tableData.totals.packagePrice|default(0) / tableData.totals.packagesCount) : 0)|number_format(2) }}
         </strong>
     </td>
 </tr>

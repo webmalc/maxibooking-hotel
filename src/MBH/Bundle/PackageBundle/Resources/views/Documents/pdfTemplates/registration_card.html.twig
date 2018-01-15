@@ -187,7 +187,7 @@
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.grazhdanstvo'|trans }} </div>
                                 </div>
                                 <div class="area"
-                                     style="margin-left: 100px;">{% if tourist %}{{ tourist.citizenship }}{% endif %}</div>
+                                     style="margin-left: 100px;">{% if tourist %}{{ get_country(tourist.citizenshipTld).name }}{% endif %}</div>
                             </div>
                         </td>
                         <td colspan="4" style="width: 33%">

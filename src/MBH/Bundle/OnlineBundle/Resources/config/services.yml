@@ -21,6 +21,6 @@ services:
 
     mbh.form_type:
         class: MBH\Bundle\OnlineBundle\Form\FormType
-        arguments: ['%country_type%']
+        arguments: ['%country_type%', '%mbh.online.form%']
         tags:
             {name: form.type}
