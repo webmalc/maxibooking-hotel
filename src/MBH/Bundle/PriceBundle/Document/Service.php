@@ -32,7 +32,7 @@ class Service extends Base
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -96,7 +96,7 @@ class Service extends Base
      * )
      */
     protected $price = 0;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -105,7 +105,7 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isOnline = true;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -114,14 +114,14 @@ class Service extends Base
      * @Assert\Choice(choices = {"per_stay", "per_night", "not_applicable", "day_percent"})
      */
     protected $calcType;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="code")
      */
     protected $code;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -130,7 +130,7 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     protected $system = false;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -139,7 +139,7 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     protected $recalcWithPackage = false;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -157,7 +157,7 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     protected $time = false;
-    
+
     /**
      * @var bool
      * @Gedmo\Versioned
@@ -165,7 +165,7 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     private $includeArrival;
-    
+
     /**
      * @var bool
      * @Gedmo\Versioned
@@ -346,7 +346,7 @@ class Service extends Base
     {
         return $this->code;
     }
-    
+
     /**
      * Set system
      *
@@ -491,7 +491,7 @@ class Service extends Base
             $this->internationalTitle = Helper::translateToLat($this->fullTitle);
         }
     }
-    
+
     /**
      * Set recalcWithPackage
      *
@@ -574,12 +574,34 @@ class Service extends Base
      */
     public function getJsonSerialized($isFull = false)
     {
-        //TODO: Потребуется - расширю
         $data = [
             'id' => $this->getId(),
             'title' => $this->getName(),
         ];
 
         return $data;
+    }
+
+    /**
+     * @unused
+     * @param int $numberOfPeople
+     * @param int $lengthOfStay
+     * @param null $priceForDay
+     * @return int
+     */
+    public function calcFullPrice(int $numberOfPeople, int $lengthOfStay, $priceForDay = null)
+    {
+        switch ($this->getCalcType()) {
+            case 'per_stay':
+                return $this->getPrice() * $numberOfPeople;
+            case 'per_night':
+                return $numberOfPeople * $lengthOfStay * $this->getPrice();
+            case 'not_applicable':
+                return  $this->getPrice();
+            case 'day_percent':
+                return $this->getPrice() * $priceForDay;
+            default:
+                throw new \InvalidArgumentException('Incorrect service calculation type');
+        }
     }
 }
