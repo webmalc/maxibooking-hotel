@@ -54,7 +54,12 @@ class BillingClientAfterInstallClientCommand extends Command
             throw new InvalidArgumentException('Mandatory option "client" is not specified');
         }
 
-        $this->instanceManager->afterInstall($clientName);
+        $isSuccessful = $this->instanceManager->afterInstall($clientName);
+        if ($isSuccessful) {
+            $this->logger->info('After install method ended successful');
+        } else {
+            $this->logger->err('After install method failed');
+        }
     }
 
 

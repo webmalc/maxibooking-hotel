@@ -69,10 +69,16 @@ class BillingApi
         $this->guzzle->post(self::BILLING_HOST . self::RESULT_API_URL, []);
     }
 
+    /**
+     * @param Result $result
+     * @param $clientName
+     * @return ResponseInterface
+     */
     public function sendClientInstallationResult(Result $result, $clientName)
     {
         $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT_SETTINGS['endpoint'], $clientName) . self::CLIENT_INSTALL_RESULT_URL_END;
-        $this->sendPost($url, $result->getApiResponse(true), true);
+
+        return $this->sendPost($url, $result->getApiResponse(true), true);
     }
 
 
