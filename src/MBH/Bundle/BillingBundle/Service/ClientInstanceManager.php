@@ -259,11 +259,11 @@ class ClientInstanceManager
             $decodedResponse = json_decode((string)$response->getBody(), true);
             if ($decodedResponse['status'] === true) {
                 $this->logger->info('Installation result sent to billing');
+                $isSent = true;
             } else {
                 $isSent = $this->sendInstallationResult($installationResult, $clientName, $numberOfSendingAttempts++);
                 $this->logger->err('Sending the installation result failed. Reason: ' . $decodedResponse['message']);
             }
-            $isSent = true;
         } catch (RequestException $exception) {
             $this->logger->err($exception);
             if ($numberOfSendingAttempts < self::MAX_NUMBER_OF_REQUEST_ATTEMPTS) {
