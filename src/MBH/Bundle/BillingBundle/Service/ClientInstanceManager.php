@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BillingBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use FOS\UserBundle\Doctrine\UserManager;
 use GuzzleHttp\Exception\RequestException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BillingBundle\Document\InstallationWorkflow;
@@ -42,6 +43,7 @@ class ClientInstanceManager
     private $consoleFolder;
     private $isDebug;
     private $kernelEnv;
+    private $userManager;
 
 
     public function __construct(
@@ -54,7 +56,8 @@ class ClientInstanceManager
         BillingApi $billingApi,
         RoomTypeManager $roomTypeManager,
         HotelManager $hotelManager,
-        Workflow $workflow
+        Workflow $workflow,
+        UserManager $userManager
     ) {
         $this->maintenanceManager = $maintenanceManager;
         $this->logger = $logger;
@@ -69,6 +72,7 @@ class ClientInstanceManager
         $this->consoleFolder = $kernel->getRootDir().'/../bin';
         $this->isDebug = $kernel->isDebug();
         $this->kernelEnv = $kernel->getEnvironment();
+        $this->userManager = $userManager;
     }
 
     /**
@@ -212,12 +216,16 @@ class ClientInstanceManager
     {
         /** @var User $admin */
         $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
-        $admin->setPassword($this->generateAdminPassword());
+        $plainPassword = $this->generateAdminPassword();
+        $admin->setPassword($plainPassword);
         $token = (new AuthorizationToken())
             ->setToken($this->generateAuthorizationToken())
             ->setExpiredAt(new \DateTime('+1 hour'));
         $admin->setApiToken($token);
         $this->dm->flush();
+        $this->userManager->updateUser($user, true);
+
+        $admin->setPlainPassword($plainPassword);
 
         return $admin;
     }
@@ -318,7 +326,7 @@ class ClientInstanceManager
      */
     private function generateAdminPassword()
     {
-        return $this->helper->getRandomString();
+        return $this->helper->getRandomString(10);
     }
 
     private function changeInstallProcessStatus(string $client, string $status)

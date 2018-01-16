@@ -104,6 +104,7 @@ services:
             - '@mbh.hotel.room_type_manager'
             - '@mbh.hotel.hotel_manager'
             - '@workflow.installation'
+            - '@fos_user.user_manager'
 
     mbh.billing_response_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler
