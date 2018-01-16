@@ -41,6 +41,14 @@ class BillingClientAfterInstallClientCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $clientName = $input->getOption('client');
+        $message = sprintf(
+            '%s command starter with client %s and kernel client %s',
+            $this->getName(),
+            $clientName,
+            $this->getApplication()->getKernel()->getClient()
+        );
+        $this->logger->addRecord(Logger::INFO, $message);
+
         if (empty($clientName)) {
             $this->logger->addRecord(Logger::CRITICAL, 'No client name for installClient');
             throw new InvalidArgumentException('Mandatory option "client" is not specified');
