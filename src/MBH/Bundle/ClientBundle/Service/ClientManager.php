@@ -13,10 +13,9 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class ClientManager
 {
-    //TODO: Уточнить и изменить для прода
-    const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
-    const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_contacts';
-    const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems'];
+    const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 120;
+    const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_payment';
+    const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems', 'user_tariff'];
     const SESSION_CLIENT_FIELD = 'client';
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
     const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
@@ -140,7 +139,7 @@ class ClientManager
      */
     public function isClientActive()
     {
-        return $this->getClient()->getStatus() == Client::CLIENT_ACTIVE_STATUS
+        return $this->getClient()->getStatus() === Client::CLIENT_ACTIVE_STATUS
             || $this->session->get(self::IS_AUTHORIZED_BY_TOKEN) !== false;
     }
 

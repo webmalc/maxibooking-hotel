@@ -271,6 +271,12 @@ services:
         tags:
           - { name: kernel.event_subscriber }
 
+    mbh.base_on_request_listener:
+        class: MBH\Bundle\BaseBundle\EventListener\OnRequest
+        arguments: ['@service_container']
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
     mbh.time_zone.subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\TimeZoneSubscriber
         arguments: ['@mbh.helper']

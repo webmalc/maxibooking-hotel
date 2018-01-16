@@ -27,6 +27,7 @@ $(document).ready(function () {
     handleAuthOrganFieldVisibility();
     handleVisibilityOfBossBaseRelatedFields();
     initTariffPage();
+    $('.select2-container').css('width', '100%');
 });
 
 function handleClientServiceForm() {
@@ -107,7 +108,7 @@ function setPayerFormVisibility() {
         }
     }
 
-    $('select.select2:not(#order-paid-status), span.select2:not(#order-paid-status)').css('width', '100%');
+    $('.select2-container').css('width', '100%');
 }
 
 function handleVisibilityOfBossBaseRelatedFields() {

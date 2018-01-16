@@ -23,15 +23,18 @@ class OnRequest
     public function onKernelRequest(GetResponseEvent $event)
     {
         $clientManager = $this->container->get('mbh.client_manager');
+        $session = $this->container->get('session');
 
         if (!$clientManager->isClientActive()
-            && $this->container->get('session')->get(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR) === true
+            && $session->get(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR) !== true
             && !$clientManager->isRouteAccessibleForInactiveClient($event->getRequest()->get('_route'))
             && $this->container->get('security.token_storage')->getToken()
             && $this->container->get('security.token_storage')->getToken()->getUser() instanceOf User
             && $this->container->get('security.authorization_checker')->isGranted('ROLE_PAYMENTS')
         ) {
-            $this->container->get('session')->getFlashBag()->add('error', 'on_request_listener.mb_not_paid_error');
+            if (!$session->getFlashBag()->has('error')) {
+                $session->getFlashBag()->add('error', 'on_request_listener.mb_not_paid_error');
+            }
             $url = $this->container->get('router')->generate(ClientManager::DEFAULT_ROUTE_FOR_INACTIVE_CLIENT);
             $response = new RedirectResponse($url);
             $event->setResponse($response);

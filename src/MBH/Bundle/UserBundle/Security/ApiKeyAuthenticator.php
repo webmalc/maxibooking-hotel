@@ -84,7 +84,7 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
             }
         }
 
-        return array_diff($userRoles, ['ROLE_USER', 'ROLE_GROUP', 'ROLE_PERSONAL_ACCOUNT']);
+        return array_diff($userRoles, ['ROLE_USER', 'ROLE_GROUP', 'ROLE_PERSONAL_ACCOUNT', 'ROLE_PAYMENTS']);
     }
 
     public function supportsToken(TokenInterface $token, $providerKey)
