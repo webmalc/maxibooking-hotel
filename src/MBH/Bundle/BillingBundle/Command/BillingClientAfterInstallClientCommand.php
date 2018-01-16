@@ -4,19 +4,26 @@
 namespace MBH\Bundle\BillingBundle\Command;
 
 
-use http\Exception\InvalidArgumentException;
 use MBH\Bundle\BillingBundle\Service\ClientInstanceManager;
 use Monolog\Logger;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class BillingClientInstallationCommand extends Command
+class BillingClientAfterInstallClientCommand extends Command
 {
+    /** @var ClientInstanceManager */
     private $instanceManager;
+    /** @var Logger */
     private $logger;
 
+    /**
+     * BillingClientAfterInstallClientCommand constructor.
+     * @param ClientInstanceManager $instanceManager
+     * @param Logger $logger
+     */
     public function __construct(ClientInstanceManager $instanceManager, Logger $logger, ?string $name = null)
     {
         $this->instanceManager = $instanceManager;
@@ -27,23 +34,19 @@ class BillingClientInstallationCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('mbh:client:installation')
-            ->addOption('client', null, InputOption::VALUE_REQUIRED, 'client name')
-        ;
+            ->setName('mbh:client:after:install')
+            ->addOption('client', null, InputOption::VALUE_REQUIRED, 'client name');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
         $clientName = $input->getOption('client');
         if (empty($clientName)) {
-            $this->logger->addCritical('No client name for installClient');
+            $this->logger->addRecord(Logger::CRITICAL, 'No client name for installClient');
             throw new InvalidArgumentException('Mandatory option "client" is not specified');
         }
-        $this->logger->addRecord(Logger::INFO, 'Try to start installClient()');
-        $this->instanceManager->installClient($clientName);
-        $this->logger->addRecord(Logger::INFO, 'Try to start runAfterInstallCommand()');
-        $this->instanceManager->runAfterInstallCommand($clientName);
+
+        $this->instanceManager->afterInstall($clientName);
     }
 
 

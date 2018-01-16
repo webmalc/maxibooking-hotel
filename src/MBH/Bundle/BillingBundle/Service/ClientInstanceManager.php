@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Exception\RequestException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BillingBundle\Document\InstallationWorkflow;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\AfterInstallException;
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingRoom;
@@ -32,11 +33,15 @@ class ClientInstanceManager
     private $clientListGetter;
     private $helper;
     private $dm;
+    /** @var \AppKernel */
     private $kernel;
     private $billingApi;
     private $roomTypeManager;
     private $hotelManager;
     private $workflow;
+    private $consoleFolder;
+    private $isDebug;
+    private $kernelEnv;
 
 
     public function __construct(
@@ -61,6 +66,9 @@ class ClientInstanceManager
         $this->roomTypeManager = $roomTypeManager;
         $this->hotelManager = $hotelManager;
         $this->workflow = $workflow;
+        $this->consoleFolder = $kernel->getRootDir().'/../bin';
+        $this->isDebug = $kernel->isDebug();
+        $this->kernelEnv = $kernel->getEnvironment();
     }
 
     /**
@@ -83,12 +91,15 @@ class ClientInstanceManager
         $result = new Result();
 
         if ($this->workflow->can($installProcess, 'install')) {
-            $command = 'mbh:client:installation --client=' . $clientName;
-            $cwd = $this->kernel->getRootDir().'/../bin';
-            $isDebug = $this->kernel->isDebug();
-            $kernelEnv = $this->kernel->getEnvironment();
-            $command = sprintf('php console %s --env=%s %s',$command, $kernelEnv, $isDebug ?'': '--no-debug');
-            $process = new Process($command, $cwd, null, null, 60*10);
+            $command = 'mbh:client:installation --client='.$clientName;
+
+            $command = sprintf(
+                'php console %s --env=%s %s',
+                $command,
+                $this->kernelEnv,
+                $this->isDebug ? '' : '--no-debug'
+            );
+            $process = new Process($command, $this->consoleFolder, null, null, 60 * 10);
             try {
                 $this->workflow->apply($installProcess, 'install');
                 $this->dm->flush($installProcess);
@@ -98,7 +109,7 @@ class ClientInstanceManager
                 );
                 $this->logger->addRecord(
                     Logger::INFO,
-                    'Starting console command '. $command
+                    'Starting console command '.$command
                 );
                 $process->start();
             } catch (ProcessFailedException|ProcessTimedOutException $e) {
@@ -107,7 +118,8 @@ class ClientInstanceManager
         } else {
             $this->logger->addRecord(
                 Logger::WARNING,
-                'Install task was canceled! There is task  for installation client '. $clientName . ' but workflow statis is '. $installProcess->getCurrentPlace()
+                'Install task was canceled! There is task  for installation client '.$clientName.' but workflow statis is '.$installProcess->getCurrentPlace(
+                )
             );
         }
 
@@ -117,7 +129,9 @@ class ClientInstanceManager
 
     private function getInstallProcess(string $clientName)
     {
-        return $this->dm->getRepository('MBHBillingBundle:InstallationWorkflow')->findOneBy(['clientName' => $clientName]);
+        return $this->dm->getRepository('MBHBillingBundle:InstallationWorkflow')->findOneBy(
+            ['clientName' => $clientName]
+        );
     }
 
     /**
@@ -129,21 +143,21 @@ class ClientInstanceManager
         $result = new Result();
 
         try {
-            $this->logger->addRecord(Logger::INFO, 'Try to install ' . $clientName);
+            $this->logger->addRecord(Logger::INFO, 'Try to install '.$clientName);
             $this->maintenanceManager->install($clientName);
-            $this->logger->addRecord(Logger::INFO, 'Client ' . $clientName . ' was installed');
+            $this->logger->addRecord(Logger::INFO, 'Client '.$clientName.' was installed');
             $this->changeInstallProcessStatus($clientName, 'installed');
         } catch (\Throwable $e) {
             $this->changeInstallProcessStatus($clientName, 'error');
             $result->addError($e->getMessage());
-            $message = 'Client ' . $clientName . ' install error.' . $e->getMessage();
+            $message = 'Client '.$clientName.' install error.'.$e->getMessage();
             try {
                 $this->maintenanceManager->rollBack($clientName);
-                $this->logger->addRecord(Logger::CRITICAL,$message);
+                $this->logger->addRecord(Logger::CRITICAL, $message);
                 $result->addError($message);
                 $this->changeInstallProcessStatus($clientName, 'rollback');
             } catch (ClientMaintenanceException $e) {
-                $message = $message . ' RollBackError. ' . $e->getMessage();
+                $message = $message.' RollBackError. '.$e->getMessage();
                 $this->logger->addRecord(Logger::CRITICAL, $message);
                 $result->addError($message);
             }
@@ -153,35 +167,53 @@ class ClientInstanceManager
     }
 
 
-    /**
-     * @param Result $result
-     * @param $clientName
-     * @return bool
-     */
-    public function afterInstall(Result $result, $clientName)
+    public function afterInstall(string $clientName)
     {
         $this->logger->addRecord(Logger::INFO, 'After install started');
-        if ($result->isSuccessful()) {
-            try {
-                $admin = $this->updateAdminUser();
-                $result->setData(
-                    [
-                        'password' => $admin->getPlainPassword(),
-                        'token' => $admin->getApiToken()->getToken(),
-                        'url' => Client::compileClientUrl($clientName),
-                    ]
+        $result = new Result();
+        try {
+            if ($this->kernel->getClient() !== $clientName) {
+                $message = sprintf(
+                    'The Kernel has wrong client. Kernel has %s client, clientName is %.',
+                    $this->kernel->getClient(),
+                    $clientName
                 );
-                $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created');
-            } catch (\Throwable $e) {
-                $this->logger->addRecord(Logger::CRITICAL, $e->getMessage());
+                throw new AfterInstallException($message);
             }
-
+            $admin = $this->updateAdminUser();
+            $result->setData(
+                [
+                    'password' => $admin->getPlainPassword(),
+                    'token' => $admin->getApiToken()->getToken(),
+                    'url' => Client::compileClientUrl($clientName),
+                ]
+            );
+            $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created');
+        } catch (\Throwable $e) {
+            $result->setIsSuccessful(false);
+            $this->logger->addRecord(Logger::CRITICAL, $e->getMessage());
         }
         $this->logger->addRecord(Logger::INFO, 'Try to send data for billing');
 
         return $this->sendInstallationResult($result, $clientName);
     }
 
+    /**
+     * @param string $clientName
+     */
+    public function runAfterInstallCommand(string $clientName)
+    {
+        $command = 'mbh:client:after:install';
+        $commandLine = sprintf('php console %s --client=%s --env=%s', $command, $clientName, $this->kernelEnv);
+        try {
+            $this->logger->addRecord(Logger::INFO, 'Try to start afterInstall command with client '.$clientName);
+            $process = new Process($commandLine, $this->consoleFolder, ['MB_CLIENT' => $clientName], null, 60 * 3);
+            $process->mustRun();
+        } catch (\Throwable $exception) {
+            $this->sendInstallationResult(Result::createErrorResult(), $clientName);
+            $this->logger->err($exception->getMessage());
+        }
+    }
 
 
     /**
@@ -207,8 +239,11 @@ class ClientInstanceManager
      * @param int $numberOfSendingAttempts
      * @return bool
      */
-    public function sendInstallationResult(Result $installationResult, string $clientName, $numberOfSendingAttempts = 0): bool
-    {
+    public function sendInstallationResult(
+        Result $installationResult,
+        string $clientName,
+        $numberOfSendingAttempts = 0
+    ): bool {
         $isSent = false;
         try {
             $this->billingApi->sendClientInstallationResult($installationResult, $clientName);
@@ -236,6 +271,7 @@ class ClientInstanceManager
         $this->logger->info('Start installation of fixtures');
         if ($login !== $this->kernel->getClient()) {
             $this->logger->err('Kernel name differ from passed client name');
+
             return Result::createErrorResult(['Client name differ with kernel name']);
         }
 
@@ -246,29 +282,33 @@ class ClientInstanceManager
             try {
                 $property = $this->billingApi->getBillingEntityByUrl($propertyUrl, BillingProperty::class);
             } catch (\Throwable $exception) {
-                $this->logger->err('Error pulling of hotel by url "' . $propertyUrl . '". Message:' . $exception->getMessage());
+                $this->logger->err(
+                    'Error pulling of hotel by url "'.$propertyUrl.'". Message:'.$exception->getMessage()
+                );
 
                 return Result::createErrorResult([$exception->getMessage()]);
             }
 
             $isHotelDefault = $propertyNumber === 0;
-            $this->logger->info('Start creation of hotel "' . $property->getName() . '"');
+            $this->logger->info('Start creation of hotel "'.$property->getName().'"');
             $hotel = $this->hotelManager->createByBillingProperty($property, $isHotelDefault);
-            $this->logger->info('Hotel "' . $property->getName() . '" created. Start creation of rooms');
+            $this->logger->info('Hotel "'.$property->getName().'" created. Start creation of rooms');
 
             foreach ($property->getRooms() as $roomUrl) {
                 try {
                     /** @var BillingRoom $billingRoom */
                     $billingRoom = $this->billingApi->getBillingEntityByUrl($roomUrl, BillingRoom::class);
                 } catch (\Throwable $exception) {
-                    $this->logger->err('Error pulling of room by url "' . $roomUrl . '". Message:' . $exception->getMessage());
+                    $this->logger->err(
+                        'Error pulling of room by url "'.$roomUrl.'". Message:'.$exception->getMessage()
+                    );
 
                     return Result::createErrorResult([$exception->getMessage()]);
                 }
 
                 $this->roomTypeManager->createByBillingRoom($billingRoom, $hotel, true);
             }
-            $this->logger->info('Rooms creation for hotel "' . $property->getName() . '" finished');
+            $this->logger->info('Rooms creation for hotel "'.$property->getName().'" finished');
             $this->dm->flush();
         }
         $this->logger->info('End installation of fixtures');
@@ -304,7 +344,6 @@ class ClientInstanceManager
             $this->dm->flush($installProcess);
         }
     }
-
 
 
 }

@@ -78,6 +78,11 @@ services:
         arguments: ['@mbh.client_instance_manager', '@mbh.billing.logger']
         tags: ['console.command']
 
+    mbh.console.billing_after_install_client:
+        class: MBH\Bundle\BillingBundle\Command\BillingClientAfterInstallClientCommand
+        arguments: ['@mbh.client_instance_manager', '@mbh.billing.logger']
+        tags: ['console.command']
+
     mbh.service.ssh_commands:
         class: MBH\Bundle\BillingBundle\Service\SshCommands
 
