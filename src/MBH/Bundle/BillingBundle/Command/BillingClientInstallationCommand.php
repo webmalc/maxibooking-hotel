@@ -59,9 +59,8 @@ class BillingClientInstallationCommand extends Command
         try {
             $this->logger->addRecord(Logger::INFO, 'Try to start afterInstall command with client '.$clientName);
             $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $clientName], null, 60 * 3);
-            $process->mustRun();
+            $process->start();
         } catch (\Throwable $exception) {
-            $this->instanceManager->sendInstallationResult(Result::createErrorResult(), $clientName);
             $this->logger->err($exception->getMessage());
         }
 
