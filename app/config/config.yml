@@ -1,6 +1,7 @@
 
 imports:
     - { resource: parameters.yml }
+    - { resource: workflow.yml }
     - { resource: security.yml }
     - { resource: version.yml }
     - { resource: mbh.yml }
@@ -36,37 +37,6 @@ framework:
         app: cache.adapter.redis
         default_redis_provider: "%mbh_redis%"
     ide: "phpstorm://open?file=%%f&line=%%l"
-
-    workflows:
-        installation:
-            type: 'workflow'
-            marking_store:
-                type: 'single_state'
-                arguments:
-                    - 'currentPlace'
-            supports:
-                - MBH\Bundle\BillingBundle\Document\InstallationWorkflow
-            places:
-              - new
-              - progress
-              - installed
-              - error
-            transitions:
-                install:
-                    from: new
-                    to: progress
-                installed:
-                    from: progress
-                    to: installed
-                error:
-                    from: progress
-                    to: error
-                rollback:
-                    from: error
-                    to: new
-
-
-
 
 # Twig Configuration
 twig:

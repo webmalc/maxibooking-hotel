@@ -4,6 +4,7 @@
 namespace MBH\Bundle\BillingBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BillingBundle\Lib\InstallWorkflowInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
@@ -12,10 +13,9 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * Class InstallationWorkflow
  * @package MBH\Bundle\BillingBundle\Document
  * @ODM\Document(collection="InstallationWorkflows")
-
  *
  */
-class InstallationWorkflow
+class InstallationWorkflow implements InstallWorkflowInterface
 {
     /**
      * @var string
