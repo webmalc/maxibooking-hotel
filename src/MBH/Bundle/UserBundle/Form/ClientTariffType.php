@@ -13,7 +13,7 @@ class ClientTariffType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('numberOfRooms', TextType::class, [
+            ->add('rooms', TextType::class, [
                 'label' => 'client_tariff_type.number_of_rooms.label',
                 'attr' => [
                     'class' => 'payment-system-params stripe mbh-spinner',
