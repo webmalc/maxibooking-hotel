@@ -217,7 +217,7 @@ class ClientInstanceManager
         /** @var User $admin */
         $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
         $plainPassword = $this->generateAdminPassword();
-        $admin->setPassword($plainPassword);
+        $admin->setPlainPassword($plainPassword);
         $token = (new AuthorizationToken())
             ->setToken($this->generateAuthorizationToken())
             ->setExpiredAt(new \DateTime('+1 hour'));
