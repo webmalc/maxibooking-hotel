@@ -5,12 +5,15 @@ namespace MBH\Bundle\BillingBundle\Command;
 
 
 use http\Exception\InvalidArgumentException;
+use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\ClientInstanceManager;
 use Monolog\Logger;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 
 class BillingClientInstallationCommand extends Command
 {
@@ -43,7 +46,25 @@ class BillingClientInstallationCommand extends Command
         $this->logger->addRecord(Logger::INFO, 'Try to start installClient()');
         $this->instanceManager->installClient($clientName);
         $this->logger->addRecord(Logger::INFO, 'Try to start runAfterInstallCommand()');
-        $this->instanceManager->runAfterInstallCommand($clientName);
+
+        /**
+         * @param string $clientName
+         */
+
+        $command = 'mbh:client:after:install';
+        $commandLine = sprintf('php console %s --client=%s --env=%s', $command, $clientName, $input->getOption('env'));
+        /** @var Application $application */
+        $application = $this->getApplication();
+        $consoleFolder = $application->getKernel()->getRootDir().'/../bin';
+        try {
+            $this->logger->addRecord(Logger::INFO, 'Try to start afterInstall command with client '.$clientName);
+            $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $clientName], null, 60 * 3);
+            $process->mustRun();
+        } catch (\Throwable $exception) {
+            $this->instanceManager->sendInstallationResult(Result::createErrorResult(), $clientName);
+            $this->logger->err($exception->getMessage());
+        }
+
     }
 
 

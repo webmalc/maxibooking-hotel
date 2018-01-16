@@ -198,23 +198,6 @@ class ClientInstanceManager
         return $this->sendInstallationResult($result, $clientName);
     }
 
-    /**
-     * @param string $clientName
-     */
-    public function runAfterInstallCommand(string $clientName)
-    {
-        $command = 'mbh:client:after:install';
-        $commandLine = sprintf('php console %s --client=%s --env=%s', $command, $clientName, $this->kernelEnv);
-        try {
-            $this->logger->addRecord(Logger::INFO, 'Try to start afterInstall command with client '.$clientName);
-            $process = new Process($commandLine, $this->consoleFolder, ['MB_CLIENT' => $clientName], null, 60 * 3);
-            $process->mustRun();
-        } catch (\Throwable $exception) {
-            $this->sendInstallationResult(Result::createErrorResult(), $clientName);
-            $this->logger->err($exception->getMessage());
-        }
-    }
-
 
     /**
      * @return User
