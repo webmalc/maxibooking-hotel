@@ -4,7 +4,6 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\RoomViewTypeData;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 

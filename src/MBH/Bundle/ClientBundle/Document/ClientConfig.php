@@ -300,6 +300,31 @@ class ClientConfig extends Base
     }
 
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $currency;
+
+    /**
+     * @return string
+     */
+    public function getCurrency(): ?string
+    {
+        return $this->currency ? $this->currency : ($this->timeZone === 'Europe/Moscow' ? 'rub' : 'usd');
+    }
+
+    /**
+     * @param string $currency
+     * @return ClientConfig
+     */
+    public function setCurrency(string $currency): ClientConfig
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
      * @return Invoice
      */
     public function getInvoice(): ?Invoice
@@ -635,6 +660,7 @@ class ClientConfig extends Base
     public function removePaymentSystem($paymentSystem)
     {
         $this->paymentSystems = array_diff($this->paymentSystems, [$paymentSystem]);
+        $this->$paymentSystem = null;
 
         return $this;
     }

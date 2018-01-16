@@ -22,9 +22,6 @@ class OnRequest
 
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $timeZone = $this->container->get('mbh.helper')->getTimeZone();
-        $this->container->get('twig')->getExtension('Twig_Extension_Core')->setTimezone($timeZone);
-
         $clientManager = $this->container->get('mbh.client_manager');
 
         if (!$clientManager->isClientActive()

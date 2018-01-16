@@ -348,7 +348,7 @@ class TaskController extends Controller
                     'MBHHotelBundle') :
                 '',
             'status' => $entity->getStatus() ?
-                $this->container->getParameter('mbh.task.statuses')[$entity->getStatus()]['title'] :
+                $this->get('translator')->trans($this->container->getParameter('mbh.task.statuses')[$entity->getStatus()]['title']) :
                 '',
         ];
 

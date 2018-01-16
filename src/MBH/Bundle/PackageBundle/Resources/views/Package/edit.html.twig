@@ -184,7 +184,7 @@
                         </td>
                         <td>
                                             <span
-                                                    class="text-{{ statuses[status].class }}">{{ statuses[status].title }} {% if status == 'channel_manager' %}({{ package.channelManagerType }}){% endif %}</span>
+                                                    class="text-{{ statuses[status].class }}">{{ statuses[status].title|trans }} {% if status == 'channel_manager' %}({{ package.channelManagerType }}){% endif %}</span>
                             {% if package.deletedAt %} &nbsp;
                                 <small class="text-danger"><i
                                             class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}

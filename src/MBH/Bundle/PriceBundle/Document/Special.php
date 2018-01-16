@@ -165,7 +165,7 @@ class Special extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Field(type="date", name="begin")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()
@@ -175,7 +175,7 @@ class Special extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Field(type="date", name="displayFrom")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()
@@ -185,7 +185,7 @@ class Special extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Field(type="date", name="end")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()
@@ -195,7 +195,7 @@ class Special extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Field(type="date", name="displayTo")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()

@@ -5,12 +5,12 @@
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
         <td class="content">
-            {{ row.totalRooms|default(0) }}
+            {{ row.totalRooms|default(0)|number_format(0) }}
         </td>
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.totalRooms|default(0)|number_format(2) }}
+            {{ tableData.totals.totalRooms|default(0)|number_format(0) }}
         </strong>
     </td>
 </tr>
@@ -26,7 +26,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.hotelRooms|default(0)|number_format(2) }}
+            {{ tableData.totals.hotelRooms|default(0) }}
         </strong>
     </td>
 </tr>
@@ -42,7 +42,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.packagesCount|default(0)|number_format(2) }}
+            {{ tableData.totals.packagesCount|default(0) }}
         </strong>
     </td>
 </tr>
@@ -58,7 +58,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.totalRooms|default(0)|number_format(2) - tableData.totals.packagesCount|default(0)|number_format(2) }}
+            {{ tableData.totals.totalRooms|default(0) - tableData.totals.packagesCount|default(0) }}
         </strong>
     </td>
 </tr>
@@ -74,10 +74,28 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.hotelRooms|default(0)|number_format(2) - tableData.totals.packagesCount|default(0)|number_format(2) }}
+            {{ tableData.totals.hotelRooms|default(0) - tableData.totals.packagesCount|default(0) }}
         </strong>
     </td>
 </tr>
+
+<tr>
+    <td>
+        <small>{{ 'report.filling_table_rows.reserved_rooms_from_room_fund'|trans}}</small>
+    </td>
+    {% for date in rangeDateList %}
+        {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+        <td class="content">
+            {{ row.numberOfPackagesToRoomFundRelation|default(0)|number_format(2) }} %
+        </td>
+    {% endfor %}
+    <td class="content-total">
+        <strong>
+            {{ tableData.totals.numberOfPackagesToRoomFundRelation|default(0)|number_format(2) }} %
+        </strong>
+    </td>
+</tr>
+
 <tr>
     <td>
         <small>{{ 'report.filling_table_rows.reserved_rooms'|trans}}</small>
@@ -107,7 +125,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.uniqueNotPaidRooms }} ({{ tableData.totals.notPaidRooms|default(0)|number_format(2) }})
+            {{ tableData.totals.uniqueNotPaidRooms }} ({{ tableData.totals.notPaidRooms|default(0) }})
         </strong>
     </td>
 </tr>
@@ -124,7 +142,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.uniqueGuests|default(0) }} ({{ tableData.totals.guests|default(0)|number_format(2) }})
+            {{ tableData.totals.uniqueGuests|default(0) }} ({{ tableData.totals.guests|default(0) }})
         </strong>
     </td>
 </tr>
@@ -158,6 +176,22 @@
     <td class="content-total">
         <strong>
             {{ tableData.totals.packagePrice|default(0)|number_format(2) }}
+        </strong>
+    </td>
+</tr>
+<tr class="info">
+    <td>
+        <small>{{ 'report.filling_table_rows.average_price_for_room_night_realtion'|trans}}</small>
+    </td>
+    {% for date in rangeDateList %}
+        {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+        <td class="content">
+            {{ (row.packagesCount != 0 ? (row.packagePrice|default(0) / row.packagesCount) : 0)|number_format(2) }}
+        </td>
+    {% endfor %}
+    <td class="content-total">
+        <strong>
+            {{ (tableData.totals.packagesCount != 0 ? (tableData.totals.packagePrice|default(0) / tableData.totals.packagesCount) : 0)|number_format(2) }}
         </strong>
     </td>
 </tr>

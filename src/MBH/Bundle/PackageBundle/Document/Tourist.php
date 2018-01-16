@@ -107,7 +107,7 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Field(type="date", name="birthday")
+     * @ODM\Field(type="date")
      * @ODM\Index
      * @Assert\Date()
      */
@@ -593,14 +593,6 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
         }
 
         $this->fullName = $this->generateFullName();
-    }
-
-    /**
-     * @return string
-     */
-    public function generateFullNameWithAge()
-    {
-        return $this->generateFullName() . ($this->getBirthday() ? ' (' . $this->getBirthday()->format('d.m.Y') . '), возраст: ' . $this->getAge() : '');
     }
 
     /**

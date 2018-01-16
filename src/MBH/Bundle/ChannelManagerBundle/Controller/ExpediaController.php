@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Form\ExpediaType;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -14,6 +15,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ExpediaController
@@ -68,7 +70,7 @@ class ExpediaController extends Controller
                 $this->dm->persist($config);
                 $this->dm->flush();
 
-                $this->get('mbh.channelmanager')->updateInBackground();
+//                $this->get('mbh.channelmanager')->updateInBackground();
 
                 $this->addFlash('success', 'controller.expediaController.settings_saved_success');
             } else {
@@ -96,29 +98,35 @@ class ExpediaController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $serviceTariffs = $this->get('mbh.channelmanager.expedia')->pullTariffs($config);
-        $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
-            'hotel' => $this->hotel,
-            'booking' => $serviceTariffs,
-        ]);
+        try {
+            $serviceTariffs = $this->get('mbh.channelmanager.expedia')->pullTariffs($config);
+        } catch (ChannelManagerException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+        }
+        if (isset($serviceTariffs)) {
+            $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
+                'hotel' => $this->hotel,
+                'booking' => $serviceTariffs,
+            ]);
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $config->removeAllTariffs();
-            foreach ($form->getData() as $id => $tariff) {
-                if ($tariff) {
-                    $configTariff = new Tariff();
-                    $configTariff->setTariff($tariff)->setTariffId($id);
-                    $config->addTariff($configTariff);
-                    $this->dm->persist($config);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $config->removeAllTariffs();
+                foreach ($form->getData() as $id => $tariff) {
+                    if ($tariff) {
+                        $configTariff = new Tariff();
+                        $configTariff->setTariff($tariff)->setTariffId($id);
+                        $config->addTariff($configTariff);
+                        $this->dm->persist($config);
+                    }
                 }
+                $this->dm->flush();
+
+                $this->get('mbh.channelmanager')->updateInBackground();
+                $this->addFlash('success', 'controller.expediaController.settings_saved_success');
+
+                return $this->redirectToRoute('expedia_tariff');
             }
-            $this->dm->flush();
-
-            $this->get('mbh.channelmanager')->updateInBackground();
-            $this->addFlash('success', 'controller.expediaController.settings_saved_success');
-
-            return $this->redirectToRoute('expedia_tariff');
         }
 
         return [
@@ -146,31 +154,38 @@ class ExpediaController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $roomTypeData = $this->get('mbh.channelmanager.expedia')->pullRooms($config);
-        $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
-            'hotel' => $this->hotel,
-            'booking' => $roomTypeData,
-        ]);
+        try {
+            $roomTypeData = $this->get('mbh.channelmanager.expedia')->pullRooms($config);
+        } catch (ChannelManagerException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+        }
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $config->removeAllRooms();
-            $this->dm->flush();
-            foreach ($form->getData() as $id => $roomType) {
-                if ($roomType) {
-                    $configRoom = new Room();
-                    $configRoom->setRoomType($roomType)->setRoomId($id);
-                    $config->addRoom($configRoom);
-                    $this->dm->persist($config);
+        if (isset($roomTypeData)) {
+            $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
+                'hotel' => $this->hotel,
+                'booking' => $roomTypeData,
+            ]);
+
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $config->removeAllRooms();
+                $this->dm->flush();
+                foreach ($form->getData() as $id => $roomType) {
+                    if ($roomType) {
+                        $configRoom = new Room();
+                        $configRoom->setRoomType($roomType)->setRoomId($id);
+                        $config->addRoom($configRoom);
+                        $this->dm->persist($config);
+                    }
                 }
+                $this->dm->flush();
+
+                $this->get('mbh.channelmanager')->updateInBackground();
+
+                $this->addFlash('success', 'controller.expediaController.settings_saved_success');
+
+                return $this->redirectToRoute('expedia_room');
             }
-            $this->dm->flush();
-
-            $this->get('mbh.channelmanager')->updateInBackground();
-
-            $this->addFlash('success', 'controller.expediaController.settings_saved_success');
-
-            return $this->redirectToRoute('expedia_room');
         }
 
         return [
@@ -195,5 +210,21 @@ class ExpediaController extends Controller
         );
 
         return $this->redirect($this->generateUrl('expedia'));
+    }
+
+    /**
+     * @Route("/push_notification", name="expedia_push_notification")
+     * @param Request $request
+     * @return Response
+     */
+    public function handlePushNotificationAction(Request $request)
+    {
+        $requestXml = $request->getContent();
+
+        $responseXml = $this->get('mbh.channelmanager.expedia')->handleNotificationOrder($requestXml);
+
+        return new Response($responseXml, 200, [
+            'Content-Type' => 'text/xml'
+        ]);
     }
 }

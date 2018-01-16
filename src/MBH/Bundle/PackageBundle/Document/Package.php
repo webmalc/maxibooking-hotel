@@ -157,7 +157,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Field(type="date", name="begin")
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message= "validator.document.package.begin_not_specified")
      * @Assert\Date()
      * @ODM\Index()
@@ -167,7 +167,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Field(type="date", name="end")
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message= "validator.document.package.end_not_specified")
      * @Assert\Date()
      * @ODM\Index()
@@ -897,11 +897,11 @@ class Package extends Base implements \JsonSerializable
     {
         $title = $this->getNumberWithPrefix();
         if ($accommodation && $this->getAccommodation()) {
-            $title .=' Номер: '.$this->getAccommodation()->getName().'. ';
+            $title .=' '.$this->getAccommodation()->getName().'. ';
         }
         /** @var Tourist|Organization $name */
         if ($payer && $name = $this->getOrder()->getPayer()) {
-            $title .= ' Плательщик: '.$name.'. ';
+            $title .= ' '.$name.'. ';
         }
         return $title;
     }
@@ -1815,5 +1815,26 @@ class Package extends Base implements \JsonSerializable
         $this->searchQuery->add($searchQuery);
 
         return $this;
+    }
+
+    /**
+     * @return array]
+     */
+    public function getJsonSerialized()
+    {
+        $services = array_map(function (PackageService $packageService) {
+            return $packageService->getService()->getJsonSerialized();
+        }, $this->getServices()->toArray());
+
+        return [
+            'id' => $this->getId(),
+            'roomTypeId' => $this->getRoomType()->getId(),
+            'tariffId' => $this->getTariff()->getId(),
+            'adults' => $this->getAdults(),
+            'children' => $this->getChildren(),
+            'begin' => $this->getBegin()->format('d.m.Y'),
+            'end' => $this->getEnd()->format('d.m.Y'),
+            'services' => $services
+        ];
     }
 }

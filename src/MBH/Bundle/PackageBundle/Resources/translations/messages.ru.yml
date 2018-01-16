@@ -373,7 +373,7 @@ form.organizationType.accountant_fio: 'ФИО бухгалтера'
 form.organizationType.inn: ИНН
 form.organizationType.kpp: КПП
 form.organizationType.registration_date: 'Дата гос.регистрации'
-form.organizationType.registration_number: 'Регистраиционный номер в ПФР'
+form.organizationType.registration_number: 'Регистрационный номер в ПФР'
 form.organizationType.activity_code: 'Код основной деятельности'
 form.organizationType.okpo_code: 'Код по ОКПО'
 form.organizationType.writer_fio: 'ФИО подписанта в род. падеже'
@@ -427,6 +427,7 @@ package.document.type_train_tickets: 'Ж/д билеты'
 package.document.type_info: Информация
 package.document.type_letter: Письмо
 package.document.type_other: Прочее
+package.document_type.tourist_age: 'возраст'
 tourist.json.clients_in_black_list: 'Клиент в черном списке'
 tourist.json.client_not_in_black_list: 'Клиент не в черном списке'
 tourist.json.issued_date: выдан
@@ -529,15 +530,17 @@ report.accommodation.floor_filter.title: Этаж
 report.accommodation.find_button.title: Найти
 report.filling_table_rows.rooms_at_sale: 'Номеров в продаже'
 report.filling_table_rows.number_of_rooms: 'Номерной фонд'
-report.filling_table_rows.number_of_busy_rooms: 'Забронировано номеров'
+report.filling_table_rows.number_of_busy_rooms: 'Забронировано номеров/ночей'
 report.filling_table_rows.balance_on_sale: 'Остаток (в продаже)'
 report.filling_table_rows.balanse_number_of_rooms: 'Остаток (номерной фонд)'
+report.filling_table_rows.reserved_rooms_from_room_fund: 'Заполняемость ном. фонда'
 report.filling_table_rows.reserved_rooms: 'Забронировано номеров %'
 report.filling_table_rows.number_of_rooms_without_payment: 'Номера без оплаты (брони)'
 report.filling_table_rows.total_number_of_guests: 'Гостей всего'
 report.filling_table_rows.guests_per_room: 'Гостей на 1 номер'
 report.filling_table_rows.cost_of_living: 'Стоимость проживания'
 report.filling_table_rows.cost_of_services: 'Стоимость услуг'
+report.filling_table_rows.average_price_for_room_night_realtion: 'Ср.цена за номер/ночь'
 report.filling_table_rows.total_cost: 'Общая стоимость'
 report.filling_table_rows.received_in_fact: 'Получено фактически'
 report.filling_table_rows.received_in_fact_in_percents: 'Получено фактически %'
@@ -708,7 +711,6 @@ manager.channel_manager.hotels: Hotels
 manager.channel_manager.venere: Venere
 validator.form.image.min.error: Превышено минимальное значение
 validator.form.image.max.error: Превышено максимальное занчение
-validator.form.image.type.error: Не корректное значение данных
 csv.type.package: Тип брони
 csv.type.order.type: Тип заказа
 csv.type.begin: С
@@ -884,6 +886,8 @@ report.filling.filling_table.total: Итог
 report.filling.filling_table.number_of_places: мест
 report.filling.filling.dates: Даты
 report.filling.filling.room_types: 'Тип номера'
+report.filling.filling.room_status: 'Статус комнаты'
+report.filling.filling.only_enabled: 'Только влюченные?'
 report.polls_view.number_of_order: Заказ
 report.polls_view.hotel: Отель
 report.polls: Даты
@@ -1233,8 +1237,6 @@ controller.packageController.record_edited_success_services: 'Даты услу�
 mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny: 'Не найдено ни одной рабочей смены'
 mbhpackagebundle.view.report.workshiftlist.rabochaya_smena: 'Рабочая смена'
 mbhpackagebundle.view.tourist.jsonbuttons.udaleniye.zapisi: 'Удаленные записи'
-validator.form.image.min.error: Превышено минимальное значение
-validator.form.image.max.error: Превышено максимальное занчение
 validator.form.image.type.error: Не корректное значение данных
 mbh.package_bundle.fixtures.delete_reason_data.denial: Отказ
 mbh.package_bundle.fixtures.delete_reason_data.error: Ошибка
@@ -1285,3 +1287,4 @@ mbh.analytics.types.sales_sources: "Источники продаж"
 mbh.analytics.types.hotel_occupancy: "Заполняемость отеля"
 mbh.analytics.types.sales_services: "Динамика реализации услуг"
 mbh.analytics.types.sales_managers: "Менеджеры и брони"
+package.document_type.tourist_age: 'возраст'

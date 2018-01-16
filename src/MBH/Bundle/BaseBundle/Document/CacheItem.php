@@ -28,7 +28,7 @@ class CacheItem extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Field(type="date", name="begin")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @ODM\Index()
      */
@@ -36,7 +36,7 @@ class CacheItem extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Field(type="date", name="end")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @ODM\Index()
      */
@@ -44,7 +44,7 @@ class CacheItem extends Base
 
     /**
      * @var \DateTime|null
-     * @ODM\Field(type="date", name="lifetime")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @ODM\Index()
      */

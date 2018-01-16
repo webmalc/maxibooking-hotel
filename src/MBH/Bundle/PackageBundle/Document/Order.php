@@ -996,4 +996,22 @@ class Order extends Base
         $this->onlinePaymentType = $onlinePaymentType;
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getJsonSerialized()
+    {
+        $packages = array_map(function(Package $package) {
+            return $package->getJsonSerialized();
+        }, $this->getPackages()->toArray());
+
+        return [
+            'id' => $this->getId(),
+            'note' => $this->getNote(),
+            'mainTourist' => $this->getMainTourist()->jsonSerialize(),
+            'price' => $this->getPrice(),
+            'packages' => $packages
+        ];
+    }
 }

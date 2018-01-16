@@ -303,7 +303,8 @@ var docReadyPackages = function () {
                                 $('#mbh_bundle_packagebundle_package_csv_type_paid').val($('#package-filter-paid').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_confirmed').val($('#package-filter-confirmed').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_deleted').val(($('#package-filter-deleted').is(':checked')) ? 1 : 0)
-                                $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'))
+                                $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'));
+                                $('#mbh_bundle_packagebundle_package_csv_type_query').val($('#package-table_filter').find('input[type="search"]').val());
                                 $('.modal.in').modal('hide')
                             });
 

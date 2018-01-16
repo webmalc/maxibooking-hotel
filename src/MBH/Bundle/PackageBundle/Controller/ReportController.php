@@ -554,6 +554,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         }
 
         $roomTypeList = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
+        $roomStatuses = $this->dm
+            ->getRepository('MBHHotelBundle:RoomStatus')
+            ->findBy([
+                'hotel' => $this->hotel,
+                'isEnabled' => true
+            ]);
 
         if (!$roomTypes) {
             $roomTypes = $roomTypeList;
@@ -563,9 +569,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $end = new \DateTime('midnight +6 day');
 
         $generator = $this->get('mbh.package.report.filling_report_generator');
-        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes);
+        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes, [], false);
 
         return [
+                'roomStatusOptions' => array_merge(['withoutStatus' => 'Без статуса'], $this->helper->sortByValue($roomStatuses)),
                 'roomTypes' => $roomTypes,
                 'roomTypeList' => $roomTypeList,
                 'begin' => $begin,
@@ -616,9 +623,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $begin = new \DateTime('midnight -1 day');
             $end = new\DateTime('midnight +6 day');
         }
+        $roomStatusOptions = $this->helper->getDataFromMultipleSelectField($request->get('roomStatus'));
 
         $generator = $this->get('mbh.package.report.filling_report_generator');
-        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes);
+        $isEnabled = $request->get('isEnabled') === 'true';
+        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes, $roomStatusOptions, $isEnabled);
 
         return $result + ['roomTypes' => $roomTypes];
     }

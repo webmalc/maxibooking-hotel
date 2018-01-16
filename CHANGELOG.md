@@ -1,3 +1,7 @@
+2.4.1
+============
+Merged pull requests
+
 2.4.0
 ============
 * Bug fixes

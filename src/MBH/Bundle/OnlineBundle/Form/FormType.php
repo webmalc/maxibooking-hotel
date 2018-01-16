@@ -4,6 +4,8 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\ClientBundle\Service\ClientManager;
+use MBH\Bundle\PackageBundle\Models\Billing\Country;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -19,15 +21,19 @@ use MBH\Bundle\OnlineBundle\Document\FormConfig;
 
 class FormType extends AbstractType
 {
-    private $countryType;
+    private $clientManager;
+    private $paymentTypes;
 
-    public function __construct($countryType)
+    public function __construct(ClientManager $clientManager, $onlineFormParams)
     {
-        $this->countryType = $countryType;
+        $this->clientManager = $clientManager;
+        $this->paymentTypes = $onlineFormParams['payment_types'];
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $clientCountry = $this->clientManager->getClient()->getCountry();
+
         $builder
             ->add(
                 'hotels',
@@ -126,9 +132,9 @@ class FormType extends AbstractType
                 'required' => false,
                 'group' => 'form.formType.parameters',
             ]);
-        if ($this->countryType === 'ru' || $this->countryType == 'kaz') {
-            $innLabel = $this->countryType == 'ru' ? 'form.formType.is_request_inn.label' : 'form.formType.is_request_inn.kaz.label';
-            $innHelp = $this->countryType == 'ru' ? 'form.formType.is_request_inn.help' : 'form.formType.is_request_inn.kaz.help';
+        if ($clientCountry === Country::RUSSIA_TLD || $clientCountry == Country::KAZAKHSTAN_TLD) {
+            $innLabel = $clientCountry == Country::RUSSIA_TLD ? 'form.formType.is_request_inn.label' : 'form.formType.is_request_inn.kaz.label';
+            $innHelp = $clientCountry == Country::RUSSIA_TLD ? 'form.formType.is_request_inn.help' : 'form.formType.is_request_inn.kaz.help';
             $builder
                 ->add('requestInn', CheckboxType::class, [
                     'label' => $innLabel,
@@ -173,7 +179,10 @@ class FormType extends AbstractType
                 InvertChoiceType::class,
                 [
                     'group' => 'form.formType.payment',
-                    'choices' => $options['paymentTypes'],
+                    'choices' => $this->paymentTypes,
+                    'choice_label' => function ($value) {
+                        return 'payment_types.' . $value;
+                    },
                     'label' => 'form.formType.payment_type',
                     'multiple' => true,
                     'help' => 'form.formType.reservation_payment_types_with_online_form'
@@ -266,7 +275,6 @@ class FormType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'MBH\Bundle\OnlineBundle\Document\FormConfig',
-                'paymentTypes' => [],
                 'user' => null
             )
         );

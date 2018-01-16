@@ -417,7 +417,8 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        return $dm->getRepository('MBHPackageBundle:PackageSource')->createQueryBuilder('s')
+        return $dm->getRepository('MBHPackageBundle:PackageSource')
+            ->createQueryBuilder()
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
@@ -456,7 +457,8 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        return $dm->getRepository('MBHUserBundle:User')->createQueryBuilder('s')
+        return $dm->getRepository('MBHUserBundle:User')
+            ->createQueryBuilder()
             ->sort(['lastName' => 'desc', 'username' => 'desc'])
             ->getQuery()
             ->execute();
@@ -542,7 +544,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
      * @param boolean $withoutTotal
      * @return array
      */
-    private function getSeries($values = array(), $categoryGetMethod = 'getRoomTypes', $withoutTotal = false)
+    private function getSeries($values = [], $categoryGetMethod = 'getRoomTypes', $withoutTotal = false)
     {
         $request = $this->getRequest();
         $cumulative = $request->get('cumulative');
@@ -686,7 +688,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $end = $period->getEndDate();
         $end->modify('+1 day');
 
-        $qb = $this->dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
+        $qb = $this->dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder();
         if (count($roomTypesIds)) {
             $qb->field('roomType.id')->in($roomTypesIds);
         }

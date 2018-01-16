@@ -48,11 +48,9 @@ class TouristController extends Controller
     public function indexAction()
     {
         $form = $this->createForm(TouristFilterForm::class);
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
 
         return [
             'form' => $form->createView(),
-            'vegaDocumentTypes' => $vegaDocumentTypes
         ];
     }
 
@@ -88,7 +86,6 @@ class TouristController extends Controller
             $touristPackages[$tourist->getId()] = $packageRepository->findOneByTourist($tourist, $packageCriteria);
         }
 
-        $vegaDocumentTypes = $this->container->get('mbh.fms_dictionaries')->getDocumentTypes();
         $arrivals = $this->container->getParameter('mbh.package.arrivals');
 
         return [
@@ -96,7 +93,7 @@ class TouristController extends Controller
             'total' => count($tourists),
             'draw' => $request->get('draw'),
             'touristPackages' => $touristPackages,
-            'vegaDocumentTypes' => $vegaDocumentTypes,
+            'documentTypes' => $this->get('mbh.fms_dictionaries')->getDocumentTypes(),
             'arrivals' => $arrivals,
         ];
     }
@@ -698,7 +695,7 @@ class TouristController extends Controller
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
         foreach ($touristQB->getQuery()->execute() as $tourist) {
             $touristPackage = $packageRepository->findOneByTourist($tourist, $packageCriteria);
-            if (!is_null($touristPackage)) {
+            if (!is_null($touristPackage) && $tourist->getLastName() != 'Н/д') {
                 $viewFile = $tourist->getCitizenshipTld() === Country::RUSSIA_TLD
                     ? '@MBHClient/Fms/fms_export_russian.xml.twig'
                     : '@MBHClient/Fms/fms_export_foreign.xml.twig';
@@ -712,10 +709,8 @@ class TouristController extends Controller
         }
 
         $zipManager = $this->get('mbh.zip_manager');
-        $zipName = 'kontur.zip';
-        $zipManager->writeToZip($stringsToWriteByNames, $zipName);
-        $attachedZipFileName = 'kontur-export ' . $this->helper->getDatePeriodString($beginDate, $endDate, 'Y.m.d') . '.zip';
+        $zipFileName = 'kontur-export ' . $this->helper->getDatePeriodString($beginDate, $endDate, 'Y.m.d') . '.zip';
 
-        return $this->get('mbh.zip_manager')->getAttachedZipResponse($zipName, $attachedZipFileName);
+        return $zipManager->writeToStreamedResponse($stringsToWriteByNames, $zipFileName);
     }
 }

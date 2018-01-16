@@ -251,7 +251,7 @@ jQuery(document).ready(function() {
                         }
                     };
                     calc();
-                    jQuery('.mbh-results-tourists-select, .mbh-results-packages-count, .mbh-results-services-count').click(function() {
+                    jQuery('.mbh-results-tourists-select, .mbh-results-packages-count, .mbh-results-services-count').on('click change', function() {
                         calc();
                     });
                 }());
@@ -331,7 +331,7 @@ jQuery(document).ready(function() {
                             success: function(data) {
                                 wrapper.html('{{ styles|escape("js") }}' + data);
 
-                                jQuery(document).trigger('user-form-load-event');
+                                wrapper.trigger('user-form-load-event');
 
                                 setSelect2();
                                 var prevUser = jQuery.cookie('mbh.user');

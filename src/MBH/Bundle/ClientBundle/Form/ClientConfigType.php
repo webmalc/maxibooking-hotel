@@ -22,10 +22,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ClientConfigType extends AbstractType
 {
     private $helper;
+    private $currencyData;
 
-    public function __construct(Helper $helper)
+    public function __construct(Helper $helper, array $currencyData)
     {
         $this->helper = $helper;
+        $this->currencyData = $currencyData;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -40,6 +42,15 @@ class ClientConfigType extends AbstractType
                 },
                 'label' => 'form.clientConfigType.time_zone.label',
                 'data' => $this->helper->getTimeZone($builder->getData())
+            ])
+            ->add('currency', ChoiceType::class, [
+                'required' => false,
+                'group' => 'form.clientConfigType.main_group',
+                'choices' => array_keys($this->currencyData),
+                'choice_label' => function ($value) {
+                    return 'form.clientConfigType.currency.options.' . $value;
+                },
+                'label' => 'form.clientConfigType.currency.label'
             ])
             ->add(
                 'isSendSms',

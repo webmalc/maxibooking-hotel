@@ -1014,7 +1014,7 @@ function onHideCheckboxChange() {
 function initSelect2TextForBilling(inputId, apiSettings) {
     var $select2Field = select2Text($('#' + inputId));
     var selectedValue = $select2Field.val();
-    
+
     $select2Field.select2({
         minimumInputLength: 3,
         placeholder: Translator.trans('tourist.make_a_choice'),
@@ -1023,7 +1023,7 @@ function initSelect2TextForBilling(inputId, apiSettings) {
             headers: {
                 Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
             },
-            url: apiSettings['url'],
+            url: apiSettings['url'] + '/',
             dataType: 'json',
             data: function (params) {
                 return {
@@ -1053,7 +1053,7 @@ function initSelect2TextForBilling(inputId, apiSettings) {
         initSelection: function (element, callback) {
             var id = $(element).val();
             if (id) {
-                $.ajax(apiSettings['url'] + '/' + id, {
+                $.ajax(apiSettings['url'] + '/' + id + '/', {
                     dataType: "json",
                     headers: {
                         Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"

@@ -89,7 +89,8 @@ class TemplateFormatter
             'organization' => $organization,
             'user' => $user,
             'arrivalTimeDefault' => $hotel->getPackageArrivalTime(),
-            'departureTimeDefault' => $hotel->getPackageDepartureTime()
+            'departureTimeDefault' => $hotel->getPackageDepartureTime(),
+            'documentTypes' => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes()
         ];
 
         $params = $this->addCalculatedParams($params, $package);

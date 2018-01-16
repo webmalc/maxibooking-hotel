@@ -60,11 +60,12 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $roomTypes,
         $serviceTariffs,
         ChannelManagerConfigInterface $config
-    )
-    {
+    ) {
         $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $xmlElements = [];
         $priceCalculator = $this->container->get('mbh.calculation');
+        $localCurrency = $this->dm->getRepository('MBHClientBundle:Client')->fetchConfig()->getCurrency();
+
         foreach ($requestDataArray as $roomTypeId => $pricesByTariffs) {
             foreach ($pricesByTariffs as $tariffId => $pricesByDates) {
                 $cmHelper = $this->container->get('mbh.channelmanager.helper');
@@ -90,7 +91,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $priceList = [];
                     if (!is_null($priceCache)) {
                         $priceList = $priceCalculator->calcPrices($priceCache->getRoomType(), $priceCache->getTariff(), $periodBegin, $periodBegin);
-                        $hasPriceList = count($priceList) > 0;
+                        $hasPriceList = is_array($priceList) && count($priceList) > 0;
                     }
 
                     $ratePlanElement = $roomTypeElement->addChild('RatePlan');
@@ -98,8 +99,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $ratePlanElement->addAttribute('closed', $hasPriceList ? 'false' : 'true');
 
                     $rateElement = $ratePlanElement->addChild('Rate');
-                    $rateElement->addAttribute('currency',
-                        strtoupper($this->container->getParameter('locale.currency')));
+                    $rateElement->addAttribute('currency', $localCurrency);
                     if ($hasPriceList) {
                         foreach ($priceList as $price) {
                             if (!isset($price['children']) || $price['children'] == 0) {
@@ -346,8 +346,13 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $confirmTime = new \DateTime('now', new \DateTimeZone("UTC"));
         $confirmNumberElement->addAttribute('confirmTime', $confirmTime->format(self::CONFIRMATION_DATE_FORMAT_STRING));
 
-        if ($orderInfo->getConfirmNumber()) {
-            $confirmNumberElement->addAttribute('confirmNumber', $orderInfo->getConfirmNumber());
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
+        $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(['channelManagerId' => $orderInfo->getChannelManagerOrderId()]);
+        $confirmNumberElement->addAttribute('confirmNumber', $order->getId());
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
         }
 
         return $this->formatTemplateRequest([$confirmNumbersElement], $config,

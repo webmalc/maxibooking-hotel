@@ -167,13 +167,13 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-hourglass-half']);
         $menu['reports']->addChild('report_user', ['route' => 'report_users', 'label' => 'menu.label.reports.managers'])
             ->setAttributes(['icon' => 'fa fa-user']);
-        $menu['reports']->addChild('report_invite', ['route' => 'report_invite', 'label' => 'menu.label.reports.invite'])
-            ->setAttributes(['icon' => 'fa fa-map']);
+//        $menu['reports']->addChild('report_invite', ['route' => 'report_invite', 'label' => 'menu.label.reports.invite'])
+//            ->setAttributes(['icon' => 'fa fa-map']);
         $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'menu.label.reports.analystics'])
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'menu.label.reports.polls'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['reports']->addChild('dynamic_sale', ['route' => 'dynamic_sales', 'label' => 'Динамика продаж'])
+        $menu['reports']->addChild('dynamic_sale', ['route' => 'dynamic_sales', 'label' => 'menu.label.reports.dynamic_sales'])
             ->setAttributes(['icon' => 'fa fa-bar-chart']);
         $menu['reports']->addChild('packages_daily_report', ['route' => 'packages_daily_report', 'label' => 'menu.label.reports.daily_report'])
             ->setAttributes(['icon' => 'fa fa-money']);
@@ -186,11 +186,11 @@ class Builder implements ContainerAwareInterface
         }
         //$token = $this->container->get('security.token_storage')->getToken();
         //if ($token && $token->getUser() instanceof User && $token->getUser()->getIsEnabledWorkShift()) {
-        $menu['reports']->addChild(
-            'report_work_shift',
-            ['route' => 'report_work_shift', 'label' => 'menu.label.reports.work_shift']
-        )
-            ->setAttributes(['icon' => 'fa fa-clock-o']);
+//        $menu['reports']->addChild(
+//            'report_work_shift',
+//            ['route' => 'report_work_shift', 'label' => 'menu.label.reports.work_shift']
+//        )
+//            ->setAttributes(['icon' => 'fa fa-clock-o']);
         //}
 
         return $this->filter($menu, $factory, $options);
