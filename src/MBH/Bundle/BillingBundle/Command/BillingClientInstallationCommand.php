@@ -42,6 +42,7 @@ class BillingClientInstallationCommand extends Command
     {
 
         $clientName = $input->getOption('client');
+
         if (empty($clientName)) {
             $this->logger->addCritical('No client name for installClient');
             throw new InvalidArgumentException('Mandatory option "client" is not specified');
@@ -56,22 +57,6 @@ class BillingClientInstallationCommand extends Command
         $params['--client'] = $clientName;
         $command = new \MBH\Bundle\BaseBundle\Lib\Task\Command($command, $params, $clientName, $input->getOption('env'), $isDebug);
         $this->producer->publish(serialize($command));
-
-        /**
-         * @param string $clientName
-         */
-
-//        $commandLine = sprintf('php console %s --client=%s --env=%s', $command, $clientName, $input->getOption('env'));
-//        /** @var Application $application */
-//        $application = $this->getApplication();
-//        $consoleFolder = $application->getKernel()->getRootDir().'/../bin';
-//        try {
-//            $this->logger->addRecord(Logger::INFO, 'Try to start '. $commandLine . 'command with client ');
-//            $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $clientName], null, 60 * 3);
-//            $process->start();
-//        } catch (\Throwable $exception) {
-//            $this->logger->err($exception->getMessage());
-//        }
 
     }
 

@@ -42,6 +42,7 @@ class ClientInstanceManager
     private $roomTypeManager;
     private $hotelManager;
     private $workflow;
+    private $workflowAfterInstall;
     private $consoleFolder;
     private $isDebug;
     private $kernelEnv;
@@ -59,6 +60,7 @@ class ClientInstanceManager
         RoomTypeManager $roomTypeManager,
         HotelManager $hotelManager,
         Workflow $workflow,
+        Workflow $workflowAfterInstall,
         UserManager $userManager
     ) {
         $this->maintenanceManager = $maintenanceManager;
@@ -75,6 +77,7 @@ class ClientInstanceManager
         $this->isDebug = $kernel->isDebug();
         $this->kernelEnv = $kernel->getEnvironment();
         $this->userManager = $userManager;
+        $this->workflowAfterInstall = $workflowAfterInstall;
     }
 
     /**
@@ -178,7 +181,7 @@ class ClientInstanceManager
 
         $this->logger->addRecord(Logger::INFO, $message);
         $afterInstallProcess = $this->getAfterInstallProcess($clientName);
-        if (!$this->workflow->can($afterInstallProcess, 'after_install')) {
+        if (!$this->workflowAfterInstall->can($afterInstallProcess, 'after_install')) {
             $this->logger->addRecord(Logger::WARNING, 'After install process for user '. $clientName .' in state' . $afterInstallProcess->getCurrentPlace());
 
             return false;
@@ -341,19 +344,19 @@ class ClientInstanceManager
     private function changeInstallProcessStatus(string $client, string $transition)
     {
         $installProcess = $this->getInstallProcess($client);
-        $this->changeStatus($installProcess, $transition);
+        $this->changeStatus($installProcess, $transition, $this->workflow);
     }
 
     private function changeAfterInstallProcessStatus(string $client, string $transition)
     {
         $installProcess = $this->getAfterInstallProcess($client);
-        $this->changeStatus($installProcess, $transition);
+        $this->changeStatus($installProcess, $transition, $this->workflowAfterInstall);
     }
 
-    private function changeStatus(InstallWorkflowInterface $installProcess, string $transition)
+    private function changeStatus(InstallWorkflowInterface $installProcess, string $transition, Workflow $workflow)
     {
-        if ($installProcess && $this->workflow->can($installProcess, $transition)) {
-            $this->workflow->apply($installProcess, $transition);
+        if ($installProcess && $workflow->can($installProcess, $transition)) {
+            $workflow->apply($installProcess, $transition);
             $this->logger->addRecord(
                 Logger::INFO,
                 'Change install process to state '.$installProcess->getCurrentPlace()
@@ -378,7 +381,6 @@ class ClientInstanceManager
         if (!$process) {
             $process = AfterInstallationWorkFlow::createInstallationWorkflow($clientName);
             $this->dm->persist($process);
-            $this->dm->flush($process);
         }
 
         return $process;
