@@ -6,9 +6,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Doctrine\UserManager;
 use GuzzleHttp\Exception\RequestException;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BillingBundle\Document\AfterInstallationWorkFlow;
 use MBH\Bundle\BillingBundle\Document\InstallationWorkflow;
 use MBH\Bundle\BillingBundle\Lib\Exceptions\AfterInstallException;
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
+use MBH\Bundle\BillingBundle\Lib\InstallWorkflowInterface;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingRoom;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
@@ -40,6 +42,7 @@ class ClientInstanceManager
     private $roomTypeManager;
     private $hotelManager;
     private $workflow;
+    private $workflowAfterInstall;
     private $consoleFolder;
     private $isDebug;
     private $kernelEnv;
@@ -57,6 +60,7 @@ class ClientInstanceManager
         RoomTypeManager $roomTypeManager,
         HotelManager $hotelManager,
         Workflow $workflow,
+        Workflow $workflowAfterInstall,
         UserManager $userManager
     ) {
         $this->maintenanceManager = $maintenanceManager;
@@ -73,6 +77,7 @@ class ClientInstanceManager
         $this->isDebug = $kernel->isDebug();
         $this->kernelEnv = $kernel->getEnvironment();
         $this->userManager = $userManager;
+        $this->workflowAfterInstall = $workflowAfterInstall;
     }
 
     /**
@@ -131,12 +136,6 @@ class ClientInstanceManager
         return $result;
     }
 
-    private function getInstallProcess(string $clientName)
-    {
-        return $this->dm->getRepository('MBHBillingBundle:InstallationWorkflow')->findOneBy(
-            ['clientName' => $clientName]
-        );
-    }
 
     /**
      * @param string $clientName
@@ -181,31 +180,44 @@ class ClientInstanceManager
         );
 
         $this->logger->addRecord(Logger::INFO, $message);
-        $result = new Result();
-        try {
-            if ($this->kernel->getClient() !== $clientName) {
-                $message = sprintf(
-                    'The Kernel has wrong client. Kernel has %s client, clientName is %.',
-                    $this->kernel->getClient(),
-                    $clientName
-                );
-                throw new AfterInstallException($message);
-            }
-            $admin = $this->updateAdminUser();
-            $data = [
-                'password' => $admin->getPlainPassword(),
-                'token' => $admin->getApiToken()->getToken(),
-                'url' => Client::compileClientUrl($clientName),
-            ];
-            $result->setData($data);
-            $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created with answer.', $data);
-        } catch (\Throwable $e) {
-            $result->setIsSuccessful(false);
-            $this->logger->addRecord(Logger::CRITICAL, $e->getMessage());
-        }
-        $this->logger->addRecord(Logger::INFO, 'Try to send data for billing');
+        $afterInstallProcess = $this->getAfterInstallProcess($clientName);
+        if (!$this->workflowAfterInstall->can($afterInstallProcess, 'after_install')) {
+            $this->logger->addRecord(Logger::WARNING, 'After install process for user '. $clientName .' in state' . $afterInstallProcess->getCurrentPlace());
 
-        return $this->sendInstallationResult($result, $clientName);
+            return false;
+        } else {
+            $this->changeAfterInstallProcessStatus($clientName, 'after_install');
+            $result = new Result();
+            try {
+                if ($this->kernel->getClient() !== $clientName) {
+                    $message = sprintf(
+                        'The Kernel has wrong client. Kernel has %s client, clientName is %.',
+                        $this->kernel->getClient(),
+                        $clientName
+                    );
+                    throw new AfterInstallException($message);
+                }
+                $admin = $this->updateAdminUser();
+                $data = [
+                    'password' => $admin->getPlainPassword(),
+                    'token' => $admin->getApiToken()->getToken(),
+                    'url' => Client::compileClientUrl($clientName),
+                ];
+                $result->setData($data);
+                $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created with answer.', $data);
+                $this->changeAfterInstallProcessStatus($clientName, 'installed');
+            } catch (\Throwable $e) {
+                $result->setIsSuccessful(false);
+                $this->logger->addRecord(Logger::CRITICAL, $e->getMessage());
+                $this->changeAfterInstallProcessStatus($clientName, 'error');
+
+            }
+            $this->logger->addRecord(Logger::INFO, 'Try to send data for billing');
+
+            return $this->sendInstallationResult($result, $clientName);
+
+        }
+
     }
 
 
@@ -223,7 +235,7 @@ class ClientInstanceManager
             ->setExpiredAt(new \DateTime('+1 hour'));
         $admin->setApiToken($token);
         $this->dm->flush();
-        $this->userManager->updateUser($user, true);
+        $this->userManager->updateUser($admin, true);
 
         $admin->setPlainPassword($plainPassword);
 
@@ -329,11 +341,22 @@ class ClientInstanceManager
         return $this->helper->getRandomString(10);
     }
 
-    private function changeInstallProcessStatus(string $client, string $status)
+    private function changeInstallProcessStatus(string $client, string $transition)
     {
         $installProcess = $this->getInstallProcess($client);
-        if ($installProcess && $this->workflow->can($installProcess, $status)) {
-            $this->workflow->apply($installProcess, $status);
+        $this->changeStatus($installProcess, $transition, $this->workflow);
+    }
+
+    private function changeAfterInstallProcessStatus(string $client, string $transition)
+    {
+        $installProcess = $this->getAfterInstallProcess($client);
+        $this->changeStatus($installProcess, $transition, $this->workflowAfterInstall);
+    }
+
+    private function changeStatus(InstallWorkflowInterface $installProcess, string $transition, Workflow $workflow)
+    {
+        if ($installProcess && $workflow->can($installProcess, $transition)) {
+            $workflow->apply($installProcess, $transition);
             $this->logger->addRecord(
                 Logger::INFO,
                 'Change install process to state '.$installProcess->getCurrentPlace()
@@ -342,5 +365,25 @@ class ClientInstanceManager
         }
     }
 
+    private function getInstallProcess(string $clientName)
+    {
+        return $this->dm->getRepository('MBHBillingBundle:InstallationWorkflow')->findOneBy(
+            ['clientName' => $clientName]
+        );
+    }
+
+    private function getAfterInstallProcess(string $clientName)
+    {
+        $process = $this->dm->getRepository('MBHBillingBundle:AfterInstallationWorkFlow')->findOneBy(
+            ['clientName' => $clientName]
+        );
+
+        if (!$process) {
+            $process = AfterInstallationWorkFlow::createInstallationWorkflow($clientName);
+            $this->dm->persist($process);
+        }
+
+        return $process;
+    }
 
 }
