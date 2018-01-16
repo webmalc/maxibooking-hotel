@@ -75,7 +75,7 @@ services:
 
     mbh.console.billing_client_install:
         class: MBH\Bundle\BillingBundle\Command\BillingClientInstallationCommand
-        arguments: ['@mbh.client_instance_manager', '@mbh.billing.logger']
+        arguments: ['@mbh.client_instance_manager', '@mbh.billing.logger', '@old_sound_rabbit_mq.task_command_runner_producer']
         tags: ['console.command']
 
     mbh.console.billing_after_install_client:

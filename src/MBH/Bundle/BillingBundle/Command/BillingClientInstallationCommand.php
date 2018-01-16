@@ -5,9 +5,9 @@ namespace MBH\Bundle\BillingBundle\Command;
 
 
 use http\Exception\InvalidArgumentException;
-use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\ClientInstanceManager;
 use Monolog\Logger;
+use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,11 +19,14 @@ class BillingClientInstallationCommand extends Command
 {
     private $instanceManager;
     private $logger;
+    private $producer;
 
-    public function __construct(ClientInstanceManager $instanceManager, Logger $logger, ?string $name = null)
+    public function __construct(ClientInstanceManager $instanceManager, Logger $logger, Producer $producer, ?string $name = null)
     {
         $this->instanceManager = $instanceManager;
         $this->logger = $logger;
+        $this->producer = $producer;
+
         parent::__construct($name);
     }
 
@@ -45,24 +48,30 @@ class BillingClientInstallationCommand extends Command
         }
         $this->logger->addRecord(Logger::INFO, 'Try to start installClient()');
         $this->instanceManager->installClient($clientName);
-        $this->logger->addRecord(Logger::INFO, 'Try to start runAfterInstallCommand()');
+        $this->logger->addRecord(Logger::INFO, 'Generate queue to after install command');
+
+
+        $isDebug = $this->getApplication()->getKernel()->isDebug();
+        $command = 'mbh:client:after:install';
+        $params['--client'] = $clientName;
+        $command = new \MBH\Bundle\BaseBundle\Lib\Task\Command($command, $params, $clientName, $input->getOption('env'), $isDebug);
+        $this->producer->publish(serialize($command));
 
         /**
          * @param string $clientName
          */
 
-        $command = 'mbh:client:after:install';
-        $commandLine = sprintf('php console %s --client=%s --env=%s', $command, $clientName, $input->getOption('env'));
-        /** @var Application $application */
-        $application = $this->getApplication();
-        $consoleFolder = $application->getKernel()->getRootDir().'/../bin';
-        try {
-            $this->logger->addRecord(Logger::INFO, 'Try to start afterInstall command with client '.$clientName);
-            $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $clientName], null, 60 * 3);
-            $process->start();
-        } catch (\Throwable $exception) {
-            $this->logger->err($exception->getMessage());
-        }
+//        $commandLine = sprintf('php console %s --client=%s --env=%s', $command, $clientName, $input->getOption('env'));
+//        /** @var Application $application */
+//        $application = $this->getApplication();
+//        $consoleFolder = $application->getKernel()->getRootDir().'/../bin';
+//        try {
+//            $this->logger->addRecord(Logger::INFO, 'Try to start '. $commandLine . 'command with client ');
+//            $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $clientName], null, 60 * 3);
+//            $process->start();
+//        } catch (\Throwable $exception) {
+//            $this->logger->err($exception->getMessage());
+//        }
 
     }
 

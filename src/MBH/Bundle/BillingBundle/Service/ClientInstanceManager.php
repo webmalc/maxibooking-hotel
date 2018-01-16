@@ -170,12 +170,12 @@ class ClientInstanceManager
     public function afterInstall(string $clientName)
     {
         $message = sprintf(
-            '%s service starter with client %s and kernel client %s',
+            '%s service started with client %s and kernel client %s',
             self::class,
             $clientName,
             $this->kernel->getClient()
         );
-        var_dump($message);
+
         $this->logger->addRecord(Logger::INFO, $message);
         $result = new Result();
         try {
@@ -188,14 +188,13 @@ class ClientInstanceManager
                 throw new AfterInstallException($message);
             }
             $admin = $this->updateAdminUser();
-            $result->setData(
-                [
-                    'password' => $admin->getPlainPassword(),
-                    'token' => $admin->getApiToken()->getToken(),
-                    'url' => Client::compileClientUrl($clientName),
-                ]
-            );
-            $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created');
+            $data = [
+                'password' => $admin->getPlainPassword(),
+                'token' => $admin->getApiToken()->getToken(),
+                'url' => Client::compileClientUrl($clientName),
+            ];
+            $result->setData($data);
+            $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created with answer.', $data);
         } catch (\Throwable $e) {
             $result->setIsSuccessful(false);
             $this->logger->addRecord(Logger::CRITICAL, $e->getMessage());
