@@ -169,7 +169,14 @@ class ClientInstanceManager
 
     public function afterInstall(string $clientName)
     {
-        $this->logger->addRecord(Logger::INFO, 'After install started');
+        $message = sprintf(
+            '%s service starter with client %s and kernel client %s',
+            self::class,
+            $clientName,
+            $this->kernel->getClient()
+        );
+        var_dump($message);
+        $this->logger->addRecord(Logger::INFO, $message);
         $result = new Result();
         try {
             if ($this->kernel->getClient() !== $clientName) {
