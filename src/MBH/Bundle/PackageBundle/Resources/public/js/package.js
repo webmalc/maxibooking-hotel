@@ -500,12 +500,33 @@ var docReadyPackages = function () {
 
 
     discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'), $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'))
+};
+
+function setPaymentCardVisibility() {
+    var $paymentCardInfo = $('#payment-card-info');
+    if ($paymentCardInfo.length === 1) {
+        var $showInfoBtn = $('#show-payment-info-button');
+        var $hideInfoBtn = $('#hide-payment-info-button');
+
+        $showInfoBtn.click(function () {
+            $paymentCardInfo.show();
+            $showInfoBtn.hide();
+            $hideInfoBtn.show();
+        });
+
+        $hideInfoBtn.click(function () {
+            $paymentCardInfo.hide();
+            $showInfoBtn.show();
+            $hideInfoBtn.hide();
+        });
+    }
 }
 
 
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
+    setPaymentCardVisibility();
     //package ajax tabs
     (function () {
         var tabs = $('#package-tabs');
