@@ -41,6 +41,7 @@ class BillingClientAfterInstallClientCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $clientName = $input->getOption('client');
+
         $message = sprintf(
             '%s command starter with client %s and kernel client %s',
             $this->getName(),
