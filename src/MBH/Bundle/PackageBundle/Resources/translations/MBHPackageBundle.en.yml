@@ -40,7 +40,7 @@ order.cash.cash_documents_not_found: 'Payment documents not found'
 order.edit.order_editing: 'Edit order #'
 order.edit.deleted: Deleted
 order.edit.room: Room
-order.edit.card: 'Edit card'
+order.edit.card: 'Credit card'
 order.edit.paid_price: 'Paid / Total'
 order.edit.paid: Paid
 order.edit.not_paid: 'Not paid'
