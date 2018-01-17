@@ -108,7 +108,19 @@ class ClientInstanceManager
                 $this->kernelEnv,
                 $this->isDebug ? '' : '--no-debug'
             );
-            $process = new Process($command, $this->consoleFolder, null, null, 60 * 10);
+            $env = [
+                \AppKernel::CLIENT_VARIABLE => \AppKernel::DEFAULT_CLIENT,
+            ];
+            if ($this->kernelEnv === 'dev') {
+                $env = array_merge(
+                    $env,
+                    [
+                        'XDEBUG_CONFIG' => 'ideKey=PHPSTORM',
+                        'PHP_IDE_CONFIG' => 'serverName=cli'
+                    ]
+                );
+            }
+            $process = new Process($command, $this->consoleFolder, $env, null, 60 * 10);
             try {
                 $this->workflow->apply($installProcess, 'install');
                 $this->dm->flush($installProcess);
@@ -182,7 +194,10 @@ class ClientInstanceManager
         $this->logger->addRecord(Logger::INFO, $message);
         $afterInstallProcess = $this->getAfterInstallProcess($clientName);
         if (!$this->workflowAfterInstall->can($afterInstallProcess, 'after_install')) {
-            $this->logger->addRecord(Logger::WARNING, 'After install process for user '. $clientName .' in state' . $afterInstallProcess->getCurrentPlace());
+            $this->logger->addRecord(
+                Logger::WARNING,
+                'After install process for user '.$clientName.' in state'.$afterInstallProcess->getCurrentPlace()
+            );
 
             return false;
         } else {
@@ -262,7 +277,7 @@ class ClientInstanceManager
                 $isSent = true;
             } else {
                 $isSent = $this->sendInstallationResult($installationResult, $clientName, $numberOfSendingAttempts++);
-                $this->logger->err('Sending the installation result failed. Reason: ');
+                $this->logger->err('Sending the installation result failed. Reason: '.$decodedResponse['message']);
             }
         } catch (RequestException $exception) {
             $this->logger->err($exception);
