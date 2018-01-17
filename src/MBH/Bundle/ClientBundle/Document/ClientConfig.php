@@ -702,7 +702,7 @@ class ClientConfig extends Base
     {
 
         $doc = $this->getPaymentSystemDocByName($paymentSystemName);
-
+        $url = $url ?? $this->getSuccessUrl();
         if (!$doc || $cashDocument->getOperation() != 'in' || $cashDocument->getMethod() != 'electronic' || $cashDocument->getIsPaid()) {
             return [];
         }

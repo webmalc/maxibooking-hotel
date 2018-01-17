@@ -317,7 +317,7 @@ class ApiController extends Controller
             ->setAutohide(false)
             ->setEnd(new \DateTime('+10 minute'))
             ->setLink(
-                $this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()])
+                $this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
             )
             ->setLinkText('mailer.to_order')
             ->setMessageType(NotificationType::ONLINE_PAYMENT_CONFIRM_TYPE);
@@ -611,7 +611,7 @@ class ApiController extends Controller
                     'data' => array_merge(
                         [
                             'test' => false,
-                            'currency' => $this->clientConfig->getCurrency(),
+                            'currency' => strtoupper($this->clientConfig->getCurrency()),
                             'buttonText' => $this->get('translator')->trans(
                                 'views.api.make_payment_for_order_id',
                                 ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],

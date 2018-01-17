@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
 

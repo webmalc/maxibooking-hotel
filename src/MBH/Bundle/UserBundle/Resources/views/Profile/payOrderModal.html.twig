@@ -10,7 +10,7 @@
                     <button type="button" id="bill-button" class="btn btn-primary">
                         {{ 'view.pay_order_modal.open_bill'|trans}}
                     </button>
-                    <input type="hidden" value="{{ paymentType.html }}" id="bill-content">
+                    <input type="hidden" id="bill-content" value="{{ paymentType.html }}" >
 
                 {% else %}
                     {{ paymentType.html|raw }}
@@ -24,7 +24,8 @@
     var billButton = document.getElementById('bill-button');
     if (billButton) {
         document.getElementById('bill-button').onclick = function () {
-            window.open('about:blank').document.body.innerHTML += document.getElementById('bill-content').innerHTML;
+            var billContent = document.getElementById('bill-content').value;
+            window.open('about:blank').document.body.innerHTML += billContent;
         };
     }
 </script>

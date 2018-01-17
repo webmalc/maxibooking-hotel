@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use MBH\Bundle\UserBundle\Form\ClientContactsType;
 use MBH\Bundle\UserBundle\Form\ClientServiceType;
@@ -147,21 +148,20 @@ class ProfileController extends Controller
     public function tariffAction(Request $request)
     {
         $billingApi = $this->get('mbh.billing.api');
-        //TODO: Эти данные будут получаться с биллинга когда будет реализован функционал
-        $tariffsData = [
-            'main' => [
-                'rooms' => 123,
-                'price' => 12345,
-                'begin' => new \DateTime('midnight'),
-                'period' => 1
-            ],
-            'next' => [
-                'rooms' => 223,
-                'price' => 22345,
-                'begin' => new \DateTime('midnight +1 month'),
-                'period' => 6
-            ],
-        ];
+
+//        $tariffsData = [
+//            'main' => [
+//                'rooms' => 123,
+//                'price' => 12345,
+//                'period' => 1
+//            ],
+//            'next' => [
+//                'rooms' => 223,
+//                'price' => 22345,
+//                'begin' => new \DateTime('midnight +1 month'),
+//                'period' => 6
+//            ],
+//        ];
 
         $form = $this->createForm(ClientTariffType::class);
         if ($request->isMethod('POST')) {
@@ -171,13 +171,14 @@ class ProfileController extends Controller
                 if ($result->isSuccessful()) {
                     //TODO: Наверное другой текст
                     $this->addFlash('success', 'view.personal_account.tariff.change_tariff.success');
-                    //TODO: Поменять значения в массиве $tariffsData
                 } else {
                     $this->addBillingErrorFlash();
                     $this->get('mbh.form_data_handler')->fillFormByBillingErrors($form, $result->getErrors());
                 }
             }
         }
+
+        $tariffsData = $billingApi->getTariffsData();
 
         return [
             'tariffsData' => $tariffsData,
