@@ -82,26 +82,25 @@
                                     <small class="text-danger"><i class="fa fa-times"> </i> {{ 'order.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
                                 {% endif %}
                             </td>
-
-                            {% if entity.creditCard and is_granted('ROLE_PAYMENT_CARD_INFO') %}
-                            <tr>
-                                <td>
-                                <strong>{{ 'order.edit.card'|trans({}, 'MBHPackageBundle') }}</strong>
-                                    &nbsp;<button class="btn btn-primary" id="show-payment-info-button">
-                                        {{ 'order.edit.payment_card_info.show_button.title'|trans({}, 'MBHPackageBundle')}}
-                                    </button>
-                                    <button class="btn btn-primary" style="display: none" id="hide-payment-info-button">
-                                        {{ 'order.edit.payment_card_info.hide_button.title'|trans({}, 'MBHPackageBundle')}}
-                                    </button>
-                                </td>
-                                <td>
-                                    <div id="payment-card-info" style="display: none">
-                                        {{ entity.creditCard|nl2br }}
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endif %}
                         </tr>
+                        {% if entity.creditCard and is_granted('ROLE_PAYMENT_CARD_INFO') %}
+                        <tr>
+                            <td>
+                            <strong>{{ 'order.edit.card'|trans({}, 'MBHPackageBundle') }}</strong>
+                                &nbsp;<button class="btn btn-primary" id="show-payment-info-button">
+                                    {{ 'order.edit.payment_card_info.show_button.title'|trans({}, 'MBHPackageBundle')}}
+                                </button>
+                                <button class="btn btn-primary" style="display: none" id="hide-payment-info-button">
+                                    {{ 'order.edit.payment_card_info.hide_button.title'|trans({}, 'MBHPackageBundle')}}
+                                </button>
+                            </td>
+                            <td>
+                                <div id="payment-card-info" style="display: none">
+                                    {{ entity.creditCard|nl2br }}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div></div>
