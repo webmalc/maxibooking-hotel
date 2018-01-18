@@ -85,11 +85,16 @@ class BillingClientInstallationCommand extends ContainerAwareCommand
             Logger::INFO,
             'Starting console command '.$command
         );
-        $process->start();
-        while ($process->isRunning()) {
-            $logger->addRecord(Logger::DEBUG, '.');
-        }
-        $logger->addRecord(Logger::INFO, $process->getOutput());
+        $process->mustRun(
+            function ($type, $buffer) use ($logger){
+                if (Process::ERR === $type) {
+                    echo 'ERR > '.$buffer;
+                } else {
+                    echo 'OUT > '.$buffer;
+                }
+                $logger->addRecord(Logger::INFO, $buffer);
+
+            });
     }
 
 
