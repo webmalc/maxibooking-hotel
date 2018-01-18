@@ -63,6 +63,4 @@ class BillingClientAfterInstallClientCommand extends Command
             $this->logger->err('After install method failed');
         }
     }
-
-
 }

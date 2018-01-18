@@ -255,7 +255,6 @@ class ClientInstanceManager
                 $this->logger->info('Installation result sent to billing');
                 $isSent = true;
             } else {
-                $isSent = $this->sendInstallationResult($installationResult, $clientName, $numberOfSendingAttempts++);
                 $this->logger->err('Sending the installation result failed. Reason: '.$decodedResponse['message']);
             }
         } catch (RequestException $exception) {
