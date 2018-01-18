@@ -16,7 +16,7 @@ error_reporting(E_ALL);
 $loader = require __DIR__.'/../app/autoload.php';
 Debug::enable();
 $request = Request::createFromGlobals();
-Request::setTrustedProxies(['127.0.0.1', '127.0.1.1', $request->server->get('REMOTE_ADDR')], Request::HEADER_X_FORWARDED_ALL);
+Request::setTrustedProxies(['127.0.0.1', '127.0.1.1', $request->server->get('REMOTE_ADDR')], Request::HEADER_X_FORWARDED_AWS_ELB);
 
 //Note! Default client comes  here from NGINX config
 $client = $request->server->get(AppKernel::CLIENT_VARIABLE);

@@ -14,7 +14,7 @@ if (PHP_VERSION_ID < 70000) {
 }
 
 $request = Request::createFromGlobals();
-Request::setTrustedProxies(['127.0.0.1', $request->server->get('REMOTE_ADDR') ], Request::HEADER_X_FORWARDED_ALL);
+Request::setTrustedProxies(['127.0.0.1', $request->server->get('REMOTE_ADDR') ], Request::HEADER_X_FORWARDED_AWS_ELB);
 
 //Note! Default client comes  here from NGINX config
 $client = $request->server->get(AppKernel::CLIENT_VARIABLE);
