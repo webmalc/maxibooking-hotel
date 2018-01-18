@@ -181,13 +181,13 @@ class ClientInstanceManager
             $clientName,
             $this->kernel->getClient()
         );
-
         $this->logger->addRecord(Logger::INFO, $message);
+
         $afterInstallWorkFlow = $this->getAfterInstallProcess($clientName);
         if (!$this->workflowAfterInstall->can($afterInstallWorkFlow, 'after_install')) {
             $this->logger->addRecord(
                 Logger::WARNING,
-                'After install process for user '.$clientName.' in state'.$afterInstallWorkFlow->getCurrentPlace()
+                'After install process for user '.$clientName.' in state '.$afterInstallWorkFlow->getCurrentPlace()
             );
 
             return false;
@@ -195,7 +195,9 @@ class ClientInstanceManager
             $this->changeAfterInstallProcessStatus($clientName, 'after_install');
             $result = new Result();
 
+            $this->logger->addRecord(Logger::DEBUG, 'Start update admin.');
             $admin = $this->updateAdminUser();
+            $this->logger->addRecord(Logger::DEBUG, 'Update admin was complete.');
             $data = [
                 'password' => $admin->getPlainPassword(),
                 'token' => $admin->getApiToken()->getToken(),
