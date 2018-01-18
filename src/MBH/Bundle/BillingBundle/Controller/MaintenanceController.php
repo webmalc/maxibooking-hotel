@@ -52,8 +52,11 @@ class MaintenanceController extends BaseController
     public function installPropertiesAction(Request $request)
     {
         $requestData = json_decode($request->getContent(), true);
-        $this->checkToken($requestData['token']);
-        $login = $requestData['login'];
+        $this->checkToken($requestData['token']??null);
+        $login = $requestData['login']??null;
+        if (!$login) {
+            throw new UnauthorizedHttpException('No Login!');
+        }
         $result = $this->get('mbh.client_instance_manager')->installFixtures($login);
         if ($result->isSuccessful()) {
             $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
@@ -87,7 +90,7 @@ class MaintenanceController extends BaseController
 //        return new JsonResponse($installer->toJson($answer), 200, [], true);
     }
 
-    private function checkToken(string $token)
+    private function checkToken(string $token = null)
     {
         if ($token !== BillingApi::AUTH_TOKEN) {
             throw new UnauthorizedHttpException('Incorrect token!');

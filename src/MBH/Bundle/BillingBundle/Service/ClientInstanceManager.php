@@ -136,7 +136,6 @@ class ClientInstanceManager
             );
         }
 
-
         return $result;
     }
 
@@ -212,7 +211,6 @@ class ClientInstanceManager
         }
 
     }
-
 
     /**
      * @return User
