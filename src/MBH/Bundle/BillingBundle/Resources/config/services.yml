@@ -11,7 +11,6 @@ services:
         class: MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager
         calls:
             - [addMaintenance, ['@mbh.parameters.maintenance']]
-#            - [addMaintenance, ['@mbh.nginx.maintenance']]
             - [addMaintenance, ['@mbh.mongo.maintenance']]
 
     mbh.maintenance.abstract:
@@ -71,11 +70,6 @@ services:
     mbh.console.billing_install:
         class: MBH\Bundle\BillingBundle\Command\BillingInstallCommand
         arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger"]
-        tags: ['console.command']
-
-    mbh.console.billing_client_install:
-        class: MBH\Bundle\BillingBundle\Command\BillingClientInstallationCommand
-        arguments: ['@mbh.client_instance_manager', '@mbh.billing.logger', '@old_sound_rabbit_mq.task_command_runner_producer']
         tags: ['console.command']
 
     mbh.console.billing_after_install_client:
