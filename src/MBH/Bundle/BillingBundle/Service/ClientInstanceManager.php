@@ -91,15 +91,15 @@ class ClientInstanceManager
             Logger::INFO,
             'Get installation task for client '.$clientName.' in service '.static::class
         );
-        $installProcess = $this->getInstallProcess($clientName);
-        if (!$installProcess) {
-            $installProcess = InstallationWorkflow::createInstallationWorkflow($clientName);
-            $this->dm->persist($installProcess);
+        $installWorkflow = $this->getInstallProcess($clientName);
+        if (!$installWorkflow) {
+            $installWorkflow = InstallationWorkflow::createInstallationWorkflow($clientName);
+            $this->dm->persist($installWorkflow);
         }
 
         $result = new Result();
 
-        if ($this->workflow->can($installProcess, 'install')) {
+        if ($this->workflow->can($installWorkflow, 'install')) {
             $command = 'mbh:client:installation --client='.$clientName;
 
             $command = sprintf(
@@ -111,22 +111,14 @@ class ClientInstanceManager
             $env = [
                 \AppKernel::CLIENT_VARIABLE => \AppKernel::DEFAULT_CLIENT,
             ];
-            if ($this->kernelEnv === 'dev') {
-                $env = array_merge(
-                    $env,
-                    [
-                        'XDEBUG_CONFIG' => 'ideKey=PHPSTORM',
-                        'PHP_IDE_CONFIG' => 'serverName=cli'
-                    ]
-                );
-            }
+
             $process = new Process($command, $this->consoleFolder, $env, null, 60 * 10);
             try {
-                $this->workflow->apply($installProcess, 'install');
-                $this->dm->flush($installProcess);
+                $this->workflow->apply($installWorkflow, 'install');
+                $this->dm->flush($installWorkflow);
                 $this->logger->addRecord(
                     Logger::INFO,
-                    'Workflow changed status to '.$installProcess->getCurrentPlace()
+                    'Workflow changed status to '.$installWorkflow->getCurrentPlace()
                 );
                 $this->logger->addRecord(
                     Logger::INFO,
@@ -139,11 +131,10 @@ class ClientInstanceManager
         } else {
             $this->logger->addRecord(
                 Logger::WARNING,
-                'Install task was canceled! There is task  for installation client '.$clientName.' but workflow statis is '.$installProcess->getCurrentPlace(
+                'Install task was canceled! There is task  for installation client '.$clientName.' but workflow statis is '.$installWorkflow->getCurrentPlace(
                 )
             );
         }
-
 
         return $result;
     }
@@ -192,41 +183,27 @@ class ClientInstanceManager
         );
 
         $this->logger->addRecord(Logger::INFO, $message);
-        $afterInstallProcess = $this->getAfterInstallProcess($clientName);
-        if (!$this->workflowAfterInstall->can($afterInstallProcess, 'after_install')) {
+        $afterInstallWorkFlow = $this->getAfterInstallProcess($clientName);
+        if (!$this->workflowAfterInstall->can($afterInstallWorkFlow, 'after_install')) {
             $this->logger->addRecord(
                 Logger::WARNING,
-                'After install process for user '.$clientName.' in state'.$afterInstallProcess->getCurrentPlace()
+                'After install process for user '.$clientName.' in state'.$afterInstallWorkFlow->getCurrentPlace()
             );
 
             return false;
         } else {
             $this->changeAfterInstallProcessStatus($clientName, 'after_install');
             $result = new Result();
-            try {
-                if ($this->kernel->getClient() !== $clientName) {
-                    $message = sprintf(
-                        'The Kernel has wrong client. Kernel has %s client, clientName is %.',
-                        $this->kernel->getClient(),
-                        $clientName
-                    );
-                    throw new AfterInstallException($message);
-                }
-                $admin = $this->updateAdminUser();
-                $data = [
-                    'password' => $admin->getPlainPassword(),
-                    'token' => $admin->getApiToken()->getToken(),
-                    'url' => Client::compileClientUrl($clientName),
-                ];
-                $result->setData($data);
-                $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created with answer.', $data);
-                $this->changeAfterInstallProcessStatus($clientName, 'installed');
-            } catch (\Throwable $e) {
-                $result->setIsSuccessful(false);
-                $this->logger->addRecord(Logger::CRITICAL, $e->getMessage());
-                $this->changeAfterInstallProcessStatus($clientName, 'error');
 
-            }
+            $admin = $this->updateAdminUser();
+            $data = [
+                'password' => $admin->getPlainPassword(),
+                'token' => $admin->getApiToken()->getToken(),
+                'url' => Client::compileClientUrl($clientName),
+            ];
+            $result->setData($data);
+            $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created with answer.', $data);
+            $this->changeAfterInstallProcessStatus($clientName, 'installed');
             $this->logger->addRecord(Logger::INFO, 'Try to send data for billing');
 
             return $this->sendInstallationResult($result, $clientName);
@@ -235,12 +212,12 @@ class ClientInstanceManager
 
     }
 
-
     /**
      * @return User
      */
     private function updateAdminUser(): User
     {
+
         /** @var User $admin */
         $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
         $plainPassword = $this->generateAdminPassword();

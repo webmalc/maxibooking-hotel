@@ -173,5 +173,15 @@ class BillingMongoClient
         return $this->manager->executeCommand($dbName ?? $this->adminDatabase, $command);
     }
 
+    public static function createMongoClient(
+        string $adminLogin,
+        string $adminPassword,
+        string $host,
+        string $adminDatabase,
+        string $options
+    ) {
+        return new static($adminLogin, $adminPassword, $host, $adminDatabase, $options);
+    }
+
 
 }

@@ -5,34 +5,16 @@ namespace MBH\Bundle\BillingBundle\Command;
 
 
 use http\Exception\InvalidArgumentException;
-use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
-use MBH\Bundle\BillingBundle\Service\ClientInstanceManager;
 use Monolog\Logger;
-use OldSound\RabbitMqBundle\RabbitMq\Producer;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
-class BillingClientInstallationCommand extends Command
+class BillingClientInstallationCommand extends ContainerAwareCommand
 {
-    private $instanceManager;
-    private $logger;
-    private $producer;
-
-    public function __construct(ClientInstanceManager $instanceManager, Logger $logger, Producer $producer, ?string $name = null)
-    {
-        $this->instanceManager = $instanceManager;
-        $this->logger = $logger;
-        $this->producer = $producer;
-
-        parent::__construct($name);
-    }
 
     protected function configure()
     {
@@ -44,19 +26,48 @@ class BillingClientInstallationCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
+        $container = $this->getContainer();
+        $logger = $container->get('mbh.billing.logger');
+        $instanceManager = $container->get('mbh.client_instance_manager');
         $clientName = $input->getOption('client');
 
         if (empty($clientName)) {
-            $this->logger->addCritical('No client name for installClient');
+            $logger->addCritical('No client name for installClient');
             throw new InvalidArgumentException('Mandatory option "client" is not specified');
         }
-        $this->logger->addRecord(Logger::INFO, 'Try to start installClient()');
-        $this->instanceManager->installClient($clientName);
+        $logger->addRecord(Logger::INFO, 'Try to start installClient()');
+        $instanceManager->installClient($clientName);
+
+        $this->cacheWarmup($clientName);
+        $this->afterInstall($clientName);
 
 
+        //Disable queue.
+//        $logger->addRecord(Logger::INFO, 'Generate queue to after install command');
+//        $isDebug = $this->getApplication()->getKernel()->isDebug();
+//        $command = 'mbh:client:after:install';
+//        $params['--client'] = $clientName;
+//        $command = new \MBH\Bundle\BaseBundle\Lib\Task\Command($command, $params, $clientName, $input->getOption('env'), $isDebug);
+//        $this->producer->publish(serialize($command));
+
+    }
+
+    private function cacheWarmup(string $clientName)
+    {
+        $command = 'cache:warmup';
+        $this->executeProcess($command, $clientName);
+
+    }
+
+    private function afterInstall(string $clientName)
+    {
         $command = 'mbh:client:after:install --client='.$clientName;
-        /** @var Kernel $kernel */
+        $this->executeProcess($command, $clientName);
+    }
+
+    private function executeProcess(string $command, string $clientName)
+    {
+        /** @var \AppKernel $kernel */
         $kernel = $this->getApplication()->getKernel();
         $command = sprintf(
             'php console %s --env=%s %s',
@@ -77,27 +88,12 @@ class BillingClientInstallationCommand extends Command
             );
         }
         $process = new Process($command, $kernel->getRootDir().'/../bin', $env, null, 60 * 10);
-        try {
-            $this->logger->addRecord(
-                Logger::INFO,
-                'Starting console command '.$command
-            );
-            $process->start();
-        } catch (ProcessFailedException|ProcessTimedOutException $e) {
-            throw new ClientMaintenanceException($e->getMessage());
-        }
-
-
-        //Disable queue.
-//        $this->logger->addRecord(Logger::INFO, 'Generate queue to after install command');
-//        $isDebug = $this->getApplication()->getKernel()->isDebug();
-//        $command = 'mbh:client:after:install';
-//        $params['--client'] = $clientName;
-//        $command = new \MBH\Bundle\BaseBundle\Lib\Task\Command($command, $params, $clientName, $input->getOption('env'), $isDebug);
-//        $this->producer->publish(serialize($command));
-
-
-
+        $logger = $this->getContainer()->get('mbh.billing.logger');
+        $logger->addRecord(
+            Logger::INFO,
+            'Starting console command '.$command
+        );
+        $process->run();
     }
 
 

@@ -123,7 +123,7 @@ class Result
                 if (!is_array($responseData)) {
                     throw new Exception('Data in response with separated data fields should be type of array ');
                 }
-                array_merge($response, $responseData);
+                $response = array_merge($response, $responseData);
             } else {
                 $response['data'] = $responseData;
             }

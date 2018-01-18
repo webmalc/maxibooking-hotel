@@ -56,6 +56,7 @@ class BillingClientAfterInstallClientCommand extends Command
         }
 
         $isSuccessful = $this->instanceManager->afterInstall($clientName);
+
         if ($isSuccessful) {
             $this->logger->info('After install method ended successful');
         } else {
