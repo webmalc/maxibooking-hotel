@@ -80,29 +80,18 @@ views.form.index.new: Создание
 views.form.index.settings: Настройки
 views.form.index.site_embed_code: 'Код для сайта'
 views.form.index.edit_templates: 'Тонкая настройка шаблона'
-views.form.index.settings_required: 'Необходимо заполнить основные настройки!'
 views.form.index.site_embed_form_code: 'Код формы для вставки на сайт'
-views.form.index.to_form_place: 'На место для формы:'
 views.form.index.before_closing_tag: 'Перед закрывающим тегом'
 views.form.index.search_page_embed_code: 'Код страницы поиска для вставки на сайт:'
 views.form.index.to_results_place: 'На место для результатов:'
 views.form.layout.online_form: 'Онлайн модуль'
-views.form.layout.online_polls: Оценки
-views.form.layout.invite: 'Визовое приглашение'
-online_form.notification: 'Оформлены новые брони через онлайн форму.'
 views.form.period_is_not_filled: 'Не выбраны даты заезда и выезда!'
 views.api.getResultsTable.noch: Ночь
 views.api.getResultsTable.nochi: Ночи
 views.api.getResultsTable.nochei: Ночей
 views.form.index.settings_in_quotes: настройки
-views.form.index.site_embed_code: Код для сайта
 views.form.index.settings_required: "Необходимо заполнить основные настройки!"
-views.form.index.site_embed_form_code: Код формы поиска
 views.form.index.to_form_place: "На место для формы:"
-views.form.index.before_closing_tag: Перед закрывающим тегом
-views.form.index.search_page_embed_code: "Код формы результатов поиска:"
-views.form.index.to_results_place: "На место для результатов:"
 views.form.layout.online_polls: "Оценки"
 views.form.layout.invite: "Визовое приглашение"
 online_form.notification: "Оформлены новые брони через онлайн форму."
-views.form.period_is_not_filled: Не выбраны даты заезда и выезда!

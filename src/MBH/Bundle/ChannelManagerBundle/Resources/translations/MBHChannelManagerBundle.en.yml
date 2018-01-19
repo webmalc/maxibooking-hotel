@@ -67,7 +67,7 @@ channelManager.oktogo.notification.error.subject: 'Oktogo.ru error'
 channelManager.oktogo.notification.error: 'Oktogo.ru order processing error. Information: %info%'
 channelManager.booking.notification.bottom: 'Warning! An error requires manual fixing. Please contact our technical support.'
 channelmanager.empty.config: 'Channel manager synchronisation error'
-views.channelmanager.actions.sync: Syncronize
+views.channelmanager.actions.sync: Synchronize
 channelManager.ostrovok.notification.subject.new: 'New Ostrovok.ru order'
 channelManager.ostrovok.notification.subject.edit: 'Ostrovok.ru order changed'
 channelManager.ostrovok.notification.subject.delete: 'Ostrovok.ru order deleted'

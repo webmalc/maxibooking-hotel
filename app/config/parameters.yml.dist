@@ -34,7 +34,6 @@ parameters:
   #System
   locale: ru
   country_type: ru
-  locale.currency: rub
   debug_toolbar: true
   debug_redirects: false
   use_assetic_controller: false
@@ -65,7 +64,7 @@ parameters:
     tasks: true
 
   #client name for env
-  client: ''
+  client: '%env(MB_CLIENT)%'
 
   #mongodb_ssl
   mongodb_ssl: false

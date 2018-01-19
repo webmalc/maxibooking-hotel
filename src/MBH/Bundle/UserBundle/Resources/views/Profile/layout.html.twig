@@ -9,7 +9,7 @@
 {% if is_granted('ROLE_PAYMENTS') %}
     {% set menu = menu|merge([
         {'route': 'user_contacts', 'title': '<i class="fa fa-book"></i> '~ 'view.personal_account.contacts.small_title'|trans},
-        {'route': 'user_services', 'title': '<i class="fa fa-plug"></i> '~ 'view.personal_account.services.small_title'|trans},
+        {'route': 'user_tariff', 'title': '<i class="fa fa-sliders"></i> '~ 'view.personal_account.tariff.small_title'|trans},
         {'route': 'user_payer', 'title': '<i class="' ~ currency().icon ~ '"></i> '~ 'view.personal_account.payer.small_title'|trans},
         {'route': 'user_payment', 'title': '<i class="fa fa-credit-card"></i> '~ 'view.personal_account.orders.small_title'|trans}
     ]) %}

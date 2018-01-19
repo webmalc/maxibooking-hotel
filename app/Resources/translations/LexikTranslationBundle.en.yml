@@ -3,7 +3,7 @@ translations.key: Key
 translations.grid_caption: 'Translations list'
 translations.cache_removed: 'Cache files have been removed'
 translations.new_translation: 'New translation'
-translations.add_translation: 'Add a translation'
+translations.add_translation: 'Add translation'
 translations.save: Save
 translations.save_add: 'Save and Add'
 translations.page_title: Translations

@@ -14,7 +14,7 @@ form.userType.hotels_user_has_access_to: 'Hotels available to this user'
 form.userType.is_included: 'Enabled?'
 form.userType.expires_at: 'Valid until'
 form.userType.surname: 'Last name'
-form.userType.two_factor: 'Two-factor autentification?'
+form.userType.two_factor: 'Two factor authentification?'
 form.userType.general_info: 'General information'
 form.userType.placeholder_surname: Smith
 form.userType.name: 'First name'

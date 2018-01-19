@@ -5,7 +5,6 @@ namespace MBH\Bundle\HotelBundle\Document;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -18,6 +17,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
+use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
@@ -223,10 +223,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuCategory", mappedBy="hotel") */
     protected $dishMenuCategories;
 
-
     /**
      * @Gedmo\Versioned
-     * @ODM\Field(type="int")
+     * @ODM\Field(type="string")
      */
     protected $countryTld;
 
@@ -767,8 +766,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         $result = [];
 
         foreach ($this->servicesCategories as $serviceCategory) {
+            /** @var Service $service */
             foreach ($serviceCategory->getServices() as $service) {
-                if ($online && !$service->getIsOnline()) {
+                if ($online && (!$service->getIsOnline() || !in_array($service->getCalcType(), ['per_stay', 'not_applicable']))) {
                     continue;
                 }
                 if ($enabled && !$service->getIsEnabled()) {

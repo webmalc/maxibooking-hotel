@@ -263,6 +263,35 @@ class BillingApi
     }
 
     /**
+     * @param array $newTariffData
+     * @return Result
+     */
+    public function changeTariff(array $newTariffData)
+    {
+        $requestResult = new Result();
+        $newTariffData['rooms'] = (int)$newTariffData['rooms'];
+        $url = self::BILLING_HOST . '/' . $this->locale . '/clients/' . $this->billingLogin . '/tariff_update/';
+
+        try {
+            $response = $this->sendPost($url, $newTariffData, true);
+        } catch (RequestException $exception) {
+            $requestResult->setIsSuccessful(false);
+            $response = $exception->getResponse();
+            $this->handleErrorResponse($response, $requestResult);
+
+            return $requestResult;
+        }
+
+        $decodedResponse = json_decode((string)$response->getBody(), true);
+
+        if ($decodedResponse['status'] !== true) {
+            $requestResult->setIsSuccessful(false);
+        }
+
+        return $requestResult;
+    }
+
+    /**
      * @param ResponseInterface $response
      * @param Result $requestResult
      * @param $modelType

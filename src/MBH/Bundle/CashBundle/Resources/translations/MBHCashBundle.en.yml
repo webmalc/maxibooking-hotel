@@ -1,11 +1,11 @@
-views.cash.edit.new_document: 'Create document #'
+views.cash.edit.new_document: 'Create document'
 views.cash.edit.edit_document: 'Edit document #'
 views.cash.index.period: Dates
 views.cash.index.filter.byPaidDate: Paid
 views.cash.index.filter.byDocumentDate: Created
 views.cash.index.filter.byDeletedDate: Deleted
 views.cash.index.document_list: 'List of documents'
-views.cash.index.note: Comments
+views.cash.index.note: Note
 views.cash.index.reservation: Order
 views.cash.index.income: Income
 views.cash.index.expense: Expense
@@ -30,7 +30,7 @@ views.cash.index.show_not_confirmed: 'Show unconfirmed only'
 views.cash.index.show_deleted: 'Include deleted'
 views.cash.index.byDay: 'By date'
 views.cash.index.result: 'Total sum'
-views.cash.index.type: 'Cash movements'
+views.cash.index.type: 'Order number'
 cashDocument.method.cash: Cash
 cashDocument.method.cashless: Non-cash
 cashDocument.method.electronic: Electronic

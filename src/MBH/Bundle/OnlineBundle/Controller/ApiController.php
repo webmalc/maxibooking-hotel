@@ -485,6 +485,7 @@ class ApiController extends Controller
      */
     public function getUserFormAction(Request $request)
     {
+        $this->setLocaleByRequest();
         $requestJson = json_decode($request->getContent());
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
@@ -610,8 +611,7 @@ class ApiController extends Controller
                     'data' => array_merge(
                         [
                             'test' => false,
-                            'currency' => strtoupper($this->getParameter('locale.currency')),
-
+                            'currency' => $this->clientConfig->getCurrency(),
                             'buttonText' => $this->get('translator')->trans(
                                 'views.api.make_payment_for_order_id',
                                 ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],

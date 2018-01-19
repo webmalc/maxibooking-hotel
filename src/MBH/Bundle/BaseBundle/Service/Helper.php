@@ -346,9 +346,13 @@ class Helper
             'восемьсот',
             'девятьсот'
         ];
+        $translator = $this->container->get('translator');
+        $smallCurrency = $translator->trans($currency['small']);
+        $currencyText = $translator->trans($currency['text']);
+
         $unit = array( // Units
-            array($currency['small'], $currency['small'], $currency['small'], 1),
-            array($currency['text'], $currency['text'], $currency['text'], 0),
+            array($smallCurrency, $smallCurrency, $smallCurrency, 1),
+            array($currencyText, $currencyText, $currencyText, 0),
             array('тысяча', 'тысячи', 'тысяч', 1),
             array('миллион', 'миллиона', 'миллионов', 0),
             array('миллиард', 'милиарда', 'миллиардов', 0),
@@ -616,6 +620,17 @@ class Helper
         preg_match('/\d+/', $string, $numberMatches);
 
         return count($numberMatches) > 0 ? $numberMatches[0] : intval($string);
+    }
+
+    /**
+     * @param $xmlString
+     * @return bool
+     */
+    public function isXMLValid($xmlString)
+    {
+        $result = simplexml_load_string($xmlString, 'SimpleXmlElement', LIBXML_NOERROR+LIBXML_ERR_FATAL+LIBXML_ERR_NONE);
+
+        return $result->__toString() !== '';
     }
 
 

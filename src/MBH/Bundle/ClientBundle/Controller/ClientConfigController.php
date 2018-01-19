@@ -71,10 +71,17 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
         $form = $this->createForm(ClientConfigType::class, $entity);
 
+        $previousTimeZone = $entity->getTimeZone();
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-
+            if (!is_null($previousTimeZone) && $previousTimeZone != $entity->getTimeZone()) {
+                $entity->setTimeZone($previousTimeZone);
+                $this->addFlash('warning',
+                    $this->get('translator')->trans('controller.clientConfig.change_time_zone_contact_support',
+                        ['%supportEmail%' => $this->getParameter('support')['email']]))
+                ;
+            }
             $this->dm->persist($entity);
             $this->dm->flush();
 

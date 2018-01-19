@@ -16,8 +16,7 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
             ->setDescription('Recalculate RoomCaches package count')
             ->addOption('roomTypes', null, InputOption::VALUE_REQUIRED, 'RoomTypes ids (comma-separated)')
             ->addOption('begin', null, InputOption::VALUE_REQUIRED, 'Recalculate from (date - d.m.Y)')
-            ->addOption('end', null, InputOption::VALUE_REQUIRED, 'Recalculate to (date - d.m.Y)')
-        ;
+            ->addOption('end', null, InputOption::VALUE_REQUIRED, 'Recalculate to (date - d.m.Y)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -29,6 +28,12 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
 
         if ($input->getOption('roomTypes')) {
             $roomTypes = explode(',', trim($input->getOption('roomTypes'), ','));
+        } else {
+            $roomTypes = $helper
+                ->toIds($this->getContainer()
+                    ->get('doctrine.odm.mongodb.document_manager')
+                    ->getRepository('MBHHotelBundle:RoomType')
+                    ->findAll());
         }
 
         $recalculationResult = $this->getContainer()->get('mbh.room.cache')->recalculateByPackages(

@@ -6,13 +6,13 @@
     <div class="box-header"></div>
     <div class="box-body">
         <div>{{ 'restaurant.dishorder.table.number'|trans }}: {{ order.id }} </div>
-        <div>{{ 'restaurant.dishorder.table.price'|trans }}: {{ order.price|number_format('2') ~ currency().text }}</div>
+        <div>{{ 'restaurant.dishorder.table.price'|trans }}: {{ order.price|number_format('2') ~ currency().text|trans }}</div>
         <div>{{ 'restaurant.dishorder.table.content'|trans }}:
             {% for dish in order.dishes %}
             <div class="dish">
                 <small class="label bg-green badge-sidebar-right badge-sidebar-margin">{{ dish.amount }}</small>
                 {{ dish.dishitemname }}
-                <span>{{ dish.fixedprice|number_format(2)~currency().text }}</span>
+                <span>{{ dish.fixedprice|number_format(2)~currency().text|trans }}</span>
             </div>
             {% endfor %}
         </div>

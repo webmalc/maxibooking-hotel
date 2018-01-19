@@ -177,7 +177,8 @@ class Mailer implements \SplObserver, MailerInterface
                 $translator->setLocale($recipient->getCommunicationLanguage());
                 $data['isSomeLanguage'] = false;
                 /** @var Hotel $hotel */
-                if ($hotel = $data['hotel'] && $hotel->getInternationalTitle()) {
+                $hotel = $data['hotel'];
+                if ($hotel && $hotel instanceOf Hotel && $hotel->getInternationalTitle()) {
                     $data['hotelName'] = $hotel->getInternationalTitle();
                     $transParams['%hotel%'] = $hotel->getInternationalTitle();
                 }

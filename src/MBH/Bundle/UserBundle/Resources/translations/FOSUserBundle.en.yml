@@ -6,7 +6,7 @@ resetting.request.invalid_username: 'User "%username%" does not exist.'
 layout.groups: Groups
 group.name: 'Group name'
 group.edit: 'Edit group'
-group.create: 'Add a group'
+group.create: 'Add group'
 edit.small_title: Edit
 user.index.small_title: List
 index.login: Login
