@@ -40,7 +40,8 @@ class BillingApi
     const PAYER_COMPANY_ENDPOINT_SETTINGS = ['endpoint' => 'companies', 'model' => Company::class, 'returnArray' => false];
 
     const AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
-    const BILLING_DATETIME_FORMAT = \DateTime::ATOM;
+    const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s\Z';
+    const BILLING_DATETIME_FORMAT_WITH_MICROSECONDS = 'Y-m-d\TH:i:s.u\Z';
 
     /** @var GuzzleClient */
     private $guzzle;
@@ -81,6 +82,20 @@ class BillingApi
         return $this->sendPost($url, $result->getApiResponse(true), true);
     }
 
+
+    /**
+     * @param string $dateString
+     * @return bool|\DateTime
+     */
+    public static function getDateByBillingFormat(string $dateString)
+    {
+        $date = \DateTime::createFromFormat(self::BILLING_DATETIME_FORMAT, $dateString);
+        if (!$date instanceof \DateTime) {
+            $date = \DateTime::createFromFormat(self::BILLING_DATETIME_FORMAT_WITH_MICROSECONDS, $dateString);
+        }
+
+        return $date;
+    }
 
     /**
      * @param $login
@@ -289,6 +304,17 @@ class BillingApi
         }
 
         return $requestResult;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTariffsData()
+    {
+        $response = $this->sendGet(self::BILLING_HOST . '/' . $this->locale . '/clients/' . $this->billingLogin . '/tariff_detail/');
+        $decodedResponse = json_decode((string)$response->getBody(), true);
+
+        return $decodedResponse;
     }
 
     /**

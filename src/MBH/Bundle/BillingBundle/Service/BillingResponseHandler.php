@@ -3,14 +3,17 @@
 namespace MBH\Bundle\BillingBundle\Service;
 
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class BillingResponseHandler
 {
     const NON_FIELD_ERRORS = 'non_field_errors';
     private $supportContacts;
+    private $translator;
 
-    public function __construct(array $supportContacts) {
+    public function __construct(array $supportContacts, TranslatorInterface $translator) {
         $this->supportContacts = $supportContacts;
+        $this->translator = $translator;
     }
 
     /**
