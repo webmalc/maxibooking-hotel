@@ -68,7 +68,7 @@ class ProtectedFile
     {
         $this->imageFile = $image;
 
-        if ($image) {
+        if ($image && in_array($image->getType(), ['jpg', 'png', 'jpeg'])) {
             list($width, $height) = getimagesize($image);
             $this->setWidth($width);
             $this->setHeight($height);

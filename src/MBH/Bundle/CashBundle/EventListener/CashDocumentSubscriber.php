@@ -163,8 +163,13 @@ class CashDocumentSubscriber implements EventSubscriber
         $client = $kernel->getClient();
         /** @var PdfGenerator $generator */
         $generator = $this->container->get('mbh.pdf_generator');
-        $generator->setPath($orderDocument->getUploadRootDir($client));
+        $path = $orderDocument->getUploadRootDir($client);
+        $generator->setPath($path);
         $generator->save($id, $template, ['cashDocument' => $document, 'myOrganization' => $myOrganization]);
+
+        $file = new ProtectedFile();
+        $uploadedFile = new UploadedFile($path, $fileName, 'pdf');
+        $file->setImageFile($uploadedFile);
 
         $orderDocument->setCashDocument($document);
         //$document->setOrderDocument($orderDocument);
