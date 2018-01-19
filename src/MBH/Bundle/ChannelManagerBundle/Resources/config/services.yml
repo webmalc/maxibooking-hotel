@@ -76,6 +76,17 @@ services:
         arguments: ['@service_container']
         shared: false
 
+    mbh.channel_manager.expedia_notification_order_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaNotificationOrderInfo
+        arguments: ['@service_container']
+
+    mbh.channel_manager.expedia_notification_package_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaNotificationPackageInfo
+        arguments: ['@service_container']
+
+    mbh.channel_manager.expedia_notification_response_compiler:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaNotificationResponseCompiler
+
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: ['@mbh.currency']

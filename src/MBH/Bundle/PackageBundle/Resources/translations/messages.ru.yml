@@ -711,7 +711,6 @@ manager.channel_manager.hotels: Hotels
 manager.channel_manager.venere: Venere
 validator.form.image.min.error: Превышено минимальное значение
 validator.form.image.max.error: Превышено максимальное занчение
-validator.form.image.type.error: Не корректное значение данных
 csv.type.package: Тип брони
 csv.type.order.type: Тип заказа
 csv.type.begin: С
@@ -1238,8 +1237,6 @@ controller.packageController.record_edited_success_services: 'Даты услу�
 mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny: 'Не найдено ни одной рабочей смены'
 mbhpackagebundle.view.report.workshiftlist.rabochaya_smena: 'Рабочая смена'
 mbhpackagebundle.view.tourist.jsonbuttons.udaleniye.zapisi: 'Удаленные записи'
-validator.form.image.min.error: Превышено минимальное значение
-validator.form.image.max.error: Превышено максимальное занчение
 validator.form.image.type.error: Не корректное значение данных
 mbh.package_bundle.fixtures.delete_reason_data.denial: Отказ
 mbh.package_bundle.fixtures.delete_reason_data.error: Ошибка
@@ -1290,3 +1287,4 @@ mbh.analytics.types.sales_sources: "Источники продаж"
 mbh.analytics.types.hotel_occupancy: "Заполняемость отеля"
 mbh.analytics.types.sales_services: "Динамика реализации услуг"
 mbh.analytics.types.sales_managers: "Менеджеры и брони"
+package.document_type.tourist_age: 'возраст'

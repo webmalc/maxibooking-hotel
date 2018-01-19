@@ -8,8 +8,8 @@ use Symfony\Component\Validator\Constraint;
  */
 class Tariff extends Constraint
 {
-    public $messageDate = 'invalid.daterange';
-    public $messageAges = 'invalid.ages';
+    public $messageDates = 'invalid.daterange';
+    public $messageAges = 'invalid.ages.error';
     
     /**
      * {@inheritDoc}

@@ -133,7 +133,7 @@ form.searchType.adults: Adults
 form.searchType.adults_amount_less_zero: 'Number of adults cannot be less than zero'
 form.searchType.adults_amount_not_filled: 'Number of adults is not specified'
 form.searchType.children: Children
-form.searchType.forceBooking: 'Ignore conditions and limitations'
+form.searchType.forceBooking: 'Ignore conditions and restrictions'
 form.searchType.children_ages: 'Children age'
 form.searchType.children_amount_less_zero: 'Number of children cannot be less than zero'
 form.searchType.children_amount_not_filled: 'Number of children is not specified'
@@ -156,10 +156,10 @@ form.touristType.placeholder_phone: 'Phone number'
 form.touristType.email: Email
 form.touristType.placeholder_email: mail@example.com
 form.touristType.note: Note
-controller.analyticsController.package_trips_amount: 'Number of trips'
+controller.analyticsController.package_trips_amount: 'Number of bookings'
 controller.analyticsController.sale_date: 'Purchase date'
 controller.orderController.cash_register_paper_deleted_success: 'Document successfully deleted'
-controller.orderController.add_cash_register_paper: 'Add a document'
+controller.orderController.add_cash_register_paper: 'Add document'
 controller.orderController.cash_register_paper_added_success: 'Document successfully added'
 controller.orderController.payer_added_success: 'Payer successfully added'
 controller.orderController.payer_saved_success: 'Payer successfully saved'
@@ -188,7 +188,7 @@ controller.packageController.relocation_dates_error: 'Relocation error. Incorrec
 controller.packageController.relocation_accommodation_error: 'Relocation error. No accommodation.'
 controller.taskTypeController.record_created_success: 'Entry successfully added'
 controller.taskTypeController.record_edited_success: 'Entry successfully edited.'
-controller.documentsController.alert_no_documents: 'No doument has been loaded'
+controller.documentsController.alert_no_documents: 'No document has been uploaded'
 form.organizationType.short_name: 'Short title'
 form.organizationType.director_fio: 'Head name'
 form.organizationType.accountant_fio: 'Accountant name'
@@ -338,7 +338,7 @@ package.services.fixed_price_for_all_booking_room: 'Fixed price for every reserv
 package.services.breakfast_sweden_table: 'Breakfast Buffet'
 package.services.continental_breakfast: 'Continental breakfast'
 package.services.dinner: Lunch
-report.accommodation.chessBoard: Chessboard
+report.accommodation.chessBoard: 'Reservation Calendar'
 form.chessBoard.begin.label: 'Check in'
 form.chessBoard.end.label: 'Check out'
 form.chessBoard.roomType.label: 'Room type'
@@ -370,7 +370,7 @@ modal.chessBoard.registered: Registered
 modal.chessBoard.not_specified: 'Not specified'
 modal.chessBoard.roomType: 'Room type'
 modal.chessBoard.accommodation: Accommodation
-modal.chessBoard.without_accommodation: 'No accommodation'
+modal.chessBoard.without_accommodation: 'Without allocation'
 modal.chessBoard.services: Services
 modal.chessBoard.tariff: Rate
 modal.chessBoard.price: Price
@@ -401,7 +401,7 @@ chessboard_manager.room_type.title: 'Room type'
 chessboard_manager.housing.title: Wing
 chessboard_manager.floor.title: Floor
 chessboard_manager.filter.button.text: Apply
-chessboard_manager.without_accommodation.tile.text: 'No accommodation'
+chessboard_manager.without_accommodation.tile.text: 'Without allocation'
 package.accommodation.rooms: Rooms
 package.accommodation.room_type: 'Room type'
 package.accommodation.dates: Dates
@@ -424,7 +424,7 @@ mbhpackagebundle.view.package.accommodation.korpus: Wing
 mbhpackagebundle.view.package.guest.fio: 'Full name'
 mbhpackagebundle.view.package.service.nazvaniye: Title
 mbhpackagebundle.view.documents.pdftemplates.registration_card.kurenie_v_nashey_gostinice_zapresheno_etc: 'Smoking in our hotel is forbidden. It is only allowed in special smoking zones.'
-mbhpackagebundle.form.packagemaintype.ignorirovat_uslovia_i_ogranichenia_pri_poiske_dostupnogo_nomera: 'Ignore conditions and limitations while searching for a room?'
+mbhpackagebundle.form.packagemaintype.ignorirovat_uslovia_i_ogranichenia_pri_poiske_dostupnogo_nomera: 'Ignore conditions and restrictions while searching for a room?'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.data: Date
 mbhpackagebundle.view.documents.pdftemplates.registration_card.za_sohranenie_deneg_i_cennih_veshey_ne_sdannih_na_hranenie_etc: 'Hotel administration is not responsible for money and items left unguarded'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd: 'Check out'
@@ -438,7 +438,7 @@ mbhpackagebundle.form.packagemaintype.zayezd: 'Check in'
 mbhpackagebundle.form.packagemaintype.viezd: 'Check out'
 mbhpackagebundle.form.packagemaintype.zaezd_viezd: 'Check in/out'
 mbhpackagebundle.form.packagemaintype.prinuditelnoe_bronirovanie: 'Forced reservation'
-mbhpackagebundle.form.packagemaintype.number: Number
+mbhpackagebundle.form.packagemaintype.number: Room
 mbhpackagebundle.form.packagemaintype.virtualnii_nomer: 'Internal number'
 mbhpackagebundle.form.packagemaintype.kurashii: 'Smoking?'
 mbhpackagebundle.form.packagemaintype.akcia: Sale
@@ -472,7 +472,7 @@ form.packageMainType.is_force_booking: 'Forced reservation'
 form.packageMainType.is_force_booking.help: 'Ignore conditions and restrictions while searching for a room?'
 form.packageMainType.room_type: 'Room type'
 form.packageMainType.virtual_room: 'Virtual room'
-form.packageMainType.room_group: Number
+form.packageMainType.room_group: Room
 form.packageMainType.adults: Adults
 form.packageMainType.children: Children
 form.packageMainType.is_smoking: 'Smoking?'
@@ -490,7 +490,7 @@ form.packageServiceType.includeArrival: 'Include check in?'
 form.packageServiceType.includeArrival.help: 'Include check in date?'
 form.packageServiceType.includeDeparture: 'Include check out?'
 form.packageServiceType.includeDeparture.help: 'Include check out date?'
-form.packagevirtualroomtype.nomer: Number
+form.packagevirtualroomtype.nomer: Room
 form.packagevirtualroomtype.virt_room.group: 'Virtual number'
 form.searchType.check_out: 'Check out'
 controller.analyticsController.series_total_name: Total
@@ -512,7 +512,7 @@ form.order_document_type.note: Comment
 tourist.json.clients_in_black_list: 'This guest is blacklisted'
 tourist.json.client_not_in_black_list: 'This guest is not on blacklist'
 tourist.index.small_title: 'List of guests'
-tourist.index.foreign_citizens: 'Foreingn citizens'
+tourist.index.foreign_citizens: 'Foreign citizen'
 tourist.index.dates: Dates
 tourist.index.fio: 'Full name'
 tourist.index.main_document: 'Main document'
@@ -584,7 +584,7 @@ report.work_shift_table.changed_packages: 'Changed reservations'
 report.work_shift_table.removed_packages: 'Deleted reservations'
 report.user_table.sold_packages: 'Reservations sold'
 report.user_table.cost_of_accommodation: 'Accommodation cost'
-report.user_table.all_users: 'All guests'
+report.user_table.all_users: 'All users'
 order_manager.package_service_comment.default_service: 'Default services'
 modal.chessBoard.rooms: Rooms
 modal.chessBoard.number_of_adults: adults
@@ -696,7 +696,7 @@ tourist.new_country_modal.country_name: 'Country name'
 mbhpackagebundle.view.tourist.index.migratsionnaya.karta: 'Migration card'
 controller.documentsController.action_view: View
 form.organizationType.kpp: 'Registry Number'
-package.accommodaton_modal.chessboard_button.text: Chessboard
+package.accommodaton_modal.chessboard_button.text: 'Reservation Calendar'
 controller.packageController.service_edit_success: 'Service edited successfully'
 form.organizationType.type: Type
 controller.documentsController.table_row_tourist: Client
@@ -1257,11 +1257,15 @@ mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan: 'Issued by
 mbhpackagebundle.view.documents.pdftemplates.registration_card.pribytiye: Arrival
 form.organizationType.okpo_code: 'SIC code'
 templateDocument.type.form: 'Tax payer form'
-tourist.index.button.export_to_kontur.text: 'Migration online service'
+tourist.index.button.export_to_kontur.text: 'Migration Service report'
 csv.type.tariff: Rate
 mbhpackagebundle.views.forma_g: 'Tax payer form'
 mbhpackagebundle.views.anketa: 'Form #3'
 mbhpackagebundle.views.rossiiskoi_federacii: 'Russian Federation'
-mbhpackagebundle.views.ot_data_g: 'from december 13 1993 #121'
+mbhpackagebundle.views.ot_data_g: 'from December 13 1993 #121'
 mbhpackagebundle.views.obratnaya_storona: 'Tax payer form back side'
 mbhpackagebundle.view.documents.pdftemplates.PP: Signature
+report.filling_table_rows.reserved_rooms_from_room_fund: 'Room occupancy'
+report.filling.filling.room_status: 'Room status'
+report.filling.filling.only_enabled: 'Enabled only?'
+package.document_type.tourist_age: age

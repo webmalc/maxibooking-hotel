@@ -1,16 +1,16 @@
 nights: night|nights|nights
-twig.extension.jan: jan
-twig.extension.feb: feb
-twig.extension.march: mar
-twig.extension.april: apr
-twig.extension.may: may
-twig.extension.june: june
-twig.extension.july: july
-twig.extension.august: aug
-twig.extension.september: sept
-twig.extension.october: oct
-twig.extension.november: nov
-twig.extension.december: dec
+twig.extension.jan: Jan
+twig.extension.feb: Feb
+twig.extension.march: Mar
+twig.extension.april: Apr
+twig.extension.may: May
+twig.extension.june: June
+twig.extension.july: July
+twig.extension.august: Aug
+twig.extension.september: Sep
+twig.extension.october: Oct
+twig.extension.november: Nov
+twig.extension.december: Dec
 mailer.to_order: 'Proceed to booking'
 mailer.to_package: 'Proceed to reservation'
 mailer.base.linkText: 'Go to MaxiBooking'
@@ -41,7 +41,7 @@ mailer.base.estimate_our_service: 'Rate our service'
 mailer.base.generated_mail: 'Mail is generated automatically by the MaxiBooking hotel management system'
 mailer.reportArrival.expectedGuest: 'Expected guests'
 mailer.reportArrival.duty: Debt
-mailer.reportArrival.number: Room
+mailer.reportArrival.number: Number
 mailer.reportArrival.numbers: Rooms
 mailer.reportArrival.customer: Client
 mailer.reportArrival.payment: Payment
@@ -74,7 +74,7 @@ mailer.order.transfer: Transfer
 mailer.order.guests: Guests
 mailer.order.arrival_time: 'Check in time'
 mailer.order.departure_time: 'Check out time'
-mailer.order.comments: Comments
+mailer.order.comments: Note
 mailer.closedTasks.subject: 'Closed tasks'
 mailer.closedTasks.text: 'Closed tasks:'
 mailer.closedTasks.task: Task
@@ -144,7 +144,7 @@ menu.header.navigation: Navigation
 menu.label.broni: Reservations
 menu.label.podbor: Search
 menu.label.portie: Porter
-menu.label.portie.shah: Chessboard
+menu.label.portie.shah: 'Reservation Calendar'
 menu.label.portie.arrdep: 'Check in/Check out'
 menu.label.nomandprice: 'Rooms and rates'
 menu.label.nomandprice.tariff: Rates
@@ -199,7 +199,7 @@ form.title: 'Internal title'
 form.description: Description
 form.title.help: 'Title only visible inside MaxiBooking system'
 form.begin: 'Period beginning'
-form.end: 'Preiod end'
+form.end: 'Period ending'
 form.group.config: Settings
 isEnabled: 'Enabled?'
 document.saved: 'Entry successfully saved'
@@ -292,7 +292,7 @@ facilities.shower: Shower
 facilities.toilets: WC
 facilities.ws: Toilet
 facilities.sign-in: 'Emergency exit'
-facilities.telephone: 'Phone number'
+facilities.telephone: Telephone
 facilities.fan: Fan
 facilities.conditioner: 'Air conditioning'
 facilities.modern-tv: 'Modern TV'
@@ -522,7 +522,7 @@ basebundle.menu.booking: Reservations
 basebundle.menu.picking: Selection
 basebundle.menu.receptionist: Porter
 basebundle.menu.arrival_departure: 'Check in/out'
-basebundle.menu.chess_player: Chessboard
+basebundle.menu.chess_player: 'Reservation Calendar'
 basebundle.menu.tariffs: Rates
 basebundle.menu.view: Overview
 basebundle.menu.price: Pricing
@@ -590,7 +590,84 @@ notifier.config.title.unpaid: 'Non paid order notification'
 notifier.config.title.online_order: 'Reservation via web form notification'
 notifier.config.title.task: 'Tasks notification'
 form.clientConfigType.notification_group: 'Notifications settings'
-form.clientConfigType.notification.help: 'Choose notifications available for sending to clients'
+form.clientConfigType.notification.help: 'Choose notifications you want to send to clients'
 subscriber.cannot_delete_room_in_sale_error: 'Impossible to delete a room as it is availalbe for sale'
 mbhbasebundle.views.mailer.vz: adults
 mbhbasebundle.views.mailer.rb: children
+mbh.hotel.themes.ecological: Eco
+mbh.hotel.themes.haute_cuisine: 'Exquisite cuisine'
+mbh.hotel.themes.spa: SPA/Wellness
+currency.rub.text: dollar
+mbh.package.arrivals.work: Work
+mbh.package.arrivals.service: Official
+mbh.services.calcTypes.day_percent: 'Per service (% from 1 night price)'
+currency.rub.small: cent
+mbh.package.arrivals.study: Study
+currency.uah.small: cent
+mbh.cash.operations.out: Expense
+mbh.cash.operations.in: Receipt
+mbh.task.statuses.closed.title: Closed
+mbh.task.statuses.process.title: 'In progress'
+mbh.task.statuses.open.title: Open
+mbh.package.arrivals.other: Other
+mbh.package.arrivals.residence: Transit
+mbh.package.arrivals.private: Private
+mbh.services.calcTypes.not_applicable: 'Per service'
+mbh.package.arrivals.business: Work
+mbh.package.arrivals.tourism: Tourism
+currency.uah.text: dollar
+mbh.package.statuses.online.title: Online
+mbh.package.statuses.offline.title: Regular
+mbh.weekdays.fri: Friday
+mbh.weekdays.sat: Saturday
+mbh.services.calcTypes.per_night: 'For a night'
+mbh.weekdays.thu: Thursday
+mbh.weekdays.wed: Wednesday
+mbh.weekdays.tue: Tuesday
+mbh.weekdays.mon: Monday
+mbh.weekdays.sun: Sunday
+currency.kzt.small: ¢
+currency.kzt.text: $
+mbh.package.arrivals.humanitarian: Humanitarian
+mbh.mailer.subject.text: 'Messages from MaxiBooking'
+mbh.services.calcTypes.per_stay: 'For the whole stay'
+menu.label.reports.dynamic_sales: 'Sales dynamics'
+mbh.hotel.types.guest_house: 'Guest house'
+mbh.warehouse.operations.in: Receipt
+mbh.organization.types.my: 'My companies'
+mbh.organization.types.contragents: Partners
+mbh.gender.types.unknown: Unspecified
+mbh.gender.types.female: Female
+mbh.gender.types.male: Male
+mbh.cash.operations.fee: Comission
+mbh.hotel.themes.beach: Beach/Shore
+mbh.hotel.themes.ski: Mountains/Skiing
+mbh.hotel.themes.sport: Sport
+mbh.hotel.themes.adventure: Adventure
+mbh.hotel.themes.homestead: Farmstead
+mbh.hotel.themes.shoping: Shopping
+mbh.hotel.types.mini_hotel: 'Mini hotel'
+mbh.hotel.types.resort: Resort
+mbh.hotel.types.motel: Motel
+mbh.hotel.types.hotel: Hotel
+mbh.hotel.types.hostel: Hostel
+mbh.hotel.types.sanatorium: Sanatorium
+mbh.hotel.types.pension: Pension
+mbh.hotel.themes.city: City
+mbh.hotel.types.apartments: Apartments
+mbh.warehouse.operations.out: Expense
+mbh.hotel.themes.nature: Nature/Wildlife
+mbh.hotel.themes.country_holidays: 'Countryside rest'
+mbh.hotel.types.recreation_center: 'Recreation center'
+mbh.hotel.types.country_club: 'Country Club'
+mbh.hotel.themes.сity_tour: 'City tour'
+mbh.hotel.themes.budget_travel: 'Economy and student tours'
+mbh.hotel.themes.family_trip: 'Family trip'
+mbh.hotel.themes.international: International
+mbh.hotel.themes.business_trip: 'Business trip'
+mbh.hotel.themes.romantic_vacation: 'Romantic holidays / Honeymoon'
+mbh.hotel.themes.interior_design: 'Designer interior'
+mbh.hotel.themes.luxury_holidays: 'Luxury leisure'
+mailer.order.subject_text: 'Booking payment confirmation'
+mailer.order.prepend_text: 'We received a payment of %paymentSum% from you!'
+mailer.order.header_text: '%hotelName% welcomes you'

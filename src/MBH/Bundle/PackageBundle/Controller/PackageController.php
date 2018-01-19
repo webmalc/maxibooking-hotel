@@ -152,6 +152,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'end' => $formData['end'],
                 'dates' => $formData['dates'],
                 'paid' => $formData['paid'],
+                'query' => $formData['query'],
                 'confirmed' => $formData['confirmed'],
             ];
 

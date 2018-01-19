@@ -9,6 +9,7 @@ use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
 use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use MBH\Bundle\UserBundle\Form\ClientContactsType;
 use MBH\Bundle\UserBundle\Form\ClientServiceType;
+use MBH\Bundle\UserBundle\Form\ClientTariffType;
 use MBH\Bundle\UserBundle\Form\PayerType;
 use MBH\Bundle\UserBundle\Form\ProfileType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -139,63 +140,48 @@ class ProfileController extends Controller
     /**
      * @Template()
      * @Security("is_granted('ROLE_PAYMENTS')")
-     * @Route("/services", name="user_services")
-     */
-    public function servicesAction()
-    {
-        $client = $this->get('mbh.client_manager')->getClient();
-
-        $requestResult = $this->get('mbh.billing.api')->getClientServices($client);
-        if (!$requestResult->isSuccessful()) {
-            $services = [];
-            $this->addBillingErrorFlash();
-        } else {
-//            $services = array_filter($requestResult->getData(), function (ClientService $service) {
-//                return $service->getEndAsDateTime() > new \DateTime();
-//            });
-            $services = $requestResult->getData();
-        }
-
-        $availableServicesResult = $this->get('mbh.client_manager')->getAvailableServices();
-        $availableServices = $availableServicesResult->isSuccessful() ? $availableServicesResult->getData() : [];
-
-        return [
-            'services' => $services,
-            'availableServices' => $availableServices
-        ];
-    }
-
-    /**
-     * @Security("is_granted('ROLE_PAYMENTS')")
-     * @Template()
-     * @Route("/services/add", name="add_client_service")
+     * @Route("/tariff", name="user_tariff")
      * @param Request $request
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @return array
      */
-    public function addClientServiceAction(Request $request)
+    public function tariffAction(Request $request)
     {
-        $clientManager = $this->get('mbh.client_manager');
-        $availableServicesResult = $clientManager->getAvailableServices();
-        if (!$availableServicesResult->isSuccessful()) {
-            $this->addBillingErrorFlash();
+        $billingApi = $this->get('mbh.billing.api');
+        //TODO: Эти данные будут получаться с биллинга когда будет реализован функционал
+        $tariffsData = [
+            'main' => [
+                'rooms' => 123,
+                'price' => 12345,
+                'begin' => new \DateTime('midnight'),
+                'period' => 1
+            ],
+            'next' => [
+                'rooms' => 223,
+                'price' => 22345,
+                'begin' => new \DateTime('midnight +1 month'),
+                'period' => 6
+            ],
+        ];
 
-            return $this->redirectToRoute('user_services');
-        }
-
-        $availableServices = $availableServicesResult->getData();
-        $form = $this->createForm(ClientServiceType::class, null, [
-            'services' => $availableServices
-        ]);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $res = $this->get('mbh.billing.api')->createClientService($form->getData(), $clientManager->getClient());
-            dump($res);
-            exit();
+        $form = $this->createForm(ClientTariffType::class);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $result = $billingApi->changeTariff($form->getData());
+                if ($result->isSuccessful()) {
+                    //TODO: Наверное другой текст
+                    $this->addFlash('success', 'view.personal_account.tariff.change_tariff.success');
+                    //TODO: Поменять значения в массиве $tariffsData
+                } else {
+                    $this->addBillingErrorFlash();
+                    $this->get('mbh.form_data_handler')->fillFormByBillingErrors($form, $result->getErrors());
+                }
+            }
         }
 
         return [
-            'form' => $form->createView(),
-            'serializedServices' => $this->get('serializer')->serialize($availableServices, 'json')
+            'tariffsData' => $tariffsData,
+            'form' => $form->createView()
         ];
     }
 
@@ -221,15 +207,7 @@ class ProfileController extends Controller
                 $errors = $this->get('mbh.client_payer_manager')->saveClientPayerAndReturnErrors($form->getData());
                 if (!empty($errors)) {
                     $this->addFlash('error', 'controller.profileController.payer_failed_saved');
-                    foreach ($errors as $fieldName => $errorMessages) {
-                        foreach ($errorMessages as $errorMessage) {
-                            if ($form->has($fieldName)) {
-                                $form->get($fieldName)->addError(new FormError($errorMessage));
-                            } elseif ($fieldName === BillingResponseHandler::NON_FIELD_ERRORS) {
-                                $form->addError(new FormError($errorMessage));
-                            }
-                        }
-                    }
+                    $this->get('mbh.form_data_handler')->fillFormByBillingErrors($form, $errors);
                 } else {
                     $this->addFlash('success', 'controller.profileController.payer_successfull_saved');
                 }

@@ -102,13 +102,13 @@ form.expedia.should_we_use_in_channel_manager: Использовать ли в 
 form.expedia.hotel_id: ID отеля
 form.expedia.hotel_id.help: ID отеля в Expedia Partner Central
 form.expedia.password.label: Пароль
-form.expedia.password.help: Пароль для входа в аккаунт Expedia
+form.expedia.password.help: 'Пароль для взаимодействия по API с Expedia'
 form.expedia.password.placeholder: Пароль
-form.expedia.username.label: Имя пользователя
-form.expedia.username.help: Имя пользователя для входа в аккаунт Expedia
+form.expedia.username.label: Логин пользователя
+form.expedia.username.help: 'Логин пользователя для взаимодействия по API с Expedia'
 form.expedia.username.placeholder: Имя пользователя
-order_info.expedia.need_сonfirm_cash_payment_document: Необходимо подвердить кассовый документ о платеже
-order_info.expedia.need_сonfirm_cash_tax_document: Необходимо подвердить кассовый документ о комиссии
+order_info.expedia.need_сonfirm_cash_payment_document: 'Необходимо подвердить кассовый документ о платеже'
+order_info.expedia.need_сonfirm_cash_tax_document: 'Необходимо подвердить кассовый документ о комиссии'
 order_info.expedia.required_data_missing: Ошибка при обработке синхронизации броней. В полученных от сервиса данных отсутствуют %elementDescription%
 order_info.expedia.required_order_data: 'обязательные данные: "%dataAttribute% заказа"'
 order_info.expedia.required_hotel_id: 'данные об id отеля'
@@ -120,6 +120,7 @@ order_info.expedia.multi_room_booking_info: 'Доп.информация о мн
 expedia_request_data_formatter.max_stay.error: 'В сервисе Expedia.com по умолачнию установлен максимальный срок брони %count% дней'
 expedia_request_data_formatter.min_stay.error: 'В сервисе Expedia.com по умолачнию установлен минимальный срок брони %count% дней'
 package_info.expedia.child_age: Возраст ребенка
+package_info.expedia.promoName: '%dateString% по акции:'
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkIn.help: Задачи, создаваемые при заезде гостя
 form.roomTypeTasks.checkOut: При выезде

@@ -556,6 +556,8 @@ class HundredOneHotels extends Base
             }
         }
 
+        $this->dm->refresh($order);
+        $this->dm->clear(Package::class);
         foreach ($orderInfo->getPackages() as $packageInfo) {
             $package = $this->createPackage($packageInfo, $order);
             $order->addPackage($package);

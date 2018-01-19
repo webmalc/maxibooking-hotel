@@ -49,7 +49,6 @@ class Messenger implements \SplObserver
             $message->getHotel(),
             $message->getMessageType()
         );
-
     }
 
     /**

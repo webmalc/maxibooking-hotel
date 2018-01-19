@@ -36,7 +36,7 @@ order.cash.are_you_sure_to_pay_payment: 'Are you sure you want to make a payment
 order.cash.confirm: Confirm
 order.cash.pay: Confirm
 order.cash.short_pay: Pay
-order.cash.cash_documents_not_found: 'Cash documents not found'
+order.cash.cash_documents_not_found: 'Payment documents not found'
 order.edit.order_editing: 'Edit order #'
 order.edit.deleted: Deleted
 order.edit.room: Room
@@ -194,7 +194,7 @@ package.index.check_in_today: 'Check in today'
 package.index.check_in_tomorrow: 'Check in tomorrow'
 package.index.checked_in_now: 'Currently accommodated'
 package.index.not_confirmed: 'Not confirmed'
-package.index.without_placement: 'No accommodation'
+package.index.without_placement: 'Without allocation'
 package.index.not_paid_in_time: Overdue
 package.index.not_checked_in: 'Not checked in'
 package.index.my_reservations: 'My reservations'
@@ -228,7 +228,7 @@ package.jsonButtons.delete_record: Delete
 package.jsonButtons.view_record: 'View record'
 package.layout.reservation: Reservation
 package.listTabs.list: List
-package.listTabs.chess: Chessboard
+package.listTabs.chess: 'Reservation Calendar'
 package.listTabs.placement: Accommodation
 package.listTabs.clients: Guests
 package.new.reservation_error: 'Reservation error'
@@ -293,7 +293,7 @@ report.roomsTable.room: Room
 report.roomsTable.whole_hotel: 'Whole hotel'
 search.index.search: Search
 search.index.enter_search_data: 'Enter parameters for room selection'
-search.layout.room_search: 'Accommodation search'
+search.layout.room_search: Reservation
 search.results.tariff_search: 'Search by rates'
 search.results.green: green
 search.results.main_tariffs: '- default rates'
@@ -323,7 +323,7 @@ package.index.summary.paid: Paid
 package.index.summary.debt: Debt
 package.index.summary.nights: Nights
 package.index.summary.guests: Guests
-package.index.name: Name
+package.index.name: Title
 package.index.inner_name: 'Internal name'
 package.index.delete_reason: 'Deletion reason'
 package.index.edit_record: 'Edit entry'
@@ -373,7 +373,7 @@ source.index.created: Created
 report.accommodation.dates: Dates
 package.pdf.conditions: 'The above services provided fully and in time. A client doesn''t have any claims regarding the volume, quality and timing of the services.'
 package.service.per_persons: '{0} for {% persons %} guests|{1} per {% persons %} guest|]1,Inf] for {% persons %} guests'
-package.service.calculation_type: 'Calculation type'
+package.service.calculation_type: 'Payment type'
 package.editService.edit_service: 'Edit service'
 report.accommodation.placement: accommodation
 report.accommodationTable.no_room_found: 'Rooms not found'
@@ -423,7 +423,7 @@ views.list.not_necessary: 'not requred'
 views.list.review_comiled: 'No feedback for this order!'
 report.poll.invite: 'Visa invitations'
 report.poll.small_title_order: 'Order evaluation'
-views.report.polls.not_found: 'Nothing found'
+views.report.polls.not_found: 'Polls not found'
 views.report.polls.view_record: 'Go to results'
 mbh.package.arrivals.tourism: Recreation/Tourism
 mbh.package.arrivals.work: Job/Internship
@@ -447,7 +447,7 @@ order.index.summary.total: 'Sum total'
 report.work_shift.small_title: 'Work shifts'
 package.dynamic.sale: 'Dynamics of sales'
 dynamic.sales.range_is_over_error: 'Period should not exceed %numberOfDays% days'
-dynamic.sales.day.number-of-created-packages: 'reservations created in 24 hours'
+dynamic.sales.day.number-of-created-packages: 'Reservations created in 24 hours'
 dynamic.sales.day.number-of-paid: 'Orders payed in 24 hours'
 dynamic.sales.day.number-of-paid-for-period: 'Orders payed for a date total'
 dynamic.sales.day.price-of-cancelled: 'Reservations cancelled cost in 24 hours'
@@ -462,3 +462,4 @@ dynamic.sales.day.number-of-package-days: 'Reservations in rooms number/days in 
 dynamic.sales.day.sum-of-paid-for-cancelled-for-period: 'Reservations cancelled for a period'
 dynamic.sales.day.sum-paid-to-clients-for-period-for-removed: 'Recervations cancelled cost for a period'
 dynamic.sales.show.title: 'Categories displayed'
+views.report.polls.select_button.title: Apply

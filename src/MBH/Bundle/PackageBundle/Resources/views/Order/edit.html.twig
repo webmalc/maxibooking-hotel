@@ -62,7 +62,13 @@
                                 <strong>{{ 'order.edit.payer'|trans({}, 'MBHPackageBundle') }}</strong>
                             </td>
                             <td>
-                                {% if entity.mainTourist %}{{ entity.mainTourist }} <a class="external" target="_blank" href="{{ path('tourist_edit', {'id': entity.mainTourist.id }) }}"><i class="fa fa-external-link"></i></a>{% else %}<small class="text-danger">{{ 'order.edit.not_specified'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
+                                {% if entity.mainTourist %}
+                                    {{ entity.mainTourist }} <a class="external" target="_blank" href="{{ path('tourist_edit', {'id': entity.mainTourist.id }) }}"><i class="fa fa-external-link"></i></a>
+                                {% elseif entity.organization %}
+                                    {{ entity.organization }} <a class="external" target="_blank" href="{{ path('organization_edit', {'id': entity.organization.id }) }}"><i class="fa fa-external-link"></i></a>
+                                {% else %}
+                                    <small class="text-danger">{{ 'order.edit.not_specified'|trans({}, 'MBHPackageBundle') }}</small>
+                                {% endif %}
                             </td>
                         </tr>
                         <tr>

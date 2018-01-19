@@ -23,13 +23,7 @@ services:
       tags:
         - { name: validator.constraint_validator, alias: doctrine_odm.mongodb.unique }
 
-    mbh.base_on_request_listener:
-        class: MBH\Bundle\BaseBundle\EventListener\OnRequest
-        arguments: ['@service_container']
-        tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
-
-    mbh.base_on_controller_listener:
+       mbh.base_on_controller_listener:
         class: MBH\Bundle\BaseBundle\EventListener\OnController
         arguments: ['@service_container']
         tags:
@@ -277,6 +271,12 @@ services:
         tags:
           - { name: kernel.event_subscriber }
 
+    mbh.base_on_request_listener:
+        class: MBH\Bundle\BaseBundle\EventListener\OnRequest
+        arguments: ['@service_container']
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
     mbh.time_zone.subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\TimeZoneSubscriber
         arguments: ['@mbh.helper']
@@ -371,5 +371,5 @@ services:
 
 
 
-    mbh.form_data_checker:
+    mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler

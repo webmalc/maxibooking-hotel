@@ -99,7 +99,14 @@ class Calculation
     {
         $total = 0;
 
-        $services = $package->getServices();
+        if ($package->getId()) {
+            $services = $this->dm
+                ->getRepository('MBHPackageBundle:PackageService')
+                ->findBy(['package.id' => $package->getId()]);
+        } else {
+            $services = $package->getServices();
+        }
+
         if ($services instanceof \Traversable) {
             $services = iterator_to_array($services);
         }
