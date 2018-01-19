@@ -9,6 +9,7 @@ class Client
     const CLIENT_DATA_RECEIPT_DATETIME = 'client-data-receipt-time';
     const DEFAULT_MAXIBOOKING_DOMAIN_NAME = 'aws.maxibooking.ru';
     const CLIENT_ACTIVE_STATUS = 'active';
+    const SCHEME = 'http://';
 
     /** @var  int */
     private $id;
@@ -412,7 +413,7 @@ class Client
      */
     public static function compileClientUrl($login)
     {
-        return $login . '.' . self::DEFAULT_MAXIBOOKING_DOMAIN_NAME;
+        return self::SCHEME.$login.'.'.self::DEFAULT_MAXIBOOKING_DOMAIN_NAME;
     }
 
     /**
