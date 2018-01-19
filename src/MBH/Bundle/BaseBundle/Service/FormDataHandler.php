@@ -5,6 +5,7 @@ namespace MBH\Bundle\BaseBundle\Service;
 use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
 
 class FormDataHandler
 {
@@ -43,7 +44,7 @@ class FormDataHandler
         return $result;
     }
 
-    public function fillFormByBillingErrors(Form $form, array $errors)
+    public function fillFormByBillingErrors(FormInterface $form, array $errors)
     {
         foreach ($errors as $fieldName => $errorMessages) {
             foreach ($errorMessages as $errorMessage) {

@@ -149,7 +149,7 @@ class PaymentOrder
      */
     public function getExpiredDateAsDateTime()
     {
-        return \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $this->expired_date);
+        return BillingApi::getDateByBillingFormat($this->expired_date);
     }
 
     /**
@@ -162,7 +162,7 @@ class PaymentOrder
 
     public function getPaidDateAsDateTime()
     {
-        return \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $this->paid_date);
+        return BillingApi::getDateByBillingFormat($this->paid_date);
     }
 
     /**
@@ -246,7 +246,7 @@ class PaymentOrder
      */
     public function getCreatedAsDateTime()
     {
-        return \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $this->created);
+        return BillingApi::getDateByBillingFormat($this->created);
     }
 
     /**
@@ -273,7 +273,7 @@ class PaymentOrder
      */
     public function getModifiedAsDateTime()
     {
-        return \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $this->modified);
+        return BillingApi::getDateByBillingFormat($this->modified);
     }
 
     /**

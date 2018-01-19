@@ -9,7 +9,6 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler;
 use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
-use MBH\Bundle\UserBundle\Service\ClientPayerManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -116,7 +115,9 @@ class PayerType extends AbstractType
                 'attr' => ['class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'],
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.issue_date.label',
-                'data' => $clientRuPayerData ? \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $clientRuPayerData['passport_date']) : new \DateTime('midnight')
+                'data' => $clientRuPayerData
+                    ? BillingApi::getDateByBillingFormat($clientRuPayerData['passport_date'])
+                    : new \DateTime('midnight')
             ])
             ->add('issuedBy', TextType::class, [
                 'required' => false,
@@ -248,7 +249,9 @@ class PayerType extends AbstractType
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'],
-                'data' => $hasCompany && $company->getRu() ? \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $company->getRuPayerCompanyData('proxy_date')) : new \DateTime('midnight')
+                'data' => $hasCompany && $company->getRu()
+                    ? BillingApi::getDateByBillingFormat($company->getRuPayerCompanyData('proxy_date'))
+                    : new \DateTime('midnight')
             ])
             ->add('checkingAccount', TextType::class, [
                 'required' => false,

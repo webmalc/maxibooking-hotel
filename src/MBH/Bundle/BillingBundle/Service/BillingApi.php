@@ -41,6 +41,7 @@ class BillingApi
 
     const AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
     const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s\Z';
+    const BILLING_DATETIME_FORMAT_WITH_MICROSECONDS = 'Y-m-d\TH:i:s.u\Z';
 
     /** @var GuzzleClient */
     private $guzzle;
@@ -77,6 +78,20 @@ class BillingApi
     public function getClientProperties()
     {
 
+    }
+
+    /**
+     * @param string $dateString
+     * @return bool|\DateTime
+     */
+    public static function getDateByBillingFormat(string $dateString)
+    {
+        $date = \DateTime::createFromFormat(self::BILLING_DATETIME_FORMAT, $dateString);
+        if (!$date instanceof \DateTime) {
+            $date = \DateTime::createFromFormat(self::BILLING_DATETIME_FORMAT_WITH_MICROSECONDS, $dateString);
+        }
+
+        return $date;
     }
 
     /**
@@ -292,15 +307,6 @@ class BillingApi
     {
         $response = $this->sendGet(self::BILLING_HOST . '/' . $this->locale . '/clients/' . $this->billingLogin . '/tariff_detail/');
         $decodedResponse = json_decode((string)$response->getBody(), true);
-        $mainPeriodEnd = \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $decodedResponse['main']['end']);
-        $mainPeriodBegin = \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $decodedResponse['main']['begin']);
-        $decodedResponse['main']['period'] = $mainPeriodEnd->diff($mainPeriodBegin)->m;
-
-        if (isset($decodedResponse['next'])) {
-            $mainPeriodEnd = \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $decodedResponse['next']['end']);
-            $mainPeriodBegin = \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $decodedResponse['next']['begin']);
-            $decodedResponse['next']['period'] = $mainPeriodEnd->diff($mainPeriodBegin)->m;
-        }
 
         return $decodedResponse;
     }
