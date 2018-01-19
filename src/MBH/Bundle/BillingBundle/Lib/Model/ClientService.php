@@ -205,7 +205,7 @@ class ClientService
      */
     public function getBeginAsDateTime()
     {
-        return \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $this->begin);
+        return BillingApi::getDateByBillingFormat($this->begin);
     }
 
     /**
@@ -232,7 +232,7 @@ class ClientService
      */
     public function getEndAsDateTime()
     {
-        return \DateTime::createFromFormat(BillingApi::BILLING_DATETIME_FORMAT, $this->end);
+        return BillingApi::getDateByBillingFormat($this->end);
     }
 
     /**
