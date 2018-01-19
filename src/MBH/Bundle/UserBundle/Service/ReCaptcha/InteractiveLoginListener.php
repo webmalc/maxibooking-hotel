@@ -65,6 +65,8 @@ class InteractiveLoginListener
             if ($client->getStatus() === 'not_confirmed') {
                 try {
                     $this->billingApi->confirmClient($client);
+                    $client = $this->billingApi->getClient($client->getLogin());
+                    $this->clientManager->updateSessionClientData($client, new \DateTime());
                 } catch (\Exception $exception) {
                     $this->session->set(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR, true);
                     $this->session->getFlashBag()->add('error',
