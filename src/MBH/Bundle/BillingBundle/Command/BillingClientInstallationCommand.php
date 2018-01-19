@@ -38,17 +38,8 @@ class BillingClientInstallationCommand extends ContainerAwareCommand
         $logger->addRecord(Logger::INFO, 'Try to start installClient()');
         $instanceManager->installClient($clientName);
 
-        $this->cacheWarmup($clientName);
+//        $this->cacheWarmup($clientName);
         $this->afterInstall($clientName);
-
-
-        //Disable queue.
-//        $logger->addRecord(Logger::INFO, 'Generate queue to after install command');
-//        $isDebug = $this->getApplication()->getKernel()->isDebug();
-//        $command = 'mbh:client:after:install';
-//        $params['--client'] = $clientName;
-//        $command = new \MBH\Bundle\BaseBundle\Lib\Task\Command($command, $params, $clientName, $input->getOption('env'), $isDebug);
-//        $this->producer->publish(serialize($command));
 
     }
 
