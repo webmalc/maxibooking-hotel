@@ -412,7 +412,7 @@ class Client
      */
     public static function compileClientUrl($login)
     {
-        return $login . '.' . self::DEFAULT_MAXIBOOKING_DOMAIN_NAME;
+        return 'http://' . $login . '.' . self::DEFAULT_MAXIBOOKING_DOMAIN_NAME;
     }
 
     /**
