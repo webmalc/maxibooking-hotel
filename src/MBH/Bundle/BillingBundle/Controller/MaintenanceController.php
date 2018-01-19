@@ -53,7 +53,7 @@ class MaintenanceController extends BaseController
     {
         $requestData = json_decode($request->getContent(), true);
         $this->checkToken($requestData['token']??null);
-        $login = $requestData['login']??null;
+        $login = $requestData['client_login']??null;
         if (!$login) {
             throw new UnauthorizedHttpException('No Login!');
         }

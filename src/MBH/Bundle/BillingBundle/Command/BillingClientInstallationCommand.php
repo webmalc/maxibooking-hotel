@@ -78,22 +78,14 @@ class BillingClientInstallationCommand extends ContainerAwareCommand
         $env = [
             \AppKernel::CLIENT_VARIABLE => $clientName,
         ];
-        if ($kernel->getEnvironment() === 'dev') {
-            $env = array_merge(
-                $env,
-                [
-                    'XDEBUG_CONFIG' => 'ideKey=PHPSTORM',
-                    'PHP_IDE_CONFIG' => 'serverName=cli'
-                ]
-            );
-        }
+
         $process = new Process($command, $kernel->getRootDir().'/../bin', $env, null, 60 * 10);
         $logger = $this->getContainer()->get('mbh.billing.logger');
         $logger->addRecord(
             Logger::INFO,
             'Starting console command '.$command
         );
-        $process->run();
+        $process->mustRun();
     }
 
 
