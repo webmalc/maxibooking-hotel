@@ -64,7 +64,7 @@ parameters:
     tasks: true
 
   #client name for env
-  client: ''
+  client: '%env(MB_CLIENT)%'
 
   #mongodb_ssl
   mongodb_ssl: false
