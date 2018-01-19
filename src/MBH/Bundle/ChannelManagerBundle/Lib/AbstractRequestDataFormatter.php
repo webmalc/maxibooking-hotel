@@ -279,7 +279,7 @@ abstract class AbstractRequestDataFormatter
             $end,
             $config->getHotel(),
             $this->getRoomTypeArray($roomTypes),
-            null,
+            false,
             true
         );
 

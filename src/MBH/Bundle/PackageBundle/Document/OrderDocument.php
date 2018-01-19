@@ -4,9 +4,9 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\ProtectedFile;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -67,7 +67,8 @@ class OrderDocument
     protected $cashDocument;
 
     /**
-     * @var UploadedFile
+     * @var ProtectedFile
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\ProtectedFile", cascade={"persist"})
      * @Assert\File(maxSize="6M", mimeTypes={
      *          "image/png",
      *          "image/jpeg",
@@ -131,28 +132,25 @@ class OrderDocument
     }
 
     /**
-     * @return UploadedFile|null
+     * @return ProtectedFile|null
      */
-    public function getFile(string $client = null)
+    public function getFile()
     {
-        if (!$this->file && $this->name && is_file($this->getPath($client))) {
-            $this->file = new UploadedFile($this->getPath($client), $this->getName());
-        }
-
         return $this->file;
     }
 
     /**
-     * @param UploadedFile $file
+     * @param ProtectedFile $protectedFile
      */
-    public function setFile(UploadedFile $file = null)
+    public function setFile(ProtectedFile $protectedFile = null)
     {
-        $this->file = $file;
-        if ($this->file && $this->file->isFile()) {
-            $this->originalName = $this->file->getClientOriginalName();
-            $this->name = uniqid().'.'.$this->file->getClientOriginalExtension();
-            $this->extension = $this->file->getClientOriginalExtension();
-            $this->mimeType = $this->file->getMimeType();
+        $file = $protectedFile->getImageFile();
+        $this->file = $protectedFile;
+        if ($file && $file->isFile()) {
+            $this->originalName = $protectedFile->getImageName();
+            $this->name = uniqid().'.'.$file->getExtension();
+            $this->extension = $file->getExtension();
+            $this->mimeType = $file->getMimeType();
         }
     }
 
