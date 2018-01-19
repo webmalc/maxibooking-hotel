@@ -7,7 +7,7 @@ services:
 
     mbh.api_key_user_provider:
         class: MBH\Bundle\UserBundle\Security\ApiKeyUserProvider
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.billing.api']
+        arguments: ['@doctrine.odm.mongodb.document_manager']
 
     mbh.api_key_authenticator:
         class: MBH\Bundle\UserBundle\Security\ApiKeyAuthenticator
