@@ -223,10 +223,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuCategory", mappedBy="hotel") */
     protected $dishMenuCategories;
 
-
     /**
      * @Gedmo\Versioned
-     * @ODM\Field(type="int")
+     * @ODM\Field(type="string")
      */
     protected $countryTld;
 

@@ -52,6 +52,7 @@ form.clientPaymentSystemType.password_one: Пароль 1
 form.clientPaymentSystemType.password_two: Пароль 2
 form.clientPaymentSystemType.extended_account_number: Номер расширенного счета
 form.clientPaymentSystemType.data_integrity_code: Код проверки целостности данных
+controller.clientConfig.change_time_zone_contact_support: 'Для изменения временной зоны, пожалуйста, обратитесь в службу тех.поддержки по адресу: "%supportEmail%"'
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'
 form.clientPaymentSystemType.successUrl: URl успешной оплаты
 form.clientPaymentSystemType.failUrl: URl неуспешной оплаты
