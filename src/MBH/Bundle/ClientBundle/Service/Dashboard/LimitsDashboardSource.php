@@ -40,7 +40,7 @@ class LimitsDashboardSource extends AbstractDashboardSource
         $end = new \DateTime('midnight + 1 year');
         $messages = [];
         if ($this->clientManager->isLimitOfRoomsExceeded()) {
-            $messages[] = $this->translator->trans('room_controller.limit_of_rooms_exceeded', [
+            $messages[] = $this->translator->trans('room_controller.limit_of_room_fund_exceeded', [
                 '%availableNumberOfRooms%' => $this->clientManager->getAvailableNumberOfRooms(),
                 '%overviewUrl%' => $this->router->generate('total_rooms_overview')
             ]);
