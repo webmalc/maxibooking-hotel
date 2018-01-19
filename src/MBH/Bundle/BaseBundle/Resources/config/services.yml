@@ -23,7 +23,7 @@ services:
       tags:
         - { name: validator.constraint_validator, alias: doctrine_odm.mongodb.unique }
 
-       mbh.base_on_controller_listener:
+    mbh.base_on_controller_listener:
         class: MBH\Bundle\BaseBundle\EventListener\OnController
         arguments: ['@service_container']
         tags:
