@@ -62,7 +62,7 @@ class MaintenanceController extends BaseController
             $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
             $result->setData([
                 'token' => $admin->getApiToken()->getToken(),
-                'url' => Client::compileClientUrl($this->getParameter('client'))
+                'url' => Client::compileClientUrl($login)
             ]);
         }
 
