@@ -74,10 +74,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $helper = $this->container->get('mbh.helper');
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $reportDates = $helper->getReportDates($request);
-        $begin = $reportDates['begin'];
-        /** @var \DateTime $end */
-        $end = $reportDates['end'];
+        list($begin, $end) = $helper->getReportDates($request);
         $to = (clone $end)->modify('+1 day');
 
         $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $to);
