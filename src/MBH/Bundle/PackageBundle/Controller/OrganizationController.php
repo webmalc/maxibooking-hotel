@@ -9,6 +9,7 @@ use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 
+use MBH\Bundle\BaseBundle\Document\ProtectedFile;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Form\OrganizationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -18,6 +19,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -268,5 +270,32 @@ class OrganizationController extends Controller
         }
 
         return new JsonResponse($data);
+    }
+
+    /**
+     * @Route("/stamp/{protected}/{organization}/view", name="organization_stamp_view", options={"expose"=true})
+     * @param ProtectedFile $protected
+     * @param Organization $organization
+     * @return Response
+     */
+    public function viewAction(ProtectedFile $protected, Organization $organization)
+    {
+
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW_ALL')
+            && !($this->get('security.authorization_checker')->isGranted('VIEW', $organization)
+                && $this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $pathHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
+        $path = $pathHelper->asset($protected, 'imageFile');
+        $dataManager = $this->get('liip_imagine.data.manager');
+        $filter = 'thumb_400x200';
+        $file = $dataManager->find($filter, $path);
+        $file = $this->container->get('liip_imagine.filter.manager')->applyFilter($file, $filter);
+        $headers['Content-Type'] = $file->getMimeType();
+        $content = $file->getContent();
+
+        return new Response($content, 200, $headers);
     }
 }

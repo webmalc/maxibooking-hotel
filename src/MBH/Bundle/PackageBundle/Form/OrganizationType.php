@@ -289,9 +289,11 @@ class OrganizationType extends AbstractType
                 'group' => $additionalGroup,
                 'label' => 'form.organizationType.stamp',
                 'required' => false,
-                'help' => $this->translator->trans('form.organization_type.scan', ['%size%' => '400x200']) . $logoHelp
+                'help' => $this->translator->trans('form.organization_type.scan', ['%size%' => '400x200']) . $logoHelp,
+                'parentOwnerId' =>  ($builder->getData() instanceof Organization ? $builder->getData()->getId() : null)
             ]);
         }
+
     }
 
     public function configureOptions(OptionsResolver $resolver)

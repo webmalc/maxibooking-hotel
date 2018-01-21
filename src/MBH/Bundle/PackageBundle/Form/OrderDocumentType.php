@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\BaseBundle\Form\ProtectedFileType;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -95,7 +96,7 @@ class OrderDocumentType extends AbstractType
 
         $builder->add(
             'file',
-            FileType::class,
+            ProtectedFileType::class,
             [
                 'group' => $groupTitle,
                 'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'form.order_document_type.change_file' : 'form.order_document_type.file',
@@ -135,6 +136,7 @@ class OrderDocumentType extends AbstractType
             'touristIds' => [],
             'scenario' => self::SCENARIO_ADD,
             'document' => null,
+            'data_class' => OrderDocument::class
         ]);
     }
 }
