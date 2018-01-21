@@ -66,37 +66,13 @@ class OrderDocument
      */
     protected $cashDocument;
 
+
     /**
      * @var ProtectedFile
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\ProtectedFile", cascade={"persist"})
-     * @Assert\File(maxSize="6M", mimeTypes={
-     *          "image/png",
-     *          "image/jpeg",
-     *          "image/jpg",
-     *          "image/gif",
-     *          "application/pdf",
-     *          "application/x-pdf",
-     *          "application/msword",
-     *          "application/xls",
-     *          "application/xlsx",
-     *          "application/vnd.ms-excel"
-     * }, mimeTypesMessage="validator.document.OrderDocument.file_type")
      */
     protected $file;
 
-    /**
-     * Client Original Extension
-     * @var string
-     * @ODM\Field(type="string")
-     */
-    protected $extension;
-
-
-    /**
-     * @var string
-     * @ODM\Field(type="string")
-     */
-    protected $mimeType;
 
     /**
      * @return string
@@ -132,7 +108,7 @@ class OrderDocument
     }
 
     /**
-     * @return ProtectedFile|null
+     * @return ProtectedFile
      */
     public function getFile()
     {
@@ -140,62 +116,21 @@ class OrderDocument
     }
 
     /**
-     * @param ProtectedFile $protectedFile
+     * @param ProtectedFile $file
      */
-    public function setFile(ProtectedFile $protectedFile = null)
+    public function setFile(ProtectedFile $file): void
     {
-        $file = $protectedFile->getImageFile();
-        $this->file = $protectedFile;
-        if ($file && $file->isFile()) {
-            $this->originalName = $protectedFile->getImageName();
-            $this->name = uniqid().'.'.$file->getExtension();
-            $this->extension = $file->getExtension();
-            $this->mimeType = $file->getMimeType();
-        }
+        $this->file = $file;
+
     }
+
 
     /**
      * @return bool
      */
     public function isImage()
     {
-        return in_array($this->extension, ['jpg', 'png', 'jpeg']);
-    }
-
-    /**
-     * The absolute directory path where uploaded
-     * documents should be saved
-     * @param string|null $client
-     * @return string
-     */
-    public function getUploadRootDir(string $client = null)
-    {
-        return __DIR__.'/../../../../../protectedUpload'.($client ? '/clients/'.$client : '').'/orderDocuments';
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath(string $client = null)
-    {
-        return $this->getUploadRootDir($client).DIRECTORY_SEPARATOR.$this->getName();
-    }
-
-    public function upload(string $client = null)
-    {
-        if (null === $this->getFile($client)) {
-            return;
-        }
-
-        $this->getFile($client)->move($this->getUploadRootDir($client), $this->getName());
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUploaded(string $client = null)
-    {
-        return is_file($this->getPath($client));
+        return in_array($this->getExtension(), ['jpg', 'png', 'jpeg']);
     }
 
     /**
@@ -219,7 +154,11 @@ class OrderDocument
      */
     public function getName()
     {
-        return $this->name;
+        if ($this->file) {
+            return $this->file->getOriginalName();
+        }
+
+        return null;
     }
 
     /**
@@ -228,23 +167,6 @@ class OrderDocument
     public function setName($name)
     {
         $this->name = $name;
-    }
-
-    /**
-     * @return bool
-     */
-    public function deleteFile(string $client = null)
-    {
-        if ($this->getFile($client) && is_writable($this->getFile($client)->getPathname())) {
-            $result = unlink($this->getFile($client)->getPathname());
-            if ($result) {
-                $this->file = null;
-            }
-
-            return $result;
-        }
-
-        return false;
     }
 
     /**
@@ -300,16 +222,11 @@ class OrderDocument
      */
     public function getExtension()
     {
-        return $this->extension;
-    }
+        if ($this->file) {
+            return $this->file->getExtension();
+        }
 
-    /**
-     * Client Original Extension
-     * @param string $extension
-     */
-    public function setExtension($extension)
-    {
-        $this->extension = $extension;
+        return null;
     }
 
     /**
@@ -317,15 +234,12 @@ class OrderDocument
      */
     public function getMimeType()
     {
-        return $this->mimeType;
-    }
+        if ($this->file) {
+            return $this->file->getMimeType();
+        }
 
-    /**
-     * @param string $mimeType
-     */
-    public function setMimeType($mimeType)
-    {
-        $this->mimeType = $mimeType;
+        return null;
+
     }
 
     /**
