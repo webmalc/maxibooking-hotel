@@ -19,7 +19,7 @@ parameters:
     mbh.weekdays: {1: 'mbh.weekdays.mon', 2: 'mbh.weekdays.tue', 3: 'mbh.weekdays.wed', 4: 'mbh.weekdays.thu', 5: 'mbh.weekdays.fri', 6: 'mbh.weekdays.sat', 0: 'mbh.weekdays.sun'}
 
     mbh.mongodb:
-      url: "mongodb://%mongodb_primary_host%:%mongodb_port%/%mongodb_database%"
+      url: "mongodb://%mongodb_login%:%mongodb_password%@%mongodb_host%/%mongodb_database%%mongodb_options%"
       db : "%mongodb_database%"
 
     mbh.environment: "%mbh_environment%"

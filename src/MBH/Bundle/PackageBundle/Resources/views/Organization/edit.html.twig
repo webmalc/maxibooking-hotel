@@ -21,7 +21,8 @@
 
 {% block _organization_stamp_widget %}
     {{ block('form_widget') }}
-    {% if stamp is defined and stamp is not null %}
+    {% if (stamp is defined and stamp is not null) and (parentOwnerId is defined and parentOwnerId is not null) %}
+        <a href="{{ path('organization_stamp_view', { protected: stamp.id, organization: parentOwnerId }) }}" class="fancybox"> {{ 'form.organizationType.view_image'|trans }} </a>
         <a href="{{ vich_uploader_asset(stamp, 'imageFile')|imagine_filter('stamp') }}" class="fancybox"> {{ 'form.organizationType.view_image'|trans }} </a>
     {% endif %}
 {% endblock %}

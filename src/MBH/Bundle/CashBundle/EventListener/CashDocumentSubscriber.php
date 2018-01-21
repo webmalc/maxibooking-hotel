@@ -40,14 +40,16 @@ class CashDocumentSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            'postPersist',
+            'postPersist',  //do not Enable! while ProtectedUpload
             Events::prePersist => 'prePersist',
             Events::preUpdate => 'preUpdate'
         ];
     }
 
+
     /**
      * @param LifecycleEventArgs $args
+     * @throws \Exception
      */
     public function postPersist(LifecycleEventArgs $args)
     {
@@ -102,10 +104,14 @@ class CashDocumentSubscriber implements EventSubscriber
     }
 
     /**
+     * @deprecated Этот функционал никогда не исползовался судя по всему, а т.к. Protected Upload по сути переделан, тут тоже надо переделывать.
+
+    /**
      * @param CashDocument $document
      * @param DocumentManager $dm
      * @return OrderDocument
-     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     * @throws Exception
+     * @throws \Exception
      */
     private function createPdfOrderDocument(CashDocument $document, DocumentManager $dm)
     {
@@ -164,13 +170,8 @@ class CashDocumentSubscriber implements EventSubscriber
         $client = $kernel->getClient();
         /** @var PdfGenerator $generator */
         $generator = $this->container->get('mbh.pdf_generator');
-        $path = $orderDocument->getUploadRootDir($client);
-        $generator->setPath($path);
+        $generator->setPath($orderDocument->getUploadRootDir($client));
         $generator->save($id, $template, ['cashDocument' => $document, 'myOrganization' => $myOrganization]);
-
-        $file = new ProtectedFile();
-        $uploadedFile = new UploadedFile($path, $fileName, 'pdf');
-        $file->setImageFile($uploadedFile);
 
         $orderDocument->setCashDocument($document);
         //$document->setOrderDocument($orderDocument);
