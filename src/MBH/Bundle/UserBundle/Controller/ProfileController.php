@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
+use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use MBH\Bundle\UserBundle\Form\ClientContactsType;
 use MBH\Bundle\UserBundle\Form\ClientTariffType;
 use MBH\Bundle\UserBundle\Form\PayerType;
@@ -167,8 +168,8 @@ class ProfileController extends Controller
 
                     return new Response('', 302);
                 } else {
-                    $this->addBillingErrorFlash();
-                    $this->get('mbh.form_data_handler')->fillFormByBillingErrors($form, $result->getErrors());
+                    $errors = [BillingResponseHandler::NON_FIELD_ERRORS => [$this->get('mbh.billing_response_handler')->getUnexpectedErrorText()]];
+                    $this->get('mbh.form_data_handler')->fillFormByBillingErrors($form, $errors);
                 }
             }
         }

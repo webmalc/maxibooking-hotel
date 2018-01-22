@@ -151,7 +151,7 @@ view.personal_account.services.cost: 'Стоимость'
 view.personal_account.tariff.small_title: 'Тариф'
 view.personal_account.payer.small_title: 'Плательщик'
 view.personal_account.payer.change_country_modal.title: 'Предупреждение'
-view.personal_account.payer.change_country_modal.text: 'При изменении страны плательщика будет изменена стоимость использования программы'
+view.personal_account.payer.change_country_modal.text: 'При изменении страны плательщика будет изменена валюта и цены тарифа использования программы'
 view.personal_account.payer.change_country_modal.cancel_button.text: 'Закрыть'
 
 view.personal_account.orders.small_title: 'Оплата'
