@@ -7,7 +7,39 @@ framework:
                 arguments:
                     - 'currentPlace'
             supports:
-                - MBH\Bundle\BillingBundle\Document\InstallationWorkflow
+                - MBH\Bundle\BillingBundle\Document\InstallStatusStorage
+            places:
+              - new
+              - progress
+              - credentials
+              - installed
+              - error
+              - credentials_error
+            transitions:
+                start_install:
+                    from: new
+                    to: progress
+                credentials_install:
+                    from: progress
+                    to: credentials
+                installed:
+                    from: credentials
+                    to: installed
+                error:
+                    from: progress
+                    to: error
+                credentials_error:
+                    from: credentials
+                    to: credentials_error
+
+        fixtures_installation:
+            type: 'workflow'
+            marking_store:
+                type: 'single_state'
+                arguments:
+                    - 'currentPlace'
+            supports:
+                - MBH\Bundle\BillingBundle\Document\InstallFixturesStatusStorage
             places:
               - new
               - progress
@@ -15,33 +47,6 @@ framework:
               - error
             transitions:
                 install:
-                    from: new
-                    to: progress
-                installed:
-                    from: progress
-                    to: installed
-                error:
-                    from: progress
-                    to: error
-                rollback:
-                    from: error
-                    to: new
-
-        after_installation:
-            type: 'workflow'
-            marking_store:
-                type: 'single_state'
-                arguments:
-                    - 'currentPlace'
-            supports:
-                - MBH\Bundle\BillingBundle\Document\AfterInstallationWorkFlow
-            places:
-              - new
-              - progress
-              - installed
-              - error
-            transitions:
-                after_install:
                     from: new
                     to: progress
                 installed:

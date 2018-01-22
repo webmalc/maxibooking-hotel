@@ -4,18 +4,17 @@
 namespace MBH\Bundle\BillingBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\BillingBundle\Lib\InstallWorkflowInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 
 /**
- * Class InstallationWorkflow
+ * Class InstallStatusStorage
  * @package MBH\Bundle\BillingBundle\Document
- * @ODM\Document(collection="InstallationWorkflows")
+ * @ODM\Document(collection="InstallStatusStorage")
  *
  */
-class InstallationWorkflow implements InstallWorkflowInterface
+class InstallStatusStorage
 {
     /**
      * @var string
@@ -25,7 +24,7 @@ class InstallationWorkflow implements InstallWorkflowInterface
 
     /**
      * @var string
-     * @ODM\Field(type="string", name="clientName")
+     * @ODM\Field(type="string", name="clientName", )
      * @MongoDBUnique(fields="clientName")
      */
     protected $clientName;
@@ -85,7 +84,7 @@ class InstallationWorkflow implements InstallWorkflowInterface
         $this->currentPlace = $currentPlace;
     }
 
-    public static function createInstallationWorkflow(string $clientName)
+    public static function createStatusStorage(string $clientName)
     {
         $wf = new static;
         $wf->setClientName($clientName);

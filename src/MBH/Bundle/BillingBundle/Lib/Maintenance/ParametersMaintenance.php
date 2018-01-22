@@ -4,7 +4,6 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Yaml\Yaml;
 
 final class ParametersMaintenance extends AbstractMaintenance
 {
@@ -78,7 +77,9 @@ final class ParametersMaintenance extends AbstractMaintenance
     }
 
 
-    /** Old install need to remove */
+    /**
+     * @deprecated
+     * Old install need to remove or move to yaml installer? */
     private function generateConfigOverrides(string $clientName, array $newConfig = []): array
     {
         $overrides = $newConfig ?: [

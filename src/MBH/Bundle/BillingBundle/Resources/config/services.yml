@@ -69,11 +69,11 @@ services:
 
     mbh.console.billing_install:
         class: MBH\Bundle\BillingBundle\Command\BillingInstallCommand
-        arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger"]
+        arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger", "@workflow.installation"]
         tags: ['console.command']
 
-    mbh.console.billing_after_install_client:
-        class: MBH\Bundle\BillingBundle\Command\BillingClientAfterInstallClientCommand
+    mbh.console.billing_credentials_install:
+        class: MBH\Bundle\BillingBundle\Command\BillingCredentialsInstall
         arguments: ['@mbh.client_instance_manager', '@mbh.billing.logger']
         tags: ['console.command']
 
@@ -97,9 +97,8 @@ services:
             - '@mbh.billing.api'
             - '@mbh.hotel.room_type_manager'
             - '@mbh.hotel.hotel_manager'
-            - '@workflow.installation'
-            - '@workflow.after_installation'
             - '@fos_user.user_manager'
+            - '@workflow.fixtures_installation'
             - '@mbh.acl_document_owner_maker'
 
     mbh.billing_response_handler:
