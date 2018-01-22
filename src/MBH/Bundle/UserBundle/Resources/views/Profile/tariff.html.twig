@@ -71,10 +71,10 @@
                     </button>
                     <h4 class="modal-title text-center">{{ 'view.personal_account.tariff.change_tariff_modal_title'|trans }}</h4>
                 </div>
-                <div class="modal-body" id="change-tariff-modal">
-                    {{ form_start(form, {'action': path('user_tariff'),  'attr': {'class': 'form-horizontal', 'id' : 'change-tariff-form'}}) }}
-                    {{ form_widget(form) }}
-                    {{ form_end(form) }}
+                <div class="modal-body" id="change-tariff-modal-body">
+                    <div id="change-tariff-form-wrapper">
+
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="change-tariff-button"><i class="fa fa-exchange"

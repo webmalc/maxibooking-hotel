@@ -73,9 +73,11 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
 
                 if (isset($userData['hotels']) ) {
                     foreach ($userData['hotels'] as $hotelId) {
-                        $this->container
-                            ->get('mbh.acl_document_owner_maker')
-                            ->insertAcl($user, $this->getReference($hotelId));
+                        if ($this->hasReference($hotelId)) {
+                            $this->container
+                                ->get('mbh.acl_document_owner_maker')
+                                ->insertAcl($user, $this->getReference($hotelId));
+                        }
                     }
                 }
 

@@ -5,125 +5,150 @@ namespace MBH\Bundle\BillingBundle\Command;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use http\Exception\InvalidArgumentException;
+use MBH\Bundle\BillingBundle\Document\InstallStatusStorage;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Workflow\Workflow;
 
-/**
- * Class BillingInstallCommand
- * @package MBH\Bundle\BillingBundle\Command
- * @deprecated
- */
-class BillingInstallCommand extends Command
+class BillingInstallCommand extends ContainerAwareCommand
 {
 
-    /** @var  array */
-    protected $options;
-
-    /** @var  BillingApi */
-    protected $api;
-
-    /** @var  DocumentManager */
-    protected $dm;
-
-    /** @var  Logger */
+    /** @var BillingApi */
+    protected $billingApi;
+    /** @var Logger */
     protected $logger;
+    /**
+     * @var DocumentManager
+     */
+    private $documentManager;
+    /**
+     * @var Workflow
+     */
+    private $workflow;
 
-    public function __construct(BillingApi $api, DocumentManager $dm, Logger $logger, $name = null)
+
+    public function __construct(BillingApi $billingApi, DocumentManager $documentManager, Logger $logger, Workflow $workflow, ?string $name = null)
     {
-        $this->api = $api;
-        $this->dm = $dm;
-        $this->logger = $logger;
         parent::__construct($name);
+
+        $this->billingApi = $billingApi;
+        $this->documentManager = $documentManager;
+        $this->logger = $logger;
+        $this->workflow = $workflow;
     }
 
 
     protected function configure()
     {
         $this
-            ->setName('mbh:install:billing')
-            ->setHidden(true)
-        ;
-
-        $resolver = new OptionsResolver();
-        $this->configureOptions($resolver);
-        $this->options = $resolver->resolve();
+            ->setName('mbh:billing:install')
+            ->addOption('client', null, InputOption::VALUE_REQUIRED, 'client name');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try {
-            $client = $this->createClient();
-            $this->changeInDb($client);
-        } catch (\Throwable $e) {
-            $this->logger->addCritical('Billing after install process error. '.$e->getMessage());
-            $this->api->sendFalse($client->getName());
-        }
-
-        $this->api->sendSuccess('json');
-
-
-    }
-
-    private function createClient(): Client
-    {
-        $client = new Client();
         $container = $this->getContainer();
-        $kernel = $container->get('kernel');
-        $client->setName($kernel->getClient());
-        $password = $container->get('mbh.helper')->getRandomString(20);
-        $client->setPassword($password);
+        $this->logger = $container->get('mbh.billing.logger');
+        $this->dm = $container->get('doctrine_mongodb.odm.default_document_manager');
+        $clientName = $input->getOption('client');
 
-        return $client;
-    }
+        if (empty($clientName)) {
+            $this->logger->addCritical('No client name for installClient');
+            throw new InvalidArgumentException('Mandatory option "client" is not specified');
+        }
+        $this->logger->addRecord(Logger::INFO, 'Start install client '. $clientName);
 
-    private function changeInDb(Client $client): void
-    {
-        $this->changeAdminPassword($client);
-        $this->changeHotelName($client);
-        $this->dm->flush();
 
-    }
-
-    private function changeAdminPassword(Client $client): void
-    {
-        $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
-        $admin->setPassword($client->getPassword());
-    }
-
-    private function changeHotelName(Client $client): void
-    {
-        foreach ($client->getProperties() as $property) {
-            $hotel = new Hotel();
-            $this->dm->persist($hotel);
+        if (!$statusStorage = $this->documentManager->getRepository('MBHBillingBundle:InstallStatusStorage')->findOneBy(['clientName' => $clientName])) {
+            $statusStorage = InstallStatusStorage::createStatusStorage($clientName);
+            $this->documentManager->persist($statusStorage);
         }
 
+
+        if ($this->workflow->can($statusStorage, 'start_install')) {
+            $this->changeStatus($statusStorage, 'start_install');
+
+            $instanceManager = $container->get('mbh.client_instance_manager');
+            $installResult = $instanceManager->installClient($clientName);
+
+            $billingApi = $this->getContainer()->get('mbh.billing.api');
+            if (!$installResult->isSuccessful()) {
+                $this->changeStatus($statusStorage, 'error');
+                $billingApi->sendClientInstallationResult($installResult, $clientName);
+            }
+            /** Success Result sending only from service, but false result - here */
+            try {
+                if ($this->workflow->can($statusStorage, 'credentials_install')) {
+                    $this->changeStatus($statusStorage, 'credentials_install');
+                    $result = $this->credentialsInstall($clientName);
+                    if ($result) {
+                        $this->changeStatus($statusStorage, 'installed');
+                    }
+                    if (!$result) {
+                        $this->changeStatus($statusStorage, 'credentials_error');
+                    }
+                } else {
+                    throw new ClientMaintenanceException('Error when credentials install');
+                }
+            } catch (\Throwable $e) {
+                $installResult->setIsSuccessful(false);
+                $billingApi->sendClientInstallationResult($installResult, $clientName);
+
+            }
+        } else {
+            $this->logger->addCritical('Cancel installation, case client status is '.$statusStorage->getCurrentPlace());
+        }
     }
 
-    private function getClientProperties(Client $client): array
+    private function changeStatus(InstallStatusStorage $statusStorage, string $transition)
     {
-        $result = [];
-
-        return $result;
+        if ($statusStorage && $this->workflow->can($statusStorage, $transition)) {
+            $this->workflow->apply($statusStorage, $transition);
+            $this->logger->addRecord(
+                Logger::INFO,
+                'Change install process to state '.$statusStorage->getCurrentPlace()
+            );
+            $this->documentManager->flush($statusStorage);
+        }
     }
 
-    private function configureOptions(OptionsResolver $resolver)
+    private function credentialsInstall(string $clientName): bool
     {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers, $encoders);
+        $command = 'mbh:billing:credentials:install --client='.$clientName;
 
-        $resolver->setDefault('serializer', $serializer);
+        return $this->executeProcess($command, $clientName);
+    }
 
+    private function executeProcess(string $command, string $clientName): bool
+    {
+        /** @var \AppKernel $kernel */
+        $kernel = $this->getApplication()->getKernel();
+        $command = sprintf(
+            'php console %s --env=%s %s',
+            $command,
+            $kernel->getEnvironment(),
+            $kernel->isDebug() ? '' : '--no-debug'
+        );
+        $env = [
+            \AppKernel::CLIENT_VARIABLE => $clientName,
+        ];
+
+        $process = new Process($command, $kernel->getRootDir().'/../bin', $env, null, 60 * 10);
+
+        $this->logger->addRecord(
+            Logger::INFO,
+            'Starting console command '.$command
+        );
+        $process->mustRun();
+
+        return $process->isSuccessful();
     }
 
 

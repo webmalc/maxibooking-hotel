@@ -71,6 +71,13 @@ class ClientPayerManager
 
         $billingFieldsByFormFields = array_flip($this->payerFormHandler->getBillingFieldsByFormFields());
         $requestErrors = $this->responseHandler->getErrorsByRequestResult($requestResult);
+        if (empty($requestErrors) && $formPayerData['country'] != $client->getCountry()) {
+            $client->setCountry($formPayerData['country']);
+            $requestResult = $this->clientManager->updateClient($client);
+            if (!$requestResult->isSuccessful()) {
+                $requestErrors = [BillingResponseHandler::NON_FIELD_ERRORS => [$this->responseHandler->getUnexpectedErrorText()]];
+            }
+        }
 
         return $this->payerFormHandler->fillArrayByKeys($requestErrors, $billingFieldsByFormFields, [BillingResponseHandler::NON_FIELD_ERRORS]);
     }
