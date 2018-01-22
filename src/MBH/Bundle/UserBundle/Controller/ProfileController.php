@@ -16,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * User profile controller.
@@ -138,53 +139,43 @@ class ProfileController extends Controller
     /**
      * @Template()
      * @Security("is_granted('ROLE_PAYMENTS')")
-     * @Route("/tariff", name="user_tariff")
-     * @param Request $request
+     * @Route("/tariff", name="user_tariff", options={"expose"=true})
      * @return array
      */
-    public function tariffAction(Request $request)
+    public function tariffAction()
     {
-        $billingApi = $this->get('mbh.billing.api');
-
-        $form = $this->createForm(ClientTariffType::class);
-        if ($request->isMethod('POST')) {
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $result = $billingApi->changeTariff($form->getData());
-                if ($result->isSuccessful()) {
-                    //TODO: Наверное другой текст
-                    $this->addFlash('success', 'view.personal_account.tariff.change_tariff.success');
-                } else {
-                    $this->addBillingErrorFlash();
-                    $this->get('mbh.form_data_handler')->fillFormByBillingErrors($form, $result->getErrors());
-                }
-            }
-        }
-
-        $tariffsData = $billingApi->getTariffsData();
-
         return [
-            'tariffsData' => $tariffsData,
-            'form' => $form->createView()
+            'tariffsData' => $this->get('mbh.billing.api')->getTariffsData(),
         ];
     }
 
-    public function updateTariffAction(Request $request)
+    /**
+     * @Route("update_tariff_modal", name="update_tariff_modal", options={"expose"=true})
+     * @Template
+     * @param Request $request
+     * @return array|Response
+     */
+    public function updateTariffModalAction(Request $request)
     {
         $form = $this->createForm(ClientTariffType::class);
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                $result = $billingApi->changeTariff($form->getData());
+                $result = $this->get('mbh.billing.api')->changeTariff($form->getData());
                 if ($result->isSuccessful()) {
-                    //TODO: Наверное другой текст
                     $this->addFlash('success', 'view.personal_account.tariff.change_tariff.success');
+
+                    return new Response('', 302);
                 } else {
                     $this->addBillingErrorFlash();
                     $this->get('mbh.form_data_handler')->fillFormByBillingErrors($form, $result->getErrors());
                 }
             }
         }
+
+        return [
+            'form' => $form->createView()
+        ];
     }
 
     /**

@@ -1,0 +1,7 @@
+{% extends "MBHBaseBundle::ajax.html.twig" %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('user_tariff'),  'attr': {'class': 'form-horizontal', 'id' : 'change-tariff-form'}}) }}
+        {{ form_widget(form) }}
+    {{ form_end(form) }}
+{% endblock %}

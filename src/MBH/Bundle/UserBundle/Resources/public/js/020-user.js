@@ -190,12 +190,6 @@ function hangOnPayButtonHandler() {
     })
 }
 
-function hangOnOpenBillButtonClick() {
-    $('#bill-button').click(function () {
-        window.open('about:blank').document.body.innerHTML += $('#bill-content').val();
-    });
-}
-
 function switchAuthOrganFieldsVisibility() {
     var isPassportSelected = $('#mbh_document_relation_type').val() === PASSPORT_DOCUMENT_TYPE_CODE;
     var $authorityOrganIdFormGroup = $('#mbh_document_relation_authorityOrganId').parent().parent();
@@ -212,12 +206,34 @@ function switchAuthOrganFieldsVisibility() {
 
 function initTariffPage() {
     var $changeTariffShowModalButton = $('#change-tariff-modal-show');
+    var $changeTariffFormWrapper = $('#change-tariff-form-wrapper');
     if ($changeTariffShowModalButton.length = 1) {
         $changeTariffShowModalButton.click(function () {
             $('#change-tariff-modal').modal('show');
+            $changeTariffFormWrapper.html(mbh.loader.html);
+            $.get(Routing.generate("update_tariff_modal")).done(function (modalBody) {
+                $changeTariffFormWrapper.html(modalBody);
+            });
         });
+
         $('#change-tariff-button').click(function () {
-            $('#change-tariff-form').submit();
+            var newTariffData = $('#change-tariff-form').serialize();
+            $changeTariffFormWrapper.html(mbh.loader.html);
+            $.ajax({
+                url: Routing.generate("update_tariff_modal"),
+                method: "POST",
+                data: newTariffData,
+                success: function (result) {
+                    $changeTariffFormWrapper.html(result);
+                },
+                error: function (response) {
+                    if (response.status === 302) {
+                        window.location.href = Routing.generate('user_tariff');
+                    } else {
+                        $changeTariffFormWrapper.html(mbh.error.html);
+                    }
+                }
+            });
         });
         $('.select2-container').css('width', '150px');
     }
