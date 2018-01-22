@@ -423,37 +423,6 @@ class ClientInstanceManager
         return $this->helper->getRandomString(10);
     }
 
-//    private function changeInstallProcessStatus(string $client, string $transition)
-//    {
-//        $installProcess = $this->getInstallProcess($client);
-//        $this->changeStatus($installProcess, $transition, $this->workflow);
-//    }
-//
-//    private function changeAfterInstallProcessStatus(string $client, string $transition)
-//    {
-//        $installProcess = $this->getAfterInstallProcess($client);
-//        $this->changeStatus($installProcess, $transition, $this->workflowAfterInstall);
-//    }
-//
-//    private function changeStatus(InstallWorkflowInterface $installProcess, string $transition, Workflow $workflow)
-//    {
-//        if ($installProcess && $workflow->can($installProcess, $transition)) {
-//            $workflow->apply($installProcess, $transition);
-//            $this->logger->addRecord(
-//                Logger::INFO,
-//                'Change install process to state '.$installProcess->getCurrentPlace()
-//            );
-//            $this->dm->flush($installProcess);
-//        }
-//    }
-//
-//    private function getInstallProcess(string $clientName)
-//    {
-//        return $this->dm->getRepository('MBHBillingBundle:InstallationWorkflow')->findOneBy(
-//            ['clientName' => $clientName]
-//        );
-//    }
-//
     private function getFixturesStatusStorage(string $clientName)
     {
         $statusStorage = $this->dm->getRepository('MBHBillingBundle:InstallFixturesStatusStorage')->findOneBy(
