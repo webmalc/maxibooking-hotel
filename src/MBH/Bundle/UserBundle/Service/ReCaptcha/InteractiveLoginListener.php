@@ -64,17 +64,23 @@ class InteractiveLoginListener
             $client = $this->clientManager->getClient();
             if ($client->getStatus() === 'not_confirmed') {
                 try {
-                    $this->billingApi->confirmClient($client);
-                    $client = $this->billingApi->getClient($client->getLogin());
-                    $this->clientManager->updateSessionClientData($client, new \DateTime());
+                    $result = $this->clientManager->confirmClient($client);
+                    if (!$result->isSuccessful()) {
+                        $this->handleIncorrectConfirmationRequest();
+                    }
                 } catch (\Exception $exception) {
-                    $this->session->set(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR, true);
-                    $this->session->getFlashBag()->add('error',
-                        $this->translator->trans('interactive_login_listener.error_by_client_confirmation', [
-                            '%supportEmail%' => $this->supportEmail
-                        ]));
+                    $this->handleIncorrectConfirmationRequest();
                 }
             }
         }
+    }
+
+    private function handleIncorrectConfirmationRequest()
+    {
+        $this->session->set(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR, true);
+        $this->session->getFlashBag()->add('error',
+            $this->translator->trans('interactive_login_listener.error_by_client_confirmation', [
+                '%supportEmail%' => $this->supportEmail
+            ]));
     }
 }

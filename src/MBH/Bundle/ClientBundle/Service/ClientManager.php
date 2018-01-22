@@ -143,11 +143,19 @@ class ClientManager
             || $this->session->get(self::IS_AUTHORIZED_BY_TOKEN) !== false;
     }
 
+    /**
+     * @param Client $client
+     * @return Result
+     */
     public function confirmClient(Client $client)
     {
-        $this->billingApi->confirmClient($client);
-        $client = $this->billingApi->getClient();
-        $this->updateSessionClientData($client, $currentDateTime);
+        $result = $this->billingApi->confirmClient($client);
+        if ($result->isSuccessful()) {
+            $client = $this->billingApi->getClient();
+            $this->updateSessionClientData($client, new \DateTime());
+        }
+
+        return $result;
     }
 
     /**
@@ -208,37 +216,5 @@ class ClientManager
     {
         $this->session->set(Client::CLIENT_DATA_RECEIPT_DATETIME, $currentDateTime);
         $this->session->set(self::SESSION_CLIENT_FIELD, $client);
-    }
-
-    /**
-     * @return Result
-     */
-    public function getAvailableServices()
-    {
-        $client = $this->getClient();
-        $clientServicesRequestResult = $this->billingApi->getClientServices($client);
-        if (!$clientServicesRequestResult->isSuccessful()) {
-            return $clientServicesRequestResult;
-        }
-
-        $clientServicesIds = array_map(function (ClientService $clientService) {
-            return $clientService->getService();
-        }, $clientServicesRequestResult->getData());
-
-        $servicesRequestResult = $this->billingApi->getServices();
-        if (!$servicesRequestResult->isSuccessful()) {
-            return $servicesRequestResult;
-        }
-
-        $services = [];
-        /** @var Service $service */
-        foreach ($servicesRequestResult->getData() as $service) {
-            //TODO: Временно для тестов
-//            if (!in_array($service->getId(), $clientServicesIds)) {
-                $services[] = $service;
-//            }
-        }
-
-        return Result::createSuccessResult($services);
     }
 }
