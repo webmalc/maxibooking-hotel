@@ -53,6 +53,11 @@ function handlePayerForm() {
         $('#mbhuser_bundle_payer_type_country, #mbhuser_bundle_payer_type_payerType').change(function () {
             setPayerFormVisibility();
         });
+        $('#mbhuser_bundle_payer_type_country').change(function () {
+            if ($('#mbhuser_bundle_payer_type_defaultCountry').val() !== this.value) {
+                $('#change-country-modal').modal('show');
+            }
+        });
     }
 }
 

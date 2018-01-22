@@ -12,6 +12,7 @@ use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -36,6 +37,7 @@ class PayerType extends AbstractType
         /** @var Company $company */
         $company = $options['company'];
         $hasCompany = !is_null($company);
+        $countryTld = isset($client) ? $client->getCountry() : Country::RUSSIA_TLD;
 
         $builder
             ->add('country', TextType::class, [
@@ -43,9 +45,14 @@ class PayerType extends AbstractType
                 'label' => 'form.payer_type.country.label',
                 'attr' => [
                     'class' => 'billing-text-select',
-                    'data-endpoint-name' => 'countries'
+                    'data-endpoint-name' => 'countries',
+                    'readonly' => true
                 ],
-                'data' => isset($client) ? $client->getCountry() : Country::RUSSIA_TLD
+                'data' => $countryTld
+            ])
+            ->add('defaultCountry', HiddenType::class, [
+                'mapped' => false,
+                'data' => $countryTld
             ])
             ->add('payerType', ChoiceType::class, [
                 'group' => 'form.payer_type.payer_type_group',
