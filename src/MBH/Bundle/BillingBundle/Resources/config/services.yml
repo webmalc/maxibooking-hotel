@@ -100,6 +100,7 @@ services:
             - '@workflow.installation'
             - '@workflow.after_installation'
             - '@fos_user.user_manager'
+            - '@mbh.acl_document_owner_maker'
 
     mbh.billing_response_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler

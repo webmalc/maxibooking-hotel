@@ -106,7 +106,7 @@ class RoomController extends BaseController
         $limitManager = $this->get('mbh.client_manager');
         if ($limitManager->isLimitOfRoomsExceeded(1)) {
             $limitErrorMessage = $this->get('translator')
-                ->trans('room_controller.limit_of_rooms_exceeded', [
+                ->trans('room_controller.limit_of_room_fund_exceeded', [
                     '%availableNumberOfRooms%' => $limitManager->getAvailableNumberOfRooms(),
                     '%overviewUrl%' => $this->generateUrl('total_rooms_overview')
                 ]);
@@ -187,7 +187,7 @@ class RoomController extends BaseController
                 && !$oldIsEnabledValue
                 && $limitManager->isLimitOfRoomsExceeded(1)) {
                 $limitErrorMessage = $this->get('translator')
-                    ->trans('room_controller.limit_of_rooms_exceeded', [
+                    ->trans('room_controller.limit_of_room_fund_exceeded', [
                         '%availableNumberOfRooms%' => $limitManager->getAvailableNumberOfRooms(),
                         '%overviewUrl%' => $this->generateUrl('total_rooms_overview')
                     ]);
@@ -273,7 +273,7 @@ class RoomController extends BaseController
             $limitManager = $this->get('mbh.client_manager');
             if ($limitManager->isLimitOfRoomsExceeded($numberOfCreatedRooms)) {
                 $limitErrorMessage = $this->get('translator')
-                    ->trans('room_controller.limit_of_rooms_exceeded', [
+                    ->trans('room_controller.limit_of_room_fund_exceeded', [
                         '%availableNumberOfRooms%' => $limitManager->getAvailableNumberOfRooms(),
                         '%overviewUrl%' => $this->generateUrl('total_rooms_overview')
                     ]);
