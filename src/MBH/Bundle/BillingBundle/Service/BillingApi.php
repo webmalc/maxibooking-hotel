@@ -157,7 +157,7 @@ class BillingApi
             $requestResult->setIsSuccessful(false);
 
             $response = $exception->getResponse();
-            $this->handleErrorResponse($response, $requestResult);
+            $this->handleErrorResponse($response, $requestResult, $url, $companyData);
 
             return $requestResult;
         }
@@ -191,9 +191,7 @@ class BillingApi
     {
         if (!$this->isClientCompaniesInit) {
             $queryData = ['client' => $client->getId()];
-
             $this->clientCompanies = $this->getEntities(self::PAYER_COMPANY_ENDPOINT_SETTINGS, $queryData)->getData();
-
             $this->isClientCompaniesInit = true;
         }
 
@@ -215,14 +213,15 @@ class BillingApi
             'end' => (new \DateTime('+' . $serviceData['period'] . $serviceData['units']))->format(self::BILLING_DATETIME_FORMAT)
         ];
 
-        $response = $this->sendPost($this->getBillingUrl(self::CLIENT_SERVICES_ENDPOINT_SETTINGS['endpoint']), $newClientServiceData);
+        $url = $this->getBillingUrl(self::CLIENT_SERVICES_ENDPOINT_SETTINGS['endpoint']);
+        $response = $this->sendPost($url, $newClientServiceData);
         $requestResult = new Result();
 
-        if ($response->getStatusCode() == 200) {
+        if ($response->getStatusCode() === 200) {
             return $this->tryDeserializeObject($response, $requestResult, ClientService::class);
         }
 
-        return $this->handleErrorResponse($response, $requestResult);
+        return $this->handleErrorResponse($response, $requestResult, $url, $newClientServiceData);
     }
 
     /**
@@ -282,27 +281,10 @@ class BillingApi
      */
     public function changeTariff(array $newTariffData)
     {
-        $requestResult = new Result();
         $newTariffData['rooms'] = (int)$newTariffData['rooms'];
         $url = self::BILLING_HOST . '/' . $this->locale . '/clients/' . $this->billingLogin . '/tariff_update/';
 
-        try {
-            $response = $this->sendPost($url, $newTariffData, true);
-        } catch (RequestException $exception) {
-            $requestResult->setIsSuccessful(false);
-            $response = $exception->getResponse();
-            $this->handleErrorResponse($response, $requestResult);
-
-            return $requestResult;
-        }
-
-        $decodedResponse = json_decode((string)$response->getBody(), true);
-
-        if ($decodedResponse['status'] !== true) {
-            $requestResult->setIsSuccessful(false);
-        }
-
-        return $requestResult;
+        return $this->sendPostAndHandleResult($url, $newTariffData);
     }
 
     /**
@@ -314,6 +296,95 @@ class BillingApi
         $decodedResponse = json_decode((string)$response->getBody(), true);
 
         return $decodedResponse;
+    }
+
+    /**
+     * @param $authorityId
+     * @param $locale
+     * @return AuthorityOrgan|object
+     */
+    public function getAuthorityOrganById($authorityId, $locale = null)
+    {
+        return $this->getBillingEntityById(self::FMS_ORGANS_ENDPOINT_SETTINGS, $authorityId, $locale);
+    }
+
+    /**
+     * @param $countryTld
+     * @param $locale
+     * @return Country|object
+     */
+    public function getCountryByTld($countryTld, $locale = null)
+    {
+        return $this->getBillingEntityById(self::COUNTRIES_ENDPOINT_SETTINGS, $countryTld, $locale);
+    }
+
+    /**
+     * @param $regionId
+     * @param null $locale
+     * @return Region|object
+     */
+    public function getRegionById($regionId, $locale = null)
+    {
+        return $this->getBillingEntityById(self::REGIONS_ENDPOINT_SETTINGS, $regionId, $locale);
+    }
+
+    /**
+     * @param $regionQuery
+     * @param null $locale
+     * @return Region[]
+     */
+    public function getRegionByQuery($regionQuery, $locale = null)
+    {
+        return $this->getBillingEntitiesByQuery(self::REGIONS_ENDPOINT_SETTINGS, [self::BILLING_QUERY_PARAM_NAME => $regionQuery], Region::class, $locale);
+    }
+
+    /**
+     * @param $cityId
+     * @param null $locale
+     * @return City|object
+     */
+    public function getCityById($cityId, $locale = null)
+    {
+        return $this->getBillingEntityById(self::CITIES_ENDPOINT_SETTINGS, $cityId, $locale);
+    }
+
+    /**
+     * @param Client $client
+     * @return Result
+     * @throws Exception
+     */
+    public function confirmClient(Client $client)
+    {
+        $url = self::BILLING_HOST . '/' . $this->locale . '/clients/' . $client->getLogin() . '/confirm';
+
+        return $this->sendPostAndHandleResult($url, []);
+    }
+
+    /**
+     * @param $url
+     * @param $data
+     * @return Result
+     */
+    private function sendPostAndHandleResult($url, $data)
+    {
+        $requestResult = new Result();
+
+        try {
+            $response = $this->sendPost($url, $data, true);
+        } catch (RequestException $exception) {
+            $requestResult->setIsSuccessful(false);
+            $response = $exception->getResponse();
+            $this->handleErrorResponse($response, $requestResult, $url, $data);
+
+            return $requestResult;
+        }
+
+        $decodedResponse = json_decode((string)$response->getBody(), true);
+        if ($decodedResponse['status'] !== true) {
+            $requestResult->setIsSuccessful(false);
+        }
+
+        return $requestResult;
     }
 
     /**
@@ -338,76 +409,19 @@ class BillingApi
     /**
      * @param ResponseInterface $response
      * @param Result $requestResult
+     * @param array $requestData
+     * @param string $url
      * @return Result
      */
-    private function handleErrorResponse(ResponseInterface $response, Result $requestResult)
+    private function handleErrorResponse(ResponseInterface $response, Result &$requestResult, string $url, array $requestData = [])
     {
         if ($response->getStatusCode() == 400) {
             $requestResult->setErrors(json_decode((string)$response->getBody(), true));
         } else {
-            $this->logger->error('Error by update of client "' . (string)$response->getBody() . '"');
+            $this->logErrorResponse($response, $url, $requestData);
         }
 
         return $requestResult;
-    }
-
-    /**
-     * @param $authorityId
-     * @param $locale
-     * @return AuthorityOrgan|object
-     */
-    public function getAuthorityOrganById($authorityId, $locale = null)
-    {
-        return $this->getBillingEntityById(self::FMS_ORGANS_ENDPOINT_SETTINGS, $authorityId, $locale);
-    }
-
-    /**
-     * @param $countryTld
-     * @param $locale
-     * @return Country|object
-     */
-    public function getCountryByTld($countryTld, $locale = null) {
-        return $this->getBillingEntityById(self::COUNTRIES_ENDPOINT_SETTINGS, $countryTld, $locale);
-    }
-
-    /**
-     * @param $regionId
-     * @param null $locale
-     * @return Region|object
-     */
-    public function getRegionById($regionId, $locale = null) {
-         return $this->getBillingEntityById(self::REGIONS_ENDPOINT_SETTINGS, $regionId, $locale);
-    }
-
-    /**
-     * @param $regionQuery
-     * @param null $locale
-     * @return Region[]
-     */
-    public function getRegionByQuery($regionQuery, $locale = null) {
-        return $this->getBillingEntitiesByQuery(self::REGIONS_ENDPOINT_SETTINGS, [self::BILLING_QUERY_PARAM_NAME => $regionQuery], Region::class, $locale);
-    }
-
-    /**
-     * @param $cityId
-     * @param null $locale
-     * @return City|object
-     */
-    public function getCityById($cityId, $locale = null) {
-        return $this->getBillingEntityById(self::CITIES_ENDPOINT_SETTINGS, $cityId, $locale);
-    }
-
-    /**
-     * @param Client $client
-     * @throws Exception
-     */
-    public function confirmClient(Client $client)
-    {
-        $response = $this->sendPost(self::BILLING_HOST . '/' . $this->locale . '/clients/' . $client->getLogin() . '/confirm', [], true);
-        $decodedResponse = json_decode((string)$response->getBody(), true);
-        if ($decodedResponse['status'] === false) {
-            throw new Exception($decodedResponse['message']);
-        }
     }
 
     /**
@@ -424,9 +438,8 @@ class BillingApi
             $response = $this->sendPatch($url, $requestData);
         } catch (RequestException $exception) {
             $requestResult->setIsSuccessful(false);
-
             $response = $exception->getResponse();
-            $this->handleErrorResponse($response, $requestResult);
+            $this->handleErrorResponse($response, $requestResult, $url, $requestData);
 
             return $requestResult;
         }
@@ -446,14 +459,10 @@ class BillingApi
         $endpoint = $endpointSettings['endpoint'];
         $url = $this->getBillingUrl($endpoint, null, null, $queryData);
 
-        $response = $this->guzzle->get($url, [
-            RequestOptions::HEADERS => $this->getAuthorizationHeaderAsArray(),
-            RequestOptions::HTTP_ERRORS => false
-        ]);
-
-        if ($response->getStatusCode() !== 200) {
-            $this->logger->error('Error when retrieving data from the server by url' . $url . ': ' . $response->getBody());
-            return Result::createErrorResult();
+        try {
+            $response = $this->sendGet($url);
+        } catch (RequestException $exception) {
+            return $this->handleErrorResponse($exception->getResponse(), new Result(), $url, []);
         }
 
         $decodedResponse = json_decode($response->getBody(), true);
@@ -482,7 +491,13 @@ class BillingApi
 
         $endpoint = $endpointSettings['endpoint'];
         if (!isset($this->loadedEntities[$endpoint][$id])) {
-            $response = $this->sendGet($this->getBillingUrl($endpoint, $id, $locale));
+            $url = $this->getBillingUrl($endpoint, $id, $locale);
+            try {
+                $response = $this->sendGet($url);
+            } catch (RequestException $exception) {
+                $this->logErrorAndThrowException($exception, $url);
+            }
+
             $entity = $this->serializer->deserialize($response->getBody(), $endpointSettings['model'], 'json');
             $this->loadedEntities[$endpoint][$id] = $entity;
         }
@@ -497,7 +512,11 @@ class BillingApi
      */
     public function getBillingEntityByUrl($url, $modelType)
     {
-        $response = $this->sendGet($url);
+        try {
+            $response = $this->sendGet($url);
+        } catch (RequestException $exception) {
+            $this->logErrorAndThrowException($exception, $url);
+        }
 
         return $this->serializer->deserialize($response->getBody(), $modelType, 'json');
     }
@@ -511,7 +530,13 @@ class BillingApi
      */
     private function getBillingEntitiesByQuery($endpoint, $queryParams, $modelType, $locale)
     {
-        $response = $this->sendGet($this->getBillingUrl($endpoint, null, $locale, $queryParams));
+        $url = $this->getBillingUrl($endpoint, null, $locale, $queryParams);
+
+        try {
+            $response = $this->sendGet($url);
+        } catch (RequestException $exception) {
+            $this->logErrorAndThrowException($exception, $url);
+        }
         $decodedResponse = json_decode($response->getBody(), true);
 
         $entities = [];
@@ -588,5 +613,28 @@ class BillingApi
     private function getAuthorizationHeaderAsArray()
     {
         return ['Authorization' => 'Token ' . self::AUTH_TOKEN];
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param string $url
+     * @param array $requestData
+     */
+    private function logErrorResponse(ResponseInterface $response, string $url, array $requestData): void
+    {
+        $this->logger->err('Exception was thrown by requesting ' . ' by url ' . $url
+            . '. Request data: ' . json_encode($requestData)
+            . '. Response: ' . (string)$response->getBody()
+        );
+    }
+
+    /**
+     * @param $exception
+     * @param $url
+     */
+    private function logErrorAndThrowException($exception, $url): void
+    {
+        $this->logErrorResponse($exception->getResponse(), $url, []);
+        throw new \RuntimeException('Can not get data by url ' . $url);
     }
 }

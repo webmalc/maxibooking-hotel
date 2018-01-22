@@ -20,13 +20,11 @@ class BillingResponseHandler
      * @param $requestResult
      * @return array
      */
-    private function getErrorsByFailedRequestResult($requestResult): array
+    private function getErrorsByFailedRequestResult(Result $requestResult): array
     {
         $errors = $requestResult->getErrors();
         if (empty($errors)) {
-            $errors['non_field_errors'] = [$this->translator->trans('interactive_login_listener.error_by_client_confirmation', [
-                '%supportEmail%' => $this->supportContacts['email']
-            ])];
+            $errors[self::NON_FIELD_ERRORS] = [$this->getUnexpectedErrorText()];
         } else {
             $this->fillErrorsByNestedFields('ru', $errors);
             $this->fillErrorsByNestedFields('world', $errors);
@@ -60,5 +58,15 @@ class BillingResponseHandler
             }
             unset($errors[$nestedArrayFieldName]);
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnexpectedErrorText(): string
+    {
+        return $this->translator->trans('interactive_login_listener.error_by_client_confirmation', [
+            '%supportEmail%' => $this->supportContacts['email']
+        ]);
     }
 }

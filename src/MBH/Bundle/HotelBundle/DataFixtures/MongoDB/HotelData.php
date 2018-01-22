@@ -5,8 +5,6 @@ namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 
 /**
@@ -34,7 +32,7 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface
     /**
      * {@inheritDoc}
      */
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         $repo = $manager->getRepository('MBHHotelBundle:Hotel');
 
@@ -60,5 +58,10 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface
     public function getOrder()
     {
         return -9999;
+    }
+
+    public function getEnvs(): array
+    {
+        return ['test', 'dev'];
     }
 }
