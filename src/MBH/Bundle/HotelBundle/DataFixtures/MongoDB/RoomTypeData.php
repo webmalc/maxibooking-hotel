@@ -82,6 +82,11 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
         }
     }
 
+    public function getEnvs(): array
+    {
+        return ['test', 'dev'];
+    }
+
     public function getOrder()
     {
         return 4;
