@@ -452,7 +452,7 @@ class ClientInstanceManager
     {
         $manager = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'manager']);
         if (!is_null($manager)) {
-            $this->aclOwnerMaker->insertAcl($user, $hotel);
+            $this->aclOwnerMaker->insertAcl($manager, $hotel);
         }
     }
 
