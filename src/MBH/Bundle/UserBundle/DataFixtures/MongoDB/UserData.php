@@ -1,4 +1,5 @@
 <?php
+
 namespace MBH\Bundle\UserBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
@@ -23,7 +24,6 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
             'role' => 'ROLE_USER',
             'group' => 'group-medium_manager',
             'password' => 'manager',
-            'hotels' => ['hotel-one']
         ],
         'user-mb' => [
             'username' => 'mb',
@@ -63,23 +63,13 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                     ->setEnabled(true)
                     ->setLocked(false);
 
-                if (isset($userData['group']) ) {
+                if (isset($userData['group'])) {
                     $user->addGroup($this->getReference($userData['group']));
                 }
                 $user->setAllowNotificationTypes($notificationTypes);
 
                 $manager->persist($user);
                 $manager->flush();
-
-                if (isset($userData['hotels']) ) {
-                    foreach ($userData['hotels'] as $hotelId) {
-                        if ($this->hasReference($hotelId)) {
-                            $this->container
-                                ->get('mbh.acl_document_owner_maker')
-                                ->insertAcl($user, $this->getReference($hotelId));
-                        }
-                    }
-                }
 
                 $this->setReference($key, $user);
             }

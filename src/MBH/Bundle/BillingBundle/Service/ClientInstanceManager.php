@@ -13,8 +13,10 @@ use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingRoom;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Service\HotelManager;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\PackageBundle\Lib\AclOwnerMaker;
 use MBH\Bundle\UserBundle\Document\AuthorizationToken;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager;
@@ -93,6 +95,7 @@ class ClientInstanceManager
      */
     private $workflow;
 
+    private $aclOwnerMaker;
 
     public function __construct(
         MaintenanceManager $maintenanceManager,
@@ -105,7 +108,8 @@ class ClientInstanceManager
         RoomTypeManager $roomTypeManager,
         HotelManager $hotelManager,
         UserManager $userManager,
-        WorkFlow $workflow
+        WorkFlow $workflow,
+        AclOwnerMaker $aclOwnerMaker
     ) {
         $this->maintenanceManager = $maintenanceManager;
         $this->logger = $logger;
@@ -121,6 +125,7 @@ class ClientInstanceManager
         $this->kernelEnv = $kernel->getEnvironment();
         $this->userManager = $userManager;
         $this->workflow = $workflow;
+        $this->aclOwnerMaker = $aclOwnerMaker;
     }
 
     /**
@@ -325,6 +330,9 @@ class ClientInstanceManager
             $hotel = $this->hotelManager->createByBillingProperty($property, $isHotelDefault);
             $this->logger->info('Hotel "'.$property->getName().'" created. Start creation of rooms');
 
+            $this->logger->info('Add manager rights to hotel');
+            $this->addManagerRightsToTheHotel($hotel);
+
             foreach ($property->getRooms() as $roomUrl) {
                 try {
                     /** @var BillingRoom $billingRoom */
@@ -356,7 +364,7 @@ class ClientInstanceManager
      * @param string $clientName
      * @return Result
      */
-    public function runInstallationOfRelatedToHotelsData(string $clientName)
+    private function runInstallationOfRelatedToHotelsData(string $clientName)
     {
         $command = 'doctrine:mongodb:fixtures:load --append';
         foreach (self::FIXTURES_FOR_NEW_HOTELS as $fixturesForHotel) {
@@ -435,6 +443,17 @@ class ClientInstanceManager
         }
 
         return $statusStorage;
+    }
+
+    /**
+     * @param Hotel $hotel
+     */
+    private function addManagerRightsToTheHotel(Hotel $hotel): void
+    {
+        $manager = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'manager']);
+        if (!is_null($manager)) {
+            $this->aclOwnerMaker->insertAcl($manager, $hotel);
+        }
     }
 
 }

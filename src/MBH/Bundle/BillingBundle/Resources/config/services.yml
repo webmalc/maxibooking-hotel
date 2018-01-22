@@ -99,6 +99,7 @@ services:
             - '@mbh.hotel.hotel_manager'
             - '@fos_user.user_manager'
             - '@workflow.fixtures_installation'
+            - '@mbh.acl_document_owner_maker'
 
     mbh.billing_response_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler
