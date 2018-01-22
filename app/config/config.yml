@@ -332,6 +332,11 @@ liip_imagine:
             quality: 80
             filters:
               thumbnail: { size: [95, 80], mode: outbound, allow_upscale: true }
+        thumb_400x200:
+            quality: 80
+            filters:
+              thumbnail: { size: [400, 200], mode: outbound, allow_upscale: true }
+
         stamp:
             cache: protected_flysystem_cache
             quality: 80
