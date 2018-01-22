@@ -8,7 +8,6 @@ use GuzzleHttp\Exception\RequestException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BillingBundle\Document\AfterInstallationWorkFlow;
 use MBH\Bundle\BillingBundle\Document\InstallationWorkflow;
-use MBH\Bundle\BillingBundle\Lib\Exceptions\AfterInstallException;
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use MBH\Bundle\BillingBundle\Lib\InstallWorkflowInterface;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
@@ -30,6 +29,15 @@ use Symfony\Component\Workflow\Workflow;
 class ClientInstanceManager
 {
     const MAX_NUMBER_OF_REQUEST_ATTEMPTS = 3;
+    const FIXTURES_FOR_NEW_HOTELS = [
+        "../src/MBH/Bundle/PriceBundle/DataFixtures/MongoDB/ServiceData.php",
+        '../src/MBH/Bundle/PriceBundle/DataFixtures/MongoDB/TariffData.php',
+        '../src/MBH/Bundle/PriceBundle/DataFixtures/MongoDB/SpecialData.php',
+        '../src/MBH/Bundle/RestaurantBundle/DataFixtures/MongoDB/IngredientsCategoryData',
+        '../src/MBH/Bundle/RestaurantBundle/DataFixtures/MongoDB/DishMenuCategoryData.php',
+        '../src/MBH/Bundle/RestaurantBundle/DataFixtures/MongoDB/TableTypeData.php',
+        '../src/MBH/Bundle/HotelBundle/DataFixtures/MongoDB/TaskData.php'
+    ];
 
     private $maintenanceManager;
     private $logger;
@@ -319,7 +327,52 @@ class ClientInstanceManager
             $this->logger->info('Rooms creation for hotel "'.$property->getName().'" finished');
             $this->dm->flush();
         }
+
+        $result = $this->runInstallationOfRelatedToHotelsData($login);
         $this->logger->info('End installation of fixtures');
+
+        return $result;
+    }
+
+    /**
+     * @param string $clientName
+     * @return Result
+     */
+    public function runInstallationOfRelatedToHotelsData(string $clientName)
+    {
+        $command = 'doctrine:mongodb:fixtures:load --append';
+        foreach (self::FIXTURES_FOR_NEW_HOTELS as $fixturesForHotel) {
+            $command .= ' --fixtures=' . $fixturesForHotel;
+        }
+
+        $command = sprintf(
+            'php console %s --env=%s %s',
+            $command,
+            $this->kernelEnv,
+            $this->isDebug ? '' : '--no-debug'
+        );
+        $env = [
+            \AppKernel::CLIENT_VARIABLE => $clientName,
+        ];
+
+        $this->logger->info('Before installation of related to new hotels fixtures. Run by command ' . $command);
+        $process = new Process($command, $this->consoleFolder, $env, null, 60 * 10);
+
+        try {
+            $process->mustRun();
+        } catch (\Exception $exception) {
+            $this->logger->err('Exception was thrown by installation of related to hotels fixtures. Message: ' . $exception->getMessage());
+
+            return Result::createErrorResult([$exception->getMessage()]);
+        }
+
+        if ($process->getExitCode() !== 0) {
+            $this->logger->err('Installation of related to hotels fixtures is not successful. Message: ' . $process->getExitCodeText());
+
+            return Result::createErrorResult([$process->getExitCodeText()]);
+        }
+
+        $this->logger->err('Installation of related to hotels fixtures is successful.');
 
         return Result::createSuccessResult();
     }
