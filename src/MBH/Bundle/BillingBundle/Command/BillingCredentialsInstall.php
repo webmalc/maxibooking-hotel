@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class BillingClientAfterInstallClientCommand extends Command
+class BillingCredentialsInstall extends Command
 {
     /** @var ClientInstanceManager */
     private $instanceManager;
@@ -20,7 +20,7 @@ class BillingClientAfterInstallClientCommand extends Command
     private $logger;
 
     /**
-     * BillingClientAfterInstallClientCommand constructor.
+     * BillingFixturesInstallCommand constructor.
      * @param ClientInstanceManager $instanceManager
      * @param Logger $logger
      */
@@ -34,7 +34,7 @@ class BillingClientAfterInstallClientCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('mbh:client:after:install')
+            ->setName('mbh:billing:credentials:install')
             ->addOption('client', null, InputOption::VALUE_REQUIRED, 'client name');
     }
 
@@ -55,7 +55,7 @@ class BillingClientAfterInstallClientCommand extends Command
             throw new InvalidArgumentException('Mandatory option "client" is not specified');
         }
 
-        $isSuccessful = $this->instanceManager->afterInstall($clientName);
+        $isSuccessful = $this->instanceManager->createCredentials($clientName);
 
         if ($isSuccessful) {
             $this->logger->info('After install method ended successful');
