@@ -10,28 +10,23 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
  */
 class ClientConfigRepository extends DocumentRepository
 {
-    private $clientConfig;
-
     /**
      * @return ClientConfig
      */
     public function fetchConfig()
     {
-        if (is_null($this->clientConfig)) {
-            /** @var DocumentManager $qb */
-            $qb = $this->createQueryBuilder('s');
-            $config = $qb->getQuery()->getSingleResult();
+        /** @var DocumentManager $qb */
+        $qb = $this->createQueryBuilder();
+        $config = $qb->getQuery()->getSingleResult();
 
-            if (!$config) {
-                $config = new ClientConfig();
-                $dm = $this->getDocumentManager();
-                $dm->persist($config);
-                $dm->flush();
-            }
-            $this->clientConfig = $config;
+        if (!$config) {
+            $config = new ClientConfig();
+            $dm = $this->getDocumentManager();
+            $dm->persist($config);
+            $dm->flush();
         }
 
-        return $this->clientConfig;
+        return $config;
     }
 
     /**
