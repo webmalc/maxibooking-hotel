@@ -62,7 +62,7 @@ class MaintenanceController extends BaseController
         $this->get('mbh.billing.logger')->addRecord(
             Logger::INFO,
             'Received request inside '.__METHOD__.' from '.$request->getClientIp(),
-            $requestData
+            $requestData ?? []
         );
         $this->checkToken($requestData['token'] ?? null);
         $clientLogin = $requestData['client_login'] ?? null;
