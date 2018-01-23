@@ -305,6 +305,7 @@ class ClientInstanceManager
 
         $statusStorage = $this->getFixturesStatusStorage($login);
         if (!$this->workflow->can($statusStorage, 'install')) {
+            $this->logger->err('Can not install fixtures cause '. $statusStorage->getCurrentPlace());
             return Result::createErrorResult(['message' => 'Can not install fixtures']);
         }
 
@@ -398,7 +399,7 @@ class ClientInstanceManager
             return Result::createErrorResult([$process->getExitCodeText()]);
         }
 
-        $this->logger->err('Installation of related to hotels fixtures is successful.');
+        $this->logger->info('Installation of related to hotels fixtures is successful.');
 
         return Result::createSuccessResult();
     }
