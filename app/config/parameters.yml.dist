@@ -73,4 +73,5 @@ parameters:
   s3_id: superId
   s3_secret: superSecretKey
   s3_region: eu-west-1
+  kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
 
