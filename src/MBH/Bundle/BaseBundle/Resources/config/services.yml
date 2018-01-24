@@ -369,7 +369,36 @@ services:
                   key: '%s3_id%'
                   secret: '%s3_secret%'
 
-
-
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
+
+    mbh.exception_subscriber:
+        class: MBH\Bundle\BaseBundle\EventListener\ExceptionSubscriber
+        arguments: ['@kernel', '@exception_notifier']
+        tags:
+            - {name: kernel.event_subscriber}
+
+    exception_notifier:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
+        arguments: ['@service_container', '@logger']
+        calls:
+            - [attach, ["@sentry_messenger"]]
+
+    sentry_messenger:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\SentryMessenger
+        arguments: ['@mbh.sentry_logger']
+
+    mbh.sentry_logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: ['sentry']
+        calls:
+            - [pushHandler, ['@mbh.raven_handler']]
+
+    mbh.raven_handler:
+        class: Monolog\Handler\RavenHandler
+        arguments: ['@mbh.raven_client']
+
+    mbh.raven_client:
+        class: Raven_Client
+        arguments: ['%sentry_dsn%']
+        public: false

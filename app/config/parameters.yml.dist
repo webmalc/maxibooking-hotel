@@ -73,4 +73,4 @@ parameters:
   s3_id: superId
   s3_secret: superSecretKey
   s3_region: eu-west-1
-
+  sentry_dsn: 'https://e12f8e17cc5b44fc9fa9a505bb531627:400db38d7d03451d9b91a6fe060abbe4@sentry.io/276024'
