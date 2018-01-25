@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -25,25 +26,28 @@ class CashDocumentType extends AbstractType
 {
     private $translator;
 
-    public function __construct(TranslatorInterface $translator)
+    /** @var  DocumentManager */
+    protected $documentManager;
+    /** @var  array */
+    private $methods;
+    private $operations;
+
+    public function __construct(TranslatorInterface $translator, DocumentManager $dm, array $methods, array $operations)
     {
         $this->translator = $translator;
+        $this->documentManager = $dm;
+        $this->methods = $methods;
+        $this->operations = $operations;
     }
-
-    /**
-     * @var DocumentManager
-     */
-    protected $documentManager;
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $payers = [];
-        $this->documentManager = $options['dm'];
-
         $clientConfig = $this->documentManager->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         /** @var CashDocument $cashDocument */
         $cashDocument = $builder->getData();
 
+        /** @var PayerInterface $payer */
         foreach ($options['payers'] as $payer) {
             $text = $payer->getName();
             if ($payer instanceof Organization) {
@@ -60,7 +64,7 @@ class CashDocumentType extends AbstractType
         }
 
         $translatedMethods = [];
-        foreach ($options['methods'] as $index => $methodName) {
+        foreach ($this->methods as $index => $methodName) {
             $translatedMethods[$index] = $this->translator->trans($methodName, [], 'MBHCashBundle');
         }
 
@@ -90,7 +94,7 @@ class CashDocumentType extends AbstractType
                 'multiple' => false,
                 'expanded' => true,
                 'group' => $options['groupName'],
-                'choices' => $options['operations']
+                'choices' => $this->operations
             ])
             ->add('total', TextType::class, [
                 'label' => 'form.cashDocumentType.sum',
@@ -155,13 +159,10 @@ class CashDocumentType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\CashBundle\Document\CashDocument',
-            'methods' => [],
-            'operations' => [],
             'groupName' => null,
             'payer' => null,
             'payers' => [],
             'number' => true,
-            'dm' => null,
         ]);
     }
 

@@ -82,7 +82,6 @@ class BillingApi
         return $this->sendPost($url, $result->getApiResponse(true), true);
     }
 
-
     /**
      * @param string $dateString
      * @return bool|\DateTime

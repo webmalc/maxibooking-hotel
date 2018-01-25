@@ -4,7 +4,7 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
-use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
@@ -216,5 +216,13 @@ class ClientManager
     {
         $this->session->set(Client::CLIENT_DATA_RECEIPT_DATETIME, $currentDateTime);
         $this->session->set(self::SESSION_CLIENT_FIELD, $client);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRussianClient()
+    {
+        return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
     }
 }
