@@ -880,9 +880,11 @@ class ClientConfig extends Base
             return $this->getBeginDate();
         }
 
-        $beginDateOffset = !empty($this->getBeginDateOffset()) ? $this->getBeginDateOffset() : self::DEFAULT_BEGIN_DATE_OFFSET;
+        if (!empty($this->getBeginDateOffset())) {
+            return (new \DateTime('midnight'))->modify($this->getBeginDateOffset() . ' days');
+        }
 
-        return (new \DateTime('midnight'))->modify($beginDateOffset . ' days');
+        return new \DateTime('midnight');
     }
 
     /**
