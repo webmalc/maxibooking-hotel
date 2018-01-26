@@ -9,6 +9,7 @@ use http\Exception\InvalidArgumentException;
 use MBH\Bundle\BillingBundle\Document\InstallStatusStorage;
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\BillingBundle\Service\ClientListGetter;
 use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,9 +33,11 @@ class BillingInstallCommand extends ContainerAwareCommand
      * @var Workflow
      */
     private $workflow;
+    /** @var ClientListGetter */
+    private $clientGetter;
 
 
-    public function __construct(BillingApi $billingApi, DocumentManager $documentManager, Logger $logger, Workflow $workflow, ?string $name = null)
+    public function __construct(BillingApi $billingApi, DocumentManager $documentManager, Logger $logger, Workflow $workflow, ClientListGetter $clientListGetter, ?string $name = null)
     {
         parent::__construct($name);
 
@@ -42,6 +45,7 @@ class BillingInstallCommand extends ContainerAwareCommand
         $this->documentManager = $documentManager;
         $this->logger = $logger;
         $this->workflow = $workflow;
+        $this->clientGetter = $clientListGetter;
     }
 
 
@@ -66,11 +70,14 @@ class BillingInstallCommand extends ContainerAwareCommand
         $this->logger->addRecord(Logger::INFO, 'Start install client '. $clientName);
 
 
+        if ($this->clientGetter->isClientInstalled($clientName)) {
+            throw new ClientMaintenanceException('Client Already Installed!');
+        };
+
         if (!$statusStorage = $this->documentManager->getRepository('MBHBillingBundle:InstallStatusStorage')->findOneBy(['clientName' => $clientName])) {
             $statusStorage = InstallStatusStorage::createStatusStorage($clientName);
             $this->documentManager->persist($statusStorage);
         }
-
 
         if ($this->workflow->can($statusStorage, 'start_install')) {
             $this->changeStatus($statusStorage, 'start_install');
@@ -83,7 +90,9 @@ class BillingInstallCommand extends ContainerAwareCommand
                 $this->changeStatus($statusStorage, 'error');
                 $billingApi->sendClientInstallationResult($installResult, $clientName);
             }
-            /** Success Result sending only from service, but false result - here */
+            /** Success Result sending only from service, but false result - here
+             * Need to refactoring. Voter scheme move to service.
+             */
             try {
                 if ($this->workflow->can($statusStorage, 'credentials_install')) {
                     $this->changeStatus($statusStorage, 'credentials_install');

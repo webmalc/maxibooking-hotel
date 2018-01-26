@@ -49,11 +49,15 @@ services:
 
     mbh.billing.logger:
         class:     Symfony\Bridge\Monolog\Logger
-        arguments: ['installer']
+        arguments: ["installer.%client%"]
         calls:
             - [pushHandler, ['@mbh.billing.logger_handler']]
 
     mbh.billing.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.installer.log", 200]
+
+    mbh.billing.logger_handler_overall:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.installer.log", 200]
 
@@ -69,7 +73,7 @@ services:
 
     mbh.console.billing_install:
         class: MBH\Bundle\BillingBundle\Command\BillingInstallCommand
-        arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger", "@workflow.installation"]
+        arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger", "@workflow.installation", "@mbh.service.client_list_getter"]
         tags: ['console.command']
 
     mbh.console.billing_credentials_install:
@@ -100,6 +104,7 @@ services:
             - '@fos_user.user_manager'
             - '@workflow.fixtures_installation'
             - '@mbh.acl_document_owner_maker'
+            - '@old_sound_rabbit_mq.task_command_runner_producer'
 
     mbh.billing_response_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler
