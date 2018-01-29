@@ -226,6 +226,7 @@ class ExternalApiController extends BaseController
      */
     public function addCashDocumentAndRedirectToPayment(Order $order)
     {
+        $prepaymentPercent = 10;
         if ($order->getCashDocuments()->count() == 0) {
             $cashDocument = new CashDocument();
             $cashDocument->setIsConfirmed(false)
@@ -234,7 +235,7 @@ class ExternalApiController extends BaseController
                 ->setOperation('in')
                 ->setOrder($order)
                 ->setTouristPayer($order->getMainTourist())
-                ->setTotal($order->getPrice());
+                ->setTotal($order->getPrice() * $prepaymentPercent / 100);
 
             $order->addCashDocument($cashDocument);
             $this->dm->persist($cashDocument);

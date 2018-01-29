@@ -121,6 +121,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ], $data));
 
         return [
+            'packageSources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
             'count' => $count
@@ -146,6 +147,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $data = [
                 'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
                 'roomType' => $formData['roomType'],
+                'source' => $formData['source'],
                 'status' => $formData['status'],
                 'deleted' => (boolean)$formData['deleted'],
                 'begin' => $formData['begin'],

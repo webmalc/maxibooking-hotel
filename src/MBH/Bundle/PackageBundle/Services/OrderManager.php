@@ -734,6 +734,7 @@ class OrderManager implements Searchable
             'dir' => $request->get('order')['0']['dir'],
             'paid' => $request->get('paid'),
             'confirmed' => $request->get('confirmed'),
+            'source' => $request->get('source')
         ];
 
         //quick links
