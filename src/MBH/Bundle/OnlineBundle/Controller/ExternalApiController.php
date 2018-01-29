@@ -289,7 +289,6 @@ class ExternalApiController extends BaseController
         $query->begin = $this->helper->getDateFromString($request->get('begin'));
         $query->end = $this->helper->getDateFromString($request->get('end'));
         $query->adults = (int)$request->get('adults');
-        $query->childrenAges = !is_null($request->get('children')) ? $request->get('children') : [];
 
         if (!is_null($roomTypeIds)) {
             foreach ($roomTypeIds as $roomTypeId) {
@@ -327,8 +326,10 @@ class ExternalApiController extends BaseController
         }
 
         $query->setChildrenAges(
-            !empty($request->get('children-ages')) && $query->children > 0 ? $request->get('children-ages') : []
+            !empty($request->get('childrenAges')) ? $request->get('childrenAges') : []
         );
+
+        $query->children = !is_array($request->get('childrenAges')) ? 0 : count($request->get('childrenAges'));
 
         if (!$responseCompiler->isSuccessFull()) {
             return $responseCompiler->getResponse();
