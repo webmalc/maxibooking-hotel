@@ -116,7 +116,7 @@ class RNKB implements PaymentSystemInterface
             'disabled' => $createdAt <= new \DateTime(),
             'touristEmail' => $payer ? $payer->getEmail() : null,
             'touristPhone' => $payer ? $payer->getPhone(true) : null,
-            'comment' => 'Order # ' . $cashDocument->getOrder()->getId() . '. CashDocument #' . $cashDocument->getId(),
+            'comment' => 'Order # ' . $cashDocument->getOrder()->getId() . '. CashDocument #' . $cashDocument->getId() . '. Tourist:  ' . $payer->getName() . '. Заказ #' . $cashDocument->getOrder()->getId(),
             'signature' => $this->getSignature($cashDocument, $url),
         ];
     }
