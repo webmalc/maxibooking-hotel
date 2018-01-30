@@ -18,7 +18,7 @@ class TariffsType extends AbstractType
         foreach ($options['booking'] as $name => $info) {
 
             $builder->add($name, DocumentType::class, [
-                'label' => $info['title'],
+                'label' => $info['title'] . ' (ID: ' . $name . ')',
                 'class' => 'MBHPriceBundle:Tariff',
                 'query_builder' => function(DocumentRepository $er) use($options) {
                     $qb = $er->createQueryBuilder();
