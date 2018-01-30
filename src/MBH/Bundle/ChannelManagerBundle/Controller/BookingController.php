@@ -17,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\Callback;
 
 /**
  * @Route("/booking")
@@ -210,6 +211,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.booking')->pullTariffs($config),
+            'constraints' => [new Callback([TariffsType::class, 'check'])]
         ]);
 
         $form->handleRequest($request);
