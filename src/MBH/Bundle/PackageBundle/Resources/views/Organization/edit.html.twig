@@ -13,6 +13,7 @@
 {% block content %}
     {{ form_start(form, {'action': path('organization_edit', {id: organization.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
+    <input type="hidden" value="{{ redirectTo }}" name="redirectTo">
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': organization, 'delete_route': 'organization_delete', confirm_text: 'organizations.confirm_delete'|trans({'%organization_name%': organization.name}, 'MBHPackageBundle')} %}
     {{ form_end(form) }}
 {% endblock %}

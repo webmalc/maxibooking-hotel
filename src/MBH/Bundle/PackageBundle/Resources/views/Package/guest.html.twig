@@ -19,7 +19,6 @@
         <div class="tab-pane active" id="home">
 
             {% set totalGuests = package.children + package.adults %}
-
             {% if package.tourists|length < totalGuests %}
                 <div class="alert alert-warning alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -48,7 +47,7 @@
                         <tr>
                             <td class="text-center table-icon"><i class="fa fa-male"></i></td>
                             <td>
-                                <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}" rel="main"
+                                <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id, 'redirectTo': app.request.uri}) }}" rel="main"
                                    title=" {{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">{{ tourist.fullName }}</a>
                                 &nbsp;
                                 {% if tourist.isUnwelcome %}
@@ -80,7 +79,7 @@
                             <td class="table-actions-td text-center">
                                 {% if package.deletedAt is empty %}
                                     {% if is_granted('ROLE_TOURIST_EDIT') %}
-                                    <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}"
+                                    <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id, 'redirectTo': app.request.uri }) }}"
                                        class="btn btn-success btn-xs" title="{{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
