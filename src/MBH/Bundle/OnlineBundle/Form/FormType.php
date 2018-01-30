@@ -4,8 +4,8 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
-use MBH\Bundle\PackageBundle\Models\Billing\Country;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -132,9 +132,9 @@ class FormType extends AbstractType
                 'required' => false,
                 'group' => 'form.formType.parameters',
             ]);
-        if ($countryType === Country::RUSSIA_TLD || $countryType == Country::KAZAKHSTAN_TLD) {
-            $innLabel = $countryType == Country::RUSSIA_TLD ? 'form.formType.is_request_inn.label' : 'form.formType.is_request_inn.kaz.label';
-            $innHelp = $countryType == Country::RUSSIA_TLD ? 'form.formType.is_request_inn.help' : 'form.formType.is_request_inn.kaz.help';
+        if ($clientCountry === Country::RUSSIA_TLD || $clientCountry == Country::KAZAKHSTAN_TLD) {
+            $innLabel = $clientCountry == Country::RUSSIA_TLD ? 'form.formType.is_request_inn.label' : 'form.formType.is_request_inn.kaz.label';
+            $innHelp = $clientCountry == Country::RUSSIA_TLD ? 'form.formType.is_request_inn.help' : 'form.formType.is_request_inn.kaz.help';
             $builder
                 ->add('requestInn', CheckboxType::class, [
                     'label' => $innLabel,
