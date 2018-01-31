@@ -12,6 +12,8 @@ use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Restriction;
+use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
@@ -508,7 +510,6 @@ class Search implements SearchInterface
             }
         }
 
-
         return array_values($results);
     }
 
@@ -522,7 +523,6 @@ class Search implements SearchInterface
      */
     public function setVirtualRoom($result, Tariff $tariff, Package $package = null, $forcedVirtualRoom = null)
     {
-
         if ($result->getBegin() <= new \DateTime('midnight')) {
             return true;
         }
@@ -534,12 +534,19 @@ class Search implements SearchInterface
         $roomType = $result->getRoomType();
         $begin = clone $result->getBegin();
         $end = clone $result->getEnd();
-        $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')
-            ->findOneByDate($begin, $roomType, $tariff, $this->memcached);
 
-        if ($restriction && $restriction->getMinStayArrival()) {
-            $begin->modify('-' . $restriction->getMinStayArrival() . ' days');
-            $end->modify('+' . $restriction->getMinStayArrival() . ' days');
+        /** @var RestrictionRepository $restrictionRepo */
+        $restrictionRepo = $this->dm->getRepository('MBHPriceBundle:Restriction');
+        /** @var Restriction $beginRestriction */
+        $beginRestriction = $restrictionRepo->findOneByDate($begin, $roomType, $tariff, $this->memcached);
+        /** @var Restriction $endRestriction */
+        $endRestriction = $restrictionRepo->findOneByDate($end, $roomType, $tariff, $this->memcached);
+
+        if ($beginRestriction && $beginRestriction->getMinStayArrival()) {
+            $begin->modify('-' . $beginRestriction->getMinStayArrival() . ' days');
+        }
+        if ($endRestriction && $endRestriction->getMinStayArrival()) {
+            $end->modify('+' . $endRestriction->getMinStayArrival() . ' days');
         }
 
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')
@@ -555,11 +562,13 @@ class Search implements SearchInterface
         );
 
         $groupedPackages = [];
+        /** @var Package $package */
         foreach ($packages as $package) {
             $groupedPackages[$package->getVirtualRoom()->getId()][] = [$package->getBegin(), $package->getEnd()];
         }
 
-        $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
+        $rooms = $this->dm
+            ->getRepository('MBHHotelBundle:Room')
             ->fetch(
                 null,
                 [$result->getRoomType()->getId()],
