@@ -638,6 +638,7 @@ class ApiController extends Controller
      */
     private function sendNotifications(Order $order)
     {
+        $this->dm->refresh($order);
         try {
             //backend
             $notifier = $this->container->get('mbh.notifier');
