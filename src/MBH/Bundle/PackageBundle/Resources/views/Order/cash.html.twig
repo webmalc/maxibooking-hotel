@@ -194,7 +194,7 @@
                 {{ form_start(form, {'action': path('package_order_cash', {'id': entity.id, 'packageId': package.id}),  'attr': {'class': 'form-horizontal'}}) }}
                 {{ form_widget(form) }}
             {% endif %}
-            {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_CASH_DOCUMENTS'} %}
+            {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_CASH_DOCUMENTS', 'save_buttons' : true} %}
 
             {% if is_granted('ROLE_ORDER_CASH_DOCUMENTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                 {{ form_end(form) }}

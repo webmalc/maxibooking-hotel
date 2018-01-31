@@ -146,7 +146,7 @@ class DynamicSalesGenerator
                 $allPackages = array_merge($allPackages, $packagesByCreationDates);
 
                 $packagesByCancellationDates = isset($cancelledPackagesSortedByPeriods[$periodNumber][$roomType->getId()])
-                    ? $createdPackagesSortedByPeriods[$periodNumber][$roomType->getId()]
+                    ? $cancelledPackagesSortedByPeriods[$periodNumber][$roomType->getId()]
                     : [];
 
                 $allPackages = array_merge($allPackages, $packagesByCancellationDates);
