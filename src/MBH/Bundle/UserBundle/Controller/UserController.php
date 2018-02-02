@@ -288,8 +288,7 @@ class UserController extends Controller
             //update ACL
             $this->updateAcl($entity, $form);
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.profileController.record_edited_success'));
+            $this->addFlash('success', 'controller.profileController.record_edited_success');
 
             return $this->afterSaveRedirect('user', $entity->getId());
         }
@@ -331,7 +330,6 @@ class UserController extends Controller
 
             $aclProvider->updateAcl($acl);
         }
-
     }
 
     /**

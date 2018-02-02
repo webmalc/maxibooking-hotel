@@ -1,33 +1,53 @@
 /*global window, document, Routing, fole, str, $, select2, localStorage, mbh */
 
+var BILLING_URL = 'https://billing.maxi-booking.com/';
 var BILLING_API_SETTINGS = {
     fms: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/fms-fms',
+        url: BILLING_URL + document.documentElement.lang + '/fms-fms',
         id: 'internal_id',
         text: 'name'
     },
     countries: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/countries',
+        url: BILLING_URL + document.documentElement.lang + '/countries',
         id: 'tld',
         text: 'name'
     },
     regions: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/regions',
+        url: BILLING_URL + document.documentElement.lang + '/regions',
         id: 'id',
-        text: 'name'
+        text: 'name',
+        creationRouteName: 'create_region',
+        fieldClass: 'billing-region',
+        initFormFunc: function(formResponse) {
+            $('#modal-with-form-body').html(formResponse['data']['html']);
+            $('#mbhbilling_bundle_region_type_country').val($('.billing-country').val());
+            initSelect2TextForBilling('mbhbilling_bundle_region_type_country', BILLING_API_SETTINGS.countries);
+        },
+        checkable: true
     },
     cities: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/cities',
+        url: BILLING_URL + document.documentElement.lang + '/cities',
         id: 'id',
-        text: 'display_name'
+        text: 'display_name',
+        creationRouteName: 'create_city',
+        fieldClass: 'billing-city',
+        initFormFunc: function (response) {
+            $('#modal-with-form-body').html(response['data']['html']);
+            initSelect2TextForBilling('mbhbilling_bundle_city_type_country', BILLING_API_SETTINGS.countries);
+            initSelect2TextForBilling('mbhbilling_bundle_city_type_region', BILLING_API_SETTINGS.regions);
+        },
+        checkable: true,
+        updateFormFunc: function (data) {
+            $('#mbhbilling_bundle_city_type_display_name').val($('#mbhbilling_bundle_city_type_name').val());
+        }
     },
     fmsKpp: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/fms-kpp',
+        url: BILLING_URL + document.documentElement.lang + '/fms-kpp',
         id: 'internal_id',
         text: 'name'
     },
     services: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/services/',
+        url: BILLING_URL + document.documentElement.lang + '/services/',
         id: 'id',
         text: 'title'
     }
@@ -172,10 +192,10 @@ $.fn.mbhGuestSelectPlugin = function () {
             },
             dropdownCssClass: "bigdrop"
         });
-    })
+    });
 
     return this;
-}
+};
 
 $.fn.mbhOrganizationSelectPlugin = function () {
     this.each(function () {
@@ -855,7 +875,6 @@ var select2TemplateResult = {
     };
 })(window.jQuery);
 
-
 /**
  * @author Alexandr Arofikin <sashaaro@gmail.com>
  * @param filter function
@@ -1011,6 +1030,13 @@ function onHideCheckboxChange() {
     });
 }
 
+function addAndSetSelect2Option($select2input, value, text) {
+    $select2input
+        .append('<option value="' + value + '">' + text + '</option>')
+        .val(value)
+        .trigger('change');
+}
+
 function initSelect2TextForBilling(inputId, apiSettings) {
     var $select2Field = select2Text($('#' + inputId));
     var selectedValue = $select2Field.val();
@@ -1026,9 +1052,14 @@ function initSelect2TextForBilling(inputId, apiSettings) {
             url: apiSettings['url'] + '/',
             dataType: 'json',
             data: function (params) {
-                return {
+                var queryParams = {
                     search: params.term
                 };
+                if (apiSettings['checkable']) {
+                    queryParams['is_enabled'] = true;
+                    queryParams['is_checked'] = true;
+                }
+                return queryParams;
             },
             processResults: function (data) {
                 var options = [];
@@ -1061,6 +1092,10 @@ function initSelect2TextForBilling(inputId, apiSettings) {
                 }).done(function (data) {
                     var optionId = data[apiSettings['id']];
                     var optionTitle = data[apiSettings['text']];
+
+                    if (apiSettings['checkable'] && data['is_checked'] === false) {
+                        optionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
+                    }
 
                     var selectedOrgan = {
                         id: optionId,
@@ -1114,6 +1149,53 @@ function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $upd
     }
 }
 
+function handleAddingNewBillingEntity() {
+    $('.add-billing-entity-button').click(function () {
+        var saveButton = this;
+        var $formModal = $("#modal-with-form");
+        $formModal.modal('show');
+        var $modalBody = $formModal.find('#modal-with-form-body');
+        $modalBody.html(mbh.loader.html);
+
+        var entityType = saveButton.getAttribute('data-entity-type');
+        var entitySettings = BILLING_API_SETTINGS[entityType];
+        var entityRoute = Routing.generate(entitySettings['creationRouteName']);
+        var initFormFunc = entitySettings['initFormFunc'];
+
+        $.get(entityRoute, function (response) {
+            initFormFunc(response);
+            $('#modal-with-form-save-button').click(function () {
+                var saveButton = this;
+                saveButton.setAttribute('disabled', true);
+                if (entitySettings['updateFormFunc']) {
+                    entitySettings['updateFormFunc']();
+                }
+                var entityData = $modalBody.find('form').serialize();
+                $modalBody.html(mbh.loader.html);
+                $.ajax({
+                    url: entityRoute,
+                    method: "POST",
+                    data: entityData,
+                    success: function (result) {
+                        saveButton.removeAttribute('disabled');
+                        if (result.success) {
+                            var entity = result['data'];
+                            var newEntitySelectOptionTitle = entity[entitySettings['text']] +  ' (' + Translator.trans('020-forms.on_moderation') + ')';
+                            addAndSetSelect2Option($('.' + entitySettings['fieldClass']), entity[entitySettings['id']], newEntitySelectOptionTitle);
+                            $formModal.modal('hide');
+                        } else {
+                            initFormFunc(result);
+                        }
+                    },
+                    error: function () {
+                        $modalBody.html(mbh.error.html);
+                    }
+                });
+            });
+        })
+    });
+}
+
 $(document).ready(function () {
     'use strict';
     docReadyForms();
@@ -1121,4 +1203,5 @@ $(document).ready(function () {
     mbhStartDate();
     onHideCheckboxChange();
     disableCheckboxListen();
+    handleAddingNewBillingEntity();
 });

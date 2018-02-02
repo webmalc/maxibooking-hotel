@@ -141,6 +141,7 @@ form.touristType.gender: Пол
 mbhpackagebundle.view.documents.pdftemplates.registration_card.firma: Фирма
 mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan: Выдан
 form.AddressObjectDecomposedType.country: Страна
+form.AddressObjectDecomposedType.region_id.help: 'Если регион не найден, нажмите %plusButtonHtml% для добавления'
 form.organizationType.index: Индекс
 form.AddressObjectDecomposedType.city: Город
 form.AddressObjectDecomposedType.street: Улица
@@ -379,6 +380,7 @@ form.organizationType.okpo_code: 'Код по ОКПО'
 form.organizationType.writer_fio: 'ФИО подписанта в род. падеже'
 form.organizationType.reason: 'Действует на основании'
 form.organizationType.city: Город
+form.organization_type.city.help: 'Если город не найден, нажмите %plusButtonHtml% для добавления'
 form.organizationType.street: Улица
 form.organizationType.house: Дом
 form.organizationType.corpus: Корпус

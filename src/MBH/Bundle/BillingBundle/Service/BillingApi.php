@@ -17,8 +17,10 @@ use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Lib\Model\Service;
 use MBH\Bundle\BillingBundle\Lib\Model\AuthorityOrgan;
 use MBH\Bundle\BillingBundle\Lib\Model\City;
+use MBH\Bundle\UserBundle\Document\User;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Serializer\Serializer;
 
 class BillingApi
@@ -56,13 +58,16 @@ class BillingApi
     private $clientCompanies;
     private $isClientCompaniesInit = false;
 
-    public function __construct(Logger $logger, $billingLogin, Serializer $serializer, $locale)
+    public function __construct(Logger $logger, $billingLogin, Serializer $serializer, $locale, TokenStorage $tokenStorage)
     {
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
         $this->billingLogin = $billingLogin;
-        $this->locale = $locale;
         $this->serializer = $serializer;
+
+        /** @var User $user */
+        $user = $tokenStorage->getToken();
+        $this->locale = is_object($user) ? $user->getLocale() : $locale;
     }
 
     public function sendFalse(): void
@@ -242,7 +247,7 @@ class BillingApi
         $queryData = [
             'client__login' => $client->getLogin(),
             'created__gte' => $begin->format(BillingApi::BILLING_DATETIME_FORMAT),
-            'created__lte' => $end->format(BillingApi::BILLING_DATETIME_FORMAT)
+            'created__lte' => (clone $end)->add(new \DateInterval('P1D'))->format(BillingApi::BILLING_DATETIME_FORMAT)
         ];
 
         return $this->getEntities(self::ORDERS_ENDPOINT_SETTINGS, $queryData);
@@ -325,6 +330,36 @@ class BillingApi
     public function getRegionById($regionId, $locale = null)
     {
         return $this->getBillingEntityById(self::REGIONS_ENDPOINT_SETTINGS, $regionId, $locale);
+    }
+
+    /**
+     * @param array $endpointSettings
+     * @param $entity
+     * @return ResponseInterface
+     */
+    public function createBillingEntity(array $endpointSettings, $entity)
+    {
+        $url = $this->getBillingUrl($endpointSettings['endpoint']);
+        $data = $this->serializer->normalize($entity);
+        $data = $this->convertIncorrectNormalizedFields($data);
+
+        return $this->sendPost($url, $data, false);
+    }
+
+    private function convertIncorrectNormalizedFields(array $data)
+    {
+        $normalizedFieldsNamesToBilling = [
+            'displayName' => 'display_name'
+        ];
+
+        foreach ($normalizedFieldsNamesToBilling as $normalizedName => $billingName) {
+            if (isset($data[$normalizedName])) {
+                $data[$billingName] = $data[$normalizedName];
+                unset($data[$normalizedName]);
+            }
+        }
+
+        return $data;
     }
 
     /**

@@ -72,6 +72,9 @@ class OrganizationType extends AbstractType
 
         $group = $isFull ? $personalGroup : $addGroup;
 
+        $cityHelp = $this->translator->trans('form.organization_type.city.help',
+            ['%plusButtonHtml%' => '<a class="add-billing-entity-button" data-entity-type="cities"><i class="fa fa-plus"></i></a>']);
+
         $builder->add('name', TextType::class, [
             'group' => $group,
             'label' => 'form.organizationType.name',
@@ -164,7 +167,8 @@ class OrganizationType extends AbstractType
         $builder->add('cityId', TextType::class, [
             'group' => $group,
             'label' => 'form.organizationType.city',
-            'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location', 'class' => 'citySelect'],
+            'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location', 'class' => 'citySelect billing-city'],
+            'help' => $cityHelp
         ]);
 
         $builder->add('street', TextType::class, [

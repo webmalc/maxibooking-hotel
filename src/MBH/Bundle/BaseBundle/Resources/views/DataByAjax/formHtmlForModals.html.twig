@@ -1,0 +1,7 @@
+{% extends "MBHBaseBundle::ajax.html.twig" %}
+
+{% block content %}
+    {{ form_start(form, {'action': '', 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+{% endblock %}

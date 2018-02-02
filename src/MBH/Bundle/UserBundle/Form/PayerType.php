@@ -256,7 +256,7 @@ class PayerType extends AbstractType
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'],
-                'data' => $hasCompany && $company->getRu()
+                'data' => $hasCompany && $company->getRu() && $company->getRuPayerCompanyData('proxy_date')
                     ? BillingApi::getDateByBillingFormat($company->getRuPayerCompanyData('proxy_date'))
                     : new \DateTime('midnight')
             ])

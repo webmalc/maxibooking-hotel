@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\BillingBundle\Lib\Model;
 
-class City
+class City implements BillingClientRelatedInterface, BillingEnablableInterface, BillingCheckableInterface
 {
     /** @var  int */
     private $id;
@@ -22,6 +22,10 @@ class City
     private $region;
     /** @var string */
     private $country;
+
+    use BillingCheckableTrait;
+    use BillingEnablableTrait;
+    use BillingClientRelatedTrait;
 
     /**
      * @return int

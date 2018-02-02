@@ -46,6 +46,7 @@ services:
             - '%client%'
             - '@serializer'
             - '%locale%'
+            - '@security.token_storage'
 
     mbh.billing.logger:
         class:     Symfony\Bridge\Monolog\Logger

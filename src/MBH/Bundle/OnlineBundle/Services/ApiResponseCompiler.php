@@ -18,6 +18,7 @@ class ApiResponseCompiler
     private $data = [];
     private $isSuccess = true;
 
+    const COMMON_ERRORS_FIELD_NAME = 'common';
     const FORM_CONFIG_NOT_EXISTS = 'external_api_controller.online_form_config.not_found';
     const FORM_CONFIG_NOT_ENABLED = 'external_api_controller.online_form_config.not_enabled';
     const MANDATORY_FIELD_MISSING = 'external_api_controller.missing_fields.error';
@@ -35,13 +36,27 @@ class ApiResponseCompiler
 
     /**
      * @param $text
-     * @param $params
+     * @param null $fieldName
+     * @param array $params
      * @return ApiResponseCompiler
      */
-    public function addErrorMessage($text, $params = [])
+    public function addErrorMessage($text, $fieldName = null, $params = [])
     {
-        $this->errors[] = $this->translator->trans($text, $params);
+        $errorText = $this->translator->trans($text, $params);
+        $fieldName = $fieldName ?? self::COMMON_ERRORS_FIELD_NAME;
+        $this->errors[$fieldName] = $errorText;
         $this->isSuccess = false;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $isSuccess
+     * @return ApiResponseCompiler
+     */
+    public function setIsSuccessful(bool $isSuccess)
+    {
+        $this->isSuccess = $isSuccess;
 
         return $this;
     }
@@ -60,7 +75,7 @@ class ApiResponseCompiler
     /**
      * @return bool
      */
-    public function isSuccessFull()
+    public function isSuccessful()
     {
         return $this->isSuccess;
     }
@@ -71,9 +86,8 @@ class ApiResponseCompiler
     public function getResponse()
     {
         $response = ['success' => $this->isSuccess];
-        if ($this->isSuccess) {
-            $response['data'] = $this->data;
-        } else {
+        $response['data'] = $this->data;
+        if (!$this->isSuccess) {
             $response['errors'] = $this->errors;
         }
 
