@@ -33,7 +33,7 @@ var docReadyTourists = function () {
             $popover.popover({html: true});
 
             var value = $citizenshipSelect.val();
-            if (value == 'native') {
+            if (value === 'native') {
                 $('#tourist-table').find('.show-on-print').addClass('hide')
                 //$touristTable.find('.show-on-print').addClass('hide');
                 //add print column
@@ -82,7 +82,7 @@ var docReadyTourists = function () {
     $guestSelect.mbhGuestSelectPlugin();
 
     var $guestOverflowAlert = $('#guest-overflow-alert');
-    if ($guestOverflowAlert.length == 1) {
+    if ($guestOverflowAlert.length === 1) {
         $guestOverflowAlert.children('.btn').on('click', function () {
             $guestForm.removeClass('hide');
             $(this).addClass('hide');

@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\BillingBundle\Lib\Model;
 
-class Region
+class Region implements BillingClientRelatedInterface, BillingEnablableInterface, BillingCheckableInterface
 {
     /** @var  int */
     private $id;
@@ -13,6 +13,9 @@ class Region
     /** @var  string */
     private $country;
 
+    use BillingCheckableTrait;
+    use BillingEnablableTrait;
+    use BillingClientRelatedTrait;
     /**
      * @return int
      */
@@ -63,7 +66,7 @@ class Region
      * @param string $alternate_names
      * @return Region
      */
-    public function setAlternate_names(string $alternate_names): Region
+    public function setAlternate_names(?string $alternate_names): Region
     {
         $this->alternate_names = $alternate_names;
 

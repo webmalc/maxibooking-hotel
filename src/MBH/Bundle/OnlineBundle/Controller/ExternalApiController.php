@@ -64,7 +64,7 @@ class ExternalApiController extends BaseController
             $roomTypesQB->field('isEnabled')->equals(true);
         }
 
-        if (!$responseCompiler->isSuccessFull()) {
+        if (!$responseCompiler->isSuccessful()) {
             return $responseCompiler->getResponse();
         }
 
@@ -74,9 +74,8 @@ class ExternalApiController extends BaseController
 
         /** @var FormConfig $formConfig */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
-        if ($responseCompiler->isSuccessFull()) {
+        if ($responseCompiler->isSuccessful()) {
             $responseData = [];
-            $domainName = $this->getParameter('router.request_context.host');
             /** @var RoomType $roomType */
             foreach ($roomTypes as $roomType) {
                 if (is_null($formConfig)
@@ -166,7 +165,7 @@ class ExternalApiController extends BaseController
         $responseCompiler = $this->get('mbh.api_response_compiler');
         /** @var FormConfig $formConfig */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
-        if (!$responseCompiler->isSuccessFull()) {
+        if (!$responseCompiler->isSuccessful()) {
             return $responseCompiler->getResponse();
         }
 
@@ -197,7 +196,7 @@ class ExternalApiController extends BaseController
         $queryData = $request->query;
         $requestHandler->checkMandatoryFields($queryData, ['tariffId'], $responseCompiler);
 
-        if (!$responseCompiler->isSuccessFull()) {
+        if (!$responseCompiler->isSuccessful()) {
             return $responseCompiler->getResponse();
         }
 
@@ -276,7 +275,7 @@ class ExternalApiController extends BaseController
         $roomTypeIds = $queryData->get('roomTypeIds');
         $this->setLocaleByRequest();
 
-        if (!$responseCompiler->isSuccessFull()) {
+        if (!$responseCompiler->isSuccessful()) {
             return $responseCompiler->getResponse();
         }
 
@@ -290,46 +289,22 @@ class ExternalApiController extends BaseController
         $query->adults = (int)$request->get('adults');
         $query->childrenAges = !is_null($request->get('children')) ? $request->get('children') : [];
 
-        if (!is_null($roomTypeIds)) {
-            foreach ($roomTypeIds as $roomTypeId) {
-                $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
-                if (is_null($roomType)) {
-                    $responseCompiler->addErrorMessage($responseCompiler::ROOM_TYPE_WITH_SPECIFIED_ID_NOT_EXISTS,
-                        ['%roomTypeId%' => $roomTypeId]);
-                } elseif (!is_null($formConfig) && !$formConfig->getRoomTypeChoices()->contains($roomType)) {
-                    $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_ROOM_TYPE,
-                        ['%roomTypeId%' => $roomTypeId]
-                    );
-                } else {
-                    $query->addRoomType($roomTypeId);
-                }
-            }
-        } elseif (!is_null($hotelIds)) {
-            foreach ($hotelIds as $hotelId) {
-                $hotel = $this->dm->find('MBHHotelBundle:Hotel', $hotelId);
-                if (is_null($hotel)) {
-                    $responseCompiler->addErrorMessage($responseCompiler::HOTEL_WITH_SPECIFIED_ID_NOT_EXISTS,
-                        ['%hotelId%' => $hotelId]);
-
-                } elseif (!is_null($formConfig) && !$formConfig->getHotels()->contains($hotel)) {
-                    $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_HOTEL,
-                        ['%hotelId%' => $hotelId]
-                    );
-                } else {
-                    $query->addHotel($hotel);
-                }
-            }
-        } elseif (!is_null($formConfig)) {
-            foreach ($formConfig->getHotels() as $hotel) {
+        $filteredRoomTypeIds = $requestHandler->getFilteredRoomTypeIds($roomTypeIds, $responseCompiler, $formConfig);
+        if (empty($filteredRoomTypeIds)) {
+            $filteredHotels = $requestHandler->getFilteredHotels($hotelIds, $responseCompiler, $formConfig);
+            $hotels = !empty($filteredHotels) ? $filteredHotels : $formConfig->getHotels();
+            foreach ($hotels as $hotel) {
                 $query->addHotel($hotel);
             }
+        } else {
+            $query->roomTypes = $filteredRoomTypeIds;
         }
 
         $query->setChildrenAges(
             !empty($request->get('children-ages')) && $query->children > 0 ? $request->get('children-ages') : []
         );
 
-        if (!$responseCompiler->isSuccessFull()) {
+        if (!$responseCompiler->isSuccessful()) {
             return $responseCompiler->getResponse();
         }
 

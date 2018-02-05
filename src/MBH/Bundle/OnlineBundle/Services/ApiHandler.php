@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 10.07.17
- * Time: 12:19
- */
 
 namespace MBH\Bundle\OnlineBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class ApiHandler
@@ -33,7 +28,27 @@ class ApiHandler
     {
         foreach ($fieldNames as $fieldName) {
             if (is_null($queryData->get($fieldName))) {
-                $responseCompiler->addErrorMessage(ApiResponseCompiler::MANDATORY_FIELD_MISSING, ['%field%' => $fieldName]);
+                $responseCompiler->addErrorMessage(ApiResponseCompiler::MANDATORY_FIELD_MISSING, $fieldName);
+            }
+        }
+
+        return $responseCompiler;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param ApiResponseCompiler $responseCompiler
+     * @return ApiResponseCompiler
+     */
+    public function checkBillingEntityResponse(ResponseInterface $response, ApiResponseCompiler $responseCompiler)
+    {
+        $decodedResponse = json_decode($response->getBody(), true);
+
+        if (!isset($decodedResponse['id'])) {
+            foreach ($decodedResponse as $fieldName => $errors) {
+                foreach ($errors as $error) {
+                    $responseCompiler->addErrorMessage($error, $fieldName);
+                }
             }
         }
 
@@ -53,11 +68,11 @@ class ApiHandler
 
         if (is_null($formConfig)) {
             if (!is_null($onlineFormId)) {
-                $responseCompiler->addErrorMessage(ApiResponseCompiler::FORM_CONFIG_NOT_EXISTS);
+                $responseCompiler->addErrorMessage(ApiResponseCompiler::FORM_CONFIG_NOT_EXISTS, 'onlineFormId');
             }
         } else {
             if (!$formConfig->getIsEnabled()) {
-                $responseCompiler->addErrorMessage(ApiResponseCompiler::FORM_CONFIG_NOT_ENABLED);
+                $responseCompiler->addErrorMessage(ApiResponseCompiler::FORM_CONFIG_NOT_ENABLED, 'onlineFormId');
             }
         }
 
@@ -78,9 +93,12 @@ class ApiHandler
                 $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
                 if (is_null($roomType)) {
                     $responseCompiler->addErrorMessage($responseCompiler::ROOM_TYPE_WITH_SPECIFIED_ID_NOT_EXISTS,
-                        ['%roomTypeId%' => $roomTypeId]);
+                        'roomTypeIds',
+                        ['%roomTypeId%' => $roomTypeId]
+                    );
                 } elseif (!is_null($formConfig) && $formConfig->getRoomTypes() && !$formConfig->getRoomTypeChoices()->contains($roomType)) {
                     $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_ROOM_TYPE,
+                        'roomTypeIds',
                         ['%roomTypeId%' => $roomTypeId]
                     );
                 } else {
@@ -105,10 +123,12 @@ class ApiHandler
             $hotel = $this->dm->find('MBHHotelBundle:Hotel', $hotelId);
             if (is_null($hotel)) {
                 $responseCompiler->addErrorMessage($responseCompiler::HOTEL_WITH_SPECIFIED_ID_NOT_EXISTS,
-                    ['%hotelId%' => $hotelId]);
-
+                    'hotelIds',
+                    ['%hotelId%' => $hotelId]
+                );
             } elseif (!is_null($formConfig) && !$formConfig->getHotels()->contains($hotel)) {
                 $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_HOTEL,
+                    'hotelIds',
                     ['%hotelId%' => $hotelId]
                 );
             } else {
@@ -130,7 +150,7 @@ class ApiHandler
         foreach ($fieldNames as $fieldName) {
             $fieldData = $queryData->get($fieldName);
             if (!is_array($fieldData) && !is_null($fieldData)) {
-                $responseCompiler->addErrorMessage($responseCompiler::FIELD_MUST_BE_TYPE_OF_ARRAY, ['%field%' => $fieldName]);
+                $responseCompiler->addErrorMessage($responseCompiler::FIELD_MUST_BE_TYPE_OF_ARRAY, $fieldName);
             }
         }
 

@@ -44,6 +44,10 @@ class FormDataHandler
         return $result;
     }
 
+    /**
+     * @param FormInterface $form
+     * @param array $errors
+     */
     public function fillFormByBillingErrors(FormInterface $form, array $errors)
     {
         foreach ($errors as $fieldName => $errorMessages) {
@@ -52,6 +56,8 @@ class FormDataHandler
                     $form->get($fieldName)->addError(new FormError($errorMessage));
                 } elseif ($fieldName === BillingResponseHandler::NON_FIELD_ERRORS) {
                     $form->addError(new FormError($errorMessage));
+                } else {
+                    throw new \InvalidArgumentException('Passed error for nonexistent field');
                 }
             }
         }

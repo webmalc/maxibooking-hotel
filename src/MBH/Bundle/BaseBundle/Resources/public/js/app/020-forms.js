@@ -1,33 +1,50 @@
 /*global window, document, Routing, fole, str, $, select2, localStorage, mbh */
 
+var BILLING_URL = 'https://billing.maxi-booking.com/';
 var BILLING_API_SETTINGS = {
     fms: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/fms-fms',
+        url: BILLING_URL + document.documentElement.lang + '/fms-fms',
         id: 'internal_id',
         text: 'name'
     },
     countries: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/countries',
+        url: BILLING_URL + document.documentElement.lang + '/countries',
         id: 'tld',
         text: 'name'
     },
     regions: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/regions',
+        url: BILLING_URL + document.documentElement.lang + '/regions',
         id: 'id',
-        text: 'name'
+        text: 'name',
+        creationRouteName: 'create_region',
+        fieldClass: 'billing-region',
+        initFormFunc: function (formResponse) {
+            $('#modal-with-form-body').html(formResponse['data']['html']);
+            $('#mbhbilling_bundle_region_type_country').val($('.billing-country').val());
+            initSelect2TextForBilling('mbhbilling_bundle_region_type_country', BILLING_API_SETTINGS.countries);
+        },
+        checkable: true
     },
     cities: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/cities',
+        url: BILLING_URL + document.documentElement.lang + '/cities',
         id: 'id',
-        text: 'display_name'
+        text: 'display_name',
+        creationRouteName: 'create_city',
+        fieldClass: 'billing-city',
+        initFormFunc: function (response) {
+            $('#modal-with-form-body').html(response['data']['html']);
+            initSelect2TextForBilling('mbhbilling_bundle_city_type_country', BILLING_API_SETTINGS.countries);
+            initSelect2TextForBilling('mbhbilling_bundle_city_type_region', BILLING_API_SETTINGS.regions);
+        },
+        checkable: true
     },
     fmsKpp: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/fms-kpp',
+        url: BILLING_URL + document.documentElement.lang + '/fms-kpp',
         id: 'internal_id',
         text: 'name'
     },
     services: {
-        url: 'https://billing.maxi-booking.com/' + document.documentElement.lang + '/services/',
+        url: BILLING_URL + document.documentElement.lang + '/services/',
         id: 'id',
         text: 'title'
     }
@@ -172,10 +189,10 @@ $.fn.mbhGuestSelectPlugin = function () {
             },
             dropdownCssClass: "bigdrop"
         });
-    })
+    });
 
     return this;
-}
+};
 
 $.fn.mbhOrganizationSelectPlugin = function () {
     this.each(function () {
@@ -855,7 +872,6 @@ var select2TemplateResult = {
     };
 })(window.jQuery);
 
-
 /**
  * @author Alexandr Arofikin <sashaaro@gmail.com>
  * @param filter function
@@ -953,7 +969,10 @@ var disableCheckboxListen = function () {
     $disableCheckBox.on('switchChange.bootstrapSwitch', function () {
         var disableMode = !$disableCheckBox.bootstrapSwitch('state') ? 'true' : 'false';
         var routeName = $disableCheckBox.attr('data-route-name');
-        window.location.href = Routing.generate('change_room_type_enableable_mode', {disableMode: disableMode, route : routeName});
+        window.location.href = Routing.generate('change_room_type_enableable_mode', {
+            disableMode: disableMode,
+            route: routeName
+        });
     });
 };
 
@@ -963,23 +982,23 @@ function getExportButtonSettings(entityName, format, filterDataCallback) {
         text: '<i class="fa fa-file-excel-o" title="' + format + '" data-toggle="tooltip" data-placement="bottom"></i>',
         className: 'btn btn-default btn-sm',
         action: function () {
-        $.ajax({
-            url: exportUrl,
-            type:'GET',
-            success: function (response) {
-                $('<div id="template-document-csv-modal" class="modal"></div>').insertAfter($('.content-wrapper'));
-                var $modal = $('#template-document-csv-modal');
-                $modal.html(response);
-                $modal.find('select').css('width', '100%').select2();
-                $modal.modal('show');
+            $.ajax({
+                url: exportUrl,
+                type: 'GET',
+                success: function (response) {
+                    $('<div id="template-document-csv-modal" class="modal"></div>').insertAfter($('.content-wrapper'));
+                    var $modal = $('#template-document-csv-modal');
+                    $modal.html(response);
+                    $modal.find('select').css('width', '100%').select2();
+                    $modal.modal('show');
 
-                var $form = $modal.find("form");
-                $form.find('#export-send-button').click(function() {
-                    window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
-                    $modal.modal('hide');
-                });
-            }
-        });
+                    var $form = $modal.find("form");
+                    $form.find('#export-send-button').click(function () {
+                        window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
+                        $modal.modal('hide');
+                    });
+                }
+            });
         }
     }
 }
@@ -997,7 +1016,7 @@ function onHideCheckboxChange() {
             $boxFormGroups = $checkbox.closest('.box').find('.visibility-changeable').closest('.form-group');
         }
 
-        var $hideFormGroups =  $boxFormGroups.not($checkbox.closest('.form-group'));
+        var $hideFormGroups = $boxFormGroups.not($checkbox.closest('.form-group'));
         var isOn = $checkbox.bootstrapSwitch('state');
         isOn ? $hideFormGroups.show() : $hideFormGroups.hide();
     };
@@ -1009,6 +1028,13 @@ function onHideCheckboxChange() {
     $boxHideableCheckbox.on('switchChange.bootstrapSwitch', function () {
         setVisibility(this);
     });
+}
+
+function addAndSetSelect2Option($select2input, value, text) {
+    $select2input
+        .append('<option value="' + value + '">' + text + '</option>')
+        .val(value)
+        .trigger('change');
 }
 
 function initSelect2TextForBilling(inputId, apiSettings) {
@@ -1026,19 +1052,24 @@ function initSelect2TextForBilling(inputId, apiSettings) {
             url: apiSettings['url'] + '/',
             dataType: 'json',
             data: function (params) {
-                return {
+                var queryParams = {
                     search: params.term
                 };
+                if (apiSettings['checkable']) {
+                    queryParams['is_enabled'] = true;
+                    queryParams['is_checked'] = true;
+                }
+                return queryParams;
             },
             processResults: function (data) {
                 var options = [];
 
-                data.results.forEach(function(option) {
+                data.results.forEach(function (option) {
                     var optionId = option[apiSettings['id']];
 
                     //fix error because of empty text in default option
                     if (optionId === selectedValue) {
-                        $select2Field.find('option[value="' + optionId +'"]').first().remove();
+                        $select2Field.find('option[value="' + optionId + '"]').first().remove();
                     }
 
                     options.push({
@@ -1062,6 +1093,10 @@ function initSelect2TextForBilling(inputId, apiSettings) {
                     var optionId = data[apiSettings['id']];
                     var optionTitle = data[apiSettings['text']];
 
+                    if (apiSettings['checkable'] && data['is_checked'] === false) {
+                        optionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
+                    }
+
                     var selectedOrgan = {
                         id: optionId,
                         text: optionTitle
@@ -1070,7 +1105,6 @@ function initSelect2TextForBilling(inputId, apiSettings) {
                 });
             }
         },
-
         dropdownCssClass: "bigdrop"
     });
 }
@@ -1081,7 +1115,7 @@ function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $upd
         serverSide: true,
         processing: true,
         ordering: false,
-        "drawCallback": function() {
+        "drawCallback": function () {
             process = false;
             if (drawCallback) {
                 drawCallback();
@@ -1114,6 +1148,63 @@ function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $upd
     }
 }
 
+function handleAddingNewBillingEntity() {
+    $('.add-billing-entity-button').click(function () {
+        var saveButton = this;
+        var $formModal = $("#modal-with-form");
+        $formModal.modal('show');
+        var $modalBody = $formModal.find('#modal-with-form-body');
+        $modalBody.html(mbh.loader.html);
+
+        var entityType = saveButton.getAttribute('data-entity-type');
+        var entitySettings = BILLING_API_SETTINGS[entityType];
+        var entityRoute = Routing.generate(entitySettings['creationRouteName']);
+        var initFormFunc = entitySettings['initFormFunc'];
+
+        $.ajax({
+            url: entityRoute,
+            method: 'GET',
+            error: function () {
+                $modalBody.html(mbh.error.html);
+            },
+            success: function (response) {
+                console.log(entityRoute);
+                initFormFunc(response);
+                saveButton.removeAttribute('disabled');
+                $('#modal-with-form-save-button').click(function () {
+                    var saveButton = this;
+                    saveButton.setAttribute('disabled', true);
+                    var entityData = $modalBody.find('form').serialize();
+                    $modalBody.html(mbh.loader.html);
+                    $.ajax({
+                        url: entityRoute,
+                        method: "POST",
+                        data: entityData,
+                        success: function (result) {
+                            saveButton.removeAttribute('disabled');
+                            if (result.success) {
+                                var entity = result['data'];
+                                var newEntitySelectOptionTitle = entity[entitySettings['text']];
+                                if (entitySettings['checkable'] !== undefined && entity['is_checked'] !== true) {
+                                    newEntitySelectOptionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
+                                }
+
+                                addAndSetSelect2Option($('.' + entitySettings['fieldClass']), entity[entitySettings['id']], newEntitySelectOptionTitle);
+                                $formModal.modal('hide');
+                            } else {
+                                initFormFunc(result);
+                            }
+                        },
+                        error: function () {
+                            $modalBody.html(mbh.error.html);
+                        }
+                    });
+                });
+            }
+        })
+    });
+}
+
 $(document).ready(function () {
     'use strict';
     docReadyForms();
@@ -1121,4 +1212,5 @@ $(document).ready(function () {
     mbhStartDate();
     onHideCheckboxChange();
     disableCheckboxListen();
+    handleAddingNewBillingEntity();
 });

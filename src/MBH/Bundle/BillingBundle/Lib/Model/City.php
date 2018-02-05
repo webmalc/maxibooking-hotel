@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\BillingBundle\Lib\Model;
 
-class City
+class City implements BillingClientRelatedInterface, BillingEnablableInterface, BillingCheckableInterface
 {
     /** @var  int */
     private $id;
@@ -22,6 +22,10 @@ class City
     private $region;
     /** @var string */
     private $country;
+
+    use BillingCheckableTrait;
+    use BillingEnablableTrait;
+    use BillingClientRelatedTrait;
 
     /**
      * @return int
@@ -64,7 +68,7 @@ class City
     /**
      * @return string
      */
-    public function getDisplayName(): ?string
+    public function getDisplay_name(): ?string
     {
         return $this->display_name;
     }
@@ -73,7 +77,7 @@ class City
      * @param string $display_name
      * @return City
      */
-    public function setDisplayName(string $display_name): City
+    public function setDisplay_name(string $display_name): City
     {
         $this->display_name = $display_name;
 

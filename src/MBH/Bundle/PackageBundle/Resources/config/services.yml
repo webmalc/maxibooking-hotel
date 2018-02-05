@@ -82,6 +82,7 @@ services:
 
     mbh.package.form.type.address_object_decomposed:
             class: MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType
+            arguments: ['@translator']
             tags:
                 - { name: form.type, alias: mbh_address_object_decomposed }
 

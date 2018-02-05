@@ -369,7 +369,5 @@ services:
                   key: '%s3_id%'
                   secret: '%s3_secret%'
 
-
-
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler

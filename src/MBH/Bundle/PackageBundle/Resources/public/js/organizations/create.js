@@ -9,7 +9,7 @@
             language: "ru",
             autoclose: true,
             startView: 2,
-            format: 'dd.mm.yyyy',
+            format: 'dd.mm.yyyy'
         });
     }
 
@@ -17,8 +17,8 @@
     var $hotelsGroup = $hotelsInput.closest('.form-group');
     var $typeInput = $('#organization_type');
     var checkDisplayHotelsGroup = function () {
-        $typeInput.val() == 'my' ? $hotelsGroup.show() : $hotelsGroup.hide();
-    }
+        $typeInput.val() === 'my' ? $hotelsGroup.show() : $hotelsGroup.hide();
+    };
     if ($typeInput.length > 0) {
         $typeInput.on('change', function(){
             checkDisplayHotelsGroup();
@@ -32,5 +32,4 @@
 
     $("#organization_inn").mask("000000000000");
     $("#organization_kpp").mask("000000000");
-
 })(jQuery);

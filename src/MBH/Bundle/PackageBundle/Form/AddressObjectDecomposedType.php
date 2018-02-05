@@ -6,20 +6,30 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class AddressObjectDecomposedType
  */
 class AddressObjectDecomposedType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $regionHelp = $this->translator->trans('form.AddressObjectDecomposedType.region_id.help',
+            ['%plusButtonHtml%' => '<a class="add-billing-entity-button" data-entity-type="regions"><i class="fa fa-plus"></i></a>']);
+
         $builder
             ->add('countryTld', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.country',
                 'required' => false,
                 'attr' => [
-                    'class' => 'billing-text-select',
+                    'class' => 'billing-text-select billing-country',
                     'data-endpoint-name' => 'countries'
                 ],
             ])
@@ -27,9 +37,10 @@ class AddressObjectDecomposedType extends AbstractType
                 'label' => 'form.AddressObjectDecomposedType.region',
                 'required' => false,
                 'attr' => [
-                    'class' => 'billing-text-select',
+                    'class' => 'billing-text-select billing-region',
                     'data-endpoint-name' => 'regions'
                 ],
+                'help' => $regionHelp
             ])
             ->add('city', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.city',
