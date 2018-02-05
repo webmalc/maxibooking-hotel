@@ -5,6 +5,7 @@ namespace MBH\Bundle\BillingBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Doctrine\UserManager;
 use GuzzleHttp\Exception\RequestException;
+use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BillingBundle\Document\InstallFixturesStatusStorage;
 use MBH\Bundle\BillingBundle\Document\InstallStatusStorage;
@@ -21,6 +22,7 @@ use MBH\Bundle\UserBundle\Document\AuthorizationToken;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager;
 use Monolog\Logger;
+use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
@@ -97,6 +99,9 @@ class ClientInstanceManager
 
     private $aclOwnerMaker;
 
+    /** @var ProducerInterface */
+    private $producer;
+
     public function __construct(
         MaintenanceManager $maintenanceManager,
         Logger $logger,
@@ -109,7 +114,8 @@ class ClientInstanceManager
         HotelManager $hotelManager,
         UserManager $userManager,
         WorkFlow $workflow,
-        AclOwnerMaker $aclOwnerMaker
+        AclOwnerMaker $aclOwnerMaker,
+        ProducerInterface $producer
     ) {
         $this->maintenanceManager = $maintenanceManager;
         $this->logger = $logger;
@@ -126,12 +132,12 @@ class ClientInstanceManager
         $this->userManager = $userManager;
         $this->workflow = $workflow;
         $this->aclOwnerMaker = $aclOwnerMaker;
+        $this->producer = $producer;
     }
 
     /**
      * @param string $clientName
      * @return Result
-     * @throws ClientMaintenanceException
      */
     public function runBillingInstallCommand(string $clientName)
     {
@@ -139,30 +145,13 @@ class ClientInstanceManager
             Logger::INFO,
             'Get installation task for client '.$clientName.' in service '.static::class
         );
-
         $result = new Result();
-        $command = 'mbh:billing:install --client='.$clientName;
-        $command = sprintf(
-            'php console %s --env=%s %s',
-            $command,
-            $this->kernelEnv,
-            $this->isDebug ? '' : '--no-debug'
-        );
-        $env = [
-            \AppKernel::CLIENT_VARIABLE => \AppKernel::DEFAULT_CLIENT,
-        ];
-
-        $process = new Process($command, $this->consoleFolder, $env, null, 60 * 10);
-        try {
-            $this->logger->addRecord(
-                Logger::INFO,
-                'Starting console command '.$command
-            );
-            $process->start();
-            $this->logger->addRecord(Logger::INFO, 'Command '.$command.' was started in background mode');
-        } catch (ProcessFailedException|ProcessTimedOutException $e) {
-            throw new ClientMaintenanceException($e->getMessage());
-        }
+        $this->logger->addRecord(Logger::INFO, 'Start generate queue message for install command');
+        $command = 'mbh:billing:install';
+        $params['--client'] = $clientName;
+        $command = new Command($command, $params, \AppKernel::DEFAULT_CLIENT, $this->kernelEnv, $this->isDebug);
+        $this->producer->publish(serialize($command));
+        $this->logger->addRecord(Logger::INFO, 'Queue message for install command was generated');
 
         return $result;
     }
