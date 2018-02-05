@@ -17,7 +17,6 @@ class CityType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'form.city_type.name.label'
             ])
-            ->add('display_name', HiddenType::class)
             ->add('region', TextType::class, [
                 'label' => 'form.city_type.region.label'
             ])

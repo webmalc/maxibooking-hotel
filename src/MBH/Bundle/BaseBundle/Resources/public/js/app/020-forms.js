@@ -18,7 +18,7 @@ var BILLING_API_SETTINGS = {
         text: 'name',
         creationRouteName: 'create_region',
         fieldClass: 'billing-region',
-        initFormFunc: function(formResponse) {
+        initFormFunc: function (formResponse) {
             $('#modal-with-form-body').html(formResponse['data']['html']);
             $('#mbhbilling_bundle_region_type_country').val($('.billing-country').val());
             initSelect2TextForBilling('mbhbilling_bundle_region_type_country', BILLING_API_SETTINGS.countries);
@@ -36,10 +36,7 @@ var BILLING_API_SETTINGS = {
             initSelect2TextForBilling('mbhbilling_bundle_city_type_country', BILLING_API_SETTINGS.countries);
             initSelect2TextForBilling('mbhbilling_bundle_city_type_region', BILLING_API_SETTINGS.regions);
         },
-        checkable: true,
-        updateFormFunc: function (data) {
-            $('#mbhbilling_bundle_city_type_display_name').val($('#mbhbilling_bundle_city_type_name').val());
-        }
+        checkable: true
     },
     fmsKpp: {
         url: BILLING_URL + document.documentElement.lang + '/fms-kpp',
@@ -972,7 +969,10 @@ var disableCheckboxListen = function () {
     $disableCheckBox.on('switchChange.bootstrapSwitch', function () {
         var disableMode = !$disableCheckBox.bootstrapSwitch('state') ? 'true' : 'false';
         var routeName = $disableCheckBox.attr('data-route-name');
-        window.location.href = Routing.generate('change_room_type_enableable_mode', {disableMode: disableMode, route : routeName});
+        window.location.href = Routing.generate('change_room_type_enableable_mode', {
+            disableMode: disableMode,
+            route: routeName
+        });
     });
 };
 
@@ -982,23 +982,23 @@ function getExportButtonSettings(entityName, format, filterDataCallback) {
         text: '<i class="fa fa-file-excel-o" title="' + format + '" data-toggle="tooltip" data-placement="bottom"></i>',
         className: 'btn btn-default btn-sm',
         action: function () {
-        $.ajax({
-            url: exportUrl,
-            type:'GET',
-            success: function (response) {
-                $('<div id="template-document-csv-modal" class="modal"></div>').insertAfter($('.content-wrapper'));
-                var $modal = $('#template-document-csv-modal');
-                $modal.html(response);
-                $modal.find('select').css('width', '100%').select2();
-                $modal.modal('show');
+            $.ajax({
+                url: exportUrl,
+                type: 'GET',
+                success: function (response) {
+                    $('<div id="template-document-csv-modal" class="modal"></div>').insertAfter($('.content-wrapper'));
+                    var $modal = $('#template-document-csv-modal');
+                    $modal.html(response);
+                    $modal.find('select').css('width', '100%').select2();
+                    $modal.modal('show');
 
-                var $form = $modal.find("form");
-                $form.find('#export-send-button').click(function() {
-                    window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
-                    $modal.modal('hide');
-                });
-            }
-        });
+                    var $form = $modal.find("form");
+                    $form.find('#export-send-button').click(function () {
+                        window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
+                        $modal.modal('hide');
+                    });
+                }
+            });
         }
     }
 }
@@ -1016,7 +1016,7 @@ function onHideCheckboxChange() {
             $boxFormGroups = $checkbox.closest('.box').find('.visibility-changeable').closest('.form-group');
         }
 
-        var $hideFormGroups =  $boxFormGroups.not($checkbox.closest('.form-group'));
+        var $hideFormGroups = $boxFormGroups.not($checkbox.closest('.form-group'));
         var isOn = $checkbox.bootstrapSwitch('state');
         isOn ? $hideFormGroups.show() : $hideFormGroups.hide();
     };
@@ -1064,12 +1064,12 @@ function initSelect2TextForBilling(inputId, apiSettings) {
             processResults: function (data) {
                 var options = [];
 
-                data.results.forEach(function(option) {
+                data.results.forEach(function (option) {
                     var optionId = option[apiSettings['id']];
 
                     //fix error because of empty text in default option
                     if (optionId === selectedValue) {
-                        $select2Field.find('option[value="' + optionId +'"]').first().remove();
+                        $select2Field.find('option[value="' + optionId + '"]').first().remove();
                     }
 
                     options.push({
@@ -1105,7 +1105,6 @@ function initSelect2TextForBilling(inputId, apiSettings) {
                 });
             }
         },
-
         dropdownCssClass: "bigdrop"
     });
 }
@@ -1116,7 +1115,7 @@ function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $upd
         serverSide: true,
         processing: true,
         ordering: false,
-        "drawCallback": function() {
+        "drawCallback": function () {
             process = false;
             if (drawCallback) {
                 drawCallback();
@@ -1162,36 +1161,46 @@ function handleAddingNewBillingEntity() {
         var entityRoute = Routing.generate(entitySettings['creationRouteName']);
         var initFormFunc = entitySettings['initFormFunc'];
 
-        $.get(entityRoute, function (response) {
-            initFormFunc(response);
-            $('#modal-with-form-save-button').click(function () {
-                var saveButton = this;
-                saveButton.setAttribute('disabled', true);
-                if (entitySettings['updateFormFunc']) {
-                    entitySettings['updateFormFunc']();
-                }
-                var entityData = $modalBody.find('form').serialize();
-                $modalBody.html(mbh.loader.html);
-                $.ajax({
-                    url: entityRoute,
-                    method: "POST",
-                    data: entityData,
-                    success: function (result) {
-                        saveButton.removeAttribute('disabled');
-                        if (result.success) {
-                            var entity = result['data'];
-                            var newEntitySelectOptionTitle = entity[entitySettings['text']] +  ' (' + Translator.trans('020-forms.on_moderation') + ')';
-                            addAndSetSelect2Option($('.' + entitySettings['fieldClass']), entity[entitySettings['id']], newEntitySelectOptionTitle);
-                            $formModal.modal('hide');
-                        } else {
-                            initFormFunc(result);
+        $.ajax({
+            url: entityRoute,
+            method: 'GET',
+            error: function () {
+                $modalBody.html(mbh.error.html);
+            },
+            success: function (response) {
+                console.log(entityRoute);
+                initFormFunc(response);
+                saveButton.removeAttribute('disabled');
+                $('#modal-with-form-save-button').click(function () {
+                    var saveButton = this;
+                    saveButton.setAttribute('disabled', true);
+                    var entityData = $modalBody.find('form').serialize();
+                    $modalBody.html(mbh.loader.html);
+                    $.ajax({
+                        url: entityRoute,
+                        method: "POST",
+                        data: entityData,
+                        success: function (result) {
+                            saveButton.removeAttribute('disabled');
+                            if (result.success) {
+                                var entity = result['data'];
+                                var newEntitySelectOptionTitle = entity[entitySettings['text']];
+                                if (entitySettings['checkable'] !== undefined && entity['is_checked'] !== true) {
+                                    newEntitySelectOptionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
+                                }
+
+                                addAndSetSelect2Option($('.' + entitySettings['fieldClass']), entity[entitySettings['id']], newEntitySelectOptionTitle);
+                                $formModal.modal('hide');
+                            } else {
+                                initFormFunc(result);
+                            }
+                        },
+                        error: function () {
+                            $modalBody.html(mbh.error.html);
                         }
-                    },
-                    error: function () {
-                        $modalBody.html(mbh.error.html);
-                    }
+                    });
                 });
-            });
+            }
         })
     });
 }

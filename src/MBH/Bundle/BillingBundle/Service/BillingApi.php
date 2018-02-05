@@ -341,7 +341,6 @@ class BillingApi
     {
         $url = $this->getBillingUrl($endpointSettings['endpoint']);
         $data = $this->serializer->normalize($entity);
-        $data = $this->convertIncorrectNormalizedFields($data);
 
         return $this->sendPost($url, $data, false);
     }
@@ -360,16 +359,6 @@ class BillingApi
         }
 
         return $data;
-    }
-
-    /**
-     * @param $regionQuery
-     * @param null $locale
-     * @return Region[]
-     */
-    public function getRegionByQuery($regionQuery, $locale = null)
-    {
-        return $this->getBillingEntitiesByQuery(self::REGIONS_ENDPOINT_SETTINGS, [self::BILLING_QUERY_PARAM_NAME => $regionQuery], Region::class, $locale);
     }
 
     /**
@@ -558,13 +547,11 @@ class BillingApi
     /**
      * @param $endpoint
      * @param $queryParams
-     * @param $modelType
-     * @param $locale
      * @return array
      */
-    private function getBillingEntitiesByQuery($endpoint, $queryParams, $modelType, $locale)
+    public function getBillingEntitiesByQuery($endpoint, $queryParams)
     {
-        $url = $this->getBillingUrl($endpoint, null, $locale, $queryParams);
+        $url = $this->getBillingUrl($endpoint['endpoint'], null, $this->locale, $queryParams);
 
         try {
             $response = $this->sendGet($url);
@@ -575,7 +562,7 @@ class BillingApi
 
         $entities = [];
         foreach ($decodedResponse['results'] as $entityData) {
-            $entities[] = $this->serializer->denormalize($entityData, $modelType);
+            $entities[] = $this->serializer->denormalize($entityData, $endpoint['model']);
         }
 
         return $entities;

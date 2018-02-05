@@ -109,3 +109,11 @@ services:
     mbh.billing_payer_form_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler
         shared: false
+
+    mbh.billing_data_handler:
+        class: MBH\Bundle\BillingBundle\Service\BillingDataHandler
+        arguments:
+            - '@mbh.billing.api'
+            - '@serializer'
+            - '@mbh.client_manager'
+            - '@mbh.form_data_handler'

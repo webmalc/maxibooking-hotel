@@ -68,7 +68,7 @@ class City implements BillingClientRelatedInterface, BillingEnablableInterface, 
     /**
      * @return string
      */
-    public function getDisplayName(): ?string
+    public function getDisplay_name(): ?string
     {
         return $this->display_name;
     }
@@ -77,7 +77,7 @@ class City implements BillingClientRelatedInterface, BillingEnablableInterface, 
      * @param string $display_name
      * @return City
      */
-    public function setDisplayName(string $display_name): City
+    public function setDisplay_name(string $display_name): City
     {
         $this->display_name = $display_name;
 
