@@ -369,8 +369,8 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-globe']);
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'menu.communication.label.polls'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
-            ->setAttributes(['icon' => 'fa fa-star']);
+//        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
+//            ->setAttributes(['icon' => 'fa fa-star']);
 
         return $this->filter($menu, $factory, $options);
     }
