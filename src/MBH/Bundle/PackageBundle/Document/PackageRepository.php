@@ -237,7 +237,6 @@ class PackageRepository extends DocumentRepository
             }
             $queryBuilder->field('virtualRoom.id')->equals($criteria->virtualRoom);
         }
-
         $dateFilterBy = $criteria->dateFilterBy ? $criteria->dateFilterBy : 'begin';
         //begin
         if (isset($criteria->begin)) {
@@ -276,16 +275,13 @@ class PackageRepository extends DocumentRepository
         //query
         if (isset($criteria->query)) {
             $query = trim($criteria->query);
-            $tourists = $this->dm->getRepository('MBHPackageBundle:Tourist')
+            $touristsIds = $this->dm->getRepository('MBHPackageBundle:Tourist')
                 ->createQueryBuilder()
                 ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+                ->distinct('id')
                 ->getQuery()
-                ->execute();
-
-            $touristsIds = [];
-            foreach ($tourists as $tourist) {
-                $touristsIds[] = $tourist->getId();
-            }
+                ->execute()
+                ->toArray();
 
             if (count($touristsIds)) {
                 $queryBuilder->addOr($queryBuilder->expr()->field('tourists.id')->in($touristsIds));

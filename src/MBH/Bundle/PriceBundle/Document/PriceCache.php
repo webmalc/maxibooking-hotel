@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="PriceCache already exist.")
  * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff"}, message="PriceCache already exist.")
  * @ODM\HasLifecycleCallbacks
+ * @ODM\Index(keys={"hotel"="asc","roomType"="asc","tariff"="asc","date"="asc"})
  */
 class PriceCache extends Base
 {
