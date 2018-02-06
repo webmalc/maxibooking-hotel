@@ -305,45 +305,19 @@ liip_imagine:
         aws_loader:
             flysystem:
                 filesystem_service: oneup_flysystem.aws_filesystem_cache_filesystem
-
         aws_protected_loader:
             flysystem:
                 filesystem_service: oneup_flysystem.aws_filesystem_protected_cache_filesystem
+#TODO: Need to implement chain of loaders?
+#        aws_chain_loaders:
+#            chain:
+#                loaders:
+#                    - aws_loader
+#                    - aws_protected_loader
 
     data_loader: aws_loader
 
-    resolvers:
-        public_images:
-            aws_s3:
-                client_config:
-                    credentials:
-                        key: '%s3_id%'
-                        secret: '%s3_secret%'
-                    region: '%s3_region%'
-                    version: 'latest'
-                bucket: '%s3_bucket%'
-                get_options:
-                    Scheme: https
-                put_options:
-                    CacheControl: "max-age=86400"
-                cache: true
-        protected_images:
-            aws_s3:
-                client_config:
-                    credentials:
-                        key: '%s3_id%'
-                        secret: '%s3_secret%'
-                    region: '%s3_region%'
-                    version: 'latest'
-                bucket: '%s3_protected_bucket%'
-                get_options:
-                    Scheme: https
-                put_options:
-                    CacheControl: "max-age=86400"
-
-
-
-    cache: public_images
+    cache: public_cached_images
 
     filter_sets:
         cache: ~
@@ -373,7 +347,7 @@ liip_imagine:
               thumbnail: { size: [400, 200], mode: outbound, allow_upscale: true }
 
         stamp:
-            cache: protected_images
+            cache: protected_cached_images
             quality: 80
             filters:
               thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }
