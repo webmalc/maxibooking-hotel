@@ -113,23 +113,13 @@ class OrderRepository extends DocumentRepository
         }
 
         if (isset($data['count']) && $data['count']) {
-            $docs = $qb->getQuery()->count();
-        } else {
-            $docs = $qb->getQuery()->execute();
-            if(isset($data['asIdsArray']) && !empty($data['asIdsArray'])) {
-
-
-                $ids = [];
-                foreach ($docs as $doc) {
-                    $ids[] = $doc->getId();
-                }
-                return $ids;
-            }
+            return $qb->getQuery()->count();
+        }
+        if(isset($data['asIdsArray']) && !empty($data['asIdsArray'])) {
+            return $qb->distinct('id')->getQuery()->execute()->toArray();
         }
 
-
-
-        return $docs;
+        return $qb->distinct('id')->getQuery()->execute();
     }
 
     /**
