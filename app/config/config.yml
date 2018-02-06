@@ -244,17 +244,17 @@ knp_gaufrette:
         images_adapter_amazon_s3:
             aws_s3:
                 service_id: 'mbh.aws_s3.client'
-                bucket_name: 'mb-client-upload-files'
+                bucket_name: '%s3_bucket%'
                 detect_content_type: true
                 options:
-                    directory: 'upload/%client%'
+                    directory: '%client%'
         protected_adapter_amazon_s3:
             aws_s3:
                 service_id: 'mbh.aws_s3.client'
-                bucket_name: 'mb-client-upload-files'
+                bucket_name: '%s3_protected_bucket%'
                 detect_content_type: true
                 options:
-                    directory: 'protectedUpload/%client%'
+                    directory: '%client%'
 
     filesystems:
         aws_s3_filesystem:
@@ -269,25 +269,36 @@ vich_uploader:
         upload_image:
             namer: vich_uploader.namer_uniqid
             upload_destination: aws_s3_filesystem
-            uri_prefix:         'upload/%client%'
+            uri_prefix:         '%client%'
 
         protected_upload:
             namer: vich_uploader.namer_uniqid
             upload_destination: protected_aws_s3_filesystem
-            uri_prefix:         'protectedUpload/%client%'
+            uri_prefix:         '%client%'
 #Не работает с vichUploader
 oneup_flysystem:
     adapters:
         aws_s3_cache_adapter:
             awss3v3:
                 client: mbh.aws_s3.client
-                bucket: 'mb-client-upload-files'
+                bucket: '%s3_bucket%'
+                prefix: ''
+
+        aws_s3_protected_cache_adapter:
+            awss3v3:
+                client: mbh.aws_s3.client
+                bucket: '%s3_protected_bucket%'
                 prefix: ''
 
     filesystems:
         aws_filesystem_cache:
             adapter: aws_s3_cache_adapter
             mount:  aws_filesystem_cache
+        aws_filesystem_protected_cache:
+            adapter: aws_s3_protected_cache_adapter
+            mount:  aws_filesystem_protected_cache
+
+
 
 liip_imagine:
     loaders:
@@ -295,20 +306,44 @@ liip_imagine:
             flysystem:
                 filesystem_service: oneup_flysystem.aws_filesystem_cache_filesystem
 
-    data_loader: aws_loader
-    resolvers:
-        flysystem_cache:
+        aws_protected_loader:
             flysystem:
-                filesystem_service: oneup_flysystem.aws_filesystem_cache_filesystem
-                cache_prefix: "cache/%client%"
-                root_url: "https://s3-eu-west-1.amazonaws.com/mb-client-upload-files"
-        protected_flysystem_cache:
-            flysystem:
-                filesystem_service: oneup_flysystem.aws_filesystem_cache_filesystem
-                cache_prefix: "protectedCache/%client%"
-                root_url: "https://s3-eu-west-1.amazonaws.com/mb-client-upload-files"
+                filesystem_service: oneup_flysystem.aws_filesystem_protected_cache_filesystem
 
-    cache: flysystem_cache
+    data_loader: aws_loader
+
+    resolvers:
+        public_images:
+            aws_s3:
+                client_config:
+                    credentials:
+                        key: '%s3_id%'
+                        secret: '%s3_secret%'
+                    region: '%s3_region%'
+                    version: 'latest'
+                bucket: '%s3_bucket%'
+                get_options:
+                    Scheme: https
+                put_options:
+                    CacheControl: "max-age=86400"
+                cache: true
+        protected_images:
+            aws_s3:
+                client_config:
+                    credentials:
+                        key: '%s3_id%'
+                        secret: '%s3_secret%'
+                    region: '%s3_region%'
+                    version: 'latest'
+                bucket: '%s3_protected_bucket%'
+                get_options:
+                    Scheme: https
+                put_options:
+                    CacheControl: "max-age=86400"
+
+
+
+    cache: public_images
 
     filter_sets:
         cache: ~
@@ -338,7 +373,7 @@ liip_imagine:
               thumbnail: { size: [400, 200], mode: outbound, allow_upscale: true }
 
         stamp:
-            cache: protected_flysystem_cache
+            cache: protected_images
             quality: 80
             filters:
               thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }

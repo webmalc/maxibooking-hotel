@@ -369,5 +369,20 @@ services:
                   key: '%s3_id%'
                   secret: '%s3_secret%'
 
+#    mbh.imagine.cache.resolver.amazon_s3:
+#        class: Liip\ImagineBundle\Imagine\Cache\Resolver\AwsS3Resolver
+#        arguments:
+#            - '@mbh.aws_s3.client'
+#            - '%s3_bucket%'
+#        tags:
+#          - { name: "liip_imagine.cache.resolver", resolver: "amazon_s3" }
+
+
+
+
+
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
+
+
+

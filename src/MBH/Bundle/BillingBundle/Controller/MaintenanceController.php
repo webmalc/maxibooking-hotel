@@ -103,5 +103,29 @@ class MaintenanceController extends BaseController
         }
     }
 
+    /**
+     * @Route("/test")
+     */
+    public function testAction(Request $request) {
+
+        $form = $this->createForm('MBH\Bundle\BaseBundle\Form\ImageType');
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $image = $form->getData();
+            $this->dm->persist($image);
+            $this->dm->flush($image);
+            $a = 'b';
+
+        }
+
+
+        $image1 = $this->dm->find('MBHBaseBundle:Image', '5a797b28180f24002c66eac8');
+
+        return $this->render('@MBHBilling/Maintenance/test.html.twig', [
+            'form' => $form->createView(),
+            'image' => 'noimage'
+        ]);
+    }
+
 
 }
