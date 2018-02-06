@@ -24,7 +24,7 @@
 
             <div class="form-group input">
                 <label><i class="fa fa-bed" title='{{ 'report.filling.filling.room_types'|trans }}' data-toggle='tooltip'></i></label>
-                <select name="roomType" data-placeholder='{{ 'report.filling.filling.room_types'|trans }}' id="filling-report-filter-roomType" class="form-control input-sm">
+                <select name="roomTypes[]" multiple data-placeholder='{{ 'report.filling.filling.room_types'|trans }}' id="filling-report-filter-roomType" class="form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypeList %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
@@ -43,6 +43,9 @@
             <div class="form-group input">
                 <label for="filling-report-filter-isEnabled"><i class="fa fa-toggle-on" title="{{ 'report.filling.filling.only_enabled'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>&nbsp;</label>
                 <input type="checkbox" id="filling-report-filter-isEnabled">
+            </div>
+            &nbsp;<div class="form-group input">
+                <button type="button" class="btn btn-primary navbar-btn" id="filling-filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
             </div>
         </form>
         {% endblock content %}

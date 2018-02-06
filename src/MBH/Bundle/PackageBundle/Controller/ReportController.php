@@ -592,6 +592,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function fillingTableAction(Request $request)//\DateTime $begin = null, \DateTime $end  = null)
     {
+        /** @var RoomTypeRepository $roomTypeRepository */
         $roomTypeRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
 
         $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
@@ -613,9 +614,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ]);
         }
 
-        $roomType = $roomTypeRepository->find($request->get('roomType'));
-        if ($roomType) {
-            $roomTypes = [$roomType];
+        if ($request->get('roomTypes')) {
+            $roomTypes = $roomTypeRepository->fetch(null, $request->get('roomTypes'))->toArray();
         } else {
             $roomTypes = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
         }

@@ -4,7 +4,7 @@ $(document).ready(function ($) {
     var $fillingForm = $('#filling-table-filter'),
         $fillingTableWrapper = $('#filling-table-wrapper');
 
-    $fillingForm.find('input, select').on('switchChange.bootstrapSwitch change', function () {
+    $('#filling-filter-button').click(function () {
         if(!inProcess) {
             $fillingTableWrapper.html(mbh.loader.html);
             var filterData = $fillingForm.serializeObject();
