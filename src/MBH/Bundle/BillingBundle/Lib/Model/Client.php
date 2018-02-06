@@ -398,22 +398,23 @@ class Client
     /**
      * @return string
      */
-    public function getUrl(): ?string
+    public function getUrl(string $domainName = null): ?string
     {
         if (!$this->url) {
-            $this->url = self::compileClientUrl($this->getName());
+            $this->url = self::compileClientUrl($this->getName(), $domainName);
         }
 
         return $this->url;
     }
 
     /**
-     * @param $login
+     * @param string $login
+     * @param string|null $domainName
      * @return string
      */
-    public static function compileClientUrl($login)
+    public static function compileClientUrl(string $login, string $domainName = null)
     {
-        return self::SCHEME.$login.'.'.self::DEFAULT_MAXIBOOKING_DOMAIN_NAME;
+        return self::SCHEME.$login.'.'.$domainName ?? self::DEFAULT_MAXIBOOKING_DOMAIN_NAME;
     }
 
     /**

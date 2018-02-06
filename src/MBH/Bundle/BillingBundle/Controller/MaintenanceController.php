@@ -75,7 +75,7 @@ class MaintenanceController extends BaseController
             $result->setData(
                 [
                     'token' => $admin->getApiToken()->getToken(),
-                    'url' => Client::compileClientUrl($clientLogin),
+                    'url' => Client::compileClientUrl($clientLogin, $this->getParameter('domain')),
                 ]
             );
         }

@@ -37,7 +37,7 @@ parameters:
   debug_toolbar: true
   debug_redirects: false
   use_assetic_controller: false
-  router.request_context.host: 'example.com'
+  router.request_context.host: '%client%.maxi-booking.ru'
   router.request_context.scheme: http
   router.request_context.base_url: null
 
@@ -75,3 +75,4 @@ parameters:
   s3_region: eu-west-1
   kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
 
+  domain: 'maxi-booking.ru'

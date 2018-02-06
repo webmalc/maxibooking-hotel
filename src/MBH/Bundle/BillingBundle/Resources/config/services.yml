@@ -106,6 +106,7 @@ services:
             - '@workflow.fixtures_installation'
             - '@mbh.acl_document_owner_maker'
             - '@old_sound_rabbit_mq.task_command_runner_producer'
+            - '%domain%'
 
     mbh.billing_response_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler
