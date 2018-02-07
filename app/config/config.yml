@@ -316,7 +316,8 @@ liip_imagine:
 #                    - aws_protected_loader
 
     data_loader: aws_loader
-
+# Try to use proxy resolver
+#    cache: proxy
     cache: public_cached_images
 
     filter_sets:

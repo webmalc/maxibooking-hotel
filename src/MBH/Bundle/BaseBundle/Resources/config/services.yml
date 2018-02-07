@@ -404,6 +404,16 @@ services:
         tags:
             - { name: "liip_imagine.cache.resolver", resolver: "protected_cached_images" }
 
+    mbh.imagine.cache.resolver.proxy:
+        class: Liip\ImagineBundle\Imagine\Cache\Resolver\ProxyResolver
+        arguments:
+            - "@mbh.imagine.cache.resolver.amazon_s3.cache"
+            - [ "http://localhost:9090"]
+        tags:
+            - { name: "liip_imagine.cache.resolver", resolver: "proxy"}
+
+
+
     memcache:
         class: Memcache
         calls:
