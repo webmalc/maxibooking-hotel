@@ -68,7 +68,9 @@
                     justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }}, 
                     startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
-                    utils: {}
+                    utils: {},
+                    canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
+                    showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }}
                 }
             </script>
             {{ app.session.remove('mbh.justLogin') }}
@@ -143,6 +145,45 @@
 
             {% if app.environment == 'dev' %}
                 <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+                <div class="modal fade" tabindex="-1" role="dialog" id="add-tips-modal">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body">
+                                Со всеми вопросами и предложениями по доработке или багам к Дане<br><br>
+                                <form class="form-horizontal">
+                                    <input type="hidden" name="formName" id="tips-form-id">
+                                    <input type="hidden" name="fieldId" id="tips-field-id">
+                                    <div class="form-group">
+                                        <label class="required control-label col-sm-2" for="tips-tip-text">
+                                            Tip
+                                        </label>
+                                        <div class="col-sm-10">
+                                            <textarea name="tipText" class="form-control input-sm" id="tips-tip-text" cols="50" rows="10"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tips-tip-lang" class="required control-label col-sm-2">
+                                            Lang
+                                        </label>
+                                        <div class="col-sm-10">
+                                            <select name="lang" class="form-control input-sm" id="tips-tip-lang">
+                                                <option value="ru">Русский</option>
+                                                <option value="en">Английский</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                                <button type="button" class="btn btn-primary" id="tips-modal-save-button">Сохранить</button>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
             {% else %}
 
             <script src="{{ asset('js/fos_js_routes.js') }}"></script>
@@ -151,7 +192,6 @@
                 moment.locale(document.documentElement.lang);
             </script>
         {% endblock %}
-
     </body>
 </html>
 {% endspaceless %}

@@ -281,6 +281,31 @@ class ClientConfig extends Base
     protected $currency;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $showLabelTips = true;
+
+    /**
+     * @return bool
+     */
+    public function isShowLabelTips(): ?bool
+    {
+        return $this->showLabelTips;
+    }
+
+    /**
+     * @param bool $showLabelTips
+     * @return ClientConfig
+     */
+    public function setShowLabelTips(bool $showLabelTips): ClientConfig
+    {
+        $this->showLabelTips = $showLabelTips;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getCurrency(): ?string
