@@ -5,7 +5,6 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -33,6 +32,7 @@ class HotelLogoImageType extends AbstractType
     {
         parent::finishView($view, $form, $options);
         $view->children['imageFile']->vars['logo_image_delete_url'] = $options['logo_image_delete_url'];
+        $view->children['imageFile']->vars['download_uri'] = $options['logo_image_download_url'];
     }
 
 
@@ -40,7 +40,8 @@ class HotelLogoImageType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => BaseImage::class,
-            'logo_image_delete_url' => null
+            'logo_image_delete_url' => null,
+            'logo_image_download_url' => null
         ]);
     }
 

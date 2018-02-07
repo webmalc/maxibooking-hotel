@@ -309,13 +309,13 @@ liip_imagine:
             flysystem:
                 filesystem_service: oneup_flysystem.aws_filesystem_protected_cache_filesystem
 #TODO: Need to implement chain of loaders?
-#        aws_chain_loaders:
-#            chain:
-#                loaders:
-#                    - aws_loader
-#                    - aws_protected_loader
+        aws_chain_loaders:
+            chain:
+                loaders:
+                    - aws_loader
+                    - aws_protected_loader
 
-    data_loader: aws_loader
+    data_loader: aws_chain_loaders
 # Try to use proxy resolver
 #    cache: proxy
     cache: public_cached_images
@@ -353,6 +353,12 @@ liip_imagine:
             filters:
               thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }
         scaler:
+            quality: 80
+            filters:
+              relative_resize: { scale: 0.5, allow_upscale: true }
+
+        protected_scaler:
+            cache: protected_cached_images
             quality: 80
             filters:
               relative_resize: { scale: 0.5, allow_upscale: true }

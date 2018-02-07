@@ -183,8 +183,15 @@ class HotelController extends Controller
 
         $logoImageDeleteUrl = $this->generateUrl('hotel_delete_logo_image', ['id' => $entity->getId()]);
 
+        $logoDownloadUrl = null;
+        if ($entity->getLogoImage()) {
+            $logoImageId = $entity->getLogoImage()->getId();
+            $logoDownloadUrl = $this->generateUrl('hotel_logo_download', ['id' => $logoImageId]);
+        }
+
         $form = $this->createForm(HotelType::class, $entity, [
-            'logo_image_delete_url' => $logoImageDeleteUrl
+            'logo_image_delete_url' => $logoImageDeleteUrl,
+            'logo_image_download_url' => $logoDownloadUrl
         ]);
 
         return [
@@ -192,6 +199,23 @@ class HotelController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
+    }
+
+
+    /**
+     * Download Logo
+     *
+     * @Route("/{id}/logo/download", name="hotel_logo_download")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
+     * @param Image $image
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function downloadLogo(Image $image)
+    {
+        $downloader = $this->get('mbh.protected.file.downloader');
+
+        return $downloader->downloadPublicImage($image);
     }
 
     /**
