@@ -427,7 +427,7 @@ services:
 
     mbh.protected.file.downloader:
         class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
-        arguments: ["@vich_uploader.download_handler", "@vich_uploader.templating.helper.uploader_helper","@liip_imagine.data.manager"]
+        arguments: ["@vich_uploader.download_handler", "@vich_uploader.templating.helper.uploader_helper","@liip_imagine.data.manager", "@liip_imagine.filter.manager"]
 
 
 
