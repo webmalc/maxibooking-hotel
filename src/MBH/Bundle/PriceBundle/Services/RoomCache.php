@@ -276,7 +276,7 @@ class RoomCache
                     ->trans('room_cache_controller.limit_of_rooms_exceeded', [
                         '%busyDays%' => join(', ', $outOfLimitRoomsDays),
                         '%availableNumberOfRooms%' => $limitsManager->getAvailableNumberOfRooms(),
-                        '%overviewUrl%' => $this->container->get('router')->generateUrl('total_rooms_overview')
+                        '%overviewUrl%' => $this->container->get('router')->generate('total_rooms_overview')
                     ]);
             }
 
