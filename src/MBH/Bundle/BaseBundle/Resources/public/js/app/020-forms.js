@@ -1065,7 +1065,7 @@ function initAddTipModal() {
             var formName = $form.attr('name');
             var inputId = this.nodeName === 'input' ? this.id : this.getAttribute('for');
             if (!inputId) {
-                alert('Невозможно добавить подсказку к этому полю. Обратитесь к Дане, пожалуйста');
+                alert('Невозможно добавить подсказку к этому полю. Обратитесь к Дане, пожалуйста.');
             } else {
                 $tipsModal.find('#tips-form-id').val(formName);
                 $tipsModal.find('#tips-field-id').val(inputId);
