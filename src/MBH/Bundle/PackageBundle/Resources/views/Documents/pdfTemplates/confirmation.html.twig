@@ -109,7 +109,7 @@
     </div>
     {% if hotel and hotel.logoImage %}
         <div class="logo">
-            <img src="{{ asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80')) }}">
+            <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80'))) }}">
         </div>
     {% endif %}
     <div style="clear: both"></div>
@@ -312,10 +312,10 @@
     </table>
 
 
-    {% if hotel.organization and hotel.organization.stamp %}
-        <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px"
-             src="{{ hotel.organization.stamp }}">
-    {% endif %}
+    {#{% if hotel.organization and hotel.organization.stamp %}#}
+        {#<img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px"#}
+             {#src="{{ hotel.organization.stamp }}">#}
+    {#{% endif %}#}
 
     <style>
         .signatures {
