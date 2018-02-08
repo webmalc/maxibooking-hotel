@@ -35,7 +35,6 @@ body {
 }
 .package {
   z-index: 100;
-  border-bottom: 1px solid white;
   cursor: pointer;
 }
 .package .divide-package-button,
