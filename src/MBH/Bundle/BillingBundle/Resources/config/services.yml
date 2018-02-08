@@ -121,5 +121,5 @@ services:
         arguments:
             - '@mbh.billing.api'
             - '@serializer'
-            - '@mbh.client_manager'
             - '@mbh.form_data_handler'
+            - '@kernel'
