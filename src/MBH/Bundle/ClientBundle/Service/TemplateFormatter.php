@@ -13,6 +13,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Bridge\Twig\Extension\AssetExtension;
 use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
+use Symfony\Component\HttpFoundation\Response;
 use Vich\UploaderBundle\Twig\Extension\UploaderExtension;
 
 class TemplateFormatter
@@ -69,15 +70,6 @@ class TemplateFormatter
 
     public function generateDocumentTemplate(DocumentTemplate $doc, Package $package, ?User $user)
     {
-        $loader = new \Twig_Loader_Array(['template' => $doc->getContent()]);
-        $env = new \Twig_Environment($loader);
-        $env->addExtension($this->container->get('mbh.twig.extension'));
-        $env->addExtension(new TranslationExtension($this->container->get('translator')));
-        $env->addExtension(new AssetExtension($this->container->get('assets.packages')));
-        $env->addExtension(new HttpFoundationExtension($this->container->get('request_stack')));
-        $env->addExtension(new ImagineExtension($this->container->get('liip_imagine.cache.manager')));
-        $env->addExtension(new UploaderExtension($this->container->get('vich_uploader.templating.helper.uploader_helper')));
-
         $order = $package->getOrder();
         $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
         $organization = $doc->getOrganization() ? $doc->getOrganization() : $hotel->getOrganization();
@@ -94,7 +86,11 @@ class TemplateFormatter
         ];
 
         $params = $this->addCalculatedParams($params, $package);
-        $renderedTemplate = $env->render('template', $params);
+        $twig = $this->container->get('twig');
+        $renderedTemplate = $twig->createTemplate($doc->getContent())->render($params);
+
+        /*$renderedTemplate = $twig->render('@MBHPackage/Documents/pdfTemplates/act.html.twig', $params);*/
+        /*return $renderedTemplate;*/
 
         return  $this->container->get('knp_snappy.pdf')->getOutputFromHtml($renderedTemplate);
     }
