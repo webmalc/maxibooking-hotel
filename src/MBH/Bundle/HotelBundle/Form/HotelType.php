@@ -51,7 +51,8 @@ class HotelType extends AbstractType
                 'label' => 'form.hotel_logo.image_file.help',
                 'group' => 'form.hotelType.settings',
                 'required' => false,
-                'logo_image_delete_url' => $options['logo_image_delete_url']
+                'logo_image_delete_url' => $options['logo_image_delete_url'],
+                'logo_image_download_url' => $options['logo_image_download_url']
 
             ])
             ->add('isHostel', CheckboxType::class, [
@@ -88,7 +89,8 @@ class HotelType extends AbstractType
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
             'types' => [],
             'imageUrl' => null,
-            'logo_image_delete_url' => null
+            'logo_image_delete_url' => null,
+            'logo_image_download_url' => null,
         ]);
     }
 

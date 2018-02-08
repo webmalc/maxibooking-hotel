@@ -404,16 +404,14 @@ services:
         tags:
             - { name: "liip_imagine.cache.resolver", resolver: "protected_cached_images" }
 
-    mbh.imagine.cache.resolver.proxy:
-        class: Liip\ImagineBundle\Imagine\Cache\Resolver\ProxyResolver
-        arguments:
-            - "@mbh.imagine.cache.resolver.amazon_s3.cache"
-            - [ "http://localhost:9090"]
-        tags:
-            - { name: "liip_imagine.cache.resolver", resolver: "proxy"}
-
-
-
+#Didn't work
+#    mbh.imagine.cache.resolver.proxy:
+#        class: Liip\ImagineBundle\Imagine\Cache\Resolver\ProxyResolver
+#        arguments:
+#            - "@mbh.imagine.cache.resolver.amazon_s3.cache"
+#            - [ "http://localhost:9090"]
+#        tags:
+#            - { name: "liip_imagine.cache.resolver", resolver: "proxy"}
     memcache:
         class: Memcache
         calls:
@@ -426,6 +424,10 @@ services:
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
+
+    mbh.protected.file.downloader:
+        class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
+        arguments: ["@vich_uploader.download_handler", "@vich_uploader.templating.helper.uploader_helper","@liip_imagine.data.manager", "@liip_imagine.filter.manager"]
 
 
 

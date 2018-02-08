@@ -6,23 +6,24 @@ use MBH\Bundle\BaseBundle\Service\FormDataHandler;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingCheckableInterface;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingClientRelatedInterface;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingEnablableInterface;
-use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Serializer\Serializer;
 
 class BillingDataHandler
 {
     private $billingApi;
     private $serializer;
-    private $clientManager;
     private $formDataHandler;
+    /** @var \AppKernel $kernel */
+    private $kernel;
 
-    public function __construct(BillingApi $billingApi, Serializer $serializer, ClientManager $clientManager, FormDataHandler $formDataHandler) {
+    public function __construct(BillingApi $billingApi, Serializer $serializer, FormDataHandler $formDataHandler, KernelInterface $kernel) {
         $this->billingApi = $billingApi;
         $this->serializer = $serializer;
-        $this->clientManager = $clientManager;
         $this->formDataHandler = $formDataHandler;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -42,7 +43,7 @@ class BillingDataHandler
             }
             if ($entity instanceof BillingClientRelatedInterface) {
                 //TODO: Поменять если будет логин вместо ID
-                $entity->setRequest_client($this->clientManager->getClient()->getId());
+                $entity->setRequest_client($this->kernel->getClient());
             }
             if ($entity instanceof BillingEnablableInterface && $entity instanceof BillingCheckableInterface) {
                 $entity->setIs_enabled(false);

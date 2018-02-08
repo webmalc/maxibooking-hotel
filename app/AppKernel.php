@@ -56,6 +56,8 @@ class AppKernel extends Kernel
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle(),
             new DoctrineCacheBundle(),
+            new KnpGaufretteBundle(),
+            new OneupFlysystemBundle(),
 
 
             //Project bundles,
@@ -73,8 +75,7 @@ class AppKernel extends Kernel
             new MBH\Bundle\WarehouseBundle\MBHWarehouseBundle(),
             new MBH\Bundle\RestaurantBundle\MBHRestaurantBundle(),
             new MBHBillingBundle(),
-            new KnpGaufretteBundle(),
-            new OneupFlysystemBundle()
+
 
 
         );

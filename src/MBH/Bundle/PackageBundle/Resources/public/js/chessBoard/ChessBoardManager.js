@@ -1237,7 +1237,7 @@ var ChessBoardManager = (function () {
                     else if (dateLeftRoomsCount < 0) {
                         backgroundColor = self.colors['leftRoomsNegative'];
                     }
-                    dateElements[i].children[0].style.backgroundColor = backgroundColor;
+                    dateElements[i].style.backgroundColor = backgroundColor;
                     dateElements[i].children[0].innerHTML = dateLeftRoomsCount;
                     dateElements[i].setAttribute('data-toggle', "tooltip");
                     var toolTipTitle = Translator.trans('chessboard_manager.left_rooms_count.tooltip_title', { 'count': dateLeftRoomsCount });
