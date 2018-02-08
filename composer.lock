@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fa545d4c792bd18ccfa70339f838631",
+    "content-hash": "46e4cd72b30cf5f7daab9ede797b796f",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -3292,20 +3292,20 @@
         },
         {
             "name": "liip/imagine-bundle",
-            "version": "1.8.0",
+            "version": "1.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/liip/LiipImagineBundle.git",
-                "reference": "d2551d8560212d440b4a6483236005957fbd4bff"
+                "reference": "3084c77e984ec669e0d645250a3cb1077d8b92f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liip/LiipImagineBundle/zipball/d2551d8560212d440b4a6483236005957fbd4bff",
-                "reference": "d2551d8560212d440b4a6483236005957fbd4bff",
+                "url": "https://api.github.com/repos/liip/LiipImagineBundle/zipball/3084c77e984ec669e0d645250a3cb1077d8b92f6",
+                "reference": "3084c77e984ec669e0d645250a3cb1077d8b92f6",
                 "shasum": ""
             },
             "require": {
-                "imagine/imagine": "^0.6.3,<0.7",
+                "imagine/imagine": "^0.6.3|^0.7.0,<0.8",
                 "php": "^5.3.9|^7.0",
                 "symfony/asset": "~2.3|~3.0",
                 "symfony/filesystem": "~2.3|~3.0",
@@ -3389,7 +3389,7 @@
                 "symfony",
                 "transformation"
             ],
-            "time": "2017-05-09T14:18:19+00:00"
+            "time": "2017-09-09T03:53:30+00:00"
         },
         {
             "name": "liuggio/ExcelBundle",
@@ -4301,6 +4301,7 @@
                 "xls",
                 "xlsx"
             ],
+            "abandoned": "phpoffice/phpspreadsheet",
             "time": "2015-05-01T07:00:55+00:00"
         },
         {
@@ -8064,7 +8065,6 @@
         "jms/security-extra-bundle": 0,
         "ob/highcharts-bundle": 0,
         "knplabs/knp-snappy-bundle": 0,
-        "liip/imagine-bundle": 0,
         "jms/di-extra-bundle": 0,
         "liuggio/excelbundle": 20,
         "ornicar/gravatar-bundle": 20,
@@ -8073,6 +8073,7 @@
         "dinhkhanh/mongodb-acl-bundle": 20,
         "lexik/translation-bundle": 20,
         "oneup/flysystem-bundle": 0,
+        "symfony/workflow": 0,
         "symfony/phpunit-bridge": 0,
         "liip/functional-test-bundle": 0
     },

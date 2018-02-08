@@ -131,11 +131,9 @@ class OrganizationController extends Controller
 
             if ($form->isValid()) {
                 /** @var string|null $clientName */
-                $clientName = $this->container->get('kernel')->getClient();
                 $this->dm->persist($organization);
                 $this->dm->flush();
 
-                $organization->upload($clientName);
                 $this->addFlash('success', 'controller.organization_controller.organization_successfully_created');
 
                 return $this->redirect($this->generateUrl('organizations', ['type' => $organization->getType()]));
@@ -287,15 +285,8 @@ class OrganizationController extends Controller
             throw $this->createAccessDeniedException();
         }
 
-        $pathHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
-        $path = $pathHelper->asset($protected, 'imageFile');
-        $dataManager = $this->get('liip_imagine.data.manager');
-        $filter = 'thumb_400x200';
-        $file = $dataManager->find($filter, $path);
-        $file = $this->container->get('liip_imagine.filter.manager')->applyFilter($file, $filter);
-        $headers['Content-Type'] = $file->getMimeType();
-        $content = $file->getContent();
+        $downloader = $this->get('mbh.protected.file.downloader');
 
-        return new Response($content, 200, $headers);
+        return $downloader->steamOutputFileWithFilter($protected, 'thumb_400x200');
     }
 }

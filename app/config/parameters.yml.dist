@@ -37,7 +37,7 @@ parameters:
   debug_toolbar: true
   debug_redirects: false
   use_assetic_controller: false
-  router.request_context.host: 'example.com'
+  router.request_context.host: '%client%.maxi-booking.ru'
   router.request_context.scheme: http
   router.request_context.base_url: null
 
@@ -74,3 +74,11 @@ parameters:
   s3_secret: superSecretKey
   s3_region: eu-west-1
 
+  s3_bucket: 'mb-client-upload-files'
+  s3_protected_bucket: 'mb-client-protected-upload-files'
+  kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
+
+  memcache_host: '127.0.0.1'
+
+
+  domain: 'maxi-booking.ru'

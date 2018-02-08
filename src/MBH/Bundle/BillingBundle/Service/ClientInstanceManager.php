@@ -27,6 +27,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Workflow\Workflow;
 
 class ClientInstanceManager
@@ -102,6 +103,9 @@ class ClientInstanceManager
     /** @var ProducerInterface */
     private $producer;
 
+    /** @var RouterInterface  */
+    private $domain;
+
     public function __construct(
         MaintenanceManager $maintenanceManager,
         Logger $logger,
@@ -115,7 +119,8 @@ class ClientInstanceManager
         UserManager $userManager,
         WorkFlow $workflow,
         AclOwnerMaker $aclOwnerMaker,
-        ProducerInterface $producer
+        ProducerInterface $producer,
+        string $domain
     ) {
         $this->maintenanceManager = $maintenanceManager;
         $this->logger = $logger;
@@ -133,6 +138,7 @@ class ClientInstanceManager
         $this->workflow = $workflow;
         $this->aclOwnerMaker = $aclOwnerMaker;
         $this->producer = $producer;
+        $this->domain = $domain;
     }
 
     /**
@@ -208,7 +214,7 @@ class ClientInstanceManager
             $data = [
                 'password' => $admin->getPlainPassword(),
                 'token' => $admin->getApiToken()->getToken(),
-                'url' => Client::compileClientUrl($clientName),
+                'url' => Client::compileClientUrl($clientName, $this->domain),
             ];
             $result->setData($data);
             $this->logger->addRecord(Logger::INFO, 'ClientData for billing was created with answer.', $data);

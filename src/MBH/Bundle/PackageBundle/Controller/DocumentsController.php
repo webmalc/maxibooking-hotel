@@ -120,11 +120,11 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
     /**
      *
      * @Route("/document/{order}/{protected}/view/{download}", name="order_document_view", options={"expose"=true}, defaults={"download" = 0})
-
      * @Method("GET")
-     * @param $name
-     * @param $download
-     * @return Response
+     * @param Order $order
+     * @param ProtectedFile $protected
+     * @param int $download
+     * @return Response|\Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function viewAction(Order $order, ProtectedFile $protected, $download = 0)
     {
@@ -134,20 +134,12 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
                 && $this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW'))) {
             throw $this->createAccessDeniedException();
         }
-
+        $downloader = $this->get('mbh.protected.file.downloader');
         if ($download) {
-            $downloadHandler = $this->get('vich_uploader.download_handler');
-            return $downloadHandler->downloadObject($protected, 'imageFile');
+            return $downloader->downloadProtectedFile($protected);
         }
 
-        $pathHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
-        $path = $pathHelper->asset($protected, 'imageFile');
-        $dataManager = $this->get('liip_imagine.data.manager');
-        $file = $dataManager->find('scaler', $path);
-        $headers['Content-Type'] = $file->getMimeType();
-        $content = $file->getContent();
-
-        return new Response($content, 200, $headers);
+        return $downloader->streamOutputFile($protected);
     }
 
     /**
