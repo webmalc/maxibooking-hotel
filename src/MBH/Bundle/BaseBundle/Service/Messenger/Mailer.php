@@ -92,6 +92,7 @@ class Mailer implements \SplObserver, MailerInterface
 
     /**
      * @param \SplSubject $notifier
+     * @throws \Exception
      */
     public function update(\SplSubject $notifier)
     {

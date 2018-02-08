@@ -430,4 +430,13 @@ services:
         arguments: ["@vich_uploader.download_handler", "@vich_uploader.templating.helper.uploader_helper","@liip_imagine.data.manager", "@liip_imagine.filter.manager"]
 
 
+    mbh.mongodb.client:
+        class: MongoClient
+        arguments: ["mongodb://%mongodb_login%:%mongodb_password%@%mongodb_host%/%mongodb_database%%mongodb_options%"]
+
+
+    mbh.session.handler.mongodb:
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\MongoDbSessionHandler
+        arguments: ["@mbh.mongodb.client", {database: '%mongodb_database%', collection: "sessions" }]
+
 
