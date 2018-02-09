@@ -17,7 +17,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Process\Process;
 
 class HotelController extends Controller
 {
@@ -111,19 +110,8 @@ class HotelController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $entity->uploadFile();
-
-            $this->dm->persist($entity);
-            $this->dm->flush();
-
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'));
-
-            //todo: create services
-            $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-            $client = $this->container->getParameter('client');
-            $process = new Process('nohup php ' . $console . 'doctrine:mongodb:fixtures:load --append --no-debug > /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $client]);
-            $process->run();
+            $this->get('mbh.hotel.hotel_manager')->create($entity);
+            $this->addFlash('success', 'controller.hotelController.record_created_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
@@ -153,8 +141,7 @@ class HotelController extends Controller
         if ($form->isValid()) {
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'));
+            $this->addFlash('success', 'controller.hotelController.record_edited_success');
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
 

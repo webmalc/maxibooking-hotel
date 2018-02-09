@@ -879,7 +879,7 @@ manager.channel_manager.oktogo: Oktogo
 manager.channel_manager.expedia: Expedia
 manager.channel_manager.hotels: Hotels.com
 manager.channel_manager.venere: Venere
-csv.type.order.type: 'Order type'
+csv.type.order.type: 'Channel'
 csv.type.begin: From
 csv.type.end: To
 csv.type.tariffAccomodation: Accommodation

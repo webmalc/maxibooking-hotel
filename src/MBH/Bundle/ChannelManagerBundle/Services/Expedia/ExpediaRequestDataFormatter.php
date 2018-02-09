@@ -64,7 +64,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $xmlElements = [];
         $priceCalculator = $this->container->get('mbh.calculation');
-        $localCurrency = $this->dm->getRepository('MBHClientBundle:Client')->fetchConfig()->getCurrency();
+        $localCurrency = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getCurrency();
 
         foreach ($requestDataArray as $roomTypeId => $pricesByTariffs) {
             foreach ($pricesByTariffs as $tariffId => $pricesByDates) {

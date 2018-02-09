@@ -140,7 +140,7 @@
                         </td>
                         <td style="width: 20%">
                             {% if hotel.logoImage %}
-                                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile'))) }}" style="height: 80px;float: right;">
+                                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80'))) }}">
                             {% endif %}
                         </td>
                     </tr>

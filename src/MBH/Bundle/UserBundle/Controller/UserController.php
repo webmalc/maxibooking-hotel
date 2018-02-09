@@ -143,6 +143,7 @@ class UserController extends Controller
 
             }
         }
+
         $form = $this->createForm(UserType::class,
             $entity, ['hotels' => $hasHotels, 'roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
         );
@@ -283,6 +284,7 @@ class UserController extends Controller
                 $entity->setPlainPassword($newPassword);
             }
 
+            $this->get('session')->set('_locale', $entity->getLocale());
             $this->container->get('fos_user.user_manager')->updateUser($entity);
 
             //update ACL

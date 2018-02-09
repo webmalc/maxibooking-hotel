@@ -89,16 +89,15 @@ class TemplateFormatter
         $twig = $this->container->get('twig');
         $renderedTemplate = $twig->createTemplate($doc->getContent())->render($params);
 
-        /*$renderedTemplate = $twig->render('@MBHPackage/Documents/pdfTemplates/act.html.twig', $params);*/
-        /*return $renderedTemplate;*/
-
         return  $this->container->get('knp_snappy.pdf')->getOutputFromHtml($renderedTemplate);
     }
 
+
     /**
-     * @param $params
+     * @param array $params
      * @param Package $package
      * @return array
+     * @throws \Exception
      */
     private function addCalculatedParams(array $params, Package $package)
     {

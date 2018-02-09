@@ -662,13 +662,27 @@ class OrderManager implements Searchable
             //find package
             foreach ($order->getPackages() as $package) {
                 if ($package->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
+                    /** @var Package $package */
                     $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($package->getId());
+
+                    if ($service->getCalcType() == 'day_percent') {
+                        $date = null;
+                        if ($service->getCode() === 'Early check-in') {
+                            $date = $package->getBegin();
+                        } elseif ($service->getCode() === 'Late check-out') {
+                            $date = (clone $package->getEnd())->modify('-1 day');
+                        }
+
+                        $price = $package->getPriceByDate($date) * $service->getPrice() / 100;
+                    } else {
+                        $price = $service->getPrice();
+                    }
 
                     $packageService = new PackageService();
                     $packageService->setPackage($package)
                         ->setService($service)
                         ->setAmount((int)$info['amount'])
-                        ->setPrice($service->getPrice());
+                        ->setPrice($price);
 
                     $this->dm->persist($packageService);
                     $this->dm->flush();
@@ -733,6 +747,7 @@ class OrderManager implements Searchable
             'dir' => $request->get('order')['0']['dir'],
             'paid' => $request->get('paid'),
             'confirmed' => $request->get('confirmed'),
+            'source' => $request->get('source')
         ];
 
         //quick links
