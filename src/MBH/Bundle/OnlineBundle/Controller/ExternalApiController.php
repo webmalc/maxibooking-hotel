@@ -226,6 +226,7 @@ class ExternalApiController extends BaseController
      */
     public function addCashDocumentAndRedirectToPayment(Order $order)
     {
+        $prepaymentPercent = 10;
         if ($order->getCashDocuments()->count() == 0) {
             $cashDocument = new CashDocument();
             $cashDocument->setIsConfirmed(false)
@@ -234,7 +235,7 @@ class ExternalApiController extends BaseController
                 ->setOperation('in')
                 ->setOrder($order)
                 ->setTouristPayer($order->getMainTourist())
-                ->setTotal($order->getPrice());
+                ->setTotal($order->getPrice() * $prepaymentPercent / 100);
 
             $order->addCashDocument($cashDocument);
             $this->dm->persist($cashDocument);
@@ -288,7 +289,6 @@ class ExternalApiController extends BaseController
         $query->begin = $this->helper->getDateFromString($request->get('begin'));
         $query->end = $this->helper->getDateFromString($request->get('end'));
         $query->adults = (int)$request->get('adults');
-        $query->childrenAges = !is_null($request->get('children')) ? $request->get('children') : [];
 
         if (!is_null($roomTypeIds)) {
             foreach ($roomTypeIds as $roomTypeId) {
@@ -326,8 +326,10 @@ class ExternalApiController extends BaseController
         }
 
         $query->setChildrenAges(
-            !empty($request->get('children-ages')) && $query->children > 0 ? $request->get('children-ages') : []
+            !empty($request->get('childrenAges')) ? $request->get('childrenAges') : []
         );
+
+        $query->children = !is_array($request->get('childrenAges')) ? 0 : count($request->get('childrenAges'));
 
         if (!$responseCompiler->isSuccessFull()) {
             return $responseCompiler->getResponse();

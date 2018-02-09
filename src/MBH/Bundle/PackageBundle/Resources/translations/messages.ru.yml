@@ -712,7 +712,8 @@ manager.channel_manager.venere: Venere
 validator.form.image.min.error: Превышено минимальное значение
 validator.form.image.max.error: Превышено максимальное занчение
 csv.type.package: Тип брони
-csv.type.order.type: Тип заказа
+csv.type.order.type: Канал продаж
+csv.type.order.source: 'Источник продаж'
 csv.type.begin: С
 csv.type.end: По
 csv.type.tariffAccomodation: Размещение
@@ -839,6 +840,8 @@ package.guest.add_more: 'Добавить ещё'
 package.index.dates: Даты
 package.index.room_type: 'Тип номера'
 package.index.package_type: 'Тип брони'
+package.index.filter.package_source.title: 'Источник продаж'
+package.index.filter.package_source.placeholder: 'Источник продаж'
 package.index.payment_status: 'Статус оплаты'
 package.late_early_check_modal.add_new_service: 'Добавить новую услугу'
 package.late_early_check_modal.quantity: Количество

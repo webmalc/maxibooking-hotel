@@ -48,6 +48,16 @@
                 </select>
             </div>
             <div class="input">
+                <i class="fa fa-compass" title='{{ 'package.index.filter.package_source.title'|trans }}' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="{{ 'package.index.filter.package_source.placeholder'|trans }}" id="package-source-filter"
+                        class="package-filter form-control input-sm plain-html">
+                    <option></option>
+                    {% for source in packageSources %}
+                        <option value="{{ source.id }}">{{ source.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input">
                 <i class="{{ currency().icon }}" title='{{ 'package.index.payment_status'|trans }}' data-toggle='tooltip'></i>&nbsp <select
                         data-placeholder="{{ 'package.index.payment_status'|trans }}" id="package-filter-paid"
                         class="package-filter form-control input-sm">

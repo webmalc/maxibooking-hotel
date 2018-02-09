@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ODM\MongoDB\Cursor;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Service\Cache;
@@ -573,6 +574,9 @@ class PackageRepository extends DocumentRepository
         //status
         if (isset($data['status']) && !empty($data['status'])) {
             $orderData = array_merge($orderData, ['asIdsArray' => true, 'status' => $data['status']]);
+        }
+        if (isset($data['source']) && !empty($data['source'])) {
+            $orderData = array_merge($orderData, ['asIdsArray' => true, 'source' => $data['source']]);
         }
         if (!empty($orderData)) {
             if ($isShowDeleted && $dm->getFilterCollection()->isEnabled('softdeleteable')) {
