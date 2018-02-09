@@ -299,7 +299,7 @@ class ApiController extends Controller
             ->setAutohide(false)
             ->setEnd(new \DateTime('+10 minute'))
             ->setLink(
-                $this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()])
+                $this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
             )
             ->setLinkText('mailer.to_order')
             ->setMessageType(NotificationType::ONLINE_PAYMENT_CONFIRM_TYPE);
@@ -638,6 +638,7 @@ class ApiController extends Controller
      */
     private function sendNotifications(Order $order)
     {
+        $this->dm->refresh($order);
         try {
             //backend
             $notifier = $this->container->get('mbh.notifier');

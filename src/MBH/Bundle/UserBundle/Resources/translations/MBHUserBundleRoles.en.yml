@@ -177,7 +177,6 @@ ROLE_ORDER_CASH_DOCUMENTS: Accounting
 ROLE_PACKAGE_DELETE: 'Delete all reservations'
 ROLE_PACKAGE_EDIT_ALL: 'Edit all reservations'
 ROLE_PACKAGE_DELETE_ALL: 'Delete all reservations'
-ROLE_PACKAGE_DOCS: 'Reservation documents'
 ROLE_ORDER_AUTO_CONFIRMATION: 'Order autoconfirmation'
 ROLE_PACKAGE_PRICE_EDIT: 'Edit reservation price'
 ROLE_TOURIST_REPORT: 'Guests report'

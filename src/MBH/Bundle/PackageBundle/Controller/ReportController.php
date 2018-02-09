@@ -857,11 +857,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function packagesDailyReportTableAction(Request $request)
     {
-        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
-
-        $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
-        $end = $this->helper->getDateFromString($request->query->get('end'))
-            ?? (clone $defaultBeginDate)->modify('+45 days');
+        $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? new \DateTime('midnight - 30 days');;
+        $end = $this->helper->getDateFromString($request->query->get('end'))?? new \DateTime('midnight');
 
         list($defaultCalculationBegin, $defaultCalculationEnd) = $this->helper->getDefaultDatesOfSettlement();
         $calculationBegin = $this->helper->getDateFromString($request->query->get('calcBegin'))
