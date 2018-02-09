@@ -157,6 +157,7 @@ class OrganizationController extends Controller
      */
     public function editAction(Organization $organization, Request $request)
     {
+        $redirectTo = $request->get('redirectTo');
         $clientName = $this->get('kernel')->getClient();
         $imageUrl = $organization->getStamp($clientName) ? $this->generateUrl('stamp', ['id' => $organization->getId()]) : null;
 
@@ -190,15 +191,14 @@ class OrganizationController extends Controller
                     $organization->upload($clientName);
                 }
 
-                return $this->isSavedRequest() ?
-                    $this->redirectToRoute('organization_edit', ['id' => $organization->getId()]) :
-                    $this->redirectToRoute('organizations');
+                return $this->afterSaveRedirectExtended('organization', $organization->getId(), [], '_edit', $redirectTo);
             }
         }
 
         return [
             'form' => $form->createView(),
             'organization' => $organization,
+            'redirectTo' => $redirectTo
         ];
     }
 
