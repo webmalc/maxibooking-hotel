@@ -20,6 +20,7 @@ use MBH\Bundle\BillingBundle\Lib\Model\City;
 use MBH\Bundle\UserBundle\Document\User;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Serializer\Serializer;
 
@@ -41,7 +42,7 @@ class BillingApi
     const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
     const PAYER_COMPANY_ENDPOINT_SETTINGS = ['endpoint' => 'companies', 'model' => Company::class, 'returnArray' => false];
 
-    const AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
+    const AUTH_TOKEN = '3e5d268bcd1d36dfd5a13b4128aedb231e90f200';
     const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s\Z';
     const BILLING_DATETIME_FORMAT_WITH_MICROSECONDS = 'Y-m-d\TH:i:s.u\Z';
 
@@ -51,6 +52,8 @@ class BillingApi
     private $billingLogin;
     private $locale;
     private $serializer;
+    /** @var  \AppKernel */
+    private $kernel;
 
     private $loadedEntities = [];
     private $clientServices;
@@ -58,11 +61,12 @@ class BillingApi
     private $clientCompanies;
     private $isClientCompaniesInit = false;
 
-    public function __construct(Logger $logger, $billingLogin, Serializer $serializer, $locale, TokenStorage $tokenStorage)
+    public function __construct(Logger $logger, KernelInterface $kernel, Serializer $serializer, $locale, TokenStorage $tokenStorage)
     {
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
-        $this->billingLogin = $billingLogin;
+        $this->kernel = $kernel;
+        $this->billingLogin = $this->kernel->getClient();
         $this->serializer = $serializer;
 
         /** @var User $user */
@@ -345,21 +349,6 @@ class BillingApi
         return $this->sendPost($url, $data, false);
     }
 
-    private function convertIncorrectNormalizedFields(array $data)
-    {
-        $normalizedFieldsNamesToBilling = [
-            'displayName' => 'display_name'
-        ];
-
-        foreach ($normalizedFieldsNamesToBilling as $normalizedName => $billingName) {
-            if (isset($data[$normalizedName])) {
-                $data[$billingName] = $data[$normalizedName];
-                unset($data[$normalizedName]);
-            }
-        }
-
-        return $data;
-    }
 
     /**
      * @param $cityId

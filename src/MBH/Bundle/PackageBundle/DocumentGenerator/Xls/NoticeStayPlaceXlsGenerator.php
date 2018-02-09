@@ -274,7 +274,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             }
         }
 
-        if($addressObjectDecomposed = $user->getAddressObjectDecomposed()) {
+        $addressObjectDecomposed = $user->getAddressObjectDecomposed();
+        if($addressObjectDecomposed && $addressObjectDecomposed->getRegionId()) {
             if($region = $this->billing->getRegionById($addressObjectDecomposed->getRegionId())) {
                 $this->write($region->getName(), 'AE39');
             }

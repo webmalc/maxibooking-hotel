@@ -79,6 +79,4 @@ parameters:
 
   memcache_host: '127.0.0.1'
 
-
   domain: 'maxi-booking.ru'
-  sentry_dsn: 'https://e12f8e17cc5b44fc9fa9a505bb531627:400db38d7d03451d9b91a6fe060abbe4@sentry.io/276024'

@@ -3,7 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;

@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -51,7 +52,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function notifyException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
-        if (!$exception instanceof AccessDeniedException && $this->kernel->getEnvironment() === 'prod') {
+        if (!$exception instanceof AccessDeniedException && !$exception instanceof NotFoundHttpException && $this->kernel->getEnvironment() === 'prod') {
             $message = $this->exceptionNotifier::createMessage();
             $messageText = "Произошла ошибка у \"" . $this->kernel->getClient()
                 . ". \"\n Сообщение \"" . $exception->getMessage()

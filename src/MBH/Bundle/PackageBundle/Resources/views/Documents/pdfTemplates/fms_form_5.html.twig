@@ -271,7 +271,7 @@
                                         <div class="title" style="width: 120px">
                                             7. {{ 'package.resources.views.grazhdanstvo'|trans }}
                                         </div>
-                                        <div class="area" style="margin-left: 121px">&nbsp{{ get_country(tourist.citizenshipTld).name }}</div>
+                                        <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenshipTld ? get_country(tourist.citizenshipTld).name : '' }}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -352,7 +352,7 @@
                                             9. {{ 'package.resources.views.adres_mesta_zhitelstva'|trans }}: &nbsp&nbsp {{ 'package.resources.views.country'|trans }}
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ get_country(tourist.addressObjectDecomposed.countryTld).name }} {% endif %}</div>
+                                             style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.countryTld %} {{ get_country(tourist.addressObjectDecomposed.countryTld).name }} {% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -644,7 +644,7 @@
                                             <div class="title" style="width: 120px">
                                                 7. {{ 'package.resources.views.grazhdanstvo'|trans }}
                                             </div>
-                                            <div class="area" style="margin-left: 121px">&nbsp{{ get_country(tourist.citizenshipTld).name }}</div>
+                                            <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenshipTld ? get_country(tourist.citizenshipTld).name : '' }}</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -725,7 +725,7 @@
                                                 9. {{ 'package.resources.views.adres_mesta_zhitelstva'|trans }}: &nbsp&nbsp {{ 'package.resources.views.country'|trans }}
                                             </div>
                                             <div class="area"
-                                                 style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ get_country(tourist.addressObjectDecomposed.countryTld).name }} {% endif %}</div>
+                                                 style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.countryTld %} {{ get_country(tourist.addressObjectDecomposed.countryTld).name }} {% endif %}</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -854,7 +854,7 @@
 
                 <div style="clear: both"></div>
             </div>
-            {% if loop.index < tourists|length %}
+            {% if loop.index < package.tourists|length %}
                 <div style="page-break-after: always;"></div>
             {% endif %}
         </div>
