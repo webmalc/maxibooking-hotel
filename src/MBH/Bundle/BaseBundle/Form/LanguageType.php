@@ -9,7 +9,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class LanguageType
-
  */
 class LanguageType extends AbstractType
 {
@@ -17,7 +16,7 @@ class LanguageType extends AbstractType
 
     public function getParent()
     {
-        return  ChoiceType::class;
+        return ChoiceType::class;
     }
 
     public function configureOptions(OptionsResolver $resolver)

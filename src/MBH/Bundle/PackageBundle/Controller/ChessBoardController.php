@@ -49,7 +49,7 @@ class ChessBoardController extends BaseController
             'tileTopPadding' => 7,
             'dayTopPadding' => 0,
             'titleSubPadding' => 0,
-            'titleSubFontSize' => 11,
+            'titleSubFontSize' => 13,
             'leftRoomsAndNoAccFontSize' => 16,
         ],
         [
@@ -60,7 +60,7 @@ class ChessBoardController extends BaseController
             'tileTopPadding' => 12,
             'dayTopPadding' => 5,
             'titleSubPadding' => 5,
-            'titleSubFontSize' => 11,
+            'titleSubFontSize' => 13,
             'leftRoomsAndNoAccFontSize' => 16,
         ],
         [
@@ -71,7 +71,7 @@ class ChessBoardController extends BaseController
             'tileTopPadding' => 12,
             'dayTopPadding' => 9,
             'titleSubPadding' => 0,
-            'titleSubFontSize' => 11,
+            'titleSubFontSize' => 15,
             'leftRoomsAndNoAccFontSize' => 20,
         ]
     ];
@@ -112,6 +112,7 @@ class ChessBoardController extends BaseController
         $tourist->setBirthplace(new BirthPlace());
         $tourist->setCitizenshipTld(Country::RUSSIA_TLD);
         $tourist->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
+        $colorSettings = $this->dm->getRepository('MBHClientBundle:ColorsConfig')->fetchConfig();
 
         return [
             'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),
@@ -142,7 +143,8 @@ class ChessBoardController extends BaseController
                 $tourist->getAddressObjectDecomposed())
                 ->createView(),
             'sizes' => self::SIZE_CONFIGS,
-            'stylesFileNumber' => $stylesFileNumber
+            'stylesFileNumber' => $stylesFileNumber,
+            'colors' => $colorSettings->__toArray()
         ];
     }
 
@@ -486,7 +488,7 @@ class ChessBoardController extends BaseController
         if (isset($data['filter_end'])) {
             $endDate = $this->helper->getDateFromString($data['filter_end']);
         } else {
-            $endDate = (new \DateTime('midnight'))->modify('+25 days');
+            $endDate = (new \DateTime('midnight'))->modify('+30 days');
         }
 
         return [

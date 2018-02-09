@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class ClientManager
 {
-    const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
+    const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 5;
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_contacts';
     const SESSION_CLIENT_FIELD = 'client';
 

@@ -68,7 +68,7 @@ class OrderRepository extends DocumentRepository
 
     /**
      * @param $data
-     * @return \MBH\Bundle\PackageBundle\Document\Order[]
+     * @return int|Order[]
      * @throws \Exception
      */
     public function fetch($data)
@@ -111,25 +111,18 @@ class OrderRepository extends DocumentRepository
         if(isset($data['status']) && !empty($data['status'])) {
             $qb->field('status')->equals($data['status']);
         }
-
-        if (isset($data['count']) && $data['count']) {
-            $docs = $qb->getQuery()->count();
-        } else {
-            $docs = $qb->getQuery()->execute();
-            if(isset($data['asIdsArray']) && !empty($data['asIdsArray'])) {
-
-
-                $ids = [];
-                foreach ($docs as $doc) {
-                    $ids[] = $doc->getId();
-                }
-                return $ids;
-            }
+        if(isset($data['source']) && !empty($data['source'])) {
+            $qb->field('source.id')->equals($data['source']);
         }
 
+        if (isset($data['count']) && $data['count']) {
+            return $qb->getQuery()->count();
+        }
+        if(isset($data['asIdsArray']) && !empty($data['asIdsArray'])) {
+            return $qb->distinct('id')->getQuery()->execute()->toArray();
+        }
 
-
-        return $docs;
+        return $qb->distinct('id')->getQuery()->execute();
     }
 
     /**

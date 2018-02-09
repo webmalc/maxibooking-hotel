@@ -2,9 +2,10 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\TouristRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
@@ -15,7 +16,7 @@ class PackageInfo
     private $packageCommonData;
     private $tariffs;
     private $roomTypes;
-    /** @var ManagerRegistry  */
+    /** @var DocumentManager  */
     private $dm;
     /** @var ContainerInterface  */
     private $container;
@@ -152,11 +153,10 @@ class PackageInfo
         $touristRepository = $this->dm->getRepository('MBHPackageBundle:Tourist');
         foreach ($this->guests as $guestData) {
             $touristNameData = explode(' ', $guestData['name']);
-            /** @var Tourist $tourist */
             $tourists[] = $touristRepository->fetchOrCreate(
                 $touristNameData[0],
                 isset($touristNameData[1]) ? $touristNameData[1] : null,
-                isset($touristNameData[2]) ? $touristNameData[1] : null
+                isset($touristNameData[2]) ? $touristNameData[2] : null
             );
         }
         return $tourists;

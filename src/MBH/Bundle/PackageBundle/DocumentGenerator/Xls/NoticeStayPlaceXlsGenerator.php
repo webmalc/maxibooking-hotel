@@ -230,7 +230,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->phpExcelObject->setActiveSheetIndex(1);
 
         if ($hotel->getRegionId()) {
-            $this->write($hotel->getRegionId()->getTitle(), 'AE14');
+            $this->write($this->billing->getRegionById($hotel->getRegionId())->getName(), 'AE14');
         }
 
         //Район

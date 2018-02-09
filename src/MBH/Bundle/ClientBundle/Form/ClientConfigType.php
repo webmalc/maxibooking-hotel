@@ -83,6 +83,12 @@ class ClientConfigType extends AbstractType
                     'required' => false,
                 ]
             )
+            ->add('showLabelTips', CheckboxType::class, [
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false,
+                'label' => 'form.clientConfigType.show_label_tips.label',
+                'help' => 'form.clientConfigType.show_label_tips.help'
+            ])
             ->add(
                 'useRoomTypeCategory',
                 CheckboxType::class,
