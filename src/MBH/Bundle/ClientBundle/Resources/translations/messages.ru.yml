@@ -24,6 +24,8 @@ form.clientConfigType.is_send_mail_at_payment_confirmation.label: Оповеща
 form.clientConfigType.is_send_mail_at_payment_confirmation.help: Отправлять ли письмо по умолчанию при подтверждении кассового документа?
 form.clientConfigType.is_enabled_work_shift: Рабочие смены
 form.clientConfigType.instant_search: Быстрый поиск
+form.clientConfigType.show_label_tips.label: 'Показывать описания'
+form.clientConfigType.show_label_tips.help: 'Показывать ли описания в формах и отчетах?'
 form.clientConfigType.instant_search_help: Поиск сразу при изменении полей?
 form.clientConfigType.default_notice_doc: Принимающая сторона
 form.clientConfigType.default_notice_doc_desc: Принимающая сторона иностранного гражданина по умолчанию
