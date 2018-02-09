@@ -145,7 +145,7 @@
                                     {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.cityId and package.accommodation.housing.address %}
                                         {{ get_city(package.accommodation.housing.cityId).name }} {{ package.accommodation.housing.address }}
                                     {% elseif package.roomType.hotel.regionId and package.roomType.hotel.cityId %}
-                                        {{ get_region(package.roomType.hotel.regionId).name }} {{ 'package.resources.views.g'|trans }}. {{ get_city(package.roomType.hotel.cityId).name }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}
+                                        {{ get_region(package.roomType.hotel.regionId).name }}, {{ 'package.resources.views.g'|trans }} {{ get_city(package.roomType.hotel.cityId).name }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}{% if package.roomType.hotel.corpus %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}{% endif %}
                                     {% endif %}
                                 </div>
                                 <div class="center" style="font-size: 9px">
