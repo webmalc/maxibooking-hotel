@@ -358,7 +358,6 @@ services:
         arguments:
             - '@kernel'
 
-
     mbh.aws_s3.client:
         class: Aws\S3\S3Client
         factory: [Aws\S3\S3Client, 'factory']
@@ -439,4 +438,33 @@ services:
         class: Symfony\Component\HttpFoundation\Session\Storage\Handler\MongoDbSessionHandler
         arguments: ["@mbh.mongodb.client", {database: '%mongodb_database%', collection: "sessions" }]
 
+    mbh.exception_subscriber:
+        class: MBH\Bundle\BaseBundle\EventListener\ExceptionSubscriber
+        arguments: ['@kernel', '@exception_notifier']
+        tags:
+            - {name: kernel.event_subscriber}
 
+    exception_notifier:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
+        arguments: ['@service_container', '@logger']
+        calls:
+            - [attach, ["@sentry_messenger"]]
+
+    sentry_messenger:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\SentryMessenger
+        arguments: ['@mbh.sentry_logger']
+
+    mbh.sentry_logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: ['sentry']
+        calls:
+            - [pushHandler, ['@mbh.raven_handler']]
+
+    mbh.raven_handler:
+        class: Monolog\Handler\RavenHandler
+        arguments: ['@mbh.raven_client']
+
+    mbh.raven_client:
+        class: Raven_Client
+        arguments: ['%sentry_dsn%']
+        public: false

@@ -224,23 +224,23 @@ parameters:
         vashotel:
           title: 'ВашОтель'
           service: 'mbh.channelmanager.vashotel'
-          password: jguuE26t684Fl
+          password: '%vashotel_pass%'
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
           username: Maxibooking-live
-          password: 'B*I)UB:G.E:sGs7mVy-X1r(H))gnAUx?*uyM:ZC/'
+          password: '%booking_pass%'
         ostrovok:
           title: 'Ostrovok'
           service: 'mbh.channelmanager.ostrovok'
-          username: 59a0ed03e26016ab59a3fe1cfdeb9479
-          password: 1b9952573d01aef185ca3edc17432aab
+          username: '%ostrovok_username%'
+          password: '%ostrovok_pass%'
         myallocator:
           title: 'MyAllocator'
           service: 'mbh.channelmanager.myallocator'
-          api_username: maxipanev
-          api_password: VCuMhanjdxiC
-          vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
+          api_username: '%myallocator_api_username%'
+          api_password: '%myallocator_api_pass%'
+          vendor_password: '%myallocator_vendor_pass%'
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
         expedia:
           title: 'Expedia'
