@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,7 +19,7 @@ class TariffsType extends AbstractType
         foreach ($options['booking'] as $name => $info) {
 
             $builder->add($name, DocumentType::class, [
-                'label' => $info['title'],
+                'label' => $info['title'] . ' (ID: ' . $name . ')',
                 'class' => 'MBHPriceBundle:Tariff',
                 'query_builder' => function(DocumentRepository $er) use($options) {
                     $qb = $er->createQueryBuilder();
@@ -38,7 +39,7 @@ class TariffsType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                //'constraints' => [new Callback(['methods' => [[$this,'check']]])],
+                'constraints' => null,
                 'booking' => [],
                 'hotel' => null,
             ]
@@ -48,6 +49,7 @@ class TariffsType extends AbstractType
     public function check($data, ExecutionContextInterface $context)
     {
         $ids = [];
+        /** @var Tariff $tariff */
         foreach($data as $tariff) {
             if ($tariff && in_array($tariff->getId(), $ids)) {
                 $context->addViolation('tarifftype.validation');
