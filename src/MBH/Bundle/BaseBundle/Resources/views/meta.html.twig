@@ -62,7 +62,7 @@
                 var mbh = {
                     currency: {
                         icon: "{{ currency().icon }}",
-                        text: "{{ currency().text }}"
+                        text: "{{ currency().text|trans }}"
 
                     },
                     justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }}, 

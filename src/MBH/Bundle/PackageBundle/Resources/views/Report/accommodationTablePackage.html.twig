@@ -5,8 +5,8 @@
 <b>{{ 'report.accommodation_table_package.is_arrived'|trans}}:</b> {{ data.doc.isCheckIn ? 'report.accommodation_table_package.yes'|trans : 'report.accommodation_table_package.no'|trans }}<br>
 <b>{{ 'report.accommodation_table_package.is_departured'|trans}}:</b> {{ data.doc.isCheckOut ? 'report.accommodation_table_package.yes'|trans : 'report.accommodation_table_package.no'|trans }}<br>
 <b>{{ 'report.accommodation_table_package.guests'|trans}}:</b> {{ data.doc.adults }}+{{ data.doc.children }}<br>
-<b>{{ 'report.accommodation_table_package.cost'|trans}}:</b> {{ data.doc.order.price }} {{ currency().text }}<br>
-<b>{{ 'report.accommodation_table_package.debt'|trans}}:</b> {{ data.doc.order.debt }} {{ currency().text }}<br>
+<b>{{ 'report.accommodation_table_package.cost'|trans}}:</b> {{ data.doc.order.price }} {{ currency().text|trans }}<br>
+<b>{{ 'report.accommodation_table_package.debt'|trans}}:</b> {{ data.doc.order.debt }} {{ currency().text|trans }}<br>
 {% if data.doc.services is not empty %}
     <b>{{ 'report.accommodation_table_package.services'|trans}}:</b>
     {{ data.doc.services|join(', ') }}

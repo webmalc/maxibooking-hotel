@@ -168,7 +168,7 @@
             </tr>
         </table>
 
-        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ counter }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ counter }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text|trans }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
 
@@ -214,7 +214,7 @@
         </table>
 
         {% if paidTotal > 0 %}
-            <p>{{ "package.pdf.count_paid_total"|trans({}, "MBHPackageBundle") }} {{ paidTotal|number_format(2) }} {{ currency().text }}<br>
+            <p>{{ "package.pdf.count_paid_total"|trans({}, "MBHPackageBundle") }} {{ paidTotal|number_format(2) }} {{ currency().text|trans }}<br>
                 <strong>{{ paidTotal|num2str|capitalize }}</strong></p>
         {% endif %}
 

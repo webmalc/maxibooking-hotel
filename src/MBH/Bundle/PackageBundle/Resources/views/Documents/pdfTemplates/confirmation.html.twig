@@ -279,7 +279,7 @@
     </table>
 
     <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ package.services|length + packages|length }}
-        , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}
+        , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text|trans }}
         <br>
         <strong>{{ total|num2str|capitalize }}</strong>
     </p>
