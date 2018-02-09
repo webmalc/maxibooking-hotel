@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -166,7 +167,7 @@ class UserType extends AbstractType
                 'required' => false,
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'),
             ))
-            ->add('locale', LocaleType::class, [
+            ->add('locale', LanguageType::class, [
                 'label' => 'form.userType.locale',
                 'group' => 'form.userType.general_info',
             ])

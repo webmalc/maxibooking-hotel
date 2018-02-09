@@ -48,6 +48,7 @@ class PackageSource extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
+     * @Gedmo\Translatable
      * @Assert\Length(
      *      min=2,
      *      minMessage= "validator.document.packageSource.min_name",
@@ -83,9 +84,33 @@ class PackageSource extends Base
      */
     protected $code;
 
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
+
     public function __construct()
     {
        $this->setSystem(false);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     * @return PackageSource
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+
+        return $this;
     }
 
     /**

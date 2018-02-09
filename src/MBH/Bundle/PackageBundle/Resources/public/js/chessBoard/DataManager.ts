@@ -2,7 +2,7 @@
 ///<reference path="ChessBoardManager.ts"/>
 /*global $ */
 
-declare let Routing:any;
+declare let Routing: any;
 declare let packages;
 
 class DataManager {
@@ -28,7 +28,7 @@ class DataManager {
         ActionManager.showResultMessages(response);
         this.updatePackagesData();
 
-        if(response.data) {
+        if (response.data) {
             return response.data;
         }
     }
@@ -69,7 +69,7 @@ class DataManager {
     public relocateAccommodationRequest(accommodationId, newAccommodationData) {
         let self = this;
         $.ajax({
-            url: Routing.generate('relocate_accommodation', {id : accommodationId}),
+            url: Routing.generate('relocate_accommodation', {id: accommodationId}),
             data: newAccommodationData,
             type: "PUT",
             success: function (data) {
@@ -315,5 +315,23 @@ class DataManager {
         this.noAccommodationIntervals = tableData.noAccommodationIntervals;
         this._leftRoomCounts = tableData.leftRoomCounts;
         this.noAccommodationCounts = tableData.noAccommodationCounts;
+    }
+
+    public getAccommodationNeighbors(accommodationId) {
+        let neighborsBySides = {};
+        let accommodationData = this._accommodations[accommodationId];
+        for (let id in this._accommodations) {
+            let iteratedAccommodation = this._accommodations[id];
+            if (this._accommodations.hasOwnProperty(id)
+                && iteratedAccommodation.accommodation == accommodationData.accommodation) {
+                if (iteratedAccommodation.end === accommodationData.begin) {
+                    neighborsBySides['left'] = iteratedAccommodation;
+                } else if (iteratedAccommodation.begin === accommodationData.end) {
+                    neighborsBySides['right'] = iteratedAccommodation;
+                }
+            }
+        }
+
+        return neighborsBySides;
     }
 }
