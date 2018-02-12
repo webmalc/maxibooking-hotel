@@ -28,7 +28,7 @@ var BILLING_API_SETTINGS = {
     cities: {
         url: BILLING_URL + document.documentElement.lang + '/cities',
         id: 'id',
-        text: 'display_name',
+        text: 'full_name',
         creationRouteName: 'create_city',
         fieldClass: 'billing-city',
         initFormFunc: function (response) {
