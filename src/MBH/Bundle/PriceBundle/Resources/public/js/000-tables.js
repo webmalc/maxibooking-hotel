@@ -20,6 +20,8 @@ var mbhGridCopy = function () {
 
             return [fromIndex, toIndex];
         };
+        $('.header-action-generator').click(onCopyToGeneratorButtonClick);
+
         $('.header-action-copy').click(function (event) {
             event.preventDefault();
             var from = $('.copy-from');
@@ -67,4 +69,74 @@ var mbhGridCopy = function () {
             }
         });
     }());
+    setGeneratorData();
 };
+
+function onCopyToGeneratorButtonClick() {
+    var $tdElement = $(this).closest('td');
+    var columnNumber = $tdElement.index();
+    var $table = $tdElement.closest('table');
+    var $rows = $table.find('tr');
+    var data = {};
+    var rowOffset = 3;
+    var generatorTypeName;
+    var numberOfDataRows;
+    switch ($table.attr('id')) {
+        case 'price-cache-overview-table':
+            generatorTypeName = 'price-generator';
+            numberOfDataRows = 5;
+            break;
+        case 'restriction-overview-table':
+            generatorTypeName = 'restriction-generator';
+            numberOfDataRows = 11;
+            break;
+        case 'room-cache-overview-table':
+            generatorTypeName = 'rooms-generator';
+            numberOfDataRows = 1;
+            break;
+    }
+    for (var i = rowOffset; i < numberOfDataRows + rowOffset; i++) {
+        var $priceDataInput = $rows.eq(i).find('td').eq(columnNumber).find('input');
+        var inputName = $priceDataInput.attr('name');
+        var inputVal = $priceDataInput.attr('type') === 'text' ? $priceDataInput.val() : $priceDataInput.prop('checked');
+        data[inputName.substr(inputName.lastIndexOf('['))] = inputVal;
+    }
+
+    localStorage.setItem(generatorTypeName, JSON.stringify(data));
+}
+
+function setGeneratorData() {
+    var generatorTypeName;
+    var formName = $('form').attr('name');
+    if (formName) {
+        switch (formName) {
+            case 'mbh_price_bundle_price_cache_generator':
+                generatorTypeName = 'price-generator';
+                break;
+            case 'mbh_bundle_pricebundle_room_cache_generator_type':
+                generatorTypeName = 'rooms-generator';
+                break;
+            case 'mbh_bundle_pricebundle_restriction_generator_type':
+                generatorTypeName = 'restriction-generator';
+                break;
+        }
+
+        var data = JSON.parse(localStorage.getItem(generatorTypeName));
+        for (var fieldName in data) {
+            var $input = $('input[name="' + formName + fieldName + '"]');
+            if ($input.length === 1) {
+                switch ($input.attr('type')) {
+                    case 'hidden':
+                        $('input[name="' + formName + fieldName.replace(']', 'Fake]"]')).val(data[fieldName]);
+                    case 'text':
+                        $input.val(data[fieldName]);
+                        break;
+                    case 'checkbox':
+                        $input.bootstrapSwitch('state', data[fieldName]);
+                        break;
+                }
+            }
+        }
+        localStorage.removeItem(generatorTypeName);
+    }
+}

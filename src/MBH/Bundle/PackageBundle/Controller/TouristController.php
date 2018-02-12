@@ -133,7 +133,6 @@ class TouristController extends Controller
         $entity = new Tourist();
         $entity->setDocumentRelation(new DocumentRelation());
         $entity->setBirthplace(new BirthPlace());
-        $entity->setCitizenshipTld($this->getParameter('country_type'));
         $entity->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
 
         $form = $this->createForm(
@@ -309,7 +308,7 @@ class TouristController extends Controller
         $entity->getDocumentRelation() ?: $entity->setDocumentRelation(new DocumentRelation());
 
         //Default Value
-        $entity->getCitizenshipTld() ?: $entity->setCitizenshipTld($this->getParameter('country_type'));
+        $entity->getCitizenshipTld() ?: $entity->setCitizenshipTld($this->get('mbh.client_manager')->getClient()->getCountry());
         $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
 
         $form = $this->createForm(DocumentRelationType::class, $entity, [
