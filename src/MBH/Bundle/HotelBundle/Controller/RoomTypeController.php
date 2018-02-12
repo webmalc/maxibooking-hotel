@@ -241,7 +241,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
                 $this->dm->persist($roomType->getTaskSettings());
                 $this->dm->flush();
 
-                $this->ad(
+                $this->addFlash(
                     'success',
                     $this->get('translator')->trans('controller.roomTypeController.record_edited_success')
                 );

@@ -151,7 +151,7 @@ class ClientManager
     {
         $result = $this->billingApi->confirmClient($client);
         if ($result->isSuccessful()) {
-            $client = $this->billingApi->getClient();
+            $client = $this->billingApi->getClient($client->getLogin());
             $this->updateSessionClientData($client, new \DateTime());
         }
 
