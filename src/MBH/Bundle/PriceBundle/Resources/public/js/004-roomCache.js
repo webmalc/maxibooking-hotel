@@ -91,5 +91,6 @@ $(document).ready(function () {
         showMessage();
         rooms.change(showMessage);
         quotas.on('change switchChange.bootstrapSwitch', showTariffs);
+        setGeneratorData();
     }());
 });
