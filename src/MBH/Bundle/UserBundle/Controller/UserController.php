@@ -143,6 +143,7 @@ class UserController extends Controller
 
             }
         }
+
         $form = $this->createForm(UserType::class,
             $entity, ['hotels' => $hasHotels, 'roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
         );
@@ -181,7 +182,7 @@ class UserController extends Controller
                 $this->get('fos_user.user_manager')->updateUser($entity);
                 $this->addFlash('success', 'controller.profileController.record_edited_success');
 
-                return $this->redirectToRoute('user_document_edit', ['id' => $entity->getId()]);
+                return $this->afterSaveRedirect('user', $entity->getId(), [], '_document_edit');
             }
         }
 
@@ -212,7 +213,7 @@ class UserController extends Controller
             $this->get('fos_user.user_manager')->updateUser($entity);
             $this->addFlash('success', 'controller.profileController.record_edited_success');
 
-            return $this->redirectToRoute('user_security_edit', ['id' => $entity->getId()]);
+            return $this->afterSaveRedirect('user', $entity->getId(), [], '_security_edit');
         }
 
         return [
@@ -244,7 +245,7 @@ class UserController extends Controller
                 $this->get('fos_user.user_manager')->updateUser($entity);
                 $this->addFlash('success', 'controller.profileController.record_edited_success');
 
-                return $this->redirectToRoute('user_address_edit', ['id' => $entity->getId()]);
+                return $this->afterSaveRedirect('user', $entity->getId(), [], '_address_edit');
             }
         }
 
@@ -283,6 +284,7 @@ class UserController extends Controller
                 $entity->setPlainPassword($newPassword);
             }
 
+            $this->get('session')->set('_locale', $entity->getLocale());
             $this->container->get('fos_user.user_manager')->updateUser($entity);
 
             //update ACL

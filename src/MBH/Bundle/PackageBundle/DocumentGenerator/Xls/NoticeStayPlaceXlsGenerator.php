@@ -230,7 +230,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->phpExcelObject->setActiveSheetIndex(1);
 
         if ($hotel->getRegionId()) {
-            $this->write($hotel->getRegionId()->getTitle(), 'AE14');
+            $this->write($this->billing->getRegionById($hotel->getRegionId())->getName(), 'AE14');
         }
 
         //Район
@@ -274,7 +274,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             }
         }
 
-        if($addressObjectDecomposed = $user->getAddressObjectDecomposed()) {
+        $addressObjectDecomposed = $user->getAddressObjectDecomposed();
+        if($addressObjectDecomposed && $addressObjectDecomposed->getRegionId()) {
             if($region = $this->billing->getRegionById($addressObjectDecomposed->getRegionId())) {
                 $this->write($region->getName(), 'AE39');
             }

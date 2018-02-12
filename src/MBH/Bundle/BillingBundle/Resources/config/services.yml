@@ -43,7 +43,7 @@ services:
         class: MBH\Bundle\BillingBundle\Service\BillingApi
         arguments:
             - '@mbh.billing.logger'
-            - '%client%'
+            - '@kernel'
             - '@serializer'
             - '%locale%'
             - '@security.token_storage'

@@ -352,8 +352,8 @@ var ChessBoardManager = (function () {
             + '<br><b>' + Translator.trans("chessboard_manager.package_tooltip.price") + ': </b>' + packageItem.price
             + '<br><b>' + Translator.trans("chessboard_manager.package_tooltip.package_begin") + ': </b>' + packageItem.packageBegin
             + '<br><b>' + Translator.trans("chessboard_manager.package_tooltip.package_end") + ': </b>' + packageItem.packageEnd
-            + '<br><b>' + Translator.trans("chessboard_manager.package_tooltip.is_checkin") + ': </b>' + (packageItem.isCheckIn ? 'да' : 'нет')
-            + '<br><b>' + Translator.trans("chessboard_manager.package_tooltip.is_checkout") + ': </b>' + Translator.trans((packageItem.isCheckOut ? 'package.yes' : 'package.yes'));
+            + '<br><b>' + Translator.trans("chessboard_manager.package_tooltip.is_checkin") + ': </b>' + Translator.trans(packageItem.isCheckIn ? 'package.yes' : 'package.no')
+            + '<br><b>' + Translator.trans("chessboard_manager.package_tooltip.is_checkout") + ': </b>' + Translator.trans((packageItem.isCheckOut ? 'package.yes' : 'package.no'));
         description.setAttribute('data-content', descriptionPopoverContent);
         var $packageDiv = $(packageDiv);
         packageDiv.onmousemove = function () {
@@ -1237,7 +1237,7 @@ var ChessBoardManager = (function () {
                     else if (dateLeftRoomsCount < 0) {
                         backgroundColor = self.colors['leftRoomsNegative'];
                     }
-                    dateElements[i].style.backgroundColor = backgroundColor;
+                    dateElements[i].children[0].style.backgroundColor = backgroundColor;
                     dateElements[i].children[0].innerHTML = dateLeftRoomsCount;
                     dateElements[i].setAttribute('data-toggle', "tooltip");
                     var toolTipTitle = Translator.trans('chessboard_manager.left_rooms_count.tooltip_title', { 'count': dateLeftRoomsCount });

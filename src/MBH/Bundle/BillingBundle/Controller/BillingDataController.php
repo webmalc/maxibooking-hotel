@@ -37,31 +37,23 @@ class BillingDataController extends Controller
      */
     public function newCityAction(Request $request)
     {
-        $billingApi = $this->get('mbh.billing.api');
-        $updateBeforeCreationFunc = function (City $city) use ($billingApi) {
-            $region = $billingApi->getRegionById($city->getRegion());
-            $country = $billingApi->getCountryByTld($city->getCountry());
-            $city->setDisplay_name($city->getName() . ', ' . $region->getName() . ', ' . $country->getName());
-        };
-
-        return $this->handleBillingEntityAction($request, CityType::class, BillingApi::CITIES_ENDPOINT_SETTINGS, $updateBeforeCreationFunc);
+        return $this->handleBillingEntityAction($request, CityType::class, BillingApi::CITIES_ENDPOINT_SETTINGS);
     }
 
     /**
      * @param Request $request
      * @param string $formType
      * @param array $endpointSettings
-     * @param callable $updateBeforeCreationFunc
      * @return JsonResponse
      */
-    private function handleBillingEntityAction(Request $request, string $formType, array $endpointSettings, callable $updateBeforeCreationFunc = null)
+    private function handleBillingEntityAction(Request $request, string $formType, array $endpointSettings)
     {
         $form = $this->createForm($formType, new $endpointSettings['model']);
         $responseCompiler = $this->get('mbh.api_response_compiler');
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
-            $responseCompiler = $this->get('mbh.billing_data_handler')->handleNewEntityForm($form, $responseCompiler, $endpointSettings, $updateBeforeCreationFunc);
+            $responseCompiler = $this->get('mbh.billing_data_handler')->handleNewEntityForm($form, $responseCompiler, $endpointSettings);
         }
 
         if ($request->isMethod('GET') || !$responseCompiler->isSuccessful()) {

@@ -30,10 +30,9 @@ class BillingDataHandler
      * @param FormInterface $form
      * @param ApiResponseCompiler $responseCompiler
      * @param array $endpointSettings
-     * @param callable|null $updateBeforeCreationFunc
      * @return ApiResponseCompiler|\Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function handleNewEntityForm(FormInterface $form, ApiResponseCompiler $responseCompiler, array $endpointSettings, callable $updateBeforeCreationFunc = null)
+    public function handleNewEntityForm(FormInterface $form, ApiResponseCompiler $responseCompiler, array $endpointSettings)
     {
         if ($form->isSubmitted() && $form->isValid()) {
             $entity = $form->getData();
@@ -48,9 +47,6 @@ class BillingDataHandler
             if ($entity instanceof BillingEnablableInterface && $entity instanceof BillingCheckableInterface) {
                 $entity->setIs_enabled(false);
                 $entity->setIs_checked(false);
-            }
-            if (!is_null($updateBeforeCreationFunc)) {
-                $updateBeforeCreationFunc($entity);
             }
             $response = $this->billingApi->createBillingEntity($endpointSettings, $entity);
             $decodedResponse = json_decode($response->getBody(), true);

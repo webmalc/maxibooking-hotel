@@ -67,7 +67,8 @@
     "league/flysystem-aws-s3-v3": "^1.0",
     "knplabs/knp-gaufrette-bundle": "~0.5",
     "stripe/stripe-php": "^5.7",
-    "symfony/workflow": "3.4.*@stable"
+    "symfony/workflow": "3.4.*@stable",
+    "sentry/sentry": "^1.8"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

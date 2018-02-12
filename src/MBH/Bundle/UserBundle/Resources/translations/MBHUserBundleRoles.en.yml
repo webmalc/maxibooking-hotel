@@ -236,6 +236,7 @@ ROLE_WAREHOUSE_INVOICE_EDIT: 'Edit invoice'
 ROLE_WAREHOUSE_INVOICE_DELETE: 'Delete invoice'
 ROLE_WAREHOUSE: Stock
 ROLE_PRICE_SUMMARY: 'View reservation price summary'
+ROLE_PAYMENT_CARD_INFO: 'Credit card info'
 ROLE_DASHBOARD: 'System inquires'
 ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT: 'Check in/out reports'
 ROLE_DAILY_REPORT_BY_PACKAGES: 'Funds reports'

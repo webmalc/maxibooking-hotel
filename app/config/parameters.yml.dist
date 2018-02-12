@@ -33,7 +33,6 @@ parameters:
 
   #System
   locale: ru
-  country_type: ru
   debug_toolbar: true
   debug_redirects: false
   use_assetic_controller: false
@@ -80,6 +79,5 @@ parameters:
   kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
 
   memcache_host: '127.0.0.1'
-
 
   domain: 'maxi-booking.ru'

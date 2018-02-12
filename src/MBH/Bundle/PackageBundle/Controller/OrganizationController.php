@@ -2,11 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-
 use Doctrine\MongoDB\Query\Expr;
-use Imagine\Gd\Imagine;
-use Imagine\Image\Box;
-use Imagine\Image\ImageInterface;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 
 use MBH\Bundle\BaseBundle\Document\ProtectedFile;
@@ -16,7 +12,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -157,6 +152,8 @@ class OrganizationController extends Controller
      */
     public function editAction(Organization $organization, Request $request)
     {
+        $redirectTo = $request->get('redirectTo');
+
         $form = $this->createForm(OrganizationType::class, $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
             'id' => $organization->getId(),
@@ -171,15 +168,24 @@ class OrganizationController extends Controller
             if ($form->isValid()) {
                 $this->dm->flush();
                 $this->addFlash('success', 'controller.organization_controller.organization_successfully_edited');
-                return $this->isSavedRequest() ?
-                    $this->redirectToRoute('organization_edit', ['id' => $organization->getId()]) :
-                    $this->redirectToRoute('organizations');
+
+                if ($this->isSavedRequest()) {
+                    $params = ['id' => $organization->getId()];
+                    if (!empty($redirectTo)) {
+                        $params['redirectTo'] = $redirectTo;
+                    }
+
+                    return $this->redirectToRoute('organization_edit', $params);
+                }
+
+                return empty($redirectTo) ? $this->redirectToRoute('organizations') : $this->redirect($redirectTo);
             }
         }
 
         return [
             'form' => $form->createView(),
             'organization' => $organization,
+            'redirectTo' => $redirectTo
         ];
     }
 

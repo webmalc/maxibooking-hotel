@@ -9,7 +9,7 @@ class City implements BillingClientRelatedInterface, BillingEnablableInterface, 
     /** @var  string */
     private $name;
     /** @var  string */
-    private $display_name;
+    private $full_name;
     /** @var  string */
     private $alternate_names;
     /** @var  string */
@@ -68,18 +68,18 @@ class City implements BillingClientRelatedInterface, BillingEnablableInterface, 
     /**
      * @return string
      */
-    public function getDisplay_name(): ?string
+    public function getFullName(): ?string
     {
-        return $this->display_name;
+        return $this->full_name;
     }
 
     /**
-     * @param string $display_name
+     * @param string $full_name
      * @return City
      */
-    public function setDisplay_name(string $display_name): City
+    public function setFullName(string $full_name): City
     {
-        $this->display_name = $display_name;
+        $this->full_name = $full_name;
 
         return $this;
     }

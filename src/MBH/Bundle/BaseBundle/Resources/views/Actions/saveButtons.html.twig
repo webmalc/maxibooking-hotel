@@ -4,6 +4,9 @@
 {% if save is not defined %}
     {% set save = true %}
 {% endif %}
+{% if redirectTo is not defined or not redirectTo %}
+    {% set redirectTo = title_url|default(path('_welcome')) %}
+{% endif %}
 
 <ul class="nav navbar-nav">
     {% if save_close %}<li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"> </i><span class="hidden-xs">&nbsp;{{ 'views.actions.saveButtons.save_and_close'|trans({}, 'MBHBaseBundle') }}</span></button></li>{% endif %}
@@ -12,5 +15,6 @@
         <button type="submit" name="save" class="btn btn-primary navbar-btn"><i
                     class="fa fa-check-square-o"> </i><span class="hidden-xs">&nbsp;{{ save_text|default('views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle')) }}</span>
         </button></li>{% endif %}
-    <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i><span class="hidden-xs">&nbsp;{{ 'views.actions.saveButtons.cancel'|trans({}, 'MBHBaseBundle') }}</span></button></li>
+    <li>
+        <button type="button" onclick="location.href = '{{redirectTo }}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i><span class="hidden-xs">&nbsp;{{ 'views.actions.saveButtons.cancel'|trans({}, 'MBHBaseBundle') }}</span></button></li>
 </ul>

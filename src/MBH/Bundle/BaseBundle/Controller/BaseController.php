@@ -113,6 +113,29 @@ class BaseController extends Controller
     }
 
     /**
+     * @param $route
+     * @param $id
+     * @param array $params
+     * @param string $suffix
+     * @param null $redirectPath
+     * @return RedirectResponse
+     */
+    public function afterSaveRedirectExtended($route, $id, array $params = [], $suffix = '_edit', $redirectPath = null)
+    {
+        if ($this->isSavedRequest()) {
+            $mergingParams = ['id' => $id];
+            if (!empty($redirectPath)) {
+                $mergingParams['redirectTo'] = $redirectPath;
+            }
+            $params = array_merge($mergingParams, $params);
+
+            return $this->redirectToRoute($route . $suffix, $params);
+        }
+
+        return empty($redirectPath) ? $this->redirectToRoute($route, $params) : $this->redirect($redirectPath);
+    }
+
+    /**
      * Is saved request and whether need to stay on current page
      * @return bool
      */

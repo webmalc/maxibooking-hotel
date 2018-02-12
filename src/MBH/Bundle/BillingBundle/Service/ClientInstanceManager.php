@@ -209,7 +209,7 @@ class ClientInstanceManager
 
         $this->logger->addRecord(Logger::DEBUG, 'Start update admin.');
         try {
-            $admin = $this->updateAdminUser();
+            $admin = $this->updateAdminUser($clientName);
             $this->logger->addRecord(Logger::DEBUG, 'Update admin was complete.');
             $data = [
                 'password' => $admin->getPlainPassword(),
@@ -229,15 +229,17 @@ class ClientInstanceManager
     }
 
     /**
+     * @param $clientName
      * @return User
      */
-    private function updateAdminUser(): User
+    private function updateAdminUser($clientName): User
     {
-
+        $client = $this->billingApi->getClient($clientName);
         /** @var User $admin */
         $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
         $plainPassword = $this->generateAdminPassword();
         $admin->setPlainPassword($plainPassword);
+        $admin->setEmail($client->getEmail());
         $token = (new AuthorizationToken())
             ->setToken($this->generateAuthorizationToken())
             ->setExpiredAt(new \DateTime('+1 hour'));

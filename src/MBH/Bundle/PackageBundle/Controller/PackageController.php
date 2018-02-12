@@ -121,6 +121,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ], $data));
 
         return [
+            'packageSources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
             'count' => $count
@@ -146,6 +147,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $data = [
                 'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
                 'roomType' => $formData['roomType'],
+                'source' => $formData['source'],
                 'status' => $formData['status'],
                 'deleted' => (boolean)$formData['deleted'],
                 'begin' => $formData['begin'],
@@ -251,11 +253,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected());
 
         $entities = $qb->getQuery()->execute();
-        $summary = $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->fetchSummary($qb
-                ->limit(0)
-                ->skip(0));
+        $summary = $this->get('mbh.order_manager')
+            ->calculateSummary($qb->limit(0)->skip(0));
         //TODO: Check $entities->count() must be != count($entities)
         //see cdec6e8455be089388e580a32838f42241dc7d25
         return [

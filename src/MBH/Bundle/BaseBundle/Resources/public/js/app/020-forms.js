@@ -28,7 +28,7 @@ var BILLING_API_SETTINGS = {
     cities: {
         url: BILLING_URL + document.documentElement.lang + '/cities',
         id: 'id',
-        text: 'display_name',
+        text: 'full_name',
         creationRouteName: 'create_city',
         fieldClass: 'billing-city',
         initFormFunc: function (response) {
@@ -1109,6 +1109,75 @@ function initSelect2TextForBilling(inputId, apiSettings) {
     });
 }
 
+function initLabelTips() {
+    if (mbh.showLabelTips) {
+        var currentLang = document.documentElement.lang;
+        var languageSettings = (currentLang === 'ru' || (tips_en === undefined) ? tips_ru : tips_en);
+        for (var formName in languageSettings) {
+            var $form = $('form[name="' + formName + '"]');
+            $form.find('label').each(function (index, label) {
+                var fieldId = label.getAttribute('for');
+                var tipText = languageSettings[formName][fieldId];
+                if (tipText) {
+                    var span = document.createElement('span');
+                    span.classList.add('dotted-bottom-border');
+                    span.innerHTML = label.innerHTML;
+                    span.setAttribute('data-toggle', "tooltip");
+                    span.setAttribute('title', tipText);
+                    label.innerHTML = span.outerHTML;
+                }
+            });
+        }
+    }
+}
+
+function initAddTipModal() {
+    if (mbh.canAddTips) {
+        $('input,label').dblclick(function () {
+            var $tipsModal = $('#add-tips-modal');
+            var $form = $(this).closest('form');
+            var formName = $form.attr('name');
+            var inputId = this.nodeName === 'input' ? this.id : this.getAttribute('for');
+            if (!inputId) {
+                alert('Невозможно добавить подсказку к этому полю. Обратитесь к Дане, пожалуйста.');
+            } else {
+                $tipsModal.find('#tips-form-id').val(formName);
+                $tipsModal.find('#tips-field-id').val(inputId);
+                $tipsModal.modal('show');
+                setTipText(formName, inputId);
+                $('#tips-tip-lang').change(function () {
+                    setTipText(formName, inputId);
+                });
+                $('#tips-modal-save-button').click(function () {
+                    $.ajax({
+                        url: Routing.generate('add_tip'),
+                        data: $tipsModal.find('form').serialize(),
+                        success: function () {
+                            $('#tips-tip-text').val('');
+                            $tipsModal.modal('hide');
+                        },
+                        error: function () {
+                            alert('Дайте Дане по рукам! Какой-то косяк на серваке!');
+                        }
+                    });
+                });
+            }
+        });
+    }
+}
+
+function setTipText(formName, inputId) {
+    var lang = $('#tips-tip-lang').val();
+    var languageSettings = (lang === 'ru' || (typeof tips_en !== 'undefined') ? tips_ru : null);
+    var text;
+    if (languageSettings && languageSettings[formName] && languageSettings[formName][inputId]) {
+        text = languageSettings[formName][inputId];
+    } else {
+        text = '';
+    }
+
+    $('#tips-tip-text').val(text);
+}
 function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $updateButton, filterDataCallback, drawCallback) {
     var process = false;
     $table.dataTable({
@@ -1212,5 +1281,7 @@ $(document).ready(function () {
     mbhStartDate();
     onHideCheckboxChange();
     disableCheckboxListen();
+    initLabelTips();
+    initAddTipModal();
     handleAddingNewBillingEntity();
 });

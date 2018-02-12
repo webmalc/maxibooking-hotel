@@ -68,7 +68,7 @@ class OrderRepository extends DocumentRepository
 
     /**
      * @param $data
-     * @return \MBH\Bundle\PackageBundle\Document\Order[]
+     * @return int|Order[]
      * @throws \Exception
      */
     public function fetch($data)
@@ -110,6 +110,9 @@ class OrderRepository extends DocumentRepository
         //status
         if(isset($data['status']) && !empty($data['status'])) {
             $qb->field('status')->equals($data['status']);
+        }
+        if(isset($data['source']) && !empty($data['source'])) {
+            $qb->field('source.id')->equals($data['source']);
         }
 
         if (isset($data['count']) && $data['count']) {

@@ -745,7 +745,7 @@ class Tariff extends Base implements ConditionsInterface
     {
         $data = [
             'id' => $this->getId(),
-            'title' => $this->getFullTitle() ? $this->getFullTitle() : $this->getTitle(),
+            'title' => $this->getFullTitle() ?? $this->getTitle(),
             'description' => $this->getDescription() ?? '',
             'hotel' => $this->getHotel()->getId()
         ];

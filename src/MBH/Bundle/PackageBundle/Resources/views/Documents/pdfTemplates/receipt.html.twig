@@ -80,10 +80,10 @@
                     ,
                     {{ 'package.resources.views.place_of_birth'|trans }} <span class="area"
                                                                                style="display: inline-block; width: 505px">
-                    &nbsp {% if tourist and tourist.birthPlace and tourist.birthPlace.cityId and tourist.birthPlace.countryTld %}
+                    &nbsp {% if tourist and tourist.birthPlace and tourist.birthPlace and tourist.birthPlace.countryTld %}
                             {{ get_country(tourist.birthPlace.countryTld).name }}
                             {{ tourist.birthPlace.mainRegion }}
-                            {{ get_city(tourist.birthPlace.cityId).name }}
+                            {{ tourist.birthPlace.city }}
                             {{ tourist.birthPlace.district }}
                         {% endif %}
                 </span>
@@ -130,10 +130,10 @@
                 </div>
                 <div style="display: inline-block">
                 <span class="area" style="display: inline-block; width: 470px">
-                    {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.address %}
-                        {{ package.accommodation.housing.city }} {{ package.accommodation.housing.address }}
-                    {% elseif package.roomType.hotel.city and package.roomType.hotel.street %}
-                        {{ package.roomType.hotel.city }}
+                    {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.cityId and package.accommodation.housing.address %}
+                        {{ get_city(package.accommodation.housing.cityId).name }} {{ package.accommodation.housing.address }}
+                    {% elseif package.roomType.hotel.cityId and package.roomType.hotel.street %}
+                        {{ get_city(package.roomType.hotel.cityId).name }}
                         {{ package.roomType.hotel.street }}
                         {% if package.roomType.hotel.house %}
                             д.{{ package.roomType.hotel.house }}

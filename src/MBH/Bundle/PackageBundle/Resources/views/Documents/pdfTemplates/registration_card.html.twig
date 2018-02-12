@@ -187,7 +187,7 @@
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.grazhdanstvo'|trans }} </div>
                                 </div>
                                 <div class="area"
-                                     style="margin-left: 100px;">{% if tourist %}{{ get_country(tourist.citizenshipTld).name }}{% endif %}</div>
+                                     style="margin-left: 100px;">{% if tourist and tourist.citizenshipTld %}{{ get_country(tourist.citizenshipTld).name }}{% endif %}</div>
                             </div>
                         </td>
                         <td colspan="4" style="width: 33%">
@@ -228,7 +228,7 @@
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.mesto.rozhdeniya'|trans }} </div>
                                 </div>
                                 <div class="area"
-                                     style="margin-left: 130px;">{% if tourist and tourist.birthplace and tourist.birthplace.countryTld and tourist.birthplace.cityId %}{{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ tourist.birthplace.mainRegion ~ '  ' ~ get_city(tourist.birthplace.cityId).name ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
+                                     style="margin-left: 130px;">{% if tourist and tourist.birthplace and tourist.birthplace.countryTld and tourist.birthplace.city %}{{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ tourist.birthplace.mainRegion ~ '  ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -264,7 +264,7 @@
                                     <div>Country</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.strana'|trans }} </div>
                                 </div>
-                                <div class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ get_country(tourist.addressObjectDecomposed.countryTld).name }} {% endif %}</div>
+                                <div class="area">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.countryTld %} {{ get_country(tourist.addressObjectDecomposed.countryTld).name }} {% endif %}</div>
                             </div>
                         </td>
                         <td colspan="4">
@@ -295,7 +295,7 @@
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.gorod'|trans }} </div>
                                 </div>
                                 <div style="margin-left: 56px"
-                                     class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
+                                     class="area">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
                             </div>
                         </td>
                     </tr>

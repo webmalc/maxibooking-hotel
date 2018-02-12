@@ -268,4 +268,20 @@ class Promotion extends Base implements ConditionsInterface
         $this->childrenDiscount = $childrenDiscount;
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getJsonSerialized()
+    {
+        return [
+            'title' => $this->getFullTitle() ?? $this->getTitle(),
+            'discount' => $this->getDiscount(),
+            'isInPercents' => $this->getIsPercentDiscount(),
+            'isIndividual' => $this->getIsIndividual(),
+            'numberOfAdultsFree' => $this->getFreeAdultsQuantity() === null ? 0 : $this->getFreeAdultsQuantity(),
+            'numberOfChildrenFree' => $this->getFreeChildrenQuantity() === null ? 0 : $this->getFreeChildrenQuantity(),
+            'childrenDiscount' => $this->getChildrenDiscount() === null ? 0 : $this->getChildrenDiscount()
+        ];
+    }
 }

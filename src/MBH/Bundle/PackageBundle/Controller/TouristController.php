@@ -255,7 +255,9 @@ class TouristController extends Controller
                         ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
             }
 
-            return $this->afterSaveRedirect('tourist', $tourist->getId());
+            $redirectPath = $request->request->get('redirectTo');
+
+            return $this->afterSaveRedirectExtended('tourist', $tourist->getId(), [], '_edit', $redirectPath);
         }
 
         return [
@@ -274,9 +276,10 @@ class TouristController extends Controller
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      * @param Tourist $entity
+     * @param Request $request
      * @return array
      */
-    public function editAction(Tourist $entity)
+    public function editAction(Tourist $entity, Request $request)
     {
         $form = $this->createForm(TouristType::class, $entity, [
             'genders' => $this->container->getParameter('mbh.gender.types')
@@ -285,7 +288,8 @@ class TouristController extends Controller
         return [
             'entity' => $entity,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($entity),
+            'redirectTo' => $request->query->get('redirectTo')
         ];
     }
 

@@ -156,7 +156,7 @@ class Housing extends Base
     }
 
     /**
-     * @return City
+     * @return string
      */
     public function getCityId()
     {
@@ -164,10 +164,10 @@ class Housing extends Base
     }
 
     /**
-     * @param City $cityId
+     * @param string $cityId
      * @return self
      */
-    public function setCityId(City $cityId)
+    public function setCityId($cityId)
     {
         $this->cityId = $cityId;
 

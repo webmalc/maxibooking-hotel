@@ -623,7 +623,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
                 if (!in_array($hotelTotalValueTitle, $totalByHotelsOptions)
                     && (in_array($hotelTotalValueTitle, $requestedRoomTypes) || count($requestedRoomTypes) == 0)
                 ) {
-                    $totalByHotelsOptions[$hotelTotalValueTitle] = 'Итого ' . $category->getHotel()->getName();
+                    $totalByHotelsOptions[$hotelTotalValueTitle] = ' ' . $category->getHotel()->getName();
                 }
             }
         }
@@ -634,7 +634,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
         $totalOptions = $totalByHotelsOptions;
         if (!$withoutTotal) {
-            $totalOptions['byAll'] = $this->get('translator')->trans('controller.analyticsController.series_total_name');
+            $totalOptions['byAll'] = $this->get('translator')->trans('controller.analyticsController.total');
         }
 
         foreach ($totalOptions as $totalOption => $totalOptionTitle) {
