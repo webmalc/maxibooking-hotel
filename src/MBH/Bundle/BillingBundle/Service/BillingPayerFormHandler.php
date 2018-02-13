@@ -207,11 +207,12 @@ class BillingPayerFormHandler extends FormDataHandler
 
     /**
      * @param array $payerData
+     * @throws \Exception
      */
     public function handleInitData($payerData): void
     {
         if (!$this->isNaturalEntityPayer() && $this->payerType !== self::LEGAL_ENTITY_ID) {
-            throw new Exception('Incorrect payer type "' . $payerType . '"!');
+            throw new \Exception('Incorrect payer type "' . $this->payerType . '"!');
         }
 
         $fieldCallbacks = [

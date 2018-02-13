@@ -267,12 +267,12 @@ class PackageSubscriber implements EventSubscriber
                 }
             }
 
-            $creator = $this->container->get('mbh.hotel.console_auto_task_creator');
-            if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
-                $creator->createCheckOutTasks($document);
-            } elseif (isset($changeSet['isCheckIn']) && $changeSet['isCheckIn'][0] === false && $changeSet['isCheckIn'][1] === true) {
-                $creator->createCheckInTasks($document);
-            }
+//            $creator = $this->container->get('mbh.hotel.console_auto_task_creator');
+//            if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
+//                $creator->createCheckOutTasks($document);
+//            } elseif (isset($changeSet['isCheckIn']) && $changeSet['isCheckIn'][0] === false && $changeSet['isCheckIn'][1] === true) {
+//                $creator->createCheckInTasks($document);
+//            }
         }
     }
 }

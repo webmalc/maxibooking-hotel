@@ -43,6 +43,7 @@ class BillingApi
     const PAYER_COMPANY_ENDPOINT_SETTINGS = ['endpoint' => 'companies', 'model' => Company::class, 'returnArray' => false];
 
     const AUTH_TOKEN = '3e5d268bcd1d36dfd5a13b4128aedb231e90f200';
+    const INSTALLATION_AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
     const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s\Z';
     const BILLING_DATETIME_FORMAT_WITH_MICROSECONDS = 'Y-m-d\TH:i:s.u\Z';
 
