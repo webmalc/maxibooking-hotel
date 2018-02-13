@@ -39,7 +39,7 @@ class NoticeStayPlaceXlsType extends AbstractType
 
         /** @var Tourist $tourist */
         foreach($options['tourists'] as $tourist) {
-            if($tourist) {
+            if($tourist && $tourist->getCitizenshipTld()) {
                 $citizenship = $this->billingApi->getCountryByTld($tourist->getCitizenshipTld());
                 $citizenshipName = $citizenship
                     ? $citizenship->getName()
