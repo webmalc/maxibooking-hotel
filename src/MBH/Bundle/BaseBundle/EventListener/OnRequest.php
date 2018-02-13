@@ -25,7 +25,7 @@ class OnRequest
         $clientManager = $this->container->get('mbh.client_manager');
         $session = $this->container->get('session');
 
-        if (!($clientManager->isClientActive() || $this->container->getParameter('client') === 'maxibooking')
+        if (!($this->container->getParameter('client') === 'maxibooking' || $clientManager->isClientActive())
             && $session->get(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR) !== true
             && !$clientManager->isRouteAccessibleForInactiveClient($event->getRequest()->get('_route'))
             && $this->container->get('security.token_storage')->getToken()
