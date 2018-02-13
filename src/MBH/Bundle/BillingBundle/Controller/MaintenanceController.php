@@ -98,7 +98,7 @@ class MaintenanceController extends BaseController
 
     private function checkToken(string $token = null)
     {
-        if ($token !== BillingApi::AUTH_TOKEN) {
+        if ($token !== BillingApi::INSTALLATION_AUTH_TOKEN) {
             throw new UnauthorizedHttpException('Incorrect token!');
         }
     }
