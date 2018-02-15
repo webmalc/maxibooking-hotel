@@ -345,6 +345,7 @@ class Mailer implements \SplObserver, MailerInterface
                 'transParams' => [],
                 'linkText' => $linkText,
                 'link' => $confirmationUrl,
+                'messageType' => NotificationType::EMAIL_RESETTING_TYPE
             ],
             '@MBHBase/Mailer/resettingPassword.html.twig'
         );
@@ -357,7 +358,7 @@ class Mailer implements \SplObserver, MailerInterface
     private function canISentToClient(string $notificationType): bool
     {
         $result = true;
-        if (NotificationType::AUTH_TYPE === $notificationType) {
+        if (in_array($notificationType, NotificationType::getSystemNotificationTypes())) {
             return true;
         }
         /** @var ClientConfig $clientConfig */
