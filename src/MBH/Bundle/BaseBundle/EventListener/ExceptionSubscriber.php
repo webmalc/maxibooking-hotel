@@ -58,9 +58,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 . ". \"\n Сообщение \"" . $exception->getMessage()
                 . "\".\n Стек:" . $exception->getTraceAsString();
             $message->setText($messageText);
-            $this->exceptionNotifier
-                ->setMessage($message)
-                ->notify();
+//            $this->exceptionNotifier
+//                ->setMessage($message)
+//                ->notify();
         }
     }
 }

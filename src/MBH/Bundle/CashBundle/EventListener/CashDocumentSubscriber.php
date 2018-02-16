@@ -123,8 +123,6 @@ class CashDocumentSubscriber implements EventSubscriber
         $id = uniqid();
         $orderDocument->setName($id.'.pdf');
         $orderDocument->setType('invoice_for_payment');
-        $orderDocument->setMimeType('application/pdf');
-        $orderDocument->setExtension('pdf');
         $orderDocument->setComment($this->container->get('translator')->trans('cashDocumentSubscriber.schet') . ' №'.$document->getNumber(). ' ' . $this->container->get('translator')->trans('cashDocumentSubscriber.ot') . ' '.$document->getDocumentDate()->format('d.m.Y').' ('.$document->getTotal().' ' . $translator->trans($currency['text']) . ')');
         $orderDocument->setTourist($document->getTouristPayer());
         $orderDocument->setOrganization($document->getOrganizationPayer());
