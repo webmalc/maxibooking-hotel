@@ -151,7 +151,7 @@ class ClientInstanceManager
             Logger::INFO,
             'Get installation task for client '.$clientName.' in service '.static::class
         );
-        $result = new Result();
+        $result = (new Result())->setData(['client' => $clientName]);
         $this->logger->addRecord(Logger::INFO, 'Start generate queue message for install command');
         $command = 'mbh:billing:install';
         $params['--client'] = $clientName;

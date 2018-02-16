@@ -2,16 +2,12 @@
 
 namespace MBH\Bundle\BillingBundle\Controller;
 
-use http\Exception\InvalidArgumentException;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\BillingBundle\Document\InstallStatusStorage;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Monolog\Logger;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -29,7 +25,7 @@ class MaintenanceController extends BaseController
      * )
      * @param Request $request
      * @return JsonResponse
-     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     * @throws \HttpInvalidParamException
      */
     public function installAction(Request $request)
     {
@@ -42,7 +38,7 @@ class MaintenanceController extends BaseController
         $this->checkToken($requestData['token']);
         $clientLogin = $requestData['client_login'];
         if (!$clientLogin) {
-            throw new InvalidArgumentException('No login in request');
+            throw new \HttpInvalidParamException('No login in request');
         }
 
         $result = $this->get('mbh.client_instance_manager')->runBillingInstallCommand($clientLogin);
