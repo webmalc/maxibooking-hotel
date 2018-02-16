@@ -919,4 +919,29 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         return $report->generateReportTableResponse();
     }
+
+    /**
+     * @Template()
+     * @Route("/reservation_report", name="reservation_report")
+     */
+    public function reservationReportAction()
+    {
+
+    }
+
+    /**
+     * @Route("/reservation_report_table", name="reservation_report_table", options={"expose"=true})
+     * @param Request $request
+     * @return Response
+     */
+    public function reservationReportTableAction(Request $request)
+    {
+        $date = $request->get('date');
+        $periodBegin = $request->get('periodBegin');
+        $periodEnd = $request->get('periodEnd');
+        $report = $this->get('mbh.reservation_report')
+            ->generate($periodBegin, $periodEnd, $date);
+
+        return $report->generateReportTableResponse();
+    }
 }

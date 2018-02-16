@@ -236,8 +236,6 @@ services:
         tags:
             - {name: form.type}
 
-    mbh.unwelcome_type:
-        class: MBH\Bundle\PackageBundle\Form\UnwelcomeType
-        arguments: ['@translator']
-        tags:
-            - {name: form.type}
+    mbh.reservation_report:
+        class: MBH\Bundle\PackageBundle\Services\ReservationReportCompiler
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.report', '@translator']

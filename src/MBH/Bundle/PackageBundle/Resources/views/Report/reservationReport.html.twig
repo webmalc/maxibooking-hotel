@@ -1,0 +1,51 @@
+{% extends 'MBHPackageBundle::layout.html.twig' %}
+
+{% set title = 'views.report.reservation_report.title'|trans %}
+{% set layout = 'box' %}
+
+{% block content %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'reservation-report-filter'} %}
+        {% block content %}
+            <form class="form-inline search-form filter-form remember" id="reservation-report-filter" role="form">
+                <div class="input">
+                    <i class="fa fa-calendar" title='{{ 'views.report.reservation_report.period.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp
+                    <input type="text" id="reservation-report-filter-begin"
+                           class="datepicker reservation-report-filter begin-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
+                </div>
+                <div class="input hidden">
+                    - &nbsp
+                    <input type="text" id="reservation-report-filter-end"
+                           class="datepicker reservation-report-filter end-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
+                </div>
+                <div class="input">
+                    <i class="fa fa-bed" title='{{ 'views.report.reservation_report.datreport_date.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp
+                    <input type="text" id="reservation-report-date"
+                           class="datepicker reservation-report-filter form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
+                </div>
+
+                {#<div class="input">#}
+                    {#<i class="fa fa-home" title='{{ 'views.report.packages_daily_report.hotels.title'|trans }}'#}
+                       {#data-toggle='tooltip'></i>&nbsp#}
+                    {#<select multiple data-placeholder="{{ 'views.report.packages_daily_report.hotels.placeholder'|trans }}"#}
+                            {#id="reservation-report-filter-hotels" class="reservation-report-filter form-control input-sm">#}
+                        {#<option></option>#}
+                        {#{% for hotel in hotels %}#}
+                            {#<option value="{{ hotel.id }}"#}
+                                    {#{% if hotel.id in app.request.get('hotels') and hotels|length != app.request.get('hotels')|length %}selected{% endif %}>{{ hotel.name }}</option>#}
+                        {#{% endfor %}#}
+                    {#</select>#}
+                {#</div>#}
+                <div class="input">
+                    <button type="button" id="reservation-report-update-table-button" class="btn btn-primary">{{ 'views.report.packages_daily_report.update_button'|trans }}</button>
+                </div>
+            </form>
+        {% endblock content %}
+    {% endembed %}
+
+    <div id="reservation-report-table" class="scrolling" style="position:relative;"></div>
+{% endblock %}

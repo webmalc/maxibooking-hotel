@@ -1260,6 +1260,7 @@ report.packages_daily_report_compiler.sum_for_packages: 'Приход за бр�
 report.packages_daily_report_compiler.cancellation_for_packages: 'Аннуляция за брони'
 report.packages_daily_report_compiler.return_for_packages: 'Вернули за брони'
 views.report.packages_daily_report.title: 'Денежные средства'
+views.report.reservation_report.title: 'Отчет по бронированию номеров'
 views.report.packages_daily_report.mail_title: 'Отчет по денежным средствам'
 views.report.packages_daily_report.dates_input.title: 'Даты бронирования'
 views.report.packages_daily_report.calculation_dates.title: 'Даты проживания'
@@ -1284,6 +1285,8 @@ distribution_by_days_report.days_of_week_abbr.fri: 'Пт'
 distribution_by_days_report.days_of_week_abbr.sat: 'Сб'
 distribution_by_days_report.days_of_week_abbr.sun: 'Вс'
 distribution_by_days_report.total_row: 'Итого'
+views.report.reservation_report.period.title: 'Период'
+views.report.reservation_report.datreport_date.title: 'Дата'
 
 mbh.analytics.types.sales_packages: "Динамика продаж по количеству броней"
 mbh.analytics.types.sales_cash: "Динамика продаж по стоимости броней"
