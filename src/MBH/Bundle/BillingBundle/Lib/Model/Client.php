@@ -45,6 +45,7 @@ class Client
     private $city;
     private $address;
     private $postal_code;
+    private $trial_activated;
 
     /** @var  string
      * @Assert\NotNull(groups={"installation"})
@@ -237,7 +238,8 @@ class Client
      */
     public function getRoomsLimit()
     {
-        return $this->getRestrictions()['rooms_limit'];
+        return 200;
+//        return $this->getRestrictions()['rooms_limit'];
     }
 
     /**
@@ -544,4 +546,22 @@ class Client
         return $this->getName();
     }
 
+    /**
+     * @return bool
+     */
+    public function getTrial_activated()
+    {
+        return $this->trial_activated;
+    }
+
+    /**
+     * @param bool $trial_activated
+     * @return Client
+     */
+    public function setTrial_activated($trial_activated)
+    {
+        $this->trial_activated = $trial_activated;
+
+        return $this;
+    }
 }

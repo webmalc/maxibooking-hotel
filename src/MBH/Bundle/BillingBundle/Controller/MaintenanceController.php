@@ -4,12 +4,14 @@ namespace MBH\Bundle\BillingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 
 /**
  * Class MaintenanceController
@@ -25,6 +27,7 @@ class MaintenanceController extends BaseController
      * )
      * @param Request $request
      * @return JsonResponse
+     * @throws ClientMaintenanceException
      * @throws \HttpInvalidParamException
      */
     public function installAction(Request $request)
@@ -40,8 +43,11 @@ class MaintenanceController extends BaseController
         if (!$clientLogin) {
             throw new \HttpInvalidParamException('No login in request');
         }
-
-        $result = $this->get('mbh.client_instance_manager')->runBillingInstallCommand($clientLogin);
+        if ($this->get('mbh.service.client_list_getter')->isClientInstalled($clientLogin)) {
+            $result = Result::createErrorResult(['Client is already installed!']);
+        } else {
+            $result = $this->get('mbh.client_instance_manager')->runBillingInstallCommand($clientLogin);
+        }
 
         return new JsonResponse($result->getApiResponse());
     }
