@@ -193,6 +193,32 @@ class ClientConfig extends Base
     protected $queryStat = true;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     */
+    protected $isDisableableOn = false;
+
+    /**
+     * @return bool
+     */
+    public function isIsDisableableOn(): bool
+    {
+        return $this->isDisableableOn;
+    }
+
+    /**
+     * @param bool $isDisableableOn
+     * @return ClientConfig
+     */
+    public function setIsDisableableOn(bool $isDisableableOn): ClientConfig
+    {
+        $this->isDisableableOn = $isDisableableOn;
+
+        return $this;
+    }
+
+    /**
      * @return integer
      */
     public function getNoticeUnpaid(): int
