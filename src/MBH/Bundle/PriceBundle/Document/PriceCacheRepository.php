@@ -107,4 +107,47 @@ class PriceCacheRepository extends DocumentRepository
 
         return $result;
     }
+
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     * @param Hotel|null $hotel
+     * @param array $roomTypes
+     * @param array $tariffs
+     * @param bool $categories
+     * @param \DateTime|null $displayedDate
+     * @return array
+     */
+    public function fetchWithCancelDate(
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        Hotel $hotel = null,
+        array $roomTypes = [],
+        array $tariffs = [],
+        $categories = false,
+        \DateTime $displayedDate = null
+    ) {
+        $cachesQB = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories);
+        if (!is_null($displayedDate)) {
+            $cachesQB->addAnd($cachesQB->expr()
+                ->addOr($cachesQB->expr()->field('createdAt')->exists(false))
+                ->addOr($cachesQB->expr()->field('createdAt')->lt($displayedDate)));
+            $cachesQB->addAnd($cachesQB->expr()
+                ->addOr($cachesQB->expr()->field('cancelDate')->gt($displayedDate))
+                ->addOr($cachesQB->expr()->field('cancelDate')->exists(false))
+                ->addOr($cachesQB->expr()->field('cancelDate')->equals(null)));
+        } else {
+            $cachesQB->field('isEnabled')->equals(true);
+        }
+        $caches = $cachesQB->getQuery()->execute()->toArray();
+
+        $result = [];
+        $method = $categories ? 'getRoomTypeCategory' : 'getRoomType';
+        /** @var PriceCache $cache */
+        foreach ($caches as $cache) {
+            $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
+        }
+
+        return $result;
+    }
 }
