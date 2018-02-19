@@ -11,7 +11,8 @@ var REPORT_SETTINGS = {
                 date: $('#reservation-report-date').val(),
                 roomTypes: $('#reservation-report-filter-rooms').val()
             }
-        }
+        },
+        dateRangeType: 'previous'
     }
 };
 
@@ -113,11 +114,31 @@ $(document).ready(function () {
 
 function initMBHReport() {
     var $updateButton = $('.report-update-button');
+    setDefaultRangePickerDates();
     if ($updateButton.length === 1) {
         updateReportTable();
         $updateButton.click(function () {
             updateReportTable();
         });
+    }
+}
+
+function setDefaultRangePickerDates() {
+    var $reportWrapper = $('.report-wrapper');
+    var reportId = $reportWrapper.attr('data-report-id');
+    var reportSettings = REPORT_SETTINGS[reportId];
+    if (reportSettings.dateRangeType === 'previous') {
+        var $rangePickerInput = $('.daterangepicker-input');
+        var $beginInput = $('.begin-datepicker');
+        var $endInput = $('.end-datepicker');
+        if (!$beginInput.val() || !$endInput.val()) {
+            var beginDate = moment().subtract(20, 'days');
+            $rangePickerInput.data('daterangepicker').setStartDate(beginDate.toDate());
+            $beginInput.val(beginDate.format("DD.MM.YYYY"));
+            var endDate = moment();
+            $rangePickerInput.data('daterangepicker').setEndDate(endDate.toDate());
+            $endInput.val(endDate.format("DD.MM.YYYY"));
+        }
     }
 }
 

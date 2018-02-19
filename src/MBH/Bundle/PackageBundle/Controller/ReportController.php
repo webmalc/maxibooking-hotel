@@ -938,7 +938,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function reservationReportTableAction(Request $request)
     {
-        $date = $this->helper->getDateFromString($request->get('date'));
+        $date = $this->helper->getDateFromString($request->get('date')) ?? new \DateTime('midnight');
         $periodBegin = $this->helper->getDateFromString($request->get('periodBegin'));
         $periodEnd = $this->helper->getDateFromString($request->get('periodEnd'));
 

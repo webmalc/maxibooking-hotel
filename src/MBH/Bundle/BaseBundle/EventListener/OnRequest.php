@@ -25,7 +25,7 @@ class OnRequest
         $clientManager = $this->container->get('mbh.client_manager');
         $session = $this->container->get('session');
 
-        if (!($this->container->get('kernel')->getClient() === \AppKernel::DEFAULT_CLIENT || $clientManager->isClientActive())
+        if (!($this->container->get('kernel')->isDefaultClient()|| $clientManager->isClientActive())
             && $session->get(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR) !== true
             && !$clientManager->isRouteAccessibleForInactiveClient($event->getRequest()->get('_route'))
             && $this->container->get('security.token_storage')->getToken()

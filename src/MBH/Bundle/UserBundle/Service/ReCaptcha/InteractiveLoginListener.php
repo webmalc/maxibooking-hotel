@@ -5,6 +5,7 @@ namespace MBH\Bundle\UserBundle\Service\ReCaptcha;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use \ReCaptcha\ReCaptcha;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -24,6 +25,8 @@ class InteractiveLoginListener
     protected $session;
     protected $supportEmail;
     protected $translator;
+    /** @var \AppKernel */
+    protected $kernel;
 
     /**
      * InteractiveLoginListener constructor.
@@ -33,8 +36,10 @@ class InteractiveLoginListener
      * @param BillingApi $billingApi
      * @param TranslatorInterface $translator
      * @param $supportInfo
+     * @param KernelInterface $kernel
+     * @internal param string $clientLogin
      */
-    public function __construct(array $params, ClientManager $clientManager, Session $session, BillingApi $billingApi, TranslatorInterface $translator, $supportInfo)
+    public function __construct(array $params, ClientManager $clientManager, Session $session, BillingApi $billingApi, TranslatorInterface $translator, $supportInfo, KernelInterface $kernel)
     {
         $this->params = $params;
         $this->clientManager = $clientManager;
@@ -42,6 +47,7 @@ class InteractiveLoginListener
         $this->billingApi = $billingApi;
         $this->translator = $translator;
         $this->supportEmail = $supportInfo['email'];
+        $this->kernel = $kernel;
     }
 
     /**
@@ -60,15 +66,17 @@ class InteractiveLoginListener
             if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
                 throw new BadCredentialsException('Captcha is invalid');
             }
-            $client = $this->clientManager->getClient();
-            if ($client->getStatus() === 'not_confirmed') {
-                try {
-                    $result = $this->clientManager->confirmClient($client);
-                    if (!$result->isSuccessful()) {
+            if (!$this->kernel->isDefaultClient()) {
+                $client = $this->clientManager->getClient();
+                if ($client->getStatus() === 'not_confirmed') {
+                    try {
+                        $result = $this->clientManager->confirmClient($client);
+                        if (!$result->isSuccessful()) {
+                            $this->handleIncorrectConfirmationRequest();
+                        }
+                    } catch (\Exception $exception) {
                         $this->handleIncorrectConfirmationRequest();
                     }
-                } catch (\Exception $exception) {
-                    $this->handleIncorrectConfirmationRequest();
                 }
             }
         }
