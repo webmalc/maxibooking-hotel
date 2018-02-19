@@ -53,7 +53,6 @@
                 {% endfor %}
             </select>
         </div>
-        {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'price_cache_overview'} %}
         <div class="input">
             <label for="displayed-prices-date"><i class="fa fa-calendar-check-o" aria-hidden="true" title='{{ 'mbhpricebundle.view.pricecache.filter.displayed_price_caches_date'|trans }}' data-toggle='tooltip'></i>&nbsp;</label>
             <input type="text" id="displayed-prices-date" name="displayed-prices-date" class="price-cache-overview-filter datepicker form-control input-sm" data-date-format="dd.mm.yyyy" value="">
