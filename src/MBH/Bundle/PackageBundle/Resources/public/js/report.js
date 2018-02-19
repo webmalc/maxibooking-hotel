@@ -1,5 +1,21 @@
 /*jslint todo: true */
 /*global window, $, document, Routing */
+
+var REPORT_SETTINGS = {
+    reservation: {
+        routeName: 'reservation_report_table',
+        getDataFunction: function () {
+            return {
+                periodBegin: $('#reservation-report-filter-begin').val(),
+                periodEnd: $('#reservation-report-filter-end').val(),
+                date: $('#reservation-report-date').val(),
+                roomTypes: $('#reservation-report-filter-rooms').val()
+            }
+        },
+        dateRangeType: 'previous'
+    }
+};
+
 $(document).ready(function () {
     'use strict';
 
@@ -93,5 +109,50 @@ $(document).ready(function () {
         e.preventDefault();
         accommodationReportGet();
     });
+    initMBHReport();
 });
 
+function initMBHReport() {
+    var $updateButton = $('.report-update-button');
+    setDefaultRangePickerDates();
+    if ($updateButton.length === 1) {
+        updateReportTable();
+        $updateButton.click(function () {
+            updateReportTable();
+        });
+    }
+}
+
+function setDefaultRangePickerDates() {
+    var $reportWrapper = $('.report-wrapper');
+    var reportId = $reportWrapper.attr('data-report-id');
+    var reportSettings = REPORT_SETTINGS[reportId];
+    if (reportSettings.dateRangeType === 'previous') {
+        var $rangePickerInput = $('.daterangepicker-input');
+        var $beginInput = $('.begin-datepicker');
+        var $endInput = $('.end-datepicker');
+        if (!$beginInput.val() || !$endInput.val()) {
+            var beginDate = moment().subtract(20, 'days');
+            $rangePickerInput.data('daterangepicker').setStartDate(beginDate.toDate());
+            $beginInput.val(beginDate.format("DD.MM.YYYY"));
+            var endDate = moment();
+            $rangePickerInput.data('daterangepicker').setEndDate(endDate.toDate());
+            $endInput.val(endDate.format("DD.MM.YYYY"));
+        }
+    }
+}
+
+function updateReportTable() {
+    var $reportWrapper = $('.report-wrapper');
+    var reportId = $reportWrapper.attr('data-report-id');
+    var reportSettings = REPORT_SETTINGS[reportId];
+    $reportWrapper.html(mbh.loader.html);
+    $.ajax({
+        url: Routing.generate(reportSettings.routeName),
+        success: function (response) {
+            $reportWrapper.html(response);
+            // setScrollable();
+        },
+        data: reportSettings.getDataFunction()
+    });
+}

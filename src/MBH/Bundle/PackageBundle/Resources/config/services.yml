@@ -184,3 +184,12 @@ services:
       class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
       arguments: ['@doctrine.odm.mongodb.document_manager']
       shared: false
+
+    mbh.reservation_report:
+        class: MBH\Bundle\PackageBundle\Services\ReservationReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+            - '@mbh.helper'
+            - '@mbh.calculation'

@@ -682,7 +682,7 @@ class Calculation
         /** @var LogEntryRepository $logEntryRepo */
         $logEntryRepo = $this->dm->getRepository('GedmoLoggable:LogEntry');
         $packageIds = $this->helper->toIds($packages);
-        $b = microtime(true);
+
         /** @var LogEntry[] $packagesRawLogs */
         $packagesRawLogs = $logEntryRepo
             ->createQueryBuilder()
@@ -731,7 +731,7 @@ class Calculation
                 $packageId = $package->getId();
                 $isCurrentDate = $dateString === $currentDateString;
 
-                if ($isCurrentDate) {
+                if ($isCurrentDate || !isset($sortedLogData[$packageId])) {
                     $price = $package->getPackagePrice();
                     $totalOverWrite = $package->getTotalOverwrite();
                     $servicesPrice = $package->getServicesPrice();
