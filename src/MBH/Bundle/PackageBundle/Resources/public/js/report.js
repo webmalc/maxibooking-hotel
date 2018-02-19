@@ -11,8 +11,7 @@ var REPORT_SETTINGS = {
                 date: $('#reservation-report-date').val(),
                 roomTypes: $('#reservation-report-filter-rooms').val()
             }
-        },
-        dateRangeType: 'previous'
+        }
     }
 };
 
@@ -127,15 +126,15 @@ function setDefaultRangePickerDates() {
     var $reportWrapper = $('.report-wrapper');
     var reportId = $reportWrapper.attr('data-report-id');
     var reportSettings = REPORT_SETTINGS[reportId];
-    if (reportSettings && reportSettings.dateRangeType === 'previous') {
+    if (reportSettings) {
         var $rangePickerInput = $('.daterangepicker-input');
         var $beginInput = $('.begin-datepicker');
         var $endInput = $('.end-datepicker');
         if (!$beginInput.val() || !$endInput.val()) {
-            var beginDate = moment().subtract(20, 'days');
+            var beginDate = moment(mbh.startDatePick, "DD.MM.YYYY");
             $rangePickerInput.data('daterangepicker').setStartDate(beginDate.toDate());
             $beginInput.val(beginDate.format("DD.MM.YYYY"));
-            var endDate = moment();
+            var endDate = beginDate().add(20, "days");
             $rangePickerInput.data('daterangepicker').setEndDate(endDate.toDate());
             $endInput.val(endDate.format("DD.MM.YYYY"));
         }
