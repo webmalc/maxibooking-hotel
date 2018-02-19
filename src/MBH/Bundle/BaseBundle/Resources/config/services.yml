@@ -15,6 +15,11 @@ services:
         class: Twig_Extensions_Extension_Date
         tags:
             - name: twig.extension
+    mbh.event_listener.disable_listener:
+        class: MBH\Bundle\BaseBundle\Lib\Disableable\DisableableSubscriber
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
 
     doctrine_odm.mongodb.validator.unique:
       class: MBH\Bundle\BaseBundle\Validator\Constraints\UniqueEntityValidator
