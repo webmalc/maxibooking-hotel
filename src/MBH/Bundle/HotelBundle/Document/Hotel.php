@@ -341,7 +341,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @ODM\Field(type="string")
      * @var string
-     * @ODM\Index()
      */
     protected $description;
 
