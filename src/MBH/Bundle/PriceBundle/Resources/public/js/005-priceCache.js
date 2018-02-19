@@ -123,7 +123,6 @@ $(document).ready(function () {
             };
         showMessage();
         prices.change(showMessage);
-        setGeneratorData();
     }());
 
     (function () {
