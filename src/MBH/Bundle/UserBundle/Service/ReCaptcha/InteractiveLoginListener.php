@@ -60,7 +60,6 @@ class InteractiveLoginListener
             if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
                 throw new BadCredentialsException('Captcha is invalid');
             }
-
             $client = $this->clientManager->getClient();
             if ($client->getStatus() === 'not_confirmed') {
                 try {

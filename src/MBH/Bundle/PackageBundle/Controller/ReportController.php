@@ -926,7 +926,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function reservationReportAction()
     {
-
+        return [
+            'roomTypes' => $this->hotel->getRoomTypes()
+        ];
     }
 
     /**
@@ -936,11 +938,17 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function reservationReportTableAction(Request $request)
     {
-        $date = $request->get('date');
-        $periodBegin = $request->get('periodBegin');
-        $periodEnd = $request->get('periodEnd');
+        $date = $this->helper->getDateFromString($request->get('date'));
+        $periodBegin = $this->helper->getDateFromString($request->get('periodBegin'));
+        $periodEnd = $this->helper->getDateFromString($request->get('periodEnd'));
+
+        $roomTypeIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
+        $roomTypes = empty($roomTypeIds)
+            ? $this->hotel->getRoomTypes()
+            : $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch(null, $roomTypeIds);
+
         $report = $this->get('mbh.reservation_report')
-            ->generate($periodBegin, $periodEnd, $date);
+            ->generate($periodBegin, $periodEnd, $date, $roomTypes->toArray());
 
         return $report->generateReportTableResponse();
     }

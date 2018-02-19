@@ -238,4 +238,9 @@ services:
 
     mbh.reservation_report:
         class: MBH\Bundle\PackageBundle\Services\ReservationReportCompiler
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.report', '@translator']
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+            - '@mbh.helper'
+            - '@mbh.calculation'

@@ -67,6 +67,14 @@ class ReportCell
     }
 
     /**
+     * @return string
+     */
+    public function getRowOption()
+    {
+        return $this->rowOption;
+    }
+
+    /**
      * @param mixed $columnOption
      * @return ReportCell
      */

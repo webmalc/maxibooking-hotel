@@ -535,7 +535,7 @@ class PackageRepository extends DocumentRepository
                 $roomTypeMongoId = $packageData['roomType']['$id'];
                 $distributionData[$dayOfWeekNumber]['value'] = [$roomTypeMongoId->serialize() => [
                     'count' => 1,
-                    'price' => $packagePrice
+                    'price' => $packagePrice,
                 ]];
             }
         }

@@ -1286,7 +1286,15 @@ distribution_by_days_report.days_of_week_abbr.sat: 'Сб'
 distribution_by_days_report.days_of_week_abbr.sun: 'Вс'
 distribution_by_days_report.total_row: 'Итого'
 views.report.reservation_report.period.title: 'Период'
-views.report.reservation_report.datreport_date.title: 'Дата'
+views.report.reservation_report.report_date.title: 'Дата'
+views.report.reservation_report.room_types.title: 'Типы комнат'
+reservation_report.number_of_packages: 'Забронировано номеров по состоянию на %date%'
+reservation_report.previous_number_of_packages: 'Забронировано номеров по состоянию на %previousDate%'
+reservation_report.date: 'Дата'
+reservation_report.delta_number_of_packages: 'Дельта забронировано номеров'
+reservation_report.delta_numb_of_packages_in_percent: '% по бронированию номеров'
+reservation_report.packages_price: 'Цена по состоянию на %date%'
+reservation_report.previous_packages_price: 'Цена по состоянию на %previousDate%'
 
 mbh.analytics.types.sales_packages: "Динамика продаж по количеству броней"
 mbh.analytics.types.sales_cash: "Динамика продаж по стоимости броней"

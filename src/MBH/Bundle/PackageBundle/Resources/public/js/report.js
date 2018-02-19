@@ -1,5 +1,20 @@
 /*jslint todo: true */
 /*global window, $, document, Routing */
+
+var REPORT_SETTINGS = {
+    reservation: {
+        routeName: 'reservation_report_table',
+        getDataFunction: function () {
+            return {
+                periodBegin: $('#reservation-report-filter-begin').val(),
+                periodEnd: $('#reservation-report-filter-end').val(),
+                date: $('#reservation-report-date').val(),
+                roomTypes: $('#reservation-report-filter-rooms').val()
+            }
+        }
+    }
+};
+
 $(document).ready(function () {
     'use strict';
 
@@ -17,7 +32,7 @@ $(document).ready(function () {
             $('.tile-bookable').click(function () {
                 var td = $(this),
                     roomId = td.attr('data-room-id'),
-                    date =  td.attr('data-date');
+                    date = td.attr('data-date');
                 if (packageData && roomId === packageData.room.id && packageData.dateOne !== date) {
                     // create packages
                     packageData.dataTwo = date;
@@ -48,7 +63,7 @@ $(document).ready(function () {
         accommodationReportGet = function (page) {
             var form = $('#accommodation-report-filter'),
                 wrapper = $('#accommodation-report-content')
-                ;
+            ;
 
             page = typeof page !== 'undefined' ? page : 1;
 
@@ -93,5 +108,30 @@ $(document).ready(function () {
         e.preventDefault();
         accommodationReportGet();
     });
+    initMBHReport();
 });
 
+function initMBHReport() {
+    var $updateButton = $('.report-update-button');
+    if ($updateButton.length === 1) {
+        updateReportTable();
+        $updateButton.click(function () {
+            updateReportTable();
+        });
+    }
+}
+
+function updateReportTable() {
+    var $reportWrapper = $('.report-wrapper');
+    var reportId = $reportWrapper.attr('data-report-id');
+    var reportSettings = REPORT_SETTINGS[reportId];
+    $reportWrapper.html(mbh.loader.html);
+    $.ajax({
+        url: Routing.generate(reportSettings.routeName),
+        success: function (response) {
+            $reportWrapper.html(response);
+            // setScrollable();
+        },
+        data: reportSettings.getDataFunction()
+    });
+}
