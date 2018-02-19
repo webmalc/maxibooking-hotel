@@ -127,7 +127,7 @@ function setDefaultRangePickerDates() {
     var $reportWrapper = $('.report-wrapper');
     var reportId = $reportWrapper.attr('data-report-id');
     var reportSettings = REPORT_SETTINGS[reportId];
-    if (reportSettings.dateRangeType === 'previous') {
+    if (reportSettings && reportSettings.dateRangeType === 'previous') {
         var $rangePickerInput = $('.daterangepicker-input');
         var $beginInput = $('.begin-datepicker');
         var $endInput = $('.end-datepicker');
