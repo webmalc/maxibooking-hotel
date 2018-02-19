@@ -1580,6 +1580,19 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getPricesByDateWithDiscount()
+    {
+        $prices = [];
+        foreach ($this->pricesByDate as $dateString => $price) {
+            $prices[$dateString] = $price - ($this->getDiscountMoney() / $this->getNights());
+        }
+
+        return $prices;
+    }
+
+    /**
      * @param array $prices
      * @return Package
      */

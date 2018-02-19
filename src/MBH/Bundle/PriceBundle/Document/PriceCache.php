@@ -9,14 +9,16 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
 
 /**
  * @ODM\Document(collection="PriceCache", repositoryClass="MBH\Bundle\PriceBundle\Document\PriceCacheRepository")
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
- * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="PriceCache already exist.")
- * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff"}, message="PriceCache already exist.")
+ * @MongoDBUnique(fields={"roomType", "date", "tariff", "cancelDate"}, message="PriceCache already exist.")
+ * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff", "cancelDate"}, message="PriceCache already exist.")
  * @ODM\HasLifecycleCallbacks
+ * @Disableable\Disableable
  * @ODM\Index(keys={"hotel"="asc","roomType"="asc","tariff"="asc","date"="asc"})
  */
 class PriceCache extends Base
@@ -129,6 +131,64 @@ class PriceCache extends Base
      */
     protected $singlePrice = null;
 
+    /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     * @ODM\Index()
+     * @Assert\Date()
+     */
+    protected $cancelDate;
+
+    /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="create")
+     * @ODM\Field(type="date")
+     * @Assert\Date()
+     * @Assert\NotNull()
+     */
+    protected $createdAt;
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     * @return PriceCache
+     */
+    public function setCreatedAt(\DateTime $createdAt): PriceCache
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCancelDate(): ?\DateTime
+    {
+        return $this->cancelDate;
+    }
+
+    /**
+     * @param \DateTime $cancelDate
+     * @param bool $isDisabled
+     * @return PriceCache
+     */
+    public function setCancelDate(\DateTime $cancelDate, $isDisabled = false): PriceCache
+    {
+        $this->cancelDate = $cancelDate;
+        if ($isDisabled) {
+            $this->setIsEnabled(false);
+        }
+
+        return $this;
+    }
 
     /**
      * Set hotel

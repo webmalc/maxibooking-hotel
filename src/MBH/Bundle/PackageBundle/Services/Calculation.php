@@ -174,16 +174,23 @@ class Calculation
         }
         $tariffId = $tariff->getId();
         $duration = $end->diff($begin)->format('%a') + 1;
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-            ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
+        $priceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $tariffId, $memcached) {
+            return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
+        };
+
+        $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
         if (!$tariff->getIsDefault()) {
             $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel, null, $memcached);
             if (!$defaultTariff) {
                 return false;
             }
-            $defaultPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories, $memcached);
+            $defaultPriceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                    ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories, $memcached);
+            };
+            $defaultPriceCaches = $this->helper->getFilteredResult($this->dm, $defaultPriceCachesCallback);
         } else {
             $defaultPriceCaches = $priceCaches;
             $defaultTariff = $tariff;

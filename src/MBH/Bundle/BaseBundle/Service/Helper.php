@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -357,6 +358,28 @@ class Helper
 
         foreach ($collection as $object) {
             $result[] = (is_object($object) && method_exists($object, $method)) ? $object->$method() : (string)$object;
+        }
+
+        return $result;
+    }
+    /**
+     * Get filtered values for the specified filter
+     *
+     * @param DocumentManager $dm
+     * @param  $callback
+     * @param bool $isFilterOn
+     * @param string $filter
+     * @return mixed
+     */
+    public function getFilteredResult(DocumentManager $dm, $callback, $isFilterOn = true, $filter = 'disableable')
+    {
+        if ($isFilterOn && !$dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->enable($filter);
+        }
+        $result = $callback();
+
+        if ($isFilterOn && $dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->disable($filter);
         }
 
         return $result;
