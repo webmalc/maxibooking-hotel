@@ -132,10 +132,10 @@ function setDefaultRangePickerDates() {
         var $beginInput = $('.begin-datepicker');
         var $endInput = $('.end-datepicker');
         if (!$beginInput.val() || !$endInput.val()) {
-            var beginDate = moment(mbh.startDatePick, "DD.MM.YYYY");
+            var beginDate = moment().subtract(20, 'days');
             $rangePickerInput.data('daterangepicker').setStartDate(beginDate.toDate());
             $beginInput.val(beginDate.format("DD.MM.YYYY"));
-            var endDate = beginDate().add(20, "days");
+            var endDate = moment();
             $rangePickerInput.data('daterangepicker').setEndDate(endDate.toDate());
             $endInput.val(endDate.format("DD.MM.YYYY"));
         }
@@ -151,7 +151,9 @@ function updateReportTable() {
         url: Routing.generate(reportSettings.routeName),
         success: function (response) {
             $reportWrapper.html(response);
-            // setScrollable();
+            if (reportSettings.isScrollable) {
+                setScrollable($reportWrapper.get(0));
+            }
         },
         data: reportSettings.getDataFunction()
     });
