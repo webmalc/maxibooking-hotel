@@ -21,7 +21,7 @@ function updateDailyReportTable() {
         url: Routing.generate('packages_daily_report_table'),
         success: function(response) {
             $dailyReportWrapper.html(response);
-            setScrollable('daily-report');
+            setScrollable($dailyReportWrapper.get(0));
         },
         data: {
             begin: $('#daily-report-filter-begin').val(),

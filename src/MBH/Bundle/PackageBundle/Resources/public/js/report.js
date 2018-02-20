@@ -12,7 +12,7 @@ var REPORT_SETTINGS = {
                 roomTypes: $('#reservation-report-filter-rooms').val()
             }
         },
-        dateRangeType: 'previous'
+        isScrollable: true
     }
 };
 
@@ -127,7 +127,7 @@ function setDefaultRangePickerDates() {
     var $reportWrapper = $('.report-wrapper');
     var reportId = $reportWrapper.attr('data-report-id');
     var reportSettings = REPORT_SETTINGS[reportId];
-    if (reportSettings.dateRangeType === 'previous') {
+    if (reportSettings) {
         var $rangePickerInput = $('.daterangepicker-input');
         var $beginInput = $('.begin-datepicker');
         var $endInput = $('.end-datepicker');
@@ -151,7 +151,9 @@ function updateReportTable() {
         url: Routing.generate(reportSettings.routeName),
         success: function (response) {
             $reportWrapper.html(response);
-            // setScrollable();
+            if (reportSettings.isScrollable) {
+                setScrollable($reportWrapper.get(0));
+            }
         },
         data: reportSettings.getDataFunction()
     });
