@@ -73,12 +73,7 @@ class ReservationReportCompiler
                     return ['text-center'];
                 }
 
-                $notTitleCellClasses = ['wide-column', Report::HORIZONTAL_SCROLLABLE_CLASS];
-                if ($cell->getRowOption() === 'date' && $cell->getValue()) {
-                    $sdf = 123;
-                }
-
-                return $notTitleCellClasses;
+                return ['wide-column', Report::HORIZONTAL_SCROLLABLE_CLASS];
             },
         ];
 
