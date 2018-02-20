@@ -243,7 +243,9 @@ class ReservationReportCompiler
         $roomTypeTitleRow = $table->addRow();
         $roomTypeTitleRow->addClass('warning');
         $roomTypeTitleRow->addClass('total-row');
-        $roomTypeTitleRow->createAndAddCell($title, $numberOfDays + 1);
+
+        $roomTypeTitleCell = $roomTypeTitleRow->createAndAddCell($title, $numberOfDays + 1);
+        $roomTypeTitleCell->addClass('horizontal-text-scrollable');
 
         $columnOptions = ['title'];
         /** @var \DateTime $day */
