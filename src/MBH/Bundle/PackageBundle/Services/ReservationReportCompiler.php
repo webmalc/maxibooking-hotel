@@ -67,16 +67,6 @@ class ReservationReportCompiler
         $packagesData = $this->getPackageData($periodBegin, $periodEnd, $date, $this->helper->toIds($roomTypes));
         $previousYearDate = $this->getClonedPreviousPeriodDate($date);
 
-        $rowsCallbacks = [
-            'classes' => function (ReportRow $row) {
-                if ($row->getRowOption() === self::DATE_OPTION) {
-                    return [Report::VERTICAL_SCROLLABLE_CLASS];
-                }
-
-                return [];
-            }
-        ];
-
         $cellsCallbacks = [
             'classes' => function (ReportCell $cell) {
                 if ($cell->getColumnOption() !== 'title') {
@@ -104,7 +94,16 @@ class ReservationReportCompiler
 
         $dataHandlers = ['title' => (new DefaultDataHandler())->setInitData($rowTitles)];
 
-        foreach ($roomTypes as $roomType) {
+        foreach ($roomTypes as $tableNumber => $roomType) {
+            $rowsCallbacks = [
+                'classes' => function (ReportRow $row) use ($tableNumber) {
+                    if ($row->getRowOption() === self::DATE_OPTION && $tableNumber === 0) {
+                        return [Report::VERTICAL_SCROLLABLE_CLASS];
+                    }
+
+                    return [];
+                }
+            ];
             $this->generateTableRows($roomType->getName(), $numberOfDays, $reportPeriod, $packagesData[$roomType->getId()], $dataHandlers, $cellsCallbacks, $rowsCallbacks);
         }
 

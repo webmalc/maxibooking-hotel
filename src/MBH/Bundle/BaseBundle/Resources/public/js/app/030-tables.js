@@ -90,38 +90,19 @@ $(document).ready(function () {
     'use strict';
     docReadyTables();
 });
-
 function setVerticalScrollable($scrollableElements, wrapper) {
     var $table = $scrollableElements.parent().parent();
     var tableOffset = getTableOffset($table, wrapper);
 
-    var $lineAfterLastScrollableLine = $scrollableElements.first().parent().children().eq($scrollableElements.length);
-    if ($lineAfterLastScrollableLine.length === 0) {
-        $lineAfterLastScrollableLine = $table.find('tbody').children().eq(0);
-    }
-    $lineAfterLastScrollableLine.children().each(function (index, elem) {
-        var $element = $(elem);
-        $element.css('min-width', $element.css('width'));
-        $element.css('max-width', $element.css('width'));
-        $element.css('width', $element.css('width'));
-    });
+    setSameWidthForCellsInTheSameColumn();
 
     var scrollableLinesHeight = 0;
+    $scrollableElements.each(function (index, trElement) {
+        scrollableLinesHeight += parseInt(getComputedStyle(trElement).height, 10);
+    });
     var vScrollableTable = getScrollableTableTemplate($table, tableOffset);
     var tbodyElement = document.createElement('tbody');
     vScrollableTable.appendChild(tbodyElement);
-    $scrollableElements.each(function (index, trElement) {
-        scrollableLinesHeight += parseInt(getComputedStyle(trElement).height, 10);
-        $(trElement).children().each(function (index, tdElement) {
-            var $tdElement = $(tdElement);
-            $tdElement.css('min-width', $tdElement.css('width'));
-            $tdElement.css('max-width', $tdElement.css('width'));
-            if ($tdElement.css('background-color') === "rgba(0, 0, 0, 0)") {
-                $tdElement.css('background-color', 'white');
-            }
-        });
-    });
-
     $scrollableElements.each(function (index, trElement) {
         tbodyElement.appendChild(trElement);
     });
@@ -135,33 +116,49 @@ function setVerticalScrollable($scrollableElements, wrapper) {
     return vScrollableTable;
 }
 
-function setScrollable(reportWrapperId) {
+function setScrollable(wrapper) {
     var $verticalScrollable = $('.vertical-scrollable');
-    var wrapper = document.getElementById(reportWrapperId);
     var $horizontalScrollable = $('.horizontal-scrollable');
     var $table = $horizontalScrollable.parent().parent().parent();
     var tableOffset = getTableOffset($table, wrapper);
+
+    var offsetForFirstScrollable = getOffsetForFirstVerticalScrollable($table);
     var vScrollableTable = setVerticalScrollable($verticalScrollable, wrapper);
     var scrollableLinesHeight = parseInt(getComputedStyle(vScrollableTable).height, 10);
 
-    var hScrollableTable = getScrollableTableTemplate($table, tableOffset);
-    hScrollableTable.style.top = scrollableLinesHeight + 'px';
-    hScrollableTable.style.minWidth = $horizontalScrollable.first().css('min-width');
-    hScrollableTable.style.maxWidth = $horizontalScrollable.first().css('max-width');
-    var hScrollableTableBody = document.createElement('tbody');
-    hScrollableTable.appendChild(hScrollableTableBody);
-    $horizontalScrollable.parent().each(function (index, trElement) {
-        if (!trElement.classList.contains('vertical-scrollable')) {
-            var hScrollableTableLine = document.createElement('tr');
-            $(trElement).find('.horizontal-scrollable').each(function (index, tdElem) {
-                var clonedTdElement = tdElem.cloneNode(true);
-                clonedTdElement.style.backgroundColor = 'white';
-                hScrollableTableLine.appendChild(clonedTdElement);
-            });
-            hScrollableTableBody.appendChild(hScrollableTableLine);
+    var $tables = $horizontalScrollable.closest('table');
+    var firstTableOffset;
+
+    $tables.each(function (tableIndex, table) {
+        var hScrollableTable = getScrollableTableTemplate($table, tableOffset);
+        hScrollableTable.classList.add('horizontal-scrollable-table');
+        var tableTopOffset = $(table).offset().top;
+        if (tableIndex === 0) {
+            firstTableOffset = tableTopOffset;
+            hScrollableTable.style.top = scrollableLinesHeight + offsetForFirstScrollable - 1 + 'px';
+        } else {
+            hScrollableTable.style.top = scrollableLinesHeight + offsetForFirstScrollable - 1 + (tableTopOffset - firstTableOffset) + 'px';
         }
+
+        hScrollableTable.style.minWidth = $horizontalScrollable.first().css('min-width');
+        hScrollableTable.style.maxWidth = $horizontalScrollable.first().css('max-width');
+        var hScrollableTableBody = document.createElement('tbody');
+        hScrollableTable.appendChild(hScrollableTableBody);
+
+        $(table).find('tr').each(function (rowIndex, row) {
+            if (!row.classList.contains('vertical-scrollable')) {
+                var hScrollableTableLine = document.createElement('tr');
+                $(row).find('.horizontal-scrollable').each(function (index, tdElem) {
+                    var clonedTdElement = tdElem.cloneNode(true);
+                    clonedTdElement.style.backgroundColor = 'white';
+                    hScrollableTableLine.appendChild(clonedTdElement);
+                });
+                hScrollableTableBody.appendChild(hScrollableTableLine);
+            }
+        });
+
+        wrapper.appendChild(hScrollableTable);
     });
-    wrapper.appendChild(hScrollableTable);
 
     var $verticalAndHorizontalScrollable = $verticalScrollable.find('.horizontal-scrollable');
     var bothSidesScrollable = [];
@@ -181,14 +178,96 @@ function setScrollable(reportWrapperId) {
         bothSidesScrollable.push(bothSideScrollable);
     });
 
+    var $horizontalTextScrollable = $('.horizontal-text-scrollable');
+    $horizontalTextScrollable.each(function (index, cell) {
+        cell.style.height = getComputedStyle(cell).height;
+        cell.style.position = 'relative';
+
+        var span = document.createElement('span');
+        span.style.position = 'absolute';
+        span.style.paddingLeft = '10px';
+        span.style.left = 0;
+        span.classList.add('scrollable-text-span');
+        span.style.top = 9 + 'px';
+        span.innerHTML = cell.innerHTML;
+        cell.innerHTML = span.outerHTML;
+    });
+
     var $bothSidesScrollable = $(bothSidesScrollable);
+    var $horizontalScrollableTables = $('.horizontal-scrollable-table');
+    var $scrollableTextSpan = $('.scrollable-text-span');
 
     wrapper.onscroll = function () {
         vScrollableTable.style.top = tableOffset + wrapper.scrollTop + 'px';
-        hScrollableTable.style.left = wrapper.scrollLeft + 'px';
+        $horizontalScrollableTables.css('left', wrapper.scrollLeft);
+        $scrollableTextSpan.css('left', wrapper.scrollLeft);
         $bothSidesScrollable.css('left', wrapper.scrollLeft);
         $bothSidesScrollable.css('top', tableOffset + wrapper.scrollTop);
     };
+}
+
+function getOffsetForFirstVerticalScrollable($table) {
+    var $tableRows = $table.find('tr');
+    var offsetForFirstScrollableRow = 0;
+    for (var rowIndex = 0; rowIndex < $tableRows.length; rowIndex++) {
+        var $currentRow = $tableRows.eq(rowIndex);
+        if ($currentRow.hasClass('vertical-scrollable')) {
+            break;
+        }
+        offsetForFirstScrollableRow += parseInt($currentRow.css('height'), 10);
+    }
+
+    return offsetForFirstScrollableRow;
+}
+
+function setSameWidthForCellsInTheSameColumn() {
+    var $reportTables = $('table.mbh-report-table');
+    var $firstTableScrollableRows = $reportTables.first().find('tr.vertical-scrollable');
+    var numberOfFirstScrollable = $firstTableScrollableRows.first().index();
+    var numberOfHorizontalScrollableLines = $firstTableScrollableRows.length;
+
+    var widestCellWidths = {};
+    $reportTables.each(function (tableIndex, table) {
+        $(table).find('tr').each(function (rowIndex, row) {
+            if (rowIndex >= numberOfFirstScrollable && rowIndex <= numberOfHorizontalScrollableLines) {
+                if (!widestCellWidths[rowIndex]) {
+                    widestCellWidths[rowIndex] = {};
+                }
+
+                $(row).children().each(function (cellIndex, cell) {
+                    var cellWidth = parseInt(getComputedStyle(cell).width, 10);
+                    if (!widestCellWidths[rowIndex] || !widestCellWidths[rowIndex][cellIndex]) {
+                        widestCellWidths[rowIndex][cellIndex] = cellWidth;
+                    } else {
+                        if (widestCellWidths[rowIndex][cellIndex] > cellWidth) {
+                            widestCellWidths[rowIndex][cellIndex] = cellWidth;
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    $reportTables.each(function (tableIndex, table) {
+        var isCellForHeaderTable = tableIndex === 0;
+        $(table).find('tr').each(function (rowIndex, row) {
+            var isRowAfterLastScrollable = isCellForHeaderTable && rowIndex === (numberOfHorizontalScrollableLines + 1);
+            if (rowIndex >= numberOfFirstScrollable && (rowIndex <= numberOfHorizontalScrollableLines || isRowAfterLastScrollable)) {
+                $(row).children().each(function (cellIndex, cell) {
+                    var minWidth = isRowAfterLastScrollable
+                        ? widestCellWidths[rowIndex - 1][cellIndex] + 'px'
+                        : widestCellWidths[rowIndex][cellIndex] + 'px';
+                    cell.style.minWidth = minWidth;
+                    cell.style.maxWidth = minWidth;
+                    cell.style.width = minWidth;
+
+                    if (isCellForHeaderTable && !isRowAfterLastScrollable && getComputedStyle(cell).backgroundColor === "rgba(0, 0, 0, 0)") {
+                        cell.style.backgroundColor = 'white';
+                    }
+                });
+            }
+        });
+    });
 }
 
 function getTableOffset($table, wrapper) {

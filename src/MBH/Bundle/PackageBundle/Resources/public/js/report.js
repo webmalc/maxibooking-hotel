@@ -11,7 +11,8 @@ var REPORT_SETTINGS = {
                 date: $('#reservation-report-date').val(),
                 roomTypes: $('#reservation-report-filter-rooms').val()
             }
-        }
+        },
+        isScrollable: true
     }
 };
 
