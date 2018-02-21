@@ -36,6 +36,12 @@ var REPORT_SETTINGS = {
         getInterrelatedOptions: function (option) {
             var interrelatedOptions = ['number_of_packages', 'previous_number_of_packages'];
             return interrelatedOptions.indexOf(option) > -1 ? interrelatedOptions : [];
+        },
+        initFunc: function () {
+            var $reportDateInput = $('#reservation-report-date');
+            if (!$reportDateInput.val()) {
+                $reportDateInput.val(moment().format('DD.MM.YYYY'))
+            }
         }
     }
 };
@@ -138,11 +144,14 @@ $(document).ready(function () {
 
 function initMBHReport() {
     var $updateButton = $('.report-update-button');
-    setDefaultRangePickerDates();
-    if ($updateButton.length === 1) {
-        updateReportTable();
+    var reportSettings = getReportSettings();
+    if ($updateButton.length === 1 && reportSettings) {
+        if (reportSettings.initFunc) {
+            reportSettings.initFunc();
+        }
+        updateReportTable(reportSettings);
         $updateButton.click(function () {
-            updateReportTable();
+            updateReportTable(reportSettings);
         });
     }
 }
@@ -154,27 +163,9 @@ function getReportSettings() {
     return REPORT_SETTINGS[reportId];
 }
 
-function setDefaultRangePickerDates() {
-    var reportSettings = getReportSettings();
-    if (reportSettings) {
-        var $rangePickerInput = $('.daterangepicker-input');
-        var $beginInput = $('.begin-datepicker');
-        var $endInput = $('.end-datepicker');
-        if (!$beginInput.val() || !$endInput.val()) {
-            var beginDate = moment().subtract(20, 'days');
-            $rangePickerInput.data('daterangepicker').setStartDate(beginDate.toDate());
-            $beginInput.val(beginDate.format("DD.MM.YYYY"));
-            var endDate = moment();
-            $rangePickerInput.data('daterangepicker').setEndDate(endDate.toDate());
-            $endInput.val(endDate.format("DD.MM.YYYY"));
-        }
-    }
-}
-
-function updateReportTable() {
+function updateReportTable(reportSettings) {
     var $reportWrapper = $('.report-wrapper');
-    var reportSettings = getReportSettings();
-    
+
     $reportWrapper.html(mbh.loader.html);
     $.ajax({
         url: Routing.generate(reportSettings.routeName),
@@ -182,17 +173,16 @@ function updateReportTable() {
             $reportWrapper.html(response);
             if (reportSettings.isScrollable) {
                 setScrollable($reportWrapper.get(0));
-                initGraphDrawing();
+                initGraphDrawing(reportSettings);
             }
         },
         data: reportSettings.getDataFunction()
     });
 }
 
-function initGraphDrawing() {
-    var reportSettings = getReportSettings();
+function initGraphDrawing(reportSettings) {
     if (reportSettings.canDrawGraphs) {
-        $('td').dblclick(function () {
+        $('td.graph-drawable').dblclick(function () {
             var cell = this;
             var numberOfTable = $(cell).closest('table').attr('data-table-number');
             var graphData = [];

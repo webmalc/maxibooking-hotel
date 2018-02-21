@@ -6,7 +6,7 @@
 {% block content %}
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'reservation-report-filter'} %}
         {% block content %}
-            <form class="form-inline search-form filter-form remember" id="reservation-report-filter" role="form">
+            <form class="form-inline search-form filter-form remember mbh-start-date" id="reservation-report-filter" role="form">
                 <div class="input">
                     <i class="fa fa-calendar" title='{{ 'views.report.reservation_report.period.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
