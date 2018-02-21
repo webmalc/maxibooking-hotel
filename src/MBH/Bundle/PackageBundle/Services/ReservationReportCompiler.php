@@ -69,11 +69,17 @@ class ReservationReportCompiler
 
         $cellsCallbacks = [
             'classes' => function (ReportCell $cell) {
+                $classes = [];
+                if ($cell->getRowOption() !== self::DATE_OPTION) {
+                    $classes[] = 'graph-drawable';
+                }
                 if ($cell->getColumnOption() !== 'title') {
-                    return ['text-center'];
+                    $classes[] = 'text-center';
+                } else {
+                    $classes = array_merge(['wide-column', Report::HORIZONTAL_SCROLLABLE_CLASS], $classes);
                 }
 
-                return ['wide-column', Report::HORIZONTAL_SCROLLABLE_CLASS];
+                return $classes;
             },
         ];
 
@@ -91,17 +97,23 @@ class ReservationReportCompiler
                 ]
             );
         }
+        $this->report->setRowTitles($rowTitles);
+        $this->report->setCommonRowTitles([
+            self::NUMBER_OF_ORDERS_OPTION => $this->translator->trans('reservation_report.number_of_packages_common'),
+            self::PREVIOUS_NUMBER_OF_ORDERS_OPTION => $this->translator->trans('reservation_report.number_of_packages_common')
+        ]);
 
         $dataHandlers = ['title' => (new DefaultDataHandler())->setInitData($rowTitles)];
 
         foreach ($roomTypes as $tableNumber => $roomType) {
             $rowsCallbacks = [
                 'classes' => function (ReportRow $row) use ($tableNumber) {
+                    $classes = [];
                     if ($row->getRowOption() === self::DATE_OPTION && $tableNumber === 0) {
-                        return [Report::VERTICAL_SCROLLABLE_CLASS];
+                        $classes[] = Report::VERTICAL_SCROLLABLE_CLASS;
                     }
 
-                    return [];
+                    return $classes;
                 }
             ];
             $this->generateTableRows($roomType->getName(), $numberOfDays, $reportPeriod, $packagesData[$roomType->getId()], $dataHandlers, $cellsCallbacks, $rowsCallbacks);

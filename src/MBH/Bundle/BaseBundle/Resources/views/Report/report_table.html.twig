@@ -1,11 +1,18 @@
-{% if true %}
+{% if withJson is not defined %}
+    {% set withJson = false %}
+{% endif %}
+
+{% if withJson %}
     <script>
-        var jsonData = [];
+        var jsonData = {
+            tableData: [],
+            rowTitles: JSON.parse("{{ report.getRowTitlesAsJson()|raw }}"),
+            commonRowTitles: JSON.parse("{{ report.getCommonRowTitlesAsJson()|raw }}")
+        };
     </script>
     {% for table in report.tables %}
         <script>
-            jsonData.push(JSON.parse("{{ table.jsonEncodedData|raw }}"));
-
+            jsonData['tableData'].push(JSON.parse("{{ table.jsonEncodedData|raw }}"));
         </script>
     {% endfor %}
 {% endif %}
@@ -14,8 +21,14 @@
     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
 {% endfor %}
 {% if report.isSuccess %}
-    {% for table in report.tables %}
-        <table class="{{ table.classes|join(' ') }}" {{ table.getAttributesAsString()|raw }}>
+    {% if report.title %}
+        <h2 style="text-align: center; margin:55px 0 30px;font-family:Tahoma,Arial;font-size:26px;line-height:30px;color:#000;font-weight:normal;">
+            {{ report.title }}
+        </h2>
+    {% endif %}
+    {% for tableNumber, table in report.tables %}
+        <table class="{{ table.classes|join(' ') }}" {{ table.getAttributesAsString()|raw }}
+               data-table-number="{{ tableNumber }}">
             {% for row in table.rows %}
                 <tr class="{{ row.classes|join(' ') }}" {{ row.getAttributesAsString()|raw }}>
                     {% for cell in row.cells %}
