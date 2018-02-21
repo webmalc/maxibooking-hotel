@@ -115,16 +115,16 @@ class Builder implements ContainerAwareInterface
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
 
-        if ($openTaskCount > 0) {
-            $taskAttributes += [
-                'badge' => true,
-                'badge_class' => 'bg-red',
-                'badge_id' => 'task-counter',
-                'badge_value' => $openTaskCount
-            ];
-        }
+//        if ($openTaskCount > 0) {
+//            $taskAttributes += [
+//                'badge' => true,
+//                'badge_class' => 'bg-red',
+//                'badge_id' => 'task-counter',
+//                'badge_value' => $openTaskCount
+//            ];
+//        }
 
-        $menu->addChild('task', ['route' => 'task', 'label' => 'menu.label.task'])->setAttributes($taskAttributes);
+//        $menu->addChild('task', ['route' => 'task', 'label' => 'menu.label.task'])->setAttributes($taskAttributes);
 
         $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'menu.label.nomandprice.tariff'])
             ->setAttributes(['icon' => 'fa fa-sliders']);

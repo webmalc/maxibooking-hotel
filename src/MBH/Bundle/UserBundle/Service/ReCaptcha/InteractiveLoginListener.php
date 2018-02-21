@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\UserBundle\Service\ReCaptcha;
 
+use MBH\Bundle\BillingBundle\Lib\Model\ClientAuth;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use \ReCaptcha\ReCaptcha;
@@ -76,9 +77,18 @@ class InteractiveLoginListener
                     } catch (\Exception $exception) {
                         $this->handleIncorrectConfirmationRequest();
                     }
+                } else {
+                    $serverData = $event->getRequest()->server;
+                    $clientAuth = (new ClientAuth())
+                        ->setIp($serverData->get("REMOTE_ADDR"))
+                        ->setClient($this->kernel->getClient())
+                        ->setAuth_date(new \DateTime())
+                        ->setUser_agent($serverData->get("HTTP_USER_AGENT"))
+                    ;
+
+                    $this->billingApi->senClientAuthMessage($clientAuth);
                 }
             }
-
         }
     }
 

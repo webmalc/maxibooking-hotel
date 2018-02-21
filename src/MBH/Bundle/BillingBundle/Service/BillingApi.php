@@ -7,6 +7,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\ClientAuth;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\Company;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
@@ -371,6 +372,12 @@ class BillingApi
         $url = self::BILLING_HOST . '/' . $this->locale . '/clients/' . $client->getLogin() . '/confirm';
 
         return $this->sendPostAndHandleResult($url, []);
+    }
+
+    public function senClientAuthMessage(ClientAuth $clientAuth)
+    {
+        $url = $this->getBillingUrl('authentications');
+        $this->sendPostAndHandleResult($url, $this->serializer->normalize($clientAuth));
     }
 
     /**
