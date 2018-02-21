@@ -284,6 +284,8 @@ function getScrollableTableTemplate($table, tableOffset) {
     templateTable.style.top = tableOffset + 'px';
     templateTable.classList = $table.get(0).classList;
     templateTable.style.position = 'absolute';
+    templateTable.style.backgroundColor = 'white';
+    templateTable.style.zIndex = 200;
 
     return templateTable;
 }
