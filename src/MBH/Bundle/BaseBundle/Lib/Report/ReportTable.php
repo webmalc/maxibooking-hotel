@@ -64,7 +64,6 @@ class ReportTable
      * @param ReportDataHandler[] $dataHandlers
      * @param array $cellsCallbacks
      * @param array $rowsCallbacks
-     * @param bool $withJsonData
      * @return ReportTable
      * @throws \Exception
      */
@@ -73,10 +72,9 @@ class ReportTable
         array $columnOptions,
         array $dataHandlers,
         $cellsCallbacks = [],
-        $rowsCallbacks = [],
-        $withJsonData = true
+        $rowsCallbacks = []
     ) {
-        return $this->generateTable($rowOptions, $columnOptions, $dataHandlers, true, $cellsCallbacks, $rowsCallbacks, $withJsonData);
+        return $this->generateTable($rowOptions, $columnOptions, $dataHandlers, true, $cellsCallbacks, $rowsCallbacks);
     }
 
     /**
@@ -85,7 +83,6 @@ class ReportTable
      * @param array $dataHandlers
      * @param array $cellsCallbacks
      * @param array $rowsCallbacks
-     * @param bool $withJsonData
      * @return ReportTable
      */
     public function generateByRowHandlers(
@@ -93,10 +90,9 @@ class ReportTable
         array $columnOptions,
         array $dataHandlers,
         $cellsCallbacks = [],
-        $rowsCallbacks = [],
-        $withJsonData = true
+        $rowsCallbacks = []
     ) {
-        return $this->generateTable($rowOptions, $columnOptions, $dataHandlers, false, $cellsCallbacks, $rowsCallbacks, $withJsonData);
+        return $this->generateTable($rowOptions, $columnOptions, $dataHandlers, false, $cellsCallbacks, $rowsCallbacks);
     }
 
     /**
@@ -106,7 +102,6 @@ class ReportTable
      * @param bool $byColumns
      * @param array $cellsCallbacks
      * @param array $rowsCallbacks
-     * @param bool $withJsonData
      * @return $this
      * @throws \Exception
      */
@@ -116,8 +111,7 @@ class ReportTable
         array $dataHandlers,
         $byColumns,
         $cellsCallbacks,
-        $rowsCallbacks,
-        $withJsonData
+        $rowsCallbacks
     ) {
         foreach ($rowOptions as $rowOption) {
             $newRow = $this->fetchRow($rowOption)
@@ -133,9 +127,9 @@ class ReportTable
                 $valueCriteriaOption = $byColumns ? $rowOption : $columnOption;
                 $value = $dataHandlers[$handlerCriteriaOption]->getValueByOption($valueCriteriaOption);
 
-                if ($withJsonData) {
-                    $this->collectedData[$rowOption][$columnOption] = $value;
-                }
+                $byColumns
+                    ? $this->collectedData[$rowOption][$columnOption] = $value
+                    : $this->collectedData[$columnOption][$rowOption] = $value;
 
                 $newRow->createAndAddCell($value)
                     ->setCallbacks($cellsCallbacks)

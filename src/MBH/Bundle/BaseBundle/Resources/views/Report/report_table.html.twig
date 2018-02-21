@@ -4,12 +4,15 @@
 
 {% if withJson %}
     <script>
-        var jsonData = [];
+        var jsonData = {
+            tableData: [],
+            rowTitles: JSON.parse("{{ report.getRowTitlesAsJson()|raw }}"),
+            commonRowTitles: JSON.parse("{{ report.getCommonRowTitlesAsJson()|raw }}")
+        };
     </script>
     {% for table in report.tables %}
         <script>
-            jsonData.push(JSON.parse("{{ table.jsonEncodedData|raw }}"));
-
+            jsonData['tableData'].push(JSON.parse("{{ table.jsonEncodedData|raw }}"));
         </script>
     {% endfor %}
 {% endif %}
@@ -23,8 +26,9 @@
             {{ report.title }}
         </h2>
     {% endif %}
-    {% for table in report.tables %}
-        <table class="{{ table.classes|join(' ') }}" {{ table.getAttributesAsString()|raw }}>
+    {% for tableNumber, table in report.tables %}
+        <table class="{{ table.classes|join(' ') }}" {{ table.getAttributesAsString()|raw }}
+               data-table-number="{{ tableNumber }}">
             {% for row in table.rows %}
                 <tr class="{{ row.classes|join(' ') }}" {{ row.getAttributesAsString()|raw }}>
                     {% for cell in row.cells %}

@@ -91,6 +91,11 @@ class ReservationReportCompiler
                 ]
             );
         }
+        $this->report->setRowTitles($rowTitles);
+        $this->report->setCommonRowTitles([
+            self::NUMBER_OF_ORDERS_OPTION => $this->translator->trans('reservation_report.number_of_packages_common'),
+            self::PREVIOUS_NUMBER_OF_ORDERS_OPTION => $this->translator->trans('reservation_report.number_of_packages_common')
+        ]);
 
         $dataHandlers = ['title' => (new DefaultDataHandler())->setInitData($rowTitles)];
 

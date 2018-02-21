@@ -12,7 +12,31 @@ var REPORT_SETTINGS = {
                 roomTypes: $('#reservation-report-filter-rooms').val()
             }
         },
-        isScrollable: true
+        isScrollable: true,
+        canDrawGraphs: true,
+        byRows: true,
+        getXAxisData: function (tableData, option) {
+            var previousYearOptions = ['previous_number_of_packages'];
+            var isCurrentYearOption = previousYearOptions.indexOf(option) === -1;
+
+            var periodBegin = moment($('#reservation-report-filter-begin').val(), "DD.MM.YYYY");
+            var periodEnd = moment($('#reservation-report-filter-end').val(), "DD.MM.YYYY");
+            if (!isCurrentYearOption) {
+                periodBegin = periodBegin.subtract(1, "year");
+                periodEnd = periodEnd.subtract(1, "year");
+            }
+
+            var xAxisData = {};
+            for (var iteratedDate = periodBegin; iteratedDate.isSameOrBefore(periodEnd); iteratedDate.add(1, 'days')) {
+                xAxisData[iteratedDate.format("DD.MM")] = iteratedDate.valueOf();
+            }
+
+            return xAxisData;
+        },
+        getInterrelatedOptions: function (option) {
+            var interrelatedOptions = ['number_of_packages', 'previous_number_of_packages'];
+            return interrelatedOptions.indexOf(option) > -1 ? interrelatedOptions : [];
+        }
     }
 };
 
@@ -123,10 +147,15 @@ function initMBHReport() {
     }
 }
 
-function setDefaultRangePickerDates() {
+function getReportSettings() {
     var $reportWrapper = $('.report-wrapper');
     var reportId = $reportWrapper.attr('data-report-id');
-    var reportSettings = REPORT_SETTINGS[reportId];
+    
+    return REPORT_SETTINGS[reportId];
+}
+
+function setDefaultRangePickerDates() {
+    var reportSettings = getReportSettings();
     if (reportSettings) {
         var $rangePickerInput = $('.daterangepicker-input');
         var $beginInput = $('.begin-datepicker');
@@ -144,8 +173,8 @@ function setDefaultRangePickerDates() {
 
 function updateReportTable() {
     var $reportWrapper = $('.report-wrapper');
-    var reportId = $reportWrapper.attr('data-report-id');
-    var reportSettings = REPORT_SETTINGS[reportId];
+    var reportSettings = getReportSettings();
+    
     $reportWrapper.html(mbh.loader.html);
     $.ajax({
         url: Routing.generate(reportSettings.routeName),
@@ -153,8 +182,151 @@ function updateReportTable() {
             $reportWrapper.html(response);
             if (reportSettings.isScrollable) {
                 setScrollable($reportWrapper.get(0));
+                initGraphDrawing();
             }
         },
         data: reportSettings.getDataFunction()
     });
+}
+
+function initGraphDrawing() {
+    var reportSettings = getReportSettings();
+    if (reportSettings.canDrawGraphs) {
+        $('td').dblclick(function () {
+            var cell = this;
+            var numberOfTable = $(cell).closest('table').attr('data-table-number');
+            var graphData = [];
+            var graphName;
+
+            if (reportSettings.byRows) {
+                var rowOption = cell.parentNode.getAttribute('data-row-option');
+                var interrelatedOptions = reportSettings.getInterrelatedOptions(rowOption);
+                var tableData = jsonData['tableData'][numberOfTable];
+                if (tableData) {
+                    var xAxisData = reportSettings.getXAxisData(tableData, rowOption);
+                    var dataOptions;
+                    if (interrelatedOptions.length > 0) {
+                        dataOptions = interrelatedOptions;
+                        graphName = jsonData.commonRowTitles[rowOption];
+                    } else {
+                        dataOptions = [rowOption];
+                        graphName = jsonData.rowTitles[rowOption];
+                    }
+
+                    dataOptions.forEach(function (option) {
+                        var optionData = tableData[option];
+                        var graphOptionData = [];
+                        for (var xValue in xAxisData) {
+                            if (xAxisData.hasOwnProperty(xValue)) {
+                                graphOptionData.push([xAxisData[xValue], optionData[xValue]]);
+                            }
+                        }
+                        graphData.push({values: graphOptionData, name: jsonData.rowTitles[option]});
+                    });
+                }
+            } else {
+
+            }
+
+            if (graphData.length > 0) {
+                showGraph(graphData, graphName);
+            }
+        });
+    }
+}
+
+function showGraph(data, graphName) {
+    $('#graph-modal').modal('show');
+    var dates = [];
+
+    data.forEach(function (rowData, index) {
+        var values = rowData.values;
+        var series = {};
+
+        series.name = rowData.name;
+        series.data = values;
+        series.xAxis = index;
+        series.tickPosition = 'inside';
+        dates.push(series);
+    });
+
+
+    Highcharts.chart('graph-wrapper', {
+        global: {
+            useUTC: true
+        },
+        chart: {
+            type: 'areaspline',
+            alignTicks: false
+        },
+        title: {
+            text: graphName
+        },
+        xAxis: [{
+            type: 'datetime',
+            showLastLabel: true,
+            crosshair: true,
+            tickmarkPlacement: 'on',
+            labels: {
+                formatter: function () {
+                    return Highcharts.dateFormat('%b %d', this.value);
+                },
+                style: {
+                    color: 'rgb(124, 181, 236)'
+
+                }
+            },
+            plotBands: [{
+                color: 'rgba(68, 170, 213, .2)'
+            }]
+        }, {
+            type: 'datetime',
+            showLastLabel: true,
+            crosshair: true,
+            tickmarkPlacement: 'on',
+            labels: {
+                formatter: function () {
+                    return Highcharts.dateFormat('%b %d', this.value);
+                }
+            }
+        },
+            {
+                type: 'datetime',
+                showLastLabel: true,
+                crosshair: true,
+                labels: {
+                    formatter: function () {
+                        return Highcharts.dateFormat('%b %d', this.value);
+                    }
+                }
+            }
+        ],
+        yAxis: {
+            title: {
+                text: graphName
+            }
+        },
+        tooltip: {
+            shared: true,
+            headerFormat: '<b>{series.name}</b><br>',
+            pointFormat: '{point.x:%e. %b}: <b>{point.y:.0f} </b>'
+        },
+        plotOptions: {
+            areaspline: {
+                fillOpacity: 0.5
+            },
+            series: {
+                pointWidth: 15,
+                pointInterval: 21 * 3600 * 1000 // one day
+            },
+            spline: {
+                marker: {
+                    enabled: true
+                }
+            }
+        },
+        series: dates,
+        lang: mbh.highchartsOptions.lang
+    });
+    $('text:contains("Highcharts.com")').hide();
 }
