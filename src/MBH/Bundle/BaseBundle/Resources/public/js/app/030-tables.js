@@ -108,6 +108,7 @@ function setVerticalScrollable($scrollableElements, wrapper) {
     });
 
     $table.css('margin-top', scrollableLinesHeight);
+    $table.css('z-index', 200);
     wrapper.appendChild(vScrollableTable);
     wrapper.onscroll = function () {
         vScrollableTable.style.top = tableOffset + wrapper.scrollTop + 'px';
@@ -239,7 +240,7 @@ function setSameWidthForCellsInTheSameColumn() {
                     if (!widestCellWidths[rowIndex] || !widestCellWidths[rowIndex][cellIndex]) {
                         widestCellWidths[rowIndex][cellIndex] = cellWidth;
                     } else {
-                        if (widestCellWidths[rowIndex][cellIndex] > cellWidth) {
+                        if (widestCellWidths[rowIndex][cellIndex] < cellWidth) {
                             widestCellWidths[rowIndex][cellIndex] = cellWidth;
                         }
                     }
@@ -285,7 +286,6 @@ function getScrollableTableTemplate($table, tableOffset) {
     templateTable.classList = $table.get(0).classList;
     templateTable.style.position = 'absolute';
     templateTable.style.backgroundColor = 'white';
-    templateTable.style.zIndex = 500;
 
     return templateTable;
 }
