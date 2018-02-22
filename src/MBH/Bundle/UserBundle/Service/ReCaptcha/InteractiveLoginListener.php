@@ -65,7 +65,7 @@ class InteractiveLoginListener
                 throw new BadCredentialsException('Captcha is invalid');
             }
 
-            if ($this->kernel->getClient() !== \AppKernel::DEFAULT_CLIENT) {
+            if (!$this->kernel->isDefaultClient()) {
                 $client = $this->clientManager->getClient();
 
                 if ($client->getStatus() === 'not_confirmed') {

@@ -112,5 +112,11 @@ class AppKernel extends Kernel
         return $this->client;
     }
 
-
+    /**
+     * @return bool
+     */
+    public function isDefaultClient()
+    {
+        return $this->client === self::DEFAULT_CLIENT;
+    }
 }
