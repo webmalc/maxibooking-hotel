@@ -240,7 +240,7 @@ services:
 
     mbh.universal_command.logger_handler:
         class:     Monolog\Handler\StreamHandler
-        arguments: ["%kernel.logs_dir%/%kernel.environment%.mailer.log", 200]
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.universal.log", 200]
 
     mbh.universal_command.logger:
         class:     Symfony\Bridge\Monolog\Logger
