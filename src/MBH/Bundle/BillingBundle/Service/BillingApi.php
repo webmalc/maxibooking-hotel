@@ -374,10 +374,27 @@ class BillingApi
         return $this->sendPostAndHandleResult($url, []);
     }
 
-    public function senClientAuthMessage(ClientAuth $clientAuth)
+    /**
+     * @param $clientIp
+     * @param $userAgent
+     */
+    public function senClientAuthMessage($clientIp, $userAgent)
     {
+        $clientAuth = (new ClientAuth())
+            ->setIp($clientIp)
+            ->setClient('danya-test')
+            ->setAuth_date((new \DateTime())->format(self::BILLING_DATETIME_FORMAT))
+            ->setUser_agent($userAgent)
+        ;
+
         $url = $this->getBillingUrl('authentications');
-        $this->sendPostAndHandleResult($url, $this->serializer->normalize($clientAuth));
+        $data = $this->serializer->normalize($clientAuth);
+        try {
+            $response = $this->sendPost($url, $data, true);
+        } catch (RequestException $exception) {
+            $response = $exception->getResponse();
+            $this->handleErrorResponse($response, $requestResult, $url, $data);
+        }
     }
 
     /**
@@ -399,7 +416,7 @@ class BillingApi
             return $requestResult;
         }
 
-        $decodedResponse = json_decode((string)$response->getBody(), true);
+            $decodedResponse = json_decode((string)$response->getBody(), true);
         if ($decodedResponse['status'] !== true) {
             $requestResult->setIsSuccessful(false);
         }

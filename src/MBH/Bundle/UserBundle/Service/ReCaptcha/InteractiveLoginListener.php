@@ -16,7 +16,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class InteractiveLoginListener
 {
-    /** @var array  */
+    /** @var array */
     protected $params;
     /** @var  BillingApi */
     protected $billingApi;
@@ -24,7 +24,7 @@ class InteractiveLoginListener
     protected $session;
     protected $supportEmail;
     protected $translator;
-    /** @var \AppKernel  */
+    /** @var \AppKernel */
     protected $kernel;
 
     /**
@@ -79,14 +79,8 @@ class InteractiveLoginListener
                     }
                 } else {
                     $serverData = $event->getRequest()->server;
-                    $clientAuth = (new ClientAuth())
-                        ->setIp($serverData->get("REMOTE_ADDR"))
-                        ->setClient($this->kernel->getClient())
-                        ->setAuth_date(new \DateTime())
-                        ->setUser_agent($serverData->get("HTTP_USER_AGENT"))
-                    ;
 
-                    $this->billingApi->senClientAuthMessage($clientAuth);
+                    $this->billingApi->senClientAuthMessage($serverData->get("REMOTE_ADDR"), $serverData->get("HTTP_USER_AGENT"));
                 }
             }
         }
