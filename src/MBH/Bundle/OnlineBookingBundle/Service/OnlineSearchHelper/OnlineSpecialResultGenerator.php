@@ -5,9 +5,11 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Cursor;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\Special;
 
 class OnlineSpecialResultGenerator extends AbstractResultGenerator
@@ -16,8 +18,11 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 
     const SPECIAL_LIMIT = 0;
 
-    protected function createOnlineResultInstance($roomType, array $results, SearchQuery $searchQuery): OnlineResultInstance
-    {
+    protected function createOnlineResultInstance(
+        $roomType,
+        array $results,
+        SearchQuery $searchQuery
+    ): OnlineResultInstance {
         $instance = parent::createOnlineResultInstance($roomType, $results, $searchQuery);
         $instance->setSpecial($searchQuery->getSpecial());
 
@@ -42,6 +47,10 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
             $searchQuery->end = $special->getEnd();
             $searchQuery->forceRoomTypes = true;
             $searchQuery->setPreferredVirtualRoom($special->getVirtualRoom());
+            if ($formData->isForceCapacityRestriction() && $searchQuery->getPreferredVirtualRoom()) {
+                $this->forceCapacityRestriction($searchQuery, $searchQuery->getPreferredVirtualRoom());
+            }
+
             $searchResult = $this->search($searchQuery);
 
             if ($searchResult && !$this->isVirtualRoomIsNull(reset($searchResult))) {
@@ -67,7 +76,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
                         $count++;
                     }
 
-                    $specialLimit = $this->options['show_special_restrict']??self::SPECIAL_LIMIT;
+                    $specialLimit = $this->options['show_special_restrict'] ?? self::SPECIAL_LIMIT;
 
                     if ($specialLimit && $count >= $specialLimit) {
                         break;
@@ -82,7 +91,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 
     private function isVirtualRoomIsNull(SearchResult $searchResult)
     {
-        return $searchResult->getVirtualRoom() === null ? true: false;
+        return $searchResult->getVirtualRoom() === null ? true : false;
     }
 
     private function filterSpecials(array $specials)
@@ -109,6 +118,44 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
         }
 
         return $specials;
+    }
+
+    private function forceCapacityRestriction(SearchQuery $query, Room $room)
+    {
+        $repository = $this->container->get('doctrine_mongodb.odm.default_document_manager')->getRepository(
+            'MBHPriceBundle:Restriction'
+        );
+        $special = $query->getSpecial();
+        if (count($special->getTariffs())) {
+            $tariff = $special->getTariffs()->first();
+        }
+        $roomTypeId = $room->getRoomType()->getId();
+        $restrictions = $repository->fetch(
+            $query->begin,
+            $query->end,
+            $room->getHotel(),
+            (array)$roomTypeId,
+            [],
+            true
+        );
+        if (count($restrictions) && isset($tariff)) {
+            $restrictionsArray = $restrictions[$roomTypeId][$tariff->getId()] ?? null;
+        }
+
+        if (isset($restrictionsArray) && is_array($restrictionsArray) && count($restrictionsArray)) {
+            $guests = array_map(
+                function (Restriction $restriction) {
+                    return (int)$restriction->getMinGuest();
+                }, $restrictionsArray
+
+            );
+            $minGuests = min($guests);
+            if ($minGuests) {
+                $query->adults = $minGuests;
+            }
+        }
+
+
     }
 
 }

@@ -56,6 +56,13 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         return $results;
     }
 
+
+    /**
+     * @param $searchResult
+     * @param SearchQuery $searchQuery
+     * @return OnlineResultInstance
+     * @throws OnlineBookingSearchException
+     */
     protected function resultOnlineInstanceCreator($searchResult, SearchQuery $searchQuery): OnlineResultInstance
     {
         if ($searchResult instanceof SearchResult) {

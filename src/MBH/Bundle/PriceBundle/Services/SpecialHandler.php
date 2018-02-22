@@ -121,6 +121,7 @@ class SpecialHandler
         );
         //Здесь используется уже готовый код для поиска в онлайн
         $searchForm = $this->getFormData($special);
+        $searchForm->setForceCapacityRestriction(true);
         $searchResults = $this->specialSearchHelper->getResults($searchForm);
         $error = '';
 
