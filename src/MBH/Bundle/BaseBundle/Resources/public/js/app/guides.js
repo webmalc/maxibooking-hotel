@@ -212,13 +212,26 @@ function runGuide(guideName) {
         });
 
         var steps = guideData.steps;
-        steps['onBeforeStart'] = function () {
+        if (steps[0].selector && steps[0].selector.indexOf('#main-menu') === 0 && $(steps[0].selector).hasClass('active')) {
+            steps.splice(0, 1);
+        }
+
+        steps.forEach(function (stepData) {
+            stepData['nextButton'] = {text: Translator.trans('guides.next_button.title')};
+            stepData['skipButton'] = {text: Translator.trans('guides.skip_button.title')};
+        });
+
+        steps[0]['onBeforeStart'] = function () {
+            if (localStorage.getItem('sidebar-collapse') === 'close') {
+                $('.sidebar-toggle').trigger('click');
+            }
             setTimeout(function () {
                 $('.enjoyhint_close_btn').css('top', 55);
             }, 500);
         };
 
-        enjoyhint_instance.set(guideData.steps);
+
+        enjoyhint_instance.set(steps);
         enjoyhint_instance.run();
     } else {
         clearGuidesLSData();
