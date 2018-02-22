@@ -57,7 +57,8 @@
 
         {% block scripts %}
             {#Client config set Date#}
-            {% set datePickerBeginDate = client_config().getActualBeginDate()|date('d.m.Y')  %}
+            {% set datePickerBeginDate = client_config().getActualBeginDate()  %}
+            {% set searchBeginDate = client_config().getSearchInputBeginDate() %}
             <script>
                 var mbh = {
                     currency: {
@@ -67,6 +68,7 @@
                     },
                     justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }}, 
                     startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
+                    searchBeginDate: '{{ searchBeginDate|date('d.m.Y') }}',
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
                     utils: {},
                     canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
