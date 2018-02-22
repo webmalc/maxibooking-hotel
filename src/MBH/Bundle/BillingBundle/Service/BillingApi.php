@@ -382,7 +382,7 @@ class BillingApi
     {
         $clientAuth = (new ClientAuth())
             ->setIp($clientIp)
-            ->setClient('danya-test')
+            ->setClient($this->billingLogin)
             ->setAuth_date((new \DateTime())->format(self::BILLING_DATETIME_FORMAT))
             ->setUser_agent($userAgent)
         ;

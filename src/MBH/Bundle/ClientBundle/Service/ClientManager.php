@@ -10,6 +10,7 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class ClientManager
 {
@@ -26,13 +27,16 @@ class ClientManager
     private $session;
     private $billingApi;
     private $logger;
+    /** @var \AppKernel  */
+    private $kernel;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, KernelInterface $kernel)
     {
         $this->dm = $dm;
         $this->session = $session;
         $this->billingApi = $billingApi;
         $this->logger = $logger;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -50,6 +54,10 @@ class ClientManager
 
     public function isLimitOfRoomCachesExceeded(array $modifiedRoomCaches)
     {
+        if ($this->kernel->isDefaultClient()) {
+            return false;
+        }
+
         $roomCacheRepository = $this->dm->getRepository('MBHPriceBundle:RoomCache');
 
         $date = reset($modifiedRoomCaches)->getDate();

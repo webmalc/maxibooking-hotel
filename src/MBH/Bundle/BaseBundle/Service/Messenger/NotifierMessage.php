@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
-use MBH\Bundle\BaseBundle\Lib\ChoicerInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -103,7 +102,27 @@ class NotifierMessage
 
     /** @var string */
     private $messageType = null;
+    /** @var  string */
+    private $messageIdentifier;
 
+    /**
+     * @return string
+     */
+    public function getMessageIdentifier(): ?string
+    {
+        return $this->messageIdentifier;
+    }
+
+    /**
+     * @param string $messageIdentifier
+     * @return NotifierMessage
+     */
+    public function setMessageIdentifier(string $messageIdentifier): NotifierMessage
+    {
+        $this->messageIdentifier = $messageIdentifier;
+
+        return $this;
+    }
 
     /**
      * @return string
