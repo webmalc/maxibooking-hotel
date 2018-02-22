@@ -28,9 +28,14 @@ class OnRequest
         if ($this->container->get('kernel')->getClient() !== \AppKernel::DEFAULT_CLIENT) {
             $client = $clientManager->getClient();
             if (!$client->getTrial_activated() && $this->isRequestedByMBUser()) {
-                $url = $clientManager->isRussianClient() ? ClientManager::INSTALLATION_PAGE_RU : ClientManager::INSTALLATION_PAGE_COM;
-                $response = new RedirectResponse($url);
-                $event->setResponse($response);
+                $client = $this->container->get('mbh.billing.api')->getClient();
+                if (!$client->getTrial_activated()) {
+                    $url = $clientManager->isRussianClient() ? ClientManager::INSTALLATION_PAGE_RU : ClientManager::INSTALLATION_PAGE_COM;
+                    $response = new RedirectResponse($url);
+                    $event->setResponse($response);
+                } else {
+                    $this->container->get('mbh.client_manager')->updateSessionClientData($client, new \DateTime());
+                }
             }
             if (!$clientManager->isClientActive()
                 && $session->get(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR) !== true
