@@ -5,6 +5,7 @@ namespace MBH\Bundle\BaseBundle\Service\Messenger;
 use FOS\UserBundle\Mailer\MailerInterface;
 use FOS\UserBundle\Model\UserInterface;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Document\NotifierErrorCounter;
 use MBH\Bundle\BaseBundle\Lib\MailerNotificationException;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
@@ -140,7 +141,6 @@ class Mailer implements \SplObserver, MailerInterface
     {
         if (empty($recipients)) {
             $recipients = $this->getSystemRecipients(
-                $data['category'] ?? null,
                 $data['hotel'] ?? null,
                 $data['messageType'] ?? null
             );
@@ -225,13 +225,12 @@ class Mailer implements \SplObserver, MailerInterface
     }
 
     /**
-     * @param null $category
      * @param Hotel|null $hotel
      * @param string|null $messageType
      * @return mixed
      * @throws MailerNotificationException
      */
-    public function getSystemRecipients($category = null, Hotel $hotel = null, string $messageType = null)
+    public function getSystemRecipients(Hotel $hotel = null, string $messageType = null)
     {
 
         if (!$messageType) {
@@ -388,14 +387,14 @@ class Mailer implements \SplObserver, MailerInterface
                 ->findOneBy(['notificationId' => $message->getMessageIdentifier()]);
             if (is_null($notifierErrorCounter)) {
                 $notifierErrorCounter = (new NotifierErrorCounter())->setNotificationId($message->getMessageIdentifier());
-                $this->dm->persist($notifierErrorCounter);
+                $this->dm->getManager()->persist($notifierErrorCounter);
             }
 
             $notifierErrorCounter->increaseErrorCounter();
-            if ($notifierErrorCounter->getErrorCounter() >= NotifierErrorCounter::NUMBER_OF_IGNORED_NOTIFICATIONS) {
-                $notifierErrorCounter->setErrorCounter(0);
+            if ($notifierErrorCounter->getErrorCounter() > $this->container->getParameter('number_of_skipped_error_mails')) {
+                $notifierErrorCounter->setErrorCounter(1);
             }
-            $this->dm->flush();
+            $this->dm->getManager()->flush();
 
             return $notifierErrorCounter->getErrorCounter() > 1;
         }

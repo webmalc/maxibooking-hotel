@@ -81,3 +81,4 @@ parameters:
   memcache_host: '127.0.0.1'
 
   domain: 'maxi-booking.ru'
+  number_of_skipped_error_mails: 20

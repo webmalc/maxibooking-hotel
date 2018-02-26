@@ -24,7 +24,8 @@ class UserRepository extends DocumentRepository
         $qb = $this->createQueryBuilder();
         $qb
             ->field('enabled')->equals(true)
-            ->field('locked')->equals(false);
+            ->addOr($qb->expr()->field('locked')->equals(false))
+            ->addOr($qb->expr()->field('locked')->exists(false));
         /** If notificationType is not exists, return all recipients */
         if ($notificationType instanceof NotificationType) {
             $qb->field('allowNotificationTypes')->includesReferenceTo($notificationType);

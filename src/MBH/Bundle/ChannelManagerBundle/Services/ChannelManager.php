@@ -347,17 +347,20 @@ class ChannelManager
             if ($serviceTitle && $service['key'] != $serviceTitle) {
                 continue;
             }
+            $notificationErrorId = $service['key'] . '_pull_orders_error';
             try {
                 $this->logger->info('Start pullOrders for '.$service['title']);
                 $noError = $result[$service['key']]['result'] = $service['service']->pullOrders($pullOldStatus);
                 if (!$noError) {
                     $this->logger->error($serviceTitle.' error when pull orders');
-                    $this->sendMessage($service, $service['service']->getErrors());
+                    $this->sendMessage($service, $service['service']->getErrors(), $notificationErrorId);
+                } else {
+                    $this->dm->getRepository('MBHBaseBundle:NotifierErrorCounter')->removeErrorCounterIfExists($notificationErrorId);
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
-                $this->sendMessage($service, [(string)$e]);
+                $this->sendMessage($service, [(string)$e], $notificationErrorId);
                 $this->logger->error(get_called_class().': '.(string)$e);
             }
         }
@@ -366,10 +369,11 @@ class ChannelManager
     }
 
     /**
-     * @param string $service
+     * @param array $service
      * @param array $errors
+     * @param null|string $notificationErrorId
      */
-    private function sendMessage($service, array $errors = [])
+    private function sendMessage($service, array $errors = [], string $notificationErrorId = null)
     {
         $notifier = $this->container->get('mbh.notifier');
         $message = $notifier::createMessage();
@@ -390,6 +394,10 @@ class ChannelManager
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'))
             ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE);
+        if (!is_null($notificationErrorId)) {
+            $message->setMessageIdentifier($notificationErrorId);
+        }
+
         $notifier
             ->setMessage($message)
             ->notify();
