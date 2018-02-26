@@ -1,14 +1,15 @@
 var LS_CURRENT_GUIDE_WITH_STAGE = 'current-guide-stage';
 
 var GUIDES_BY_PATH = {
-    any: ['first-guide-1', 'start-guide-1', 'start1-guide-1'],
+    any: ['first-guide-1', 'start-guide-1', 'start1-guide-1', 'search-guide-1'],
     "/warehouse/record": ['first-guide-2'],
     '/package': ['first-guide-1'],
     '/warehouse/record/new': ['first-guide-3'],
     '/price/room_cache': ['start-guide-2'],
     '/price/price_cache': ['start1-guide-1'],
     '/price/room_cache/generator': ['start-guide-3'],
-    '/price/price_cache/generator': ['start1-guide-3']
+    '/price/price_cache/generator': ['start1-guide-3'],
+    '/package/search': ['search-guide-2']
 };
 
 var EXCLUDED_PATHS_BEGINS = ['/user'];
@@ -183,6 +184,81 @@ var GUIDES = {
                 description: 'Нажмите кнопку'
             }
         ]
+    },
+    'tariff-guide-1': {
+        steps: [
+            {
+
+            }
+        ]
+
+    },
+    'search-guide-1': {
+        steps: [
+            {
+                selector: '#main-menu li[icon="fa fa-search"]',
+                event: 'click',
+                description: 'Забронировать номер для клиента можно здесь'
+            }
+        ],
+        next: 'search-guide-2'
+    },
+    'search-guide-2': {
+        steps: [
+            {
+                selector: '#package-search-form .input:eq(0) input.daterangepicker-input',
+                event_type: 'next',
+                description: 'Укажите даты брони'
+            },
+            {
+                selector: '#s_adults',
+                event_type: 'next',
+                description: 'Укажите количество взрослых'
+            },
+            {
+                selector: '#s_children',
+                event_type: 'next',
+                description: 'и детей'
+            },
+            {
+                selector: '#package-search-form .input:eq(5) span.select2-container',
+                event_type: 'next',
+                description: 'Здесь можно выбрать тип номера'
+            }
+        ],
+        next: 'search-guide-3',
+        onEnd: function () {
+            if ($('.package-search-book').length > 0) {
+                runGuide('search-guide-3-v1')
+            } else {
+                runGuide('search-guide-3-v2')
+            }
+        }
+    },
+    'search-guide-3-v1': {
+        steps: [
+            {
+                selector: '.package-search-book',
+                event: 'click',
+                description: 'Нажмите, чтобы забронировать'
+            }
+        ],
+        next: ''
+    },
+    'search-guide-3-v2': {
+        steps: [
+            {
+                selector: '.package-search-book',
+                event_type: 'next',
+                //TODO: Тут текст нужен
+                description: 'Не найдены варианты бронирования.'
+            }
+        ]
+    },
+    'package-details': {
+        steps: [
+
+        ]
     }
 };
 
@@ -204,6 +280,9 @@ function runGuide(guideName) {
                 clearGuidesLSData();
                 if (guideData.next) {
                     writeGuidesLSData(guideData.next);
+                }
+                if (guideData.onEnd) {
+                    guideData.onEnd();
                 }
             }, onStart: function () {
                 writeGuidesLSData(guideName);
