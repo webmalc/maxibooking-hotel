@@ -1,264 +1,256 @@
+/*global window, $, document, Translator, searchProcess */
+
 var LS_CURRENT_GUIDE_WITH_STAGE = 'current-guide-stage';
 
 var GUIDES_BY_PATH = {
-    any: ['first-guide-1', 'start-guide-1', 'start1-guide-1', 'search-guide-1'],
+    any: ['first-guide-1', 'room-cache-1', 'price-cache-1', 'search-guide-1'],
     "/warehouse/record": ['first-guide-2'],
     '/package': ['first-guide-1'],
     '/warehouse/record/new': ['first-guide-3'],
-    '/price/room_cache': ['start-guide-2'],
-    '/price/price_cache': ['start1-guide-1'],
-    '/price/room_cache/generator': ['start-guide-3'],
-    '/price/price_cache/generator': ['start1-guide-3'],
-    '/package/search': ['search-guide-2']
+    '/price/room_cache': ['room-cache-2'],
+    '/price/price_cache': ['price-cache-2'],
+    '/price/room_cache/generator': ['room-cache-3'],
+    '/price/price_cache/generator': ['price-cache-3'],
+    '/package/search': ['search-guide-2', 'search-guide-3-v1', 'search-guide-3-v2']
 };
 
+var INCLUDED_PATHS_BEGINS = ['/package/order'];
 var EXCLUDED_PATHS_BEGINS = ['/user'];
 
 var GUIDES = {
-    'first-guide-1': {
-        steps: [
-            {
-                selector: '#main-menu li[icon="fa fa-usd"]',
-                event: 'click',
-                description: 'Click on this btn'
-            },
-            {
-                timeout: 500,
-                selector: '#main-menu li[icon="fa fa-book"]',
-                event: 'click',
-                description: 'Click on this btn'
-            }
-        ],
-        next: 'first-guide-2'
+    'room-cache-1': {
+        getSteps: function () {
+            return [
+                {
+                    selector: '#main-menu li.dropdown:eq(1)',
+                    event: 'click',
+                    description: 'Для начала нажмите сюда'
+                },
+                {
+                    timeout: 500,
+                    selector: '#main-menu li.dropdown:eq(1) li:eq(2)',
+                    event: 'click',
+                    description: 'Далее сюда'
+                }
+            ]
+        },
+        next: 'room-cache-2'
     },
-    'first-guide-2': {
-        steps: [
-            {
-                timeout: 500,
-                selector: '#actions button',
-                event: 'click',
-                description: 'Click on this btn'
-            }
-        ],
-        next: 'first-guide-3'
+    'room-cache-2': {
+        getSteps: function () {
+            return [
+                {
+                    selector: '#actions li:nth-child(2) button',
+                    event: 'click',
+                    description: 'Для генерации номеров в продаже нажмите сюда'
+                }
+            ]
+        },
+        next: 'room-cache-3'
     },
-    'first-guide-3': {
-        steps: [
-            {
-                'next #mbh_bundle_warehousebundle_recordtype_qtty': 'Заполните поле'
-            },
-            {
-                'next #mbh_bundle_warehousebundle_recordtype_price': 'Заполните поле'
-            },
-            {
-                selector: '#mbh_bundle_warehousebundle_recordtype .form-group:nth-child(3) span.select2',
-                event_type: 'next',
-                description: 'Поле с селектом'
-            },
-            {
-                'next #mbh_bundle_warehousebundle_recordtype_operation': 'Поле toggle'
-            },
-            {
-                'next #mbh_bundle_warehousebundle_recordtype_recordDate': 'Поле с датой'
-            },
-            {
-                selector: '#mbh_bundle_warehousebundle_recordtype .form-group:nth-child(8) .bootstrap-touchspin',
-                event: 'next',
-                description: 'Полное поле, с тачспином по бокам'
-            },
-            {
-                selector: '#actions button[name="save_close"]',
-                event_type: 'click',
-                description: 'Кнопка'
-            }
-        ]
+    'room-cache-3': {
+        getSteps: function () {
+            return [
+                {
+                    'next #mbh_bundle_pricebundle_room_cache_generator_type_begin': 'Укажите начало периода'
+                },
+                {
+                    'next #mbh_bundle_pricebundle_room_cache_generator_type_end': 'Укажите конец периода'
+                },
+                {
+                    selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(3) span.select2',
+                    event_type: 'next',
+                    description: 'Можно указать определенные дни недели'
+                },
+                {
+                    selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(4) span.select2',
+                    event_type: 'next',
+                    description: 'Укажите типы номеров'
+                },
+                {
+                    selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(7) .bootstrap-touchspin',
+                    event_type: 'next',
+                    description: 'Укажите количество номеров'
+                },
+                {
+                    selector: '#actions li:first-child button',
+                    event: 'click',
+                    description: 'Нажмите кнопку'
+                }
+            ]
+        }
     },
-    'start-guide-1': {
-        steps: [
-            {
-                selector: '#main-menu li[icon="fa fa-usd"]',
-                event: 'click',
-                description: 'Здравствуйте. Для начала нажмите сюда'
-            },
-            {
-                timeout: 500,
-                selector: '#main-menu li[icon="fa fa-bed"]:not(.first)',
-                event: 'click',
-                description: 'Далее сюда'
-            }
-        ],
-        next: 'start-guide-2'
+    'price-cache-1': {
+        getSteps: function () {
+            return [
+                {
+                    selector: '#main-menu li.dropdown:eq(1)',
+                    event: 'click',
+                    description: 'Для начала нажмите сюда'
+                },
+                {
+                    timeout: 500,
+                    selector: '#main-menu li.dropdown:eq(1) li:eq(3)',
+                    event: 'click',
+                    description: 'Далее сюда'
+                }
+            ]
+        },
+        next: 'price-cache-2'
     },
-    'start-guide-2': {
-        steps: [
-            {
-                selector: '#actions li:nth-child(2) button',
-                event: 'click',
-                description: 'Для генерации номеров в продаже нажмите сюда'
-            }
-        ],
-        next: 'start-guide-3'
+    'price-cache-2': {
+        getSteps: function () {
+            return [
+                {
+                    selector: '#actions li:nth-child(2) button',
+                    event: 'click',
+                    description: 'Для генерации цен нажмите сюда'
+                }
+            ]
+        },
+        next: 'price-cache-3'
     },
-    'start-guide-3': {
-        steps: [
-            {
-                'next #mbh_bundle_pricebundle_room_cache_generator_type_begin' : 'Укажите начало периода'
-            },
-            {
-                'next #mbh_bundle_pricebundle_room_cache_generator_type_end' : 'Укажите конец периода'
-            },
-            {
-                selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(3) span.select2',
-                event_type: 'next',
-                description: 'Можно указать определенные дни недели'
-            },
-            {
-                selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(4) span.select2',
-                event_type: 'next',
-                description: 'Укажите типы номеров'
-            },
-            {
-                selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(7) .bootstrap-touchspin',
-                event_type: 'next',
-                description: 'Укажите количество номеров'
-            },
-            {
-                selector: '#actions li:first-child button',
-                event: 'click',
-                description: 'Нажмите кнопку'
-            }
-        ]
-    },
-    'start1-guide-1': {
-        steps: [
-            {
-                selector: '#main-menu li[icon="fa fa-usd"]',
-                event: 'click',
-                description: 'Здравствуйте. Для начала нажмите сюда'
-            },
-            {
-                timeout: 500,
-                selector: '#main-menu ul.menu-open li[icon="fa fa-usd"]',
-                event: 'click',
-                description: 'Далее сюда'
-            }
-        ],
-        next: 'start1-guide-2'
-    },
-    'start1-guide-2': {
-        steps: [
-            {
-                selector: '#actions li:nth-child(2) button',
-                event: 'click',
-                description: 'Для генерации цен нажмите сюда'
-            }
-        ],
-        next: 'start1-guide-3'
-    },
-    'start1-guide-3': {
-        steps: [
-            {
-                'next #mbh_price_bundle_price_cache_generator_begin' : 'Укажите начало периода'
-            },
-            {
-                'next #mbh_price_bundle_price_cache_generator_end' : 'Укажите конец периода'
-            },
-            {
-                selector: '#mbh_price_bundle_price_cache_generator .form-group:nth-child(4) span.select2',
-                event_type: 'next',
-                description: 'Укажите типы номеров'
-            },
-            {
-                selector: '#mbh_price_bundle_price_cache_generator .form-group:nth-child(5) span.select2',
-                event_type: 'next',
-                description: 'Укажите тарифы'
-            },
-            {
-                selector: '#mbh_price_bundle_price_cache_generator .form-group:nth-child(1) .bootstrap-touchspin',
-                event_type: 'next',
-                description: 'Укажите цену'
-            },
-            {
-                selector: '#actions li:first-child button',
-                event: 'click',
-                description: 'Нажмите кнопку'
-            }
-        ]
-    },
-    'tariff-guide-1': {
-        steps: [
-            {
-
-            }
-        ]
-
+    'price-cache-3': {
+        getSteps: function () {
+            return [
+                {
+                    'next #mbh_price_bundle_price_cache_generator_begin': 'Укажите начало периода'
+                },
+                {
+                    'next #mbh_price_bundle_price_cache_generator_end': 'Укажите конец периода'
+                },
+                {
+                    selector: '#mbh_price_bundle_price_cache_generator .form-group:nth-child(4) span.select2',
+                    event_type: 'next',
+                    description: 'Укажите типы номеров'
+                },
+                {
+                    selector: '#mbh_price_bundle_price_cache_generator .form-group:nth-child(5) span.select2',
+                    event_type: 'next',
+                    description: 'Укажите тарифы'
+                },
+                {
+                    selector: '#mbh_price_bundle_price_cache_generator .form-group:nth-child(1) .bootstrap-touchspin',
+                    event_type: 'next',
+                    description: 'Укажите цену'
+                },
+                {
+                    selector: '#actions li:first-child button',
+                    event: 'click',
+                    description: 'Нажмите кнопку'
+                }
+            ]
+        }
     },
     'search-guide-1': {
-        steps: [
-            {
-                selector: '#main-menu li[icon="fa fa-search"]',
-                event: 'click',
-                description: 'Забронировать номер для клиента можно здесь'
-            }
-        ],
+        getSteps: function () {
+            return [
+                {
+                    selector: '#main-menu li[icon="fa fa-search"]',
+                    event: 'click',
+                    description: 'Забронировать номер для клиента можно здесь'
+                }
+            ]
+        },
         next: 'search-guide-2'
     },
     'search-guide-2': {
-        steps: [
-            {
-                selector: '#package-search-form .input:eq(0) input.daterangepicker-input',
-                event_type: 'next',
-                description: 'Укажите даты брони'
-            },
-            {
-                selector: '#s_adults',
-                event_type: 'next',
-                description: 'Укажите количество взрослых'
-            },
-            {
-                selector: '#s_children',
-                event_type: 'next',
-                description: 'и детей'
-            },
-            {
-                selector: '#package-search-form .input:eq(5) span.select2-container',
-                event_type: 'next',
-                description: 'Здесь можно выбрать тип номера'
+        getSteps: function () {
+            var steps = [
+                {
+                    selector: '#package-search-form .input:eq(0) input.daterangepicker-input',
+                    event_type: 'next',
+                    description: 'Укажите даты брони'
+                },
+                {
+                    selector: '#s_adults',
+                    event_type: 'next',
+                    description: 'Укажите количество взрослых'
+                },
+                {
+                    selector: '#s_children',
+                    event_type: 'next',
+                    description: 'и детей'
+                },
+                {
+                    selector: '#package-search-form .input:eq(5) span.select2-container',
+                    event_type: 'next',
+                    description: 'Здесь можно выбрать тип номера'
+                }
+            ];
+
+            if ($('#search-submit-button').length) {
+                steps.push({
+                    selector: '#search-submit-button',
+                    event: 'click',
+                    description: 'Нажмите для поиска вариантов бронирования'
+                });
             }
-        ],
-        next: 'search-guide-3',
+
+            return steps;
+        },
         onEnd: function () {
-            if ($('.package-search-book').length > 0) {
-                runGuide('search-guide-3-v1')
-            } else {
-                runGuide('search-guide-3-v2')
-            }
+            var checkForCompletenessAndRunGuide = function () {
+                setTimeout(function () {
+                    console.log(searchProcess);
+                    if (searchProcess) {
+                        checkForCompletenessAndRunGuide()
+                    } else {
+                        if ($('.package-search-book').length > 0) {
+                            runGuide('search-guide-3-v1')
+                        } else {
+                            runGuide('search-guide-3-v2')
+                        }
+                    }
+                }, 650);
+            };
+            checkForCompletenessAndRunGuide();
         }
     },
     'search-guide-3-v1': {
-        steps: [
-            {
-                selector: '.package-search-book',
-                event: 'click',
-                description: 'Нажмите, чтобы забронировать'
-            }
-        ],
-        next: ''
+        getSteps: function () {
+            return [
+                {
+                    selector: '.package-search-book',
+                    event: 'click',
+                    description: 'Нажмите, чтобы забронировать'
+                }
+            ]
+        },
+        next: 'package-payer'
     },
     'search-guide-3-v2': {
-        steps: [
-            {
-                selector: '.package-search-book',
-                event_type: 'next',
-                //TODO: Тут текст нужен
-                description: 'Не найдены варианты бронирования.'
-            }
-        ]
+        getSteps: function () {
+            return [
+                {
+                    selector: '#package-search-results-wrapper .alert-warning',
+                    event_type: 'next',
+                    //TODO: Тут текст нужен
+                    description: 'Не найдены варианты бронирования.'
+                }
+            ]
+        }
     },
-    'package-details': {
-        steps: [
-
-        ]
+    'package-payer': {
+        getSteps: function () {
+            return [
+                {
+                    selector: '#mbh_bundle_packagebundle_package_order_tourist_type_lastName',
+                    event_type: 'next',
+                    description: 'Укажите фамилию плательщика'
+                },
+                {
+                    selector: '#mbh_bundle_packagebundle_package_order_tourist_type_firstName',
+                    event_type: 'next',
+                    description: 'Укажите имя плательщика'
+                },
+                {
+                    selector: '#actions button[name="save_close"]',
+                    event: 'click',
+                    description: 'Сохраните'
+                }
+            ]
+        }
     }
 };
 
@@ -272,8 +264,13 @@ function runGuide(guideName) {
     if ((currentPath.length - 1) === currentPath.lastIndexOf('/')) {
         currentPath = currentPath.substring(0, currentPath.length - 1)
     }
-
-    if (guideName && (GUIDES_BY_PATH[currentPath] || GUIDES_BY_PATH.any.indexOf(guideName) > -1) && !isPathExcluded(currentPath)) {
+console.log(GUIDES_BY_PATH[currentPath]);
+    console.log(guideName);
+    if (guideName &&
+        ((GUIDES_BY_PATH[currentPath] && GUIDES_BY_PATH[currentPath].indexOf(guideName) > -1) || GUIDES_BY_PATH.any.indexOf(guideName) > -1 || isPathBeginsFromIncluded(currentPath))
+        && !isPathExcluded(currentPath)
+    ) {
+        console.log(GUIDES_BY_PATH[currentPath]);
         var guideData = GUIDES[guideName];
         var enjoyhint_instance = new EnjoyHint({
             onEnd: function () {
@@ -289,9 +286,12 @@ function runGuide(guideName) {
                 $('.enjoyhint_close_btn,.enjoyhint_skip_btn').click(clearGuidesLSData);
             }
         });
-
-        var steps = guideData.steps;
-        if (steps[0].selector && steps[0].selector.indexOf('#main-menu') === 0 && $(steps[0].selector).hasClass('active')) {
+        console.log(guideName);
+        var steps = guideData.getSteps();
+        if (steps[0].selector && steps[0].selector.indexOf('#main-menu') === 0
+            && $(steps[0].selector).hasClass('active')
+            && $(steps[0].selector).hasClass('dropdown')
+        ) {
             steps.splice(0, 1);
         }
 
@@ -309,12 +309,22 @@ function runGuide(guideName) {
             }, 500);
         };
 
-
         enjoyhint_instance.set(steps);
         enjoyhint_instance.run();
     } else {
         clearGuidesLSData();
     }
+}
+
+function isPathBeginsFromIncluded(currentPath) {
+    var isBegins = false;
+    INCLUDED_PATHS_BEGINS.forEach(function (pathBegin) {
+        if (currentPath.indexOf(pathBegin) === 0) {
+            isBegins = true;
+        }
+    });
+
+    return isBegins;
 }
 
 function isPathExcluded(path) {
