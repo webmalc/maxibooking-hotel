@@ -31,12 +31,13 @@
      data-roomtypeid="{{ special.roomTypeId }}"
      data-hotelid="{{ special.hotelId }}"
 >
+
     <div class="spec-img">
         <div data-image="{{ absolute_url(asset(special.images|first)) }}" class="main-img"style="background:url('{{ absolute_url(asset(special.images|first|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
             <p class="special-strip"> - {{ special.discount }}{{ (special.isPercent)?'%':'руб' }}</p>
         </div>
         <div class="hotel-thumb">
-            <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt="">  <a href="http://azovsky.ru/shvedskiy-stol/" title="Шведский стол">3-раз. питание шведский стол</a></p>
+            <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt="">  <a href="http://azovsky.ru{{ special.eat.url|default('/') }}" title="Шведский стол">{{ special.eat.number|default(3) }}-раз. питание шведский стол</a></p>
         </div>
     </div>
 
@@ -53,7 +54,7 @@
             <p class="room">{{ special.roomTypeName }}</p>
         {% endif %}
 
-        <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt=""> <a href="http://azovsky.ru/shvedskiy-stol/" title="Шведский стол">3-раз. питание шведский стол</a></p>
+        <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt=""> <a href="http://azovsky.ru{{ special.eat.url|default('/') }}" title="Шведский стол">{{ special.eat.number|default(3) }}-раз. питание шведский стол</a></p>
     </div>
     <div class="spec-date">
         <p
