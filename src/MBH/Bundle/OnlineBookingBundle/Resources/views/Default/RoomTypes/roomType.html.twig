@@ -33,7 +33,8 @@
             <div class="leftinrdm">
                 <p class="titlerdm">
                     {% if hotelsLinks is defined and roomType.hotel.id in hotelsLinks|keys %}
-                        <a href="{{ hotelsLinks[roomType.hotel.id] }}" class="hotel_link" target="_blank">
+                        {% set link = hotelsLinks[roomType.hotel.id] %}
+                        <a href="{{ link.url }}" class="hotel_link" target="_blank">
                             {{ roomType.hotel.fullTitle }}
                         </a>
                     {% else %}
@@ -55,10 +56,13 @@
                     {{ onlineResult.query.children }} {{ 'children'|transchoice(onlineResult.query.children) }}
                     {% endif %}
                 </p>
-                {% if hotelsLinks.eat is defined and hotelsLinks.eat is not empty %}
-                    <a href="{{ hotelsLinks.eat }}" class="eat_link" target="_blank">
-                        <p class="eattype"><img src="/images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
-                    </a>
+                {% if hotelsLinks is defined and roomType.hotel.id in hotelsLinks|keys %}
+                    {% if hotelsLinks[roomType.hotel.id].eat is defined %}
+                        {% set eat = hotelsLinks[roomType.hotel.id].eat %}
+                        <a href="{{ eat.url }}" class="eat_link" target="_blank">
+                            <p class="eattype"><img src="/images/vl.png" alt=""> {{ eat.number }}-разовое питание<br>шведский стол</p>
+                        </a>
+                    {% endif %}
                 {% else %}
                     <img src="/images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
                 {% endif %}

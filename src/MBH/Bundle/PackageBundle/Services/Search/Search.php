@@ -265,11 +265,11 @@ class Search implements SearchInterface
                 }
 
                 //MaxGuest
-                if ($restriction->getMaxGuest() && $query->getTotalPlaces() > $restriction->getMaxGuest()) {
+                if ($restriction->getMaxGuest() && $query->getTotalPlaces() > $restriction->getMaxGuest() && !$query->isIgnoreGuestRestriction()) {
                     $delete = true;
                 }
                 //MinGuest
-                if ($restriction->getMinGuest() && $restriction->getMinGuest() > $query->getTotalPlaces()) {
+                if ($restriction->getMinGuest() && $restriction->getMinGuest() > $query->getTotalPlaces() && !$query->isIgnoreGuestRestriction()) {
                     $delete = true;
                 }
                 //ClosedOnArrival

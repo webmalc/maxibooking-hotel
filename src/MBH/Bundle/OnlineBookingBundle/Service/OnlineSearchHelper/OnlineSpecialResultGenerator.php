@@ -48,7 +48,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
             $searchQuery->forceRoomTypes = true;
             $searchQuery->setPreferredVirtualRoom($special->getVirtualRoom());
             if ($formData->isForceCapacityRestriction() && $searchQuery->getPreferredVirtualRoom()) {
-                $this->forceCapacityRestriction($searchQuery, $searchQuery->getPreferredVirtualRoom());
+                $searchQuery->setIgnoreGuestRestriction(true);
             }
 
             $searchResult = $this->search($searchQuery);
@@ -118,44 +118,6 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
         }
 
         return $specials;
-    }
-
-    private function forceCapacityRestriction(SearchQuery $query, Room $room)
-    {
-        $repository = $this->container->get('doctrine_mongodb.odm.default_document_manager')->getRepository(
-            'MBHPriceBundle:Restriction'
-        );
-        $special = $query->getSpecial();
-        if (count($special->getTariffs())) {
-            $tariff = $special->getTariffs()->first();
-        }
-        $roomTypeId = $room->getRoomType()->getId();
-        $restrictions = $repository->fetch(
-            $query->begin,
-            $query->end,
-            $room->getHotel(),
-            (array)$roomTypeId,
-            [],
-            true
-        );
-        if (count($restrictions) && isset($tariff)) {
-            $restrictionsArray = $restrictions[$roomTypeId][$tariff->getId()] ?? null;
-        }
-
-        if (isset($restrictionsArray) && is_array($restrictionsArray) && count($restrictionsArray)) {
-            $guests = array_map(
-                function (Restriction $restriction) {
-                    return (int)$restriction->getMinGuest();
-                }, $restrictionsArray
-
-            );
-            $minGuests = min($guests);
-            if ($minGuests) {
-                $query->adults = $minGuests;
-            }
-        }
-
-
     }
 
 }
