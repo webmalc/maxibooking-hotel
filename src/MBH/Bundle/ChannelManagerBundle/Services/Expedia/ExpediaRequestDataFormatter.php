@@ -375,8 +375,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $rootNode->addAttribute('xmlns', $xmlns);
 
         $authNode = $rootNode->addChild('Authentication');
-        $authNode->addAttribute('username', $config->getUsername());
-        $authNode->addAttribute('password', $config->getPassword());
+        $authData = $this->container->getParameter('mbh.channelmanager.services')['expedia'];
+        $authNode->addAttribute('username', $authData['username']);
+        $authNode->addAttribute('password', $authData['password']);
 
         $hotelNode = $rootNode->addChild('Hotel');
         $hotelNode->addAttribute('id', $config->getHotelId());

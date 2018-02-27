@@ -245,6 +245,8 @@ parameters:
         expedia:
           title: 'Expedia'
           service: 'mbh.channelmanager.expedia'
+          username: EQCMaxibooking
+          password: '%expedia_pass%'
         hundred_one_hotels:
           title: '101 Отель'
           service: 'mbh.channelmanager.hundred_one_hotels'

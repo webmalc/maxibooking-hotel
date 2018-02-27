@@ -49,6 +49,7 @@ services:
 
     mbh.channelmanager.expedia_request_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestFormatter
+        arguments: ['%mbh.channelmanager.services%']
 
     mbh.channelmanager.expedia_request_data_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestDataFormatter

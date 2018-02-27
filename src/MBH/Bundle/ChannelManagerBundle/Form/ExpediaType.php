@@ -26,24 +26,7 @@ class ExpediaType extends AbstractType
                 'label' => 'form.expedia.hotel_id',
                 'required' => true,
                 'help' => 'form.expedia.hotel_id.help',
-            ])
-            ->add('username', TextType::class, [
-                'label' => 'form.expedia.username.label',
-                'required' => true,
-                'help' => 'form.expedia.username.help',
-                'attr' => [
-                    'placeholder' => 'form.expedia.username.placeholder'
-                ]
-            ])
-            ->add('password', TextType::class, [
-                    'label' => 'form.expedia.password.label',
-                    'required' => true,
-                    'attr' => [
-                        'placeholder' => 'form.expedia.password.placeholder'
-                    ],
-                    'help' => 'form.expedia.password.help'
-                ]
-            );
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

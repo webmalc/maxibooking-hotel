@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
-use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -22,7 +21,7 @@ use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as MBHValidator;
  * @MBHValidator\Currency
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class ExpediaConfig extends Base implements BaseInterface, CurrencyConfigInterface
+class ExpediaConfig extends Base implements BaseInterface
 {
     public function getName()
     {
@@ -65,20 +64,6 @@ class ExpediaConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     protected $hotelId;
 
     /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     */
-    protected $currency;
-
-    /**
-     * @var float
-     * @Gedmo\Versioned
-     * @ODM\Field(type="float")
-     */
-    protected $currencyDefaultRatio;
-
-    /**
      * @var array
      * @ODM\EmbedMany(targetDocument="Room")
      */
@@ -95,52 +80,6 @@ class ExpediaConfig extends Base implements BaseInterface, CurrencyConfigInterfa
      * @ODM\EmbedMany(targetDocument="Service")
      */
     protected $services;
-
-    /**
-     * @var string
-     * @ODM\Field()
-     * @Assert\NotNull(message="validator.document.expediaConfig.username_not_specified")
-     */
-    protected $username;
-
-    /**
-     * @var string
-     * @ODM\Field()
-     * @Assert\NotNull(message="validator.document.expediaConfig.password_not_specified")
-     */
-    protected $password;
-
-    /**
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param string $username
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-    }
 
     /**
      * Set hotel
@@ -311,43 +250,5 @@ class ExpediaConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     public function getServices()
     {
         return $this->services;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrency()
-    {
-        return $this->currency;
-    }
-
-    /**
-     * @param string $currency
-     * @return self
-     */
-    public function setCurrency($currency)
-    {
-        $this->currency = $currency;
-
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getCurrencyDefaultRatio()
-    {
-        return $this->currencyDefaultRatio;
-    }
-
-    /**
-     * @param float $currencyDefaultRatio
-     * @return self
-     */
-    public function setCurrencyDefaultRatio($currencyDefaultRatio)
-    {
-        $this->currencyDefaultRatio = $currencyDefaultRatio;
-
-        return $this;
     }
 }
