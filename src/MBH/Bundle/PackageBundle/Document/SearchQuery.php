@@ -460,7 +460,7 @@ class SearchQuery extends Base
     /**
      * @return bool
      */
-    public function isIgnoreGuestRestriction(): bool
+    public function isIgnoreGuestRestriction()
     {
         return $this->ignoreGuestRestriction;
     }
@@ -468,7 +468,7 @@ class SearchQuery extends Base
     /**
      * @param bool $ignoreGuestRestriction
      */
-    public function setIgnoreGuestRestriction(bool $ignoreGuestRestriction): void
+    public function setIgnoreGuestRestriction(bool $ignoreGuestRestriction)
     {
         $this->ignoreGuestRestriction = $ignoreGuestRestriction;
     }

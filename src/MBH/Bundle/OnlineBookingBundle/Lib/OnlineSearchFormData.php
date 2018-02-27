@@ -272,7 +272,7 @@ class OnlineSearchFormData
     /**
      * @return bool
      */
-    public function isForceCapacityRestriction(): bool
+    public function isForceCapacityRestriction()
     {
         return $this->forceCapacityRestriction;
     }
@@ -280,7 +280,7 @@ class OnlineSearchFormData
     /**
      * @param bool $forceCapacityRestriction
      */
-    public function setForceCapacityRestriction(bool $forceCapacityRestriction): void
+    public function setForceCapacityRestriction(bool $forceCapacityRestriction)
     {
         $this->forceCapacityRestriction = $forceCapacityRestriction;
     }
