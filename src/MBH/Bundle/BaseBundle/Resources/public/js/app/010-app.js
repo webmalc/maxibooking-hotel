@@ -385,6 +385,7 @@ var updateTaskCounter = function () {
 }
 
 var delay = 1000 * 60 * 5;//5 minutes
-setInterval(function () {
-    updateTaskCounter()
-}, delay);
+//Disable task update for azovsky
+// setInterval(function () {
+//     updateTaskCounter()
+// }, delay);

@@ -188,9 +188,10 @@ class OrderSubscriber implements EventSubscriber
                 $meta = $dm->getClassMetadata(get_class($order));
                 $uow->recomputeSingleDocumentChangeSet($meta, $order);
 
-                if (isset($uow->getDocumentChangeSet($entity)['accommodation'])) {
-                    $this->container->get('mbh.cache')->clear('accommodation_rooms');
-                }
+                //TODO: Похоже что это лишнее, т.к. в любом раскладе у нас вызывается removeCache где ключ accommodation_rooms в перечне удаляемых.
+//                if (isset($uow->getDocumentChangeSet($entity)['accommodation'])) {
+//                    $this->container->get('mbh.cache')->clear('accommodation_rooms', $entity->getBegin(), $entity->getEnd());
+//                }
                 $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
             }
 

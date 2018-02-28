@@ -78,9 +78,9 @@ class PackageSubscriber implements EventSubscriber
             }
             $entity->setServicesPrice(0);
             $dm->persist($entity);
-            $dm->flush();
+            $dm->flush($entity);
 
-            $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
+            /*$this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());*/
         }
 
         return;
@@ -181,7 +181,7 @@ class PackageSubscriber implements EventSubscriber
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
-            $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
+//            $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
         }
     }
 
@@ -230,7 +230,7 @@ class PackageSubscriber implements EventSubscriber
         if ($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
             $package->setPromotion($package->getTariff()->getDefaultPromotion());
         }
-        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
+        /*$this->_removeCache(clone $package->getBegin(), clone $package->getEnd());*/
     }
 
     public function preUpdate(LifecycleEventArgs $args)
@@ -248,7 +248,7 @@ class PackageSubscriber implements EventSubscriber
             $meta = $dm->getClassMetadata(get_class($package));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $package);
         }
-        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
+        /*$this->_removeCache(clone $package->getBegin(), clone $package->getEnd());*/
     }
 
     public function postUpdate(LifecycleEventArgs $args)

@@ -1024,7 +1024,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid()) {
 
             $orderId = $entity->getOrder()->getId();
-            $this->dm->persist($entity);
+            /*$this->dm->persist($entity);*/
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 

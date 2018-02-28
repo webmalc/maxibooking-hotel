@@ -159,7 +159,7 @@
                 "mongodb",
                 "security"
             ],
-            "time": "2016-09-12 09:31:21"
+            "time": "2016-09-12T09:31:21+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1044,7 +1044,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2017-07-07 05:37:08"
+            "time": "2017-07-07T05:37:08+00:00"
         },
         {
             "name": "doctrine/mongodb-odm",
@@ -1127,7 +1127,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2017-06-23 09:22:43"
+            "time": "2017-06-23T09:22:43+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -1201,7 +1201,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2017-06-07 14:25:20"
+            "time": "2017-06-07T14:25:20+00:00"
         },
         {
             "name": "friendsofsymfony/jsrouting-bundle",
@@ -1336,7 +1336,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2016-11-03 15:42:43"
+            "time": "2016-11-03T15:42:43+00:00"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -2940,7 +2940,7 @@
                 "manager",
                 "myallocator"
             ],
-            "time": "2015-10-01 23:11:25"
+            "time": "2015-10-01T23:11:25+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -3029,7 +3029,7 @@
             ],
             "authors": [
                 {
-                    "name": "Marc Aubé"
+                    "name": "Marc AubÃ©"
                 }
             ],
             "description": "Symfony2 Bundle that ease the use of highcharts to display rich graph and charts in your app",
@@ -3212,7 +3212,7 @@
                     "email": "thibault.duplessis@gmail.com"
                 },
                 {
-                    "name": "Henrik Bjørnskov",
+                    "name": "Henrik BjÃ¸rnskov",
                     "email": "henrik@bjrnskov.dk"
                 }
             ],
@@ -3223,7 +3223,7 @@
                 "templating",
                 "twig"
             ],
-            "time": "2016-02-09 14:23:53"
+            "time": "2016-02-09T14:23:53+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -3380,7 +3380,7 @@
                     "role": "Maintainer"
                 },
                 {
-                    "name": "Raúl Araya",
+                    "name": "RaÃºl Araya",
                     "email": "nubeiro@gmail.com",
                     "role": "Maintainer"
                 }
@@ -3514,6 +3514,7 @@
                 "xls",
                 "xlsx"
             ],
+            "abandoned": "phpoffice/phpspreadsheet",
             "time": "2015-05-01T07:00:55+00:00"
         },
         {
@@ -4026,7 +4027,7 @@
                 "translatable",
                 "tree"
             ],
-            "time": "2016-01-26 23:58:32"
+            "time": "2016-01-26T23:58:32+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",

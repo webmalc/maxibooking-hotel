@@ -42,6 +42,11 @@ services:
     class:      MBH\Bundle\PriceBundle\Task\CalculateSpecialPrices
     arguments: ["@kernel"]
 
+  task_cache_clear:
+    class:      MBH\Bundle\BaseBundle\Task\CacheClear
+    arguments: ["@mbh.cache"]
+
+
   mbh.special_handler:
     class: MBH\Bundle\PriceBundle\Services\SpecialHandler
     arguments: ['@mbh.package.search', '@doctrine_mongodb.odm.document_manager','@mbh.specials.logger', '@mbh.online.special_data_preparer', '@mbh.online.special_result_generator', '@mbh.online.search_form_data', '@mbh.notifier.mailer']
