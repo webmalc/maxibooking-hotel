@@ -1283,6 +1283,6 @@ $(document).ready(function () {
     disableCheckboxListen();
     initLabelTips();
     initAddTipModal();
-    runGuide();
+    runGuides();
     handleAddingNewBillingEntity();
 });

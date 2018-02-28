@@ -1,6 +1,9 @@
 /*global window, $, document, Translator, searchProcess */
 
 var LS_CURRENT_GUIDE_WITH_STAGE = 'current-guide-stage';
+var LS_CURRENT_GUIDES_LIST = 'current-guides-list';
+var LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST = 'number-of-guide';
+var LS_HAS_VIEWED_WELCOME_GUIDE = 'has-viewed-welcome-guide';
 
 var GUIDES_BY_PATH = {
     any: ['first-guide-1', 'room-cache-1', 'price-cache-1', 'search-guide-1'],
@@ -16,6 +19,8 @@ var GUIDES_BY_PATH = {
 
 var INCLUDED_PATHS_BEGINS = ['/package/order'];
 var EXCLUDED_PATHS_BEGINS = ['/user'];
+
+var WELCOME_GUIDES_LIST = ['room-cache-1', 'price-cache-1', 'search-guide-1'];
 
 var GUIDES = {
     'room-cache-1': {
@@ -192,14 +197,13 @@ var GUIDES = {
         onEnd: function () {
             var checkForCompletenessAndRunGuide = function () {
                 setTimeout(function () {
-                    console.log(searchProcess);
                     if (searchProcess) {
                         checkForCompletenessAndRunGuide()
                     } else {
                         if ($('.package-search-book').length > 0) {
-                            runGuide('search-guide-3-v1')
+                            runGuides(['search-guide-3-v1'])
                         } else {
-                            runGuide('search-guide-3-v2')
+                            runGuides(['search-guide-3-v2']);
                         }
                     }
                 }, 650);
@@ -254,9 +258,33 @@ var GUIDES = {
     }
 };
 
-function runGuide(guideName) {
+$(document).ready(function() {
+    'use strict';
+    if (localStorage.getItem(LS_HAS_VIEWED_WELCOME_GUIDE) !== 'true') {
+        runFirstGuide();
+    }
+});
+
+function runFirstGuide() {
+    runGuides(WELCOME_GUIDES_LIST);
+}
+
+function runGuides(guidesList) {
+    if (isMobileDevice()) {
+        return;
+    }
+
+    guidesList = guidesList || JSON.parse(localStorage.getItem(LS_CURRENT_GUIDES_LIST));
+
+    var guideName;
+    if (guidesList) {
+        localStorage.setItem(LS_CURRENT_GUIDES_LIST, JSON.stringify(guidesList));
+        guideName = guidesList[0];
+    } else {
+        guideName = localStorage.getItem(LS_CURRENT_GUIDE_WITH_STAGE);
+    }
+
     var devAddressStr = '/app_dev.php';
-    guideName = guideName || localStorage.getItem(LS_CURRENT_GUIDE_WITH_STAGE);
     var currentPath = location.pathname.indexOf(devAddressStr) > -1 ?
         location.pathname.substr(devAddressStr.length)
         : location.pathname;
@@ -264,56 +292,56 @@ function runGuide(guideName) {
     if ((currentPath.length - 1) === currentPath.lastIndexOf('/')) {
         currentPath = currentPath.substring(0, currentPath.length - 1)
     }
-console.log(GUIDES_BY_PATH[currentPath]);
-    console.log(guideName);
-    if (guideName &&
-        ((GUIDES_BY_PATH[currentPath] && GUIDES_BY_PATH[currentPath].indexOf(guideName) > -1) || GUIDES_BY_PATH.any.indexOf(guideName) > -1 || isPathBeginsFromIncluded(currentPath))
-        && !isPathExcluded(currentPath)
-    ) {
-        console.log(GUIDES_BY_PATH[currentPath]);
+
+    if (guideName && isCurrentPathIncluded(currentPath, guideName) && !isPathExcluded(currentPath)) {
         var guideData = GUIDES[guideName];
-        var enjoyhint_instance = new EnjoyHint({
+        var enjoyHintInstance = new EnjoyHint({
             onEnd: function () {
-                clearGuidesLSData();
-                if (guideData.next) {
-                    writeGuidesLSData(guideData.next);
-                }
+                clearGuidesLSData(false);
                 if (guideData.onEnd) {
                     guideData.onEnd();
                 }
+
+                if (guideData.next) {
+                    writeGuidesLSData(guideData.next);
+                } else {
+                    if (guidesList) {
+                        var numberOfGuideInList = parseInt(localStorage.getItem(LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST), 10) || 0;
+                        if (numberOfGuideInList === -1 || numberOfGuideInList === (guidesList.length - 1)) {
+                            clearGuidesLSData();
+                        } else {
+                            var nextGuideNumber = numberOfGuideInList + 1;
+                            localStorage.setItem(LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST, nextGuideNumber);
+                            setTimeout(function () {
+                                runGuides([guidesList[nextGuideNumber]]);
+                            }, 100);
+                        }
+                    }
+                }
             }, onStart: function () {
                 writeGuidesLSData(guideName);
-                $('.enjoyhint_close_btn,.enjoyhint_skip_btn').click(clearGuidesLSData);
+                $('.enjoyhint_close_btn,.enjoyhint_skip_btn').click(function () {
+                    clearGuidesLSData();
+                    if (guidesList === WELCOME_GUIDES_LIST) {
+                        localStorage.setItem(LS_HAS_VIEWED_WELCOME_GUIDE, true);
+                    }
+                });
             }
         });
-        console.log(guideName);
         var steps = guideData.getSteps();
-        if (steps[0].selector && steps[0].selector.indexOf('#main-menu') === 0
-            && $(steps[0].selector).hasClass('active')
-            && $(steps[0].selector).hasClass('dropdown')
-        ) {
-            steps.splice(0, 1);
-        }
 
-        steps.forEach(function (stepData) {
-            stepData['nextButton'] = {text: Translator.trans('guides.next_button.title')};
-            stepData['skipButton'] = {text: Translator.trans('guides.skip_button.title')};
-        });
-
-        steps[0]['onBeforeStart'] = function () {
-            if (localStorage.getItem('sidebar-collapse') === 'close') {
-                $('.sidebar-toggle').trigger('click');
-            }
-            setTimeout(function () {
-                $('.enjoyhint_close_btn').css('top', 55);
-            }, 500);
-        };
-
-        enjoyhint_instance.set(steps);
-        enjoyhint_instance.run();
+        updateSteps(steps);
+        enjoyHintInstance.set(steps);
+        enjoyHintInstance.run();
     } else {
         clearGuidesLSData();
     }
+}
+
+function isCurrentPathIncluded(currentPath, guideName) {
+    return (GUIDES_BY_PATH[currentPath] && GUIDES_BY_PATH[currentPath].indexOf(guideName) > -1)
+        || GUIDES_BY_PATH.any.indexOf(guideName) > -1
+        || isPathBeginsFromIncluded(currentPath);
 }
 
 function isPathBeginsFromIncluded(currentPath) {
@@ -338,10 +366,42 @@ function isPathExcluded(path) {
     return isExcluded;
 }
 
-function clearGuidesLSData() {
+function clearGuidesLSData(withList) {
+    if (withList === undefined) {
+        withList = true;
+    }
     localStorage.removeItem(LS_CURRENT_GUIDE_WITH_STAGE);
+    if (withList) {
+        localStorage.removeItem(LS_CURRENT_GUIDES_LIST);
+        localStorage.removeItem(LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST);
+    }
 }
 
 function writeGuidesLSData(guideWithStage) {
     localStorage.setItem(LS_CURRENT_GUIDE_WITH_STAGE, guideWithStage);
+}
+
+function updateSteps(steps) {
+    if (isFirstStepOpenDropdownMenu(steps)) {
+        steps.splice(0, 1);
+    }
+    steps.forEach(function (stepData) {
+        stepData['nextButton'] = {text: Translator.trans('guides.next_button.title')};
+        stepData['skipButton'] = {text: Translator.trans('guides.skip_button.title')};
+    });
+
+    steps[0]['onBeforeStart'] = function () {
+        if (localStorage.getItem('sidebar-collapse') === 'close') {
+            $('.sidebar-toggle').trigger('click');
+        }
+        setTimeout(function () {
+            $('.enjoyhint_close_btn').css('top', 55);
+        }, 500);
+    };
+}
+
+function isFirstStepOpenDropdownMenu(steps) {
+    return steps[0].selector && steps[0].selector.indexOf('#main-menu') === 0
+        && $(steps[0].selector).hasClass('active')
+        && $(steps[0].selector).hasClass('dropdown');
 }

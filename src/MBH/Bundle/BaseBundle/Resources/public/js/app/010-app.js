@@ -181,6 +181,9 @@ $('#work-shift-lock').on('click', function(e) {
     mbh.alert.show($this.attr('href'), header, text, buttonText, buttonIcon, buttonClass);
 });
 
+function isMobileDevice() {
+    return /Mobi/.test(navigator.userAgent);
+}
 
 var deleteLink = function() {
     'use strict';
