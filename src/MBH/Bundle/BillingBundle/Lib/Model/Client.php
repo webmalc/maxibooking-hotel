@@ -238,8 +238,7 @@ class Client
      */
     public function getRoomsLimit()
     {
-        return 200;
-//        return $this->getRestrictions()['rooms_limit'];
+        return $this->getRestrictions()['rooms_limit'];
     }
 
     /**
@@ -359,10 +358,13 @@ class Client
 
     /**
      * @param string $name
+     * @return Client
      */
     public function setName(string $name)
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**

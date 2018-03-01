@@ -31,9 +31,9 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
                 ? $translator->trans($titleId)
                 : $titleId;
 
-//            if ($manager->getRepository('MBHPackageBundle:PackageSource')->findBy(['fullTitle' => $title, 'code' => $value])) {
-//                continue;
-//            }
+            if ($manager->getRepository('MBHPackageBundle:PackageSource')->findBy(['fullTitle' => $title, 'code' => $value])) {
+                continue;
+            }
 
             $packageSource = new PackageSource();
             $packageSource

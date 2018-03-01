@@ -190,7 +190,7 @@ class ClientManager
         ) {
             try {
                 /** @var Client $client */
-                $client = $this->billingApi->getClient();
+                $client = $this->kernel->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
             } catch (\Exception $exception) {
                 $client = $this->session->get(self::SESSION_CLIENT_FIELD);
                 $this->logger->err($exception->getMessage());
@@ -234,5 +234,20 @@ class ClientManager
     public function isRussianClient()
     {
         return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+    }
+
+    private function getDefaultClientData()
+    {
+        return (new Client())
+            ->setEmail('d.zaluev@maxi-booking.ru')
+            ->setName('maxiboooking')
+            ->setCountry('ru')
+            ->setLogin('maxibooking')
+            ->setPhone('+89670447992')
+            ->setCity(16970)
+            ->setRegion(2832)
+            ->setRestrictions(['rooms_limit' => 200])
+            ->setTrial_activated(true)
+            ->setInstallation('installed');
     }
 }

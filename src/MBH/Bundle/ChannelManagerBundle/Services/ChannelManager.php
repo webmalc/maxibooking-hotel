@@ -51,6 +51,7 @@ class ChannelManager
     protected $client;
     /** @var  Producer */
     protected $producer;
+    protected $logger;
 
     public function __construct(ContainerInterface $container)
     {
