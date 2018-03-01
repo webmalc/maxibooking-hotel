@@ -246,6 +246,7 @@ class ClientManager
             ->setPhone('+89670447992')
             ->setCity(16970)
             ->setRegion(2832)
+            ->setStatus(Client::CLIENT_ACTIVE_STATUS)
             ->setRestrictions(['rooms_limit' => 200])
             ->setTrial_activated(true)
             ->setInstallation('installed');
