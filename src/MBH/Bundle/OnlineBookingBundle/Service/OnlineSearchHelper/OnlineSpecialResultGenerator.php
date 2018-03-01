@@ -14,9 +14,11 @@ use MBH\Bundle\PriceBundle\Document\Special;
 
 class OnlineSpecialResultGenerator extends AbstractResultGenerator
 {
+    const SPECIAL_LIMIT = 0;
+
     protected const TYPE = 'special';
 
-    const SPECIAL_LIMIT = 0;
+
 
     protected function createOnlineResultInstance(
         $roomType,
@@ -94,7 +96,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
         return $searchResult->getVirtualRoom() === null ? true : false;
     }
 
-    private function filterSpecials(array $specials)
+    private function filterSpecials(array $specials): array
     {
         if (count($specials)) {
             uasort(

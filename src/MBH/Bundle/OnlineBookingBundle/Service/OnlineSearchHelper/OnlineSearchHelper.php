@@ -13,7 +13,7 @@ class OnlineSearchHelper
     private $options;
 
     /** @var  \SplObjectStorage */
-    private $resultsGenerators;
+    private $dataProviders;
     /** @var  Helper */
     private $helper;
 
@@ -25,20 +25,26 @@ class OnlineSearchHelper
     public function __construct(array $options, Helper $helper)
     {
         $this->options = $options;
-        $this->resultsGenerators = new \SplObjectStorage();
+        $this->dataProviders = new \SplObjectStorage();
         $this->helper = $helper;
     }
 
-    public function addGenerator(AbstractResultGenerator $generator)
+//    public function addGenerator(AbstractResultGenerator $generator)
+//    {
+//        $this->dataProviders->attach($generator);
+//    }
+
+    public function addDataProvider(OnlineDataProviderWrapperInterface $dataProvider)
     {
-        $this->resultsGenerators->attach($generator);
+        $this->dataProviders->attach($dataProvider);
     }
 
     public function getResults(OnlineSearchFormData $formInstance)
     {
         $results = [];
-        foreach ($this->resultsGenerators as $generator) {
-            $results[$generator->getType()] = $generator->getResults($formInstance)->toArray();
+        foreach ($this->dataProviders as $dataProvider) {
+            /** @var OnlineDataProviderWrapperInterface $dataProvider */
+            $results[$dataProvider->getType()] = $dataProvider->getResults($formInstance);
         }
         if (count($results)) {
             $results = $this->finishFilter($results);
@@ -56,7 +62,7 @@ class OnlineSearchHelper
         if ($isCommon && $isSpecials) {
             $this->injectQueryIdInSpecial(reset($searchResults['common'])->getQueryId(), $searchResults['special']);
             $result[] = array_shift($searchResults['special']);
-            $result = array_merge($result , $searchResults['common'] , $searchResults['special']);
+            $result = array_merge($result, $searchResults['common'], $searchResults['special']);
 
             return $result;
         }
