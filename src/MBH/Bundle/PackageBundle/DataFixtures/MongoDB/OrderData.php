@@ -213,7 +213,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             ->setPaid($data['paid'])
             ->setStatus('offline')
             ->setTotalOverwrite($data['price'])
-            ->setSource($this->getReference('Booking.com'))
+//            ->setSource($this->getReference('Booking.com'))
             ->setMainTourist($tourist)
             ->setCreatedBy($this->getReference('user-admin'))
             ->setCreatedAt((new \DateTime())->modify('-' . $data['regDayAgo'] . 'days'));
