@@ -78,6 +78,6 @@ parameters:
   s3_protected_bucket: 'mb-client-protected-upload-files'
   kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
 
-  memcache_host: '127.0.0.1'
+  memcache_host: 'mbh-memcached'
 
   domain: 'maxi-booking.ru'

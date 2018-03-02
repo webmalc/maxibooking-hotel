@@ -19,6 +19,8 @@
         <env name="MONGODB_ADMIN_LOGIN" value="admin"/>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
         <env name="MONGODB_PRIMARY_HOST" value="mbh-mongo"/>
+        <env name="MONGODB_HOST" value="mbh-mongo"/>
+        <env name="MONGODB_PORT" value="27017"/>
     </php>
 
     <testsuites>
