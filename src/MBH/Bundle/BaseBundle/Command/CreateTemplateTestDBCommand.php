@@ -37,9 +37,9 @@ class CreateTemplateTestDBCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->getContainer()->get('mbh.mongo.maintenance')->createDBUser('template_test_db', self::CLIENT_NAME_FOR_CREATION_OF_TEMPLATE_TEST_DB);
         $this->runCommand('doctrine:mongodb:schema:drop');
-        $dbName = getenv('MONGODB_DATABASE');
-        $this->getContainer()->get('mbh.mongo.maintenance')->createDBUser($dbName, self::CLIENT_NAME_FOR_CREATION_OF_TEMPLATE_TEST_DB);
+
         $this->runCommand('doctrine:mongodb:fixtures:load --append');
 
         $paramsString = '--collections=LogEntry';
