@@ -81,6 +81,6 @@ class CashDocumentData extends AbstractFixture implements OrderedFixtureInterfac
      */
     protected function getEnvs(): array
     {
-        return ['test'];
+        return ['test', 'dev'];
     }
 }

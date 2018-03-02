@@ -24,8 +24,6 @@ class InteractiveLoginListener
     protected $session;
     protected $supportEmail;
     protected $translator;
-    /** @var \AppKernel */
-    protected $kernel;
 
     /**
      * InteractiveLoginListener constructor.
@@ -35,9 +33,8 @@ class InteractiveLoginListener
      * @param BillingApi $billingApi
      * @param TranslatorInterface $translator
      * @param $supportInfo
-     * @param KernelInterface $kernel
      */
-    public function __construct(array $params, ClientManager $clientManager, Session $session, BillingApi $billingApi, TranslatorInterface $translator, $supportInfo, KernelInterface $kernel)
+    public function __construct(array $params, ClientManager $clientManager, Session $session, BillingApi $billingApi, TranslatorInterface $translator, $supportInfo)
     {
         $this->params = $params;
         $this->clientManager = $clientManager;
@@ -45,7 +42,6 @@ class InteractiveLoginListener
         $this->billingApi = $billingApi;
         $this->translator = $translator;
         $this->supportEmail = $supportInfo['email'];
-        $this->kernel = $kernel;
     }
 
     /**
@@ -65,7 +61,7 @@ class InteractiveLoginListener
                 throw new BadCredentialsException('Captcha is invalid');
             }
 
-            if (!$this->kernel->isDefaultClient()) {
+            if (!$this->clientManager->isDefaultClient()) {
                 $client = $this->clientManager->getClient();
 
                 if ($client->getStatus() === 'not_confirmed') {

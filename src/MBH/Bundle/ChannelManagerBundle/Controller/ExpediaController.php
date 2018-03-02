@@ -213,6 +213,7 @@ class ExpediaController extends Controller
     }
 
     /**
+     * @Method("POST")
      * @Route("/push_notification", name="expedia_push_notification")
      * @param Request $request
      * @return Response

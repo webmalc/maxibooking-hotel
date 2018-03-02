@@ -438,12 +438,6 @@ services:
         class: Symfony\Component\HttpFoundation\Session\Storage\Handler\MongoDbSessionHandler
         arguments: ["@mbh.mongodb.client", {database: '%mongodb_database%', collection: "sessions" }]
 
-    mbh.exception_subscriber:
-        class: MBH\Bundle\BaseBundle\EventListener\ExceptionSubscriber
-        arguments: ['@kernel', '@exception_notifier']
-        tags:
-            - {name: kernel.event_subscriber}
-
     exception_notifier:
         class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
         arguments: ['@service_container', '@logger']

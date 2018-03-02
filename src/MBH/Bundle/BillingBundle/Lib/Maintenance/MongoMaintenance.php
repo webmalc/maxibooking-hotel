@@ -183,7 +183,7 @@ final class MongoMaintenance extends AbstractMaintenance
     }
 
 
-    private function createDBUser(string $dbName, string $clientName): void
+    public function createDBUser(string $dbName, string $clientName): void
     {
         $clientConfig = $this->getClientConfig($clientName);
         $dbUserName = $clientConfig['MONGODB_LOGIN'];

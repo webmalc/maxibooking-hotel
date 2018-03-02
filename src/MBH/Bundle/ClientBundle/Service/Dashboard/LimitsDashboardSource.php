@@ -16,13 +16,10 @@ class LimitsDashboardSource extends AbstractDashboardSource
      * message default type
      */
     const TYPE = 'danger';
-
     /** @var  ClientManager */
     private $clientManager;
     /** @var  Router */
     private $router;
-    /** @var  \AppKernel */
-    private $kernel;
 
     public function __construct(
         ManagerRegistry $documentManager,
@@ -30,13 +27,11 @@ class LimitsDashboardSource extends AbstractDashboardSource
         TranslatorInterface $translator,
         Helper $helper,
         ClientManager $clientManager,
-        Router $router,
-        KernelInterface $kernel
+        Router $router
     ) {
         parent::__construct($documentManager, $validator, $translator, $helper);
         $this->clientManager = $clientManager;
         $this->router = $router;
-        $this->kernel = $kernel;
     }
 
     protected function generateMessages(): array
@@ -44,7 +39,7 @@ class LimitsDashboardSource extends AbstractDashboardSource
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight + 1 year');
         $messages = [];
-        if (!$this->kernel->isDefaultClient()) {
+        if (!$this->clientManager->isDefaultClient()) {
             if ($this->clientManager->isLimitOfRoomsExceeded()) {
                 $messages[] = $this->translator->trans('room_controller.limit_of_room_fund_exceeded', [
                     '%availableNumberOfRooms%' => $this->clientManager->getAvailableNumberOfRooms(),

@@ -25,7 +25,7 @@ class OnRequest
         $clientManager = $this->container->get('mbh.client_manager');
         $session = $this->container->get('session');
 
-        if (!$this->container->get('kernel')->isDefaultClient()) {
+        if (!$clientManager->isDefaultClient()) {
             $client = $clientManager->getClient();
             if (!$client->getTrial_activated() && $this->isRequestedByMBUser()) {
                 $client = $this->container->get('mbh.billing.api')->getClient();

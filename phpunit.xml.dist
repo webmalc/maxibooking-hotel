@@ -17,6 +17,7 @@
         <env name="MONGODB_OPTIONS" value=""/>
         <env name="MONGODB_PASSWORD" value="maxibooking"/>
         <env name="MONGODB_ADMIN_LOGIN" value="admin"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
         <env name="MONGODB_PRIMARY_HOST" value="mbh-mongo"/>
     </php>
 

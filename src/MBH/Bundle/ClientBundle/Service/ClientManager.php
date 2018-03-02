@@ -10,7 +10,6 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 class ClientManager
 {
@@ -27,16 +26,15 @@ class ClientManager
     private $session;
     private $billingApi;
     private $logger;
-    /** @var \AppKernel  */
-    private $kernel;
+    private $client;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, KernelInterface $kernel)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, string $client)
     {
         $this->dm = $dm;
         $this->session = $session;
         $this->billingApi = $billingApi;
         $this->logger = $logger;
-        $this->kernel = $kernel;
+        $this->client = $client;
     }
 
     /**
@@ -54,7 +52,7 @@ class ClientManager
 
     public function isLimitOfRoomCachesExceeded(array $modifiedRoomCaches)
     {
-        if ($this->kernel->isDefaultClient()) {
+        if ($this->isDefaultClient()) {
             return false;
         }
 
@@ -169,6 +167,14 @@ class ClientManager
     }
 
     /**
+     * @return bool
+     */
+    public function isDefaultClient()
+    {
+        return $this->client === \AppKernel::DEFAULT_CLIENT;
+    }
+
+    /**
      * @param $routeName
      * @return bool
      */
@@ -189,8 +195,11 @@ class ClientManager
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
             try {
+                if (!$this->isDefaultClient()) {
+                    dump($this->client);
+                }
                 /** @var Client $client */
-                $client = $this->kernel->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
+                $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
             } catch (\Exception $exception) {
                 $client = $this->session->get(self::SESSION_CLIENT_FIELD);
                 $this->logger->err($exception->getMessage());

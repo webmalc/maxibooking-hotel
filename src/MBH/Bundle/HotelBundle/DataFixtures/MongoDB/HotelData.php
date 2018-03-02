@@ -47,10 +47,6 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface
                 $manager->flush();
 
                 $this->setReference($key, $hotel);
-
-                if ($this->getEnv() != 'test') {
-                    break;
-                }
             }
         }
     }
