@@ -55,7 +55,7 @@ class OnlineSearchHelper
         $isSpecials = isset($searchResults['special']) && !empty($searchResults['special']);
         if ($isCommon && $isSpecials) {
             $this->injectQueryIdInSpecial(reset($searchResults['common'])->getQueryId(), $searchResults['special']);
-            $result[] = array_shift($searchResults['special']);
+#           $result[] = array_shift($searchResults['special']);
             $result = array_merge($result , $searchResults['common'] , $searchResults['special']);
 
             return $result;

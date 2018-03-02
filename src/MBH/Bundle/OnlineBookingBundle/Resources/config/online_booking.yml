@@ -19,7 +19,7 @@ parameters:
 
         show_specials: true
         show_special_restrict: 10
-#        special_list_sort: byDate
+#       special_list_sort: byDate
         special_list_sort: byPrice
 
 
