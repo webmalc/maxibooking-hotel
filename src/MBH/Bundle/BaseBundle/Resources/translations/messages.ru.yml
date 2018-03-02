@@ -313,7 +313,7 @@ menu.header.navigation: Навигация
 menu.header.settings: Настройки
 menu.label.broni: Брони
 menu.label.podbor: Подбор
-menu.label.portie: Портье
+menu.label.portie: Размещение
 menu.label.portie.nomfond: 'Номерной фонд'
 menu.label.portie.shah: Шахматка
 menu.label.portie.arrdep: Заезд/Выезд
@@ -326,7 +326,7 @@ menu.label.nomandprice.restriction: 'Условия и ограничения'
 menu.label.nomandprice.services: Услуги
 menu.label.nomandprice.promotions: Акции
 menu.label.task: Задачи
-menu.label.cash: Касса
+menu.label.cash: Расчеты
 menu.label.warehouse: Склад
 menu.label.restaurant: Ресторан
 menu.label.reports: Отчеты
