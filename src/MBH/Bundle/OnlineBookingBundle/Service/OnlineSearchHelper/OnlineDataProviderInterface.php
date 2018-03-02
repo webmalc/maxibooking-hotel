@@ -10,6 +10,6 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
 
 interface OnlineDataProviderInterface
 {
-    public function search(OnlineSearchFormData $formData, SearchQuery $searchQuery): array;
+    public function search(OnlineSearchFormData $formData): array;
     public function getType(): string;
 }

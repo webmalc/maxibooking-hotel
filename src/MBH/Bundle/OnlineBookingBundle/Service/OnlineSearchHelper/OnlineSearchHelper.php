@@ -57,12 +57,12 @@ class OnlineSearchHelper
         array $searchResults
     ) {
         $result = [];
-        $isCommon = isset($searchResults['common']) && !empty($searchResults['common']);
-        $isSpecials = isset($searchResults['special']) && !empty($searchResults['special']);
+        $isCommon = isset($searchResults[OnlineCommonDataProvider::TYPE]) && !empty($searchResults[OnlineCommonDataProvider::TYPE]);
+        $isSpecials = isset($searchResults[OnlineSpecialDataProvider::TYPE]) && !empty($searchResults[OnlineSpecialDataProvider::TYPE]);
         if ($isCommon && $isSpecials) {
-            $this->injectQueryIdInSpecial(reset($searchResults['common'])->getQueryId(), $searchResults['special']);
-            $result[] = array_shift($searchResults['special']);
-            $result = array_merge($result, $searchResults['common'], $searchResults['special']);
+            $this->injectQueryIdInSpecial(reset($searchResults[OnlineCommonDataProvider::TYPE])->getQueryId(), $searchResults[OnlineSpecialDataProvider::TYPE]);
+//            $result[] = array_shift($searchResults[OnlineSpecialDataProvider::TYPE]);
+            $result = array_merge($result, $searchResults[OnlineCommonDataProvider::TYPE], $searchResults[OnlineSpecialDataProvider::TYPE]);
 
             return $result;
         }
