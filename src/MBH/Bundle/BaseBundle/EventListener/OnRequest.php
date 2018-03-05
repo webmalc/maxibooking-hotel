@@ -36,8 +36,7 @@ class OnRequest
                 } else {
                     $this->container->get('mbh.client_manager')->updateSessionClientData($client, new \DateTime());
                 }
-            }
-            if (!$clientManager->isClientActive()
+            } elseif (!$clientManager->isClientActive()
                 && $session->get(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR) !== true
                 && !$clientManager->isRouteAccessibleForInactiveClient($event->getRequest()->get('_route'))
                 && $this->isRequestedByMBUser()
