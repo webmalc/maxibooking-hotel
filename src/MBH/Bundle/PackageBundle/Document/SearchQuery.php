@@ -473,9 +473,4 @@ class SearchQuery extends Base
         $this->ignoreGuestRestriction = $ignoreGuestRestriction;
     }
 
-
-
-
-
-
 }

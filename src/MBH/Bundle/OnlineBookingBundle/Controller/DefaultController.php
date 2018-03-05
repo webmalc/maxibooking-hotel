@@ -94,8 +94,8 @@ class DefaultController extends BaseController
         if ($form->isValid()) {
             /** @var OnlineSearchFormData $data */
             $data = $form->getData();
-            $resultGenerator = $this->get('mbh.online.search_helper');
-            $searchResults = $resultGenerator->getResults($data);
+            $resultDataProvider = $this->get('mbh.online.search_helper');
+            $searchResults = $resultDataProvider->getResults($data);
         }
         $html = '';
         $requestSearchUrl = $this->onlineOptions['request_search_url'];
