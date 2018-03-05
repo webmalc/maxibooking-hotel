@@ -37,7 +37,9 @@ class SpecialDataPreparer
     /**
      * SpecialDataPreparer constructor.
      * @param DocumentManager $dm
-     * @param array $hotelsLinks
+     * @param array $onlineOptions
+     * @param SorterInterface $sorter
+     * @param array $onlineBookingConfig
      */
     public function __construct(DocumentManager $dm, array $onlineOptions, SorterInterface $sorter)
     {
@@ -130,16 +132,18 @@ class SpecialDataPreparer
         /** @var SpecialPrice $specPrice */
         $roomType = $specialPrice->getRoomType();
         $tariff = $specialPrice->getTariff();
+        $hotel = $roomType->getHotel();
+        $hotelId = $hotel->getId();
 
         $result = [
             'special' => $special,
             'roomType' => $roomType,
             'tariff' => $tariff,
-            'hotelId' => $roomType->getHotel()->getId(),
+            'hotelId' => $hotelId,
             'images' => $this->getImage($roomType),
             'hotelName' => $roomType->getHotel()->getName(),
             'roomTypeName' => $roomType->getCategory()->getFullTitle(),
-            'eat' => '',
+            'eat' => $this->getEatData($hotelId),
             'dates' => [
                 'begin' => $special->getBegin(),
                 'end' => $special->getEnd(),
@@ -153,10 +157,15 @@ class SpecialDataPreparer
             'specialId' => $special->getId(),
             'roomTypeId' => $roomType->getId(),
             'roomCategoryId' => $roomType->getCategory()->getId(),
-            'hotelLink' => $this->onlineOptions['hotels_links'][$roomType->getHotel()->getId()]??null
+            'hotelLink' => $this->onlineOptions['hotels_links'][$hotelId]??null
         ];
 
         return $result;
+    }
+
+    private function getEatData(string $hotelId): ?array
+    {
+        return $this->onlineOptions['hotels_links'][$hotelId]['eat'] ?? null;
     }
 
 

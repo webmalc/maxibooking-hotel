@@ -177,6 +177,9 @@ services:
           - '@validator'
           - '@mbh.cache.logger'
           - '@mbh.mongo'
+          - '@old_sound_rabbit_mq.task_cache_clear_producer'
+        tags:
+          - { name: kernel.event_listener, event: kernel.terminate }
 
     mbh.task.logger:
         class:     Symfony\Bridge\Monolog\Logger

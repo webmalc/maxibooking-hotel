@@ -219,6 +219,9 @@ class SearchQuery extends Base
     /** @var  string */
     protected $querySavedId;
 
+    /** @var bool */
+    protected $ignoreGuestRestriction = false;
+
     /**
      * @return bool
      */
@@ -453,6 +456,24 @@ class SearchQuery extends Base
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isIgnoreGuestRestriction()
+    {
+        return $this->ignoreGuestRestriction;
+    }
+
+    /**
+     * @param bool $ignoreGuestRestriction
+     */
+    public function setIgnoreGuestRestriction(bool $ignoreGuestRestriction)
+    {
+        $this->ignoreGuestRestriction = $ignoreGuestRestriction;
+    }
+
+
 
 
 

@@ -9,6 +9,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 
 /**
  * @ODM\Document(collection="CacheItem", repositoryClass="MBH\Bundle\BaseBundle\Document\CacheItemRepository")
+
  */
 class CacheItem extends Base
 {
@@ -49,6 +50,7 @@ class CacheItem extends Base
      * @ODM\Index()
      */
     private $lifetime;
+
 
     /**
      * lifetime set
@@ -103,7 +105,7 @@ class CacheItem extends Base
     /**
      * @return \DateTime
      */
-    public function getBegin(): \DateTime
+    public function getBegin()
     {
         return $this->begin;
     }
@@ -121,7 +123,7 @@ class CacheItem extends Base
     /**
      * @return \DateTime
      */
-    public function getEnd(): \DateTime
+    public function getEnd()
     {
         return $this->end;
     }
@@ -134,5 +136,18 @@ class CacheItem extends Base
     {
         $this->end = $end;
         return $this;
+    }
+
+    public static function getInstance(string $key = null, \DateTime $begin = null, \DateTime $end = null)
+    {
+        $instance = new self($key);
+        if ($begin) {
+            $instance->setBegin($begin);
+        }
+        if ($end) {
+            $instance->setEnd($end);
+        }
+
+        return $instance;
     }
 }

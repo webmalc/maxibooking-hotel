@@ -54,7 +54,6 @@ class SpecialsController extends BaseController
             'hotels' => $hotels,
             'multiHotel' => $hotel === null,
             'specialPerPage' => self::SPECIAL_PER_PAGE
-
         ];
     }
 
