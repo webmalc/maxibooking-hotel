@@ -94,10 +94,10 @@
                     {% endblock prices %}
                 <p class="datesrdm">{{ onlineResult.dates.begin|date("d.m.Y") }} - {{ onlineResult.dates.end|date("d.m.Y") }}</p>
                 <p class="daysrdm">{{ onlineResult.firstResult.days }} {{ 'days'|transchoice(onlineResult.firstResult.days) }} / {{ onlineResult.firstResult.nights }} {{ 'nights'|transchoice(onlineResult.firstResult.nights) }}</p>
-                {% block remain %}
-                    {% set left_rooms = onlineResult.leftSale %}
-                    <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>
-                {% endblock remain %}
+                {#{% block remain %}#}
+                    {#{% set left_rooms = onlineResult.leftSale %}#}
+                    {#<p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>#}
+                {#{% endblock remain %}#}
                 <p class="bronsrdm"></p>
             </div>
             <div class="clear"></div>
