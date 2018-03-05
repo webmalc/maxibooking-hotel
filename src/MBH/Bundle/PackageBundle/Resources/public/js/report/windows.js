@@ -207,14 +207,20 @@ $(document).ready(function ($) {
                     specialsInit();
                 }
             });
+        },
+        getFormData = function() {
+            var formData = form.serializeObject();
+            formData['show-disabled-rooms'] = $('#windows-report-filter-show-disabled-rooms').bootstrapSwitch('state');
+
+            return formData;
         };
 
     table.html(mbh.loader.html);
-    update(form.serializeObject());
+    update(getFormData());
     $('#report-submit-button').click(function (event) {
         event.preventDefault();
         table.html(mbh.loader.html);
-        update(form.serializeObject());
+        update(getFormData());
     });
     hangPackagingHandlers();
 });

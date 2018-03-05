@@ -128,13 +128,20 @@ class WindowsReportGenerator
             $this->end = clone $this->begin;
             $this->end->modify('+45 days');
         }
+        $showDisabledRooms = $request->get('show-disabled-rooms') === 'true';
         $to = clone $this->end;
         $to->modify('+1 day');
 
-        $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
-            ->fetchQuery($this->hotel, $request->get('roomType'))
+        $roomsQB = $this->dm->getRepository('MBHHotelBundle:Room')
+            ->fetchQuery($this->hotel, $request->get('roomType'));
+        if (!$showDisabledRooms) {
+            $roomsQB->field('isEnabled')->equals(true);
+        }
+        /** @var Room[] $rooms */
+        $rooms = $roomsQB
             ->sort(['roomType.id' => 'asc', 'id' => 'asc', 'fullTitle' => 'asc'])
-            ->getQuery()->execute();
+            ->getQuery()
+            ->execute();
 
         $this->packages = $this->dm->getRepository('MBHPackageBundle:Package')
             ->fetchWithVirtualRooms($this->begin, $this->end, null, true);
