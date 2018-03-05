@@ -17,6 +17,9 @@ class OnlineSearchHelper
     /** @var  Helper */
     private $helper;
 
+    /** @var OnlineDataProviderWrapperInterface */
+    private $additionalProvider;
+
     /**
      * OnlineSearchHelper constructor.
      * @param array $options
@@ -29,40 +32,55 @@ class OnlineSearchHelper
         $this->helper = $helper;
     }
 
-//    public function addGenerator(AbstractResultGenerator $generator)
-//    {
-//        $this->dataProviders->attach($generator);
-//    }
-
     public function addDataProvider(OnlineDataProviderWrapperInterface $dataProvider)
     {
         $this->dataProviders->attach($dataProvider);
     }
 
+    public function setAdditionalProvider(OnlineDataProviderWrapperInterface $dataProvider)
+    {
+        $this->additionalProvider = $dataProvider;
+    }
+
+    /**
+     * @param OnlineSearchFormData $formInstance
+     * @return array
+     * TODO: Очень костыльно получилось с доп датами. В идеале рефакторить и тут.
+     */
     public function getResults(OnlineSearchFormData $formInstance)
     {
         $results = [];
-        foreach ($this->dataProviders as $dataProvider) {
-            /** @var OnlineDataProviderWrapperInterface $dataProvider */
-            $results[$dataProvider->getType()] = $dataProvider->getResults($formInstance);
-        }
-        if (count($results)) {
-            $results = $this->finishFilter($results);
+        if (!$this->isAdditionalData($formInstance)) {
+            foreach ($this->dataProviders as $dataProvider) {
+                /** @var OnlineDataProviderWrapperInterface $dataProvider */
+                $results[$dataProvider->getType()] = $dataProvider->getResults($formInstance);
+            }
+            if (count($results)) {
+                $results = $this->finishFilter($results);
+            }
+        } else {
+            /** When Additional dates */
+            $results = $this->additionalProvider->getResults($formInstance);
         }
 
         return $results;
+    }
+
+    private function isAdditionalData(OnlineSearchFormData $formData): bool
+    {
+        return $this->options['add_search_dates'] && $formData->isAddDates();
     }
 
     private function finishFilter(
         array $searchResults
     ) {
         $result = [];
-        $isCommon = isset($searchResults[OnlineCommonDataProvider::TYPE]) && !empty($searchResults[OnlineCommonDataProvider::TYPE]);
-        $isSpecials = isset($searchResults[OnlineSpecialDataProvider::TYPE]) && !empty($searchResults[OnlineSpecialDataProvider::TYPE]);
+        $isCommon = isset($searchResults['common']) && !empty($searchResults['common']);
+        $isSpecials = isset($searchResults['special']) && !empty($searchResults['special']);
         if ($isCommon && $isSpecials) {
-            $this->injectQueryIdInSpecial(reset($searchResults[OnlineCommonDataProvider::TYPE])->getQueryId(), $searchResults[OnlineSpecialDataProvider::TYPE]);
-//            $result[] = array_shift($searchResults[OnlineSpecialDataProvider::TYPE]);
-            $result = array_merge($result, $searchResults[OnlineCommonDataProvider::TYPE], $searchResults[OnlineSpecialDataProvider::TYPE]);
+            $this->injectQueryIdInSpecial(reset($searchResults['common'])->getQueryId(), $searchResults['special']);
+//            $result[] = array_shift($searchResults['special']);
+            $result = array_merge($result, $searchResults['common'], $searchResults['special']);
 
             return $result;
         }

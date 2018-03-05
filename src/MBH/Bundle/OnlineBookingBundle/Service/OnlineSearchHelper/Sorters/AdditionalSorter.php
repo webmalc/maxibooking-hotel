@@ -7,7 +7,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance;
 
-class CommonSorterByPrice implements OnlineSorterInterface
+class AdditionalSorter implements OnlineSorterInterface
 {
     public function sort(array $data, OnlineSearchFormData $formData = null): array
     {

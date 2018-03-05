@@ -1,21 +1,22 @@
 <?php
 
 
-namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
+namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders;
 
 
 use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\OnlineCreatorInterface;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\SearchQuery\OnlineSearchQueryGenerator;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
 
 /**
- * Class OnlineSpecialDataProvider
+ * Class SpecialDataProvider
  * @package MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper
  */
-class OnlineSpecialDataProvider implements OnlineDataProviderInterface
+class SpecialDataProvider implements DataProviderInterface
 {
     /** @var string */
     const TYPE = 'special';
@@ -26,7 +27,7 @@ class OnlineSpecialDataProvider implements OnlineDataProviderInterface
     /** @var array */
     private $onlineOptions;
 
-    /** @var OnlineResultCreator */
+    /** @var OnlineCreatorInterface  */
     private $onlineResultCreator;
     /**
      * @var OnlineSearchQueryGenerator
@@ -35,15 +36,15 @@ class OnlineSpecialDataProvider implements OnlineDataProviderInterface
 
 
     /**
-     * OnlineSpecialDataProvider constructor.
+     * SpecialDataProvider constructor.
      * @param SearchFactory $search
-     * @param OnlineResultCreator $creator
+     * @param OnlineCreatorInterface $creator
      * @param OnlineSearchQueryGenerator $queryGenerator
      * @param array $onlineOptions
      */
     public function __construct(
         SearchFactory $search,
-        OnlineResultCreator $creator,
+        OnlineCreatorInterface $creator,
         OnlineSearchQueryGenerator $queryGenerator,
         array $onlineOptions
     ) {
@@ -57,7 +58,6 @@ class OnlineSpecialDataProvider implements OnlineDataProviderInterface
     /**
      * @param OnlineSearchFormData $formData
      * @return array
-     * @throws \MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\OnlineBookingSearchException
      */
     public function search(OnlineSearchFormData $formData): array
     {
@@ -96,7 +96,7 @@ class OnlineSpecialDataProvider implements OnlineDataProviderInterface
         }
         if (count($founded)) {
             foreach ($founded as $result) {
-                $results[] = $this->onlineResultCreator->createSpecial($result['searchResult'], $result['searchQuery'], $this->getType());
+                $results[] = $this->onlineResultCreator->create($result['searchResult'], $result['searchQuery']);
             }
         }
 
@@ -163,12 +163,10 @@ class OnlineSpecialDataProvider implements OnlineDataProviderInterface
         return $formData->getSpecial() && $formData->getRoomType();
     }
 
-
-    /**
-     * @return string
-     */
     public function getType(): string
     {
-        return self::TYPE;
+        return 'special';
     }
+
+
 }

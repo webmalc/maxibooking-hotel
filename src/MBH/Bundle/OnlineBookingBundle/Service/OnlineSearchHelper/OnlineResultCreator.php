@@ -4,9 +4,10 @@
 namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
+use MBH\Bundle\HotelBundle\Form\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\OnlineBookingSearchException;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\OnlineCreatorInterface;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 
@@ -14,7 +15,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchResult;
  * Class OnlineResultCreator
  * @package MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper
  */
-class OnlineResultCreator
+class OnlineResultCreator implements OnlineCreatorInterface
 {
 
     /**

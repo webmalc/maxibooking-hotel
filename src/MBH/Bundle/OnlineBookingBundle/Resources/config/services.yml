@@ -76,6 +76,7 @@ services:
         calls:
             - [addDataProvider, ['@mbh.online.data_provider_common']]
             - [addDataProvider, ['@mbh.online.data_provider_special']]
+            - [setAdditionalProvider, ['@mbh.online.data_provider_additional']]
 
     mbh.online_result_instance:
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance
@@ -86,38 +87,60 @@ services:
         public: false
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters\FooSorter
 
-    mbh.online.common_price_sorter:
+    mbh.online.common_sorter:
         public: false
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters\CommonSorterByPrice
 
-    mbh.online.special_sorter_date:
+    mbh.online.special_sorter:
         public: false
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters\SpecialByDateSorter
 
-    mbh.online_result_creator:
+    mbh.online.additional_sorter:
         public: false
-        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultCreator
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters\AdditionalSorter
+##
+    mbh.online.common_result_creator:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\CommonCreator
 
+    mbh.online.special_result_creator:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\SpecialCreator
+
+    mbh.online.additional_result_creator:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\AdditionalCreator
+###
     mbh.common_data_provider:
         public: false
-        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineCommonDataProvider
-        arguments: ['@mbh.package.search', '@mbh.online_result_creator','@mbh.online.query_generator' ,'%online_booking%']
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\CommonDataProvider
+        arguments: ['@mbh.package.search', '@mbh.online.common_result_creator','@mbh.online.query_generator' ,'%online_booking%']
 
     mbh.special_data_provider:
         public: false
-        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialDataProvider
-        arguments: ['@mbh.package.search', '@mbh.online_result_creator' ,'@mbh.online.query_generator','%online_booking%']
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\SpecialDataProvider
+        arguments: ['@mbh.package.search', '@mbh.online.special_result_creator' ,'@mbh.online.query_generator','%online_booking%']
 
+    mbh.additional_data_provider:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\AdditionalDataProvider
+        arguments: ['@mbh.package.search', '@mbh.online.additional_result_creator' ,'@mbh.online.query_generator','%online_booking%']
+###
     mbh.online.data_provider_common:
         public: false
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineDataProviderWrapper
-        arguments: ["@mbh.common_data_provider", "@mbh.online.common_price_sorter"]
+        arguments: ["@mbh.common_data_provider", "@mbh.online.common_sorter", "%mbh_cache%"]
 
     mbh.online.data_provider_special:
         public: false
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineDataProviderWrapper
-        arguments: ["@mbh.special_data_provider", "@mbh.online.special_sorter_date"]
+        arguments: ["@mbh.special_data_provider", "@mbh.online.special_sorter"]
 
+    mbh.online.data_provider_additional:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineDataProviderWrapper
+        arguments: ["@mbh.additional_data_provider", "@mbh.online.additional_sorter"]
+###
     mbh.online.query_generator:
         public: false
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\SearchQuery\OnlineSearchQueryGenerator

@@ -4,14 +4,13 @@
 namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 
+
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\DataProviderInterface;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters\OnlineSorterInterface;
-use MBH\Bundle\PackageBundle\Document\SearchQuery;
 
 class OnlineDataProviderWrapper implements OnlineDataProviderWrapperInterface
 {
-
-    /** @var OnlineDataProviderInterface */
     private $dataProvider;
 
     /** @var OnlineSorterInterface */
@@ -19,10 +18,10 @@ class OnlineDataProviderWrapper implements OnlineDataProviderWrapperInterface
 
     /**
      * OnlineDataProviderContainer constructor.
-     * @param OnlineDataProviderInterface $dataProvider
+     * @param DataProviderInterface $dataProvider
      * @param OnlineSorterInterface $onlineSorter
      */
-    public function __construct(OnlineDataProviderInterface $dataProvider, OnlineSorterInterface $onlineSorter)
+    public function __construct(DataProviderInterface $dataProvider, OnlineSorterInterface $onlineSorter)
     {
         $this->dataProvider = $dataProvider;
         $this->onlineSorter = $onlineSorter;
@@ -32,7 +31,7 @@ class OnlineDataProviderWrapper implements OnlineDataProviderWrapperInterface
     {
         $clonedFormData = clone $formData;
         $result = $this->dataProvider->search($clonedFormData);
-        $result = $this->onlineSorter->sort($result);
+        $result = $this->onlineSorter->sort($result, $clonedFormData);
 
         return $result;
     }
