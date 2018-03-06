@@ -7,6 +7,7 @@ use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Monolog\Logger;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -21,6 +22,7 @@ class MaintenanceController extends BaseController
 {
 
     /**
+     * @Method("POST")
      * @Route(
      *     "/install",
      *     requirements={"_format":"json"}
@@ -53,6 +55,7 @@ class MaintenanceController extends BaseController
     }
 
     /**
+     * @Method("POST")
      * @Route("/install_properties")
      * @param Request $request
      * @return JsonResponse
