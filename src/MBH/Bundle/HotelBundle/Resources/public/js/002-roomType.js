@@ -41,32 +41,30 @@ $(document).ready(function () {
         hostel.on('switchChange.bootstrapSwitch', show);
     }());
 
+    var initDataTable = function (roomTypeId, isFirstInit) {
+        var $table = $('.rooms-table[data-room-type-id="' + roomTypeId + '"]');
+        if (!isFirstInit) {
+            $table.dataTable().fnDestroy();
+        }
+
+        $table.dataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": false,
+            "bAutoWidth": false,
+            "ajax": Routing.generate('room_type_room_json', {'id': roomTypeId})
+        });
+    };
+
     //roomType rooms datatables
     (function () {
-        $('.rooms-table').each(function () {
-
-            $(this).dataTable({
-                "processing": true,
-                "serverSide": true,
-                "ordering": false,
-                "bAutoWidth": false,
-                "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
-            });
-        });
+        var openedRoomTypeId = $('ul.nav-tabs li.active a').attr('href').substring(1);
+        initDataTable(openedRoomTypeId, true);
     }());
 
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function () {
         var roomTypeId = this.getAttribute('href').substring(1);
-        $('.rooms-table[data-room-type-id="' + roomTypeId + '"]').each(function () {
-            $(this).dataTable().fnDestroy();
-            $(this).dataTable({
-                "processing": true,
-                "serverSide": true,
-                "ordering": false,
-                "bAutoWidth": false,
-                "ajax": Routing.generate('room_type_room_json', {'id': roomTypeId})
-            });
-        });
+        initDataTable(roomTypeId, false);
     });
 
 
