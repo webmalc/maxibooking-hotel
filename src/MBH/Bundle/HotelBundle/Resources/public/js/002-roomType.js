@@ -56,14 +56,15 @@ $(document).ready(function () {
     }());
 
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function () {
-        $('.rooms-table').each(function () {
+        var roomTypeId = this.getAttribute('href').substring(1);
+        $('.rooms-table[data-room-type-id="' + roomTypeId + '"]').each(function () {
             $(this).dataTable().fnDestroy();
             $(this).dataTable({
                 "processing": true,
                 "serverSide": true,
                 "ordering": false,
                 "bAutoWidth": false,
-                "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
+                "ajax": Routing.generate('room_type_room_json', {'id': roomTypeId})
             });
         });
     });
