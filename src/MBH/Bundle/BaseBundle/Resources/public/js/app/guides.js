@@ -6,7 +6,7 @@ var LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST = 'number-of-guide';
 var LS_HAS_VIEWED_WELCOME_GUIDE = 'has-viewed-welcome-guide';
 
 var GUIDES_BY_PATH = {
-    any: ['first-guide-1', 'room-cache-1', 'price-cache-1', 'search-guide-1'],
+    any: ['first-guide-1', 'room-cache-1', 'price-cache-1', 'search-guide-1', 'tariff-guide-1'],
     "/warehouse/record": ['first-guide-2'],
     '/package': ['first-guide-1'],
     '/warehouse/record/new': ['first-guide-3'],
@@ -14,7 +14,8 @@ var GUIDES_BY_PATH = {
     '/price/price_cache': ['price-cache-2'],
     '/price/room_cache/generator': ['room-cache-3'],
     '/price/price_cache/generator': ['price-cache-3'],
-    '/package/search': ['search-guide-2', 'search-guide-3-v1', 'search-guide-3-v2']
+    '/package/search': ['search-guide-2', 'search-guide-3-v1', 'search-guide-3-v2'],
+    '/price/management/tariff': ['tariff-guide-add-1']
 };
 
 var INCLUDED_PATHS_BEGINS = ['/package/order'];
@@ -255,10 +256,51 @@ var GUIDES = {
                 }
             ]
         }
+    },
+    'tariff-guide-1': {
+        getSteps: function () {
+            return [
+                {
+                    selector: '#main-menu li.dropdown:eq(1)',
+                    event: 'click',
+                    description: 'Для начала нажмите сюда'
+                },
+                {
+                    timeout: 500,
+                    selector: '#main-menu li.dropdown:eq(1) li:eq(0)',
+                    event: 'click',
+                    description: 'Выберите, чтобы добавить и отредактировать тариф'
+                }
+            ];
+        },
+        next: 'tariff-guide-add-1'
+    },
+    'tariff-guide-add-1': {
+        getSteps: function () {
+            return [
+                {
+                    selector: '#actions li:eq(0) button',
+                    event: 'click',
+                    description: 'Нажмите здесь'
+                }
+            ];
+        },
+        next: 'tariff-guide-add-2'
+    },
+    'tariff-guide-add-2': {
+        getSteps: function () {
+            return [
+                {
+                    selector: '#mbh_bundle_pricebundle_tariff_main_type_fullTitle',
+                    event_type: 'next',
+                    description: 'Назовите тариф'
+                }
+            ];
+        }
     }
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     'use strict';
     if (localStorage.getItem(LS_HAS_VIEWED_WELCOME_GUIDE) !== 'true') {
         runFirstGuide();
@@ -276,22 +318,13 @@ function runGuides(guidesList) {
 
     guidesList = guidesList || JSON.parse(localStorage.getItem(LS_CURRENT_GUIDES_LIST));
 
-    var guideName;
-    if (guidesList) {
+    var guideName = localStorage.getItem(LS_CURRENT_GUIDE_WITH_STAGE);
+    var numberOfGuideInList = parseInt(localStorage.getItem(LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST), 10) || 0;
+    if (!guideName && guidesList) {
         localStorage.setItem(LS_CURRENT_GUIDES_LIST, JSON.stringify(guidesList));
-        guideName = guidesList[0];
-    } else {
-        guideName = localStorage.getItem(LS_CURRENT_GUIDE_WITH_STAGE);
+        guideName = guidesList[numberOfGuideInList];
     }
-
-    var devAddressStr = '/app_dev.php';
-    var currentPath = location.pathname.indexOf(devAddressStr) > -1 ?
-        location.pathname.substr(devAddressStr.length)
-        : location.pathname;
-
-    if ((currentPath.length - 1) === currentPath.lastIndexOf('/')) {
-        currentPath = currentPath.substring(0, currentPath.length - 1)
-    }
+    var currentPath = getCurrentPath();
 
     if (guideName && isCurrentPathIncluded(currentPath, guideName) && !isPathExcluded(currentPath)) {
         var guideData = GUIDES[guideName];
@@ -304,18 +337,15 @@ function runGuides(guidesList) {
 
                 if (guideData.next) {
                     writeGuidesLSData(guideData.next);
-                } else {
-                    if (guidesList) {
-                        var numberOfGuideInList = parseInt(localStorage.getItem(LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST), 10) || 0;
-                        if (numberOfGuideInList === -1 || numberOfGuideInList === (guidesList.length - 1)) {
-                            clearGuidesLSData();
-                        } else {
-                            var nextGuideNumber = numberOfGuideInList + 1;
-                            localStorage.setItem(LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST, nextGuideNumber);
-                            setTimeout(function () {
-                                runGuides([guidesList[nextGuideNumber]]);
-                            }, 100);
-                        }
+                } else if (guidesList) {
+                    if (numberOfGuideInList === -1 || numberOfGuideInList === (guidesList.length - 1)) {
+                        clearGuidesLSData();
+                    } else {
+                        var nextGuideNumber = numberOfGuideInList + 1;
+                        localStorage.setItem(LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST, nextGuideNumber);
+                        setTimeout(function () {
+                            runGuides();
+                        }, 100);
                     }
                 }
             }, onStart: function () {
@@ -334,6 +364,21 @@ function runGuides(guidesList) {
         enjoyHintInstance.set(steps);
         enjoyHintInstance.run();
     } else {
+        if (!guideName) {
+            console.log('Нет имени гайда');
+        } else if (!isCurrentPathIncluded(currentPath, guideName)) {
+            console.log('Путь не входит');
+            if (!GUIDES_BY_PATH[currentPath]) {
+                console.log('Нет в гайдах по пути');
+                console.log(currentPath);
+            } else if (GUIDES_BY_PATH[currentPath].indexOf(guideName) === -1) {
+                console.log('Нет в списке гайда');
+            } else if (!isPathBeginsFromIncluded(currentPath)) {
+                console.log('Путь не начинается с включенных');
+            }
+        } else if (isPathExcluded(currentPath)) {
+            console.log('Путь в исключенных');
+        }
         clearGuidesLSData();
     }
 }
@@ -404,4 +449,17 @@ function isFirstStepOpenDropdownMenu(steps) {
     return steps[0].selector && steps[0].selector.indexOf('#main-menu') === 0
         && $(steps[0].selector).hasClass('active')
         && $(steps[0].selector).hasClass('dropdown');
+}
+
+function getCurrentPath() {
+    var devAddressStr = '/app_dev.php';
+    var currentPath = location.pathname.indexOf(devAddressStr) > -1 ?
+        location.pathname.substr(devAddressStr.length)
+        : location.pathname;
+
+    if ((currentPath.length - 1) === currentPath.lastIndexOf('/')) {
+        currentPath = currentPath.substring(0, currentPath.length - 1)
+    }
+
+    return currentPath;
 }
