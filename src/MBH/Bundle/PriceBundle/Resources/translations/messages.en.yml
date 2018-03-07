@@ -527,3 +527,11 @@ price.controller.restrictioncontroller.room_types_not_found: 'Room types not fou
 price.controller.restrictioncontroller.tariffs_not_found: 'Rates types not found'
 price.controller.restrictioncontroller.data_successful_generate: 'Data generated successfully'
 price.controller.servicecontroller.price_successful_saved: 'Prices saved successfully'
+total_rooms_overview_table.rooms_count: Rooms
+total_rooms_overview_table.total: Total
+total_rooms_overview_table.number_of_unused_rooms: 'Left rooms'
+total_rooms_overview_table.rooms_at_sale: 'Rooms set for sale'
+total_rooms_overview_table.by_all_hotels: 'By all hotels'
+total_rooms_overview_table.number_of_rooms: 'Number of rooms'
+total_rooms_overview_table.available_number_of_rooms: 'Available number of rooms according to the rate'
+room_cache_controller.limit_of_rooms_exceeded: 'Number of rooms set to sale exceeds maximum available amount set in rates for the following dates: Available in rates %availableNumberOfRooms%. Подробнее <a href="%overviewUrl%" target="_blank">информация по номерам</a>'

@@ -48,7 +48,7 @@ views.api.getUserForm.enter_data_to_continue: 'Заполните данные �
 views.api.getUserForm.surname: Фамилия
 views.api.getUserForm.placeholder_surname: Иванов
 views.api.getUserForm.patronymic: Отчество
-views.api.get_user_form.default_patronymic: 'Иванович'
+views.api.get_user_form.default_patronymic: Иванович
 views.api.getUserForm.name: Имя
 views.api.getUserForm.phone: Телефон
 views.api.getUserForm.email: E-mail
@@ -90,8 +90,8 @@ views.api.getResultsTable.noch: Ночь
 views.api.getResultsTable.nochi: Ночи
 views.api.getResultsTable.nochei: Ночей
 views.form.index.settings_in_quotes: настройки
-views.form.index.settings_required: "Необходимо заполнить основные настройки!"
-views.form.index.to_form_place: "На место для формы:"
-views.form.layout.online_polls: "Оценки"
-views.form.layout.invite: "Визовое приглашение"
-online_form.notification: "Оформлены новые брони через онлайн форму."
+views.form.index.settings_required: 'Необходимо заполнить основные настройки!'
+views.form.index.to_form_place: 'На место для формы:'
+views.form.layout.online_polls: Оценки
+views.form.layout.invite: 'Визовое приглашение'
+online_form.notification: 'Оформлены новые брони через онлайн форму.'

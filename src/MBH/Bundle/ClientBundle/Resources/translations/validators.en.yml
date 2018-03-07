@@ -1,1 +1,4 @@
 validate.type.integer: 'Value must be a positive number'
+validator.colors_config.max_сolor_length: 'Max length should not exceed 22 digits'
+validator.colors_config.max_hex_code: 'Max length should not exceed 7 digits'
+validator.colors_config.min_hex_code: 'Max length should not be less 6 digits'
