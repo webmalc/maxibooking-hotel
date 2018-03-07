@@ -25,7 +25,7 @@ aciton_manager.modal.change_package_end.confirmation: 'Are you sure you want to 
 action_manager.modal.need_changepackage_end.title: 'To perform this action check out date must be changed'
 action_manager.modal.book_button.title: 'Reserve a room. Total rooms: %roomsCount%'
 action_manager.modal.disabled_book_button.title: 'To create a reservation, please add the payer.'
-action_manager.update_modal.without_accommodation: 'Without accommodation'
+action_manager.update_modal.without_accommodation: 'Without allocation'
 action_manager.update_modal.not_specified: 'Not specified'
 search.book_button.title: 'Reserve a room. %roomsCount% total rooms left.'
 search.disabled_book_button.title: 'To create a reservation, please add a payer.'
@@ -182,3 +182,5 @@ dynamic_sales.option_data_type.comparative_graph_name.relative: 'Comparison of r
 dynamic_sales.option_data_type.comparative_graph_name.absolute: 'Comparison of absolute values in the category "% optionName%"'
 package_bundle.accommodations.warning_before_setting_accoommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Reservation calendar</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
 package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Chessboard</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
+guides.next_button.title: Next
+guides.skip_button.title: Exit

@@ -217,7 +217,7 @@ package.json.corrupted: error
 package.json.edit_order: 'Edit order'
 package.json.deleted_order: Deleted
 package.json.go_to_placement: 'Proceed to accommodation'
-package.json.not_placed: 'Not accommodated'
+package.json.not_placed: 'Without allocation'
 package.json.go_to_payer: 'Proceed to payer'
 package.json.no_payer: 'No payer'
 package.json.go_to_calculations: 'Proceed to accounting'

@@ -184,3 +184,6 @@ package_bundle.accommodations.warning_before_setting_accoommodation_with_existed
 
 dynamic_sales.option_data_type.comparative_graph_name.relative: 'Сравнение относительных значений в категории "%optionName%"'
 dynamic_sales.option_data_type.comparative_graph_name.absolute: 'Сравнение абсолютных значений в категории "%optionName%"'
+
+guides.next_button.title: 'Далее'
+guides.skip_button.title: 'Выход'

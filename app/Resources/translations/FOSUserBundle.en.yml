@@ -11,7 +11,7 @@ security.login.submit: 'Log in'
 profile.show.username: Username
 profile.show.email: Email
 profile.edit.submit: Update
-profile.flash.updated: 'The profile has been updated.'
+profile.flash.updated: 'Your profile has been updated.'
 change_password.submit: 'Change password'
 change_password.flash.success: 'The password has been changed'
 registration.check_email: "An email has been sent to %email%. It contains an activation link you must click to activate your account.\n"
