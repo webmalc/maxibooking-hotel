@@ -9,12 +9,9 @@
 namespace Tests\Bundle\HotelBundle\Controller;
 
 
-use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -22,9 +19,10 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class RoomTypeControllerTest extends WebTestCase
 {
+    private const NAME_TEST_HOTEL = 'Мой отель #1';
+
     private const URL_INDEX = '/management/hotel/roomtype';
     private const TABS_ITEM = 'ul[role="tablist"] > li';
-    private const TABS_FIRST_TAB = 'div.tab-pane.active';
 
     private const ROOM_TYPE_TAB_NAME_NUM2 = 'Двухместный';
     private const ROOM_TYPE_TAB_NAME_NUM3 = 'Трехместный';
@@ -74,20 +72,29 @@ class RoomTypeControllerTest extends WebTestCase
         return $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
     }
 
+    /**
+     * @return mixed
+     */
     private function getHotelId()
     {
         return $this->dm->getRepository('MBHHotelBundle:Hotel')
-            ->findOneBy(['fullTitle' => 'Мой отель #1'])
+            ->findOneBy(['fullTitle' => self::NAME_TEST_HOTEL])
             ->getId();
     }
 
+    /**
+     * @param $roomTypeId
+     * @return array|Room[]
+     */
     private function getRooms($roomTypeId)
     {
         return $this->dm->getRepository('MBHHotelBundle:Room')
-            ->findBy([
-                'roomType.id' => $roomTypeId,
-                'hotel.id'    => $this->hotelId,
-            ]);
+            ->findBy(
+                [
+                    'roomType.id' => $roomTypeId,
+                    'hotel.id'    => $this->hotelId,
+                ]
+            );
     }
 
     /**
@@ -97,7 +104,6 @@ class RoomTypeControllerTest extends WebTestCase
      */
     private function getRandomFacilities()
     {
-//        $facilities = $this->dm->getRepository('MBHHotelBundle:FacilityRepository')->getAllByGroup();
         $facilities = $this->getContainer()->get('mbh.facility_repository')->getAllByGroup();
 
         $selectFacilities = [];
@@ -144,17 +150,22 @@ class RoomTypeControllerTest extends WebTestCase
 
     /**
      * @param string $fullTitle
-     * @return mixed
+     * @param bool $returnId
+     * @return \MBH\Bundle\HotelBundle\Document\RoomType|null|object
      */
-    private function getRoomTypeId($fullTitle = self::ROOM_TYPE_TAB_NAME_NUM2)
+    private function getRoomType($fullTitle = self::ROOM_TYPE_TAB_NAME_NUM2, $returnId = true)
     {
         $roomTypeId = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->findOneBy([
-                'fullTitle' => $fullTitle,
-                'hotel.id'  => $this->hotelId,
-            ])
-            ->getId();
+            ->findOneBy(
+                [
+                    'fullTitle' => $fullTitle,
+                    'hotel.id'  => $this->hotelId,
+                ]
+            );
 
+        if ($returnId) {
+            return $roomTypeId->getId();
+        }
         return $roomTypeId;
     }
 
@@ -197,7 +208,7 @@ class RoomTypeControllerTest extends WebTestCase
     }
 
     /**
-     *  ссылки:
+     *  тест для ссылок:
      *  - Редактировать
      *  - Добавить Номер
      *  - Сгенерировать Номера
@@ -221,13 +232,29 @@ class RoomTypeControllerTest extends WebTestCase
             $links
         );
 
-        $this->linkTest($links->eq(self::LINK_EDIT_ROOM_TYPE), self::LINK_NAME[self::LINK_EDIT_ROOM_TYPE], $this->getLinkAction($roomTypeId, self::LINK_EDIT_ROOM_TYPE));
+        $this->linkTest(
+            $links->eq(self::LINK_EDIT_ROOM_TYPE),
+            self::LINK_NAME[self::LINK_EDIT_ROOM_TYPE],
+            $this->getLinkAction($roomTypeId, self::LINK_EDIT_ROOM_TYPE)
+        );
 
-        $this->linkTest($links->eq(self::LINK_ADD_ROOM), self::LINK_NAME[self::LINK_ADD_ROOM], $this->getLinkAction($roomTypeId, self::LINK_ADD_ROOM));
+        $this->linkTest(
+            $links->eq(self::LINK_ADD_ROOM),
+            self::LINK_NAME[self::LINK_ADD_ROOM],
+            $this->getLinkAction($roomTypeId, self::LINK_ADD_ROOM)
+        );
 
-        $this->linkTest($links->eq(self::LINK_GENERATE_ROOM), self::LINK_NAME[self::LINK_GENERATE_ROOM], $this->getLinkAction($roomTypeId, self::LINK_GENERATE_ROOM));
+        $this->linkTest(
+            $links->eq(self::LINK_GENERATE_ROOM),
+            self::LINK_NAME[self::LINK_GENERATE_ROOM],
+            $this->getLinkAction($roomTypeId, self::LINK_GENERATE_ROOM)
+        );
 
-        $this->linkTest($links->eq(self::LINK_DELETE_ROOM_TYPE), self::LINK_NAME[self::LINK_DELETE_ROOM_TYPE], $this->getLinkAction($roomTypeId, self::LINK_DELETE_ROOM_TYPE));
+        $this->linkTest(
+            $links->eq(self::LINK_DELETE_ROOM_TYPE),
+            self::LINK_NAME[self::LINK_DELETE_ROOM_TYPE],
+            $this->getLinkAction($roomTypeId, self::LINK_DELETE_ROOM_TYPE)
+        );
     }
 
     /**
@@ -271,7 +298,7 @@ class RoomTypeControllerTest extends WebTestCase
 
         $this->assertCount(
             0,
-            array_diff_assoc($arrayDb,$arrayTable)
+            array_diff_assoc($arrayDb, $arrayTable)
         );
     }
 
@@ -308,8 +335,8 @@ class RoomTypeControllerTest extends WebTestCase
             $tabs
         );
 
-        $roomTypeIdNum2 = $this->getRoomTypeId();
-        $roomTypeIdNum3 = $this->getRoomTypeId(self::ROOM_TYPE_TAB_NAME_NUM3);
+        $roomTypeIdNum2 = $this->getRoomType();
+        $roomTypeIdNum3 = $this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3);
 
         $linkNum2 = $tabs->eq(0)->filter('a');
         $linkNum3 = $tabs->eq(1)->filter('a');
@@ -328,7 +355,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     public function testLinkTabNum2()
     {
-        $this->tabLinksTest($this->getRoomTypeId());
+        $this->tabLinksTest($this->getRoomType());
     }
 
     /**
@@ -336,7 +363,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     public function testLinkTabNum3()
     {
-        $this->tabLinksTest($this->getRoomTypeId(self::ROOM_TYPE_TAB_NAME_NUM3));
+        $this->tabLinksTest($this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3));
     }
 
     /**
@@ -344,7 +371,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     public function testResponseTableWithRooms()
     {
-        $roomTypeId = $this->getRoomTypeId();
+        $roomTypeId = $this->getRoomType();
         $this->getTableWithRooms($roomTypeId);
 
         $this->assertTrue(
@@ -360,7 +387,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     public function testDataNum2()
     {
-        $this->diffArrayAjaxVsArrayDbTest($this->getRoomTypeId());
+        $this->diffArrayAjaxVsArrayDbTest($this->getRoomType());
     }
 
     /**
@@ -368,7 +395,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     public function testDataNum3()
     {
-        $this->diffArrayAjaxVsArrayDbTest($this->getRoomTypeId(self::ROOM_TYPE_TAB_NAME_NUM3));
+        $this->diffArrayAjaxVsArrayDbTest($this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3));
     }
 
     /**
@@ -376,7 +403,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     public function testTableRoomDelete()
     {
-        $roomTypeId = $this->getRoomTypeId();
+        $roomTypeId = $this->getRoomType();
 
         $list = $this->getTableWithRooms($roomTypeId);
 
@@ -405,7 +432,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     public function testTableRoomEdit()
     {
-        $roomTypeId = $this->getRoomTypeId();
+        $roomTypeId = $this->getRoomType();
 
         $list = $this->getTableWithRooms($roomTypeId);
 
@@ -420,9 +447,11 @@ class RoomTypeControllerTest extends WebTestCase
         $nameNew = time();
         $form = $formEdit
             ->filter(self::BUTTON_NAME_SAVE)
-            ->form([
-                self::FORM_NAME_HOTEL_ROOM_TYPE . '[fullTitle]' => $nameNew,
-            ]);
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[fullTitle]' => $nameNew,
+                ]
+            );
 
         /** нажато Сохранить */
         $result = $this->client->submit($form);
@@ -434,7 +463,10 @@ class RoomTypeControllerTest extends WebTestCase
 
         /** нажато Сохранить и Закрыть */
         $this->assertTrue(
-            $redirect->getUri() == $this->client->getRequest()->getUriForPath(self::URL_INDEX) . '/?tab=' . $roomTypeId
+            $redirect->getUri() == $this
+                ->client
+                ->getRequest()
+                ->getUriForPath(self::URL_INDEX) . '/?tab=' . $roomTypeId
         );
 
         $list = $this->getTableWithRooms($roomTypeId);
@@ -454,7 +486,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     public function testAddNewRoom()
     {
-        $roomTypeId = $this->getRoomTypeId();
+        $roomTypeId = $this->getRoomType();
 
         $this->client->followRedirects(true);
 
@@ -464,18 +496,22 @@ class RoomTypeControllerTest extends WebTestCase
         $nameInside = 'InsideName_' . $nameNew;
         $form = $crawler
             ->filter(self::BUTTON_NAME_SAVE)
-            ->form([
-                self::FORM_NAME_HOTEL_ROOM_TYPE . '[fullTitle]' => $nameNew,
-                self::FORM_NAME_HOTEL_ROOM_TYPE . '[title]'     => $nameInside,
-                self::FORM_NAME_HOTEL_ROOM_TYPE . '[floor]'     => 100500,
-                self::FORM_NAME_HOTEL_ROOM_TYPE . '[isSmoking]' => true,
-            ]);
-        $form->setValues([
-            self::FORM_NAME_HOTEL_ROOM_TYPE . '[roomViewsTypes]' => [
-                '5a99322bcb5f740de15d9b02',
-                '5a99322bcb5f740de15d9b0e',
-            ],
-        ]);
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[fullTitle]' => $nameNew,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[title]'     => $nameInside,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[floor]'     => 100500,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[isSmoking]' => true,
+                ]
+            );
+        $form->setValues(
+            [
+                self::FORM_NAME_HOTEL_ROOM_TYPE . '[roomViewsTypes]' => [
+                    '5a99322bcb5f740de15d9b02',
+                    '5a99322bcb5f740de15d9b0e',
+                ],
+            ]
+        );
         $result = $this->client->submit($form);
 
         /** нажато Сохранить */
@@ -487,7 +523,10 @@ class RoomTypeControllerTest extends WebTestCase
 
         /** нажато Сохранить и Закрыть */
         $this->assertTrue(
-            $redirect->getUri() == $this->client->getRequest()->getUriForPath(self::URL_INDEX) . '/?tab=' . $roomTypeId
+            $redirect->getUri() == $this
+                ->client
+                ->getRequest()
+                ->getUriForPath(self::URL_INDEX) . '/?tab=' . $roomTypeId
         );
 
         $list = $this->getTableWithRooms($roomTypeId);
@@ -521,17 +560,21 @@ class RoomTypeControllerTest extends WebTestCase
 
         $form = $crawler
             ->filter(self::BUTTON_NAME_SAVE)
-            ->form([
-                self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[fullTitle]'          => $nameNew,
-                self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[title]'              => $nameInside,
-                self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[internationalTitle]' => $nameInternational,
-                self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[description]'        => 'test',
-                self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[roomSpace]'          => 100500,
-            ]);
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[fullTitle]'          => $nameNew,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[title]'              => $nameInside,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[internationalTitle]' => $nameInternational,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[description]'        => 'test',
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[roomSpace]'          => 100500,
+                ]
+            );
 
-        $form->setValues([
-            self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[facilities]' => $this->facilities,
-        ]);
+        $form->setValues(
+            [
+                self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[facilities]' => $this->facilities,
+            ]
+        );
 
         /** нажато Сохранить */
         $result = $this->client->submit($form);
@@ -549,10 +592,8 @@ class RoomTypeControllerTest extends WebTestCase
 
         $tabs = $crawler->filter(self::TABS_ITEM);
 
-        for ($i = 0; $i < $tabs->count(); $i++) {
-            if ($tabs->eq($i)->filter('a:contains("' . $nameInside . '")')->count() > 0) {
-                $newTab = true;
-            }
+        if ($tabs->filter('a:contains("' . $nameInside . '")')->count() > 0) {
+            $newTab = true;
         }
 
         $this->assertTrue($newTab, 'no new tab');
@@ -564,15 +605,22 @@ class RoomTypeControllerTest extends WebTestCase
      */
     public function testEditRoomType()
     {
-        $crawler = $this->getListCrawler($this->getLinkAction($this->getRoomTypeId(self::ROOM_TYPE_NEW_FULL_TITLE), self::LINK_EDIT_ROOM_TYPE));
+        $crawler = $this->getListCrawler(
+            $this->getLinkAction(
+                $this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE),
+                self::LINK_EDIT_ROOM_TYPE
+            )
+        );
 
         $newInsideName = self::ROOM_TYPE_NEW_TITLE . '_edit';
 
         $form = $crawler
             ->filter(self::BUTTON_NAME_SAVE)
-            ->form([
-                self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[title]' => $newInsideName,
-            ]);
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[title]' => $newInsideName,
+                ]
+            );
 
         $this->client->followRedirects(true);
         /** нажато Сохранить */
@@ -586,13 +634,37 @@ class RoomTypeControllerTest extends WebTestCase
 
         $tabs = $crawler->filter(self::TABS_ITEM);
 
-        for ($i = 0; $i < $tabs->count(); $i++) {
-            if ($tabs->eq($i)->filter('a:contains("' . $newInsideName . '")')->count() > 0) {
-                $newTab = true;
-            }
+        if ($tabs->filter('a:contains("' . $newInsideName . '")')->count() > 0) {
+            $newTab = true;
         }
 
         $this->assertTrue($newTab, 'no edit tab');
+    }
+
+
+    /**
+     * показывать отключенные ввиды комнат
+     */
+    public function testEnabledRoomType()
+    {
+        $roomType = $this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE, false);
+
+        $roomType->setIsEnabled(false);
+        $this->dm->flush($roomType);
+
+        $crawler = $this->getListCrawler(self::URL_INDEX);
+        $tabs = $crawler->filter(self::TABS_ITEM);
+
+        $disabledTab = true;
+
+        if ($tabs->filter('a:contains("' . self::ROOM_TYPE_NEW_TITLE . '_edit' . '")')->count() > 0) {
+            $disabledTab = false;
+        }
+
+        $this->assertTrue($disabledTab, 'no "isEnabled" roomtype (tab)');
+
+        $roomType->setIsEnabled(true);
+        $this->dm->flush($roomType);
     }
 
     /**
@@ -601,18 +673,25 @@ class RoomTypeControllerTest extends WebTestCase
     public function testDeleteRoomType()
     {
         $this->client->followRedirects(true);
-        $crawler = $this->getListCrawler($this->getLinkAction($this->getRoomTypeId(self::ROOM_TYPE_NEW_FULL_TITLE), self::LINK_DELETE_ROOM_TYPE));
+        $crawler = $this->getListCrawler(
+            $this->getLinkAction(
+                $this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE),
+                self::LINK_DELETE_ROOM_TYPE
+            )
+        );
 
         $tabs = $crawler->filter(self::TABS_ITEM);
 
         $deleteRoomType = true;
 
-        for ($i = 0; $i < $tabs->count(); $i++) {
-            if ($tabs->eq($i)->filter('a:contains("' . self::ROOM_TYPE_NEW_TITLE . '_edit' . '")')->count() > 0) {
-                $deleteRoomType = false;
-            }
+        if ($tabs->filter('a:contains("' . self::ROOM_TYPE_NEW_TITLE . '_edit' . '")')->count() > 0) {
+            $deleteRoomType = false;
         }
 
-        $this->assertTrue($deleteRoomType, 'no remove roomtype (tab)');
+        if (!empty($this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE, false))) {
+            $deleteRoomType = false;
+        }
+
+        $this->assertTrue($deleteRoomType, 'no remove RoomType');
     }
 }
