@@ -73,8 +73,6 @@
                     utils: {},
                     canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
                     showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }}
-                    utils: {},
-                    canAddTips: {{ 'true' }}
                 }
             </script>
             {{ app.session.remove('mbh.justLogin') }}
