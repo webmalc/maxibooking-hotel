@@ -155,7 +155,7 @@ view.personal_account.payer.change_country_modal.text: 'При изменени�
 view.personal_account.payer.change_country_modal.cancel_button.text: 'Закрыть'
 
 view.personal_account.orders.small_title: 'Оплата'
-view.personal_account.orders.order_small_title: 'Заказ №orderId'
+view.personal_account.orders.order_small_title: 'Заказ №%orderId%'
 view.personal_account.orders.begin_date.title: 'Дата начала'
 view.personal_account.orders.end_date.title: 'Дата окончания'
 view.personal_account.orders.paid_status.paid: 'Оплачено'
