@@ -237,7 +237,7 @@ form.AddressObjectDecomposedType.street: Street
 form.unwelcomeType.comment: Comment
 csv.form.tariffType: 'Room type'
 form.BirthplaceType.settlement: Settlement
-form.DocumentRelation.type: 'Document type'
+form.DocumentRelation.type: 'ID type'
 form.AddressObjectDecomposedType.zip_code: 'Zip code'
 form.AddressObjectDecomposedType.region: 'Region (state)'
 form.AddressObjectDecomposedType.district: District
@@ -377,7 +377,7 @@ modal.chessBoard.price: Price
 modal.chessBoard.serices_price: 'Services price'
 modal.chessBoard.payed: Paid
 modal.chessBoard.search_results: 'Reservation options'
-modal.chessBoard.accommodation_info: 'Changaeble accommodation details'
+modal.chessBoard.accommodation_info: 'Changeable accommodation details'
 modal.chessBoard.payer_name: Payer
 modal.chessBoard.package_begin_date: 'Reservation start date'
 modal.chessBoard.package_end_date: 'Reservation end date'
@@ -544,7 +544,7 @@ report.filling_table_rows.cost_of_services: 'Services cost'
 report.filling_table_rows.received_in_fact_in_percents: 'Received %'
 report.porter.menu.arrival: 'Check in'
 report.porter.menu.departure: 'Check out'
-report.porter.menu.accommodation: Accommodation
+report.porter.menu.accommodation: 'Living now'
 report.porter_rows.number_of_adults: adults
 report.porter_rows.number_of_children: children
 report.porter_rows.arrived: 'Checked in'
@@ -977,7 +977,7 @@ package.resources.g_po: 'year, till'
 package.resources.gg: year
 package.resources.undertake: 'I promise'
 package.late_early_check_modal.add_new_service: 'Add new service'
-package.order_packages.not_accommodate: 'Not accommodated'
+package.order_packages.not_accommodate: 'Without allocation'
 service.ajax_list.time_is_not_specified: 'Time is not specified'
 windows.search.error: 'Rooms from windows system are not found. Room type:  %room_type%'
 controller.packageController.record_edited_success_services: 'Service dates were changed with reservation dates change'
@@ -1239,7 +1239,7 @@ mbhpackagebundle.view.package.late.early.check.modal.net: 'No'
 templateDocument.type.receipt: Receipt
 mbhpackagebundle.view.package.guest.kliyent.v.chernom.spiske: 'Guest is blacklisted'
 mbhpackagebundle.view.package.guest.kliyent.ne.v.chernom.spiske: 'Guest is not blacklisted'
-mbhpackagebundle.view.package.orderpackages.ne.razmeshcheno: 'not accommodated'
+mbhpackagebundle.view.package.orderpackages.ne.razmeshcheno: 'Without allocation'
 mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa: Questionnaire
 mbhpackagebundle.view.documents.pdftemplates.fms_form_5.blok.mashinochitayemykh.dannykh: 'Machine read information block'
 mbhpackagebundle.view.documents.pdftemplates.confirmation.vydan: issued

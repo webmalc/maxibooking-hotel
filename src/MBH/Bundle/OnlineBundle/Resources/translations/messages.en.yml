@@ -42,7 +42,7 @@ form.formType.used_children_ages.label: 'Children age'
 form.formType.used_children_ages.help: 'Show children age field on web form'
 online_invite.voting_code: 'Voting web form embeded code'
 form.formType.css_label: CSS
-form.formType.css: Editing
+form.formType.css: Layout
 form.formType.css_help: 'Additional css-styles for web form'
 form.formType.theme_label: Theme
 form.formType.resultsUrl_label: 'Result page'
