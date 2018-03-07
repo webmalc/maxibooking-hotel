@@ -8,7 +8,7 @@ mbhcashbundle.view.cash.jsonbuttons.data: Дата
 form.cashDocumentType.sum: Сумма
 mbhcashbundle.service.onecexporter.platelshchik: Плательщик
 mbhcashbundle.service.onecexporter.platelshchikschet: ПлательщикСчет
-mbhcashbundle.service.onecexporter.dataspisano: ДатаСписано
+mbhcashbundle.service.onecexporter.dataspisano: 'Дата Списано'
 form.cashDocumentType.payer: Плательщик
 form.cashDocumentType.platelshikBank1: ПлательщикБанк1
 mbhcashbundle.service.onecexporter.poluchatelbank1: ПолучательБанк1
@@ -33,18 +33,18 @@ mbhcashbundle.service.onecexporter.poluchatelbank: ПолучательБанк
 mbhcashbundle.service.onecexporter.poluchatelbik: ПолучательБИК
 mbhcashbundle.service.onecexporter.poluchatelkorschet: ПолучательКорсчет
 mbhcashbundle.service.onecexporter.vidplatezha: 'Вид платежа'
-mbhcashbundle.service.onecexporter.vidoplaty: ВидОплаты
+mbhcashbundle.service.onecexporter.vidoplaty: 'Вид Оплаты'
 mbhcashbundle.service.onecexporter.kod: Код
 mbhcashbundle.service.onecexporter.statussostavitelya: СтатусСоставителя
 mbhcashbundle.service.onecexporter.pokazatelkbk: ПоказательКБК
 mbhcashbundle.service.onecexporter.okato: ОКАТО
-mbhcashbundle.service.onecexporter.pokazatelosnovaniya: ПоказательОснования
+mbhcashbundle.service.onecexporter.pokazatelosnovaniya: 'Показатель Основания'
 mbhcashbundle.service.onecexporter.pokazatelperioda: ПоказательПериода
 mbhcashbundle.service.onecexporter.pokazatelnomera: ПоказательНомера
 mbhcashbundle.service.onecexporter.pokazateldaty: ПоказательДаты
 mbhcashbundle.service.onecexporter.pokazateltipa: ПоказательТипа
 mbhcashbundle.service.onecexporter.ocherednost: Очередность
-mbhcashbundle.service.onecexporter.naznacheniyeplatezha: НазначениеПлатежа
+mbhcashbundle.service.onecexporter.naznacheniyeplatezha: 'Назначение Платежа'
 mbhcashbundle.service.onecexporter.konetsdokumenta: КонецДокумента
 mbhcashbundle.service.onecexporter.versiyaformata: ВерсияФормата
 mbhcashbundle.service.onecexporter.kodirovka: Кодировка
@@ -77,9 +77,9 @@ form.cashDocumentType.document_date: 'Дата документа'
 form.cashDocumentType.paid_date: 'Дата оплаты'
 form.cashDocumentType.operation_type: 'Вид операции'
 form.cashDocumentType.comment: Комментарий
-form.cashDocumentType.is_paid: Оплачен?
+form.cashDocumentType.is_paid: 'Оплачен?'
 form.cashDocumentType.is_send_mail.label: 'Оповестить о подтверждении платежа?'
-form.cashDocumentType.is_send_mail.help: Отправить ли письмо при подтверждении кассового документа?
+form.cashDocumentType.is_send_mail.help: 'Отправить ли гсостю письмо о подтверждении кассового документа?'
 controller.cashController.edit_record_success: 'Запись успешно отредактирована.'
 controller.cashController.payment_confirmed_success: 'Платеж успешно подтвержден'
 controller.cashController.beznal.v.tom.chisle.electronnie: 'Безнал (в т.ч. электронные)'

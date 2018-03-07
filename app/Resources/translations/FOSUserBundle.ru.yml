@@ -1,0 +1,42 @@
+group.edit.submit: 'Обновить группу'
+group.show.name: 'Название группы'
+group.new.submit: 'Создать группу'
+group.flash.updated: 'Группа обновлена.'
+group.flash.created: 'Группа создана.'
+group.flash.deleted: 'Группа удалена.'
+security.login.username: 'Имя пользователя'
+security.login.password: Пароль
+security.login.remember_me: 'Запомнить меня'
+security.login.submit: Войти
+profile.show.username: 'Имя пользователя'
+profile.show.email: 'Электронная почта'
+profile.edit.submit: Обновить
+profile.flash.updated: 'Профиль пользователя обновлен.'
+change_password.submit: 'Изменить пароль'
+change_password.flash.success: 'Пароль изменен.'
+registration.check_email: 'Письмо отправлено на адрес %email%. В нём содержится ссылка, по которой вы можете подтвердить свою регистрацию.'
+registration.confirmed: 'Поздравляем %username%, ваш аккаунт подтвержден.'
+registration.back: 'Вернуться на предыдущую страницу.'
+registration.submit: Зарегистрироваться
+registration.flash.user_created: 'Пользователь успешно создан.'
+registration.email.subject: 'Добро пожаловать, %username%!'
+registration.email.message: "Приветствуем, %username%!\n\nДля подтверждения вашей регистрации, пройдите по ссылке %confirmationUrl%\n\nЭта ссылка может быть использована только единожды для подтверждения вашей учетной записи.\n\nС наилучшими пожеланиями,\nкоманда сайта.\n"
+resetting.check_email: "Письмо отправлено. Оно содержит ссылку, при переходе по которой ваш пароль будет сброшен.\nЗаметьте, вы сможете запросить новый пароль только через %tokenLifetime% часов.\n\nЕсли вы не получили письмо, проверьте папку Спам или попробуйте снова.\n"
+resetting.request.username: 'Имя пользователя или электронная почта'
+resetting.request.submit: 'Сбросить пароль'
+resetting.reset.submit: 'Изменить пароль'
+resetting.flash.success: 'Пароль успешно сброшен.'
+resetting.email.subject: 'Сброс пароля'
+resetting.email.message: "Приветствуем, %username%!\n\nДля сброса пароля, пожалуйста, пройдите по ссылке %confirmationUrl%\n\nС наилучшими пожеланиями,\nкоманда сайта.\n"
+layout.logout: Выход
+layout.login: Вход
+layout.register: Регистрация
+layout.logged_in_as: 'Вы вошли как %username%'
+form.group_name: 'Название группы'
+form.username: 'Имя пользователя'
+form.email: 'Электронная почта'
+form.current_password: 'Текущий пароль'
+form.password: Пароль
+form.password_confirmation: 'Подтвердите пароль'
+form.new_password: 'Новый пароль'
+form.new_password_confirmation: 'Подтвердите пароль'

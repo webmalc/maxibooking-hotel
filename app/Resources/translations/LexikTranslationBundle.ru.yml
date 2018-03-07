@@ -1,0 +1,30 @@
+translations.invalidate_cache: 'Очистить кеш'
+translations.domain: Домен
+translations.key: Ключ
+translations.grid_caption: 'Список переводов'
+translations.cache_removed: 'Кеш файлы были удалены'
+translations.new_translation: 'Новый перевод'
+translations.add_translation: 'Добавить перевод'
+translations.save: Сохранить
+translations.save_add: 'Создать и добавить новый'
+translations.page_title: Переводы
+translations.show_hide_columns: 'Показать/Скрыть колонки'
+translations.toggle_all_columns: 'Show/Hide all columns'
+translations.save_row: 'Сохранить текущую строку'
+translations.successfully_updated: 'Перевод для ключа #%id% успешно обновлён.'
+translations.successfully_added: 'Перевод успешно добавлен.'
+translations.successfully_deleted: 'Translations have been successfully deleted.'
+translations.update_failed: 'Произошла ошибка при обновлении перевода для ключа #%id%.'
+translations.delete_failed: 'Failed to delete translations for key #%id%.'
+translations.back_to_list: 'Вернуться к списку'
+translations.all_translations: All
+translations.no_translations: 'No translations'
+translations.profiler: Profiler
+translations.data_source: 'Data source'
+translations.latest_profiles: 'Latest profiles'
+translations.profile: Profile
+overview.page_title: Overview
+overview.show_grid: 'Translation grid'
+overview.msg_latest_translation: 'Latest translation date: %date% UTC.'
+overview.domain: Domain
+overview.no_stats: 'No data to display.'
