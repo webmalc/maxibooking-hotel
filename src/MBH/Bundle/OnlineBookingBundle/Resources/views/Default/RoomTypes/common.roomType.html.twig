@@ -8,7 +8,7 @@
     {% block discount %}
         {% set discount = tariffResult.tariff.defaultPromotion.discount??'' %}
         {% if discount %}
-            {{" - #{discount}%" }}
+            {#{{" - #{discount}%" #}
         {% endif %}
     {% endblock %}
 {% endembed %}
