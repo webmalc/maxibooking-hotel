@@ -117,9 +117,10 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 }
             }
 
-            if ($numberOfRoomType % 3 === 0) {
+            if ($numberOfRoomType % 2 === 0) {
                 $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
                     'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+                $xmlElements = [];
             }
         }
 
