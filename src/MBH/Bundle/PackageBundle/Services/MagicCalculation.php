@@ -82,17 +82,21 @@ class MagicCalculation extends Calculation
             } else {
                 $ids = [$mergingTariff->getId()];
             }
-            $mergingTariff = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                ->fetch(
-                    $begin,
-                    $end,
-                    $hotel,
-                    [$roomTypeId],
-                    $ids,
-                    true,
-                    $this->manager->useCategories,
-                    $memcached
-                );
+            $mergingTariffCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached, $ids) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                    ->fetch(
+                        $begin,
+                        $end,
+                        $hotel,
+                        [$roomTypeId],
+                        $ids,
+                        true,
+                        $this->manager->useCategories,
+                        $memcached
+                    );
+            };
+            $mergingTariff = $this->helper->getFilteredResult($this->dm, $mergingTariffCallback);
+
 
             if ($mergingTariff) {
                 $mergingTariffsPrices += $mergingTariff;
