@@ -183,7 +183,7 @@ mbhpricebundle.view.tariff.edit.redaktirovaniye: Еditing
 mbhpricebundle.view.tariff.edittabs.obshchayainformatsiya: 'General information'
 mbhpricebundle.view.tariff.edittabs.aktsii: Sales
 mbhpricebundle.view.tariff.edittabs.uslugi: Services
-mbhpricebundle.view.tariff.edittabs.nasledovaniye: Heritage
+mbhpricebundle.view.tariff.edittabs.nasledovaniye: Inheritage
 mbhpricebundle.view.promotion.index.nazvaniye: Title
 mbhpricebundle.view.promotion.index.skidka: Discount
 mbhpricebundle.view.promotion.index.vzroslyyebesplatno: 'Adults accommodation is free'
@@ -466,7 +466,7 @@ price.form.is_service_available_sale: 'Available for sale?'
 pricebundle.resources.views.public_info: 'General information'
 pricebundle.resources.views.actions: Sales
 pricebundle.resources.views.services: Services
-pricebundle.resources.views.inheritage: Heritage
+pricebundle.resources.views.inheritage: Inheritage
 mbhpricebundle.view.roomcache.graph.net.dannykh: 'No data'
 mbhpricebundle.view.roomcache.index.tip.nomera: 'Room type'
 mbhpricebundle.view.roomcache.index.kvoty.po.tarifam: Rate

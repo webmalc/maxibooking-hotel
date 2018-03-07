@@ -25,7 +25,7 @@ aciton_manager.modal.change_package_end.confirmation: 'Are you sure you want to 
 action_manager.modal.need_changepackage_end.title: 'To perform this action check out date must be changed'
 action_manager.modal.book_button.title: 'Reserve a room. Total rooms: %roomsCount%'
 action_manager.modal.disabled_book_button.title: 'To create a reservation, please add the payer.'
-action_manager.update_modal.without_accommodation: 'Without accommodation'
+action_manager.update_modal.without_accommodation: 'Without allocation'
 action_manager.update_modal.not_specified: 'Not specified'
 search.book_button.title: 'Reserve a room. %roomsCount% total rooms left.'
 search.disabled_book_button.title: 'To create a reservation, please add a payer.'

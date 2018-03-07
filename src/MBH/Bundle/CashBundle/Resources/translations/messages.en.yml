@@ -22,7 +22,7 @@ mbhcashbundle.service.onecexporter.platezhnoe.poruchenie: 'Payment order'
 form.cashDocumentType.platelshikBank1: 'Payer bank'
 mbhcashbundle.service.onecexporter.platelshchikbank: 'Payer bank'
 mbhcashbundle.service.onecexporter.sektsiyaraschschet: 'Account number section'
-form.cashDocumentType.is_send_mail.help: 'Notify about payment document confirmation?'
+form.cashDocumentType.is_send_mail.help: 'Notify a payer that the payment has been confirmed?'
 mbhcashbundle.service.onecexporter.ot: from
 mbhcashbundle.service.onecexporter.kod: Code
 mbhcashbundle.service.onecexporter.summa: Sum
@@ -81,7 +81,7 @@ mbhcashbundle.service.onecexporter.konetsraschschet: 'Ending IBAN/ABA/IFSC/Routi
 mbhcashbundle.service.onecexporter.konetsfayla: 'File ending'
 mbhcashbundle.form.searchtype.vid.platezha: 'Payment type'
 mbhcashbundle.view.cash.index.upload_clearing: 'Export non cash'
-form.cashDocumentType.is_send_mail.label: 'Notify about payment confirmation?'
+form.cashDocumentType.is_send_mail.label: 'Notify about the payment?'
 controller.cashController.beznal.v.tom.chisle.electronnie: 'Non cash (incl. electronic transactions)'
 cashDocumentSubscriber.document.dlia.pechati.ne.sozdan: 'Document for printing is generated.'
 cashDocumentSubscriber.ne.naidena.organizacia.dlia.etogo.otela: 'Companies from My companies sections are not found for this hotel'

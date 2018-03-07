@@ -330,7 +330,7 @@ twig.extensiion.day_abbr: day
 twig.extensiion.hour_abbr: hour
 twig.extensiion.minute_abbr: min
 dashboard.modal.header: Warnings
-dashboard.link: look
+dashboard.link: 'Go to error'
 menu.communication.label.yh: VashOtel
 form.image.is_default.label: 'Default?'
 form.image.file.label: Image
@@ -408,8 +408,8 @@ security.two_factor.code: 'Login password'
 mailer.recipient.empty.email: 'Recipient email is empty %guest%'
 exception.relation_delete.message.task: 'Cannot be deleted. This type contains existing tasks (%total%)'
 cancel: Cancel
-portrait: Album
-landscape: Book
+portrait: Landscape
+landscape: Portrait
 age.full: year|year|years
 children: child|child|children
 days: day|day|days

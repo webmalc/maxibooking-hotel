@@ -6,6 +6,7 @@ var setSearchDatepickers = function(date) {
     (date === 'undefined') ? date = new Date(): date = new Date(date);
     $('#s_begin').datepicker('setStartDate', date);
 };
+var searchProcess = false;
 
 $(document).ready(function() {
     'use strict';
@@ -70,7 +71,6 @@ $(document).ready(function() {
 
     var $wrapper = $('#package-search-results-wrapper');
     var $warning = $('#accommodation-alert');
-    var searchProcess = false;
 
     //ajax request
 
