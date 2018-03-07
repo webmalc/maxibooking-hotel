@@ -47,7 +47,7 @@ class Calculation
     /**
      * @var \MBH\Bundle\BaseBundle\Service\Helper
      */
-    private $helper;
+    protected $helper;
 
     public function __construct(ContainerInterface $container)
     {
