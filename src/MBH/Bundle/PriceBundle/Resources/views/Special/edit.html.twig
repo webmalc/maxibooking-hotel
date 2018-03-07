@@ -17,7 +17,7 @@
     </div>
     {{ form_start(form, {'action': path('special_edit', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% embed 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'special_delete' } %}
+    {% embed 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'special_delete', 'delete_role': 'ROLE_SPECIAL_DELETE' } %}
         {% block saveButtons %}
             <ul class="nav navbar-nav">
                 <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"> </i><span class="hidden-xs">&nbsp;{{ 'views.actions.saveButtons.save_and_close'|trans({}, 'MBHBaseBundle') }}</span></button></li>
