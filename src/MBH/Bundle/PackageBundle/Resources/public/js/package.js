@@ -383,7 +383,10 @@ var docReadyPackages = function () {
                 .removeClass('btn-default').addClass('btn-primary');
         }
 
-        $('.package-filter').on('change switchChange.bootstrapSwitch', function () {
+        $('.package-filter:not(#package-filter-begin):not(#package-filter-end)').on('change switchChange.bootstrapSwitch', function () {
+            $('#package-table').dataTable().fnDraw();
+        });
+        $('#package-filter-begin, #package-filter-end').on('changeDate', function () {
             $('#package-table').dataTable().fnDraw();
         });
         $('#package-table-quick-links a').click(function () {
