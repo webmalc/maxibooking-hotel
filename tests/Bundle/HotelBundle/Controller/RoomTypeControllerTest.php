@@ -31,6 +31,10 @@ class RoomTypeControllerTest extends WebTestCase
     private const ROOM_TYPE_NEW_FULL_TITLE = 'RoomType_Name';
     private const ROOM_TYPE_NEW_TITLE = 'RoomType_InsideName';
 
+    private const ROOM_GENERATE_FROM = 39;
+    private const ROOM_GENERATE_TO = 46;
+    private const ROOM_GENERATE_PREFIX = 'TSTRM';
+
     private const LINK_EDIT_ROOM_TYPE = 0;
     private const LINK_ADD_ROOM = 1;
     private const LINK_GENERATE_ROOM = 2;
@@ -45,11 +49,16 @@ class RoomTypeControllerTest extends WebTestCase
 
     private const FORM_NAME_HOTEL_ROOM_TYPE_TYPE = 'mbh_bundle_hotelbundle_room_type_type';
     private const FORM_NAME_HOTEL_ROOM_TYPE = 'mbh_bundle_hotelbundle_room_type';
+    private const FORM_NAME_HOTEL_ROOMS_GENERATE = 'mbh_bundle_hotelbundle_room_type_generate_rooms_type';
 
     private const BUTTON_NAME_SAVE = 'button[name="save"]';
+    private const BUTTON_NAME_SAVE_CLOSE = 'button[name="save_close"]';
 
     private $facilities;
     private $hotelId;
+
+    /** Число записей возращаемые getTableWithRooms() */
+    private const DEFAULT_RECORDS_TOTAL = 10;
 
     /** @var DocumentManager */
     private $dm;
@@ -95,6 +104,22 @@ class RoomTypeControllerTest extends WebTestCase
                     'hotel.id'    => $this->hotelId,
                 ]
             );
+    }
+
+    /**
+     * @param $roomTypeId
+     * @return array
+     */
+    private function getRoomsAsArray($roomTypeId)
+    {
+        $arr = [];
+
+        /** @var Room $room */
+        foreach ($this->getRooms($roomTypeId) as $room) {
+            $arr[$room->getId()] = $room->getFullTitle();
+        }
+
+        return $arr;
     }
 
     /**
@@ -290,15 +315,9 @@ class RoomTypeControllerTest extends WebTestCase
             }
         }
 
-        $arrayDb = [];
-        /** @var Room $room */
-        foreach ($this->getRooms($roomTypeId) as $room) {
-            $arrayDb[$room->getId()] = $room->getFullTitle();
-        }
-
         $this->assertCount(
             0,
-            array_diff_assoc($arrayDb, $arrayTable)
+            array_diff_assoc($this->getRoomsAsArray($roomTypeId), $arrayTable)
         );
     }
 
@@ -407,8 +426,8 @@ class RoomTypeControllerTest extends WebTestCase
 
         $list = $this->getTableWithRooms($roomTypeId);
 
-        $this->assertContains(
-            (string)10,
+        $this->assertEquals(
+            self::DEFAULT_RECORDS_TOTAL,
             $list['recordsTotal']
         );
         /** порядковый номер записи для удаления*/
@@ -421,8 +440,8 @@ class RoomTypeControllerTest extends WebTestCase
 
         $list = $this->getTableWithRooms($roomTypeId);
 
-        $this->assertContains(
-            (string)9,
+        $this->assertEquals(
+            self::DEFAULT_RECORDS_TOTAL - 1,
             $list['recordsTotal']
         );
     }
@@ -457,7 +476,7 @@ class RoomTypeControllerTest extends WebTestCase
         $result = $this->client->submit($form);
         $this->alertMsgTest('Запись успешно отредактирована', $result);
 
-        $form = $result->filter('button[name="save_close"]')->form();
+        $form = $result->filter(self::BUTTON_NAME_SAVE_CLOSE)->form();
 
         $redirect = $this->client->submit($form);
 
@@ -517,7 +536,7 @@ class RoomTypeControllerTest extends WebTestCase
         /** нажато Сохранить */
         $this->alertMsgTest('Комната успешно добавлена', $result);
 
-        $form = $result->filter('button[name="save_close"]')->form();
+        $form = $result->filter(self::BUTTON_NAME_SAVE_CLOSE)->form();
 
         $redirect = $this->client->submit($form);
 
@@ -531,8 +550,8 @@ class RoomTypeControllerTest extends WebTestCase
 
         $list = $this->getTableWithRooms($roomTypeId);
 
-        $this->assertContains(
-            (string)10,
+        $this->assertEquals(
+            self::DEFAULT_RECORDS_TOTAL,
             $list['recordsTotal']
         );
 
@@ -542,6 +561,86 @@ class RoomTypeControllerTest extends WebTestCase
         $this->assertContains(
             $nameInside,
             $item->filter('a')->text()
+        );
+    }
+
+    /**
+     * создани номеров через генератор
+     */
+    public function testGenerateRoomsAdd()
+    {
+        $roomTypeId = $this->getRoomType();
+
+        $this->client->followRedirects(true);
+
+        $crawler = $this->getListCrawler($this->getLinkAction($roomTypeId, self::LINK_GENERATE_ROOM));
+
+        /* invalid form */
+        $form = $crawler
+            ->filter(self::BUTTON_NAME_SAVE_CLOSE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[from]' => self::ROOM_GENERATE_TO,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[to]'   => self::ROOM_GENERATE_FROM,
+                ]
+            );
+
+        $result = $this->client->submit($form);
+        $this->assertValidationErrors(['data'], $this->client->getContainer());
+
+        /* valid form */
+        $form = $result
+            ->filter(self::BUTTON_NAME_SAVE_CLOSE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[from]'   => self::ROOM_GENERATE_FROM,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[to]'     => self::ROOM_GENERATE_TO,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[prefix]' => self::ROOM_GENERATE_PREFIX,
+                ]
+            );
+
+        $result = $this->client->submit($form);
+        $this->alertMsgTest('Номера успешно сгенерированы', $result);
+
+        $list = $this->getTableWithRooms($roomTypeId);
+
+        $this->assertEquals(
+            self::DEFAULT_RECORDS_TOTAL + (self::ROOM_GENERATE_TO - self::ROOM_GENERATE_FROM + 1),
+            $list['recordsTotal']
+        );
+    }
+
+    /**
+     * повтроное создание с такими же данными
+     * проверка на отутствие перезаписи
+     */
+    public function testGenerateRoomAgain()
+    {
+        $roomTypeId = $this->getRoomType();
+
+        $arrayDbBefore = $this->getRoomsAsArray($roomTypeId);
+
+        $this->client->followRedirects(true);
+
+        $crawler = $this->getListCrawler($this->getLinkAction($roomTypeId, self::LINK_GENERATE_ROOM));
+
+        $form = $crawler
+            ->filter(self::BUTTON_NAME_SAVE_CLOSE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[from]'   => self::ROOM_GENERATE_FROM,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[to]'     => self::ROOM_GENERATE_TO,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[prefix]' => self::ROOM_GENERATE_PREFIX,
+                ]
+            );
+
+        $this->client->submit($form);
+
+        $arrayDbAfter = $this->getRoomsAsArray($roomTypeId);
+
+        $this->assertCount(
+            0,
+            array_diff_assoc($arrayDbBefore,$arrayDbAfter)
         );
     }
 
