@@ -61,16 +61,20 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $serviceTariffs,
         ChannelManagerConfigInterface $config
     ) {
+        $pricesRequestData = [];
         $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $xmlElements = [];
         $priceCalculator = $this->container->get('mbh.calculation');
         $localCurrency = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getCurrency();
 
+        $numberOfRoomType = 0;
         foreach ($requestDataArray as $roomTypeId => $pricesByTariffs) {
+            $numberOfRoomType++;
             foreach ($pricesByTariffs as $tariffId => $pricesByDates) {
                 $cmHelper = $this->container->get('mbh.channelmanager.helper');
                 $comparePropertyMethods = ['getPrice', 'getIsPersonPrice', 'getAdditionalPrice', 'getAdditionalChildrenPrice', 'getSinglePrice', 'getChildPrice'];
                 $periodsData = $cmHelper->getPeriodsFromDayEntities($begin, $end, $pricesByDates, $comparePropertyMethods, 'Y-m-d');
+
                 foreach ($periodsData as $periodData) {
                     $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
                     /** @var PriceCache $priceCache */
@@ -112,10 +116,14 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $xmlElements[] = $xmlRoomTypeData;
                 }
             }
+
+            if ($numberOfRoomType % 3 === 0) {
+                $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                    'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+            }
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config,
-            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+        return $pricesRequestData;
     }
 
     /**
