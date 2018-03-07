@@ -63,17 +63,11 @@ class MagicCalculation extends Calculation
             if (!$defaultTariff) {
                 return false;
             }
-            $defaultPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                ->fetch(
-                    $begin,
-                    $end,
-                    $hotel,
-                    [$roomTypeId],
-                    [$defaultTariff->getId()],
-                    true,
-                    $this->manager->useCategories,
-                    $memcached
-                );
+            $defaultPriceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                    ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories, $memcached);
+            };
+            $defaultPriceCaches = $this->helper->getFilteredResult($this->dm, $defaultPriceCachesCallback);
 
         } else {
             $defaultPriceCaches = $priceCaches;
