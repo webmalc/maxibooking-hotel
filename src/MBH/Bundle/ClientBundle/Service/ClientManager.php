@@ -195,9 +195,6 @@ class ClientManager
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
             try {
-                if (!$this->isDefaultClient()) {
-                    dump($this->client);
-                }
                 /** @var Client $client */
                 $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
             } catch (\Exception $exception) {
