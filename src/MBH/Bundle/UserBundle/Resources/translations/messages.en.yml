@@ -137,8 +137,8 @@ form.payer_type.country_group: Country
 form.payer_type.country.label: Country
 form.payer_type.payer_type_group: 'Payer type'
 form.payer_type.label: 'Payer type'
-form.payer_type.legal_entity: 'Юридическое лицо'
-form.payer_type.natural_entity: 'Физическое лицо'
+form.payer_type.legal_entity: 'Legal entity'
+form.payer_type.natural_entity: 'Natural person'
 form.payer_type.address_group: Address
 form.payer_type.address.label: Address
 form.payer_type.city.label: City
@@ -153,10 +153,8 @@ form.payer_type.issue_by.label: 'Issued by'
 form.payer_type.bank.group: Bank
 form.payer_type.bank.checking_account.label: 'Checking account'
 form.payer_type.bank.name.label: Name
-form.payer_type.foreign_bank.group: Банк
+form.payer_type.foreign_bank.group: Bank
 form.payer_type.foreign_bank.name.label: 'Bank name'
 form.payer_type.foreign_bank.swift.label: SWIFT
 form.payer_type.field_not_filled: 'Field not filled'
 form.payer_type.organization.legal_address.label: 'Legal address'
-form.payer_type.legal_entity: 'Legal entity'
-form.payer_type.natural_entity: 'Natural person'
