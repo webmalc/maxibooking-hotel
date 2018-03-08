@@ -129,3 +129,31 @@ view.personal_account.services.service_name: Name
 view.personal_account.orders.small_title: Payment
 view.personal_account.payer.change_country_modal.cancel_button.text: Close
 view.personal_account.order_status.corrupted: Corrupted
+form.client_contacts_type.name.label: Name
+form.client_contacts_type.email.label: Email
+form.client_contacts_type.phone.label: Phone
+view.personal_account.tariff.month_abbr: 'months'
+form.payer_type.country_group: Country
+form.payer_type.country.label: Country
+form.payer_type.payer_type_group: 'Payer type'
+form.payer_type.label: 'Payer type'
+form.payer_type.legal_entity: 'Юридическое лицо'
+form.payer_type.natural_entity: 'Физическое лицо'
+form.payer_type.address_group: Address
+form.payer_type.address.label: Address
+form.payer_type.city.label: City
+form.payer_type.state.label: Region
+form.payer_type.postal_code.label: 'Postal code'
+form.payer_type.identification_group: 'Identification'
+form.payer_type.document_type.label: 'Document type'
+form.payer_type.series.label: Series
+form.payer_type.number.label: Number
+form.payer_type.issue_date.label: 'Issue date'
+form.payer_type.issue_by.label: 'Issued by'
+form.payer_type.bank.group: Bank
+form.payer_type.bank.checking_account.label: 'Checking account'
+form.payer_type.bank.name.label: Name
+form.payer_type.foreign_bank.group: Банк
+form.payer_type.foreign_bank.name.label: 'Bank name'
+form.payer_type.foreign_bank.swift.label: SWIFT
+form.payer_type.field_not_filled: 'Field not filled'
