@@ -118,6 +118,6 @@ external_api_controller.error.specified_hotel_not_contains_in_form_config: 'Hote
 external_api_controller.error.room_type_with_specified_id_not_exists: 'Room type with ID = "%roomTypeId%" does not exist'
 payment_types.by_receipt: 'Bank transfer'
 external_api_controller.online_form_config.not_enabled: 'This online form is unavailable'
-external_api_controller.field_must_be_type_of_array: 'Must be an array data structure'
+external_api_controller.field_must_be_type_of_array: '"%field%" must be an array data structure'
 external_api_controller.online_form_config.not_found: 'Online form with ID = "%formId%" does not exist'
-external_api_controller.missing_fields.error: 'Should be filled'
+external_api_controller.missing_fields.error: 'Mandatory field "%field%" missing'

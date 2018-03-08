@@ -79,9 +79,53 @@ view.wait.time: '%hourst% hours %minutes% minutes'
 views.add_guest_modal.add_guest: 'Add guest'
 form.clientConfigType.notification.staff.label: 'Notification list for a user'
 form.clientConfigType.notification.staff.help: 'What type of notifications will be available to a user'
-
-form.payer_type.organization.inn.label: 'INN'
-form.payer_type.organization.ogrn.label: 'OGRN'
-form.payer_type.organization.kpp.label: 'KPP'
-form.payer_type.bank.bik.label: 'BIK'
-form.payer_type.inn.label: 'INN'
+form.payer_type.organization.inn.label: INN
+form.payer_type.organization.ogrn.label: OGRN
+form.payer_type.organization.kpp.label: KPP
+form.payer_type.bank.bik.label: BIK
+form.payer_type.inn.label: INN
+view.personal_account.tariff.change_tariff.success: 'Tariff successfully changed'
+view.personal_account.tariff.change_tariff_modal_title: 'Change the tariff'
+view.personal_account.tariff.change_tariff_button.title: 'Change the tariff'
+view.personal_account.tariff.begin: Start
+view.personal_account.orders.end_date.title: 'End date'
+view.personal_account.order_status.new: New
+view.personal_account.order_status.paid: Paid
+view.personal_account.order_status.canceled: Cancelled
+view.personal_account.cancel_button.title: Cancel
+view.personal_account.pay_button.title: Pay
+view.personal_account.tariff.end: End
+view.personal_account.tariff.price: Price
+view.personal_account.tariff.period: Period
+view.personal_account.orders.sum: Total
+view.personal_account.orders.show: Show
+view.personal_account.orders.paid_status.all: All
+view.personal_account.orders.paid_status.paid: Paid
+view.personal_account.order_status.processing: 'In progress'
+view.personal_account.orders.payment_status: 'Payment Status'
+view.personal_account.orders.payment_period: 'Payment period'
+view.personal_account.orders.payment_date: 'Payment date'
+view.personal_account.orders.creation_date: 'Creation date'
+view.personal_account.orders.apply_button.title: Apply
+view.personal_account.tariff.current: 'Current tariff'
+view.personal_account.tariff.next: 'Planned rate'
+view.personal_account.tariff.number_of_rooms: 'Number of rooms in the tariff'
+view.personal_account.orders.paid_status.not-paid: 'Not paid'
+view.personal_account.orders.begin_date.title: 'Start date'
+view.personal_account.orders.order_small_title: 'Order №%orderId%'
+view.personal_account.payer.small_title: Payer
+view.personal_account.tariff.small_title: Tariff
+view.personal_account.services.cost: Cost
+view.personal_account.services.unit_type: 'Unit type'
+view.personal_account.services.quantity: Quantity
+view.personal_account.services.price: Price
+view.personal_account.services.small_title: Services
+view.personal_account.contacts.small_title: Contacts
+view.personal_account.title: Profile
+view.personal_account.payer.change_country_modal.text: 'Changes in the payer city will lead to changes in the currency and tariff price of the program'
+view.personal_account.payer.change_country_modal.title: Warning
+view.personal_account.services.period: 'Subscription period'
+view.personal_account.services.service_name: Name
+view.personal_account.orders.small_title: Payment
+view.personal_account.payer.change_country_modal.cancel_button.text: Close
+view.personal_account.order_status.corrupted: Corrupted
