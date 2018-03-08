@@ -158,3 +158,5 @@ form.payer_type.foreign_bank.name.label: 'Bank name'
 form.payer_type.foreign_bank.swift.label: SWIFT
 form.payer_type.field_not_filled: 'Field not filled'
 form.payer_type.organization.legal_address.label: 'Legal address'
+form.payer_type.organization.group: Organization
+form.payer_type.organization.name.label: Name
