@@ -50,7 +50,10 @@ $(document).ready(function () {
                     data: data,
                     beforeSend: function () { pricesProcessing = true; },
                     success: function (data) {
+                        var begin = moment();
                         wrapper.html(data);
+                        var end = moment();
+                        console.log(end.diff(begin));
                         begin.val($('#restriction-overview-begin').val());
                         end.val($('#restriction-overview-end').val());
                         inputs();

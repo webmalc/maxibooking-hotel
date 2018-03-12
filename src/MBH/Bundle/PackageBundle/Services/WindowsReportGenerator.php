@@ -372,12 +372,14 @@ class WindowsReportGenerator
         if (isset($this->packages[$roomTypeId][$room->getId()])) {
             $packages = $this->packages[$roomTypeId][$room->getId()];
 
+            /** @var Package $package */
             foreach ($packages as $package) {
                 if ($date >= $package->getBegin() && $date <= $package->getEnd()) {
                     $this->data[$date->format('d.m.Y')][$room->getId()][] = [
                         'package' => $package,
                         'tooltip' => '# '.
                             $package->getNumberWithPrefix().' <br>'.
+                            'Создана ' . $package->getCreatedAt()->format('d.m.Y') . '<br>'.
                             $package->getBegin()->format('d.m.Y').' - '.
                             $package->getEnd()->format('d.m.Y').'<br>'.
                             $package->getOrder()->getPayer()
