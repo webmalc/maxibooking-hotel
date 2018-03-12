@@ -73,7 +73,7 @@ class BillingApi
 
         /** @var User $user */
         $user = $tokenStorage->getToken();
-        $this->locale = is_object($user) ? $user->getLocale() : $locale;
+        $this->locale = is_object($user) && !empty($user->getLocale()) ? $user->getLocale() : $locale;
     }
 
     public function sendFalse(): void

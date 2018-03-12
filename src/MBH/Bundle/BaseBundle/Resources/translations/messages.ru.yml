@@ -77,9 +77,9 @@ days: день|дня|дней
 children: реб|реб|дет
 children.full: ребенок|ребенка|детей
 adults.full: взрослый|взрослых|взрослых
-pacakge.edit.number_of_adults: 'Взрослых'
-pacakge.edit.number_of_children: 'Детей'
-pacakge.edit.children_ages: 'Возраста'
+pacakge.edit.number_of_adults: Взрослых
+pacakge.edit.number_of_children: Детей
+pacakge.edit.children_ages: Возраста
 age.full: год|года|лет
 twig.extension.jan: янв
 twig.extension.feb: февр
@@ -96,6 +96,7 @@ twig.extension.december: дек
 landscape: книжная
 portrait: альбомная
 controller.baseController.delete_record_success: 'Запись успешно удалена'
+controller.baseController.document_is_deleted: 'Документ уже удален!'
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Нельзя удалить запись с существующими бронями'
 mailer.to_order: 'Перейти к заказу'
 mailer.order.subject_text: 'Подтверждение оплаты бронирования отеля'
@@ -156,12 +157,12 @@ mailer.order.amount: Итого
 mailer.order.quantity: Количество
 mailer.order.client_info: 'Сведения о клиенте'
 mailer.order.payment_info: 'Сведения об оплате'
-mailer.order.total_paid: Всего оплачено
+mailer.order.total_paid: 'Всего оплачено'
 mailer.order.surcharges: 'Доплата составляет'
 mailer.order.phone: Телефон
 mailer.order.number: Номер
-mailer.order.arrival: 'Заезд'
-mailer.order.departure: 'Выезд'
+mailer.order.arrival: Заезд
+mailer.order.departure: Выезд
 mailer.order.numbers: Номеров
 mailer.order.customer: Заказчик
 mailer.order.payment: Оплата
@@ -193,7 +194,7 @@ mailer.base.rate.good: Хорошо
 mailer.base.rate.perfect: Отлично
 mailer.resetting_mail.reset_pass_button.text: 'Сбросить пароль'
 mailer.recipient.empty.email: 'Пустая почта у получателя %guest%'
-mailer.image.not.exists: 'Не существует файла %path%. Возмжожно не создан кеш файла'
+mailer.image.not.exists: 'Не существует файла %path%. Возможно не создан кеш файла'
 debt: Долг
 partially_paid: Частично
 paid: Оплачено
@@ -313,7 +314,7 @@ menu.header.navigation: Навигация
 menu.header.settings: Настройки
 menu.label.broni: Брони
 menu.label.podbor: Подбор
-menu.label.portie: Размещение
+menu.label.portie: Портье
 menu.label.portie.nomfond: 'Номерной фонд'
 menu.label.portie.shah: Шахматка
 menu.label.portie.arrdep: Заезд/Выезд
@@ -326,7 +327,7 @@ menu.label.nomandprice.restriction: 'Условия и ограничения'
 menu.label.nomandprice.services: Услуги
 menu.label.nomandprice.promotions: Акции
 menu.label.task: Задачи
-menu.label.cash: Расчеты
+menu.label.cash: Касса
 menu.label.warehouse: Склад
 menu.label.restaurant: Ресторан
 menu.label.reports: Отчеты
@@ -496,122 +497,117 @@ dashboard.messages.roomType.roomCache: 'не выставлены "Номера 
 dashboard.messages.roomType.priceCache: 'не выставлены "Цены" основного тарифа на следующие периоды'
 dashboard.link: посмотреть
 menu.communication.label.yh: ВашОтель
-
 form.image.is_default.label: 'Основное?'
 form.image.is_default.help: 'Является ли изображение основным'
-form.image.file.label: 'Изображение'
+form.image.file.label: Изображение
 form.image.file.help: 'Загрузить изображение'
-form.image.priority.label : 'Приоритет показа'
-form.image.priority.help : 'Приоритет показа (опционально) -1000 ... 1000'
-image.priority: 'Приоритет'
-forms.export_type.main_group: Настройки генерируемого документа
-forms.export_type.fields.label: Названия полей
-forms.export_type.fields.help: Имена экспортируемых полей
-
-notifier.config.label.cash_confirm: Оплата документа
+form.image.priority.label: 'Приоритет показа'
+form.image.priority.help: 'Приоритет показа (опционально) -1000 ... 1000'
+image.priority: Приоритет
+forms.export_type.main_group: 'Настройки генерируемого документа'
+forms.export_type.fields.label: 'Названия полей'
+forms.export_type.fields.help: 'Имена экспортируемых полей'
+notifier.config.label.cash_confirm: 'Оплата документа'
 notifier.config.label.arrival: Прибытие
 notifier.config.label.feedback: Оценка
-notifier.config.label.online_order: Бронь Онлайн
-notifier.config.label.channel_manager_order: Channel Manager
-notifier.config.label.online_payment_confirm: Онлайн оплата
+notifier.config.label.online_order: 'Бронь Онлайн'
+notifier.config.label.channel_manager_order: 'Channel Manager'
+notifier.config.label.online_payment_confirm: 'Онлайн оплата'
 notifier.config.label.confirm_order: Подтверждение
 notifier.config.label.unpaid: Неоплата
 notifier.config.label.task: Задачи
-
-notifier.config.title.cash_confirm: Уведомление о подтверждении документа оплаты
-notifier.config.title.arrival: Уведомление о прибытии
-notifier.config.title.feedback: Письмо с просьбой об оценке
-notifier.config.title.online: Уведомление о брони из онлайн формы
-notifier.config.title.channel_manager_order: Уведомление брони от ChannelManager
-notifier.config.title.online_payment_confirm: Подтверждение онлайн оплаты
-notifier.config.title.confirm_order: Подтверждение заказа
-notifier.config.title.unpaid: Уведомление о заказе без оплаты
-notifier.config.title.online_order: Уведомление о брони сделанной онлайн (форма)
-notifier.config.title.task: Уведомления о задачах
-
-form.clientConfigType.notification_group: Настройка уведомлений
-form.clientConfigType.notification.label: Список уведомлений для клиентов
-form.clientConfigType.notification.help: Выберите тип уведомлений доступный для рассылки клиентам
-
-facilities.parking: 'Парковка'
-facilities.fitness: 'Фитнес-центр'
-facilities.swimming: 'Бассейн'
-facilities.sauna: 'Баня/Сауна'
-facilities.internet: 'Интернет-класс'
-facilities.shopping: 'Шопинг'
-facilities.restaurant: 'Ресторан'
-facilities.cafeteria: 'Кафетерий'
-facilities.fastfood: 'Закусочная'
+notifier.config.title.cash_confirm: 'Уведомление о подтверждении документа оплаты'
+notifier.config.title.arrival: 'Уведомление о прибытии'
+notifier.config.title.feedback: 'Письмо с просьбой об оценке'
+notifier.config.title.online: 'Уведомление о брони из онлайн формы'
+notifier.config.title.channel_manager_order: 'Уведомление брони от ChannelManager'
+notifier.config.title.online_payment_confirm: 'Подтверждение онлайн оплаты'
+notifier.config.title.confirm_order: 'Подтверждение заказа'
+notifier.config.title.unpaid: 'Уведомление о заказе без оплаты'
+notifier.config.title.online_order: 'Уведомление о брони сделанной онлайн (форма)'
+notifier.config.title.task: 'Уведомления о задачах'
+form.clientConfigType.notification_group: 'Настройка уведомлений'
+form.clientConfigType.notification.label: 'Список уведомлений для клиентов'
+form.clientConfigType.notification.help: 'Выберите тип уведомлений доступный для рассылки клиентам'
+facilities.parking: Парковка
+facilities.fitness: Фитнес-центр
+facilities.swimming: Бассейн
+facilities.sauna: Баня/Сауна
+facilities.internet: Интернет-класс
+facilities.shopping: Шопинг
+facilities.restaurant: Ресторан
+facilities.cafeteria: Кафетерий
+facilities.fastfood: Закусочная
 facilities.beach-bar: 'Бар на пляже'
 facilities.beer: 'Пивной бар'
 facilities.baggage-safe: 'Комната хранения'
-facilities.baggage-man: 'Носильщик'
+facilities.baggage-man: Носильщик
 facilities.disc-floppy: 'Гостевой офис'
-facilities.spa: 'Спа-салон'
+facilities.spa: Спа-салон
 facilities.lounge: 'Зона отдыха'
 facilities.skiing: 'Лыжная трасса'
-facilities.chapel: 'Часовня'
+facilities.chapel: Часовня
 facilities.animals: 'Разрешены животные'
 facilities.no-animals: 'Размещение с животными запрещено'
 facilities.credit-card: 'Кредитные карты принимаются'
 facilities.cc-nc: 'Иностранная валюта не принимается'
 facilities.breakfast: 'Завтрак включен'
 facilities.reception: 'Круглосуточная стойка регистрации'
-facilities.wifi: 'Wi-Fi'
+facilities.wifi: Wi-Fi
 facilities.free-wifi: 'Бесплатный Wi-Fi'
 facilities.car-side: 'Прокат автомобиля'
 facilities.taxi: 'Заказ такси'
 facilities.menu: 'Заказ еды'
 facilities.travelling: 'Заказ экскурсий'
 facilities.lock: 'Контроль доступа'
-facilities.camera: 'Видеонаблюдение'
+facilities.camera: Видеонаблюдение
 facilities.keys: 'Электронные замки'
 facilities.metro: 'Близость метрополитена'
 facilities.disability: 'Доступ для маломобильных граждан'
 facilities.blind: 'Доступ для слепых граждан'
 facilities.maleroom: 'Мужская комната'
 facilities.femaleroom: 'Женская комната'
-facilities.ruby: 'Люкс'
+facilities.ruby: Люкс
 facilities.bed: 'Односпальная кровать'
 facilities.double-bed: 'Двуспальная кровать'
-facilities.sofa: 'Диван-кровать'
-facilities.armchair: 'Кресло'
-facilities.table: 'Стол'
-facilities.platen: 'Столик'
-facilities.chair: 'Стул'
-facilities.dresstable: 'Трюмо'
+facilities.sofa: Диван-кровать
+facilities.armchair: Кресло
+facilities.table: Стол
+facilities.platen: Столик
+facilities.chair: Стул
+facilities.dresstable: Трюмо
 facilities.wardrobe: 'Платяной шкаф'
 facilities.bookcase: 'Книжный шкаф'
-facilities.torchere: 'Торшер'
-facilities.safe: 'Сейф'
-facilities.kitchen: 'Кухня'
-facilities.bar: 'Минибар'
-facilities.teapot: 'Чайник'
-facilities.coffee: 'Кофе-машина'
-facilities.fridge: 'Холодильник'
-facilities.bath: 'Ванная'
-facilities.sink: 'Умывальник'
-facilities.shower: 'Душ'
-facilities.toilets: 'Туалет'
-facilities.ws: 'Унитаз'
+facilities.torchere: Торшер
+facilities.safe: Сейф
+facilities.kitchen: Кухня
+facilities.bar: Минибар
+facilities.teapot: Чайник
+facilities.coffee: Кофе-машина
+facilities.fridge: Холодильник
+facilities.bath: Ванная
+facilities.sink: Умывальник
+facilities.shower: Душ
+facilities.toilets: Туалет
+facilities.ws: Унитаз
 facilities.sign-in: 'Запасной выход'
-facilities.telephone: 'Телефон'
-facilities.fan: 'Вентилятор'
-facilities.conditioner: 'Кондиционер'
+facilities.telephone: Телефон
+facilities.fan: Вентилятор
+facilities.conditioner: Кондиционер
 facilities.modern-tv: 'Современный телевизор'
-facilities.old-tv: 'Телевизор'
+facilities.old-tv: Телевизор
 facilities.homecinema: 'Домашний кинотеатр'
 facilities.washmachine: 'Стиральная машина'
-facilities.radio: 'Радио'
-facilities.iron: 'Утюг'
-facilities.plug: 'Электророзетка'
+facilities.radio: Радио
+facilities.iron: Утюг
+facilities.plug: Электророзетка
 facilities.board-games: 'Настольные игры'
-currency.rub.text: 'руб.'
-currency.rub.small: 'коп.'
-currency.uah.text: 'грн.'
-currency.uah.small: 'коп.'
-currency.kzt.text: 'тенге'
-currency.kzt.small: 'тиын'
+currency.rub.text: руб.
+currency.rub.small: коп.
+currency.uah.text: грн.
+currency.uah.small: коп.
+currency.kzt.text: тенге
+currency.kzt.small: тиын
 mbh.weekdays.sun: Воскресенье
 mbh.weekdays.mon: Понедельник
 mbh.weekdays.tue: Вторник
@@ -623,8 +619,8 @@ mbh.services.calcTypes.per_stay: 'за весь срок'
 mbh.services.calcTypes.per_night: 'за cутки'
 mbh.services.calcTypes.not_applicable: 'за услугу'
 mbh.services.calcTypes.day_percent: 'за услугу (% от цены за сутки)'
-mbh.package.statuses.offline.title: 'Обычная'
-mbh.package.statuses.online.title: 'Онлайн'
+mbh.package.statuses.offline.title: Обычная
+mbh.package.statuses.online.title: Онлайн
 mbh.package.arrivals.service: Служебная
 mbh.package.arrivals.tourism: Туризм
 mbh.package.arrivals.business: Деловая
@@ -635,54 +631,49 @@ mbh.package.arrivals.residence: Транзит
 mbh.package.arrivals.humanitarian: Гуманитарная
 mbh.package.arrivals.other: Другая
 mbh.mailer.subject.text: 'Сообщение от MaxiBooking'
-mbh.task.statuses.open.title: 'Открыта'
+mbh.task.statuses.open.title: Открыта
 mbh.task.statuses.process.title: 'В процессе'
-mbh.task.statuses.closed.title: 'Закрыта'
-mbh.cash.operations.in: "Поступление"
-mbh.cash.operations.out: "Расход"
-mbh.cash.operations.fee: "Комиссия"
-mbh.gender.types.male: "Мужчина"
-mbh.gender.types.female: "Женщина"
-mbh.gender.types.unknown: "Неизвестно"
-mbh.organization.types.contragents: 'Контрагенты'
+mbh.task.statuses.closed.title: Закрыта
+mbh.cash.operations.in: Поступление
+mbh.cash.operations.out: Расход
+mbh.cash.operations.fee: Комиссия
+mbh.gender.types.male: Мужчина
+mbh.gender.types.female: Женщина
+mbh.gender.types.unknown: Неизвестно
+mbh.organization.types.contragents: Контрагенты
 mbh.organization.types.my: 'Мои организации'
-mbh.warehouse.operations.in: "Приход"
-mbh.warehouse.operations.out: "Расход"
-
-mbh.hotel.types.apartments: 'Апартаменты'
+mbh.warehouse.operations.in: Приход
+mbh.warehouse.operations.out: Расход
+mbh.hotel.types.apartments: Апартаменты
 mbh.hotel.types.recreation_center: 'База отдыха'
 mbh.hotel.types.guest_house: 'Гостевой дом'
-mbh.hotel.types.pension: 'Пансионат'
-mbh.hotel.types.sanatorium: 'Санаторий'
+mbh.hotel.types.pension: Пансионат
+mbh.hotel.types.sanatorium: Санаторий
 mbh.hotel.types.country_club: 'Загородный клуб'
-mbh.hotel.types.hostel: 'Хостел'
-mbh.hotel.types.hotel: 'Отель'
-mbh.hotel.types.motel: 'Мотель'
+mbh.hotel.types.hostel: Хостел
+mbh.hotel.types.hotel: Отель
+mbh.hotel.types.motel: Мотель
 mbh.hotel.types.resort: 'Курортный отель'
-mbh.hotel.types.mini_hotel: 'Мини-отель'
-
+mbh.hotel.types.mini_hotel: Мини-отель
 mbh.hotel.themes.сity_tour: 'Экскурсия по городу'
 mbh.hotel.themes.budget_travel: 'Бюджетные и молодежные поездки'
-mbh.hotel.themes.shoping: 'Шопинг'
+mbh.hotel.themes.shoping: Шопинг
 mbh.hotel.themes.family_trip: 'Семейная поездка'
-mbh.hotel.themes.international: 'Международный'
+mbh.hotel.themes.international: Международный
 mbh.hotel.themes.business_trip: 'Деловая поездка'
 mbh.hotel.themes.romantic_vacation: 'Романтический отпуск/Медовый месяц'
 mbh.hotel.themes.interior_design: 'Дизайнерский интерьер'
 mbh.hotel.themes.luxury_holidays: 'Отдых класса люкс'
 mbh.hotel.themes.haute_cuisine: 'Изысканная кухня'
 mbh.hotel.themes.country_holidays: 'Загородный отдых'
-mbh.hotel.themes.homestead: 'Усадьба'
+mbh.hotel.themes.homestead: Усадьба
 mbh.hotel.themes.nature: 'Природа/Дикая флора и фауна'
 mbh.hotel.themes.spa: 'Спа/Оздоровительные процедуры'
-mbh.hotel.themes.ecological: 'Экологический'
-mbh.hotel.themes.ski: 'Горы/лыжи'
-mbh.hotel.themes.adventure: 'Приключение'
-mbh.hotel.themes.sport: 'Спорт'
-mbh.hotel.themes.beach: 'Пляж/Побережье'
-mbh.hotel.themes.city: 'Городской'
-mailer.order.subject_text: 'Подтверждение оплаты бронирования отеля'
-mailer.order.prepend_text: 'От Вас получена оплата в размере %paymentSum%!'
-mailer.order.header_text: 'Вас приветствует %hotelName%'
+mbh.hotel.themes.ecological: Экологический
+mbh.hotel.themes.ski: Горы/лыжи
+mbh.hotel.themes.adventure: Приключение
+mbh.hotel.themes.sport: Спорт
+mbh.hotel.themes.beach: Пляж/Побережье
+mbh.hotel.themes.city: Городской
 modal_with_form.add_region.title: 'Добавление региона'
 modal_with_form.add_city.title: 'Добавление города'

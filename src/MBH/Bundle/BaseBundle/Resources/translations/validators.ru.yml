@@ -10,4 +10,4 @@ validator.image.max_size_exceeded: 'Превышен максимальный р
 validator.image.incorrect_file_type: 'Выбран некорректный тип файла'
 validator.form.image.min.error: 'Превышено минимальное значение'
 validator.form.image.max.error: 'Превышено максимальное занчение'
-validator.form.image.type.error: 'Не корректное значение данных'
+validator.form.image.type.error: 'Некорректное значение данных'

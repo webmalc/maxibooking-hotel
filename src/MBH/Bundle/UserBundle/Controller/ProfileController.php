@@ -30,11 +30,14 @@ class ProfileController extends Controller
      *
      * @Route("/profile", name="user_profile")
      * @Method("GET")
-     * @Security("is_granted('ROLE_PASSWORD')")
      * @Template()
      */
     public function profileAction()
     {
+        if (!$this->isGranted('ROLE_PASSWORD')) {
+            return $this->redirectToRoute('user_payment');
+        }
+
         $form = $this->createForm(ProfileType::class, $this->getUser());
 
         return [
@@ -61,12 +64,10 @@ class ProfileController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-
             $this->container->get('fos_user.user_manager')->updateUser($entity);
+            $this->addFlash('success', 'controller.profileController.new_password_saved_success');
 
-            $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.profileController.new_password_saved_success'));
-            return $this->redirect($this->generateUrl('user_profile'));
+            return $this->redirectToRoute('user_profile');
         }
 
         return [
@@ -189,7 +190,6 @@ class ProfileController extends Controller
     public function payerAction(Request $request)
     {
         $payerCompany = $this->get('mbh.client_payer_manager')->getClientPayerCompany();
-
         $form = $this->createForm(PayerType::class, null, [
             'client' => $this->get('mbh.client_manager')->getClient(),
             'company' => $payerCompany

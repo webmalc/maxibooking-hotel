@@ -146,7 +146,7 @@ ROLE_ORDER_AUTO_CONFIRMATION: 'Автоподтверждение заказа'
 ROLE_PACKAGE_PRICE_EDIT: 'Редактирование цены брони'
 ROLE_INDIVIDUAL_PROMOTION_ADD: 'Добавление индивидуальной акции'
 ROLE_PROMOTION_ADD: 'Добавление акции'
-ROLE_SPECIAL: 'Спецпредложения'
+ROLE_SPECIAL: Спецпредложения
 ROLE_SPECIAL_ADD: 'Добавление спецпредложений'
 ROLE_SPECIAL_VIEW: 'Просмотр спецпредложений'
 ROLE_SPECIAL_NEW: 'Добавление спецпредложений'
@@ -159,7 +159,7 @@ ROLE_PRICE_SUMMARY: 'Просмотр итоговых значений брон
 ROLE_TOURIST: Клиенты
 ROLE_TOURIST_REPORT: 'Отчет по клиентам'
 ROLE_PORTER_REPORT: 'Отчет портье'
-ROLE_ACCOMMODATION_REPORT: 'Шахматка'
+ROLE_ACCOMMODATION_REPORT: Шахматка
 ROLE_SERVICES_REPORT: 'Отчет по услугам'
 ROLE_ORGANIZATION: Организации
 ROLE_MANAGERS_REPORT: 'Отчет по менеджерам'
@@ -256,8 +256,9 @@ ROLE_RESTAURANT_TABLE_ITEM_DELETE: 'Удалить стул'
 ROLE_RESTAURANT_TABLE_CATEGORY_NEW: 'Добавить категорию'
 ROLE_RESTAURANT_TABLE_CATEGORY_EDIT: 'Редактировать категорию'
 ROLE_RESTAURANT_TABLE_CATEGORY_DELETE: 'Удалить категорию'
-ROLE_DYNAMIC_SALES: Динамика продаж
-ROLE_DYNAMIC_SALES_VIEW: Отчет продаж
+ROLE_DYNAMIC_SALES: 'Динамика продаж'
+ROLE_DYNAMIC_SALES_VIEW: 'Отчет продаж'
 ROLE_PERSONAL_ACCOUNT: 'Личный кабинет'
 ROLE_PASSWORD: 'Личный кабинет - Пароль'
 ROLE_PAYMENTS: 'Личный кабинет — Платежи'
+ROLE_PACKAGE_DOCS: 'Документы заказа'

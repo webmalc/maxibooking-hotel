@@ -185,7 +185,7 @@ class User extends BaseUser implements RecipientInterface
      * @var string
      * @ODM\Field(type="string")
      */
-    protected $locale = 'ru';
+    protected $locale;
 
     /**
      * @ODM\Field(type="date")

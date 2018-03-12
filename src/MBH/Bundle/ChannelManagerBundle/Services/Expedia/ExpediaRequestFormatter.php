@@ -23,10 +23,14 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
         $this->expediaUsername = $expediaAuthData['username'];
     }
 
-    public function formatUpdatePricesRequest($priceData) : array
+    public function formatUpdatePricesRequest($pricesData) : array
     {
-        return [$this->getXMLRequestInfo($priceData)
-            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL)];
+        $res = [];
+        foreach ($pricesData as $priceData) {
+            $res[] = $this->getXMLRequestInfo($priceData)->setUrl(self::AVAILABILITY_AND_RATES_API_URL);
+        }
+
+        return $res;
     }
 
     public function formatUpdateRestrictionsRequest($restrictionData) : array

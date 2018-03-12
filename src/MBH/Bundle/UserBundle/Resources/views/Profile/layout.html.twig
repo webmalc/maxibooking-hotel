@@ -3,10 +3,17 @@
 {% set title_url = path('user_profile') %}
 {% set layout = 'tabs' %}
 
-{% set menu = [
-{'route': 'user_profile', 'title': '<i class="fa fa-cog"></i> '~ 'views.profile.profile.change_password'|trans({}, 'FOSUserBundle')},
-] %}
+{% set menu = [] %}
+{% if is_granted('ROLE_PASSWORD') %}
+    {% set menu = menu|merge([{'route': 'user_profile', 'title': '<i class="fa fa-cog"></i> '~ 'views.profile.profile.change_password'|trans({}, 'FOSUserBundle')}])%}
+{% else %}
+    {% set permissionToPasswordDenied = true %}
+{% endif %}
+
 {% if is_granted('ROLE_PAYMENTS') %}
+    {% if permissionToPasswordDenied is defined and permissionToPasswordDenied %}
+        {% set active = active - 1 %}
+    {% endif %}
     {% set menu = menu|merge([
         {'route': 'user_contacts', 'title': '<i class="fa fa-book"></i> '~ 'view.personal_account.contacts.small_title'|trans},
         {'route': 'user_tariff', 'title': '<i class="fa fa-sliders"></i> '~ 'view.personal_account.tariff.small_title'|trans},

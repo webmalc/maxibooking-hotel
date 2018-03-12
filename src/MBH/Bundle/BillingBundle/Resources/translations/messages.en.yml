@@ -1,0 +1,5 @@
+form.city_type.country.label: Country
+form.city_type.region.label: Region
+form.city_type.name.label: City
+form.region_type.name.label: Region
+form.region_type.country.label: Country
