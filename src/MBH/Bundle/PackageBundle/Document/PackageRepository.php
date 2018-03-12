@@ -661,7 +661,7 @@ class PackageRepository extends DocumentRepository
                 $qb->addAnd($expr);
             }
         } else {
-            if ($dateType === 'createdAt' || $dateType === 'deletedAt') {
+            if (($dateType === 'createdAt' || $dateType === 'deletedAt') && isset($data['end']) && $data['end'] instanceof \DateTime) {
                 $data['end']->modify('+1 day');
             }
             if (isset($data['begin']) && !empty($data['begin'])) {

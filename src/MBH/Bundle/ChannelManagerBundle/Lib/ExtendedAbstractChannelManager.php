@@ -73,6 +73,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $requestInfoArray = $this->requestFormatter->formatUpdateRoomsRequest($roomsData);
             foreach ($requestInfoArray as $requestInfo) {
                 $this->log('begin update rooms');
+                $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
                 $this->log('response for update rooms request:');
