@@ -21,7 +21,7 @@ class RoomTypeControllerTest extends WebTestCase
 {
     private const NAME_TEST_HOTEL = 'Мой отель #1';
 
-    private const URL_INDEX = '/management/hotel/roomtype';
+    private const URL_INDEX = '/management/hotel/roomtype/';
     private const TABS_ITEM = 'ul[role="tablist"] > li';
 
     private const ROOM_TYPE_TAB_NAME_NUM2 = 'Двухместный';
@@ -74,6 +74,473 @@ class RoomTypeControllerTest extends WebTestCase
         $this->dm = $this->getDocumentManager();
         $this->facilities = $this->getRandomFacilities();
         $this->hotelId = $this->getHotelId();
+    }
+
+
+    /**
+     * проверяем статус ответа
+     */
+    public function testStatusCode()
+    {
+        $this->getListCrawler(self::URL_INDEX);
+
+        $this->assertStatusCode(
+            200, // or Symfony\Component\HttpFoundation\Response::HTTP_OK
+            $this->client
+        );
+
+    }
+
+    /**
+     * Тест страницы management/hotel/roomtype/
+     * и наименования вкладок (tabs)
+     */
+    public function testIndexRoomType()
+    {
+        $crawler = $this->getListCrawler(self::URL_INDEX);
+
+        $tabs = $crawler->filter(self::TABS_ITEM);
+
+        $this->assertCount(
+            3,
+            $tabs
+        );
+
+        $roomTypeIdNum2 = $this->getRoomType();
+        $roomTypeIdNum3 = $this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3);
+
+        $linkNum2 = $tabs->eq(0)->filter('a');
+        $linkNum3 = $tabs->eq(1)->filter('a');
+        $linkAdd = $tabs->eq(2)->filter('a');
+
+
+        $this->linkTest($linkNum2, self::ROOM_TYPE_TAB_NAME_NUM2, '#' . $roomTypeIdNum2);
+
+        $this->linkTest($linkNum3, self::ROOM_TYPE_TAB_NAME_NUM3, '#' . $roomTypeIdNum3);
+
+        $this->linkTest($linkAdd, self::ROOM_TYPE_TAB_NAME_ADD_NEW, self::URL_INDEX . 'new');
+    }
+
+    /**
+     *  Вкладка Двухместный, ссылки
+     */
+    public function testLinkTabNum2()
+    {
+        $this->tabLinksTest($this->getRoomType());
+    }
+
+    /**
+     *  Вкладка Трехместный, ссылки
+     */
+    public function testLinkTabNum3()
+    {
+        $this->tabLinksTest($this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3));
+    }
+
+    /**
+     * тест формата ответа (json)
+     */
+    public function testResponseTableWithRooms()
+    {
+        $roomTypeId = $this->getRoomType();
+        $this->getTableWithRooms($roomTypeId);
+
+        $this->assertTrue(
+            $this->client->getResponse()->headers->contains(
+                'Content-Type',
+                'application/json'
+            )
+        );
+    }
+
+    /**
+     * данные двухместных номеров
+     */
+    public function testDataNum2()
+    {
+        $this->diffArrayAjaxVsArrayDbTest($this->getRoomType());
+    }
+
+    /**
+     * данные трехместных номеров
+     */
+    public function testDataNum3()
+    {
+        $this->diffArrayAjaxVsArrayDbTest($this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3));
+    }
+
+    /**
+     * удаление комнаты
+     */
+    public function testTableRoomDelete()
+    {
+        $this->client->followRedirects();
+        $roomTypeId = $this->getRoomType();
+
+        $list = $this->getTableWithRooms($roomTypeId);
+
+        $this->assertEquals(
+            self::DEFAULT_RECORDS_TOTAL,
+            $list['recordsTotal']
+        );
+        /** порядковый номер записи для удаления*/
+        $key = 5;
+        $node = new Crawler($list['data'][$key][5]);
+        $link = $node->filter('a.delete-link')->attr('href');
+        $result = $this->client->request('GET', $link);
+
+        $this->alertMsgTest('Запись успешно удалена', $result);
+
+        $list = $this->getTableWithRooms($roomTypeId);
+
+        $this->assertEquals(
+            self::DEFAULT_RECORDS_TOTAL - 1,
+            $list['recordsTotal']
+        );
+    }
+
+    /**
+     * редактирование записи комнаты
+     */
+    public function testTableRoomEdit()
+    {
+        $this->client->followRedirects();
+        $roomTypeId = $this->getRoomType();
+
+        $list = $this->getTableWithRooms($roomTypeId);
+
+        /** порядковый номер записи для редактирования*/
+        $key = 8;
+
+        $node = new Crawler($list['data'][$key][1]);
+        $nameOld = $node->filter('a')->text();
+        $link = $node->filter('a')->attr('href');
+        $formEdit = $this->client->request('GET', $link);
+
+        $nameNew = time();
+        $form = $formEdit
+            ->filter(self::BUTTON_NAME_SAVE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[fullTitle]' => $nameNew,
+                ]
+            );
+
+        /** нажато Сохранить */
+        $result = $this->client->submit($form);
+        $this->alertMsgTest('Запись успешно отредактирована', $result);
+
+        $form = $result->filter(self::BUTTON_NAME_SAVE_CLOSE)->form();
+
+        $redirect = $this->client->submit($form);
+
+        /** нажато Сохранить и Закрыть */
+        $this->assertTrue(
+            $redirect->getUri() == $this
+                ->client
+                ->getRequest()
+                ->getUriForPath(self::URL_INDEX) . '?tab=' . $roomTypeId
+        );
+
+        $list = $this->getTableWithRooms($roomTypeId);
+
+        $node = new Crawler($list['data'][$key][1]);
+
+        $this->assertNotContains(
+            $nameOld,
+            $node->filter('a')->text()
+        );
+
+        $this->linkTest($node->filter('a'), $nameNew, $link);
+    }
+
+    /**
+     * Создание новой комнаты
+     */
+    public function testAddNewRoom()
+    {
+        $this->client->followRedirects();
+        $roomTypeId = $this->getRoomType();
+
+        $crawler = $this->getListCrawler($this->getLinkAction($roomTypeId, self::LINK_ADD_ROOM));
+
+        $nameNew = time();
+        $nameInside = 'InsideName_' . $nameNew;
+        $form = $crawler
+            ->filter(self::BUTTON_NAME_SAVE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[fullTitle]' => $nameNew,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[title]'     => $nameInside,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[floor]'     => 100500,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[isSmoking]' => true,
+                ]
+            );
+        $form->setValues(
+            [
+                self::FORM_NAME_HOTEL_ROOM_TYPE . '[roomViewsTypes]' => [
+                    '5a99322bcb5f740de15d9b02',
+                    '5a99322bcb5f740de15d9b0e',
+                ],
+            ]
+        );
+        $result = $this->client->submit($form);
+
+        /** нажато Сохранить */
+        $this->alertMsgTest('Комната успешно добавлена', $result);
+
+        $form = $result->filter(self::BUTTON_NAME_SAVE_CLOSE)->form();
+
+        $redirect = $this->client->submit($form);
+
+        /** нажато Сохранить и Закрыть */
+        $this->assertTrue(
+            $redirect->getUri() == $this
+                ->client
+                ->getRequest()
+                ->getUriForPath(self::URL_INDEX) . '?tab=' . $roomTypeId
+        );
+
+        $list = $this->getTableWithRooms($roomTypeId);
+
+        $this->assertEquals(
+            self::DEFAULT_RECORDS_TOTAL,
+            $list['recordsTotal']
+        );
+
+        /** проверяем в последнем элементе имя */
+        $item = new Crawler(array_pop($list['data'])[1]);
+
+        $this->assertContains(
+            $nameInside,
+            $item->filter('a')->text()
+        );
+    }
+
+    /**
+     * создани номеров через генератор
+     */
+    public function testGenerateRoomsAdd()
+    {
+        $this->client->followRedirects();
+        $roomTypeId = $this->getRoomType();
+
+        $crawler = $this->getListCrawler($this->getLinkAction($roomTypeId, self::LINK_GENERATE_ROOM));
+
+        /* invalid form */
+        $form = $crawler
+            ->filter(self::BUTTON_NAME_SAVE_CLOSE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[from]' => self::ROOM_GENERATE_TO,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[to]'   => self::ROOM_GENERATE_FROM,
+                ]
+            );
+
+        $result = $this->client->submit($form);
+        $this->assertValidationErrors(['data'], $this->client->getContainer());
+
+        /* valid form */
+        $form = $result
+            ->filter(self::BUTTON_NAME_SAVE_CLOSE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[from]'   => self::ROOM_GENERATE_FROM,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[to]'     => self::ROOM_GENERATE_TO,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[prefix]' => self::ROOM_GENERATE_PREFIX,
+                ]
+            );
+
+        $result = $this->client->submit($form);
+        $this->alertMsgTest('Номера успешно сгенерированы', $result);
+
+        $list = $this->getTableWithRooms($roomTypeId);
+
+        $this->assertEquals(
+            self::DEFAULT_RECORDS_TOTAL + (self::ROOM_GENERATE_TO - self::ROOM_GENERATE_FROM + 1),
+            $list['recordsTotal']
+        );
+    }
+
+    /**
+     * повтроное создание с такими же данными
+     * проверка на отутствие перезаписи
+     */
+    public function testGenerateRoomAgain()
+    {
+        $this->client->followRedirects();
+        $roomTypeId = $this->getRoomType();
+
+        $arrayDbBefore = $this->getRoomsAsArray($roomTypeId);
+
+        $crawler = $this->getListCrawler($this->getLinkAction($roomTypeId, self::LINK_GENERATE_ROOM));
+
+        $form = $crawler
+            ->filter(self::BUTTON_NAME_SAVE_CLOSE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[from]'   => self::ROOM_GENERATE_FROM,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[to]'     => self::ROOM_GENERATE_TO,
+                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[prefix]' => self::ROOM_GENERATE_PREFIX,
+                ]
+            );
+
+        $this->client->submit($form);
+
+        $arrayDbAfter = $this->getRoomsAsArray($roomTypeId);
+
+        $this->assertCount(
+            0,
+            array_diff_assoc($arrayDbBefore, $arrayDbAfter)
+        );
+    }
+
+    /**
+     * Добавление нового типа
+     */
+    public function testAddNewRoomType()
+    {
+        $this->client->followRedirects();
+        $crawler = $this->getListCrawler(self::URL_INDEX . 'new');
+
+        $nameNew = self::ROOM_TYPE_NEW_FULL_TITLE;
+        $nameInside = self::ROOM_TYPE_NEW_TITLE;
+        $nameInternational = 'InternationalNameRoomType_' . $nameNew;
+
+        $form = $crawler
+            ->filter(self::BUTTON_NAME_SAVE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[fullTitle]'          => $nameNew,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[title]'              => $nameInside,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[internationalTitle]' => $nameInternational,
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[description]'        => 'test',
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[roomSpace]'          => 100500,
+                ]
+            );
+
+        $form->setValues(
+            [
+                self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[facilities]' => $this->facilities,
+            ]
+        );
+
+        /** нажато Сохранить */
+        $result = $this->client->submit($form);
+        $this->alertMsgTest('Новый тип номера успешно создан', $result);
+
+        foreach ($result->filter('input[name="' . self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[facilities][]"]') as $input) {
+            if (!in_array($input->nodeValue, $this->facilities)) {
+                $this->assertTrue(false, 'No facilities');
+            }
+        }
+
+        $crawler = $this->getListCrawler(self::URL_INDEX);
+
+        $newTab = false;
+
+        $tabs = $crawler->filter(self::TABS_ITEM);
+
+        if ($tabs->filter('a:contains("' . $nameInside . '")')->count() > 0) {
+            $newTab = true;
+        }
+
+        $this->assertTrue($newTab, 'no new tab');
+    }
+
+
+    /**
+     *  редактирование нового типа
+     */
+    public function testEditRoomType()
+    {
+        $this->client->followRedirects();
+        $crawler = $this->getListCrawler(
+            $this->getLinkAction(
+                $this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE),
+                self::LINK_EDIT_ROOM_TYPE
+            )
+        );
+
+        $newInsideName = self::ROOM_TYPE_NEW_TITLE . '_edit';
+
+        $form = $crawler
+            ->filter(self::BUTTON_NAME_SAVE)
+            ->form(
+                [
+                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[title]' => $newInsideName,
+                ]
+            );
+
+        /** нажато Сохранить */
+        $result = $this->client->submit($form);
+
+        $this->alertMsgTest('Запись успешно отредактирована.', $result);
+
+        $crawler = $this->getListCrawler(self::URL_INDEX);
+
+        $newTab = false;
+
+        $tabs = $crawler->filter(self::TABS_ITEM);
+
+        if ($tabs->filter('a:contains("' . $newInsideName . '")')->count() > 0) {
+            $newTab = true;
+        }
+
+        $this->assertTrue($newTab, 'no edit tab');
+    }
+
+
+    /**
+     * показывать отключенные ввиды комнат
+     */
+    public function testEnabledRoomType()
+    {
+        $roomType = $this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE, false);
+
+        $roomType->setIsEnabled(false);
+        $this->dm->flush($roomType);
+
+        $crawler = $this->getListCrawler(self::URL_INDEX);
+        $tabs = $crawler->filter(self::TABS_ITEM);
+
+        $disabledTab = true;
+
+        if ($tabs->filter('a:contains("' . self::ROOM_TYPE_NEW_TITLE . '_edit' . '")')->count() > 0) {
+            $disabledTab = false;
+        }
+
+        $this->assertTrue($disabledTab, 'you can see tabs with attribute IsEnabled set in False');
+
+        $roomType->setIsEnabled(true);
+        $this->dm->flush($roomType);
+    }
+
+    /**
+     * удаление созданного RoomType
+     */
+    public function testDeleteRoomType()
+    {
+        $crawler = $this->getListCrawler(
+            $this->getLinkAction(
+                $this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE),
+                self::LINK_DELETE_ROOM_TYPE
+            )
+        );
+
+        $tabs = $crawler->filter(self::TABS_ITEM);
+
+        $deleteRoomType = true;
+
+        if ($tabs->filter('a:contains("' . self::ROOM_TYPE_NEW_TITLE . '_edit' . '")')->count() > 0) {
+            $deleteRoomType = false;
+        }
+
+        if (!empty($this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE, false))) {
+            $deleteRoomType = false;
+        }
+
+        $this->assertTrue($deleteRoomType, 'no remove RoomType');
     }
 
     private function getDocumentManager()
@@ -153,13 +620,13 @@ class RoomTypeControllerTest extends WebTestCase
     {
         switch ($linkType) {
             case self::LINK_EDIT_ROOM_TYPE:
-                return self::URL_INDEX . '/' . $id . '/edit';
+                return self::URL_INDEX . $id . '/edit';
             case self::LINK_ADD_ROOM:
                 return '/management/hotel/room/' . $id . '/new/';
             case self::LINK_GENERATE_ROOM:
                 return '/management/hotel/room/' . $id . '/generate/';
             case self::LINK_DELETE_ROOM_TYPE:
-                return self::URL_INDEX . '/' . $id . '/delete';
+                return self::URL_INDEX . $id . '/delete';
         }
         return false;
     }
@@ -170,7 +637,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     private function getLinkRoom($roomTypeId)
     {
-        return '/management/hotel/room/' . $roomTypeId . '/room';
+        return '/management/hotel/room/' . $roomTypeId . '/room/';
     }
 
     /**
@@ -241,8 +708,6 @@ class RoomTypeControllerTest extends WebTestCase
      */
     private function tabLinksTest($roomTypeId)
     {
-        $this->client->followRedirects(true);
-
         $tab = $this->getListCrawler(self::URL_INDEX)->filter('#' . $roomTypeId);
 
         $this->assertContains(
@@ -290,8 +755,6 @@ class RoomTypeControllerTest extends WebTestCase
      */
     private function getTableWithRooms($roomTypeId)
     {
-        $this->client->followRedirects(true);
-
         $this->getListCrawler($this->getLinkRoom($roomTypeId));
 
         return json_decode($this->client->getResponse()->getContent(), true);
@@ -319,478 +782,5 @@ class RoomTypeControllerTest extends WebTestCase
             0,
             array_diff_assoc($this->getRoomsAsArray($roomTypeId), $arrayTable)
         );
-    }
-
-    /**
-     * проверяем статус ответа
-     */
-    public function testStatusCode()
-    {
-        $this->client->followRedirects(true);
-
-        $this->getListCrawler(self::URL_INDEX);
-
-        $this->assertEquals(
-            200, // or Symfony\Component\HttpFoundation\Response::HTTP_OK
-            $this->client->getResponse()->getStatusCode()
-        );
-
-    }
-
-    /**
-     * Тест страницы management/hotel/roomtype/
-     * и наименования вкладок (tabs)
-     */
-    public function testIndexRoomType()
-    {
-        $this->client->followRedirects(true);
-
-        $crawler = $this->getListCrawler(self::URL_INDEX);
-
-        $tabs = $crawler->filter(self::TABS_ITEM);
-
-        $this->assertCount(
-            3,
-            $tabs
-        );
-
-        $roomTypeIdNum2 = $this->getRoomType();
-        $roomTypeIdNum3 = $this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3);
-
-        $linkNum2 = $tabs->eq(0)->filter('a');
-        $linkNum3 = $tabs->eq(1)->filter('a');
-        $linkAdd = $tabs->eq(2)->filter('a');
-
-
-        $this->linkTest($linkNum2, self::ROOM_TYPE_TAB_NAME_NUM2, '#' . $roomTypeIdNum2);
-
-        $this->linkTest($linkNum3, self::ROOM_TYPE_TAB_NAME_NUM3, '#' . $roomTypeIdNum3);
-
-        $this->linkTest($linkAdd, self::ROOM_TYPE_TAB_NAME_ADD_NEW, self::URL_INDEX . '/new');
-    }
-
-    /**
-     *  Вкладка Двухместный, ссылки
-     */
-    public function testLinkTabNum2()
-    {
-        $this->tabLinksTest($this->getRoomType());
-    }
-
-    /**
-     *  Вкладка Трехместный, ссылки
-     */
-    public function testLinkTabNum3()
-    {
-        $this->tabLinksTest($this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3));
-    }
-
-    /**
-     * тест формата ответа (json)
-     */
-    public function testResponseTableWithRooms()
-    {
-        $roomTypeId = $this->getRoomType();
-        $this->getTableWithRooms($roomTypeId);
-
-        $this->assertTrue(
-            $this->client->getResponse()->headers->contains(
-                'Content-Type',
-                'application/json'
-            )
-        );
-    }
-
-    /**
-     * данные двухместных номеров
-     */
-    public function testDataNum2()
-    {
-        $this->diffArrayAjaxVsArrayDbTest($this->getRoomType());
-    }
-
-    /**
-     * данные трехместных номеров
-     */
-    public function testDataNum3()
-    {
-        $this->diffArrayAjaxVsArrayDbTest($this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3));
-    }
-
-    /**
-     * удаление комнаты
-     */
-    public function testTableRoomDelete()
-    {
-        $roomTypeId = $this->getRoomType();
-
-        $list = $this->getTableWithRooms($roomTypeId);
-
-        $this->assertEquals(
-            self::DEFAULT_RECORDS_TOTAL,
-            $list['recordsTotal']
-        );
-        /** порядковый номер записи для удаления*/
-        $key = 5;
-        $node = new Crawler($list['data'][$key][5]);
-        $link = $node->filter('a.delete-link')->attr('href');
-        $result = $this->client->request('GET', $link);
-
-        $this->alertMsgTest('Запись успешно удалена', $result);
-
-        $list = $this->getTableWithRooms($roomTypeId);
-
-        $this->assertEquals(
-            self::DEFAULT_RECORDS_TOTAL - 1,
-            $list['recordsTotal']
-        );
-    }
-
-    /**
-     * редактирование записи комнаты
-     */
-    public function testTableRoomEdit()
-    {
-        $roomTypeId = $this->getRoomType();
-
-        $list = $this->getTableWithRooms($roomTypeId);
-
-        /** порядковый номер записи для редактирования*/
-        $key = 8;
-
-        $node = new Crawler($list['data'][$key][1]);
-        $nameOld = $node->filter('a')->text();
-        $link = $node->filter('a')->attr('href');
-        $formEdit = $this->client->request('GET', $link);
-
-        $nameNew = time();
-        $form = $formEdit
-            ->filter(self::BUTTON_NAME_SAVE)
-            ->form(
-                [
-                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[fullTitle]' => $nameNew,
-                ]
-            );
-
-        /** нажато Сохранить */
-        $result = $this->client->submit($form);
-        $this->alertMsgTest('Запись успешно отредактирована', $result);
-
-        $form = $result->filter(self::BUTTON_NAME_SAVE_CLOSE)->form();
-
-        $redirect = $this->client->submit($form);
-
-        /** нажато Сохранить и Закрыть */
-        $this->assertTrue(
-            $redirect->getUri() == $this
-                ->client
-                ->getRequest()
-                ->getUriForPath(self::URL_INDEX) . '/?tab=' . $roomTypeId
-        );
-
-        $list = $this->getTableWithRooms($roomTypeId);
-
-        $node = new Crawler($list['data'][$key][1]);
-
-        $this->assertNotContains(
-            $nameOld,
-            $node->filter('a')->text()
-        );
-
-        $this->linkTest($node->filter('a'), $nameNew, $link);
-    }
-
-    /**
-     * Создание новой комнаты
-     */
-    public function testAddNewRoom()
-    {
-        $roomTypeId = $this->getRoomType();
-
-        $this->client->followRedirects(true);
-
-        $crawler = $this->getListCrawler($this->getLinkAction($roomTypeId, self::LINK_ADD_ROOM));
-
-        $nameNew = time();
-        $nameInside = 'InsideName_' . $nameNew;
-        $form = $crawler
-            ->filter(self::BUTTON_NAME_SAVE)
-            ->form(
-                [
-                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[fullTitle]' => $nameNew,
-                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[title]'     => $nameInside,
-                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[floor]'     => 100500,
-                    self::FORM_NAME_HOTEL_ROOM_TYPE . '[isSmoking]' => true,
-                ]
-            );
-        $form->setValues(
-            [
-                self::FORM_NAME_HOTEL_ROOM_TYPE . '[roomViewsTypes]' => [
-                    '5a99322bcb5f740de15d9b02',
-                    '5a99322bcb5f740de15d9b0e',
-                ],
-            ]
-        );
-        $result = $this->client->submit($form);
-
-        /** нажато Сохранить */
-        $this->alertMsgTest('Комната успешно добавлена', $result);
-
-        $form = $result->filter(self::BUTTON_NAME_SAVE_CLOSE)->form();
-
-        $redirect = $this->client->submit($form);
-
-        /** нажато Сохранить и Закрыть */
-        $this->assertTrue(
-            $redirect->getUri() == $this
-                ->client
-                ->getRequest()
-                ->getUriForPath(self::URL_INDEX) . '/?tab=' . $roomTypeId
-        );
-
-        $list = $this->getTableWithRooms($roomTypeId);
-
-        $this->assertEquals(
-            self::DEFAULT_RECORDS_TOTAL,
-            $list['recordsTotal']
-        );
-
-        /** проверяем в последнем элементе имя */
-        $item = new Crawler(array_pop($list['data'])[1]);
-
-        $this->assertContains(
-            $nameInside,
-            $item->filter('a')->text()
-        );
-    }
-
-    /**
-     * создани номеров через генератор
-     */
-    public function testGenerateRoomsAdd()
-    {
-        $roomTypeId = $this->getRoomType();
-
-        $this->client->followRedirects(true);
-
-        $crawler = $this->getListCrawler($this->getLinkAction($roomTypeId, self::LINK_GENERATE_ROOM));
-
-        /* invalid form */
-        $form = $crawler
-            ->filter(self::BUTTON_NAME_SAVE_CLOSE)
-            ->form(
-                [
-                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[from]' => self::ROOM_GENERATE_TO,
-                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[to]'   => self::ROOM_GENERATE_FROM,
-                ]
-            );
-
-        $result = $this->client->submit($form);
-        $this->assertValidationErrors(['data'], $this->client->getContainer());
-
-        /* valid form */
-        $form = $result
-            ->filter(self::BUTTON_NAME_SAVE_CLOSE)
-            ->form(
-                [
-                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[from]'   => self::ROOM_GENERATE_FROM,
-                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[to]'     => self::ROOM_GENERATE_TO,
-                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[prefix]' => self::ROOM_GENERATE_PREFIX,
-                ]
-            );
-
-        $result = $this->client->submit($form);
-        $this->alertMsgTest('Номера успешно сгенерированы', $result);
-
-        $list = $this->getTableWithRooms($roomTypeId);
-
-        $this->assertEquals(
-            self::DEFAULT_RECORDS_TOTAL + (self::ROOM_GENERATE_TO - self::ROOM_GENERATE_FROM + 1),
-            $list['recordsTotal']
-        );
-    }
-
-    /**
-     * повтроное создание с такими же данными
-     * проверка на отутствие перезаписи
-     */
-    public function testGenerateRoomAgain()
-    {
-        $roomTypeId = $this->getRoomType();
-
-        $arrayDbBefore = $this->getRoomsAsArray($roomTypeId);
-
-        $this->client->followRedirects(true);
-
-        $crawler = $this->getListCrawler($this->getLinkAction($roomTypeId, self::LINK_GENERATE_ROOM));
-
-        $form = $crawler
-            ->filter(self::BUTTON_NAME_SAVE_CLOSE)
-            ->form(
-                [
-                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[from]'   => self::ROOM_GENERATE_FROM,
-                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[to]'     => self::ROOM_GENERATE_TO,
-                    self::FORM_NAME_HOTEL_ROOMS_GENERATE . '[prefix]' => self::ROOM_GENERATE_PREFIX,
-                ]
-            );
-
-        $this->client->submit($form);
-
-        $arrayDbAfter = $this->getRoomsAsArray($roomTypeId);
-
-        $this->assertCount(
-            0,
-            array_diff_assoc($arrayDbBefore,$arrayDbAfter)
-        );
-    }
-
-    /**
-     * Добавление нового типа
-     */
-    public function testAddNewRoomType()
-    {
-        $this->client->followRedirects(true);
-
-        $crawler = $this->getListCrawler(self::URL_INDEX . '/new');
-
-        $nameNew = self::ROOM_TYPE_NEW_FULL_TITLE;
-        $nameInside = self::ROOM_TYPE_NEW_TITLE;
-        $nameInternational = 'InternationalNameRoomType_' . $nameNew;
-
-        $form = $crawler
-            ->filter(self::BUTTON_NAME_SAVE)
-            ->form(
-                [
-                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[fullTitle]'          => $nameNew,
-                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[title]'              => $nameInside,
-                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[internationalTitle]' => $nameInternational,
-                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[description]'        => 'test',
-                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[roomSpace]'          => 100500,
-                ]
-            );
-
-        $form->setValues(
-            [
-                self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[facilities]' => $this->facilities,
-            ]
-        );
-
-        /** нажато Сохранить */
-        $result = $this->client->submit($form);
-        $this->alertMsgTest('Новый тип номера успешно создан', $result);
-
-        foreach ($result->filter('input[name="' . self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[facilities][]"]') as $input) {
-            if (!in_array($input->nodeValue, $this->facilities)) {
-                $this->assertTrue(false, 'No facilities');
-            }
-        }
-
-        $crawler = $this->getListCrawler(self::URL_INDEX);
-
-        $newTab = false;
-
-        $tabs = $crawler->filter(self::TABS_ITEM);
-
-        if ($tabs->filter('a:contains("' . $nameInside . '")')->count() > 0) {
-            $newTab = true;
-        }
-
-        $this->assertTrue($newTab, 'no new tab');
-    }
-
-
-    /**
-     *  редактирование нового типа
-     */
-    public function testEditRoomType()
-    {
-        $crawler = $this->getListCrawler(
-            $this->getLinkAction(
-                $this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE),
-                self::LINK_EDIT_ROOM_TYPE
-            )
-        );
-
-        $newInsideName = self::ROOM_TYPE_NEW_TITLE . '_edit';
-
-        $form = $crawler
-            ->filter(self::BUTTON_NAME_SAVE)
-            ->form(
-                [
-                    self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[title]' => $newInsideName,
-                ]
-            );
-
-        $this->client->followRedirects(true);
-        /** нажато Сохранить */
-        $result = $this->client->submit($form);
-
-        $this->alertMsgTest('Запись успешно отредактирована.', $result);
-
-        $crawler = $this->getListCrawler(self::URL_INDEX);
-
-        $newTab = false;
-
-        $tabs = $crawler->filter(self::TABS_ITEM);
-
-        if ($tabs->filter('a:contains("' . $newInsideName . '")')->count() > 0) {
-            $newTab = true;
-        }
-
-        $this->assertTrue($newTab, 'no edit tab');
-    }
-
-
-    /**
-     * показывать отключенные ввиды комнат
-     */
-    public function testEnabledRoomType()
-    {
-        $roomType = $this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE, false);
-
-        $roomType->setIsEnabled(false);
-        $this->dm->flush($roomType);
-
-        $crawler = $this->getListCrawler(self::URL_INDEX);
-        $tabs = $crawler->filter(self::TABS_ITEM);
-
-        $disabledTab = true;
-
-        if ($tabs->filter('a:contains("' . self::ROOM_TYPE_NEW_TITLE . '_edit' . '")')->count() > 0) {
-            $disabledTab = false;
-        }
-
-        $this->assertTrue($disabledTab, 'no "isEnabled" roomtype (tab)');
-
-        $roomType->setIsEnabled(true);
-        $this->dm->flush($roomType);
-    }
-
-    /**
-     * удаление созданного RoomType
-     */
-    public function testDeleteRoomType()
-    {
-        $this->client->followRedirects(true);
-        $crawler = $this->getListCrawler(
-            $this->getLinkAction(
-                $this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE),
-                self::LINK_DELETE_ROOM_TYPE
-            )
-        );
-
-        $tabs = $crawler->filter(self::TABS_ITEM);
-
-        $deleteRoomType = true;
-
-        if ($tabs->filter('a:contains("' . self::ROOM_TYPE_NEW_TITLE . '_edit' . '")')->count() > 0) {
-            $deleteRoomType = false;
-        }
-
-        if (!empty($this->getRoomType(self::ROOM_TYPE_NEW_FULL_TITLE, false))) {
-            $deleteRoomType = false;
-        }
-
-        $this->assertTrue($deleteRoomType, 'no remove RoomType');
     }
 }
