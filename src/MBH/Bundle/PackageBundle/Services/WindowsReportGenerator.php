@@ -379,7 +379,7 @@ class WindowsReportGenerator
                         'package' => $package,
                         'tooltip' => '# '.
                             $package->getNumberWithPrefix().' <br>'.
-                            'Создана ' . $package->getCreatedAt()->format('d.m.Y') . '<br>'.
+                            'Создана: ' . $package->getCreatedAt()->format('d.m.Y') . '<br>'.
                             $package->getBegin()->format('d.m.Y').' - '.
                             $package->getEnd()->format('d.m.Y').'<br>'.
                             $package->getOrder()->getPayer()

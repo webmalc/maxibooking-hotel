@@ -5,7 +5,7 @@
     "data": [
         {% for entity in entities %}
         [
-            "<div class='text-center table-icon {{ entity.parent ? 'text-primary' }}{{ not entity.isOnline ? 'disabled-entry' }}'><i class='fa fa-sliders'></i></div>",
+            "<div class='text-center table-icon {{ entity.parent ? 'text-primary' }} {{ not entity.isEnabled ? 'disabled-entry' }}'><i class='fa fa-sliders'></i></div>",
             "<div class='text-center'>{{ entity.position }}</div>",
             "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'tariff'} %}{% endembed %}",
             "<small>{{ entity.parent }}</small>",
