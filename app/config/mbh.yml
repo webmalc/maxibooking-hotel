@@ -13,8 +13,8 @@ parameters:
 
     # ReCaptcha
     mbh.recaptcha:
-      site: '6Lev6AYUAAAAADL-WFxyHoaaGfya4uFBCUh09FWx'
-      secret: '6Lev6AYUAAAAAIk51IMnRdGS4Im_-1h3pk-cM87a'
+      site:
+      secret:
 
     mbh.weekdays: {1: 'mbh.weekdays.mon', 2: 'mbh.weekdays.tue', 3: 'mbh.weekdays.wed', 4: 'mbh.weekdays.thu', 5: 'mbh.weekdays.fri', 6: 'mbh.weekdays.sat', 0: 'mbh.weekdays.sun'}
 

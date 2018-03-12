@@ -21,7 +21,7 @@
                 <td class="text-center table-icon"><i class="fa fa-building"></i></td>
                 <td><a href="{{ path('housing_edit', { 'id': entity.id }) }}" rel="main" title= {{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">{{ entity.name }}</a></td>
                 <td>{{ entity.internalName }}</td>
-                <td class="text-center">{{ entity.city }}</td>
+                <td class="text-center">{{ entity.cityId ?  get_city(entity.cityId).name : ''}}</td>
                 <td class="text-center">{{ entity.address }}</td>
                 <td class="table-actions-td text-center">
                     {% include 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'route': 'housing', 'entity': entity} %}

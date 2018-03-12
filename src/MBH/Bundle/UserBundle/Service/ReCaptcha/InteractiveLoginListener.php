@@ -50,6 +50,9 @@ class InteractiveLoginListener
      */
     public function onSecurityInteractiveLogin(InteractiveLoginEvent $event)
     {
+        if (empty($this->params['secret'])){
+            return;
+        }
         $request = $event->getRequest();
 
         $reCaptcha = new ReCaptcha($this->params['secret']);
