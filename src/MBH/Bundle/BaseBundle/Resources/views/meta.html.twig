@@ -72,7 +72,8 @@
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
                     utils: {},
                     canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
-                    showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }}
+                    showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }},
+                    currentHotel: "{{ get_current_hotel().id }}"
                 }
             </script>
             {{ app.session.remove('mbh.justLogin') }}

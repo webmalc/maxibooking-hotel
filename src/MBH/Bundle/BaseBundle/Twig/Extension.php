@@ -176,6 +176,14 @@ class Extension extends \Twig_Extension
         return $this->clientConfig;
     }
 
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel|null
+     */
+    public function getCurrentHotel()
+    {
+        return $this->container->get('mbh.hotel.selector')->getSelected();
+    }
+
     public function stringToDate($dateString, $dateFormat = 'd.m.Y')
     {
         return \DateTime::createFromFormat($dateFormat, $dateString);
@@ -253,9 +261,7 @@ class Extension extends \Twig_Extension
      */
     public function isRussianClient()
     {
-        //TODO: Поменять когда создадут клиентов в биллинге
-//        return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
-        return true;
+        return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
     }
 
     /**
@@ -277,6 +283,7 @@ class Extension extends \Twig_Extension
             'get_client' => new \Twig_SimpleFunction('get_client', [$this, 'getClient'], ['is_safe' => ['html']]),
             'is_russian_client' => new \Twig_SimpleFunction('is_russian_client', [$this, 'isRussianClient'], ['is_safe' => ['html']]),
             'get_service' => new \Twig_SimpleFunction('get_service', [$this, 'getBillingService'], ['is_safe' => ['html']]),
+            'get_current_hotel' => new \Twig_SimpleFunction('get_current_hotel', [$this, 'getCurrentHotel'], ['is_safe' => ['html']]),
         ];
     }
 
