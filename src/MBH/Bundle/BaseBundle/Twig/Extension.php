@@ -188,6 +188,7 @@ class Extension extends \Twig_Extension
             'filter_begin_date' => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
             'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
+            'get_current_hotel' => new \Twig_SimpleFunction('get_current_hotel', [$this, 'getCurrentHotel'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -207,5 +208,13 @@ class Extension extends \Twig_Extension
     public function timezoneOffsetGet()
     {
         return (new \DateTime())->getOffset();
+    }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel|null
+     */
+    public function getCurrentHotel()
+    {
+        return $this->container->get('mbh.hotel.selector')->getSelected();
     }
 }

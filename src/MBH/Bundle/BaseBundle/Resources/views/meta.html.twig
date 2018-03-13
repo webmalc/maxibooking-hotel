@@ -69,7 +69,8 @@
                     },
                     startDatePick: '{{ dateDatepickers|date('d.m.Y') }}',
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
-                    utils: {}
+                    utils: {},
+                    currentHotel: "{{ get_current_hotel().id }}"
                 }
             </script>
 

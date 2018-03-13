@@ -254,9 +254,9 @@ var docReadyForms = function () {
         });
     }());
 
-
     $('form.remember input:not(.not-remember), form.remember select:not(.not-remember), form.remember textarea:not(.not-remember)').phoenix({
-        webStorage: 'sessionStorage'
+        webStorage: 'sessionStorage',
+        namespace: 'phoenixStorage' + mbh.currentHotel
     });
 
     $(".timepicker").timepicker({
