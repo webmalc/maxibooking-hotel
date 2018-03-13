@@ -108,7 +108,6 @@ class SpecialHandler
             return;
         }
 
-
         $special->setRecalculation();
         $this->dm->flush();
 
@@ -122,24 +121,25 @@ class SpecialHandler
         //Здесь используется уже готовый код для поиска в онлайн
         $searchForm = $this->getFormData($special);
         $searchForm->setForceCapacityRestriction(true);
+        /** @var array $searchResults */
         $searchResults = $this->specialSearchHelper->getResults($searchForm);
         $error = '';
 
         /** @var OnlineResultInstance $onlineSearchResult */
-        if ($searchResults->isEmpty()) {
+        if (!count($searchResults)) {
             if ($special->getSold() === 0) {
                 $error = 'Поиск не вернул результат для спецпредложения';
             }
 
         }
 
-        if (!$searchResults->isEmpty()) {
-            $onlineSearchResult = $searchResults->first();
+        if (count($searchResults)) {
+            $onlineSearchResult = $searchResults[0];
             /** @var SearchResult $searchResult */
 
             if (count($onlineSearchResult->getResults())) {
 
-                $searchResult = $searchResults->first()->getResults()->first();
+                $searchResult = $searchResults[0]->getResults()->first();
                 $specialPrice = $this->createSpecialPrice(
                     $searchResult->getTariff(),
                     $searchResult->getRoomType(),
