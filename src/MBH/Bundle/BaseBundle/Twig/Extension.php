@@ -141,6 +141,7 @@ class Extension extends \Twig_Extension
     public function getFilters()
     {
         return [
+            'days_diff' => new \Twig_SimpleFilter('days_diff', [$this, 'daysDiff']),
             'mbh_format' => new \Twig_SimpleFilter('mbh_format', [$this, 'format'], ['is_safe' => array('html')]),
             'mbh_md5' => new \Twig_SimpleFilter('mbh_md5', [$this, 'md5']),
             'num2str' => new \Twig_SimpleFilter('num2str', [$this, 'num2str']),
@@ -150,6 +151,27 @@ class Extension extends \Twig_Extension
             'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
         ];
+    }
+
+    public function daysDiff(\DateTime $firstDate = null, \DateTime $lastDate = null)
+    {
+        if (!$firstDate || !$lastDate) {
+            return '';
+        }
+
+        $dDiff = $firstDate->diff($lastDate);
+        $result = '';
+        foreach (\Twig_Extensions_Extension_Date::$units as $attribute => $unit) {
+            $count = $dDiff->$attribute;
+            if (0 !== $count) {
+                $result .= sprintf('%s%s', $dDiff->invert ? '+' : '-', $count);
+            }
+        }
+        if (empty($result)) {
+            $result = '0';
+        }
+
+        return $result ;
     }
 
     public function friendlyInterval(\DateInterval $interval)

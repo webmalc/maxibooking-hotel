@@ -215,7 +215,9 @@
                         <td><a target="_blank" href="{{ path('special_edit', {'id': special.id}) }}">{{ special }}</a>
                         </td>
                         <td>{{ special.hotel.name }}</td>
-                        <td>{{ special.begin|mbh_format }} - {{ special.end|mbh_format }}</td>
+                        <td><span title="{{ special.begin|days_diff(query.begin) }}">{{ special.begin|mbh_format }}</span> - <span title="{{ special.end|days_diff(query.end) }}">{{ special.end|mbh_format }}</span> <br />
+
+                        </td>
                         <td>
                             <small>{{ special.roomTypes|join(';<br>')|raw }}</small>
                         </td>
@@ -229,7 +231,7 @@
                             <select class="form-control plain-html input-sm search-special-tourist-select">
                                 {% for priceTourists, price  in sPrice.prices %}
                                     {% set arr = priceTourists|split('_') %}
-                                    <option data-adults="{{ arr[0] }}" data-children="{{ arr[1] }}" {% if (query.adults == arr[0]) and (query.children == arr[1]) %}selected{% endif %} value="{{ price }}">
+                                    <option data-adults="{{ arr[0] }}" data-children="{{ arr[1] }}" {% if (query.adults == arr[0]) and (query.children == arr[1]) %}selected{% endif %} value=" {{ price|number_format(2) }}">
                                         {% if arr[0] > 0 %}{{ arr[0] }} вз.{% endif %}{% if arr[0] > 0 and arr[1] > 0 %}+{% endif %}{% if arr[1] > 0 %}{{ arr[1] }} рб.{% endif %}
                                     </option>
                                 {% endfor %}
