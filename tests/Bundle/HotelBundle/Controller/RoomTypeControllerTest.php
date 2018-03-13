@@ -66,14 +66,12 @@ class RoomTypeControllerTest extends WebTestCase
     public function __construct(?string $name = null, array $data = [], string $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
+
+        self::baseFixtures();
+
         $this->dm = $this->getDocumentManager();
         $this->facilities = $this->getRandomFacilities();
         $this->hotelId = $this->getHotelId();
-    }
-
-    public static function setUpBeforeClass()
-    {
-        self::baseFixtures();
     }
 
     public function setUp()
