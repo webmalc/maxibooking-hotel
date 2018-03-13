@@ -9,8 +9,8 @@ use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineDataProviderWrapperInterface;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance;
-use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialResultGenerator;
 use MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -33,7 +33,7 @@ class SpecialHandler
     private $dm;
     /** @var  SpecialDataPreparer */
     private $specialHelper;
-    /** @var OnlineSpecialResultGenerator */
+    /** @var OnlineDataProviderWrapperInterface */
     private $specialSearchHelper;
     /** @var  OnlineSearchFormData */
     private $onlineSearchFormData;
@@ -52,7 +52,7 @@ class SpecialHandler
      * @param DocumentManager $dm
      * @param Logger $logger
      * @param SpecialDataPreparer $specialHelper
-     * @param OnlineSpecialResultGenerator $specialSearchHelper
+     * @param OnlineDataProviderWrapperInterface $specialSearchHelper
      * @param OnlineSearchFormData $onlineSearchFormData
      * @param Notifier $mailer
      */
@@ -61,7 +61,7 @@ class SpecialHandler
         DocumentManager $dm,
         Logger $logger,
         SpecialDataPreparer $specialHelper,
-        OnlineSpecialResultGenerator $specialSearchHelper,
+        OnlineDataProviderWrapperInterface $specialSearchHelper,
         OnlineSearchFormData $onlineSearchFormData,
         Notifier $mailer
 //        DataCollectingValidator $validator
