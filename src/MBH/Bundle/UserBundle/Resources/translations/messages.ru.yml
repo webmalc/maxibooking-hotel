@@ -127,7 +127,6 @@ form.payer_type.bank.name.label: Наименование
 form.payer_type.bank.bik.label: БИК
 form.payer_type.bank.correspondent_account.label: 'Корреспонденский счет'
 form.payer_type.foreign_bank.group: Банк
-form.payer_type.foreign_bank.iban.label: 'Номер счета получателя IBAN'
 form.payer_type.foreign_bank.name.label: 'Название банка'
 form.payer_type.foreign_bank.swift.label: 'SWIFT-код банка получателя'
 form.payer_type.field_not_filled: 'Поле должно быть заполнено!'
@@ -162,6 +161,7 @@ view.personal_account.tariff.number_of_rooms: 'Количество номеро
 view.personal_account.tariff.begin: 'Начало действия'
 view.personal_account.tariff.end: Конец
 view.personal_account.tariff.price: Стоимость
+view.personal_account.tariff.month_abbr: 'мес.'
 view.personal_account.tariff.period: Период
 view.personal_account.tariff.current: 'Текущий тариф'
 view.personal_account.tariff.next: 'Запланированный тариф'

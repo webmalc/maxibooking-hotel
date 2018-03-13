@@ -76,7 +76,7 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="document.tariff.title.too_long",
+     *      minMessage="document.tariff.full_title.too_short",
      *      max=100,
      *      maxMessage="document.tariff.title.too_long"
      * )

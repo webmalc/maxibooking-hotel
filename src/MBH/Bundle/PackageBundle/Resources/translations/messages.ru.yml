@@ -374,7 +374,7 @@ form.organizationType.accountant_fio: 'ФИО бухгалтера'
 form.organizationType.inn: ИНН
 form.organizationType.kpp: КПП
 form.organizationType.registration_date: 'Дата гос.регистрации'
-form.organizationType.registration_number: 'Регистраиционный номер в ПФР'
+form.organizationType.registration_number: 'Регистрационный номер в ПФР'
 form.organizationType.activity_code: 'Код основной деятельности'
 form.organizationType.okpo_code: 'Код по ОКПО'
 form.organizationType.writer_fio: 'ФИО подписанта в род. падеже'
@@ -714,7 +714,7 @@ manager.channel_manager.venere: Venere
 validator.form.image.min.error: 'Превышено минимальное значение'
 validator.form.image.max.error: 'Превышено максимальное занчение'
 csv.type.package: 'Тип брони'
-csv.type.order.type: 'Тип заказа'
+csv.type.order.type: 'Канал продаж'
 csv.type.order.source: 'Источник продаж'
 csv.type.begin: С
 csv.type.end: По
@@ -801,7 +801,7 @@ controller.chessboard.accommodation_update.success: 'Размещение усп
 controller.chessboard.accommodation_divide.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет размещена в номере %roomName%'
 controller.chessboard.accommodation_remove.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет без размещения'
 controller.chessboard.can_not_change_room_type_for_package_with_accommodations: 'Нельзя изменить тип номера для брони, имеющей размещения'
-controller.chessboard.accommodation_divide.error: 'Дата разделения размещение не может быть меньше начала размещения или больше конца размещения'
+controller.chessboard.accommodation_divide.error: 'Дата разделения размещения не может быть меньше начала размещения или больше конца размещения'
 controller.chessboard.accommodation_divide.error.empty_date_string: 'Передана пустая строка даты разделения размещения'
 controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: 'Ошибка! Недопустимо изменение промежуточного размещения'
 controller.chessboard.payer: Плательщик
@@ -810,7 +810,7 @@ chessboard_manager.size_slider.title: Масштаб
 chessboard_manager.room_type.title: 'Тип номера'
 chessboard_manager.housing.title: Корпус
 chessboard_manager.floor.title: Этаж
-chessboard_manager.filter.button.text: Выбрать
+chessboard_manager.filter.button.text: Применить
 chessboard_manager.without_accommodation.tile.text: 'Без размещения'
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
 accommodation_manipulator.error.edited_room_busy: 'Невозможно изменить размещение, так как в указанные дни комната "%roomName%" занята.'
