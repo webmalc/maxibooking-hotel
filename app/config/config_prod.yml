@@ -26,8 +26,3 @@ services:
         arguments: ['@kernel', '@exception_notifier']
         tags:
             - {name: kernel.event_subscriber}
-
-doctrine_mongodb:
-    connections:
-        default:
-            server: "mongodb://%mongodb_login%:%mongodb_password%@%mongodb_host%/%mongodb_database%%mongodb_options%"

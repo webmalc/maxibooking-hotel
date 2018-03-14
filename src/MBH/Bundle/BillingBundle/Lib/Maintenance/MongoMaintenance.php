@@ -27,7 +27,7 @@ final class MongoMaintenance extends AbstractMaintenance
      * @param BillingMongoClient $mongoClient
      * @throws ClientMaintenanceException
      */
-    public function __construct(ContainerInterface $container,  BillingMongoClient $mongoClient, array $options = [])
+    public function __construct(ContainerInterface $container, BillingMongoClient $mongoClient, array $options = [])
     {
         $this->mongoClient = $mongoClient;
         parent::__construct($container, $options);
@@ -134,15 +134,23 @@ final class MongoMaintenance extends AbstractMaintenance
         }
 
         $backupCommand = sprintf(
-            "mongodump -d %s -o %s --host %s -u %s -p --authenticationDatabase %s",
+            "mongodump -d %s -o %s --host %s -u %s -p %s --authenticationDatabase %s",
             $dbName,
             $backupFolder.'/mongodb'.(new \DateTime())->format('Y-m-d_H-i-s'),
-            $this->options['primary_db_host'].':'.$this->options['port'],
+            $this->createMongoDumpHost(),
             $this->options['admin_login'],
             $this->options['admin_password'],
             $this->options['admin_database']
         );
         $this->executeCommand($backupCommand);
+    }
+
+    private function createMongoDumpHost(): string
+    {
+        preg_match('/replicaSet\=(.*?)(?:\?.*)*$/', $this->options['mongo_options'], $matches);
+        $cluster = $matches[1] ?? null;
+
+        return $cluster ? $cluster.'/'. $this->options['host']: $this->options['host'];
     }
 
     /**
@@ -151,11 +159,14 @@ final class MongoMaintenance extends AbstractMaintenance
      */
     private function purgeDb(string $dbName)
     {
+        if (static::SAMPLE_DB == $dbName) {
+            throw new ClientMaintenanceException("Alarma! Try to purge system database!");
+        }
         try {
             $this->mongoClient->purgeAllDbUsers($dbName);
             $result = $this->mongoClient->dropDatabase($dbName);
         } catch (\Exception $e) {
-            throw new ClientMaintenanceException("Error! DB was dropped, but still exists".$e->getMessage());
+            throw new ClientMaintenanceException("Error! DB drop failed. ".$e->getMessage());
         }
         if (!$result) {
             throw new ClientMaintenanceException("Error DB Dropping");
@@ -248,7 +259,6 @@ final class MongoMaintenance extends AbstractMaintenance
                 [
                     'host' => $this->mongoClient->getHost(),
                     'port' => 27017,
-                    'primary_db_host' => $this->mongoClient->getHost(),
                     'admin_login' => $this->mongoClient->getAdminLogin(),
                     'admin_password' => $this->mongoClient->getAdminPassword(),
                     'mongo_options' => $this->mongoClient->getOptions(),
