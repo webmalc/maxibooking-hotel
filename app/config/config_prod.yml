@@ -31,10 +31,3 @@ doctrine_mongodb:
     connections:
         default:
             server: "mongodb://%mongodb_login%:%mongodb_password%@%mongodb_host%/%mongodb_database%%mongodb_options%"
-
-    # ReCaptcha
-
-parameters:
-    mbh.recaptcha:
-      site: '6Lev6AYUAAAAADL-WFxyHoaaGfya4uFBCUh09FWx'
-      secret: '6Lev6AYUAAAAAIk51IMnRdGS4Im_-1h3pk-cM87a'
