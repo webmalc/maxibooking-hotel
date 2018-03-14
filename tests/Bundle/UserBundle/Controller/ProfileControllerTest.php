@@ -92,8 +92,8 @@ class ProfileControllerTest extends WebTestCase
                 ],
             self::KEY_PASS_INVALID_2 =>
                 [
-                    'first'  => '123456',
-                    'second' => '123456',
+                    'first'  => '12345678',
+                    'second' => '12345678',
                 ],
             self::KEY_PASS_INVALID_3 =>
                 [
