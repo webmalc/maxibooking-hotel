@@ -8,7 +8,7 @@ mbhpricebundle.form.restrictiongeneratortype.setting: Настройки
 mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov.dlya.kotorykh.budet.proizvedena.generatsiya.tsen: 'Типы номеров для которых будет произведена генерация цен'
 mbhpricebundle.form.restrictiongeneratortype.vse.tipy.nomerov: 'Все типы номеров'
 mbhpricebundle.form.restrictiongeneratortype.tarify: Тарифы
-mbhpricebundle.form.restrictiongeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.tsen: 'Тарифы для которых будет произведена генерация цен'
+mbhpricebundle.form.restrictiongeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.tsen: 'Тарифы для которых будет произведена генерация'
 mbhpricebundle.form.restrictiongeneratortype.vse.tarify: 'Все тарифы'
 mbhpricebundle.form.restrictiongeneratortype.min_dlina: 'Мин. длина'
 mbhpricebundle.form.restrictiongeneratortype.max_dlina: 'Макс. длина'
@@ -233,7 +233,7 @@ mbhpricebundle.view.pricecache.table.price_for_adult_main_place: 'Цена за 
 mbhpricebundle.view.pricecache.table.price_for_children_additional_place: 'Цена за детское доп. место'
 mbhpricebundle.view.pricecache.filter.displayed_price_caches_date: 'Дата, для которой указаны цены'
 mbhpricebundle.view.pricecache.filter.displayed_price_caches_time: 'Время, для которого указаны цены'
-price.views.priceCache.index.warning_displayed_irrelevant_prices: 'Указаны неактульные цены'
+price.views.priceCache.index.warning_displayed_irrelevant_prices: 'Указаны неактуальные цены'
 mbhpricebundle.view.service.index.spisok: Список
 mbhpricebundle.view.service.index.redaktirovatkategoriyuuslug: 'Редактировать категорию услуг'
 mbhpricebundle.view.service.index.sozdatusluguvkategorii: 'Создать услугу в категории'
@@ -425,7 +425,7 @@ price.resources.views.roomcache.left: осталось
 price.resources.views.roomcache.number_in_sell: 'Номера в продаже'
 price.resources.views.roomcache.edit_category_of_services: 'редактирование категории услуг'
 price.form.public_information: 'Общая информация'
-price.form.public_summer: 'Внутреннне название (опциональное)'
+price.form.public_summer: 'Основной лето '
 price.form.nazvanie_dla_ispolzovania_vnutri: 'Название для использования внутри MaxiBooking'
 price.form.s_kakogo_chisla_ispolzuetsa_tarif: 'С какого числа используется тариф?'
 price.form.po_kakoe_chislo_ispolzuetsa_tarif: 'По какое число используется тариф?'
@@ -498,8 +498,8 @@ mbhpricebundle.view.roomcache.index.obzor: обзор
 mbhpricebundle.view.roomcache.index.sokhranitʹ: Сохранить
 'mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi?': 'Доступна ли услуга для продажи?'
 mbhpricebundle.view.roomcache.graph.ostalosʹ: Осталось
-'mbhpricebundle.form.tarifftype.skakogochislaispolʹzuyetsyatarif?': 'С какого числа используется тариф?'
-'mbhpricebundle.form.tarifftype.pokakoyechisloispolʹzuyetsyatarif?': 'По какое число используется тариф?'
+'mbhpricebundle.form.tarifftype.skakogochislaispolʹzuyetsyatarif?': 'С какого числа тариф отображается для бронирования?'
+'mbhpricebundle.form.tarifftype.pokakoyechisloispolʹzuyetsyatarif?': 'По какое число тариф отображается для бронирования?'
 'mbhpricebundle.form.tarifftype.onlayn?': 'Онлайн?'
 'mbhpricebundle.form.tarifftype.ispolʹzovatʹlitarifvonlaynbronirovanii?': 'Использовать ли тариф в онлайн бронировании?'
 'mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyarebenkom?': 'До какого возраста клиент считается ребенком?'
@@ -527,13 +527,11 @@ mbhpricebundle.form.pricecachegeneratortype.tsenapribronirovaniinomeranaodnogoch
 mbhpricebundle.form.tariffinheritancetype.nasledovatʹlitsenyotroditelʹskogotarifa: 'Наследовать ли цены от родительского тарифа'
 mbhpricebundle.form.tariffinheritancetype.nasledovatʹliusloviyaiogranicheniyaotroditelʹskogotarifa: 'Наследовать ли условия и ограничения от родительского тарифа'
 mbhpricebundle.form.tariffinheritancetype.nasledovatʹlikvotynomerovotroditelʹskogotarif: 'Наследовать ли квоты номеров от родительского тариф'
-
 room_cache_controller.limit_of_rooms_exceeded: 'Количество номеров в продаже превышает максимально разрешенное по тарифу количество номеров в продаже в следующие даты: %busyDays% . Доступно по тарифу %availableNumberOfRooms%. Подробнее <a href="%overviewUrl%" target="_blank">информация по номерам</a>'
-
 total_rooms_overview_table.available_number_of_rooms: 'Доступно номеров по тарифу'
 total_rooms_overview_table.by_all_hotels: 'По всем отелям'
 total_rooms_overview_table.number_of_rooms: 'Число номеров'
 total_rooms_overview_table.rooms_at_sale: 'Номера в продаже'
-total_rooms_overview_table.rooms_count: 'Номеров'
+total_rooms_overview_table.rooms_count: Номеров
 total_rooms_overview_table.number_of_unused_rooms: 'Не использовано номеров'
-total_rooms_overview_table.total: 'Всего'
+total_rooms_overview_table.total: Всего

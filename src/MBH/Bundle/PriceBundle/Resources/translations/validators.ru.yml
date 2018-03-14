@@ -28,6 +28,6 @@ document.service_category.description.too_long: 'Слишком длинное �
 document.tariff.hotel.hotel_not_chosen: 'Не выбран отель'
 document.tariff.full_title.too_short: 'Слишком короткое имя'
 document.tariff.full_title.too_long: 'Слишком длинное имя'
-document.tariff.title.too_long: 'Слишком короткое имя'
+document.tariff.title.too_long: 'Слишком длинное имя'
 document.tariff.description.too_short: 'Слишком короткое описание'
 document.tariff.description.too_long: 'Слишком длинное описание'

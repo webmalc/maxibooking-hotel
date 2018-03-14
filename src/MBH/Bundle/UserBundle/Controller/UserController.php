@@ -284,7 +284,9 @@ class UserController extends Controller
                 $entity->setPlainPassword($newPassword);
             }
 
-            $this->get('session')->set('_locale', $entity->getLocale());
+            if ($entity->getLocale()) {
+                $this->get('session')->set('_locale', $entity->getLocale());
+            }
             $this->container->get('fos_user.user_manager')->updateUser($entity);
 
             //update ACL
