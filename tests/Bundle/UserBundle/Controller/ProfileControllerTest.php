@@ -85,11 +85,11 @@ class ProfileControllerTest extends WebTestCase
 
         $pass = [
             [
-                'first'  => $temp = $this->generatePassword(self::CHANGE_PASSWORD_MIN_NUMBER_CHARSET - 2),
+                'first'  => $temp = $this->generatePassword(false,2),
                 'second' => $temp,
             ],
             [
-                'first'  => $temp = $this->generatePassword(self::CHANGE_PASSWORD_MIN_NUMBER_CHARSET),
+                'first'  => $temp = $this->generatePassword(false),
                 'second' => $temp,
             ],
             [
@@ -228,22 +228,18 @@ class ProfileControllerTest extends WebTestCase
         return $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
     }
 
-    /**
-     * @param bool $valid
-     * @return string
-     */
-    private function generatePassword($valid = true)
+
+    private function generatePassword($valid = true, $number = self::CHANGE_PASSWORD_MIN_NUMBER_CHARSET)
     {
         $pass = '';
-        if ($valid === true) {
-            $max = self::CHANGE_PASSWORD_MIN_NUMBER_CHARSET + 1;
-        } elseif (is_int($valid)) {
-            $max = $valid;
-        }
-        for ($i = 0; $i <= $max; $i++) {
+        for ($i = 0; $i <= $number; $i++) {
             $pass .= $i;
         }
-        return $this->validPassword;
+        if ($valid === true) {
+            $pass .= 'T';
+        }
+
+        return $pass;
     }
 
     protected function setValidPassword()

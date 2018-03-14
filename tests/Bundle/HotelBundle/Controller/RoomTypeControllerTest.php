@@ -248,7 +248,7 @@ class RoomTypeControllerTest extends WebTestCase
 
         $node = new Crawler($list['data'][$key][1]);
 
-        $this->assertNotContains(
+        $this->assertNotEquals(
             $nameOld,
             $node->filter('a')->text()
         );
