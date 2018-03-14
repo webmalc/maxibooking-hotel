@@ -24,6 +24,8 @@ class InteractiveLoginListener
     protected $session;
     protected $supportEmail;
     protected $translator;
+    /** @var \AppKernel */
+    protected $kernel;
 
     /**
      * InteractiveLoginListener constructor.
@@ -34,7 +36,15 @@ class InteractiveLoginListener
      * @param TranslatorInterface $translator
      * @param $supportInfo
      */
-    public function __construct(array $params, ClientManager $clientManager, Session $session, BillingApi $billingApi, TranslatorInterface $translator, $supportInfo)
+    public function __construct(
+        array $params,
+        ClientManager $clientManager,
+        Session $session,
+        BillingApi $billingApi,
+        TranslatorInterface $translator,
+        $supportInfo,
+        KernelInterface $kernel
+        )
     {
         $this->params = $params;
         $this->clientManager = $clientManager;
@@ -42,6 +52,7 @@ class InteractiveLoginListener
         $this->billingApi = $billingApi;
         $this->translator = $translator;
         $this->supportEmail = $supportInfo['email'];
+        $this->kernel = $kernel;
     }
 
     /**
@@ -57,8 +68,10 @@ class InteractiveLoginListener
         $this->session->set(ClientManager::IS_AUTHORIZED_BY_TOKEN, $isAuthorizedByToken);
 
         if ($event->getAuthenticationToken() instanceof UsernamePasswordToken) {
-            if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
-                throw new BadCredentialsException('Captcha is invalid');
+            if ($this->kernel->getEnvironment() == 'prod'){
+                if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
+                    throw new BadCredentialsException('Captcha is invalid');
+                }
             }
 
             if (!$this->clientManager->isDefaultClient()) {
