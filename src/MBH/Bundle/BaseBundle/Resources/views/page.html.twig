@@ -83,6 +83,7 @@
 
             {% include 'MBHBaseBundle::dashboardModal.html.twig' with {'dashboard_messages': dashboard_messages} %}
             {% include '@MBHBase/supportModal.html.twig' %}
+            {% include '@MBHBase/welcomeModal.html.twig' %}
             {% if app.environment == 'dev' %}
                 {% include '@MBHBase/addTipsModal.html.twig' %}
             {% endif %}

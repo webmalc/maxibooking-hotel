@@ -1,0 +1,30 @@
+<div class="modal fade" tabindex="-1" role="dialog" id="welcome-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">{{ 'welcome_modal.header_text'|trans }}</h4>
+            </div>
+            <div class="modal-body" id="welcome-modal-body">
+                {{ 'welcome_modal.welcome1'|trans }}<br>
+
+                {{ 'welcome_modal.welcome2'|trans }} <br>
+
+                {{ 'welcome_modal.welcome3'|trans }}<br>
+                {{ 'welcome_modal.welcome4'|trans }}<br>
+
+                {{ 'welcome_modal.welcome5'|trans }}
+                <button class="btn btn-primary" onclick="location.href='https://support.maxi-booking.com/hc/ru'">
+                    {{ 'welcome_modal.welcome5_continuation'|trans }}
+                </button>
+                <br>
+                {#{{ 'welcome_modal.welcome6'|trans}}#}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                {#<button type="button" class="btn btn-primary" id="tips-modal-save-button">Сохранить</button>#}
+            </div>
+        </div>
+    </div>
+</div>

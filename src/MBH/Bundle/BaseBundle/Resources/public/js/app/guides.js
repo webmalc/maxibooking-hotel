@@ -15,7 +15,8 @@ var GUIDES_BY_PATH = {
     '/price/room_cache/generator': ['room-cache-3'],
     '/price/price_cache/generator': ['price-cache-3'],
     '/package/search': ['search-guide-2', 'search-guide-3-v1', 'search-guide-3-v2'],
-    '/price/management/tariff': ['tariff-guide-add-1']
+    '/price/management/tariff': ['tariff-guide-add-1'],
+    '/price/management/tariff/new': ['tariff-guide-add-2']
 };
 
 var INCLUDED_PATHS_BEGINS = ['/package/order'];
@@ -24,19 +25,30 @@ var EXCLUDED_PATHS_BEGINS = ['/user'];
 var WELCOME_GUIDES_LIST = ['room-cache-1', 'price-cache-1', 'search-guide-1'];
 
 var GUIDES = {
+    'support-modal-guide' : {
+        getSteps: function () {
+            return [
+                {
+                    selector: '#support-link',
+                    event: 'click',
+                    description: 'Для получения информации нажмите'
+                }
+            ];
+        }
+    },
     'room-cache-1': {
         getSteps: function () {
             return [
                 {
                     selector: '#main-menu li.dropdown:eq(1)',
                     event: 'click',
-                    description: 'Для начала нажмите сюда'
+                    description: Translator.trans("guides.room_cache.dropdown_click")
                 },
                 {
                     timeout: 500,
                     selector: '#main-menu li.dropdown:eq(1) li:eq(2)',
                     event: 'click',
-                    description: 'Далее сюда'
+                    description: Translator.trans("guides.room_cache.menu_item")
                 }
             ]
         },
@@ -48,7 +60,7 @@ var GUIDES = {
                 {
                     selector: '#actions li:nth-child(2) button',
                     event: 'click',
-                    description: 'Для генерации номеров в продаже нажмите сюда'
+                    description: Translator.trans("guides.room_cache.generator_button")
                 }
             ]
         },
@@ -58,30 +70,30 @@ var GUIDES = {
         getSteps: function () {
             return [
                 {
-                    'next #mbh_bundle_pricebundle_room_cache_generator_type_begin': 'Укажите начало периода'
+                    'next #mbh_bundle_pricebundle_room_cache_generator_type_begin': Translator.trans("guides.room_cache.generator_begin")
                 },
                 {
-                    'next #mbh_bundle_pricebundle_room_cache_generator_type_end': 'Укажите конец периода'
+                    'next #mbh_bundle_pricebundle_room_cache_generator_type_end': Translator.trans("guides.room_cache.generator_end")
                 },
                 {
                     selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(3) span.select2',
                     event_type: 'next',
-                    description: 'Можно указать определенные дни недели'
+                    description: Translator.trans("guides.room_cache.generator_days_of_week")
                 },
                 {
                     selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(4) span.select2',
                     event_type: 'next',
-                    description: 'Укажите типы номеров'
+                    description: Translator.trans("guides.room_cache.generator_room_types")
                 },
                 {
                     selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(7) .bootstrap-touchspin',
                     event_type: 'next',
-                    description: 'Укажите количество номеров'
+                    description: Translator.trans("guides.room_cache.generator_number_of_rooms")
                 },
                 {
                     selector: '#actions li:first-child button',
                     event: 'click',
-                    description: 'Нажмите кнопку'
+                    description: Translator.trans("guides.room_cache.generator_save_button")
                 }
             ]
         }
@@ -92,13 +104,13 @@ var GUIDES = {
                 {
                     selector: '#main-menu li.dropdown:eq(1)',
                     event: 'click',
-                    description: 'Для начала нажмите сюда'
+                    description: Translator.trans("guides.price_cache.dropdown_menu_click: ")
                 },
                 {
                     timeout: 500,
                     selector: '#main-menu li.dropdown:eq(1) li:eq(3)',
                     event: 'click',
-                    description: 'Далее сюда'
+                    description: Translator.trans("guides.price_cache.menu_click")
                 }
             ]
         },
@@ -110,7 +122,7 @@ var GUIDES = {
                 {
                     selector: '#actions li:nth-child(2) button',
                     event: 'click',
-                    description: 'Для генерации цен нажмите сюда'
+                    description: Translator.trans("guides.price_cache.generator_button")
                 }
             ]
         },
@@ -120,30 +132,30 @@ var GUIDES = {
         getSteps: function () {
             return [
                 {
-                    'next #mbh_price_bundle_price_cache_generator_begin': 'Укажите начало периода'
+                    'next #mbh_price_bundle_price_cache_generator_begin': Translator.trans("guides.price_cache.generator_begin")
                 },
                 {
-                    'next #mbh_price_bundle_price_cache_generator_end': 'Укажите конец периода'
+                    'next #mbh_price_bundle_price_cache_generator_end': Translator.trans("guides.price_cache.generator_end")
                 },
                 {
                     selector: '#mbh_price_bundle_price_cache_generator .form-group:nth-child(4) span.select2',
                     event_type: 'next',
-                    description: 'Укажите типы номеров'
+                    description: Translator.trans("guides.price_cache.generator_room_types")
                 },
                 {
                     selector: '#mbh_price_bundle_price_cache_generator .form-group:nth-child(5) span.select2',
                     event_type: 'next',
-                    description: 'Укажите тарифы'
+                    description: Translator.trans("guides.price_cache.generator_tariffs")
                 },
                 {
                     selector: '#mbh_price_bundle_price_cache_generator .form-group:nth-child(1) .bootstrap-touchspin',
                     event_type: 'next',
-                    description: 'Укажите цену'
+                    description: Translator.trans("guides.price_cache.generator_price")
                 },
                 {
                     selector: '#actions li:first-child button',
                     event: 'click',
-                    description: 'Нажмите кнопку'
+                    description: Translator.trans("guides.price_cache.generator_save_button")
                 }
             ]
         }
@@ -154,7 +166,7 @@ var GUIDES = {
                 {
                     selector: '#main-menu li[icon="fa fa-search"]',
                     event: 'click',
-                    description: 'Забронировать номер для клиента можно здесь'
+                    description: Translator.trans("guides.reservation.menu_item")
                 }
             ]
         },
@@ -166,22 +178,22 @@ var GUIDES = {
                 {
                     selector: '#package-search-form .input:eq(0) input.daterangepicker-input',
                     event_type: 'next',
-                    description: 'Укажите даты брони'
+                    description: Translator.trans("guides.reservation.filter_dates")
                 },
                 {
                     selector: '#s_adults',
                     event_type: 'next',
-                    description: 'Укажите количество взрослых'
+                    description: Translator.trans("guides.reservation.filter_adults")
                 },
                 {
                     selector: '#s_children',
                     event_type: 'next',
-                    description: 'и детей'
+                    description: Translator.trans("guides.reservation.filter_children")
                 },
                 {
                     selector: '#package-search-form .input:eq(5) span.select2-container',
                     event_type: 'next',
-                    description: 'Здесь можно выбрать тип номера'
+                    description: Translator.trans("guides.reservation.filter_room_type")
                 }
             ];
 
@@ -189,7 +201,7 @@ var GUIDES = {
                 steps.push({
                     selector: '#search-submit-button',
                     event: 'click',
-                    description: 'Нажмите для поиска вариантов бронирования'
+                    description: Translator.trans("guides.reservation.filter_find_button")
                 });
             }
 
@@ -218,7 +230,7 @@ var GUIDES = {
                 {
                     selector: '.package-search-book',
                     event: 'click',
-                    description: 'Нажмите, чтобы забронировать'
+                    description: Translator.trans("guides.reservation.filter_book")
                 }
             ]
         },
@@ -230,8 +242,7 @@ var GUIDES = {
                 {
                     selector: '#package-search-results-wrapper .alert-warning',
                     event_type: 'next',
-                    //TODO: Тут текст нужен
-                    description: 'Не найдены варианты бронирования.'
+                    description: Translator.trans("guides.reservation.options_not_found")
                 }
             ]
         }
@@ -242,17 +253,17 @@ var GUIDES = {
                 {
                     selector: '#mbh_bundle_packagebundle_package_order_tourist_type_lastName',
                     event_type: 'next',
-                    description: 'Укажите фамилию плательщика'
+                    description: Translator.trans("guides.package.payer_surname")
                 },
                 {
                     selector: '#mbh_bundle_packagebundle_package_order_tourist_type_firstName',
                     event_type: 'next',
-                    description: 'Укажите имя плательщика'
+                    description: Translator.trans("guides.package.payer_name")
                 },
                 {
                     selector: '#actions button[name="save_close"]',
                     event: 'click',
-                    description: 'Сохраните'
+                    description: Translator.trans("guides.package.payer_save_button")
                 }
             ]
         }
@@ -303,7 +314,12 @@ var GUIDES = {
 $(document).ready(function () {
     'use strict';
     if (localStorage.getItem(LS_HAS_VIEWED_WELCOME_GUIDE) !== 'true') {
-        runFirstGuide();
+        localStorage.setItem(LS_HAS_VIEWED_WELCOME_GUIDE, true);
+        var $welcomeModal = $('#welcome-modal');
+        $welcomeModal.modal('show');
+        $welcomeModal.on('hidden.bs.modal', function () {
+            runFirstGuide();
+        });
     }
 });
 
@@ -352,9 +368,6 @@ function runGuides(guidesList) {
                 writeGuidesLSData(guideName);
                 $('.enjoyhint_close_btn,.enjoyhint_skip_btn').click(function () {
                     clearGuidesLSData();
-                    if (guidesList === WELCOME_GUIDES_LIST) {
-                        localStorage.setItem(LS_HAS_VIEWED_WELCOME_GUIDE, true);
-                    }
                 });
             }
         });
