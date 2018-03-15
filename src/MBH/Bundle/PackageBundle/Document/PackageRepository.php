@@ -1089,4 +1089,40 @@ class PackageRepository extends DocumentRepository
             ->getQuery()
             ->execute();
     }
+
+    /**
+     * @return array|Package[]
+     */
+    public function getPackagesWithInconsistencyOfPackagePriceAndSumOfPricesByDate()
+    {
+        $qb = $this->createQueryBuilder()->where('function() {
+            var pricesPrice = 0;
+            if (this.prices) {
+                this.prices.forEach(function(price) {
+                    pricesPrice += parseFloat(price.price, 10);
+                });
+            } else if (this.pricesByDate) {
+                for (var date in this.pricesByDate) {
+                    pricesPrice += parseFloat(this.pricesByDate[date], 10);
+                }
+            } else {
+                return true;
+            }
+            
+            var packagePrice = 0;
+            if(this.totalOverwrite) {
+                packagePrice = this.totalOverwrite;
+            } else {
+                packagePrice = parseFloat(this.price, 10);
+            }
+            
+            return Math.abs(packagePrice - pricesPrice) > 1;
+        }');
+
+        return $qb
+            ->field('createdAt')->gte(\DateTime::createFromFormat('d.m.Y', '01.12.2017'))
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
 }

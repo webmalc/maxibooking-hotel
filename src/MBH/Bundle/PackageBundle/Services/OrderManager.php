@@ -87,6 +87,10 @@ class OrderManager implements Searchable
             $old->getIsForceBooking() == $new->getIsForceBooking() &&
             ($updateTariff == null || $updateTariff->getId() == $old->getTariff()->getId())
         ) {
+            if ($new->getPackagePrice() != $old->getPackagePrice()) {
+                $this->updatePricesByDate($new, $updateTariff);
+            }
+
             return $new;
         }
 
@@ -697,7 +701,7 @@ class OrderManager implements Searchable
 
     public function updatePricesByDate(Package $package, ?Tariff $tariff)
     {
-        $newDailyPrice = $package->getPrice() / $package->getNights();
+        $newDailyPrice = $package->getPackagePrice() / $package->getNights();
         $newPricesByDate = [];
         $begin = clone $package->getBegin();
         $end = clone $package->getEnd();
@@ -711,12 +715,12 @@ class OrderManager implements Searchable
                     $firstPackagePrice = current($prices);
                     $packagePrice = clone $firstPackagePrice;
                     $packagePrice->setDate($day);
-                    $packagePrice->setPrice($newDailyPrice);
                 } else {
                     $packagePrice = new PackagePrice($day, $newDailyPrice, $tariff ? $tariff : $package->getTariff());
                 }
                 $package->addPackagePrice($packagePrice);
             }
+            $packagePrice->setPrice($newDailyPrice);
             if (!is_null($tariff)) {
                 $packagePrice->setTariff($tariff);
             }
