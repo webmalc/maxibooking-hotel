@@ -1,0 +1,20 @@
+---
+- name: Php custom configuration.
+  template:
+    src: "{{ php_ini_overrides_template }}"
+    dest: "/etc/php/{{ php_ini_overrides_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ php_ini_overrides_vars }}"
+
+- name: Create Symlink php-ini-overrides
+  file:
+    src: "/etc/php/{{ php_ini_overrides_file }}"
+    dest: "{{ item }}/90-{{ php_ini_overrides_file }}"
+    state: link
+  with_items:
+    - "/etc/php/7.1/fpm/conf.d"
+    - "/etc/php/7.1/cli/conf.d"
+  notify:
+    - restart php7-fpm

@@ -1,0 +1,6 @@
+---
+npm_packages:
+  - bower
+  - uglifycss
+  - uglify-js
+  - less

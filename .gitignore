@@ -131,3 +131,6 @@ env
 gtags
 
 scripts/custom/
+
+.vagrant/
+*-console.log
