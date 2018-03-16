@@ -1,29 +1,38 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="welcome-modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="background-color: #d9edf7">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">{{ 'welcome_modal.header_text'|trans }}</h4>
+                <h4 class="modal-title mbh-modal-header"
+                    style="font-weight: 600;">{{ 'welcome_modal.header_text'|trans }}</h4>
             </div>
-            <div class="modal-body" id="welcome-modal-body">
-                {{ 'welcome_modal.welcome1'|trans }}<br>
-
-                {{ 'welcome_modal.welcome2'|trans }} <br>
-
-                {{ 'welcome_modal.welcome3'|trans }}<br>
-                {{ 'welcome_modal.welcome4'|trans }}<br>
-
-                {{ 'welcome_modal.welcome5'|trans }}
-                <button class="btn btn-primary" onclick="location.href='https://support.maxi-booking.com/hc/ru'">
-                    {{ 'welcome_modal.welcome5_continuation'|trans }}
-                </button>
-                <br>
-                {#{{ 'welcome_modal.welcome6'|trans}}#}
+            <div class="modal-body" id="welcome-modal-body" style="padding: 15px 30px;">
+                <p>
+                <div class="row">
+                    <div class="col-md-1"><i style="color: #00a65a" class='fa fa-thumbs-up'></i></div>
+                    <div class="col-md-11">{{ 'welcome_modal.welcome3'|trans }}<br>{{ 'welcome_modal.welcome4'|trans }}
+                    </div>
+                </div>
+                </p>
+                <p>
+                <div class="row">
+                    <div class="col-md-1"><i style="color: #f39c12" class='fa fa-envelope'></i></div>
+                    <div class="col-md-11">{{ 'welcome_modal.welcome2'|trans }}</div>
+                </div>
+                </p>
+                <p>
+                <div class="row">
+                    <div class="col-md-1"><i style="color: #3c8dbc" class='fa fa-info-circle'></i></div>
+                    <div class="col-md-11">
+                        {% set buttonHtml = '<div id="welcome-modal-help-button"><i class="fa fa-question-circle fa-lg"></i>&nbsp; <strong>' ~ 'mbhbasebundle.views.help'|trans ~'</strong></div>' %}
+                        {{ 'welcome_modal.welcome5'|trans({'%button%': buttonHtml})|raw }}
+                    </div>
+                </div>
+                </p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-                {#<button type="button" class="btn btn-primary" id="tips-modal-save-button">Сохранить</button>#}
+            <div class="modal-footer" style="text-align: center;">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">{{ 'welcome_modal.ok_button'|trans}}</button>
             </div>
         </div>
     </div>

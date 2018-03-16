@@ -1,12 +1,14 @@
 /*global window, $, document, Translator, searchProcess */
 
+var IS_PAGE_RELOADING_START = false;
+
 var LS_CURRENT_GUIDE_WITH_STAGE = 'current-guide-stage';
 var LS_CURRENT_GUIDES_LIST = 'current-guides-list';
 var LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST = 'number-of-guide';
 var LS_HAS_VIEWED_WELCOME_GUIDE = 'has-viewed-welcome-guide';
 
 var GUIDES_BY_PATH = {
-    any: ['first-guide-1', 'room-cache-1', 'price-cache-1', 'search-guide-1', 'tariff-guide-1'],
+    any: ['first-guide-1', 'room-cache-1', 'price-cache-1', 'search-guide-1', 'tariff-guide-1', 'support-modal-guide'],
     "/warehouse/record": ['first-guide-2'],
     '/package': ['first-guide-1'],
     '/warehouse/record/new': ['first-guide-3'],
@@ -24,14 +26,21 @@ var EXCLUDED_PATHS_BEGINS = ['/user'];
 
 var WELCOME_GUIDES_LIST = ['room-cache-1', 'price-cache-1', 'search-guide-1'];
 
+var GUIDES_BY_NAMES = {
+    firstGuide: {name: Translator.trans("guides.first_guide_name"), guides: WELCOME_GUIDES_LIST},
+    roomCaches: {name: Translator.trans("guides.roomCaches"), guides: ['room-cache-1']},
+    priceCaches: {name: Translator.trans("guides.priceCaches"), guides: ['price-cache-1']},
+    search: {name: Translator.trans("guides.search"), guides: ['search-guide-1']}
+};
+
 var GUIDES = {
     'support-modal-guide' : {
         getSteps: function () {
             return [
                 {
-                    selector: '#support-link',
+                    selector: '#support-info',
                     event: 'click',
-                    description: 'Для получения информации нажмите'
+                    description: Translator.trans("guides.support_guide")
                 }
             ];
         }
@@ -104,7 +113,7 @@ var GUIDES = {
                 {
                     selector: '#main-menu li.dropdown:eq(1)',
                     event: 'click',
-                    description: Translator.trans("guides.price_cache.dropdown_menu_click: ")
+                    description: Translator.trans("guides.price_cache.dropdown_menu_click")
                 },
                 {
                     timeout: 500,
@@ -331,6 +340,9 @@ function runGuides(guidesList) {
     if (isMobileDevice()) {
         return;
     }
+    $(window).bind('beforeunload', function(){
+        IS_PAGE_RELOADING_START = true;
+    });
 
     guidesList = guidesList || JSON.parse(localStorage.getItem(LS_CURRENT_GUIDES_LIST));
 
@@ -342,7 +354,7 @@ function runGuides(guidesList) {
     }
     var currentPath = getCurrentPath();
 
-    if (guideName && isCurrentPathIncluded(currentPath, guideName) && !isPathExcluded(currentPath)) {
+    if (guideName && isCurrentPathIncluded(currentPath, guideName) && !isPathExcluded(currentPath) && !IS_PAGE_RELOADING_START) {
         var guideData = GUIDES[guideName];
         var enjoyHintInstance = new EnjoyHint({
             onEnd: function () {
@@ -368,6 +380,11 @@ function runGuides(guidesList) {
                 writeGuidesLSData(guideName);
                 $('.enjoyhint_close_btn,.enjoyhint_skip_btn').click(function () {
                     clearGuidesLSData();
+                    if (guideName !== 'support-modal-guide') {
+                        setTimeout(function () {
+                            runGuides(['support-modal-guide']);
+                        }, 500)
+                    }
                 });
             }
         });
@@ -441,6 +458,7 @@ function writeGuidesLSData(guideWithStage) {
 
 function updateSteps(steps) {
     if (isFirstStepOpenDropdownMenu(steps)) {
+        steps[1].description = steps[0].description;
         steps.splice(0, 1);
     }
     steps.forEach(function (stepData) {

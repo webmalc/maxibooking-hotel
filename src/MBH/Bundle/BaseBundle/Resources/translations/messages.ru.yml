@@ -465,6 +465,7 @@ mbhbasebundle.views.mailer.vz: вз
 mbhbasebundle.views.mailer.rb: рб
 mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc: 'Для получения кода доступа отсканируйте смартфоном QR-штрихкод с картинки с помощью приложения'
 mbhbasebundle.views.minimize_menu: 'Свернуть меню'
+mbhbasebundle.views.help: Помощь
 mbhbasebundle.views.kass: Касса
 mbhbasebundle.views.doc: Документ
 mbhbasebundle.views.sum: Сумма
@@ -687,10 +688,24 @@ mailer.order.header_text: 'Вас приветствует %hotelName%'
 modal_with_form.add_region.title: 'Добавление региона'
 modal_with_form.add_city.title: 'Добавление города'
 
-welcome_modal.header_text: 'Добро пожаловать!'
-welcome_modal.welcome1: 'Добро пожаловать в систему Maxibooking!'
+welcome_modal.header_text: 'Добро пожаловать в систему MaxiBooking!'
 welcome_modal.welcome2: 'На указанный при регистрации электронный адрес выслано письмо с логином и паролем для дальнейшего входа в программу.'
 welcome_modal.welcome3: 'Для Вашего объекта создан полноценный профиль.'
-welcome_modal.welcome4: 'Мы можете продолжить работать в системе прямо сейчас.'
-welcome_modal.welcome5: 'Для того, чтобы занести в систему остальные данные можете воспользоваться '
+welcome_modal.welcome4: 'Вы можете продолжить работать в системе прямо сейчас.'
+welcome_modal.welcome5: 'Сейчас мы предложим Вам интерактивный урок по работе в программе. Чтобы запустить его снова, нажмите на кнопку %button% в верхнем меню.'
+welcome_modal.ok_button: 'ОК'
 welcome_modal.welcome5_continuation: 'базой знаний'
+
+support_modal.header_text: 'Обучающие материалы'
+support_modal.interactive_halper: 'Интерактивный помощник'
+support_modal.info_base: 'База знаний'
+support_modal.all_articles: 'Все статьи'
+support_modal.articles.tariffs: 'Тарифы и их создание'
+support_modal.articles.package_info: 'Заполнение информации о брони'
+support_modal.articles.hotel_creation: 'Создание отеля'
+support_modal.articles.room_types: 'Тип номера. Создание, редактирование и удаление'
+support_modal.articles.booking_sync: 'Настройка синхронизации с Booking.com'
+support_modal.articles.chessboard: 'Информация в шахматке'
+
+
+modal.close_button: Закрыть
