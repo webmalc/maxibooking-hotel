@@ -77,6 +77,11 @@ services:
         arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger", "@workflow.installation", "@mbh.service.client_list_getter"]
         tags: ['console.command']
 
+    mbh.console.billing_remove:
+        class: MBH\Bundle\BillingBundle\Command\BillingRemoveCommand
+        arguments: ["@mbh.billing.logger", "@mbh.service.client_list_getter", "@mbh.maintenance.manager"]
+        tags: ['console.command']
+
     mbh.console.billing_credentials_install:
         class: MBH\Bundle\BillingBundle\Command\BillingCredentialsInstall
         arguments: ['@mbh.client_instance_manager', '@mbh.billing.logger']

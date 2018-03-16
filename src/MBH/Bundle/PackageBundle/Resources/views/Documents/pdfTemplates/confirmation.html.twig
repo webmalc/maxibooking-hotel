@@ -156,7 +156,7 @@
                 <td style="width: 20px">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.adres'|trans }} </td>
                 <td>
                     <div class="area">&nbsp
-                        {% if tourist and tourist.addressObjectDecomposed %}
+                        {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.countryTld and tourist.addressObjectDecomposed.regionId %}
                             {{ get_country(tourist.addressObjectDecomposed.countryTld).name }}, {{ get_region(tourist.addressObjectDecomposed.regionId).name }}{% if tourist.addressObjectDecomposed.city %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
                             {{ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans }}. {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.kor'|trans }}. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.kv'|trans }}. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
                         {% endif %}

@@ -85,6 +85,7 @@ class BillingApi
      * @param Result $result
      * @param $clientName
      * @return ResponseInterface
+     * @throws Exception
      */
     public function sendClientInstallationResult(Result $result, $clientName)
     {
@@ -247,6 +248,7 @@ class BillingApi
      * @param \DateTime $begin
      * @param \DateTime $end
      * @return Result
+     * @throws \Exception
      */
     public function getClientOrdersResultByCreationDate(Client $client, \DateTime $begin, \DateTime $end)
     {

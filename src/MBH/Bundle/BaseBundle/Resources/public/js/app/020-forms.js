@@ -1285,5 +1285,6 @@ $(document).ready(function () {
     disableCheckboxListen();
     initLabelTips();
     initAddTipModal();
+    runGuides();
     handleAddingNewBillingEntity();
 });

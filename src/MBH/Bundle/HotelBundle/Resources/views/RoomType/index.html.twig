@@ -20,6 +20,12 @@
                 </a>
             </li>
         {% endfor %}
+        <li {% if app.request.query.get('tab') == 'all' %}class="active"{% endif %}>
+            <a href="#all" role="tab" data-toggle="tab">
+            <i class="fa fa-bed" style="color:#008000;"></i>&nbsp;
+                Все номера
+            </a>
+        </li>
         {% if is_granted('ROLE_ROOM_TYPE_NEW') %}
         <li>
             <a href="{{ path('room_type_new') }}"><i
@@ -120,6 +126,40 @@
                 {% endif %}
             </div>
         {% endfor %}
+        <div class="tab-pane {% if app.request.query.get('tab') == 'all' %}active{% endif %}" id="all">
+
+            {% if is_granted('ROLE_ROOM_VIEW') %}
+                <!-- Rooms list -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            {{ 'views.roomType.index.room_fund'|trans({}, 'MBHHotelBundle') }}
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <table data-room-type-id="all"
+                               class="table rooms-table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+                            <thead>
+                            <tr>
+                                <th class="td-xs"></th>
+                                <th>{{ 'views.roomType.index.name'|trans({}, 'MBHHotelBundle') }}</th>
+                                <th>{{ 'views.roomType.index.housing'|trans({}, 'MBHHotelBundle') }}</th>
+                                <th>{{ 'views.roomType.index.floor'|trans({}, 'MBHHotelBundle') }}</th>
+                                <th class="td-xs text-center">{{ 'views.roomType.index.status'|trans({}, 'MBHHotelBundle') }}</th>
+                                <th class="td-sm"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-danger">
+                    <strong><i class="glyphicon glyphicon-lock"></i> {{ 'security.not_access'|trans }}</strong>
+                </div>
+            {% endif %}
+        </div>
     </div>
 
 {% endblock %} 
