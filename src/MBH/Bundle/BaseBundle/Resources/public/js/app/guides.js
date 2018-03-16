@@ -85,11 +85,6 @@ var GUIDES = {
                     'next #mbh_bundle_pricebundle_room_cache_generator_type_end': Translator.trans("guides.room_cache.generator_end")
                 },
                 {
-                    selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(3) span.select2',
-                    event_type: 'next',
-                    description: Translator.trans("guides.room_cache.generator_days_of_week")
-                },
-                {
                     selector: '#mbh_bundle_pricebundle_room_cache_generator_type .form-group:nth-child(4) span.select2',
                     event_type: 'next',
                     description: Translator.trans("guides.room_cache.generator_room_types")
@@ -193,17 +188,17 @@ var GUIDES = {
                     selector: '#s_adults',
                     event_type: 'next',
                     description: Translator.trans("guides.reservation.filter_adults")
-                },
-                {
-                    selector: '#s_children',
-                    event_type: 'next',
-                    description: Translator.trans("guides.reservation.filter_children")
-                },
-                {
-                    selector: '#package-search-form .input:eq(5) span.select2-container',
-                    event_type: 'next',
-                    description: Translator.trans("guides.reservation.filter_room_type")
                 }
+                // {
+                //     selector: '#s_children',
+                //     event_type: 'next',
+                //     description: Translator.trans("guides.reservation.filter_children")
+                // },
+                // {
+                //     selector: '#package-search-form .input:eq(5) span.select2-container',
+                //     event_type: 'next',
+                //     description: Translator.trans("guides.reservation.filter_room_type")
+                // }
             ];
 
             if ($('#search-submit-button').length) {
@@ -354,62 +349,64 @@ function runGuides(guidesList) {
     }
     var currentPath = getCurrentPath();
 
-    if (guideName && isCurrentPathIncluded(currentPath, guideName) && !isPathExcluded(currentPath) && !IS_PAGE_RELOADING_START) {
-        var guideData = GUIDES[guideName];
-        var enjoyHintInstance = new EnjoyHint({
-            onEnd: function () {
-                clearGuidesLSData(false);
-                if (guideData.onEnd) {
-                    guideData.onEnd();
-                }
+    if (!IS_PAGE_RELOADING_START) {
+        if (guideName && isCurrentPathIncluded(currentPath, guideName) && !isPathExcluded(currentPath)) {
+            var guideData = GUIDES[guideName];
+            var enjoyHintInstance = new EnjoyHint({
+                onEnd: function () {
+                    clearGuidesLSData(false);
+                    if (guideData.onEnd) {
+                        guideData.onEnd();
+                    }
 
-                if (guideData.next) {
-                    writeGuidesLSData(guideData.next);
-                } else if (guidesList) {
-                    if (numberOfGuideInList === -1 || numberOfGuideInList === (guidesList.length - 1)) {
+                    if (guideData.next) {
+                        writeGuidesLSData(guideData.next);
+                    } else if (guidesList) {
+                        if (numberOfGuideInList === -1 || numberOfGuideInList === (guidesList.length - 1)) {
+                            clearGuidesLSData();
+                        } else {
+                            var nextGuideNumber = numberOfGuideInList + 1;
+                            localStorage.setItem(LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST, nextGuideNumber);
+                            setTimeout(function () {
+                                runGuides();
+                            }, 100);
+                        }
+                    }
+                }, onStart: function () {
+                    writeGuidesLSData(guideName);
+                    $('.enjoyhint_close_btn,.enjoyhint_skip_btn').click(function () {
                         clearGuidesLSData();
-                    } else {
-                        var nextGuideNumber = numberOfGuideInList + 1;
-                        localStorage.setItem(LS_CURRENT_NUMBER_OF_GUIDE_IN_LIST, nextGuideNumber);
-                        setTimeout(function () {
-                            runGuides();
-                        }, 100);
-                    }
+                        if (guideName !== 'support-modal-guide') {
+                            setTimeout(function () {
+                                runGuides(['support-modal-guide']);
+                            }, 500)
+                        }
+                    });
                 }
-            }, onStart: function () {
-                writeGuidesLSData(guideName);
-                $('.enjoyhint_close_btn,.enjoyhint_skip_btn').click(function () {
-                    clearGuidesLSData();
-                    if (guideName !== 'support-modal-guide') {
-                        setTimeout(function () {
-                            runGuides(['support-modal-guide']);
-                        }, 500)
-                    }
-                });
-            }
-        });
-        var steps = guideData.getSteps();
+            });
+            var steps = guideData.getSteps();
 
-        updateSteps(steps);
-        enjoyHintInstance.set(steps);
-        enjoyHintInstance.run();
-    } else {
-        if (!guideName) {
-            console.log('Нет имени гайда');
-        } else if (!isCurrentPathIncluded(currentPath, guideName)) {
-            console.log('Путь не входит');
-            if (!GUIDES_BY_PATH[currentPath]) {
-                console.log('Нет в гайдах по пути');
-                console.log(currentPath);
-            } else if (GUIDES_BY_PATH[currentPath].indexOf(guideName) === -1) {
-                console.log('Нет в списке гайда');
-            } else if (!isPathBeginsFromIncluded(currentPath)) {
-                console.log('Путь не начинается с включенных');
-            }
-        } else if (isPathExcluded(currentPath)) {
-            console.log('Путь в исключенных');
+            updateSteps(steps);
+            enjoyHintInstance.set(steps);
+            enjoyHintInstance.run();
+        } else {
+            // if (!guideName) {
+            //     console.log('Нет имени гайда');
+            // } else if (!isCurrentPathIncluded(currentPath, guideName)) {
+            //     console.log('Путь не входит');
+            //     if (!GUIDES_BY_PATH[currentPath]) {
+            //         console.log('Нет в гайдах по пути');
+            //         console.log(currentPath);
+            //     } else if (GUIDES_BY_PATH[currentPath].indexOf(guideName) === -1) {
+            //         console.log('Нет в списке гайда');
+            //     } else if (!isPathBeginsFromIncluded(currentPath)) {
+            //         console.log('Путь не начинается с включенных');
+            //     }
+            // } else if (isPathExcluded(currentPath)) {
+            //     console.log('Путь в исключенных');
+            // }
+            clearGuidesLSData();
         }
-        clearGuidesLSData();
     }
 }
 

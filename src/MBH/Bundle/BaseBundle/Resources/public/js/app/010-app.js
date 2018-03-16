@@ -404,8 +404,7 @@ function initSupportModal() {
         var $modalGuidesList = $('#modal-guides-list');
         if (isMobileDevice()) {
             $modalGuidesList.closest('li').remove();
-        }
-        if ($modalGuidesList.find('li').length === 0) {
+        } else if ($modalGuidesList.find('li').length === 0) {
             for (var guideId in GUIDES_BY_NAMES) {
                 var guideListItem = document.createElement('li');
                 var linkElement = document.createElement('a');
