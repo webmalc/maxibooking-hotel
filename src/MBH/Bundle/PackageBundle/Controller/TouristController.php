@@ -476,7 +476,7 @@ class TouristController extends Controller
                         $unwelcome->setArrivalTime($package->getArrivalTime());
                         $unwelcome->setDepartureTime($package->getDepartureTime());
                     }
-                    $unwelcomeRepository->add($unwelcome, $tourist, $package);
+//                    $unwelcomeRepository->add($unwelcome, $tourist, $package);
                 }
                 $tourist->setIsUnwelcome(true);
                 $this->dm->persist($tourist);

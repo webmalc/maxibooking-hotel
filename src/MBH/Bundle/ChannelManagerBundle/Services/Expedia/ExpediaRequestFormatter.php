@@ -25,18 +25,23 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
 
     public function formatUpdatePricesRequest($pricesData) : array
     {
-        $res = [];
+        $pricesRequestsInfo = [];
         foreach ($pricesData as $priceData) {
-            $res[] = $this->getXMLRequestInfo($priceData)->setUrl(self::AVAILABILITY_AND_RATES_API_URL);
+            $pricesRequestsInfo[] = $this->getXMLRequestInfo($priceData)->setUrl(self::AVAILABILITY_AND_RATES_API_URL);
         }
 
-        return $res;
+        return $pricesRequestsInfo;
     }
 
-    public function formatUpdateRestrictionsRequest($restrictionData) : array
+    public function formatUpdateRestrictionsRequest($restrictionsData) : array
     {
-        return [$this->getXMLRequestInfo($restrictionData)
-            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL)];
+        $restrictionsRequestInfo = [];
+        foreach ($restrictionsData as $restrictionData) {
+            $restrictionsRequestInfo[] = $this->getXMLRequestInfo($restrictionData)
+                ->setUrl(self::AVAILABILITY_AND_RATES_API_URL);
+        }
+
+        return $restrictionsRequestInfo;
     }
 
     public function formatUpdateRoomsRequest($roomData) : array

@@ -181,6 +181,9 @@ $('#work-shift-lock').on('click', function(e) {
     mbh.alert.show($this.attr('href'), header, text, buttonText, buttonIcon, buttonClass);
 });
 
+function isMobileDevice() {
+    return /Mobi/.test(navigator.userAgent);
+}
 
 var deleteLink = function() {
     'use strict';
@@ -372,6 +375,7 @@ $(document).ready(function() {
             link.trigger('click');
         }
     }());
+    initSupportModal();
 });
 
 var $taskCounter = $('#task-counter');
@@ -393,3 +397,29 @@ var delay = 1000 * 60 * 5; //5 minutes
 setInterval(function() {
     updateTaskCounter();
 }, delay);
+
+function initSupportModal() {
+    $('#support-link').click(function () {
+        $('#support-info-modal').modal('show');
+        var $modalGuidesList = $('#modal-guides-list');
+        if (isMobileDevice()) {
+            $modalGuidesList.closest('li').remove();
+        } else if ($modalGuidesList.find('li').length === 0) {
+            for (var guideId in GUIDES_BY_NAMES) {
+                var guideListItem = document.createElement('li');
+                var linkElement = document.createElement('a');
+
+                linkElement.innerHTML = GUIDES_BY_NAMES[guideId].name;
+                linkElement.setAttribute('data-guide-id', guideId);
+                guideListItem.appendChild(linkElement);
+                $modalGuidesList.append(guideListItem);
+                linkElement.onclick = function () {
+                    $('#support-info-modal').modal('hide');
+                    var guideId = this.getAttribute('data-guide-id');
+                    var guides = GUIDES_BY_NAMES[guideId].guides;
+                    runGuides(guides);
+                };
+            }
+        }
+    });
+}

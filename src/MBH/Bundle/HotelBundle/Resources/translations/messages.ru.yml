@@ -140,7 +140,7 @@ form.roomTypeType.prices: Ценообразование
 form.roomTypeType.isChildPrices: 'Цены для детей'
 form.roomTypeType.isChildPricesDesc: 'Использовать ли другие цены при размещении детей на основные места??'
 form.roomTypeType.isIndividualAdditionalPrices: 'Индивидуальные цены на доп. места?'
-form.roomTypeType.isIndividualAdditionalPricesDesc: 'Использовать ли разные цены для каждого дополнительного места?'
+form.roomTypeType.isIndividualAdditionalPricesDesc: 'Использовать ли разные цены для каждого дополнительнго места?'
 form.roomTypeType.room_main_places_amount: 'Количество основных мест в номере'
 form.roomTypeType.additional_places: 'Дополнительные места'
 form.roomTypeType.room_additional_places_amount: 'Количество дополнительных мест в номере'
@@ -256,7 +256,7 @@ views.hotel.roomType.editAutoTasks.add: Добавить
 views.hotel.roomType.editTabs.public_information_and_setting: 'Общая информация и настройки'
 views.hotel.roomType.editTabs.photo: Фотографии
 views.hotel.roomType.editTabs.tasks: Задачи
-views.hotel.roomType.editImages.do_default: 'Сделать главной'
+views.hotel.roomType.editImages.do_default: Задачи
 views.hotel.roomType.editImages.delete_picture: 'Удалить картинку'
 views.hotel.roomType.new.public_information_and_setting: 'Общая информация и настройки'
 views.hotel.roomType.new.photo: Фотографии

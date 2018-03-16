@@ -31,11 +31,17 @@ class RoomController extends BaseController
      */
     public function jsonListAction(Request $request, $id)
     {
-        $qb = $this->dm->getRepository('MBHHotelBundle:Room')
-            ->createQueryBuilder('r')
-            ->field('roomType.id')->equals($id)
+        $qb = $this->dm
+            ->getRepository('MBHHotelBundle:Room')
+            ->createQueryBuilder()
             ->skip($request->get('start'))
             ->limit($request->get('length'));
+
+        if ($id === 'all') {
+            $qb->field('hotel.id')->equals($this->hotel->getId());
+        } else {
+            $qb->field('roomType.id')->equals($id);
+        }
 
         $search = $request->get('search')['value'];
         if (!empty($search)) {
