@@ -849,9 +849,11 @@ var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
     $discountInput.TouchSpin({
         min: 0.01,
         max: 9999999999999999,
-        step: 0.1,
+        step: 0.05,
         decimals: 2,
-        postfix: '%'
+        postfix: '%',
+        boostat: 5,
+        forcestepdivisibility: 'none'
     });
     var $discountTypeInputPostfix = $discountInput.siblings('span.bootstrap-touchspin-postfix');
 

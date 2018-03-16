@@ -30,7 +30,7 @@
     "tinycolor": "~1.2.1",
     "jquery.cookie": "~1.4.1",
     "tinymce": "~4.2.4",
-    "bootstrap-touchspin": "~3.0.1",
+    "bootstrap-touchspin": "3.1.2",
     "jquery-mask-plugin": "~1.13.4",
     "phoenix": "~1.2.3",
     "jquery-number": "~2.1.6",
