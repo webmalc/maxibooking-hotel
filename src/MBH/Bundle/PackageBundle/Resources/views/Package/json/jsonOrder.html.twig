@@ -1,0 +1,12 @@
+{% spaceless %}
+    <div class='text-right'>
+        <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_order_cash', {'id': entity.order.id, 'packageId': entity.id}) }}' class='text {% if entity.order.isPaid %}text-success{% elseif entity.order.paid > 0 %}text-warning{% else %}text-danger{% endif %}'>
+        <span>{{ entity.price|number_format(2) }}</span>
+        </a>
+        <br>
+        <small>
+            <i class='fa fa-sliders'> </i>
+            <span>{{ entity.tariff.name }}</span>
+        </small>
+    </div>
+{% endspaceless %}

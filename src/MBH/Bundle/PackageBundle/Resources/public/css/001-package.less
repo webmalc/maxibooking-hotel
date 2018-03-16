@@ -50,7 +50,7 @@
   display: none;
 }
 
-#package-table-filter, #accommodation-report-filter,
+#accommodation-report-filter,
 #rooms-report-filter, #analytics-filter
 {
   div.input {
@@ -68,9 +68,11 @@
   }
 
   input.datepicker {
-    width: 80px;
+    max-width: 84px !important;
+    //width: 80px;
   }
 }
+
 #package-table-quick-links
 {
   margin: 0px 0px 0px 0px;
@@ -118,5 +120,66 @@
   .package-summary-row, .order-summary-row{
     display: inline-block;
     margin-left: 20px;
+  }
+}
+
+#package-table-filter {
+  display: flex;
+  flex-wrap: wrap;
+
+  #package-filter-dates {
+    width: 150px;
+  }
+
+  input.datepicker {
+    max-width: 84px !important;
+    //width: 80px;
+  }
+
+  .fa_custom_style {
+    width: 20px;
+    align-self: center;
+    margin-right: 8px;
+    margin-left: 8px;
+  }
+
+  .group-date {
+    display: flex !important;
+    flex-wrap: wrap;
+  }
+
+  .input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media (max-width: 633px){
+  #package-table-filter {
+    input.datepicker {
+      max-width: 100% !important;
+      text-align: center;
+    }
+    .group-date_select {
+      padding-left: 34px;
+    }
+    .select2-container--default {
+      width: 100% !important;
+    }
+    .input {
+      width: 100%;
+      margin-bottom: 3px;
+    }
+  }
+
+  #package-table-quick-links {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+    li a {
+      width: 100%;
+    }
   }
 }

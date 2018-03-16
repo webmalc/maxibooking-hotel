@@ -253,7 +253,7 @@ var docReadyPackages = function () {
         })
         .dataTable({
         searchDelay: 350,
-        dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
             {
                 extend: 'excel',
@@ -332,6 +332,9 @@ var docReadyPackages = function () {
             }
         },
         "order": [[2, 'desc']],
+        "columnDefs": [
+                { className: "hidden-xs", "targets": [ 0,2,4,5,6,7 ] }
+            ],
         "aoColumns": [
             {"bSortable": false}, // icon
             null, // prefix
@@ -526,9 +529,23 @@ function setPaymentCardVisibility() {
     }
 }
 
+let actionWhenXS = {
+    afterLoadPage: function () {
+        if (document.documentElement.clientWidth < 768){
+            this.hideBox();
+        }
+    },
+    hideBox: function () {
+        $('#dishorder-table-filter-widget').addClass('collapsed-box');
+        $('#package-table-links-widget').addClass('collapsed-box');
+    }
+};
 
 $(document).ready(function () {
     'use strict';
+
+    actionWhenXS.afterLoadPage();
+
     docReadyPackages();
     setPaymentCardVisibility();
     //package ajax tabs
