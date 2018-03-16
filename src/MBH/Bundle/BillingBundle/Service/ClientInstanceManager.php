@@ -24,8 +24,6 @@ use MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager;
 use Monolog\Logger;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Workflow\Workflow;
@@ -147,17 +145,43 @@ class ClientInstanceManager
      */
     public function runBillingInstallCommand(string $clientName)
     {
-        $this->logger->addRecord(
-            Logger::INFO,
-            'Get installation task for client '.$clientName.' in service '.static::class
-        );
-        $result = (new Result())->setData(['client' => $clientName]);
-        $this->logger->addRecord(Logger::INFO, 'Start generate queue message for install command');
+
         $command = 'mbh:billing:install';
         $params['--client'] = $clientName;
+        $result = $this->publishCommand($clientName, 'install', $command, $params);
+
+        return $result;
+    }
+
+    public function runRemoveCommand(string $clientName)
+    {
+        $command = 'mbh:billing:remove';
+        $params['--client'] = $clientName;
+        $result = $this->publishCommand($clientName, 'remove', $command, $params);
+
+        return $result;
+    }
+
+    public function runRestoreCommand(string $clientName)
+    {
+        $command = 'mbh:billing:restore';
+        $params['--client'] = $clientName;
+        $result = $this->publishCommand($clientName, 'restore', $command, $params);
+
+        return $result;
+    }
+
+    private function publishCommand(string $clientName, string $taskName, string $command, array $params = []): Result
+    {
+        $this->logger->addRecord(
+            Logger::INFO,
+            'Get '.$taskName.' task for client '.$clientName.' in service '.static::class
+        );
+        $result = (new Result())->setData(['client' => $clientName]);
+        $this->logger->addRecord(Logger::INFO, 'Start generate queue message for '.$taskName.' command');
         $command = new Command($command, $params, \AppKernel::DEFAULT_CLIENT, $this->kernelEnv, $this->isDebug);
         $this->producer->publish(serialize($command));
-        $this->logger->addRecord(Logger::INFO, 'Queue message for install command was generated');
+        $this->logger->addRecord(Logger::INFO, 'Queue message for '.$taskName.' command was generated');
 
         return $result;
     }

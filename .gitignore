@@ -9,6 +9,7 @@ scripts/deploy_to_test.sh
 /app/config/secrets.yml
 /app/config/clients/*
 !app/config/clients/.gitkeep
+!app/config/clients/template_db_for_tests.env
 app/config/database.env
 /var/bootstrap.php.cache
 /var/cache/*

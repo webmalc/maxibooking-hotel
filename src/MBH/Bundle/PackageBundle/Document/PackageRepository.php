@@ -661,6 +661,9 @@ class PackageRepository extends DocumentRepository
                 $qb->addAnd($expr);
             }
         } else {
+            if ($dateType === 'createdAt' || $dateType === 'deletedAt') {
+                $data['end']->modify('+1 day');
+            }
             if (isset($data['begin']) && !empty($data['begin'])) {
                 $qb->field($dateType)->gte($data['begin']);
             }

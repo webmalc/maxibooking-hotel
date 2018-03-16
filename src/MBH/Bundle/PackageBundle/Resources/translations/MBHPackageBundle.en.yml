@@ -47,8 +47,8 @@ order.edit.not_paid: 'Not paid'
 order.edit.order_type: 'Order type'
 order.edit.payer: Payer
 order.edit.not_specified: 'Not specified'
-order.edit.payment_card_info.show_button.title: 'Show'
-order.edit.payment_card_info.hide_button.title: 'Hide'
+order.edit.payment_card_info.show_button.title: Show
+order.edit.payment_card_info.hide_button.title: Hide
 order.edit.is_confirmed: 'Confirmed?'
 order.edit.is_confirmed_yes: 'Yes'
 order.edit.is_confirmed_no: 'No'
@@ -465,3 +465,4 @@ dynamic.sales.day.sum-of-paid-for-cancelled-for-period: 'Reservations cancelled 
 dynamic.sales.day.sum-paid-to-clients-for-period-for-removed: 'Recervations cancelled cost for a period'
 dynamic.sales.show.title: 'Categories displayed'
 views.report.polls.select_button.title: Apply
+dynamic_sales.modal.close_button.text: Close

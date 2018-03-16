@@ -51,18 +51,19 @@ class ChannelManager
     protected $client;
     /** @var  Producer */
     protected $producer;
+    protected $logger;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
-        $this->services = $this->getServices();
         $this->console = $container->get('kernel')->getRootDir().'/../bin/console ';
         $this->env = $this->container->get('kernel')->getEnvironment();
         $this->logger = $container->get('mbh.channelmanager.logger');
         $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->client = $container->getParameter('client');
         $this->producer = $this->container->get('old_sound_rabbit_mq.task_command_runner_producer');
+        $this->services = $this->getServices();
     }
 
     /**

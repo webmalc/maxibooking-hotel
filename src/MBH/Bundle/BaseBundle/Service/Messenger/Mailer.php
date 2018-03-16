@@ -100,6 +100,10 @@ class Mailer implements \SplObserver, MailerInterface
         /** @var Notifier $notifier */
         $message = $notifier->getMessage();
 
+        if ($this->isMessageDuplicated($message)) {
+            return;
+        }
+
         if ($message->getEmail()) {
             $this->send(
                 $message->getRecipients(),
@@ -371,4 +375,31 @@ class Mailer implements \SplObserver, MailerInterface
         return $result;
     }
 
+    /**
+     * @param $message
+     * @return bool
+     */
+    private function isMessageDuplicated(NotifierMessage $message): bool
+    {
+        if ($message->getMessageIdentifier() && in_array($message->getType(), ['warning', 'danger'])) {
+            /** @var NotifierErrorCounter $notifierErrorCounter */
+            $notifierErrorCounter = $this->dm
+                ->getRepository('MBHBaseBundle:NotifierErrorCounter')
+                ->findOneBy(['notificationId' => $message->getMessageIdentifier()]);
+            if (is_null($notifierErrorCounter)) {
+                $notifierErrorCounter = (new NotifierErrorCounter())->setNotificationId($message->getMessageIdentifier());
+                $this->dm->persist($notifierErrorCounter);
+            }
+
+            $notifierErrorCounter->increaseErrorCounter();
+            if ($notifierErrorCounter->getErrorCounter() >= NotifierErrorCounter::NUMBER_OF_IGNORED_NOTIFICATIONS) {
+                $notifierErrorCounter->setErrorCounter(0);
+            }
+            $this->dm->flush();
+
+            return $notifierErrorCounter->getErrorCounter() > 1;
+        }
+        
+        return false;
+    }
 }

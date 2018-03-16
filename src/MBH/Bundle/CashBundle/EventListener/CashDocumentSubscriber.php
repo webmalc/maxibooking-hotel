@@ -59,7 +59,7 @@ class CashDocumentSubscriber implements EventSubscriber
         if ($document instanceof CashDocument && $document->getMethod() == 'cashless' && $document->getOperation() == 'in' && $document->getPayer()) {
 
             try {
-                $this->createPdfOrderDocument($document, $args->getDocumentManager());
+//                $this->createPdfOrderDocument($document, $args->getDocumentManager());
             } catch (Exception $e) {
                 $session = $this->container->get('session');
                 $session->getFlashBag()->add('danger', $this->container->get('translator')->trans('cashDocumentSubscriber.document.dlia.pechati.ne.sozdan') . ' ' . $e->getMessage());

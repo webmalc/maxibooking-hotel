@@ -61,16 +61,20 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $serviceTariffs,
         ChannelManagerConfigInterface $config
     ) {
+        $pricesRequestData = [];
         $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $xmlElements = [];
         $priceCalculator = $this->container->get('mbh.calculation');
         $localCurrency = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getCurrency();
 
+        $numberOfRoomType = 0;
         foreach ($requestDataArray as $roomTypeId => $pricesByTariffs) {
+            $numberOfRoomType++;
             foreach ($pricesByTariffs as $tariffId => $pricesByDates) {
                 $cmHelper = $this->container->get('mbh.channelmanager.helper');
                 $comparePropertyMethods = ['getPrice', 'getIsPersonPrice', 'getAdditionalPrice', 'getAdditionalChildrenPrice', 'getSinglePrice', 'getChildPrice'];
                 $periodsData = $cmHelper->getPeriodsFromDayEntities($begin, $end, $pricesByDates, $comparePropertyMethods, 'Y-m-d');
+
                 foreach ($periodsData as $periodData) {
                     $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
                     /** @var PriceCache $priceCache */
@@ -112,10 +116,15 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $xmlElements[] = $xmlRoomTypeData;
                 }
             }
+
+            if ($numberOfRoomType % 2 === 0) {
+                $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                    'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+                $xmlElements = [];
+            }
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config,
-            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+        return $pricesRequestData;
     }
 
     /**
@@ -375,8 +384,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $rootNode->addAttribute('xmlns', $xmlns);
 
         $authNode = $rootNode->addChild('Authentication');
-        $authNode->addAttribute('username', $config->getUsername());
-        $authNode->addAttribute('password', $config->getPassword());
+        $authData = $this->container->getParameter('mbh.channelmanager.services')['expedia'];
+        $authNode->addAttribute('username', $authData['username']);
+        $authNode->addAttribute('password', $authData['password']);
 
         $hotelNode = $rootNode->addChild('Hotel');
         $hotelNode->addAttribute('id', $config->getHotelId());

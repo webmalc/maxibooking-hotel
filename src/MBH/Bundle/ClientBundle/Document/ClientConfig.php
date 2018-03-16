@@ -938,6 +938,18 @@ class ClientConfig extends Base
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getSearchInputBeginDate()
+    {
+        if (!empty($this->getBeginDateOffset()) && $this->getBeginDateOffset() < 0) {
+            return new \DateTime('midnight');
+        }
+
+        return $this->getActualBeginDate();
+    }
+
+    /**
      * @return bool
      */
     public function isQueryStat()

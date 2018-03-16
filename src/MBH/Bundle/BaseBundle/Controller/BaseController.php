@@ -168,6 +168,10 @@ class BaseController extends Controller
                 }
             }
 
+            if (method_exists($entity, 'getDeletedAt') && !empty($entity->getDeletedAt())) {
+                throw new DeleteException('controller.baseController.document_is_deleted');
+            }
+
             if ($entity instanceof Hotel) {
                 if (!$this->get('mbh.hotel.selector')->checkPermissions($entity)) {
                     throw $this->createNotFoundException();

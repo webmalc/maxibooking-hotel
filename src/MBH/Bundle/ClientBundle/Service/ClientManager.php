@@ -13,24 +13,28 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class ClientManager
 {
-    const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 120;
+    const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_payment';
     const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems', 'user_tariff'];
     const SESSION_CLIENT_FIELD = 'client';
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
     const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
+    const INSTALLATION_PAGE_RU = 'https://demo.maxi-booking.ru/';
+    const INSTALLATION_PAGE_COM = 'https://demo.maxi-booking.com/';
 
     private $dm;
     private $session;
     private $billingApi;
     private $logger;
+    private $client;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, string $client)
     {
         $this->dm = $dm;
         $this->session = $session;
         $this->billingApi = $billingApi;
         $this->logger = $logger;
+        $this->client = $client;
     }
 
     /**
@@ -48,6 +52,10 @@ class ClientManager
 
     public function isLimitOfRoomCachesExceeded(array $modifiedRoomCaches)
     {
+        if ($this->isDefaultClient()) {
+            return false;
+        }
+
         $roomCacheRepository = $this->dm->getRepository('MBHPriceBundle:RoomCache');
 
         $date = reset($modifiedRoomCaches)->getDate();
@@ -159,6 +167,14 @@ class ClientManager
     }
 
     /**
+     * @return bool
+     */
+    public function isDefaultClient()
+    {
+        return $this->client === \AppKernel::DEFAULT_CLIENT;
+    }
+
+    /**
      * @param $routeName
      * @return bool
      */
@@ -180,7 +196,7 @@ class ClientManager
         ) {
             try {
                 /** @var Client $client */
-                $client = $this->billingApi->getClient();
+                $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
             } catch (\Exception $exception) {
                 $client = $this->session->get(self::SESSION_CLIENT_FIELD);
                 $this->logger->err($exception->getMessage());
@@ -224,5 +240,21 @@ class ClientManager
     public function isRussianClient()
     {
         return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+    }
+
+    private function getDefaultClientData()
+    {
+        return (new Client())
+            ->setEmail('d.zaluev@maxi-booking.ru')
+            ->setName('maxiboooking')
+            ->setCountry('ru')
+            ->setLogin('maxibooking')
+            ->setPhone('+89670447992')
+            ->setCity(16970)
+            ->setRegion(2832)
+            ->setStatus(Client::CLIENT_ACTIVE_STATUS)
+            ->setRestrictions(['rooms_limit' => 200])
+            ->setTrial_activated(true)
+            ->setInstallation('installed');
     }
 }

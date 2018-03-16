@@ -25,19 +25,39 @@ class OnRequest
         $clientManager = $this->container->get('mbh.client_manager');
         $session = $this->container->get('session');
 
-        if (!($this->container->get('kernel')->getClient() === \AppKernel::DEFAULT_CLIENT || $clientManager->isClientActive())
-            && $session->get(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR) !== true
-            && !$clientManager->isRouteAccessibleForInactiveClient($event->getRequest()->get('_route'))
-            && $this->container->get('security.token_storage')->getToken()
-            && $this->container->get('security.token_storage')->getToken()->getUser() instanceOf User
-            && $this->container->get('security.authorization_checker')->isGranted('ROLE_PAYMENTS')
-        ) {
-            if (!$session->getFlashBag()->has('error')) {
-                $session->getFlashBag()->add('error', 'on_request_listener.mb_not_paid_error');
+        if (!$this->container->get('kernel')->isDefaultClient()) {
+            $client = $clientManager->getClient();
+            if (!$client->getTrial_activated() && $this->isRequestedByMBUser()) {
+                $client = $this->container->get('mbh.billing.api')->getClient();
+                if (!$client->getTrial_activated()) {
+                    $url = $clientManager->isRussianClient() ? ClientManager::INSTALLATION_PAGE_RU : ClientManager::INSTALLATION_PAGE_COM;
+                    $response = new RedirectResponse($url);
+                    $event->setResponse($response);
+                } else {
+                    $this->container->get('mbh.client_manager')->updateSessionClientData($client, new \DateTime());
+                }
+            } elseif (!$clientManager->isClientActive()
+                && $session->get(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR) !== true
+                && !$clientManager->isRouteAccessibleForInactiveClient($event->getRequest()->get('_route'))
+                && $this->isRequestedByMBUser()
+                && $this->container->get('security.authorization_checker')->isGranted('ROLE_PAYMENTS')
+            ) {
+                if (!$session->getFlashBag()->has('error')) {
+                    $session->getFlashBag()->add('error', 'on_request_listener.mb_not_paid_error');
+                }
+                $url = $this->container->get('router')->generate(ClientManager::DEFAULT_ROUTE_FOR_INACTIVE_CLIENT);
+                $response = new RedirectResponse($url);
+                $event->setResponse($response);
             }
-            $url = $this->container->get('router')->generate(ClientManager::DEFAULT_ROUTE_FOR_INACTIVE_CLIENT);
-            $response = new RedirectResponse($url);
-            $event->setResponse($response);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function isRequestedByMBUser()
+    {
+        return $this->container->get('security.token_storage')->getToken()
+            && $this->container->get('security.token_storage')->getToken()->getUser() instanceOf User;
     }
 }

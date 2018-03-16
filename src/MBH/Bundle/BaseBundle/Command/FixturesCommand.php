@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\BaseBundle\Command;
 
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

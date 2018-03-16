@@ -41,7 +41,7 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface
             $manager->flush();
             $this->setReference('main-tariff/' . $hotelNumber, $tariff);
 
-            if ($this->getEnv() == 'test') {
+            if ($this->getEnv() == 'test' || $this->getEnv() == 'dev') {
                 $special = new Tariff();
                 $special->setFullTitle('Special tariff')
                 ->setIsDefault(false)

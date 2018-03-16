@@ -21,6 +21,7 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
     public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey)
     {
         $user = $token->getUser();
+        $apiKey = $token->getCredentials();
 
         if ($user instanceof User) {
             return new PreAuthenticatedToken(
@@ -40,7 +41,6 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
             );
         }
 
-        $apiKey = $token->getCredentials();
         $username = $userProvider->getUsernameForApiKey($apiKey);
 
         if (!$username) {
@@ -83,8 +83,9 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
                 $userRoles[] = $role;
             }
         }
+        $userRoles[] = 'ROLE_PAYMENTS';
 
-        return array_diff($userRoles, ['ROLE_USER', 'ROLE_GROUP', 'ROLE_PERSONAL_ACCOUNT', 'ROLE_PAYMENTS']);
+        return array_diff($userRoles, ['ROLE_USER', 'ROLE_GROUP', 'ROLE_PERSONAL_ACCOUNT']);
     }
 
     public function supportsToken(TokenInterface $token, $providerKey)

@@ -25,7 +25,7 @@ aciton_manager.modal.change_package_end.confirmation: 'Are you sure you want to 
 action_manager.modal.need_changepackage_end.title: 'To perform this action check out date must be changed'
 action_manager.modal.book_button.title: 'Reserve a room. Total rooms: %roomsCount%'
 action_manager.modal.disabled_book_button.title: 'To create a reservation, please add the payer.'
-action_manager.update_modal.without_accommodation: 'Without accommodation'
+action_manager.update_modal.without_accommodation: 'Without allocation'
 action_manager.update_modal.not_specified: 'Not specified'
 search.book_button.title: 'Reserve a room. %roomsCount% total rooms left.'
 search.disabled_book_button.title: 'To create a reservation, please add a payer.'
@@ -169,7 +169,7 @@ cash.not_confirmed: 'Not confirmed'
 008-special.show_packages: 'Show reservations'
 060-restriction.price_will_be_removed: 'Price will be deleted'
 004-calculate-orderprice.make_a_choice: 'Select one'
-001-add_dish_item.first_add_dishes: 'First add dishes to %hrefTagStart% in a corresponding menu'
+001-add_dish_item.first_add_dishes: 'First add dishes to %hrefTagStart% in a corrsponding menu'
 views.task.index.before: Before
 tourist.inn: TIN
 app.bootstrap_switch_config.yes: 'Yes'
@@ -182,9 +182,9 @@ dynamic_sales.option_data_type.comparative_graph_name.relative: 'Comparison of r
 dynamic_sales.option_data_type.comparative_graph_name.absolute: 'Comparison of absolute values in the category "% optionName%"'
 package_bundle.accommodations.warning_before_setting_accoommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Reservation calendar</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
 package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Chessboard</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
-chessboard_manager.package_tooltip.package_number: 'Number'
-chessboard_manager.package_tooltip.payer: 'Payer'
-chessboard_manager.package_tooltip.price: 'Price'
+chessboard_manager.package_tooltip.package_number: Number
+chessboard_manager.package_tooltip.payer: Payer
+chessboard_manager.package_tooltip.price: Price
 chessboard_manager.package_tooltip.package_begin: 'Check in date'
 chessboard_manager.package_tooltip.package_end: 'Check out date'
 chessboard_manager.package_tooltip.is_checkin: 'Checked in'

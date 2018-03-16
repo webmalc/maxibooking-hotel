@@ -22,7 +22,7 @@ $(document).ready(function () {
 
     handleClientServiceForm();
     handlePayerForm();
-    initPaymentsDataTable();
+    initPaymentPage();
     hangOnPayButtonHandler();
     handleAuthOrganFieldVisibility();
     handleVisibilityOfBossBaseRelatedFields();
@@ -164,7 +164,7 @@ function setClientServiceFormFieldsValues() {
     }
 }
 
-function initPaymentsDataTable() {
+function initPaymentPage() {
     var $userPaymentForm = $('#user-payment-filter');
     var $paymentsTable = $('#payments-table');
     var $updateButton = $('#filter-button');
@@ -182,6 +182,79 @@ function initPaymentsDataTable() {
         };
 
         initDataTableUpdatedByCallbackWithDataFromForm($paymentsTable, $userPaymentForm, Routing.generate('payments_list_json'), $updateButton, getFilterData, drawCallback);
+        $('#card-data-modal-button').click(function () {
+            $('#card-data-modal').modal('show');
+        });
+        handlePaymentCardForm();
+    }
+}
+
+function handlePaymentCardForm() {
+    var $validatedFields = $('#cardNumber, #cvc, #expiration-year, #expiration-month');
+    var $submitButton = $('#subscribe-button');
+    var isCardDataSaved = localStorage.getItem('is-card-data-saved') === 'true';
+
+    if (!isCardDataSaved) {
+        var validateField = function (field) {
+            var fieldId = field.getAttribute('id');
+            var $errorLabel = $('label[for="' + fieldId + '"]');
+
+            var hasErrors = false;
+            var isFieldChanged = !field.classList.contains('untouched') && !field.classList.contains('pristine');
+            var value = field.value;
+            if (fieldId === 'cardNumber' && (value.length !== 16 || !$.isNumeric(value))) {
+                hasErrors = true;
+            } else if (fieldId === 'cvc' && (value.length !== 3 || !$.isNumeric(value))) {
+                hasErrors = true;
+            } else if (fieldId === 'expiration-month' && (value === '' || ($('#expiration-year').val() === '2018' && parseInt(value, 10) < 3))) {
+                hasErrors = true;
+            } else if (fieldId === 'expiration-year' && value === '') {
+                hasErrors = true;
+            }
+
+            if (hasErrors && (isFieldChanged || $validatedFields.not(field).filter('.invalid').length === 0)) {
+                $errorLabel.show();
+            } else {
+                $errorLabel.hide();
+            }
+
+            if (hasErrors) {
+                field.classList.remove('valid');
+                field.classList.add('invalid');
+            } else {
+                field.classList.add('valid');
+                field.classList.remove('invalid');
+            }
+
+            $validatedFields.filter('.invalid').length === 0 ? $submitButton.removeAttr('disabled') : $submitButton.attr('disabled', true);
+        };
+
+        $validatedFields.each(function (fieldIndex, field) {
+            validateField(field);
+            $(field).focusout(function () {
+                if (!field.classList.contains('pristine')) {
+                    field.classList.remove('untouched');
+                }
+                validateField(field);
+            }).on('keyup change', (function () {
+                field.classList.remove('pristine');
+                validateField(field);
+                if (field.id === 'expiration-year') {
+                    validateField(document.getElementById('expiration-month'));
+                }
+            }));
+        });
+
+        $submitButton.click(function () {
+            $('#payment-card-modal-body').html(mbh.loader.html);
+            setTimeout(function () {
+                $('#payment-card-modal-body').find('.alert.alert-warning').html('Delighted to see your interest. No payment required during Free Trial');
+                localStorage.setItem('is-card-data-saved', true);
+            }, 1000);
+        });
+    } else {
+        $('#payment-card-modal-body').html(mbh.loader.html);
+        $('#payment-card-modal-body').find('.alert.alert-warning').html('Delighted to see your interest. No payment required during Free Trial');
     }
 }
 

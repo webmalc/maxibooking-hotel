@@ -2,7 +2,6 @@
 namespace MBH\Bundle\BaseBundle\Lib\Test;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase as Base;
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -352,8 +351,15 @@ abstract class WebTestCase extends Base
     public static function baseFixtures()
     {
         self::clearDB();
-        self::command('doctrine:mongodb:schema:create');
-        self::command('mbh:base:fixtures');
+//        self::command('doctrine:mongodb:schema:create');
+//        self::command('mbh:base:fixtures');
+        $container = self::getContainerStat();
+        $container->get('mbh.billing_mongo_client')->copyDatabase('template_test_db', $container->getParameter('mongodb_database'));
+    }
+
+    protected static function getContainerStat()
+    {
+        return static::$kernel->getContainer();
     }
 
     /**

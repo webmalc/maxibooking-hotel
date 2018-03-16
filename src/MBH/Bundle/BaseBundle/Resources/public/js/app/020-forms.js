@@ -955,8 +955,9 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
 var mbhStartDate = function (e) {
     if ($('form').is('.mbh-start-date')) {
         if (!($('.begin-datepicker').val()) && !($('.end-datepicker').val())) {
-            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
+            var beginDate = moment(($('form').is('.mbh-start-date-search') ? mbh.searchBeginDate : mbh.startDatePick), "DD.MM.YYYY");
+            $('.daterangepicker-input').data('daterangepicker').setStartDate(beginDate.toDate());
+            $('.daterangepicker-input').data('daterangepicker').setEndDate(beginDate.add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
             $('.begin-datepicker').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
             $('.end-datepicker').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
         }

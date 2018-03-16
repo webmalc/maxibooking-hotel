@@ -65,12 +65,12 @@ class ExpediaController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
+            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage();
             if ($errorMessage === '' || !$config->getIsEnabled()) {
                 $this->dm->persist($config);
                 $this->dm->flush();
 
-//                $this->get('mbh.channelmanager')->updateInBackground();
+                $this->get('mbh.channelmanager')->updateInBackground();
 
                 $this->addFlash('success', 'controller.expediaController.settings_saved_success');
             } else {
@@ -213,6 +213,7 @@ class ExpediaController extends Controller
     }
 
     /**
+     * @Method("POST")
      * @Route("/push_notification", name="expedia_push_notification")
      * @param Request $request
      * @return Response

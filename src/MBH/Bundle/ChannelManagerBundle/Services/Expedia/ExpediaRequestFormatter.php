@@ -14,10 +14,23 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
     const BOOKING_CONFIRMATION_API_URL = 'https://services.expediapartnercentral.com/eqc/bc';
     const PRODUCT_API_URL = 'https://services.expediapartnercentral.com/products/properties/';
 
-    public function formatUpdatePricesRequest($priceData) : array
+    private $expediaUsername;
+    private $expediaPassword;
+
+    public function __construct(array $channelManagersData) {
+        $expediaAuthData = $channelManagersData['expedia'];
+        $this->expediaPassword = $expediaAuthData['password'];
+        $this->expediaUsername = $expediaAuthData['username'];
+    }
+
+    public function formatUpdatePricesRequest($pricesData) : array
     {
-        return [$this->getXMLRequestInfo($priceData)
-            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL)];
+        $res = [];
+        foreach ($pricesData as $priceData) {
+            $res[] = $this->getXMLRequestInfo($priceData)->setUrl(self::AVAILABILITY_AND_RATES_API_URL);
+        }
+
+        return $res;
     }
 
     public function formatUpdateRestrictionsRequest($restrictionData) : array
@@ -38,16 +51,16 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
             ->setUrl(self::BOOKING_RETRIEVAL_API_URL);
     }
 
-    public function formatGetHotelInfoRequest(ChannelManagerConfigInterface $config)
+    public function formatGetHotelInfoRequest()
     {
-        return $this->getJsonRequestInfo($config, self::PRODUCT_API_URL);
+        return $this->getJsonRequestInfo(self::PRODUCT_API_URL);
     }
 
     public function formatPullRoomsRequest(ChannelManagerConfigInterface $config)
     {
         $url = self::PRODUCT_API_URL . "/{$config->getHotelId()}/roomTypes/";
 
-        return [$this->getJsonRequestInfo($config, $url)
+        return [$this->getJsonRequestInfo($url)
             ->addHeader('limit', 200)];
     }
 
@@ -61,7 +74,7 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
         $requestInfos = [];
         foreach ($roomTypesData as $roomTypeId => $roomTypeData) {
             $url = self::PRODUCT_API_URL . "/{$config->getHotelId()}/roomTypes/{$roomTypeId}/ratePlans/";
-            $requestInfos[] = $this->getJsonRequestInfo($config, $url)
+            $requestInfos[] = $this->getJsonRequestInfo($url)
                 ->addHeader('limit', 200);
         }
 
@@ -92,11 +105,11 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
             ->addHeader("Content-Type", 'text/xml');
     }
 
-    private function getJsonRequestInfo(ChannelManagerConfigInterface $config, $url) : RequestInfo
+    private function getJsonRequestInfo($url) : RequestInfo
     {
         /** @var ExpediaConfig $config */
         return (new RequestInfo())
-            ->addHeader('Authorization', 'Basic ' . base64_encode("{$config->getUsername()}:{$config->getPassword()}"))
+            ->addHeader('Authorization', 'Basic ' . base64_encode("{$this->expediaUsername}:{$this->expediaPassword}"))
             ->setUrl($url);
     }
 }

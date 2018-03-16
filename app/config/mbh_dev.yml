@@ -32,3 +32,5 @@ parameters:
         expedia:
           title: 'Expedia'
           service: 'mbh.channelmanager.expedia'
+          username: EQCMaxibooking
+          password: '%expedia_pass%'

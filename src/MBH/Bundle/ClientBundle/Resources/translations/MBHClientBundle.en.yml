@@ -27,3 +27,8 @@ client.tabs.notification: 'Notifications settings'
 client.views.payment_systems.url_not_specfied: 'Not specified'
 client.views.payment_systems.edit: Edit
 client.views.payment_systems.disable_button_text: Disable
+client.views.clientConfig.tabs.color_settings: Colors
+client.views.clientConfig.reset_confirmation.button-text: Reset
+client.views.clientConfig.reset_confirmation.text: 'Color settings will be reset to default'
+client.views.clientConfig.color_settings.small_title: 'Color settings'
+client.views.clientConfig.color_settings.reset_settings.button: 'Reset Settings'

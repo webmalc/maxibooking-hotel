@@ -45,6 +45,7 @@ class Client
     private $city;
     private $address;
     private $postal_code;
+    private $trial_activated;
 
     /** @var  string
      * @Assert\NotNull(groups={"installation"})
@@ -357,10 +358,13 @@ class Client
 
     /**
      * @param string $name
+     * @return Client
      */
     public function setName(string $name)
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -544,4 +548,22 @@ class Client
         return $this->getName();
     }
 
+    /**
+     * @return bool
+     */
+    public function getTrial_activated()
+    {
+        return $this->trial_activated;
+    }
+
+    /**
+     * @param bool $trial_activated
+     * @return Client
+     */
+    public function setTrial_activated($trial_activated)
+    {
+        $this->trial_activated = $trial_activated;
+
+        return $this;
+    }
 }

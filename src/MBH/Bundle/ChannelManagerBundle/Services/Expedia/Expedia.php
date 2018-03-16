@@ -49,9 +49,9 @@ class Expedia extends ExtendedAbstractChannelManager
         $this->requestDataFormatter = $container->get('mbh.channelmanager.expedia_request_data_formatter');
     }
 
-    public function safeConfigDataAndGetErrorMessage(ExpediaConfig $config)
+    public function safeConfigDataAndGetErrorMessage()
     {
-        $requestInfo = $this->requestFormatter->formatGetHotelInfoRequest($config);
+        $requestInfo = $this->requestFormatter->formatGetHotelInfoRequest();
         $jsonResponse = $this->sendRequestAndGetResponse($requestInfo);
         $responseHandler = $this->getResponseHandler($jsonResponse);
         if ($responseHandler->isResponseCorrect()) {

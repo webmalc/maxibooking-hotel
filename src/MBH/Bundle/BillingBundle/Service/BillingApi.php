@@ -7,6 +7,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\ClientAuth;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\Company;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
@@ -72,7 +73,7 @@ class BillingApi
 
         /** @var User $user */
         $user = $tokenStorage->getToken();
-        $this->locale = is_object($user) ? $user->getLocale() : $locale;
+        $this->locale = is_object($user) && !empty($user->getLocale()) ? $user->getLocale() : $locale;
     }
 
     public function sendFalse(): void
@@ -84,6 +85,7 @@ class BillingApi
      * @param Result $result
      * @param $clientName
      * @return ResponseInterface
+     * @throws Exception
      */
     public function sendClientInstallationResult(Result $result, $clientName)
     {
@@ -246,6 +248,7 @@ class BillingApi
      * @param \DateTime $begin
      * @param \DateTime $end
      * @return Result
+     * @throws \Exception
      */
     public function getClientOrdersResultByCreationDate(Client $client, \DateTime $begin, \DateTime $end)
     {
@@ -374,6 +377,29 @@ class BillingApi
     }
 
     /**
+     * @param $clientIp
+     * @param $userAgent
+     */
+    public function senClientAuthMessage($clientIp, $userAgent)
+    {
+        $clientAuth = (new ClientAuth())
+            ->setIp($clientIp)
+            ->setClient($this->billingLogin)
+            ->setAuth_date((new \DateTime())->format(self::BILLING_DATETIME_FORMAT))
+            ->setUser_agent($userAgent)
+        ;
+
+        $url = $this->getBillingUrl('authentications');
+        $data = $this->serializer->normalize($clientAuth);
+        try {
+            $response = $this->sendPost($url, $data, true);
+        } catch (RequestException $exception) {
+            $response = $exception->getResponse();
+            $this->handleErrorResponse($response, $requestResult, $url, $data);
+        }
+    }
+
+    /**
      * @param $url
      * @param $data
      * @return Result
@@ -392,7 +418,7 @@ class BillingApi
             return $requestResult;
         }
 
-        $decodedResponse = json_decode((string)$response->getBody(), true);
+            $decodedResponse = json_decode((string)$response->getBody(), true);
         if ($decodedResponse['status'] !== true) {
             $requestResult->setIsSuccessful(false);
         }
