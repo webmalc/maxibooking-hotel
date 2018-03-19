@@ -133,13 +133,15 @@
 
   input.datepicker {
     max-width: 84px !important;
-    //width: 80px;
   }
 
   .fa_custom_style {
+    display: flex;
+    justify-content: center;
+  }
+
+  .fa_custom_style:before {
     width: 20px;
-    align-self: center;
-    margin-right: 8px;
     margin-left: 8px;
   }
 
@@ -161,8 +163,12 @@
       max-width: 100% !important;
       text-align: center;
     }
+    .group-date .input:first-child
+    {
+      margin-bottom: 0;
+    }
     .group-date_select {
-      padding-left: 34px;
+      padding-left: 28px;
     }
     .select2-container--default {
       width: 100% !important;

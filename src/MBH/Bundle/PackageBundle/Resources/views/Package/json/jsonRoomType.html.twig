@@ -1,7 +1,13 @@
 {% spaceless %}
     <div class='visible-xs text-center'>
         <div>{{ entity.roomType }}</div>
-        <div>{{ entity.order.payer.shortName }}</div>
+        <div>
+            {% if entity.order.payer %}
+                <span>{{ entity.order.payer.shortName }}</span>
+            {% else %}
+                <span>&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;</span>
+            {% endif %}
+        </div>
         <div>
             <span class='text {% if entity.order.isPaid %}text-success{% elseif entity.order.paid > 0 %}text-warning{% else %}text-danger{% endif %}'>{{ entity.price|number_format(2) }}</span>
             <small> {{ entity.tariff.name }}</small>
