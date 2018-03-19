@@ -177,6 +177,10 @@ class SpecialHandler
             );
         }
 
+        if (!$error && $special->getIsEnabled()) {
+            $special->clearError();
+        }
+
         $special->setNoRecalculation();
 //        $errors = $this->validator->validate($special);
 //        if (!count($errors)) {

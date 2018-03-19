@@ -227,7 +227,7 @@
                         <td>{{ special.discount|number_format(2) }} {% if not special.isPercent %}{{ currency()['text'] }}{% else %}%{% endif %}</td>
                         {#<td class="text-center">{{ special.sold }}/{{ special.limit }}</td>#}
                         <td class="search-special-tourist">
-                            {% if sPrice.prices is iterable %}
+                            {% if sPrice.prices is defined and sPrice.prices is iterable %}
                             <select class="form-control plain-html input-sm search-special-tourist-select">
                                 {% for priceTourists, price  in sPrice.prices %}
                                     {% set arr = priceTourists|split('_') %}
