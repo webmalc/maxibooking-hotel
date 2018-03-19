@@ -275,9 +275,21 @@
                         {{ resultTarrifs_small }}
                     </div>
                     <div>
-                        {{ resultRoomsCount }}
-                        {{ resultRooms }}
-                        {{ touristSelect }}
+                        <div class="order_data">
+                            {{ "search.results.quantity"|trans({}, "MBHPackageBundle") }}
+                            &nbsp;:&nbsp;
+                            {{ resultRoomsCount }}
+                        </div>
+                        <div class="order_data">
+                            {{ "search.results.room"|trans({}, "MBHPackageBundle") }}
+                            &nbsp;:&nbsp;
+                            {{ resultRooms }}
+                        </div>
+                        {#<div class="order_data">#}
+                            {#{{ "search.results.guests"|trans({}, "MBHPackageBundle") }}#}
+                            {#&nbsp;:&nbsp;#}
+                            {#{{ touristSelect }}#}
+                        {#</div>#}
                     </div>
                     <div>
                         {{ finalLink }}
