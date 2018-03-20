@@ -60,6 +60,7 @@ class SpecialFilterType extends AbstractType
                 'required' => false,
                 'query_builder' => function(DocumentRepository $er) {
                     return $er->createQueryBuilder()
+                        ->field('isEnabled')->equals(true)
                         ->field('hotel')->references($this->hotelSelector->getSelected())
                         ->sort('fullTitle', 'asc');
                 },

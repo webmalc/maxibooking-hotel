@@ -47,12 +47,12 @@ class TariffRepository extends DocumentRepository
 
     /**
      * @param Hotel $hotel
-     * @param array $type 'rooms', 'restrictions', 'prices'
+     * @param string $type 'rooms', 'restrictions', 'prices'
      * @param array $tariffs ids
+     * @param bool $onlyEnabled
      * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetchChildTariffsQuery(Hotel $hotel, $type, $tariffs = [])
+    public function fetchChildTariffsQuery(Hotel $hotel, $type, $tariffs = [], $onlyEnabled = true)
     {
         $types = [
             'rooms' =>'inheritRooms', 'restrictions' => 'inheritRestrictions', 'prices' => 'inheritPrices'
@@ -69,20 +69,27 @@ class TariffRepository extends DocumentRepository
         if (!empty($tariffs) && is_array($tariffs)) {
             $qb->field('id')->in($tariffs);
         }
+        if ($onlyEnabled) {
+            $qb->field('isEnabled')->equals(true);
+        }
 
         return $qb;
     }
 
     /**
+     * //TODO: Почему метод назван "взять дочерние тарифы", если он берет наоборот ненаследованные тарифы? Оо
      * @param Hotel $hotel
-     * @param array $type 'rooms', 'restrictions', 'prices'
+     * @param string $type 'rooms', 'restrictions', 'prices'
      * @param array $tariffs ids
+     * @param bool $onlyEnabled
      * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetchChildTariffs(Hotel $hotel, $type, $tariffs = [])
+    public function fetchChildTariffs(Hotel $hotel, $type, $tariffs = [], $onlyEnabled = true)
     {
-        return $this->fetchChildTariffsQuery($hotel, $type, $tariffs)->getQuery()->execute();
+        return $this
+            ->fetchChildTariffsQuery($hotel, $type, $tariffs, $onlyEnabled)
+            ->getQuery()
+            ->execute();
     }
 
     /**
