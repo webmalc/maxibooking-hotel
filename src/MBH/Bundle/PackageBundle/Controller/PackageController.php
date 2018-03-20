@@ -552,6 +552,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         try {
             $order = $orderManager->createPackages($data, $order, $this->getUser());
         } catch (PackageCreationException $e) {
+            $this->get('logger')->err($e->getMessage());
             $createdPackageCount = count($e->order->getPackages());
             if ($packages > 1 && $createdPackageCount > 0) {
                 $request->getSession()->getFlashBag()
@@ -564,6 +565,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 return [];
             }
         } catch (\Exception $e) {
+            $this->get('logger')->err($e->getMessage());
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 dump($e);
             };
