@@ -297,4 +297,11 @@ class Extension extends \Twig_Extension
     {
         return (new \DateTime())->getOffset();
     }
+
+    public function getTokenParsers()
+    {
+        return [
+            'wrapinline' => new TwigWrapInLineTokenParser(),
+        ];
+    }
 }
