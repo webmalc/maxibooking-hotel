@@ -10,6 +10,21 @@ namespace MBH\Bundle\BaseBundle\Twig;
 
 use \Twig_Token;
 
+/**
+ * Удаление переноса строк (\r\n)
+ *
+ * <pre>
+ * {% wrapinline %}
+ *      <div class="my_class">
+ *          Hello World!
+ *          <strong>foo</strong>
+ *      </div>
+ * {% endwrapinline %}
+ *
+ * {# output will be <div class="my_class">Hello World!<strong id="my_id">foo</strong></div> #}
+ * </pre>
+ */
+
 class TwigWrapInLineTokenParser extends \Twig_TokenParser
 {
     public function parse(Twig_Token $token)

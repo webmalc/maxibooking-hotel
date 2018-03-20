@@ -1,0 +1,8 @@
+{% wrapinline %}
+    <div class='text-center {% if entity.deletedAt or entity.corrupted or entity.isForceBooking %}deleted-entry{% elseif not entity.order.confirmed %}not-confirmed-entry{% endif %}'>
+        <span data-toggle='tooltip' title='{{ 'package.json.reservation_type'|trans({}, 'MBHPackageBundle') }}  {{ statuses[entity.order.status].title|trans }}'>
+            <i class='{{ statuses[entity.order.status].icon }}'>
+            </i>
+        </span>
+    </div>
+{% endwrapinline %}

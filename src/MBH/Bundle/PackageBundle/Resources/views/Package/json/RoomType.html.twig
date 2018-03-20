@@ -1,11 +1,11 @@
-{% spaceless %}
+{% wrapinline %}
     <div class='visible-xs text-center'>
         <div>{{ entity.roomType }}</div>
         <div>
             {% if entity.order.payer %}
-                <span>{{ entity.order.payer.shortName }}</span>
+                {{ entity.order.payer.shortName }}
             {% else %}
-                <span>&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;</span>
+                &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
             {% endif %}
         </div>
         <div>
@@ -13,25 +13,23 @@
             <small> {{ entity.tariff.name }}</small>
         </div>
         <div>
-            <span>{{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}</span>
+            {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}
             <br>
             <small>{{ entity.nights }} {{ 'nights'|transchoice(entity.nights) }}</small>
         </div>
     </div>
     <div class='hidden-xs'>
-        <span>{{ entity.roomType }}</span>
+        {{ entity.roomType }}
         <br>
         <small>
             <a data-toggle='tooltip' title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_accommodation', {'id': entity.id}) }}' class='{{ entity.accommodation ? '' : 'text text-danger' }}'>
                 {% if entity.accommodation and entity.accommodation.room and entity.accommodation.room.roomType %}
-                    <span>{{ entity.firstAccommodation.room.name(entity.roomType.id == entity.accommodation.room.roomType.id ? false : true) }}</span>
-                    <span>{{ entity.accommodations|length > 1 ? ' -' ~ 'package.json_json.relocation'|trans : ''}}</span>
+                    {{ entity.firstAccommodation.room.name(entity.roomType.id == entity.accommodation.room.roomType.id ? false : true) }}
+                    {{ entity.accommodations|length > 1 ? ' -' ~ 'package.json_json.relocation'|trans : ''}}
                 {% else %}
-                    <span>&lt;</span>
-                    <span>{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}</span>
-                    <span>&gt;</span>
+                    &lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;
                 {% endif %}
             </a>
         </small>
     </div>
-{% endspaceless %}
+{% endwrapinline %}

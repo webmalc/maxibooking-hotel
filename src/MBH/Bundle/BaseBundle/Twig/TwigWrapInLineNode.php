@@ -22,7 +22,7 @@ class TwigWrapInLineNode extends \Twig_Node
             ->addDebugInfo($this)
             ->write("ob_start();\n")
             ->subcompile($this->getNode('body'))
-            ->write("echo preg_replace('/\s{2,}/','',str_replace([\"\r\n\",\"\n\",\"\r\"],'',ob_get_clean()));\n")
+            ->write("echo str_replace([\"\r\n\",\"\n\",\"\r\"],'',ob_get_clean());\n")
         ;
     }
 }

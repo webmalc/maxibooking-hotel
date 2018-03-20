@@ -1,4 +1,4 @@
-{% spaceless %}
+{% wrapinline %}
     <div class='btn-list text-right'>
         {#Ссылка была на редактирование.#}
         {#{% if (is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('ROLE_ORDER_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')))) and not entity.confirmed %}#}
@@ -26,4 +26,4 @@
             </a>
         {% endif %}
     </div>
-{% endspaceless %}
+{% endwrapinline %}

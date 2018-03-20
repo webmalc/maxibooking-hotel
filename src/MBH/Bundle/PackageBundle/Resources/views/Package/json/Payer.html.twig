@@ -1,22 +1,22 @@
-{% spaceless %}
+{% wrapinline %}
     <a data-toggle='tooltip' href='{{ path('package_order_tourist_edit', {'id': entity.order.id, 'packageId': entity.id}) }}' title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}' class='{{ entity.order.payer ? '' : 'text text-danger' }}'>
         {% if entity.order.payer %}
-            <span>{{ entity.order.payer.shortName }}</span>
+            {{ entity.order.payer.shortName }}
         {% else %}
-            <span>&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;</span>
+            &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
         {% endif %}
     </a>
     <br>
     <small>
         {% if entity.adults > 0 %}
-            <span>{{ entity.adults }} {{ 'package.json_json.number_of_adults'|trans }}</span>
+            {{ entity.adults }} {{ 'package.json_json.number_of_adults'|trans }}
         {% endif %}
         {% if entity.adults > 0 and entity.children > 0 %}
-            <span>+</span>
+            +
         {% endif %}
         {% if entity.children > 0 %}
-            <span>{{ entity.children }} {{ 'package.json_json.number_of_children'|trans }}</span>
+            {{ entity.children }} {{ 'package.json_json.number_of_children'|trans }}
         {% endif %}
-        <span>/ {{ 'package.json_json.issued_guests'|trans }}: {{ entity.tourists|length }}</span>
+        / {{ 'package.json_json.issued_guests'|trans }}: {{ entity.tourists|length }}
     </small>
-{% endspaceless %}
+{% endwrapinline %}

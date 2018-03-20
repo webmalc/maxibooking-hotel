@@ -19,14 +19,14 @@
     {% if entity.isCheckIn and entity.accommodation %}{% set checkIn = true %}{% else %}{% set checkIn = false %}{% endif %}
     {% if entity.isCheckOut and entity.accommodation %}{% set checkOut = true %}{% else %}{% set checkOut = false %}{% endif %}
     [
-    "<div class='text-center {% if entity.deletedAt or entity.corrupted or entity.isForceBooking %}deleted-entry{% elseif not entity.order.confirmed %}not-confirmed-entry{% endif %}'><span data-toggle='tooltip' title='{{ 'package.json.reservation_type'|trans({}, 'MBHPackageBundle') }}  {{ statuses[entity.order.status].title|trans }}'><i class='{{ statuses[entity.order.status].icon }}'></i></span></div>",
-    "{% include 'MBHPackageBundle:Package:/json/jsonReservation.html.twig' %}",
-    "{% include 'MBHPackageBundle:Package:/json/jsonDate.html.twig' %}",
-    "{% include 'MBHPackageBundle:Package:/json/jsonRoomType.html.twig' %}",
-    "{% include 'MBHPackageBundle:Package:/json/jsonPayer.html.twig' %}",
-    "{% include 'MBHPackageBundle:Package:/json/jsonOrder.html.twig' %}",
-    "<div class='text-right'>{% if 'now'|date('d.m.Y') == entity.createdAt|date('d.m.Y') %}{{ "package.json.today"|trans({}, "MBHPackageBundle") }} {{ entity.createdAt|date('H:i') }}{% else %}{{ entity.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ entity.createdBy|default(entity.channelManagerType)|default('online') }}</small></div>",
-    "{% include 'MBHPackageBundle:Package:/json/jsonButtons.html.twig' with {'entity': entity} %}"
+    "{% include 'MBHPackageBundle:Package:/json/OrderStatus.html.twig' %}",
+    "{% include 'MBHPackageBundle:Package:/json/Reservation.html.twig' %}",
+    "{% include 'MBHPackageBundle:Package:/json/DateArrivalDepartures.html.twig' %}",
+    "{% include 'MBHPackageBundle:Package:/json/RoomType.html.twig' %}",
+    "{% include 'MBHPackageBundle:Package:/json/Payer.html.twig' %}",
+    "{% include 'MBHPackageBundle:Package:/json/Order.html.twig' %}",
+    "{% include '@MBHPackage/Package/json/AboutCreated.html.twig' %}",
+    "{% include 'MBHPackageBundle:Package:/json/Buttons.html.twig' with {'entity': entity} %}"
     ]{% if loop.index != entities.count(true) %},{% endif %}
 {% endfor %}
 ]

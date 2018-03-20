@@ -1,0 +1,5 @@
+{% wrapinline %}
+    {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}
+    <br>
+    <small>{{ entity.nights }} {{ 'nights'|transchoice(entity.nights) }}</small>
+{% endwrapinline %}
