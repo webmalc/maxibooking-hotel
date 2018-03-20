@@ -391,11 +391,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             //check by search
             $newTariff = $form->get('tariff')->getData();
             $orderManager = $this->get('mbh.order_manager');
-            if ($package->getPackagePrice() != $oldPackage->getPackagePrice()
-                && $package->getBegin() == $oldPackage->getBegin()
-                && $package->getEnd() == $oldPackage->getEnd()) {
-                $orderManager->updatePricesByDate($package, $newTariff);
-            }
 
             $result = $orderManager->updatePackage($oldPackage, $package, $newTariff);
             if ($result instanceof Package) {
@@ -512,8 +507,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ]));
         }
 
-        $request->getSession()->getFlashBag()
-            ->set('success', $this->get('translator')->trans('controller.packageController.order_created_success'));
+        $this->addFlash('success', 'controller.packageController.order_created_success');
 
         $route = $order->getPayer() ? 'package_order_cash' : 'package_order_tourist_edit';
 
@@ -566,12 +560,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $this->dm->persist($package);
                 $this->dm->flush();
 
-                $flashBag = $request->getSession()->getFlashBag();
-                $flashBag->set('success', $this->get('translator')
-                    ->trans('controller.packageController.guest_added_success'));
+                $this->addFlash('success', 'controller.packageController.guest_added_success');
                 if ($tourist->getIsUnwelcome()) {
-                    $flashBag->set('warning', '<i class="fa fa-user-secret"></i> ' . $this->get('translator')
-                            ->trans('package.tourist_in_unwelcome'));
+                    $this->addFlash('warning', '<i class="fa fa-user-secret"></i> '
+                        . $this->get('translator')->trans('package.tourist_in_unwelcome'));
                 }
 
                 return $this->afterSaveRedirect('package', $package->getId(), [], '_guest');
@@ -784,22 +776,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $package,
             false
         );
-        $flash = $request->getSession()->getFlashBag();
 
         if (!in_array($room->getId(), $this->helper->toIds($availableRooms))) {
-            $flash->set(
-                'danger',
-                $this->get('translator')->trans('controller.packageController.record_edited_fail_accommodation')
-            );
+            $this->addFlash('danger', 'controller.packageController.record_edited_fail_accommodation');
         } else {
             $package->setAccommodation($room);
             $this->dm->persist($package);
             $this->dm->flush();
 
-            $flash->set(
-                'success',
-                $this->get('translator')->trans('controller.packageController.placement_saved_success')
-            );
+            $this->addFlash('success', 'controller.packageController.placement_saved_success');
         }
 
         return $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);

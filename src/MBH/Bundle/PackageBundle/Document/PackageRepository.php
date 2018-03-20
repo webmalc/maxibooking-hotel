@@ -661,7 +661,7 @@ class PackageRepository extends DocumentRepository
                 $qb->addAnd($expr);
             }
         } else {
-            if ($dateType === 'createdAt' || $dateType === 'deletedAt') {
+            if (($dateType === 'createdAt' || $dateType === 'deletedAt') && isset($data['end']) && $data['end'] instanceof \DateTime) {
                 $data['end']->modify('+1 day');
             }
             if (isset($data['begin']) && !empty($data['begin'])) {
@@ -1088,5 +1088,41 @@ class PackageRepository extends DocumentRepository
             ->field('order.id')->in($ordersIds)
             ->getQuery()
             ->execute();
+    }
+
+    /**
+     * @return array|Package[]
+     */
+    public function getPackagesWithInconsistencyOfPackagePriceAndSumOfPricesByDate()
+    {
+        $qb = $this->createQueryBuilder()->where('function() {
+            var pricesPrice = 0;
+            if (this.prices) {
+                this.prices.forEach(function(price) {
+                    pricesPrice += parseFloat(price.price, 10);
+                });
+            } else if (this.pricesByDate) {
+                for (var date in this.pricesByDate) {
+                    pricesPrice += parseFloat(this.pricesByDate[date], 10);
+                }
+            } else {
+                return true;
+            }
+            
+            var packagePrice = 0;
+            if(this.totalOverwrite) {
+                packagePrice = this.totalOverwrite;
+            } else {
+                packagePrice = parseFloat(this.price, 10);
+            }
+            
+            return Math.abs(packagePrice - pricesPrice) > 1;
+        }');
+
+        return $qb
+            ->field('createdAt')->gte(\DateTime::createFromFormat('d.m.Y', '01.12.2017'))
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 }

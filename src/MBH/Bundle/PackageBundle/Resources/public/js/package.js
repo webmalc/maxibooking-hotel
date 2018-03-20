@@ -555,6 +555,7 @@ $(document).ready(function () {
             return null;
         }
         tabs.find('li > a').click(function (e) {
+            setPaymentCardVisibility();
             e.preventDefault();
             $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>' + Translator.trans("package.processing") + '...</div>');
             tabs.find('li').removeClass('active');

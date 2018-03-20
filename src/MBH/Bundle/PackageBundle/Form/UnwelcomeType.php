@@ -46,6 +46,10 @@ class UnwelcomeType extends AbstractType
             4 => 'form.unwelcomeType.levels.high',
             5 => 'form.unwelcomeType.levels.very_high'
         ];
+        $translatedLevels = [];
+        foreach ($levels as $level) {
+            $translatedLevels[] = $this->translator->trans($level);
+        }
 
         foreach($this->getCharacteristics() as $characteristic) {
             $builder->add($characteristic, InvertChoiceType::class, [
@@ -53,7 +57,7 @@ class UnwelcomeType extends AbstractType
                 'group' => 'form.unwelcomeType.group.common',
                 'expanded' => true,
                 'placeholder' => null,
-                'choices' => $levels,
+                'choices' => $translatedLevels,
                 'choice_label' => function($key){
                     return $key == 0 ? 'form.unwelcomeType.levels.no' : $key;
                 },

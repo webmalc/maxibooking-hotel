@@ -6,7 +6,12 @@
     <!-- Navbar Right Menu -->
     <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
-
+            <li class="notifications-menu" id="support-info">
+                <a href="#" id="support-link" class="btn-success">
+                    <i class="fa fa-question-circle fa-lg"></i>
+                    {{ 'mbhbasebundle.views.help'|trans}}
+                </a>
+            </li>
             {% include 'MBHBaseBundle::dashboard.html.twig' with {'dashboard_messages': dashboard_messages} %}
             
             {% set cash = user_cash() %}

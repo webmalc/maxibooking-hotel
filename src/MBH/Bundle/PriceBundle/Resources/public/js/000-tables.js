@@ -69,7 +69,6 @@ var mbhGridCopy = function () {
             }
         });
     }());
-    setGeneratorData();
 };
 
 function onCopyToGeneratorButtonClick() {
@@ -120,7 +119,9 @@ function setGeneratorData() {
                 generatorTypeName = 'restriction-generator';
                 break;
         }
-
+        if (!generatorTypeName) {
+            return;
+        }
         var data = JSON.parse(localStorage.getItem(generatorTypeName));
         for (var fieldName in data) {
             var $input = $('input[name="' + formName + fieldName + '"]');

@@ -117,11 +117,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 }
             }
 
-            if ($numberOfRoomType % 2 === 0) {
-                $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
-                    'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
-                $xmlElements = [];
-            }
+            $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+            $xmlElements = [];
         }
 
         return $pricesRequestData;
@@ -218,6 +216,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         ChannelManagerConfigInterface $config
     )
     {
+        $restrictionRequestData = [];
         $xmlElements = [];
         $comparePropertyMethods = ['getMinStay', 'getMaxStay', 'getClosedOnArrival', 'getClosedOnDeparture', 'getClosed'];
         $requestDataArray = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
@@ -255,10 +254,15 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $xmlElements[] = $xmlRoomTypeData;
                 }
             }
+
+            if (!empty($xmlElements)) {
+                $restrictionRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                    'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+                $xmlElements = [];
+            }
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config,
-            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+        return $restrictionRequestData;
     }
 
     /**
@@ -328,7 +332,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
             $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
 
             $startDate = new \DateTime();
-            $endDate = new \DateTime('+2 years');
+            $endDate = new \DateTime('+1 years');
             $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
             $dateRangeElement->addAttribute('from', $startDate->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING));
             $dateRangeElement->addAttribute('to', $endDate->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING));
