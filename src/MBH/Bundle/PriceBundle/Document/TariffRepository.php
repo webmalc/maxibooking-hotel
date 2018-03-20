@@ -77,7 +77,6 @@ class TariffRepository extends DocumentRepository
     }
 
     /**
-     * //TODO: Почему метод назван "взять дочерние тарифы", если он берет наоборот ненаследованные тарифы? Оо
      * @param Hotel $hotel
      * @param string $type 'rooms', 'restrictions', 'prices'
      * @param array $tariffs ids
