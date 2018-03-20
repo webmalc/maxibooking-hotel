@@ -9,8 +9,8 @@ use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineDataProviderWrapperInterface;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance;
-use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialResultGenerator;
 use MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -33,7 +33,7 @@ class SpecialHandler
     private $dm;
     /** @var  SpecialDataPreparer */
     private $specialHelper;
-    /** @var OnlineSpecialResultGenerator */
+    /** @var OnlineDataProviderWrapperInterface */
     private $specialSearchHelper;
     /** @var  OnlineSearchFormData */
     private $onlineSearchFormData;
@@ -52,7 +52,7 @@ class SpecialHandler
      * @param DocumentManager $dm
      * @param Logger $logger
      * @param SpecialDataPreparer $specialHelper
-     * @param OnlineSpecialResultGenerator $specialSearchHelper
+     * @param OnlineDataProviderWrapperInterface $specialSearchHelper
      * @param OnlineSearchFormData $onlineSearchFormData
      * @param Notifier $mailer
      */
@@ -61,7 +61,7 @@ class SpecialHandler
         DocumentManager $dm,
         Logger $logger,
         SpecialDataPreparer $specialHelper,
-        OnlineSpecialResultGenerator $specialSearchHelper,
+        OnlineDataProviderWrapperInterface $specialSearchHelper,
         OnlineSearchFormData $onlineSearchFormData,
         Notifier $mailer
 //        DataCollectingValidator $validator
@@ -108,7 +108,6 @@ class SpecialHandler
             return;
         }
 
-
         $special->setRecalculation();
         $this->dm->flush();
 
@@ -122,24 +121,25 @@ class SpecialHandler
         //Здесь используется уже готовый код для поиска в онлайн
         $searchForm = $this->getFormData($special);
         $searchForm->setForceCapacityRestriction(true);
+        /** @var array $searchResults */
         $searchResults = $this->specialSearchHelper->getResults($searchForm);
         $error = '';
 
         /** @var OnlineResultInstance $onlineSearchResult */
-        if ($searchResults->isEmpty()) {
+        if (!count($searchResults)) {
             if ($special->getSold() === 0) {
                 $error = 'Поиск не вернул результат для спецпредложения';
             }
 
         }
 
-        if (!$searchResults->isEmpty()) {
-            $onlineSearchResult = $searchResults->first();
+        if (count($searchResults)) {
+            $onlineSearchResult = $searchResults[0];
             /** @var SearchResult $searchResult */
 
             if (count($onlineSearchResult->getResults())) {
 
-                $searchResult = $searchResults->first()->getResults()->first();
+                $searchResult = $searchResults[0]->getResults()->first();
                 $specialPrice = $this->createSpecialPrice(
                     $searchResult->getTariff(),
                     $searchResult->getRoomType(),
@@ -175,6 +175,10 @@ class SpecialHandler
                 ['specialId' => $special->getId(), 'specialName' => $special->getName()],
                 $output
             );
+        }
+
+        if (!$error && $special->getIsEnabled()) {
+            $special->clearError();
         }
 
         $special->setNoRecalculation();

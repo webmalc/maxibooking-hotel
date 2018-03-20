@@ -61,7 +61,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
         $tourist->setBirthplace(new BirthPlace());
-        $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $repository = $this->dm->getRepository('MBHVegaBundle:VegaState');
+        $tourist->setCitizenship($repository->findOneByOriginalName('РОССИЯ'));
         $tourist->getDocumentRelation()->setType('vega_russian_passport');
 
 

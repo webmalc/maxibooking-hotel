@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Form\SpecialFilterType;
@@ -196,14 +197,14 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
      * @param int $children
      * @param int $infants
      * @return array
-     * @Route("/{id}/booking/{adults}/{children}/{infants}", name="special_booking", defaults={"adults":0, "children":0})
+     * @Route("/{id}/booking/{adults}/{children}/{infants}", name="special_booking", defaults={"adults":0, "children":0}, options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_NEW')")
      * @Template()
      */
     public function bookingAction(Special $special, int $adults = 0, int $children = 0, int $infants = 0)
     {
-        $search = $this->get('mbh.online.special_result_generator');
+        $search = $this->get('mbh.online.data_provider_special');
         $searchData = $this->get('mbh.online.search_form_data');
         $searchData
             ->setSpecial($special)
@@ -212,8 +213,9 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         $searchResult = null;
         $errors = [];
         if (count($specialResult)) {
-            $searchResult = $specialResult->first()->getResults()->first()??null;
-            if ($searchResult->getVirtualRoom() === null) {
+            $searchResult = reset($specialResult)->getResults()->first()??null;
+            /** @var SearchResult $searchResult */
+            if (!$searchResult || $searchResult->getVirtualRoom() === null) {
                 $errors[] = 'Возможно спецпредложение уже не активно.';
             }
         } else {

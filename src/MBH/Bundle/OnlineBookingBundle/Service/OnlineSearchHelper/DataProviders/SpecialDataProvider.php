@@ -110,6 +110,7 @@ class SpecialDataProvider implements DataProviderInterface
      */
     private function searchCertainSpecial(OnlineSearchFormData $formData): ?array
     {
+        $formData->setCache(false);
         $searchQuery = $this->queryGenerator->createSearchQuery($formData);
         $special = $formData->getSpecial();
         $searchQuery->begin = $special->getBegin();
@@ -119,6 +120,7 @@ class SpecialDataProvider implements DataProviderInterface
         if ($formData->isForceCapacityRestriction() && $searchQuery->getPreferredVirtualRoom()) {
             $searchQuery->setIgnoreGuestRestriction(true);
         }
+        $searchQuery->tariff = $special->getTariffs()->first()->getId();
         $searchResults = $this->search->search($searchQuery);
         if (count($searchResults)) {
             /** @var SearchResult $searchResult */
