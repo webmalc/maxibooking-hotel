@@ -45,7 +45,7 @@ addLoadEvent(function () {
         return;
     }
     var urlIndex = window.location.href.indexOf('?');
-    var url = urlIndex !== -1 ? window.location.href.slice(urlIndex) : '';
+    var url = urlIndex !== -1 ? window.location.href.slice(urlIndex) : '?url=' + window.location.pathname;
     var iframeWidth = typeof(frameWidth) !== 'undefined' ? frameWidth : 300;
     var iframeHeight = typeof(frameHeight) !== 'undefined' ? frameHeight : 400;
 

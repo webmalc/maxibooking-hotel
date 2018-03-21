@@ -10,6 +10,7 @@ chessboard_manager.package_tooltip.package_begin: 'Заезд брони'
 chessboard_manager.package_tooltip.package_end: 'Выезд брони'
 chessboard_manager.package_tooltip.is_checkin: Заехали
 chessboard_manager.package_tooltip.is_checkout: Выехали
+chessboard.package_remove.success: 'Бронь успешно удалена'
 action_manager.modal.remove_confirmation.title: 'Подтверждение удаления'
 action_manager.modal.remove_confirmation.text: 'Вы действительно хотите удалить эту бронь'
 action_manager.modal.package_blocked.title: 'Бронь заблокирована для изменений'

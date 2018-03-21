@@ -25,11 +25,6 @@ trait DeleteReasonTrait
                         ->sort(['isDefault' => 'desc']);
                 },
                 'required' => true
-            ])
-            ->add('order', HiddenType::class, [
-                'mapped' => false
-            ])
-        ;
-
+            ]);
     }
 }
