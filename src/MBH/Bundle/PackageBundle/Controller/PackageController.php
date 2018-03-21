@@ -1071,7 +1071,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', id) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
      * @Template("@MBHPackage/Package/deleteModalContent.html.twig")
-     * @return array|RedirectResponse|JsonResponse
+     * @return array|JsonResponse|RedirectResponse|Response
      */
     public function deleteModalAction(Request $request, Package $entity)
     {
@@ -1082,34 +1082,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        if ($form->isValid()) {
-            $orderId = $entity->getOrder()->getId();
-            $this->dm->persist($entity);
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 
-            if ($request->isXmlHttpRequest()) {
-                $messageFormatter = $this->get('mbh.chess_board.message_formatter');
-                $messageFormatter->addSuccessfulMessage('controller.chessboard.package_remove.success');
-
-                return new JsonResponse(json_encode($messageFormatter->getMessages()));
+            if (empty($request->query->get('from_chessboard'))) {
+                $this->addFlash('success', 'controller.packageController.record_deleted_success');
             }
 
-            $request->getSession()->getFlashBag()
-                ->set(
-                    'success',
-                    $this->get('translator')->trans('controller.packageController.record_deleted_success')
-                );
-
-
-            if (!empty($form->get('order')->getData())) {
-                return $this->redirect($this->generateUrl(
-                    'package_order_edit',
-                    ['id' => $orderId, 'packageId' => $entity->getId()]
-                ));
-            }
-
-            return $this->redirectToRoute('package');
+            return new Response('', 302);
         }
 
         return [

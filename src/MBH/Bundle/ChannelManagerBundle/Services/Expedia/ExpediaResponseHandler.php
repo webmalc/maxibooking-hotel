@@ -135,10 +135,10 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         return substr($url, $roomTypeIdStartPosition, $roomTypeIdStringLength);
     }
 
-    private function removeXmlnsString($xmlString)
+    public function removeXmlnsString($xmlString)
     {
-        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns');
-        $firstQuotesPosition = $xmlnsStringStartPosition + 8;
+        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns:ns');
+        $firstQuotesPosition = $xmlnsStringStartPosition + 10;
         $xmlnsStringEndPosition = strpos($xmlString, '"', $firstQuotesPosition) + 1;
         $xmlnsString = substr($xmlString, $xmlnsStringStartPosition, $xmlnsStringEndPosition - $xmlnsStringStartPosition);
 

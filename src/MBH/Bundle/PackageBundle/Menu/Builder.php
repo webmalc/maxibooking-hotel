@@ -116,7 +116,6 @@ class Builder implements ContainerAwareInterface
             }
         }
 
-
         if(!$package->getIsLocked()) {
             $rootItem
                 ->addChild('Delete Header', [
@@ -133,12 +132,11 @@ class Builder implements ContainerAwareInterface
                     ->setLinkAttributes([
                         'class' => 'booking-delete-link',
                         'data-id' => $package->getId(),
-                        'data-toggle' => 'modal'
+                        'data-toggle' => 'modal',
+                        'data-order-id' => $package->getOrder()->getId()
                     ])
                     ->setAttributes([
                         'icon' => 'fa fa-trash-o',
-                        'class' => 'booking-delete-link',
-                        'data-id' => $package->getId()
                     ]);
             }
 

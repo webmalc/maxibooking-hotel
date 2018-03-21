@@ -96,7 +96,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
         if ($documentRelation = $tourist->getDocumentRelation()) {
             if ($documentRelation->getType() && array_key_exists($documentRelation->getType(), $documentTypes)) {
-                $this->write($documentTypes[$documentRelation->getType()], 'BC30');
+                $documentTypeString = $documentRelation->getType() === 103012 ? 'Паспорт ИГ' : $documentTypes[$documentRelation->getType()];
+                $this->write($documentTypeString, 'BC30');
             }
             $this->write($documentRelation->getSeries(), 'DC30');
             $this->write($documentRelation->getNumber(), 'DW30');
@@ -201,7 +202,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
         if ($documentRelation = $tourist->getDocumentRelation()) {
             if ($documentRelation->getType() && array_key_exists($documentRelation->getType(), $documentTypes)) {
-                $this->write($documentTypes[$documentRelation->getType()], 'BC80');
+                $documentTypeString = $documentRelation->getType() === 103012 ? 'Паспорт ИГ' : $documentTypes[$documentRelation->getType()];
+                $this->write($documentTypeString, 'BC80');
             }
             $this->write($documentRelation->getSeries(), 'DC80');
             $this->write($documentRelation->getNumber(), 'DW80');

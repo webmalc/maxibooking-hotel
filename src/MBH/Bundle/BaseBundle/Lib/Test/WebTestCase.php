@@ -351,8 +351,6 @@ abstract class WebTestCase extends Base
     public static function baseFixtures()
     {
         self::clearDB();
-//        self::command('doctrine:mongodb:schema:create');
-//        self::command('mbh:base:fixtures');
         $container = self::getContainerStat();
         $container->get('mbh.billing_mongo_client')->copyDatabase('template_test_db', $container->getParameter('mongodb_database'));
     }
