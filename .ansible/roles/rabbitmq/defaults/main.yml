@@ -19,6 +19,7 @@ rabbitmq_users:
 - user: maxibooking
   password: maxibooking
   tags: administrator
+  vhost: /maxibooking
 
 rabbitmq_users_absent:
 - guest
