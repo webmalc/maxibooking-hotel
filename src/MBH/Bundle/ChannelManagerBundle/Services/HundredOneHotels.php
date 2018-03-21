@@ -7,7 +7,6 @@ use MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use MBH\Bundle\ChannelManagerBundle\Lib\Response;
 use MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\PackageInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -18,6 +17,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use Symfony\Component\HttpFoundation\Response;
 
 class HundredOneHotels extends Base
 {
@@ -493,6 +493,7 @@ class HundredOneHotels extends Base
             $order->setDeletedAt(null);
         }
 
+        $this->dm->clear(Package::class);
         $order->setChannelManagerType(self::CHANNEL_MANAGER_TYPE)
             ->setChannelManagerId($orderInfo->getBookingId())
             ->setMainTourist($orderInfo->getPayer())
@@ -556,8 +557,6 @@ class HundredOneHotels extends Base
             }
         }
 
-        $this->dm->refresh($order);
-        $this->dm->clear(Package::class);
         foreach ($orderInfo->getPackages() as $packageInfo) {
             $package = $this->createPackage($packageInfo, $order);
             $order->addPackage($package);
@@ -702,7 +701,7 @@ class HundredOneHotels extends Base
     /**
      * Close sales on service
      * @param ChannelManagerConfigInterface $config
-     * @return bool|void
+     * @return bool
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
@@ -729,6 +728,7 @@ class HundredOneHotels extends Base
         }
 
         $this->log($sendResult);
+
         return $result;
     }
 
