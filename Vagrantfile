@@ -11,8 +11,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder ".", "/var/www/mbh"
 
-  config.vm.hostname = "mbh"
-  config.vm.define "mbh"
+  config.vm.hostname = "maxibooking-develop"
+  config.vm.define "mbh-virtual"
   config.ssh.forward_agent = true
   config.vm.network "forwarded_port", guest: 80, host: 9090
   config.vm.network "forwarded_port", guest: 27017, host: 27018
@@ -55,9 +55,11 @@ Vagrant.configure("2") do |config|
   # information on available options.
 
   config.vm.provision "shell", inline: <<-SHELL
-     test -e /usr/bin/python || (apt -qqy update && apt install -qqy python-minimal)
+     test -e /usr/bin/python || (apt -qqy update && apt install -qqy python);
+     test -e /usr/bin/pip3 || (apt -qqy update && apt install -qqy python3-pip)
   SHELL
   config.vm.provision "ansible" do |ansible|
 	ansible.playbook = ".ansible/setup.yml"
+	#ansible.verbose = "vvvv"
   end
 end

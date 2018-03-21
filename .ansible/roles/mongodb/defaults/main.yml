@@ -8,7 +8,7 @@ mongodb_apt_key_id:
   "3.4": "0C49F3730359A14518585931BC711F9BA15703C6"
   "3.6": "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
 
-mongodb_pymongo_from_pip: false                   # Install latest PyMongo via PIP or package manager
+mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
 
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
@@ -19,8 +19,8 @@ mongodb_gid:
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 
 ## net Options
-mongodb_net_bindip: 127.0.0.1                    # Comma separated list of ip addresses to listen on
-mongodb_net_http_enabled: false                  # Enable http interface
+mongodb_net_bindip: 0.0.0.0                      # Comma separated list of ip addresses to listen on
+mongodb_net_http_enabled: true                  # Enable http interface
 mongodb_net_ipv6: false                          # Enable IPv6 support (disabled by default)
 mongodb_net_maxconns: 65536                      # Max number of simultaneous connections
 mongodb_net_port: 27017                          # Specify port number
@@ -33,6 +33,15 @@ mongodb_processmanagement_fork: "{{ 'RedHat' == ansible_os_family }}"
 ## security Options
 # Disable or enable security. Possible values: 'disabled', 'enabled'
 mongodb_security_authorization: "enabled"
+
+mongodb_users:
+  - {
+    name: maxibooking,
+    password: maxibooking,
+    roles: ['readWrite', 'dbAdmin'],
+    database: maxibooking
+}
+
 mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with password for inter-process authentication
 
 ## storage Options
@@ -99,3 +108,5 @@ mongodb_root_backup_password: passw0rd
 
 # setParameter config
 mongodb_set_parameters:
+
+

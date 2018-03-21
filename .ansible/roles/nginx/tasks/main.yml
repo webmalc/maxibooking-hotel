@@ -6,6 +6,7 @@
 - name: Define nginx_user.
   set_fact:
     nginx_user: "{{ __nginx_user }}"
+    nginx_group: "{{ __nginx_group }}"
   when: nginx_user is not defined
 
 # Setup/install tasks.

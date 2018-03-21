@@ -1,4 +1,4 @@
-user  {{ nginx_user }};
+user  {{ nginx_user }} {{nginx_group}};
 
 error_log  {{ nginx_error_log }};
 pid        {{ nginx_pidfile }};

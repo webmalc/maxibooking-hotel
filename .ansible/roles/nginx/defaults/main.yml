@@ -92,8 +92,8 @@ nginx_log_format: |
 nginx_maxibooking:
   - template: "maxibooking.conf.j2"
     vhost_filename: "maxibooking.conf"
-    server_name: "*.aws.maxibooking.ru"
-    template_server_name: "~^(?<client>.+)\\.aws\\.maxibooking\\.ru$"
+    server_name: "localhost"
+    template_server_name: "localhost"
     root_path: "{{project_folder}}"
     compress: true
     ssl: false

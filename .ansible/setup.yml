@@ -4,16 +4,16 @@
   remote_user: ubuntu
   become: True
   roles:
-    - nginx
-    - user_manager
-    - common
-    - nodejs
-    - php
-    - composer
+#    - user_manager
+#    - common
+#    - nodejs
+#    - npm_install
+#    - php
+#    - composer
+#    - rabbitmq
+#    - redis
+#    - memcached
+#    - nginx
     - mongodb
-    - npm_install
-    - rabbitmq
-    - redis
-    - memcached
   vars_files:
     - default_vars.yml
