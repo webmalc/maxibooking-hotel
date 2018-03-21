@@ -20,10 +20,10 @@ parameters:
   mongodb_admin_password: '%env(MONGODB_ADMIN_PASSWORD)%'
 
   #Rabbitmq
-  rabbitmq_user: 'rabbitmq'
-  rabbitmq_password: 'rabbitmq'
+  rabbitmq_user: 'maxibooking'
+  rabbitmq_password: 'maxibooking'
   rabbitmq_host: 127.0.0.1
-  rabbitmq_vhost: '/rabbitmq'
+  rabbitmq_vhost: '/maxibooking'
   rabbitmq_port: '5672'
 
   #Security
@@ -77,6 +77,6 @@ parameters:
 
   kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
 
-  memcache_host: 'mbh-memcached'
+  memcache_host: 'localhost'
 
   domain: 'maxi-booking.ru'

@@ -40,4 +40,5 @@
   composer:
     command: install
     working_dir: '{{ project_folder }}'
-    optimize_autoloader: no
+    optimize_autoloader: true
+    global_command: false 
