@@ -27,6 +27,7 @@ php_packages:
   - php7.1-odbc
   - php7.1-ssh2
   - php7.1-zip
+  - php7.1-xdebug
 
 php_ini_overrides_template: "php-ini-overrides.ini.j2"
 php_ini_overrides_file: "php-ini-overrides.ini"

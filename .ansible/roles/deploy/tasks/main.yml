@@ -1,59 +1,44 @@
-#- name: Folder
-#  file:
-#    path: /var/www/mbh
-#    state: directory
-#    mode: 0755
-#    owner: vagrant
-#
-#- name: Git pull
-#  git:
-#    accept_hostkey: true
-#    dest: '{{ project_folder }}'
-#    clone: true
-#    force: yes
-#    update: yes
-#    repo: '{{ repo }}'
-#    version: vagrant
-#
-#- name: Copy parameter.yml
-#  copy:
-#    src: '{{ project_folder }}/app/config/parameters.yml.dist'
-#    remote_src: yes
-#    dest: '{{ project_folder }}/app/config/parameters.yml'
-#    force: no
-#
-#- name: Copy maxibooking.env
-#  copy:
-#    src: '{{ project_folder }}/app/config/clients/maxibooking.env.dist'
-#    remote_src: yes
-#    dest: '{{ project_folder }}/app/config/clients/maxibooking.env'
-#    force: no
-#
-#- name: Copy database.env
-#  copy:
-#    src:  '{{ project_folder }}/app/config/database.env.dist'
-#    remote_src: yes
-#    dest: '{{ project_folder }}/app/config/database.env'
-#    force: no
-#
-#- name: Copy secrets.env
-#  copy:
-#    src:  '{{ project_folder }}/app/config/secrets.yml.dist'
-#    remote_src: yes
-#    dest: '{{ project_folder }}/app/config/secrets.yml'
-#    force: no
-#
-#- name: Composer install
-#  composer:
-#    command: install
-#    working_dir: '{{ project_folder }}'
-#    optimize_autoloader: true
-#    global_command: false
-#    no_dev: false
-#
-#- name: Bower Install
-#  bower:
-#    path: '{{ project_folder }}'
+# Не учитывается окружение. Все делаем пока в dev
+- name: Folder
+  file:
+    path: /var/www/mbh
+    state: directory
+    mode: 0755
+    owner: vagrant
+
+- name: Git pull
+  git:
+    accept_hostkey: true
+    dest: '{{ project_folder }}'
+    clone: true
+    force: yes
+    update: yes
+    repo: '{{ repo }}'
+    version: vagrant
+
+- name: Copy Parameters
+  copy:
+    src: '{{item.src}}'
+    dest: '{{item.dest}}'
+    remote_src: yes
+  with_items:
+    - { src: '{{ project_folder }}/app/config/parameters.yml.dist', dest: '{{ project_folder }}/app/config/parameters.yml'}
+    - { src: '{{ project_folder }}/app/config/clients/maxibooking.env.dist' , dest: '{{ project_folder }}/app/config/clients/maxibooking.env'}
+    - { src: '{{ project_folder }}/app/config/database.env.dist' , dest: '{{ project_folder }}/app/config/database.env'}
+    - { src:  '{{ project_folder }}/app/config/secrets.yml.dist', dest: '{{ project_folder }}/app/config/secrets.yml' }
+
+
+- name: Composer install
+  composer:
+    command: install
+    working_dir: '{{ project_folder }}'
+    optimize_autoloader: true
+    global_command: false
+    no_dev: false
+
+- name: Bower Install
+  bower:
+    path: '{{ project_folder }}'
 
 - name: Load Fixtures
   shell: 'php console {{item}}'
@@ -61,4 +46,7 @@
     chdir: '{{project_folder}}/bin'
   with_items:
     - 'assets:install --symlink'
+    - 'fos:js-routing:dump'
+    - 'bazinga:js-translation:dump'
     - 'assetic:dump'
+    - 'doctrine:mongodb:fixtures:load --no-interaction'
