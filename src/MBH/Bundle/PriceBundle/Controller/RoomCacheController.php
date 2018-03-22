@@ -50,14 +50,14 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
      */
     public function graphAction(Request $request)
     {
-
         $generator = $this->get('mbh.room.cache.graph.generator');
 
         return [
-            'data' => $generator->generate($request, $this->hotel),
-            'begin' => $generator->getBegin(),
-            'end' => $generator->getEnd(),
-            'error' => $generator->getError()
+            'data'      => $generator->generate($request, $this->hotel),
+            'begin'     => $generator->getBegin(),
+            'end'       => $generator->getEnd(),
+            'error'     => $generator->getError(),
+            'extraData' => $generator->extraData()
         ];
     }
 

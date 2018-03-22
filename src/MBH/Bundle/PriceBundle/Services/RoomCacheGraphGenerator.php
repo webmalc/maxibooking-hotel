@@ -240,4 +240,57 @@ class RoomCacheGraphGenerator
 
         return 0;
     }
+
+    /**
+     * Возвращает массив с количесвом свободных номеров на дату [leftRooms]
+     * и кол-вом заездов [needArrivals], расчитываемым по:
+     * "разница между кол-вом не забронированных номеров на текущую дату и кол-вом не забронированных номеров на предыдущую дату
+     *  примечание: если на предыдущую дату номера в продажу не выставлены, то их количество приравнивается к 0"
+     *
+     * @return array
+     */
+    public function extraData()
+    {
+        if (empty($this->getDates()) || empty($this->data)) {
+            throw new \LogicException('Missing data');
+        }
+
+        $extraData = [];
+        foreach ($this->getRoomTypes() as $roomTypeKey => $roomTypeData) {
+            foreach ($this->dates as $dateKey => $dateData) {
+                if (isset($this->data[$roomTypeKey][$dateKey])) {
+                    $currentRoom = $this->data[$roomTypeKey][$dateKey];
+                    $currentDate = clone $currentRoom['date'];
+                    $oneDayAgo = $currentDate->modify('-1 day');
+
+                    if (!isset($this->data[$roomTypeKey][$oneDayAgo->format('d.m.Y')])) {
+                        $room = $this->dm->getRepository('MBHPriceBundle:RoomCache')
+                            ->findOneByDate($oneDayAgo, $roomTypeData);
+                    } else {
+                        $room = $this->data[$roomTypeKey][$oneDayAgo->format('d.m.Y')];
+                    }
+
+                    if (empty($room)) {
+                        $oneDayAgoLeftRooms = 0;
+                    } elseif ($room instanceof \MBH\Bundle\PriceBundle\Document\RoomCache) {
+                        $oneDayAgoLeftRooms = $room->getLeftRooms();
+                    } else {
+                        $oneDayAgoLeftRooms = $room['leftRooms'];
+                    }
+
+                    $leftRooms = $currentRoom['leftRooms'];
+                    $needArrivals = $leftRooms - $oneDayAgoLeftRooms;
+                } else {
+                    $leftRooms = 0;
+                    $needArrivals = 0;
+                }
+                $extraData[$roomTypeKey][$dateKey] = [
+                    'leftRooms'    => $leftRooms,
+                    'needArrivals' => $needArrivals,
+                ];
+            }
+        }
+
+        return $extraData;
+    }
 }
