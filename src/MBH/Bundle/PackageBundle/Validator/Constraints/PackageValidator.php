@@ -23,7 +23,6 @@ class PackageValidator extends ConstraintValidator
     /**
      * @param \MBH\Bundle\PackageBundle\Document\Package $package
      * @param Constraint $constraint
-     * @return bool
      */
     public function validate($package, Constraint $constraint)
     {
@@ -36,9 +35,7 @@ class PackageValidator extends ConstraintValidator
         if ($package->getIsCheckOut() && !$package->getIsCheckIn()) {
             $this->context->addViolation($constraint->checkOutMessage);
         }
-        if (($package->getIsCheckOut() || $package->getIsCheckIn()) && !$package->getAccommodation()) {
-            $this->context->addViolation($constraint->checkInOutMessage);
-        }
+
         $special = $package->getSpecial();
 
         if ($special) {

@@ -4,7 +4,20 @@
             <div class="modal-header">
                 <h4 class="modal-title">{{ 'modal.form.delete.reasons.confirmation'|trans({}, 'MBHPackageBundle') }}</h4>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body">
+                <input type="hidden" id="delete-modal-entity-id">
+                <div id="delete-modal-form-container">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    {{ 'modal.form.delete.reasons.close'|trans({}, 'MBHPackageBundle') }}
+                </button>
+                <button type="submit" id="package-delete-modal-button" class="btn btn-danger">
+                    {{ 'modal.form.delete.reasons.delete'|trans({}, 'MBHPackageBundle') }}
+                </button>
+            </div>
         </div>
     </div>
 </div>

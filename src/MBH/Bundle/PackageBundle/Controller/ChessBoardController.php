@@ -163,32 +163,6 @@ class ChessBoardController extends BaseController
     }
 
     /**
-     * @Method({"DELETE"})
-     * @Route("/packages/{id}", name="chessboard_remove_package", options={"expose"=true})
-     * @param Package $package
-     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', package) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
-     * @return JsonResponse
-     */
-    public function removePackageAction(Package $package)
-    {
-        $messageFormatter = $this->get('mbh.chess_board.message_formatter');
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
-            throw $this->createNotFoundException();
-        }
-        try {
-            $this->dm->remove($package);
-            $this->dm->flush();
-        } catch (\Exception $e) {
-            $message = $this->get('translator')->trans($e->getMessage());
-            $messageFormatter->addErrorMessage($e->getMessage());
-            $this->get('logger')->alert($message);
-        }
-        $messageFormatter->addSuccessfulMessage('controller.chessboard.package_remove.success');
-
-        return new JsonResponse(json_encode($messageFormatter->getMessages()));
-    }
-
-    /**
      * @Method({"PUT"})
      * @Route("/packages/{id}", name="concise_package_update", options={"expose"=true})
      * @param Request $request
