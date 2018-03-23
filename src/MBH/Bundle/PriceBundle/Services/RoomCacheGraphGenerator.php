@@ -312,6 +312,8 @@ class RoomCacheGraphGenerator
                 /** @var \MBH\Bundle\PriceBundle\Document\Restriction $restriction */
                 foreach ($restrictions as $restriction) {
                     $restDate = $restriction->getDate();
+                    $restDateAsStr = $restDate->format('d.m.Y');
+
                     $currentDate = clone $restriction->getDate();
                     $oneDayAgo = $currentDate->modify('-1 day');
 
@@ -327,9 +329,9 @@ class RoomCacheGraphGenerator
                         $yesterdayLeftRoom = 0;
                     }
 
-                    if (isset($roomCache[$restDate->format('d.m.Y')])) {
-                        $leftRooms = $roomCache[$restDate->format('d.m.Y')]->getLeftRooms();
-                        $needArrivals = $roomCache[$restDate->format('d.m.Y')]->getLeftRooms() - $yesterdayLeftRoom;
+                    if (isset($roomCache[$restDateAsStr])) {
+                        $leftRooms = $roomCache[$restDateAsStr]->getLeftRooms();
+                        $needArrivals = $roomCache[$restDateAsStr]->getLeftRooms() - $yesterdayLeftRoom;
                     } else {
                         $leftRooms = 0;
                         $needArrivals = 0;
@@ -343,19 +345,19 @@ class RoomCacheGraphGenerator
                         $isNecessary[$roomTypeKey][$date->format('d.m.Y')][$tariff][] = $needArrivals < 0 ? 0 : $needArrivals;
                     }
 
-                    if (isset($isNecessary[$roomTypeKey][$restDate->format('d.m.Y')][$tariff])) {
-                        $isNecessarySum = array_sum($isNecessary[$roomTypeKey][$restDate->format('d.m.Y')][$tariff]);
+                    if (isset($isNecessary[$roomTypeKey][$restDateAsStr][$tariff])) {
+                        $isNecessarySum = array_sum($isNecessary[$roomTypeKey][$restDateAsStr][$tariff]);
                     } else {
                         $isNecessarySum = 0;
                     }
 
-                    $rawData[$roomTypeKey][$restDate->format('d.m.Y')] = [
+                    $rawData[$roomTypeKey][$restDateAsStr] = [
                         'leftRooms'    => $leftRooms,
                         'needArrivals' => $needArrivals,
                     ];
 
                     $rawData[$roomTypeKey]['tariffs'][$tariff]['info'] = $tariffData;
-                    $rawData[$roomTypeKey]['tariffs'][$tariff][$restDate->format('d.m.Y')] = [
+                    $rawData[$roomTypeKey]['tariffs'][$tariff][$restDateAsStr] = [
                         'isNecessary' => $isNecessarySum,
                         'diff'        => $leftRooms - $isNecessarySum,
                     ];
@@ -365,7 +367,6 @@ class RoomCacheGraphGenerator
             foreach ($this->getDates() as $dateKey => $dateObj) {
                 if (array_key_exists($dateKey, $rawData[$roomTypeKey])) {
                     $extraData[$roomTypeKey][$dateKey] = $rawData[$roomTypeKey][$dateKey];
-                    $extraData[$roomTypeKey]['tariffs'] = $rawData[$roomTypeKey]['tariffs'];
                 } else {
                     $extraData[$roomTypeKey][$dateKey] = [
                         'leftRooms'    => 0,
@@ -373,6 +374,7 @@ class RoomCacheGraphGenerator
                     ];
                 }
             }
+            $extraData[$roomTypeKey]['tariffs'] = $rawData[$roomTypeKey]['tariffs'];
         }
 
         return $extraData;
