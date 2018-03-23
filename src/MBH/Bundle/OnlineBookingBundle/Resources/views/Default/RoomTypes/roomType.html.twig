@@ -45,6 +45,9 @@
                     {% if roomType.category.descriptionurl is defined and roomType.category.descriptionurl is not empty %}
                         <a class="room_link" href="{{ roomType.category.descriptionUrl }}"
                            target="_blank">{{ roomType.category.name }}</a>
+                    {% elseif roomType.descriptionurl is defined and roomType.descriptionurl is not empty  %}
+                        <a class="room_link" href="{{ roomType.descriptionUrl }}"
+                           target="_blank">{{ roomType.name }}</a>
                     {% else %}
                         {{ roomType.category.fullTitle??roomType.fullTitle }}
                     {% endif %}
