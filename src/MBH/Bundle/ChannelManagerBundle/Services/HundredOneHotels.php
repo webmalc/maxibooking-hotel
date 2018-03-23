@@ -437,12 +437,12 @@ class HundredOneHotels extends Base
                 ) {
                     $result = $this->createOrder($orderInfo, null);
                     $order = $result;
-//                    $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'new');
+                    $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'new');
                 } elseif ($orderInfo->getLastAction() == 'modified'
                     && $order && $order->getChannelManagerEditDateTime() != $orderInfo->getModifiedDate()
                 ) {
                     $result = $this->createOrder($orderInfo, $order);
-//                    $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'edit');
+                    $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'edit');
                 } elseif ($orderInfo->getLastAction() == 'canceled' && $order) {
                     $order->setChannelManagerStatus('cancelled');
                     $this->dm->persist($order);
@@ -453,15 +453,15 @@ class HundredOneHotels extends Base
                     $result = true;
                 };
 
-//                if (!$order) {
-//                    if ($orderInfo->getLastAction() === 'modified') {
-//                        $result = $this->createOrder($orderInfo, null);
-//                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, true));
-//                    }
-//                    if ($orderInfo->getLastAction() === 'cancelled') {
-//                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, false));
-//                    }
-//                }
+                if (!$order) {
+                    if ($orderInfo->getLastAction() === 'modified') {
+                        $result = $this->createOrder($orderInfo, null);
+                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, true));
+                    }
+                    if ($orderInfo->getLastAction() === 'cancelled') {
+                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, false));
+                    }
+                }
             };
         }
 
@@ -493,7 +493,6 @@ class HundredOneHotels extends Base
             $order->setDeletedAt(null);
         }
 
-        $this->dm->clear(Package::class);
         $order->setChannelManagerType(self::CHANNEL_MANAGER_TYPE)
             ->setChannelManagerId($orderInfo->getBookingId())
             ->setMainTourist($orderInfo->getPayer())

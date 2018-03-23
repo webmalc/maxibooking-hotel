@@ -22,14 +22,13 @@ function priceSeparator(amount) {
 
 jQuery(document).ready(function() {
     var resize = function() {
-        // console.log(document.body.scrollHeight);
-        // console.log($( 'body' ).height());
         window.parent.postMessage({
             type: 'mbh',
                 action: 'resize',
                 height: $('body').height()
             }, "*");
         };
+
         resize();
         setInterval(function() {
             resize();
@@ -149,6 +148,28 @@ jQuery(document).ready(function() {
                     jQuery('.mbh-results-tourists-select').each(function() {
                         show(jQuery(this).closest('tr'));
                     });
+
+                    (function setFancyBoxOffset() {
+                        var frameOffset = 0;
+                        window.addEventListener('message', function(event) {
+                            var parentWindowData = event.data;
+                            if (parentWindowData.type === 'onScroll') {
+                                frameOffset = parentWindowData.frameTopOffset;
+                            }
+                        });
+                        $('.fancybox').fancybox({
+                            'beforeLoad': function() {
+                                var fancyTopOffset = screen.height / 2 - frameOffset - document.body.scrollHeight / 2;
+                                var offsetLimit = document.body.scrollHeight / 2 - screen.height / 2
+                                if (fancyTopOffset > offsetLimit) {
+                                    fancyTopOffset = limit;
+                                } else if (fancyTopOffset * (-1)  > offsetLimit) {
+                                    fancyTopOffset = (-1) * offsetLimit;
+                                }
+                                $('.fancybox-placeholder').css('top', fancyTopOffset);
+                            }
+                        });
+                    })();
                 }());
 
                 //colorize tr
