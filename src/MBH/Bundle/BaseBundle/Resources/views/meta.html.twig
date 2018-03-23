@@ -75,6 +75,13 @@
                     canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
                     showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }},
                     currentHotel: "{{ get_current_hotel().id }}"
+                };
+
+                var additionalSettings = JSON.parse('{{ get_front_settings()|raw }}');
+                for (var propertyName in additionalSettings) {
+                    if (additionalSettings.hasOwnProperty(propertyName)) {
+                        mbh[propertyName] = additionalSettings[propertyName];
+                    }
                 }
             </script>
             {{ app.session.remove('mbh.justLogin') }}

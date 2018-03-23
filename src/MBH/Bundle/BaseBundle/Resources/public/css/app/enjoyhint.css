@@ -19,8 +19,8 @@
 
 @font-face {
     font-family: casino_handregular;
-    src: url(/web/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.eot);
-    src: url(/web/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.eot?#iefix) format('embedded-opentype'), url(/web/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.woff) format('woff'), url(/web/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.ttf) format('truetype'), url(/web/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.svg#casino_handregular) format('svg');
+    src: url(/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.eot);
+    src: url(/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.eot?#iefix) format('embedded-opentype'), url(/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.woff) format('woff'), url(/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.ttf) format('truetype'), url(/assets/vendor/enjoyhint/src/Casino_Hand/casino_hand-webfont.svg#casino_handregular) format('svg');
     font-weight: 400;
     font-style: normal
 }
