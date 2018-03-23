@@ -14,7 +14,7 @@
     force: yes
     update: yes
     repo: '{{ repo }}'
-    version: vagrant
+    version: master
 
 - include_role:
     name: project_setup

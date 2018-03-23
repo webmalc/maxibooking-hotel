@@ -18,6 +18,8 @@ app/config/database.env
 /var/clients/*
 !.gitkeep
 
+.ansible/*.retry
+
 
 
 /src/MBH/Bundle/TestBundle
@@ -136,4 +138,4 @@ scripts/custom/
 .vagrant/
 *-console.log
 
-.ansible/deploy_vars.yml
+.ansible/default_vars.yml

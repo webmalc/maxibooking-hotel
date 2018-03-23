@@ -4,8 +4,7 @@
   remote_user: vagrant
   become: false
   roles:
-    - project_setup
+    - deploy
   vars_files:
     - default_vars.yml
-    - deploy_vars.yml
 

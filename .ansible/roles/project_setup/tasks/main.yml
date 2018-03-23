@@ -9,7 +9,6 @@
     - { src: '{{ project_folder }}/app/config/database.env.dist' , dest: '{{ project_folder }}/app/config/database.env'}
     - { src:  '{{ project_folder }}/app/config/secrets.yml.dist', dest: '{{ project_folder }}/app/config/secrets.yml' }
 
-
 - name: Composer install
   composer:
     command: install
@@ -32,3 +31,4 @@
     - 'bazinga:js-translation:dump'
     - 'assetic:dump'
     - 'doctrine:mongodb:fixtures:load --no-interaction'
+  when: load_fixtures
