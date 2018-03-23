@@ -136,6 +136,7 @@ gtags
 scripts/custom/
 
 .vagrant/
+Vagrantfile
 *-console.log
 
 .ansible/default_vars.yml
