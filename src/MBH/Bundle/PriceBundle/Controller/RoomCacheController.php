@@ -57,7 +57,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             'begin'     => $generator->getBegin(),
             'end'       => $generator->getEnd(),
             'error'     => $generator->getError(),
-            'extraData' => $generator->extraData()
+            'extraData' => $generator->extraData($request)
         ];
     }
 

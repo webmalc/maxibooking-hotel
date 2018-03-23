@@ -32,7 +32,11 @@
                 <tbody>
                     {% for i in 1..data.getMaxTotalRooms(roomType) %}
                         <tr>
-                            <td class="text-center text-muted mbh-graph-cell"><small>{{ loop.revindex }}</small></td>
+                            <td class="text-center text-muted mbh-graph-cell">
+                                <small>
+                                    <span>{{ loop.revindex }}</span>
+                                </small>
+                            </td>
                             {% for date in data.dates %}
                                 {% set info = data.getInfo(roomType, date) %}
                                 {% set cellClass = null %}
@@ -97,6 +101,36 @@
                             </td>
                         {% endfor %}
                     </tr>
+                    {% if extra.tariffs is defined %}
+                        {% for tariff in extra.tariffs %}
+                            <tr class="bg-info">
+                                <td colspan="{{ data.dates|length + 1 }}">
+                                    <small>{{ tariff.info.getFullTitle }}</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center mbh-graph-cell">
+                                    <small>{{ 'price.resources.views.roomcache.graph.calculation_rooms'|trans }}</small>
+                                </td>
+                                {% for date in data.dates %}
+                                    <td class="text-center mbh-graph-cell">
+                                        <small>{{ tariff[date|date('d.m.Y')] is defined ? tariff[date|date('d.m.Y')].isNecessary : '0' }}</small>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td class="text-center mbh-graph-cell">
+                                    <small>{{ 'price.resources.views.roomcache.graph.diff'|trans }}</small>
+                                </td>
+                                {% for date in data.dates %}
+                                    {% set diff = tariff[date|date('d.m.Y')] is defined ? tariff[date|date('d.m.Y')].diff : 0 %}
+                                    <td class="text-center mbh-graph-cell{{ diff < 0 ? ' mbh-graph-cell-danger':'' }}">
+                                        <small>{{ diff }}</small>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>

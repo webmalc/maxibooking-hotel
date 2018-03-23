@@ -13,6 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class RoomCacheGraphGenerator
 {
+    private const DAYS_FOR_RESTRICTION = 7;
     /**
      * @var array
      */
@@ -198,7 +199,7 @@ class RoomCacheGraphGenerator
                 'packageCount' => $c->getPackagesCount(),
                 'leftRooms' => $c->getLeftRooms(),
                 'totalRooms' => $c->getTotalRooms(),
-                'broken' => false
+                'broken' => false,
             ];
 
             if (!isset($this->maxTotalRooms[$r]) || $c->getTotalRooms() > $this->maxTotalRooms[$r]) {
@@ -242,19 +243,146 @@ class RoomCacheGraphGenerator
     }
 
     /**
-     * Возвращает массив с количесвом свободных номеров на дату [leftRooms]
+     * Возвращает массив
+     * 1) с количесвом свободных номеров на дату [leftRooms]
      * и кол-вом заездов [needArrivals], расчитываемым по:
      * "разница между кол-вом не забронированных номеров на текущую дату и кол-вом не забронированных номеров на предыдущую дату
      *  примечание: если на предыдущую дату номера в продажу не выставлены, то их количество приравнивается к 0"
+     * 2) дополнительно к №1 производится расчет необходимого кол-ва заездов и разница между свободными номерами и необходимым кол0вом заездов
+     *
+     * (issue #1432)
      *
      * @return array
+     * @throws \LogicException
      */
-    public function extraData()
+    public function extraData(Request $request)
     {
         if (empty($this->getDates()) || empty($this->data)) {
             throw new \LogicException('Missing data');
         }
 
+        $tariffs = $request->get('tariffs');
+
+        if (empty($tariffs)) {
+            return $this->simpleExtraData();
+        } else {
+            return $this->extraDataWithTariff($tariffs);
+        }
+    }
+
+    /**
+     * @param $tariffs
+     * @return array
+     */
+    private function extraDataWithTariff($tariffs)
+    {
+        $begin = clone $this->getBegin();
+        $begin->modify('-' . self::DAYS_FOR_RESTRICTION . ' day');
+
+        $extraData = [];
+
+        $rawData = [];
+
+        $isNecessary = [];
+
+        foreach ($this->getRoomTypes() as $roomTypeKey => $roomTypeData) {
+
+            $roomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')
+                ->fetch(
+                    $begin,
+                    $this->getEnd(),
+                    $this->hotel,
+                    [$roomTypeKey],
+                    false,
+                    true
+                );
+
+            $roomCache = $roomCache[$roomTypeKey][0];
+
+            foreach ($tariffs as $tariff) {
+
+                $tariffData = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                    ->find($tariff);
+
+                $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')
+                    ->fetchQueryBuilder($begin, $this->end, $this->hotel, [$roomTypeKey], [$tariff])
+                    ->getQuery()
+                    ->toArray();
+
+                /** @var \MBH\Bundle\PriceBundle\Document\Restriction $restriction */
+                foreach ($restrictions as $restriction) {
+                    $restDate = $restriction->getDate();
+                    $currentDate = clone $restriction->getDate();
+                    $oneDayAgo = $currentDate->modify('-1 day');
+
+                    $minStay = $restriction->getMinStay();
+
+                    if (!is_null($restriction->getMinStayArrival())) {
+                        $minStay = $restriction->getMinStayArrival();
+                    }
+
+                    if (isset($roomCache[$oneDayAgo->format('d.m.Y')])) {
+                        $yesterdayLeftRoom = $roomCache[$oneDayAgo->format('d.m.Y')]->getLeftRooms();
+                    } else {
+                        $yesterdayLeftRoom = 0;
+                    }
+
+                    if (isset($roomCache[$restDate->format('d.m.Y')])) {
+                        $leftRooms = $roomCache[$restDate->format('d.m.Y')]->getLeftRooms();
+                        $needArrivals = $roomCache[$restDate->format('d.m.Y')]->getLeftRooms() - $yesterdayLeftRoom;
+                    } else {
+                        $leftRooms = 0;
+                        $needArrivals = 0;
+                    }
+
+                    $beginPeriod = clone $restDate;
+                    $beginPeriod->modify('+1 day');
+
+                    $period = new \DatePeriod($beginPeriod, new \DateInterval('P1D'), $minStay - 2);
+                    foreach ($period as $date) {
+                        $isNecessary[$roomTypeKey][$date->format('d.m.Y')][$tariff][] = $needArrivals < 0 ? 0 : $needArrivals;
+                    }
+
+                    if (isset($isNecessary[$roomTypeKey][$restDate->format('d.m.Y')][$tariff])) {
+                        $isNecessarySum = array_sum($isNecessary[$roomTypeKey][$restDate->format('d.m.Y')][$tariff]);
+                    } else {
+                        $isNecessarySum = 0;
+                    }
+
+                    $rawData[$roomTypeKey][$restDate->format('d.m.Y')] = [
+                        'leftRooms'    => $leftRooms,
+                        'needArrivals' => $needArrivals,
+                    ];
+
+                    $rawData[$roomTypeKey]['tariffs'][$tariff]['info'] = $tariffData;
+                    $rawData[$roomTypeKey]['tariffs'][$tariff][$restDate->format('d.m.Y')] = [
+                        'isNecessary' => $isNecessarySum,
+                        'diff'        => $leftRooms - $isNecessarySum,
+                    ];
+                }
+            }
+
+            foreach ($this->getDates() as $dateKey => $dateObj) {
+                if (array_key_exists($dateKey, $rawData[$roomTypeKey])) {
+                    $extraData[$roomTypeKey][$dateKey] = $rawData[$roomTypeKey][$dateKey];
+                    $extraData[$roomTypeKey]['tariffs'] = $rawData[$roomTypeKey]['tariffs'];
+                } else {
+                    $extraData[$roomTypeKey][$dateKey] = [
+                        'leftRooms'    => 0,
+                        'needArrivals' => 0,
+                    ];
+                }
+            }
+        }
+
+        return $extraData;
+    }
+
+    /**
+     * @return array
+     */
+    private function simpleExtraData()
+    {
         $extraData = [];
         foreach ($this->getRoomTypes() as $roomTypeKey => $roomTypeData) {
             foreach ($this->dates as $dateKey => $dateData) {
@@ -290,7 +418,6 @@ class RoomCacheGraphGenerator
                 ];
             }
         }
-
         return $extraData;
     }
 }
