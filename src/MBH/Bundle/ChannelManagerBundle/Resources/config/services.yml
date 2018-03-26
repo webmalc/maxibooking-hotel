@@ -78,6 +78,11 @@ services:
         arguments: ['@service_container']
         shared: false
 
+    mbh.channel_manager.order_handler:
+        class: MBH\Bundle\ChannelManagerBundle\Services\OrderHandler
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.package.search', '@translator', '@validator']
+
+
     mbh.channel_manager.expedia_notification_order_info:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaNotificationOrderInfo
         arguments: ['@service_container']
@@ -136,7 +141,7 @@ services:
 
     mbh.channel_manager.trip_advisor_response_compiler:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseCompiler
-      arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%', '%locale%', '@doctrine_mongodb.odm.document_manager', '@vich_uploader.templating.helper.uploader_helper', '@mbh.currency', '%locale.currency%', '@mbh.channel_manager.order_handler']
+      arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%online_form_result_url%', '%locale%', '@doctrine_mongodb.odm.document_manager', '@vich_uploader.templating.helper.uploader_helper', '@mbh.currency', '@mbh.channel_manager.order_handler']
 
     mbh.channel_manager.trip_advisor_response_data_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorDataFormatter

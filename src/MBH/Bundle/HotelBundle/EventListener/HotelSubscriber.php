@@ -7,15 +7,20 @@ use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Common\EventSubscriber;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorHelper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Psr\Container\ContainerInterface;
 
 class HotelSubscriber implements EventSubscriber
 {
     /** @var  BillingApi */
     private $billing;
+    /** @var  TripAdvisorHelper */
+    private $container;
 
-    public function __construct(BillingApi $billingApi, Tripadv) {
-        $this->billing = $billingApi;
+    public function __construct(ContainerInterface $container) {
+        $this->container = $container;
+        $this->billing = $container->get('mbh.billing.api');
     }
 
     /**
@@ -42,12 +47,7 @@ class HotelSubscriber implements EventSubscriber
             if ($args->hasChangedField('cityId')) {
                 $this->updateHotelAddressData($hotel);
             }
-            $config = $args->getDocumentManager()
-                ->getRepository('MBHChannelManagerBundle:TripAdvisorConfig')
-                ->findOneBy(['hotel' => $hotel]);
-            if (!is_null($config)) {
-                $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($config);
-            }
+            $this->updateTripadvisorConfigOnMbhs($args, $hotel);
         }
     }
 
@@ -75,12 +75,24 @@ class HotelSubscriber implements EventSubscriber
     {
         $document = $args->getDocument();
         if ($document instanceof Hotel) {
-            $config = $args->getDocumentManager()
-                ->getRepository('MBHChannelManagerBundle:TripAdvisorConfig')
-                ->findOneBy(['hotel' => $document]);
-            $config->setIsEnabled(false);
-            if (!is_null($config)) {
-                $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($config);
+            $this->updateTripadvisorConfigOnMbhs($args, $document, true);
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs|PreUpdateEventArgs $args
+     * @param $hotel
+     * @param bool $isRemove
+     */
+    public function updateTripadvisorConfigOnMbhs(LifecycleEventArgs $args, $hotel, bool $isRemove = false): void
+    {
+        $config = $args->getDocumentManager()
+            ->getRepository('MBHChannelManagerBundle:TripAdvisorConfig')
+            ->findOneBy(['hotel' => $hotel]);
+        if (!is_null($config)) {
+            $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($config);
+            if ($isRemove) {
+                $config->setIsEnabled(false);;
             }
         }
     }

@@ -16,12 +16,6 @@ services:
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
-    mbh.hotel_subscriber:
-        class: MBH\Bundle\HotelBundle\EventListener\HotelSubscriber
-        arguments: ['@mbh.billing.api']
-        tags:
-            - {name: doctrine_mongodb.odm.event_subscriber, connection: default }
-
     mbh.hotel.room_type.subscriber:
             class: MBH\Bundle\HotelBundle\EventListener\RoomTypeSubscriber
             tags:

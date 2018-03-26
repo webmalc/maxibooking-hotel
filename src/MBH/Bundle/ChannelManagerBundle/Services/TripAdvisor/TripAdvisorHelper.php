@@ -7,11 +7,11 @@ use GuzzleHttp\Client;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\ServiceData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffService;
 use Symfony\Component\Validator\ConstraintViolation;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use Symfony\Component\Translation\TranslatorInterface;
 use MBH\Bundle\CashBundle\Document\CardType;
@@ -58,9 +58,9 @@ class TripAdvisorHelper
         $hotelContactInformation = $hotel->getContactInformation();
 
         !empty($hotel->getInternationalStreetName()) ?: $requiredHotelData[] = 'form.hotelExtendedType.international_street_name.help';
-        !empty($hotel->getRegion()) ?: $requiredHotelData[] = 'form.hotelExtendedType.region';
-        !empty($hotel->getCountry()) ?: $requiredHotelData[] = 'form.hotelExtendedType.country';
-        !empty($hotel->getCity()) ?: $requiredHotelData[] = 'form.hotelExtendedType.city';
+        !empty($hotel->getRegionId()) ?: $requiredHotelData[] = 'form.hotelExtendedType.region';
+        !empty($hotel->getCountryTld()) ?: $requiredHotelData[] = 'form.hotelExtendedType.country';
+        !empty($hotel->getCityId()) ?: $requiredHotelData[] = 'form.hotelExtendedType.city';
         if (empty($hotelContactInformation)) {
             $requiredHotelData[] = 'form.hotel_contact_information.contact_info.group';
         } else {

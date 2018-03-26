@@ -194,6 +194,7 @@ form.trip_advisor_type.hotel_payment_policy.placeholder: Данные о пла�
 form.trip_advisor_type.terms_and_confitions.label: Общие условия
 form.trip_advisor_type.terms_and_confitions.help: Общие положение и условия
 form.trip_advisor_type.payment_type.label: Тип оплаты
+form.trip_advisor_type.payment_type.label: 'Тип парковки'
 controller.tripadvisor_controller.settings_saved_success: 'Настройки успешно сохранены.'
 controller.tripadvisor_controller.config_not_found: Основные настройки не сохранены
 controller.trip_advisor_controller.unfilled_hotel_data.error: 'Для настройки синхронизации с TripAdvisor необходимо заполнить следующие поля в настройках отеля: %fields%'

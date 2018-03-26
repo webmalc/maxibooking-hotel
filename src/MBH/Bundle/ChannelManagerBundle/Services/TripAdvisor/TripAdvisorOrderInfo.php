@@ -259,7 +259,7 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsNew(?Order $order): bool
+    public function isHandledAsNew(?Order $order): bool
     {
         return true;
     }
@@ -269,7 +269,7 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsModified(?Order $order): bool
+    public function isHandledAsModified(?Order $order): bool
     {
         return false;
     }
@@ -279,7 +279,7 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsCancelled(?Order $order): bool
+    public function isHandledAsCancelled(?Order $order): bool
     {
         return false;
     }

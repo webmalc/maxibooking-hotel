@@ -273,7 +273,7 @@ class Extension extends \Twig_Extension
      */
     public function isRussianClient()
     {
-        return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+        return $this->container->get('mbh.client_manager')->getClient()->getCountry() === Country::RUSSIA_TLD;
     }
 
     /**

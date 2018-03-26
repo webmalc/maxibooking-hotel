@@ -88,8 +88,6 @@ class TripAdvisorResponseCompiler
 
     private $confirmationPage;
     private $domainName;
-    private $arrivalTime;
-    private $departureTime;
     private $onlineFormUrl;
     private $locale;
     /** @var  DocumentManager $dm */
@@ -98,34 +96,27 @@ class TripAdvisorResponseCompiler
     private $uploaderHelper;
     /** @var  Currency $currencyHandler */
     private $currencyHandler;
-    private $localCurrency;
     /** @var  OrderHandler $channelManagerHelper */
     private $orderHandler;
 
     public function __construct(
         $confirmationPageUrl,
         $domainName,
-        $arrivalTime,
-        $departureTime,
         $onlineFormUrl,
         $locale,
         DocumentManager $dm,
         UploaderHelper $uploaderHelper,
         Currency $currencyHandler,
-        $localCurrency,
         OrderHandler $orderHandler
     )
     {
         $this->confirmationPage = $confirmationPageUrl;
         $this->domainName = $domainName;
-        $this->arrivalTime = $arrivalTime;
-        $this->departureTime = $departureTime;
         $this->onlineFormUrl = $onlineFormUrl;
         $this->locale = $locale;
         $this->dm = $dm;
         $this->uploaderHelper = $uploaderHelper;
         $this->currencyHandler = $currencyHandler;
-        $this->localCurrency = $localCurrency;
         $this->orderHandler = $orderHandler;
     }
 
@@ -688,8 +679,8 @@ class TripAdvisorResponseCompiler
             'hotel_amenities' => $this->getHotelAmenities($hotel),
             'photos' => $this->getHotelPhotoData($hotel),
             'checkin_checkout_policy' => $hotel->getCheckinoutPolicy(),
-            'checkin_time' => $this->arrivalTime . ':00',
-            'checkout_time' => $this->departureTime . ':00',
+            'checkin_time' => $hotel->getPackageArrivalTime() . ':00',
+            'checkout_time' => $hotel->getPackageDepartureTime() . ':00',
             'hotel_smoking_policy' => ['standard' => [$hotel->getSmokingPolicy()], 'custom' => []],
             'parking_shuttle' => ['standard' => [184]]
         ];

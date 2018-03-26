@@ -71,6 +71,7 @@ class TripAdvisorType extends AbstractType
                 'choices' => $options['payment_types']
             ])
             ->add('parkingTypes', InvertChoiceType::class, [
+                'label' => 'form.trip_advisor_type.payment_type.label',
                 'choices' => $this->parkingTypes,
                 'multiple' => true
             ])

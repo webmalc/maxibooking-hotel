@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
 class ExpediaNotificationPackageInfo extends AbstractPackageInfo
@@ -63,7 +64,7 @@ class ExpediaNotificationPackageInfo extends AbstractPackageInfo
         return \DateTime::createFromFormat('Y-m-d', (string)$this->packageDataXMLElement->TimeSpan->attributes()['End']);
     }
 
-    public function getRoomType()
+    public function getRoomType(): RoomType
     {
         if (!$this->isRoomTypeInit) {
             $roomTypeId = (string)$this->packageDataXMLElement->RoomTypes->RoomType->attributes()['RoomTypeCode'];
