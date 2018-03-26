@@ -46,7 +46,7 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
             'Late check-out'  => ['name' => 'price.datafixtures.mongodb.servicedata.late_check-out', 'calcType' => 'day_percent', 'enabled' => true],
         ],
         'price.datafixtures.mongodb.servicedata.options' => [
-            'WiFi' => ['name' => 'WiFi', 'calcType' => 'per_night', 'enabled' => false],
+            'WiFi' => ['name' => 'price.datafixtures.mongodb.servicedata.wifi', 'calcType' => 'per_night', 'enabled' => false],
             'Internet' => ['name' => 'price.datafixtures.mongodb.servicedata.internet', 'calcType' => 'per_night', 'enabled' => false],
             'Parking space' => ['name' => 'price.datafixtures.mongodb.servicedata.parking', 'calcType' => 'per_night', 'enabled' => false],
             'Babycot' => ['name' => 'price.datafixtures.mongodb.servicedata.children_bed', 'calcType' => 'per_night', 'enabled' => false],
@@ -66,23 +66,29 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
         $trans = $this->container->get('translator');
+        $locales = $this->container->getParameter('mbh.languages');
+        $translationRepository = $manager->getRepository('GedmoTranslatable:Translation');
 
         foreach ($hotels as $hotel) {
             foreach (self::SERVICES as $catName => $services) {
                 $category = $manager->getRepository('MBHPriceBundle:ServiceCategory')->findOneBy([
                     'system' => true,
-                    'fullTitle' => $catName,
+                    'fullTitle' => $trans->trans($catName),
                     'hotel.id' => $hotel->getId()
-                ])
-                ;
+                ]);
 
                 if (empty($category)) {
                     $category = new ServiceCategory();
                     $category->setSystem(true)
                         ->setFullTitle($trans->trans($catName))
                         ->setHotel($hotel)
-                        ->setIsEnabled(true)
-                    ;
+                        ->setIsEnabled(true);
+
+                    foreach ($locales as $locale) {
+                        $translationRepository
+                            ->translate($category, 'fullTitle', $locale, $trans->trans($catName, [], null, $locale));
+                    }
+
                     $manager->persist($category);
                     $manager->flush();
                 }
@@ -92,8 +98,7 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
                         'system' => true,
                         'code' => $code,
                         'category.id' => $category->getId()
-                    ])
-                    ;
+                    ]);
 
                     if (empty($service)) {
                         $service = new Service();
@@ -111,6 +116,11 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
                         ;
                         $manager->persist($service);
                         $manager->flush();
+
+                        foreach ($locales as $locale) {
+                            $translationRepository
+                                ->translate($service, 'fullTitle', $locale, $trans->trans($title, [], null, $locale));
+                        }
                     }
                 }
             }

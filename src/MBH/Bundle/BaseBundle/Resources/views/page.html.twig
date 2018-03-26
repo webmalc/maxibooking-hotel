@@ -3,11 +3,13 @@
 {% block body %}
     {{ parent() }}
 
+    {% set dashboard_messages = dashboard_messages() %}
+
     <header class="main-header">
         <!-- Logo -->
         {% include 'MBHBaseBundle::logo.html.twig' %}
         <!-- Header Navbar -->
-        {% include 'MBHBaseBundle::navbar.html.twig' %}
+        {% include 'MBHBaseBundle::navbar.html.twig' with {'dashboard_messages': dashboard_messages} %}
     </header>
 
     {% if form is defined %}
@@ -23,9 +25,9 @@
     <div class="content-wrapper main-container">
 
         {% block print_hotel_logo %}
-            {% if selected_hotel() and selected_hotel().logo %}
+            {% if selected_hotel() and selected_hotel().logoImage %}
                 <div id="print-hotel-logo">
-                    <img class="grayscale" src="{{ asset(selected_hotel().logoUrl)|imagine_filter('thumb_95x80') }}"/>
+                    <img class="grayscale" src="{{ asset(vich_uploader_asset(selected_hotel().logoImage, 'imageFile')|imagine_filter('thumb_95x80') ) }}"/>
                 </div>
             {% endif %}
         {% endblock %}
@@ -78,6 +80,13 @@
             {% endblock %}
 
             {% include 'MBHBaseBundle:Partials:entityDeleteForm.html.twig' %}
+
+            {% include 'MBHBaseBundle::dashboardModal.html.twig' with {'dashboard_messages': dashboard_messages} %}
+            {% include '@MBHBase/supportModal.html.twig' %}
+            {% include '@MBHBase/welcomeModal.html.twig' %}
+            {% if app.environment == 'dev' %}
+                {% include '@MBHBase/addTipsModal.html.twig' %}
+            {% endif %}
 
             <div id="print-user-info">
                 <div class="row">

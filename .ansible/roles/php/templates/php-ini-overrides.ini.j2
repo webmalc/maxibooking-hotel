@@ -1,0 +1,15 @@
+emergency_restart_threshold = {{ item.emergency_restart_threshold }}
+emergency_restart_interval = {{ item.emergency_restart_interval }}
+process_control_timeout = {{ item.process_control_timeout }}
+#az-tune
+upload_max_filesize = {{ item.upload_max_filesize }}
+post_max_size = {{ item.post_max_size }}
+date.timezone = {{ item.date_timezone }}
+memory_limit = {{ item.memory_limit }}
+apc.enable_cli = {{ item.apc_enable_cli }}
+max_execution_time = {{ item.max_execution_time }}
+#http://stackoverflow.com/questions/12905404/symfony2-slow-initialization-time
+#http://symfony.com/doc/master/performance.html
+realpath_cache_size = {{ item.realpath_cache_size }}
+realpath_cache_ttl = {{ item.realpath_cache_ttl }}
+opcache.max_accelerated_files = {{ item.opcache_max_accelerated_files }}

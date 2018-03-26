@@ -2,54 +2,69 @@
 /**
  * CommandRunner consumer
  */
+
 namespace MBH\Bundle\BaseBundle\Task;
 
+use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Bridge\Monolog\Logger;
 use MBH\Bundle\BaseBundle\Lib\Task\LoggerTrait;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Process;
 
 class CommandRunner implements ConsumerInterface
 {
     use LoggerTrait;
 
-    /** @var KernelInterface */
     private $kernel;
-    
+
     public function __construct(Logger $logger, KernelInterface $kernel)
     {
-        $this->logger = $logger;
         $this->kernel = $kernel;
+        $this->logger = $logger;
     }
 
     public function execute(AMQPMessage $message)
     {
         try {
             $command = unserialize($message->body);
+            /** @var Command $command */
             $message = $command->getCommandParams();
-            $this->logStart($message);
+            $message['Recieved command'] = $command->getCommand();
+            $this->logStart($message, $command->getClient());
 
-            $application = new Application($this->kernel);
-            $application->setAutoExit(false);
+            $consoleFolder = $this->kernel->getRootDir().'/../bin';
+            $commandLine = $this->createCommandLine($command);
 
-            $input = new ArrayInput($message);
+            $this->logger->addRecord(Logger::INFO, 'Start command from command runner '.$commandLine);
+            $process = new Process(
+                $commandLine,
+                $consoleFolder,
+                [\AppKernel::CLIENT_VARIABLE => $command->getClient()],
+                null,
+                300
+            );
+            $command->isAsync() ? $process->start() : $process->run();
 
-            $output = !$command->isAsync() ? new BufferedOutput() : new NullOutput();
-            $application->run($input, $output);
-         
             if ($command->isLogOutput() && !$command->isAsync()) {
-                $content = $output->fetch();
-                $this->logString($content);
+                $logMessage = 'client '.$command->getClient();
+                $logMessage .= ' '.$process->getOutput();
+                $this->logString($logMessage);
             }
-
             $this->logCompete();
         } catch (\Exception $e) {
-            $this->logString('ERROR: ' . $e);
+            $this->logString('ERROR: '.$e);
         }
+    }
+
+    private function createCommandLine(Command $command): string
+    {
+        $params = '';
+        foreach ($command->getCommandParams() as $key => $value) {
+            $params .= " "."$key $value";
+        }
+
+        return 'php console '.$command->getCommand().$params.' --env='.$command->getEnvironment();
     }
 }

@@ -4,7 +4,7 @@
 
 
 mbh-memcached:
-  image: phpdockerio/memcached:latest
+  image: memcached:1.4
   container_name: mbh-memcached
   ports:
     - "11211:11211"
@@ -33,7 +33,7 @@ mbh-redis:
      - "6378:6379"
 
 mbh-mongo:
-  image: mongo:latest
+  image: mongo:3.4
   container_name: mbh-mongo
   command: mongod --setParameter failIndexKeyTooLong=false
   volumes:
@@ -53,6 +53,7 @@ mbh-php-fpm:
     - ./php-fpm/start.sh:/start.sh
     - ./php-fpm/fish:/root/.config/fish/functions
     - /tmp/:/tmp/
+    - ./php-fpm/keys:/root/.ssh
   links:
     - mbh-memcached
     - mbh-mongo
@@ -65,6 +66,7 @@ mbh-webserver:
   volumes:
       - ..:/var/www/mbh
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/fastcgi_param_client:/etc/nginx/fastcgi_param_client
   ports:
    - "9090:80"
   links:

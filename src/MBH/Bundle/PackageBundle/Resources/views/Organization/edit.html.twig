@@ -1,5 +1,5 @@
 {% extends 'MBHPackageBundle:Organization:layout.html.twig' %}
-
+{% form_theme form.stamp _self %}
 {% block scripts %}
     {{ parent() }}
     {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/organizations/create.js' %}
@@ -13,6 +13,17 @@
 {% block content %}
     {{ form_start(form, {'action': path('organization_edit', {id: organization.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
+
+    <input type="hidden" value="{{ redirectTo }}" name="redirectTo">
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': organization, 'delete_route': 'organization_delete', confirm_text: 'organizations.confirm_delete'|trans({'%organization_name%': organization.name}, 'MBHPackageBundle')} %}
     {{ form_end(form) }}
+
+    {% include '@MBHBase/modalWithForm.html.twig' with {modalTitle: 'modal_with_form.add_city.title'|trans} %}
+{% endblock %}
+
+{% block _organization_stamp_widget %}
+    {{ block('form_widget') }}
+    {% if (stamp is defined and stamp is not null) and (parentOwnerId is defined and parentOwnerId is not null) %}
+        <a href="{{ path('organization_stamp_view', { protected: stamp.id, organization: parentOwnerId }) }}" class="fancybox"> {{ 'form.organizationType.view_image'|trans }} </a>
+    {% endif %}
 {% endblock %}

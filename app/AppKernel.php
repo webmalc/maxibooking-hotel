@@ -1,10 +1,31 @@
 <?php
 
+use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
+use Knp\Bundle\GaufretteBundle\KnpGaufretteBundle;
+use MBH\Bundle\BillingBundle\MBHBillingBundle;
+use Oneup\FlysystemBundle\OneupFlysystemBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
+    /** @var string */
+    const CLIENT_VARIABLE = 'MB_CLIENT';
+    /** @var string */
+    const CLIENTS_CONFIG_FOLDER = '/app/config/clients';
+    /** @var string */
+    const DEFAULT_CLIENT = 'maxibooking';
+
+    /** @var  string */
+    protected $client;
+
+    public function __construct($environment, $debug, $client = null)
+    {
+        $this->client = $client;
+        parent::__construct($environment, $debug);
+
+    }
+
     public function registerBundles()
     {
         $bundles = array(
@@ -24,7 +45,7 @@ class AppKernel extends Kernel
             new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
             new Dinhkhanh\MongoDBAclBundle\MongoDBAclBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
-            new JMS\DiExtraBundle\JMSDiExtraBundle($this),
+            new JMS\DiExtraBundle\JMSDiExtraBundle(),
             new JMS\AopBundle\JMSAopBundle(),
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
             new Ornicar\GravatarBundle\OrnicarGravatarBundle(),
@@ -34,6 +55,10 @@ class AppKernel extends Kernel
             new Lexik\Bundle\TranslationBundle\LexikTranslationBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle(),
+            new DoctrineCacheBundle(),
+            new KnpGaufretteBundle(),
+            new OneupFlysystemBundle(),
+
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),
@@ -49,6 +74,10 @@ class AppKernel extends Kernel
             new MBH\Bundle\VegaBundle\MBHVegaBundle(),
             new MBH\Bundle\WarehouseBundle\MBHWarehouseBundle(),
             new MBH\Bundle\RestaurantBundle\MBHRestaurantBundle(),
+            new MBHBillingBundle(),
+
+
+
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
@@ -57,6 +86,7 @@ class AppKernel extends Kernel
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
+            $bundles[] = new Fidry\PsyshBundle\PsyshBundle();
         }
 
         return $bundles;
@@ -66,16 +96,27 @@ class AppKernel extends Kernel
     {
         return __DIR__;
     }
+
     public function getCacheDir()
     {
         return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
     }
-    public function getLogDir()
-    {
-        return dirname(__DIR__).'/var/logs';
-    }
+
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+    }
+
+    public function getClient(): ?string
+    {
+        return $this->client;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDefaultClient()
+    {
+        return $this->client === self::DEFAULT_CLIENT;
     }
 }

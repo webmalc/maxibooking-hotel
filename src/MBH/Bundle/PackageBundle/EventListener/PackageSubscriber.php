@@ -5,11 +5,8 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -270,12 +267,12 @@ class PackageSubscriber implements EventSubscriber
                 }
             }
 
-            $creator = $this->container->get('mbh.hotel.console_auto_task_creator');
-            if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
-                $creator->createCheckOutTasks($document);
-            } elseif (isset($changeSet['isCheckIn']) && $changeSet['isCheckIn'][0] === false && $changeSet['isCheckIn'][1] === true) {
-                $creator->createCheckInTasks($document);
-            }
+//            $creator = $this->container->get('mbh.hotel.console_auto_task_creator');
+//            if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
+//                $creator->createCheckOutTasks($document);
+//            } elseif (isset($changeSet['isCheckIn']) && $changeSet['isCheckIn'][0] === false && $changeSet['isCheckIn'][1] === true) {
+//                $creator->createCheckInTasks($document);
+//            }
         }
     }
 }

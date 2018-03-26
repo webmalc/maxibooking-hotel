@@ -53,11 +53,9 @@
                     <tbody>
                     {% for cash in docs %}
 
-                        {% set data = clientConfig.getFormData(cash, null, url('online_form_check_order')) %}
-                        <tr class="{{ cash.isConfirmed is empty and cash.isPaid ? 'info' }} {{ cash.deletedAt ? 'danger' }} {{ cash.isPaid is empty ? 'transparent-tr' }} {% if cash.operation == 'in' and cash.deletedAt is empty and cash.method == 'electronic' and not cash.isPaid and not(data.disabled is defined and data.disabled) %} visa-tr {% endif %}">
+                        <tr class="{{ cash.isConfirmed is empty and cash.isPaid ? 'info' }} {{ cash.deletedAt ? 'danger' }} {{ cash.isPaid is empty ? 'transparent-tr' }}">
                             <td class="text-center"><i class='{{ currency().icon }}'></i></td>
-                            <td>
-                            {{ cash.number }}</th>
+                            <td>{{ cash.number }}</td>
                             <td>{{ cash.payer }}</td>
                             <td class="text-right">
                                 {% if cash.operation not in ['fee', 'out'] %}
@@ -81,8 +79,8 @@
                                     </a>
                                 {% endif %}
                             </td>
-                            <td>{{ operations[cash.operation] }}<br>
-                                <small>{{ methods[cash.method] }}</small>
+                            <td>{{ operations[cash.operation]|trans }}<br>
+                                <small>{{ methods[cash.method]|trans({}, 'MBHCashBundle') }}</small>
                             </td>
                             <td>{{ cash.documentDate|date('d.m.Y') }}</td>
                             <td class="text-center">{% if cash.isPaid is empty %}<span
@@ -97,7 +95,7 @@
                                         {% if cash.orderDocument %}
                                             <a href="{{ path('order_document_view', {name: cash.orderDocument.name, download: 1}) }}"
                                                class="btn btn-info btn-xs" title="" data-toggle="tooltip"
-                                               data-original-title="Скачать">
+                                               data-original-title="{{ 'order.cash.download'|trans }}">
                                                 <i class="fa fa-download"></i>
                                             </a>
                                         {% endif %}
@@ -107,7 +105,7 @@
                                         {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_CASH_CONFIRM') %}
                                             <a data-action='cashDocumentConfirmation'
                                                data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}'
-                                               data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?'
+                                               data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} {{ currency().text }}</b>?'
                                                data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}'
                                                data-button-icon='fa-check'
                                                href='{{ path('cash_confirm', { 'id': cash.id}) }}'
@@ -120,32 +118,21 @@
                                         <!-- Confirmation: end -->
 
 
-                                        {% if not cash.isPaid and is_granted('ROLE_CASH_EDIT') %}
-                                            {% if cash.operation == 'in' and cash.method == 'electronic' %}
-                                                {% if clientConfig and clientConfig.paymentSystem %}
-                                                    <div class="btn-group">
-                                                        <button type="button"
-                                                                class="btn btn-xs btn-info dropdown-toggle"
-                                                                data-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="false">
-                                                            <i class="fa fa-cc-visa"></i>&nbsp; <span
-                                                                    class="caret"></span>
-                                                        </button>
-                                                        <ul class="dropdown-menu dropdown-buttons">
-
-                                                            <li>
-                                                                {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': false})} %}
-                                                            </li>
-                                                            <!--{% if clientConfig.paymentSystem == 'uniteller' and entity.creditCard and entity.creditCard.cvc %}
-                                                        <li>
-                                                            <button onclick="location.href = '{{ path('cash_card_money', {'id': cash.id}) }}'" class="btn btn-warning btn-xs"><i class="{{ currency().icon }}"></i>&nbsp;списать</button>
-                                                        </li>
-                                                        {% endif %}-->
-                                                        </ul>
-                                                    </div>
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endif %}
+                                        {#{% if not cash.isPaid and is_granted('ROLE_CASH_EDIT') %}#}
+                                            {#{% if cash.operation == 'in' and cash.method == 'electronic' %}#}
+                                                {#{% if clientConfig and clientConfig.paymentSystems %}#}
+                                                    {#<div class="btn-group">#}
+                                                        {#<button type="button"#}
+                                                                {#class="btn btn-xs btn-info dropdown-toggle"#}
+                                                                {#data-toggle="dropdown" aria-haspopup="true"#}
+                                                                {#aria-expanded="false">#}
+                                                            {#<i class="fa fa-cc-visa"></i>&nbsp; <span#}
+                                                                    {#class="caret"></span>#}
+                                                        {#</button>#}
+                                                    {#</div>#}
+                                                {#{% endif %}#}
+                                            {#{% endif %}#}
+                                        {#{% endif %}#}
 
                                         <!-- Editing: begin -->
                                         {% if is_granted('ROLE_CASH_EDIT') and (is_granted('ROLE_CASH_CONFIRM') or cash.isConfirmed is empty) %}

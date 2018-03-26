@@ -98,6 +98,7 @@ class RoomRepository extends AbstractBaseRepository
      */
     public function getRoomsByType(Hotel $hotel, $grouped = true)
     {
+        $groupedRooms = null;
         $hotelRoomTypes = [];
         foreach ($hotel->getRoomTypes() as $roomType) {
             $hotelRoomTypes[] = $roomType->getId();
@@ -169,35 +170,42 @@ class RoomRepository extends AbstractBaseRepository
         $roomTypes && !is_array($roomTypes) ? $roomTypes = [$roomTypes] : $roomTypes;
         $rooms && !is_array($rooms) ? $rooms = [$rooms] : $rooms;
         $excludePackages and !is_array($excludePackages) ? $excludePackages = [$excludePackages] : $excludePackages;
-        $ids = $groupedRooms = [];
+        $fullRoomsIds = $groupedRooms = [];
         $hotelRoomTypes = [];
         $newEnd = clone $end;
         $newBegin = clone $begin;
 
         foreach ($hotel->getRoomTypes() as $roomType) {
-            if ($roomTypes && !in_array($roomType->getId(), $roomTypes)) {
+            if ($roomTypes && !in_array($roomType->getId(), $roomTypes) || !$roomType->getIsEnabled()) {
                 continue;
             }
             $hotelRoomTypes[] = $roomType->getId();
         }
 
-        $pAccommodations = $dm
+        $existedAccommodations = $dm
             ->getRepository('MBHPackageBundle:PackageAccommodation')
-            ->fetchWithAccommodation(
+            ->getWithAccommodationQB(
                 $newBegin->modify('+1 day'),
                 $newEnd->modify('-1 day'),
                 $rooms,
-                $excludePackages);
-        foreach ($pAccommodations as $accommodation) {
+                $excludePackages)
+            ->select(['accommodation.id'])
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+
+        foreach ($existedAccommodations as  $accommodation) {
             /** @var PackageAccommodation $accommodation */
-            $ids[] = $accommodation->getAccommodation()->getId();
+            $fullRoomsIds[] = $accommodation['accommodation']['$id'];
         }
 
         // rooms
         $qb = $this->createQueryBuilder()->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
              ->field('isEnabled')->equals(true)
              ->inToArray('roomType.id', $hotelRoomTypes)
-             ->notInNotEmpty('id', $ids)
+             ->notInNotEmpty('id', $fullRoomsIds)
              ->inNotEmpty('id', $rooms)
         ;
 
@@ -302,7 +310,7 @@ class RoomRepository extends AbstractBaseRepository
         array $sort = null
     ) {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
 
         // hotel
         if ($hotel) {
@@ -354,12 +362,26 @@ class RoomRepository extends AbstractBaseRepository
     }
 
     /**
+     * @param null $roomTypeIds
+     * @return int
+     */
+    public function getNumberOfEnabledRooms($roomTypeIds = null)
+    {
+        $qb = $this->createQueryBuilder()->field('isEnabled')->equals(true);
+        if (!is_null($roomTypeIds)) {
+            $qb->field('roomType.id')->in($roomTypeIds);
+        }
+
+        return $qb->getQuery()->count();
+    }
+
+    /**
      * @return array;
      */
     public function fetchFloors()
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
         $docs = $qb->distinct('floor')
             ->getQuery()
             ->execute();
@@ -367,5 +389,44 @@ class RoomRepository extends AbstractBaseRepository
         asort($docs);
 
         return $docs;
+    }
+
+    /**
+     * @param array|null $statusIds
+     * @param bool $includeWithoutStatuses
+     * @param bool $isOnlyEnabled
+     * @return array
+     */
+    public function getNumberOfRoomsByRoomTypeIds($statusIds = null, $includeWithoutStatuses = true, $isOnlyEnabled = false)
+    {
+        $qb = $this->createQueryBuilder();
+        if ($isOnlyEnabled) {
+            $qb->field('isEnabled')->equals(true);
+        }
+        if ($includeWithoutStatuses) {
+            $qb->addOr($qb->expr()->field('status.0')->exists(false));
+        }
+        if (!is_null($statusIds)) {
+            $qb->addOr($qb->expr()->field('status.id')->in($statusIds));
+        }
+        
+        $roomsQuantityByRoomTypeIds = $qb
+            ->map('function() {
+                var roomTypeId = this.roomType.$id;
+                emit(roomTypeId.valueOf(), this);
+            }')
+            ->reduce('function(key, values) {
+                return values.length;
+            }')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $result = [];
+        foreach ($roomsQuantityByRoomTypeIds as $roomsQuantityData) {
+            $result[$roomsQuantityData['_id']] = (int)$roomsQuantityData['value'];
+        }
+
+        return $result;
     }
 }

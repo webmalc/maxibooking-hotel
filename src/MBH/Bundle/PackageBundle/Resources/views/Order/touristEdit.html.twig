@@ -67,7 +67,7 @@
                                     <strong>{{ 'order.touristEdit.gender'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
-                                    {{ genders[order.mainTourist.sex]|default('-') }}
+                                    {{ genders[order.mainTourist.sex]|default('-')|trans }}
                                 </td>
                             </tr>
                             <tr>
@@ -83,7 +83,7 @@
                                     <strong>{{ 'order.touristEdit.document'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
-                                    {% if order.mainTourist and order.mainTourist.documentRelation and order.mainTourist.documentRelation.type %}{% autoescape false %}{{ vegaDocumentTypes[order.mainTourist.documentRelation.type]|capitalize|nl2br|default('-') }}{% endautoescape %}{% endif %}
+                                    {% if order.mainTourist and order.mainTourist.documentRelation and order.mainTourist.documentRelation.type %}{% autoescape false %}{{ documentTypes[order.mainTourist.documentRelation.type]|capitalize|nl2br|default('-') }}{% endautoescape %}{% endif %}
                                 </td>
                             </tr>
                         </tbody>
@@ -92,15 +92,15 @@
                     {% if order.deletedAt is empty %}
                         <div class="row spacer-top">
                             <div class="col-md-12 text-right btn-list">
-                                <a href="{{ path('tourist_edit_unwelcome', {'id': order.mainTourist.id }) }}"
-                                        class="btn btn-info btn-sm" title="" data-toggle="tooltip"
-                                        data-original-title="Добавить плательщика в черный список">
-                                        <i class="fa fa-user-secret"></i>
-                                    </a>
+                                {#<a href="{{ path('tourist_edit_unwelcome', {'id': order.mainTourist.id }) }}"#}
+                                        {#class="btn btn-info btn-sm" title="" data-toggle="tooltip"#}
+                                        {#data-original-title="{{ 'order.tourist_edit.add_payer_to_black_list'|trans }}">#}
+                                        {#<i class="fa fa-user-secret"></i>#}
+                                    {#</a>#}
                                 {% if package.deletedAt is empty and is_granted('ROLE_TOURIST_EDIT') %}
-                                    <a href="{{ path('tourist_edit', {'id': order.mainTourist.id }) }}"
+                                    <a href="{{ path('tourist_edit', {'id': order.mainTourist.id, 'redirectTo': app.request.uri }) }}"
                                         class="btn btn-success btn-sm" title="" data-toggle="tooltip"
-                                        data-original-title="{{ 'mbhpackagebundle.view.order.touristedit.redaktirovaniye.zapisi'|trans }} ">
+                                        data-original-title="{{ 'order.tourist_edit.edit_entry'|trans }}">
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
                                 {% endif %}

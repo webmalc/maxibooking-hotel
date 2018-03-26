@@ -12,7 +12,6 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 /**
  * @ODM\Document(repositoryClass="MBH\Bundle\HotelBundle\Document\TaskTypeCategoryRepository")
  * @Gedmo\Loggable
@@ -29,7 +28,8 @@ class TaskTypeCategory extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
+     * @Gedmo\Translatable
      * @Assert\Length(
      *      min=2,
      *      max=100
@@ -41,6 +41,7 @@ class TaskTypeCategory extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string") 
      * @Assert\NotBlank()
+     * @Gedmo\Translatable
      * @Assert\Length(
      *      min=2,
      *      max=100
@@ -50,7 +51,7 @@ class TaskTypeCategory extends Base
 
     /**
      * @var bool
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      */
     protected $isSystem;
     /**
@@ -64,6 +65,11 @@ class TaskTypeCategory extends Base
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\TaskType", mappedBy="category")
      */
     protected $types;
+
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
 
     /**
      * @return string
@@ -152,5 +158,7 @@ class TaskTypeCategory extends Base
     public function setTypes($types)
     {
         $this->types = $types;
+
+        return $this;
     }
 }

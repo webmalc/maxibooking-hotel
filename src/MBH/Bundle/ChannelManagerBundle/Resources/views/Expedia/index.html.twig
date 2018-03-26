@@ -1,0 +1,28 @@
+{% extends 'MBHChannelManagerBundle:Expedia:layout.html.twig' %}
+
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, 'base': 'expedia', 'services' : false} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {{ form_start(form, {'action': path('expedia_save'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% embed 'MBHChannelManagerBundle::actions.html.twig' %}
+                {% block additional_actions %}
+                    {% if config %}
+                        <li><button type="button" onclick="location.href = '{{ path('expedia_packages_sync') }}'" class="btn btn-default navbar-btn" data-toggle="tooltip" data-placement="top" title="{{ 'views.expedia.actions.sync_old_orders.title'|trans({}, 'MBHChannelManagerBundle') }}"><i class="fa fa-paper-plane-o"> </i> {{ 'views.expedia.actions.sync_old_orders'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
+                    {% endif %}
+                {% endblock %}
+            {% endembed %}
+            {{ form_end(form) }}
+
+            {%  if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {%  endif %}
+        </div>
+    </div>
+{% endblock %}

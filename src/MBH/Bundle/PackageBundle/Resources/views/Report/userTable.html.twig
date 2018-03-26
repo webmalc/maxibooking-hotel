@@ -4,12 +4,12 @@
     </div>
 {% else %}
     {% set cats = {
-    'sold': 'Реализовано броней',
-    'services': 'Реализовано услуг',
-    'packagePrice': 'Стоимость проживания',
-    'servicesPrice': 'Стоимость услуг',
-    'price': 'Стоимость броней',
-    'paid': 'Получено'
+    'sold': 'report.user_table.sold_packages'|trans,
+    'services': 'report.user_table.sold_services'|trans,
+    'packagePrice': 'report.user_table.cost_of_accommodation'|trans,
+    'servicesPrice': 'report.user_table.cost_of_services'|trans,
+    'price': 'report.user_table.cost_of_packages'|trans,
+    'paid': 'report.user_table.received'|trans
     } %}
 
     <table id="user-report-table"
@@ -31,7 +31,7 @@
             {% for date in dates %}
                 <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
             {% endfor %}
-            <td>{{ 'mbhpackagebundle.view.report.usertable.itogo'|trans }} </td>
+            <td>{{ 'report.user_table.total'|trans}}</td>
         </tr>
 
         {% for categoryId, category in cats %}
@@ -71,7 +71,7 @@
         </tr>
 
         <tr class="mbh-grid-header1 warning">
-        <td colspan="{{ dates|length + 2 }}"><strong>{{ 'mbhpackagebundle.view.report.usertable.vse.polʹzovateli'|trans }} </strong></td>
+        <td colspan="{{ dates|length + 2 }}"><strong>{{ 'report.user_table.all_users'|trans}}</strong></td>
         </tr>
 
         <tr class="header">
@@ -79,7 +79,7 @@
             {% for date in dates %}
                 <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
             {% endfor %}
-            <td>{{ 'mbhpackagebundle.view.report.usertable.itogo'|trans }} </td>
+            <td>{{ 'report.user_table.total'|trans}}</td>
         </tr>
 
         {% for categoryId, category in cats %}

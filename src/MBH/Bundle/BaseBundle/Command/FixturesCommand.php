@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\BaseBundle\Command;
 
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,8 +22,10 @@ class FixturesCommand extends ContainerAwareCommand
     private function runCommand(string $command)
     {
         $env = $this->getContainer()->get('kernel')->getEnvironment();
+        $client = $this->getContainer()->getParameter('client');
         $process = new Process(
-            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console ' . $command . ' --no-debug --env=' . $env
+            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console ' . $command . ' --no-debug --env=' . $env,
+            null, [\AppKernel::CLIENT_VARIABLE => $client]
         );
         $process->run();
     }

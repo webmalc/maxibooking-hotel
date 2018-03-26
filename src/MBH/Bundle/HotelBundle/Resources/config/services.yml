@@ -4,17 +4,24 @@ services:
         arguments: ['@service_container']
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
-    mbh.hotel.task.subscriber:
-        class: MBH\Bundle\HotelBundle\EventListener\TaskSubscriber
-        arguments: ['@service_container']
-        tags:
-            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+#    mbh.hotel.task.subscriber:
+#        class: MBH\Bundle\HotelBundle\EventListener\TaskSubscriber
+#        arguments: ['@service_container']
+#        tags:
+#            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
     mbh.hotel.facility.subscriber:
         class: MBH\Bundle\HotelBundle\EventListener\FacilitySubscriber
         calls:
             - [setContainer, ['@service_container']]
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
+    mbh.hotel_subscriber:
+        class: MBH\Bundle\HotelBundle\EventListener\HotelSubscriber
+        arguments: ['@mbh.billing.api']
+        tags:
+            - {name: doctrine_mongodb.odm.event_subscriber, connection: default }
+
     mbh.hotel.room_type.subscriber:
             class: MBH\Bundle\HotelBundle\EventListener\RoomTypeSubscriber
             tags:

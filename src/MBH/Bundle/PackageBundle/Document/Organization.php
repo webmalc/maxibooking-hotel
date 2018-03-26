@@ -2,13 +2,13 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\ProtectedFile;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\HotelBundle\Document\City;
@@ -16,8 +16,6 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -38,137 +36,138 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
      */
     protected $id;
     /**
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      * @Assert\NotBlank
      */
     protected $name;
     /**
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
+     * @Assert\Length(max="50")
      */
     protected $shortName;
     /**
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $directorFio;
     /**
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $accountantFio;
     /**
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $phone;
     /**
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $email;
 
     /**
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      * @Assert\Length(min=9,max=9)
-     * @Assert\Type(type="digit", message="Значение должно быть числом")
+     * @Assert\Type(type="digit", message="document.organiztion.kpp.value_must_by_digit")
      */
     protected $kpp;
 
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $registrationDate;
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $registrationNumber;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $activityCode;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $okpoCode;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $writerFio;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $reason;
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Country")
+     * @ODM\Field(type="string")
      */
-    protected $country;
+    protected $countryTld;
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Region")
+     * @ODM\Field(type="int")
      */
-    protected $region;
+    protected $regionId;
     /**
      * @Assert\NotBlank
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\City")
+     * @ODM\Field(type="int")
      */
-    protected $city;
+    protected $cityId;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $street;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $house;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $corpus;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $flat;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $index;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $bank;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $bankBik;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $bankAddress;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $correspondentAccount;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $checkingAccount;
     /**
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      * @Assert\NotBlank
      * @Assert\Choice(
      *      choices = {"contragents", "my"}
@@ -181,12 +180,12 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
      */
     protected $hotels;
     /**
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $comment;
 
     /**
-     * @var File
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\ProtectedFile", cascade={"persist"})
      */
     protected $stamp;
 
@@ -317,7 +316,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
      */
     public function getLocation()
     {
-        return ($this->getCity() ? $this->getCity()->getTitle() : '') . ', ' . $this->getStreet() . ' ' . $this->getHouse();
+        return $this->getStreet() . ' ' . $this->getHouse();
     }
 
     /**
@@ -417,51 +416,51 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     }
 
     /**
-     * @return City
+     * @return int
      */
-    public function getCity()
+    public function getCityId()
     {
-        return $this->city;
+        return $this->cityId;
     }
 
     /**
-     * @param City|null $city
+     * @param City|null $cityId
      */
-    public function setCity(City $city = null)
+    public function setCityId($cityId = null)
     {
-        $this->city = $city;
+        $this->cityId = $cityId;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getCountry()
+    public function getCountryTld()
     {
-        return $this->country;
+        return $this->countryTld;
     }
 
     /**
-     * @param mixed $country
+     * @param string $countryTld
      */
-    public function setCountry($country)
+    public function setCountryTld($countryTld)
     {
-        $this->country = $country;
+        $this->countryTld = $countryTld;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getRegion()
+    public function getRegionId()
     {
-        return $this->region;
+        return $this->regionId;
     }
 
     /**
-     * @param mixed $region
+     * @param int $regionId
      */
-    public function setRegion($region)
+    public function setRegionId($regionId)
     {
-        $this->region = $region;
+        $this->regionId = $regionId;
     }
 
     /**
@@ -678,51 +677,18 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     }
 
     /**
-     * @return File
+     * @return ProtectedFile
      */
     public function getStamp()
     {
-        if (!$this->stamp && $this->getId() && is_file($this->getPath())) {
-            $this->stamp = new File($this->getPath(), $this->getId());
-        }
-
         return $this->stamp;
     }
 
-    /**
-     * @param UploadedFile $stamp
-     */
-    public function setStamp(UploadedFile $stamp = null)
+
+
+    public function setStamp($stamp)
     {
         $this->stamp = $stamp;
-    }
-
-    /**
-     * The absolute directory path where uploaded
-     * documents should be saved
-     * @return string
-     */
-    public function getUploadRootDir()
-    {
-        return realpath(__DIR__.'/../../../../../protectedUpload/orderDocuments');
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->getUploadRootDir().DIRECTORY_SEPARATOR.$this->getId();
-    }
-
-    /**
-     * @return File
-     */
-    public function upload()
-    {
-        if ($this->getStamp() and $this->getStamp() instanceof UploadedFile) {
-            return $this->getStamp()->move($this->getUploadRootDir(), $this->getId());
-        }
     }
 
     /**
@@ -730,8 +696,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
      */
     public function prePersist()
     {
-        $this->fillLocationByCity();
-        if(!$this->getShortName()) {
+        if (!$this->getShortName()) {
             $this->setShortName($this->getName());
         }
     }
@@ -741,17 +706,8 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
      */
     public function preUpdate()
     {
-        $this->fillLocationByCity();
-        if(!$this->getShortName()) {
+        if (!$this->getShortName()) {
             $this->setShortName($this->getName());
-        }
-    }
-
-    private function fillLocationByCity()
-    {
-        if ($this->getCity()) {
-            $this->setCountry($this->getCity()->getCountry());
-            $this->setRegion($this->getCity()->getRegion());
         }
     }
 

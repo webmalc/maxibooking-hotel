@@ -65,6 +65,15 @@ class Mongo
     }
 
     /**
+     * @param string $collection
+     * @return array
+     */
+    public function dropCollection($collection)
+    {
+        return $this->db->$collection->drop();
+    }
+
+    /**
       * @param $collection
       * @param array $data
       * @return null

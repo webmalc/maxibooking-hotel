@@ -10,7 +10,7 @@
         {% block content %}
         <form id="filling-table-filter" class="form-inline icon-label-form">
             <div class="form-group input">
-                <label><i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.filling.daty'|trans }} ' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-calendar" title="{{ 'report.filling.filling.dates'|trans }}" data-toggle='tooltip'></i></label>
                 <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
             </div>
             <div class="form-group input">
@@ -23,13 +23,29 @@
             </div>
 
             <div class="form-group input">
-                <label><i class="fa fa-bed" title='{{ 'mbhpackagebundle.view.report.filling.tip.nomera'|trans }} ' data-toggle='tooltip'></i></label>
-                <select name="roomType" data-placeholder="{{ 'mbhpackagebundle.view.report.filling.tip.nomera'|trans }} " id="filling-report-filter-roomType" class="form-control input-sm">
+                <label><i class="fa fa-bed" title='{{ 'report.filling.filling.room_types'|trans }}' data-toggle='tooltip'></i></label>
+                <select name="roomTypes[]" multiple data-placeholder='{{ 'report.filling.filling.room_types'|trans }}' id="filling-report-filter-roomType" class="form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypeList %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
                     {% endfor %}
                 </select>
+            </div>
+            <div class="form-group input">
+                <label for="filling-report-filter-status"><i class="fa fa-server" title='{{ 'report.filling.filling.room_status'|trans }}' data-toggle='tooltip'></i></label>
+                <select style="width: 250px;" name="roomStatus[]" multiple data-placeholder='{{ 'report.filling.filling.room_status'|trans }}' id="filling-report-filter-status" class="form-control input-sm">
+                    <option></option>
+                    {% for roomStatusId, roomStatus in roomStatusOptions %}
+                        <option value="{{ roomStatusId }}">{{ roomStatus }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group input">
+                <label for="filling-report-filter-isEnabled"><i class="fa fa-toggle-on" title="{{ 'report.filling.filling.only_enabled'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>&nbsp;</label>
+                <input type="checkbox" id="filling-report-filter-isEnabled">
+            </div>
+            &nbsp;<div class="form-group input">
+                <button type="button" class="btn btn-primary navbar-btn" id="filling-filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
             </div>
         </form>
         {% endblock content %}

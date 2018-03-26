@@ -2,7 +2,7 @@
 namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
+use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -45,14 +45,14 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
     /**
      * {@inheritDoc}
      */
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         if (count($manager->getRepository('MBHHotelBundle:RoomType')->findAll())) {
             return;
         }
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
-        foreach ($hotels as $hotel) {
+        foreach ($hotels as $hotelNumber => $hotel) {
             foreach ($this->data() as $key => $data) {
                 $roomType = new RoomType();
                 $roomType
@@ -76,9 +76,15 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
                 }
                 $manager->flush();
 
-                $this->setReference($key, $roomType);
+                $roomTypeReference = $key . '/' . $hotelNumber;
+                $this->setReference($roomTypeReference, $roomType);
             }
         }
+    }
+
+    public function getEnvs(): array
+    {
+        return ['test', 'dev'];
     }
 
     public function getOrder()

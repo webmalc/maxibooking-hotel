@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface;
@@ -474,15 +475,20 @@ class Booking extends Base implements ChannelManagerServiceInterface
     /**
      * {@inheritDoc}
      */
-    public function pullOrders($old = false)
+    public function pullOrders($pullOldStatus = ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS)
     {
         $result = true;
+        $isPulledAllPackages = $pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS;
+        /** @var BookingConfig $config */
         foreach ($this->getConfig() as $config) {
             $request = $this->templating->render(
                 'MBHChannelManagerBundle:Booking:reservations.xml.twig',
-                ['config' => $config, 'params' => $this->params, 'lastChange' => $old]
+                ['config' => $config, 'params' => $this->params, 'pullOldStatus' => $pullOldStatus]
             );
-            $sendResult = $this->sendXml(static::BASE_SECURE_URL . 'reservations', $request, null, true);
+
+            $endpointUrl = static::BASE_SECURE_URL . ($isPulledAllPackages ? 'reservationssummary' : 'reservations');
+
+            $sendResult = $this->sendXml($endpointUrl, $request, null, true);
             $this->log('Reservations: ' . $sendResult->asXml());
 
             if (!$this->checkResponse($sendResult->asXml(), ['element' => 'reservations'])) {
@@ -490,7 +496,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
             };
 
             foreach ($sendResult->reservation as $reservation) {
-                if ((string)$reservation->status == 'modified') {
+                if ((string)$reservation->status == 'modified' || $isPulledAllPackages) {
                     if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->disable('softdeleteable');
                     }
@@ -502,14 +508,14 @@ class Booking extends Base implements ChannelManagerServiceInterface
                         'channelManagerType' => 'booking'
                     ]
                 );
-                if ((string)$reservation->status == 'modified') {
+                if ((string)$reservation->status == 'modified' || $isPulledAllPackages) {
                     if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->enable('softdeleteable');
                     }
                 }
 
                 //new
-                if ((string)$reservation->status == 'new' && !$order) {
+                if (((string)$reservation->status == 'new' && !$order) || ($isPulledAllPackages && !$order)) {
                     $result = $this->createPackage($reservation, $config);
                     $this->notify($result, 'booking', 'new');
                 }
@@ -537,6 +543,10 @@ class Booking extends Base implements ChannelManagerServiceInterface
                     );
                 }
             };
+            if ($result && $isPulledAllPackages) {
+                $config->setIsAllPackagesPulled(true);
+                $this->dm->flush();
+            }
         }
 
         return $result;

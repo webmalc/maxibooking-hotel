@@ -19,7 +19,7 @@ class RoomsType extends AbstractType
         foreach ($options['booking'] as $name => $label) {
 
             $builder->add($name, DocumentType::class, [
-                'label' => $label,
+                'label' => $label . ' (ID: ' . $name . ')',
                 'class' => 'MBHHotelBundle:RoomType',
                 'query_builder' => function(DocumentRepository $er) use($options) {
                     $qb = $er->createQueryBuilder();
@@ -30,7 +30,8 @@ class RoomsType extends AbstractType
                 },
                 'placeholder' => '',
                 'required' => false,
-                'attr' => ['placeholder' => 'roomtype.placeholder']
+                'attr' => ['placeholder' => 'roomtype.placeholder'],
+                'group' => isset($options['groupName']) ? $options['groupName'] : ''
             ]);
         }
     }

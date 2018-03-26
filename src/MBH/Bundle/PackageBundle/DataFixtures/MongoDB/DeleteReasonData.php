@@ -27,7 +27,7 @@ class DeleteReasonData extends AbstractFixture implements OrderedFixtureInterfac
     public function load(ObjectManager $manager)
     {
         foreach (self::DATA as $fullTitle => $arrayValue) {
-            if ($manager->getRepository('MBHPackageBundle:DeleteReason')->findBy(['fullTitle' => $fullTitle, 'code' => $arrayValue['0'], 'isDefault' => $arrayValue['1']])) {
+            if ($manager->getRepository('MBHPackageBundle:DeleteReason')->findBy(['code' => $arrayValue['0']])) {
                 continue;
             }
 

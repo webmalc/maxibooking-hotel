@@ -31,7 +31,7 @@ class NotifierMessage
     private $from;
 
     /**
-     * @var RecipientInterface
+     * @var RecipientInterface[]
      */
     private $recipients = [];
 
@@ -94,6 +94,54 @@ class NotifierMessage
      * @var string
      */
     private $signature = null;
+
+    /**
+     * @var string
+     */
+    private $headerText = null;
+
+    /** @var string */
+    private $messageType = null;
+    /** @var  string */
+    private $messageIdentifier;
+
+    /**
+     * @return string
+     */
+    public function getMessageIdentifier(): ?string
+    {
+        return $this->messageIdentifier;
+    }
+
+    /**
+     * @param string $messageIdentifier
+     * @return NotifierMessage
+     */
+    public function setMessageIdentifier(string $messageIdentifier): NotifierMessage
+    {
+        $this->messageIdentifier = $messageIdentifier;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaderText(): ?string
+    {
+        return $this->headerText;
+    }
+
+    /**
+     * @param string $headerText
+     * @return NotifierMessage
+     */
+    public function setHeaderText(string $headerText): NotifierMessage
+    {
+        $this->headerText = $headerText;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -305,6 +353,7 @@ class NotifierMessage
     }
 
     /**
+     * @deprecated Use setMessageType
      * @param $category
      * @return $this
      */
@@ -428,5 +477,27 @@ class NotifierMessage
 
         return $this;
     }
+
+
+    /**
+     * @param string $messageType
+     * @return $this
+     */
+    public function setMessageType(string $messageType)
+    {
+        $this->messageType = $messageType;
+
+        return $this;
+    }
+
+
+    /**
+     * @return null|string
+     */
+    public function getMessageType(): ?string
+    {
+        return $this->messageType;
+    }
+
 
 }

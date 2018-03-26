@@ -2,17 +2,18 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Lib\Exportable;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
-use MBH\Bundle\VegaBundle\Document\VegaState;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -21,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Tourist extends Base implements \JsonSerializable , PayerInterface, RecipientInterface
+class Tourist extends Base implements \JsonSerializable, PayerInterface, RecipientInterface, Exportable
 {
     /**
      * Hook timestampable behavior
@@ -106,7 +107,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="birthday")
+     * @ODM\Field(type="date")
      * @ODM\Index
      * @Assert\Date()
      */
@@ -176,10 +177,10 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      */
     protected $note;
     /**
-     * @var VegaState|null
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
+     * @var string
+     * @ODM\Field(type="string")
      */
-    protected $citizenship;
+    protected $citizenshipTld;
     /**
      * @ODM\EmbedOne(targetDocument="BirthPlace")
      * @var BirthPlace
@@ -192,7 +193,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
     protected $addressObjectDecomposed;
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $addressObjectCombined;
     /**
@@ -220,21 +221,20 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
 
     /**
      * @var bool
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @ODM\Index()
      */
     protected $isUnwelcome = false;
 
     /**
-     *
      * @ODM\ReferenceMany(targetDocument="RestarauntSeat", mappedBy="tourist")
      */
     protected $restarauntSeat;
 
     public function __construct()
     {
-        $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->restarauntSeat = new ArrayCollection();
+        $this->packages = new ArrayCollection();
     }
 
     public function getShortName()
@@ -469,7 +469,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      * @param boolean $original
      * @return string
      */
-    public function getMobilePhone($original=false)
+    public function getMobilePhone($original = false)
     {
         return self::formatPhone($this->mobilePhone, $original);
     }
@@ -593,14 +593,6 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
         }
 
         $this->fullName = $this->generateFullName();
-    }
-
-    /**
-     * @return string
-     */
-    public function generateFullNameWithAge()
-    {
-        return $this->generateFullName() . ($this->getBirthday() ? ' (' . $this->getBirthday()->format('d.m.Y') . '), возраст: ' . $this->getAge() : '');
     }
 
     /**
@@ -768,19 +760,19 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
     }
 
     /**
-     * @return VegaState
+     * @return string
      */
-    public function getCitizenship()
+    public function getCitizenshipTld()
     {
-        return $this->citizenship;
+        return $this->citizenshipTld;
     }
 
     /**
-     * @param VegaState $citizenship
+     * @param string $citizenshipTld
      */
-    public function setCitizenship(VegaState $citizenship = null)
+    public function setCitizenshipTld(string $citizenshipTld = null)
     {
-        $this->citizenship = $citizenship;
+        $this->citizenshipTld = $citizenshipTld;
     }
 
     /**
@@ -797,17 +789,6 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
     public function setBirthplace(BirthPlace $birthplace = null)
     {
         $this->birthplace = $birthplace;
-    }
-
-    /**
-     * @ODM\PrePersist
-     * @ODM\PreUpdate
-     */
-    public function preSave()
-    {
-        if ($this->getAddressObjectDecomposed() && $this->getAddressObjectDecomposed()->getCountry() && $this->getAddressObjectDecomposed()->getRegion()) {
-            $this->fillAddressObject();
-        }
     }
 
     /**
@@ -907,25 +888,6 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
         $this->isUnwelcome = $isUnwelcome;
     }
 
-    private function fillAddressObject()
-    {
-        $chain = [
-            $this->getAddressObjectDecomposed()->getCountry()->getName(),
-            $this->getAddressObjectDecomposed()->getRegion()->getName(),
-            $this->getAddressObjectDecomposed()->getCity(),
-            $this->getAddressObjectDecomposed()->getStreet(),
-            $this->getAddressObjectDecomposed()->getHouse(),
-            $this->getAddressObjectDecomposed()->getCorpus(),
-            $this->getAddressObjectDecomposed()->getFlat()
-        ];
-
-        $chain = array_map('strval', $chain);
-        if (($lastKey = array_search('', $chain)) !== false)
-            $chain = array_slice($chain, 0, $lastKey);
-
-        $this->setAddressObjectCombined(implode(' ', $chain));
-    }
-
     public function jsonSerialize()
     {
         return [
@@ -936,8 +898,28 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
             'phone' => $this->phone,
             'email' => $this->email,
             'communicationLanguage' => $this->communicationLanguage,
-            'citizenship' => $this->getCitizenship() ? $this->getCitizenship()->getName() : null,
+            'citizenshipTld' => $this->getCitizenshipTld() ? $this->getCitizenshipTld() : null,
             'documentRelation' => $this->getDocumentRelation() ? $this->getDocumentRelation() : null
+        ];
+    }
+
+    public static function getExportableFieldsData(): array
+    {
+        return [
+            'form.touristType.name' => ['field' => 'firstName'],
+            'form.touristType.surname' => ['field' => 'lastName'],
+            'form.touristType.second_name' => ['field' => 'patronymic'],
+            'form.organizationType.phone' => ['field' => 'phone'],
+            'form.touristType.mobile_phone' => ['field' => 'mobilePhone'],
+            'form.touristType.email' => ['field' => 'email'],
+            'exportable.tourist.fio' => [
+                'callback' => function ($entityData) {
+                    $fio = $entityData['lastName'] . ' ' . $entityData['firstName'];
+                    if (isset($entityData['patronymic']) && !empty($entityData['patronymic'])) {
+                        $fio .= ' ' . $entityData['patronymic'];
+                    }
+                    return $fio;
+                }]
         ];
     }
 }

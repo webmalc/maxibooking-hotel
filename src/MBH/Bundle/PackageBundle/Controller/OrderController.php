@@ -70,7 +70,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
-     * @return Response
+     * @return array|Response
      * @Template()
      * @throws \Exception
      */
@@ -87,7 +87,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
         /** @var CashDocument[] $docs */
         $docs = $cashDocumentRepository
-            ->createQueryBuilder('q')
+            ->createQueryBuilder()
             ->field('order.id')->equals($entity->getId())
             ->sort('createdAt', 'desc')
             ->getQuery()
@@ -106,13 +106,10 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         }
 
         $form = $this->createForm(CashDocumentType::class, $cash, [
-            'methods' => $this->container->getParameter('mbh.cash.methods'),
-            'operations' => $this->container->getParameter('mbh.cash.operations'),
             'groupName' => $this->get('translator')->trans('controller.orderController.add_cash_register_paper'),
             'payer' => $entity->getMainTourist() ? $entity->getMainTourist()->getId() : null,
             'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity),
             'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER'),
-            'dm' => $this->dm
         ]);
 
         if ($request->isMethod(Request::METHOD_POST)  &&
@@ -173,7 +170,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         return [
             'order' => $order,
             'logs' => $this->logs($order),
-            'vegaDocumentTypes' => $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes(),
+            'documentTypes' => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes(),
             'genders' => $this->container->getParameter('mbh.gender.types'),
             'form' => $form->createView(),
             'package' => $package
@@ -210,7 +207,6 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         return [
             'entity' => $entity,
             'logs' => $this->logs($entity),
-            'genders' => $this->container->getParameter('mbh.gender.types'),
             'form' => $form->createView(),
             'package' => $package
         ];
@@ -419,7 +415,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     /**
      * Order edit
      *
-     * @Route("/{id}/edit/{packageId}", name="package_order_edit")
+     * @Route("/{id}/edit/{packageId}", name="package_order_edit", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
@@ -529,14 +525,14 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
      * @Template("@MBHPackage/Package/deleteModalContent.html.twig")
      *
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function deleteOrderModalAction(Order $entity, Request $request)
     {
         $form = $this->createForm(OrderDeleteReasonType::class, $entity);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $permissions = $this->container->get('mbh.package.permissions');
 
             if (!$permissions->checkHotel($entity)) {
@@ -545,7 +541,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
             $this->deleteEntity($entity->getId(), 'MBHPackageBundle:Order', 'package');
 
-            return $this->redirectToRoute('package');
+            return new Response('', 302);
         }
 
         return [

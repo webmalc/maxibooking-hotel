@@ -8,62 +8,52 @@ price.views.restriction.table.minGuest: 'Мин. количество госте
 price.views.restriction.table.maxBeforeArrival: 'Макс. дней до заезда'
 price.views.restriction.table.closedOnArrival: 'Нет заезда'
 price.views.restriction.table.closedOnDeparture: 'Нет выезда'
-price.views.restriction.table.closed: 'Закрыто'
-#restriction/generator html
-price.views.restriction.generator.small_title: 'генератор'
-#restriction/layout html
+price.views.restriction.table.closed: Закрыто
+price.views.restriction.generator.small_title: генератор
 price.views.restriction.layout.small_title: 'Условия и ограничения'
-#restriction/index html
-price.views.restriction.index.small_title: 'обзор'
-price.views.restriction.index.date: 'Даты'
+price.views.restriction.index.small_title: Обзор
+price.views.restriction.index.date: Даты
 price.views.restriction.index.type: 'Тип номера'
 price.views.restriction.index.rate: Тариф
-price.views.restriction.index.save: 'Сохранить'
+price.views.restriction.index.save: Сохранить
 price.views.restriction.index.random: 'Генератор условий и ограничений'
-price.views.restriction.index.cancel: 'Отмена'
-#promotion/ html
+price.views.restriction.index.cancel: Отмена
 price.views.promotion.edit.small_title: 'редактирование акции'
-price.views.promotion.layout.small_title: 'Акции'
-price.views.promotion.index.name: 'Название'
-price.views.promotion.index.individual: 'Индивидуальная'
-price.views.promotion.index.discount: 'Скидка'
+price.views.promotion.layout.small_title: Акции
+price.views.promotion.index.name: Название
+price.views.promotion.index.individual: Индивидуальная
+price.views.promotion.index.discount: Скидка
 price.views.promotion.index.adults: 'Взрослые бесплатно'
 price.views.promotion.index.children: 'Дети бесплатно'
-price.views.promotion.index.yes: 'Да'
+price.views.promotion.index.yes: Да
 price.views.promotion.index.edit: 'Редактирование записи'
 price.views.promotion.index.delete: 'Удаление записи'
 price.views.promotion.new.small_title: 'создание акции'
-#pricecache/ html
-price.views.priceCache.table.prices: 'Цена'
+price.views.priceCache.table.prices: Цена
 price.views.priceCache.table.isPersonPrice: 'Цена за человека?'
 price.views.priceCache.table.singlePrice: 'Цена 1-местного размещения'
-price.views.priceCache.generator.small_title: 'генератор'
-price.views.priceCache.layout.small_title: 'Цены'
-price.views.priceCache.index.small_title: 'Обзор'
-price.views.priceCache.index.date: 'Даты'
+price.views.priceCache.generator.small_title: генератор
+price.views.priceCache.layout.small_title: Цены
+price.views.priceCache.index.small_title: Обзор
+price.views.priceCache.index.date: Даты
 price.views.priceCache.index.type: 'Тип номера'
-price.views.priceCache.index.rate: 'Тариф'
-price.views.priceCache.index.save: 'Сохранить'
+price.views.priceCache.index.rate: Тариф
+price.views.priceCache.index.save: Сохранить
 price.views.priceCache.index.random: 'Генератор цен'
-price.views.priceCache.index.cancel: 'Отмена'
-
-#/overview html
+price.views.priceCache.index.cancel: Отмена
 price.views.overview.tabla.rooms: 'Номера в продаже'
 price.views.overview.tabla.tariff_rooms: 'Квоты по тарифам'
-price.views.overview.tabla.prices: 'Цены'
+price.views.overview.tabla.prices: Цены
 price.views.overview.tabla.restriction: 'Условия и ограничения'
 price.views.overview.layout.small_title: 'Номера и цены'
-
-price.views.overview.index.small_title: 'обзор'
-price.views.overview.index.date: 'Даты'
+price.views.overview.index.small_title: обзор
+price.views.overview.index.date: Даты
 price.views.overview.index.type: 'Тип номера'
-price.views.overview.index.rate: 'Тариф'
-
-#/ tariff filter
-tariff.filter.status: Статус тарифа
-tariff.filter.state: Показывать выключенные?
-
-#/ tariff-table
+price.views.overview.index.rate: Тариф
+price.views.overview.index.tab_name: Обзор
+price.views.overview.limits.tab_name: Лимиты
+tariff.filter.status: 'Статус тарифа'
+tariff.filter.state: 'Показывать выключенные?'
 tariff.table.name: Название
 tariff.table.base: База
 tariff.table.children: Ребенок
@@ -71,3 +61,12 @@ tariff.table.infant: Инфант
 tariff.table.terms: Сроки
 tariff.table.default: Основной
 tariff.table.online: Онлайн
+price.views.restruction.generator.small_title: генератор
+price.views.restruction.layout.small_title: 'Условия и ограничения'
+price.views.restruction.index.small_title: обзор
+price.views.restruction.index.date: Даты
+price.views.restruction.index.type: 'Тип номера'
+price.views.restruction.index.save: Сохранить
+price.views.restruction.index.random: 'Генератор условий и ограничений'
+price.views.restruction.index.cancel: Отмена
+tariffs.filter.small_title: обзор

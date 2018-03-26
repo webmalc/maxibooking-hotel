@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\MenuItem;
+use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
@@ -43,7 +44,7 @@ class Builder implements ContainerAwareInterface
 
 
 
-        if ($checker->isGranted('ROLE_DOCUMENTS_GENERATOR')) {
+        if ($checker->isGranted('ROLE_DOCUMENTS_GENERATOR') && $this->container->getParameter('locale') == 'ru') {
 
             $rootItem
                 ->addChild('Docs header', [
@@ -115,7 +116,6 @@ class Builder implements ContainerAwareInterface
             }
         }
 
-
         if(!$package->getIsLocked()) {
             $rootItem
                 ->addChild('Delete Header', [
@@ -132,12 +132,11 @@ class Builder implements ContainerAwareInterface
                     ->setLinkAttributes([
                         'class' => 'booking-delete-link',
                         'data-id' => $package->getId(),
-                        'data-toggle' => 'modal'
+                        'data-toggle' => 'modal',
+                        'data-order-id' => $package->getOrder()->getId()
                     ])
                     ->setAttributes([
                         'icon' => 'fa fa-trash-o',
-                        'class' => 'booking-delete-link',
-                        'data-id' => $package->getId()
                     ]);
             }
 
@@ -180,16 +179,7 @@ class Builder implements ContainerAwareInterface
         //$types = $generatorFactory->getAvailableTypes();
 
         $types = [
-            TemplateGeneratorFactory::TYPE_CONFIRMATION,
-            TemplateGeneratorFactory::TYPE_CONFIRMATION_EN,
-            TemplateGeneratorFactory::TYPE_REGISTRATION_CARD,
-            TemplateGeneratorFactory::TYPE_FMS_FORM_5,
             XlsGeneratorFactory::TYPE_NOTICE,
-            TemplateGeneratorFactory::TYPE_EVIDENCE,
-            TemplateGeneratorFactory::TYPE_FORM_1_G,
-            TemplateGeneratorFactory::TYPE_RECEIPT,
-            TemplateGeneratorFactory::TYPE_BILL,
-            TemplateGeneratorFactory::TYPE_ACT,
         ];
 
         foreach ($types as $type) {
@@ -224,9 +214,10 @@ class Builder implements ContainerAwareInterface
             return true;
         }
         $menu->addChild('Additional docs header', [
-            'label' => 'Шаблоны документов'
+            'label' => $translator->trans('mbh.package.builder.document_tempates')
         ])
         ->setAttribute('dropdown_header', true);
+        /** @var DocumentTemplate $doc */
         foreach ($customDocs as $doc) {
             $menu->addChild('doc_' . $doc->getId(), [
                 'label' => $doc->getName(),

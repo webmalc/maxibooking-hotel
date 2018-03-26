@@ -8,6 +8,9 @@ interface ChannelManagerConfigInterface
 {
     public function getIsEnabled();
 
+    /**
+     * @return Hotel
+     */
     public function getHotel();
 
     public function setHotel(Hotel $hotel);

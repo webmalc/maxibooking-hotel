@@ -2,15 +2,17 @@
 
 namespace MBH\Bundle\HotelBundle\Service;
 
+use MBH\Bundle\BillingBundle\Lib\Model\BillingRoom;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class RoomTypeManager
-
  */
 class RoomTypeManager
 {
@@ -64,6 +66,38 @@ class RoomTypeManager
         return $repo->fetch($hotel, $rooms);
     }
 
+    /**
+     * @param BillingRoom $billingRoom
+     * @param Hotel $hotel
+     * @param bool $withRooms
+     * @return RoomType
+     */
+    public function createByBillingRoom(BillingRoom $billingRoom, Hotel $hotel, bool $withRooms)
+    {
+        $roomType = new RoomType();
+        $roomType
+            ->setHotel($hotel)
+            ->setFullTitle($billingRoom->getName())
+            //TODO: Узнать про кол-во мест
+            ->setPlaces(2)
+            ->setAdditionalPlaces(0)
+        ;
+
+        $this->dm->persist($roomType);
+
+        if ($withRooms) {
+            for ($i = 1; $i <= $billingRoom->getRooms(); $i ++) {
+                $room = (new Room())
+                    ->setRoomType($roomType)
+                    ->setHotel($hotel)
+                    ->setFullTitle($i);
+
+                $this->dm->persist($room);
+            }
+        }
+
+        return $roomType;
+    }
 
     /**
      * @param $id

@@ -1,6 +1,7 @@
+{% set locale = app.request.locale %}
 {% spaceless %}
     <!DOCTYPE html>
-    <html lang="ru">
+    <html lang="{{ locale }}">
         <head>
             <meta charset="utf-8">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,6 +16,7 @@
                 {% stylesheets filter='cssrewrite, uglifycss'
                     'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
                     'assets/vendor/font-awesome/css/font-awesome.min.css'
+                    'assets/vendor/font-awesome-animation/src/font-awesome-animation.css'
                     'assets/vendor/select2/dist/css/select2.min.css'
                     'assets/vendor/bootstrap-switch/dist/css/bootstrap2/bootstrap-switch.min.css'
                     'assets/vendor/datatables/media/css/dataTables.bootstrap.min.css'
@@ -29,6 +31,7 @@
                     'assets/vendor/bootstrap-daterangepicker/daterangepicker.css'
                     '@MBHBaseBundle/Resources/public/css/app/*'
                     '@MBHBaseBundle/Resources/public/css/mbsuperfont/styles.less'
+                    '@MBHBaseBundle/Resources/public/css/app/enjoyhint.css'
                 %}
                 <link rel="stylesheet" href="{{ asset_url }}"/>
                 {% endstylesheets %}
@@ -55,23 +58,26 @@
 
         {% block scripts %}
             {#Client config set Date#}
-            {% set dateDatepickers = 'midnight'|date('d.m.Y') %}
-
-            {% if client_config().beginDate is not empty and client_config().beginDate is defined and  date(dateDatepickers) < date(client_config().beginDate)  %}
-                {% set dateDatepickers = client_config().beginDate|date('d.m.Y')  %}
-            {% endif %}
+            {% set datePickerBeginDate = client_config().getActualBeginDate()  %}
+            {% set searchBeginDate = client_config().getSearchInputBeginDate() %}
             <script>
                 var mbh = {
                     currency: {
                         icon: "{{ currency().icon }}",
-                        text: "{{ currency().text }}"
+                        text: "{{ currency().text|trans }}"
 
                     },
-                    startDatePick: '{{ dateDatepickers|date('d.m.Y') }}',
+                    justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }}, 
+                    startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
+                    searchBeginDate: '{{ searchBeginDate|date('d.m.Y') }}',
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
-                    utils: {}
+                    utils: {},
+                    canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
+                    showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }},
+                    currentHotel: "{{ get_current_hotel().id }}"
                 }
             </script>
+            {{ app.session.remove('mbh.justLogin') }}
 
             {% javascripts filter='uglifyjs2'
                 'assets/vendor/jquery/dist/jquery.min.js'
@@ -82,7 +88,6 @@
                 'assets/vendor/datatables/media/js/jquery.dataTables.min.js'
                 'assets/vendor/datatables/media/js/dataTables.bootstrap.min.js'
                 'assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js'
-                'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.ru.min.js'
                 'assets/vendor/fancybox/source/jquery.fancybox.js'
                 'assets/vendor/tinycolor/dist/tinycolor-min.js'
                 'assets/vendor/jquery.cookie/jquery.cookie.js'
@@ -102,15 +107,32 @@
                 'assets/vendor/admin-lte/plugins/fastclick/fastclick.min.js'
                 'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.js'
                 'assets/vendor/admin-lte/plugins/iCheck/icheck.min.js'
-                'assets/vendor/moment/moment.js'
-                'assets/vendor/moment/locale/ru.js'
+                'assets/vendor/moment/min/moment-with-locales.min.js'
                 'assets/vendor/bootstrap-daterangepicker/daterangepicker.js'
                 'assets/vendor/readmore-js/readmore.min.js'
                 'bundles/bazingajstranslation/js/translator.min.js'
-                'js/translations/front_messages/ru.js'
+                'assets/vendor/enjoyhint/enjoyhint.min.js'
             %}
+
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
+
+            {% if locale starts with 'en' %}
+                {% set bootstrapLocale = 'en-GB' %}
+                {% set select2Locale = 'en' %}
+                {% set frontMessagesLocale = 'en' %}
+            {% elseif locale starts with 'ru' %}
+                {% set bootstrapLocale = 'ru' %}
+                {% set select2Locale = 'ru' %}
+                {% set frontMessagesLocale = 'ru' %}
+            {% endif %}
+            {% set bootstrapLocaleFile = 'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.' ~ bootstrapLocale ~ '.min.js' %}
+            {% set select2LocaleFile = 'assets/vendor/select2/dist/js/i18n/' ~ select2Locale ~ '.js' %}
+            {% set frontMessagesFile = 'js/translations/front_messages/' ~ frontMessagesLocale ~ '.js' %}
+
+            <script type="text/javascript" src="{{ asset(bootstrapLocaleFile) }}"></script>
+            <script type="text/javascript" src="{{ asset(select2LocaleFile) }}"></script>
+            <script type="text/javascript" src="{{ asset(frontMessagesFile) }}"></script>
 
             <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js"></script>
@@ -131,9 +153,10 @@
             {% else %}
             <script src="{{ asset('js/fos_js_routes.js') }}"></script>
             {% endif %}
-
+            <script>
+                moment.locale(document.documentElement.lang);
+            </script>
         {% endblock %}
-
     </body>
 </html>
 {% endspaceless %}

@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ClientBundle\Document;
 
-
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -13,11 +12,8 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 /**
  * Class DocumentTemplate
-
- *
  * @ODM\Document(collection="DocumentTemplate")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
@@ -85,10 +81,13 @@ class DocumentTemplate extends Base
 
     /**
      * @param string $title
+     * @return DocumentTemplate
      */
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -101,10 +100,13 @@ class DocumentTemplate extends Base
 
     /**
      * @param string $content
+     * @return $this
      */
     public function setContent($content)
     {
         $this->content = $content;
+
+        return $this;
     }
 
     /**

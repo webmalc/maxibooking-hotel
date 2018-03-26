@@ -1,11 +1,11 @@
 views.cash.edit.new_document: 'создание документа #'
 views.cash.edit.edit_document: 'редактирование документа #'
-views.cash.edit.order_document: Документ заказа
-views.cash.index.period: 'Период'
+views.cash.edit.order_document: 'Документ заказа'
+views.cash.index.period: Период
 views.cash.index.filter.byPaidDate: 'По поступлению'
 views.cash.index.filter.byDocumentDate: 'По выставлению'
 views.cash.index.filter.byDeletedDate: 'По удалению'
-views.cash.index.document_list: 'список документов'
+views.cash.index.document_list: 'Список документов'
 views.cash.index.note: Комментарий
 views.cash.index.reservation: Заказ
 views.cash.index.income: Приход
@@ -17,28 +17,25 @@ views.cash.index.is_updated: Обновлён
 views.cash.index.removed: Удален
 views.cash.index.payment_way: 'Способ оплаты'
 views.cash.index.operation_type: 'Вид операции'
-views.cash.index.article: 'Статья'
+views.cash.index.article: Статья
 views.cash.index.date: Дата
 views.cash.index.no_confirmed: 'Не подтверждено'
-views.cash.index.doc: 'Док.'
+views.cash.index.doc: Док.
 views.cash.jsonButtons.confirm_payment: 'Подтверждение платежа'
-views.cash.jsonButtons.are_you_sure_confirm_payment: 'Точно подтвердить платеж на сумму <b> %total_sum% RUR</b>?'
+views.cash.jsonButtons.are_you_sure_confirm_payment: 'Подтвердить платеж на сумму <b> %total_sum% </b>'
 views.cash.jsonButtons.confirm: Подтвердить
 views.cash.jsonButtons.edit_record: 'Редактирование записи'
 views.cash.jsonButtons.delete_record: 'Удаление записи'
 views.cash.layout.cash: Касса
-views.cash.index.cash_balance: Остаток по кассе
+views.cash.index.cash_balance: 'Остаток по кассе'
 views.cash.index.create: Создать
-views.cash.index.upload_all: Выгрузить все
-
-
-views.cash.index.show_no_paid: Показать неоплаченные
-views.cash.index.show_not_confirmed: Показать только неподтвержденные
-views.cash.index.show_deleted: Показать удаленные
-views.cash.index.byDay: По дням
+views.cash.index.upload_all: 'Выгрузить все'
+views.cash.index.show_no_paid: 'Показать неоплаченные'
+views.cash.index.show_not_confirmed: 'Показать только неподтвержденные'
+views.cash.index.show_deleted: 'Показать удаленные'
+views.cash.index.byDay: 'По дням'
 views.cash.index.result: Итого
-views.cash.index.type: Движение д/с
-
-cashDocument.method.cash: "Наличные"
-cashDocument.method.cashless: "Безнал"
-cashDocument.method.electronic: "Электронный"
+views.cash.index.type: 'Движение д/с'
+cashDocument.method.cash: Наличные
+cashDocument.method.cashless: Безнал
+cashDocument.method.electronic: Электронный

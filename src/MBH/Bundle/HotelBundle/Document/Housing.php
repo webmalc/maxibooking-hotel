@@ -50,11 +50,10 @@ class Housing extends Base
     protected $internalName;
 
     /**
-     * @var City
-     * @ODM\ReferenceOne(targetDocument="City")
-     * @ODM\Index()
+     * @var int
+     * @ODM\Field(type="string")
      */
-    protected $city;
+    protected $cityId;
 
     /**
      * @var string
@@ -157,20 +156,20 @@ class Housing extends Base
     }
 
     /**
-     * @return City
+     * @return string
      */
-    public function getCity()
+    public function getCityId()
     {
-        return $this->city;
+        return $this->cityId;
     }
 
     /**
-     * @param City $city
+     * @param string $cityId
      * @return self
      */
-    public function setCity(City $city)
+    public function setCityId($cityId)
     {
-        $this->city = $city;
+        $this->cityId = $cityId;
 
         return $this;
     }

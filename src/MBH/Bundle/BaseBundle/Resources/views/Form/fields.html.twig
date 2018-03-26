@@ -22,10 +22,9 @@
         {% if form.vars.groups is defined %}
             {% set groups = form.vars.groups %}
         {% endif %}
-
         {% for group, items in groups %}
-
-            <div class="box box-default box-solid">
+            {% if group != 'no-group' %}
+            <div class="box box-default box-solid" {% if form.vars.nonDisplayGroups is defined and group in form.vars.nonDisplayGroups %} style="display: none;" {% endif %}>
 
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ group|trans }}</h3>
@@ -37,16 +36,23 @@
                 </div>
 
                 <div class="box-body">
-                    {% for item in items %}
-                        {{ form_row(form[item]) }}
-                    {% endfor %}
+                    {{ block('drawForm') }}
                 </div>
             </div>
+            {% else %}
+                {{ block('drawForm') }}
+            {% endif %}
         {% endfor %}
 
         {{ form_rest(form) }}
     </div>
 {% endblock form_widget_compound %}
+
+{% block drawForm %}
+    {% for item in items %}
+        {{ form_row(form[item]) }}
+    {% endfor %}
+{% endblock %}
 
 {% block form_row %}
     {% spaceless %}
@@ -67,6 +73,10 @@
         </div>
     {% endspaceless %}
 {% endblock form_row %}
+
+{% block time_widget %}
+    <div class="bootstrap-timepicker timepicker" style="width: 60px">{{- form_widget(form) -}}</div>
+{% endblock %}
 
 {%- block datetime_widget -%}
     {% if widget == 'single_text' %}

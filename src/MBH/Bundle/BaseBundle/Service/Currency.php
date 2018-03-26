@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -99,7 +100,13 @@ class Currency
         $date ?: $date = new \DateTime('midnight');
         $currency = $this->get($code, $date);
 
-        return round(($amount / $currency->getRatio()) * $this->container->getParameter('mbh.currency.ratio.fix'), 2);
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $this->container
+            ->get('doctrine.odm.mongodb.document_manager')
+            ->getRepository('MBHClientBundle:ClientConfig')
+            ->fetchConfig();
+
+        return round(($amount / $currency->getRatio()) * $clientConfig->getCurrencyRatioFix(), 2);
     }
 
     /**
@@ -107,6 +114,12 @@ class Currency
      */
     public function info()
     {
-        return $this->container->getParameter('mbh.currency.data')[$this->container->getParameter('locale.currency')];
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $this->container
+            ->get('doctrine.odm.mongodb.document_manager')
+            ->getRepository('MBHClientBundle:ClientConfig')
+            ->fetchConfig();
+
+        return $this->container->getParameter('mbh.currency.data')[$clientConfig->getCurrency()];
     }
 }

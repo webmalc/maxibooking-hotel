@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -9,6 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
@@ -134,7 +136,7 @@ class Order extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      * @ODM\Index()
      */
@@ -143,7 +145,7 @@ class Order extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      * @ODM\Index()
      */
@@ -177,7 +179,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "101Hotels","oktogo"},
+     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "101Hotels","oktogo"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()
@@ -255,8 +257,9 @@ class Order extends Base
 
     public function __construct()
     {
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->documents = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->packages = new ArrayCollection();
+        $this->documents = new ArrayCollection();
+        $this->cashDocuments = new ArrayCollection();
     }
 
     public static function getOnlinePaymentTypesList()
@@ -287,7 +290,7 @@ class Order extends Base
     /**
      * Get packages
      *
-     * @return Package[] $packages
+     * @return Package[]|ArrayCollection $packages
      */
     public function getPackages()
     {
@@ -791,7 +794,7 @@ class Order extends Base
     }
 
     /**
-     * @return PayerInterface|null
+     * @return RecipientInterface|PayerInterface|null
      */
     public function getPayer()
     {
@@ -994,4 +997,21 @@ class Order extends Base
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function getJsonSerialized()
+    {
+        $packages = array_map(function(Package $package) {
+            return $package->getJsonSerialized();
+        }, $this->getPackages()->toArray());
+
+        return [
+            'id' => $this->getId(),
+            'note' => $this->getNote(),
+            'mainTourist' => $this->getMainTourist()->jsonSerialize(),
+            'price' => $this->getPrice(),
+            'packages' => $packages
+        ];
+    }
 }

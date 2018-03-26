@@ -1,16 +1,26 @@
 {% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
 
-{% set small_title = "редактирование гостя #" ~ tourist.id %}
+{% set small_title = 'tourist.edit_unwelcome'|trans ~ ' ' ~ tourist.id %}
 {% set layout = 'tabs' %}
 
 {% block content %}
     {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 5, 'entity': tourist} %}
 
     <div class="tab-content">
+        {% if tourist.isUnwelcome %}
+            <div class="bg-gray color-palette alert">
+                <i class="fa fa-user-secret"></i> {{ 'tourist.edit_unwelcome.added_client_to_black_list'|trans}}
+                <div class="pull-right">
+                    <a class="btn btn-xs btn-danger delete-link" href="{{ path('tourist_delete_unwelcome', {'id': tourist.id}) }}" title="" data-toggle="tooltip" data-original-title="{{ 'unwelcome.actions.delete'|trans }}">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </div>
+            </div>
+        {% else %}
         {% if isTouristValid %}
             {% if unwelcome.isMy %}
                 <div class="bg-gray color-palette alert">
-                        <i class="fa fa-user-secret"></i> Вы внесли клиента в список нежелательных гостей.
+                        <i class="fa fa-user-secret"></i> {{ 'tourist.edit_unwelcome.added_client_to_black_list'|trans}}
                     <div class="pull-right">
                         <a class="btn btn-xs btn-danger delete-link" href="{{ path('tourist_delete_unwelcome', {'id': tourist.id}) }}" title="" data-toggle="tooltip" data-original-title="{{ 'unwelcome.actions.delete'|trans }}">
                             <i class="fa fa-trash-o"></i>
@@ -21,11 +31,7 @@
 
             <div class="bg-gray color-palette alert">
                 <i class="fa fa-exclamation"></i>
-                Внесение информации в список нежелательных гостей должно
-                производиться только компетентными сотрудниками, максимально объективно и беспристрастно.
-                Не допускаются оскорбительные, неуважительные выражения, какие-либо выводы, рекомендации и определения,
-                которые могут выноситься только судебным органом, раскрытие какой-либо персональной информации клиента, а также упоминания фактов, не имеющих
-                официального подтверждения в виде акта, протокола, видеофиксации событий или ином виде, составленных в надлежащей форме и/или компетентными органами.
+                {{ 'tourist.edit_unwelcome.attention'|trans}}
             </div>
 
             {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}),  'attr': {'class': 'form-horizontal'}}) }}
@@ -42,7 +48,7 @@
             {{ form_end(form) }}
         {% else %}
             <div class="alert alert-warning alert-dismissable">
-                Укажите основной документ удостоверения личности
+                {{ 'tourist.edit_unwelcome.specify_main_document'|trans}}
             </div>
         {% endif %}
 
@@ -50,7 +56,7 @@
 
             <div class="box box-default box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">{{ 'mbhpackagebundle.view.tourist.editunwelcome.zhaloby.drugikh.oteley'|trans }} </h3>
+                    <h3 class="box-title">{{ 'tourist.edit_unwelcome.complains_of_other_hotels'|trans}}</h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool form-group-collapse" data-widget="collapse" id="mbh_package_tourist_unwelcome_list">
                             <i class="fa fa-minus"></i>
@@ -61,11 +67,11 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Отель</th>
-                        <th>{{ 'mbhpackagebundle.view.tourist.editunwelcome.period.prozhivaniya'|trans }} </th>
-                        <th>{{ 'mbhpackagebundle.view.tourist.editunwelcome.otsenki'|trans }} </th>
-                        <th>{{ 'mbhpackagebundle.view.tourist.editunwelcome.grazhdanstvo.gostya'|trans }} </th>
-                        <th>{{ 'mbhpackagebundle.view.tourist.editunwelcome.dobavleno'|trans }} </th>
+                        <th>{{ 'tourist.edit_unwelcome.hotel'|trans}}</th>
+                        <th>{{ 'tourist.edit_unwelcome.accommodation_period'|trans}}</th>
+                        <th>{{ 'tourist.edit_unwelcome.assessments'|trans}}</th>
+                        <th>{{ 'tourist.edit_unwelcome.citizenship'|trans}}</th>
+                        <th>{{ 'tourist.edit_unwelcome.added'|trans}}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -74,7 +80,9 @@
                             <td>
                                 {% if unwelcome.hotel %}
                                     <div>{{ unwelcome.hotel.title }}</div>
-                                    <small>{{ unwelcome.hotel.city }}</small>
+                                    {% if unwelcome.hotel.cityId %}
+                                        <small>{{ get_city(unwelcome.hotel.cityId).name }}</small>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                             <td>
@@ -106,6 +114,7 @@
                 <div>
             </div>
         {% endif %}
+                    {% endif %}
     </div>
 
 {% endblock %}

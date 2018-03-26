@@ -1,6 +1,8 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -20,6 +22,9 @@ class Extension extends \Twig_Extension
     * @var \Doctrine\ODM\MongoDB\DocumentManager
     */
     protected $dm;
+
+    private $clientConfig;
+    private $isClientConfigInit = false;
 
     public function __construct(ContainerInterface $container)
     {
@@ -89,10 +94,56 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @param $serviceId
+     * @return string
+     */
+    public function getBillingService($serviceId)
+    {
+        return $this->container->get('mbh.billing.api')->getServiceById($serviceId);
+    }
+
+    /**
+     * @param $authorityOrganId
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\AuthorityOrgan
+     */
+    public function getAuthorityOrganById($authorityOrganId)
+    {
+        return $this->container->get('mbh.billing.api')->getAuthorityOrganById($authorityOrganId);
+    }
+
+    /**
+     * @param $countryTld
+     * @param null $locale
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Country
+     */
+    public function getCountryByTld($countryTld, $locale = null)
+    {
+        return $this->container->get('mbh.billing.api')->getCountryByTld($countryTld, $locale);
+    }
+
+    /**
+     * @param $regionId
+     * @param null $locale
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Region
+     */
+    public function getRegionById($regionId, $locale = null)
+    {
+        return $this->container->get('mbh.billing.api')->getRegionById($regionId, $locale);
+    }
+
+    /**
+     * @param $cityId
+     * @param null $locale
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\City
+     */
+    public function getCityById($cityId, $locale = null)
+    {
+        return $this->container->get('mbh.billing.api')->getCityById($cityId, $locale);
+    }
+
+    /**
      * @param \MongoDate $mongoDate
      * @return \DateTime
-     *
-
      */
     public function convertMongoDate(\MongoDate $mongoDate)
     {
@@ -113,11 +164,41 @@ class Extension extends \Twig_Extension
     }
 
     /**
-     * @return array
+     * @return ClientConfig
      */
-    public function clientConfig()
+    public function getClientConfig()
     {
-        return $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        if (!$this->isClientConfigInit) {
+            $this->clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+            $this->isClientConfigInit = true;
+        }
+
+        return $this->clientConfig;
+    }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel|null
+     */
+    public function getCurrentHotel()
+    {
+        return $this->container->get('mbh.hotel.selector')->getSelected();
+    }
+
+    public function stringToDate($dateString, $dateFormat = 'd.m.Y')
+    {
+        return \DateTime::createFromFormat($dateFormat, $dateString);
+    }
+
+    public function getFilterBeginDate()
+    {
+        $now = new \DateTime("midnight");
+        $config = $this->getClientConfig();
+        $beginDate = $config->getBeginDate();
+        if (!$beginDate || $beginDate < $now) {
+            return $now;
+        }
+
+        return $beginDate;
     }
 
     /**
@@ -126,7 +207,7 @@ class Extension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            'mbh_format' => new \Twig_SimpleFilter('mbh_format', [$this, 'format'], ['is_safe' => array('html')]),
+            'mbh_format' => new \Twig_SimpleFilter('mbh_format', [$this, 'format'], ['is_safe' => ['html']]),
             'mbh_md5' => new \Twig_SimpleFilter('mbh_md5', [$this, 'md5']),
             'num2str' => new \Twig_SimpleFilter('num2str', [$this, 'num2str']),
             'num2enStr' => new \Twig_SimpleFilter('num2enStr', [$this, 'num2enStr']),
@@ -134,6 +215,7 @@ class Extension extends \Twig_Extension
             'convertMongoDate' => new \Twig_SimpleFilter('convertMongoDate', [$this, 'convertMongoDate']),
             'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
+            'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate'])
         ];
     }
 
@@ -150,7 +232,12 @@ class Extension extends \Twig_Extension
             $format[] .= '%i {minutes}';
         }
         $format = implode(' ', $format);
-        $format = str_replace(['{days}', '{hours}', '{minutes}'], ['д.', 'ч.', 'мин.'], $format);
+        $format = str_replace(['{days}', '{hours}', '{minutes}'], [
+            $this->translator->trans('twig.extensiion.day_abbr'),
+            $this->translator->trans('twig.extensiion.hour_abbr'),
+            $this->translator->trans('twig.extensiion.minute_abbr')
+        ], $format);
+
         return $interval->format($format);
     }
 
@@ -162,6 +249,22 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @return \MBH\Bundle\BillingBundle\Lib\Model\Client
+     */
+    public function getClient()
+    {
+        return $this->container->get('mbh.client_manager')->getClient();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRussianClient()
+    {
+        return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+    }
+
+    /**
      * @return array
      */
     public function getFunctions()
@@ -169,9 +272,18 @@ class Extension extends \Twig_Extension
         return [
             'currency' => new \Twig_SimpleFunction('currency', [$this, 'currency'], ['is_safe' => ['html']]),
             'user_cash' => new \Twig_SimpleFunction('user_cash', [$this, 'cashDocuments'], ['is_safe' => ['html']]),
-            'client_config' => new \Twig_SimpleFunction('client_config', [$this, 'clientConfig']),
+            'client_config' => new \Twig_SimpleFunction('client_config', [$this, 'getClientConfig']),
+            'filter_begin_date' => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
             'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
+            'get_authority_organ' => new \Twig_SimpleFunction('get_authority_organ', [$this, 'getAuthorityOrganById'], ['is_safe' => ['html']]),
+            'get_country' => new \Twig_SimpleFunction('get_country', [$this, 'getCountryByTld'], ['is_safe' => ['html']]),
+            'get_region' => new \Twig_SimpleFunction('get_region', [$this, 'getRegionById'], ['is_safe' => ['html']]),
+            'get_city' => new \Twig_SimpleFunction('get_city', [$this, 'getCityById'], ['is_safe' => ['html']]),
+            'get_client' => new \Twig_SimpleFunction('get_client', [$this, 'getClient'], ['is_safe' => ['html']]),
+            'is_russian_client' => new \Twig_SimpleFunction('is_russian_client', [$this, 'isRussianClient'], ['is_safe' => ['html']]),
+            'get_service' => new \Twig_SimpleFunction('get_service', [$this, 'getBillingService'], ['is_safe' => ['html']]),
+            'get_current_hotel' => new \Twig_SimpleFunction('get_current_hotel', [$this, 'getCurrentHotel'], ['is_safe' => ['html']]),
         ];
     }
 

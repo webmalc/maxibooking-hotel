@@ -100,6 +100,7 @@ class CashDocumentRepository extends DocumentRepository
     private function queryCriteriaToBuilder(CashDocumentQueryCriteria $criteria)
     {
         $qb = $this->createQueryBuilder();
+        $dm = $this->getDocumentManager();
 
         if ($criteria->skip) {
             $qb->skip($criteria->skip);
@@ -121,10 +122,10 @@ class CashDocumentRepository extends DocumentRepository
             $qb->field('method')->in($criteria->methods);
         }
 
-        if($criteria->article) {
+        if ($criteria->article) {
             $ids = Helper::toIds($criteria->article->getChildren());
             $ids[] = $criteria->article->getId();
-            foreach($criteria->article->getChildren() as $child) {
+            foreach ($criteria->article->getChildren() as $child) {
                 $ids = array_merge($ids, Helper::toIds($child->getChildren()));
             }
 
@@ -142,6 +143,37 @@ class CashDocumentRepository extends DocumentRepository
         if ($criteria->search) {
             $qb->addOr($qb->expr()->field('total')->equals((int)$criteria->search));
             $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $criteria->search . '.*/ui')));
+            $qb->addOr($qb->expr()->field('number')->equals(new \MongoRegex('/.*' . $criteria->search . '.*/ui')));
+
+            if (!is_numeric($criteria->search)) {
+                $tourists = $dm->getRepository('MBHPackageBundle:Tourist')
+                    ->createQueryBuilder()
+                    ->field('fullName')->equals(new \MongoRegex('/^.*' . $criteria->search . '.*/ui'))
+                    ->getQuery()
+                    ->execute();
+
+                $touristsIds = array_map(function ($tourist) {
+                    return $tourist->getId();
+                }, $tourists->toArray());
+
+                if (count($touristsIds)) {
+                    $qb->addOr($qb->expr()->field('touristPayer.id')->in($touristsIds));
+                }
+
+                $organizations = $dm->getRepository('MBHPackageBundle:Organization')
+                    ->createQueryBuilder()
+                    ->field('name')->equals(new \MongoRegex('/^.*' . $criteria->search . '.*/ui'))
+                    ->getQuery()
+                    ->execute();
+
+                $organizationsIds = array_map(function ($organization) {
+                    return $organization->getId();
+                }, $organizations->toArray());
+
+                if (count($organizationsIds)) {
+                    $qb->addOr($qb->expr()->field('organizationPayer.id')->in($organizationsIds));
+                }
+            }
         }
 
         if (isset($criteria->isConfirmed)) {
@@ -160,11 +192,11 @@ class CashDocumentRepository extends DocumentRepository
             if ($criteria->orderIds) {
                 $qb->field('order.id')->in($criteria->orderIds);
             }
-        } elseif($criteria->type == CashDocumentQueryCriteria::TYPE_BY_OTHER) {
+        } elseif ($criteria->type == CashDocumentQueryCriteria::TYPE_BY_OTHER) {
             $qb->field('order')->exists(false);
         }
 
-        if($criteria->deleted && $this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+        if ($criteria->deleted && $this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->disable('softdeleteable');
         }
 

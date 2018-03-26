@@ -1,0 +1,20 @@
+# Не учитывается окружение. Все делаем пока в dev
+- name: Folder
+  file:
+    path: /var/www/mbh
+    state: directory
+    mode: 0755
+    owner: vagrant
+
+- name: Git pull
+  git:
+    accept_hostkey: true
+    dest: '{{ project_folder }}'
+    clone: true
+    force: yes
+    update: yes
+    repo: '{{ repo }}'
+    version: master
+
+- include_role:
+    name: project_setup

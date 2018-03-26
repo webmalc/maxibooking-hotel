@@ -1,4 +1,5 @@
 <?php
+
 namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
@@ -14,7 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class TaskData
-
  */
 class TaskData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
@@ -58,35 +58,52 @@ class TaskData extends AbstractFixture implements OrderedFixtureInterface, Conta
     {
         /** @var DocumentRepository $roomStatusRepository */
         $roomStatusRepository = $manager->getRepository('MBHHotelBundle:RoomStatus');
-        $taskTypeCategoryRepository = $manager->getRepository('MBHHotelBundle:TaskTypeCategory');
-        $taskTypeRepository = $manager->getRepository('MBHHotelBundle:TaskType');
         $translator = $this->container->get('translator');
+        $translationRepository = $manager->getRepository('GedmoTranslatable:Translation');
+        $locales = $this->container->getParameter('mbh.languages');
 
         $repairStatusList = [];
-        foreach($this->getRoomStatuses() as $roomStatus) {
-            $repairStatus = new RoomStatus();
-            $repairStatus
-                ->setCode($roomStatus['code'])
-                ->setTitle($this->container->get('translator')->trans($roomStatus['title']))
+        foreach ($this->getRoomStatuses() as $roomStatusData) {
+            $roomStatus = new RoomStatus();
+            $roomStatus
+                ->setCode($roomStatusData['code'])
+                ->setTitle($translator->trans($roomStatusData['title']))
                 ->setHotel($hotel);
             $isNotExists = $roomStatusRepository->createQueryBuilder()
-                    ->field('code')->equals($repairStatus->getCode())
+                    ->field('code')->equals($roomStatus->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
                     ->getQuery()->count() == 0;
 
             if ($isNotExists) {
-                $manager->persist($repairStatus);
-                $repairStatusList[$repairStatus->getCode()] = $repairStatus;
+                foreach ($locales as $locale) {
+                    $translationRepository
+                        ->translate($roomStatus, 'title', $locale, $translator->trans($roomStatusData['title'], [], null, $locale));
+                }
+                $manager->persist($roomStatus);
+                $repairStatusList[$roomStatus->getCode()] = $roomStatus;
             }
         }
 
         $category = new TaskTypeCategory();
-
         $category->setIsSystem(true)
             ->setCode('clean')
             ->setTitle($translator->trans('mbhhotelbundle.taskData.cleaning'))
             ->setFullTitle($translator->trans('mbhhotelbundle.taskData.place_cleaning'))
             ->setHotel($hotel);
+
+        $taskTypeCategoryRepository = $manager->getRepository('MBHHotelBundle:TaskTypeCategory');
+        if ($taskTypeCategoryRepository->createQueryBuilder()
+                ->field('code')->equals($category->getCode())
+                ->field('hotel.id')->equals($hotel->getId())
+                ->getQuery()->count() == 0
+        ) {
+            foreach ($locales as $locale) {
+                $translationRepository
+                    ->translate($category, 'title', $locale, $translator->trans('mbhhotelbundle.taskData.cleaning', [], null, $locale))
+                    ->translate($category, 'fullTitle', $locale, $translator->trans('mbhhotelbundle.taskData.place_cleaning', [], null, $locale));
+            }
+            $manager->persist($category);
+        }
 
         $taskType = new TaskType();
         $staff = $manager->getRepository('MBHUserBundle:Group')->findOneBy(['code' => 'staff']);
@@ -96,22 +113,22 @@ class TaskData extends AbstractFixture implements OrderedFixtureInterface, Conta
             ->setCategory($category)
             ->setDefaultUserGroup($staff)
             ->setHotel($hotel);
-        if(isset($repairStatusList['cleaning'])) {
+        if (isset($repairStatusList['cleaning'])) {
             $taskType->setRoomStatus($repairStatusList['cleaning']);
         }
 
-        if ($taskTypeCategoryRepository->createQueryBuilder()
-                ->field('code')->equals($category->getCode())
-                ->field('hotel.id')->equals($hotel->getId())
-                ->getQuery()->count() == 0
-        ) {
-            $manager->persist($category);
-        }
+        $taskTypeRepository = $manager->getRepository('MBHHotelBundle:TaskType');
+
+
         if ($taskTypeRepository->createQueryBuilder()
                 ->field('code')->equals($taskType->getCode())
                 ->field('hotel.id')->equals($hotel->getId())
                 ->getQuery()->count() == 0
         ) {
+            foreach ($locales as $locale) {
+                $translationRepository
+                    ->translate($taskType, 'title', $locale, $translator->trans('mbhhotelbundle.taskData.clean_room', [], null, $locale));
+            }
             $manager->persist($taskType);
         }
         $manager->flush();

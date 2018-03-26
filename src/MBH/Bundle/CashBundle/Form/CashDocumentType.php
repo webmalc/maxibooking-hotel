@@ -4,8 +4,11 @@ namespace MBH\Bundle\CashBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -14,27 +17,42 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class CashDocumentType
-
  */
 class CashDocumentType extends AbstractType
 {
-    /**
-     * @var DocumentManager
-     */
+    private $translator;
+
+    /** @var  DocumentManager */
     protected $documentManager;
+    /** @var  array */
+    private $methods;
+    private $operations;
+
+    public function __construct(TranslatorInterface $translator, DocumentManager $dm, array $methods, array $operations)
+    {
+        $this->translator = $translator;
+        $this->documentManager = $dm;
+        $this->methods = $methods;
+        $this->operations = $operations;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $payers = [];
-        $this->documentManager = $options['dm'];
+        $clientConfig = $this->documentManager->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        /** @var CashDocument $cashDocument */
+        $cashDocument = $builder->getData();
+
+        /** @var PayerInterface $payer */
         foreach ($options['payers'] as $payer) {
             $text = $payer->getName();
             if ($payer instanceof Organization) {
                 $prefix = 'org';
-                $text .= ' (' . 'form.cashDocumentType.inn' . ' ' . $payer->getInn() . ') ' . $payer->getDirectorFio();
+                $text .= ' (' . $this->translator->trans('form.cashDocumentType.inn') . ' ' . $payer->getInn() . ') ' . $payer->getDirectorFio();
             } elseif ($payer instanceof Tourist) {
                 $prefix = 'tourist';
                 $text .= $payer->getBirthday() ? ' ' . $payer->getBirthday()->format('d.m.Y') : '';
@@ -45,8 +63,13 @@ class CashDocumentType extends AbstractType
             $payers[$prefix . '_' . $payer->getId()] = $text;
         }
 
+        $translatedMethods = [];
+        foreach ($this->methods as $index => $methodName) {
+            $translatedMethods[$index] = $this->translator->trans($methodName, [], 'MBHCashBundle');
+        }
+
         $builder
-            ->add('payer_select', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('payer_select', InvertChoiceType::class, [
                 'label' => 'form.cashDocumentType.payer',
                 'required' => true,
                 'mapped' => false,
@@ -65,13 +88,13 @@ class CashDocumentType extends AbstractType
             ->add('touristPayer', HiddenType::class, [
                 'required' => false,
             ])
-            ->add('operation', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('operation', InvertChoiceType::class, [
                 'label' => 'form.cashDocumentType.operation_type',
                 'required' => true,
                 'multiple' => false,
                 'expanded' => true,
                 'group' => $options['groupName'],
-                'choices' => $options['operations']
+                'choices' => $this->operations
             ])
             ->add('total', TextType::class, [
                 'label' => 'form.cashDocumentType.sum',
@@ -79,13 +102,13 @@ class CashDocumentType extends AbstractType
                 'group' => $options['groupName'],
                 'attr' => ['class' => 'price-spinner'],
             ])
-            ->add('method', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('method', InvertChoiceType::class, [
                 'label' => 'form.cashDocumentType.payment_way',
                 'required' => true,
                 'multiple' => false,
                 'expanded' => true,
                 'group' => $options['groupName'],
-                'choices' => $options['methods']
+                'choices' => $translatedMethods
             ])
             ->add('document_date', DateType::class, [
                 'label' => 'form.cashDocumentType.document_date',
@@ -99,6 +122,16 @@ class CashDocumentType extends AbstractType
                 'label' => 'form.cashDocumentType.is_paid',
                 'required' => false,
                 'group' => $options['groupName'],
+            ])
+            ->add(
+                'isSendMail', CheckboxType::class, [
+                'label' => 'form.cashDocumentType.is_send_mail.label',
+                'help' => 'form.cashDocumentType.is_send_mail.help',
+                'required' => false,
+                'group' => $options['groupName'],
+                'data' => !is_null($cashDocument) && !is_null($cashDocument->isSendMail())
+                    ? $cashDocument->isSendMail()
+                    : $clientConfig->isSendMailAtPaymentConfirmation()
             ])
             ->add('paid_date', DateType::class, [
                 'label' => 'form.cashDocumentType.paid_date',
@@ -126,13 +159,10 @@ class CashDocumentType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\CashBundle\Document\CashDocument',
-            'methods' => [],
-            'operations' => [],
             'groupName' => null,
             'payer' => null,
             'payers' => [],
             'number' => true,
-            'dm' => null,
         ]);
     }
 

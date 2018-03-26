@@ -1,12 +1,28 @@
+index.html
 azovsky_remote/
+develop_folder/
 /web/test
 scripts/deploy_to_test.sh
 /scripts/upload
 /web/bundles/
 /app/config/parameters.yml
+/app/config/secrets.yml
+/app/config/clients/*
+!app/config/clients/.gitkeep
+!app/config/clients/template_db_for_tests.env
+!app/config/clients/maxibooking.env.dist
+app/config/database.env
 /var/bootstrap.php.cache
 /var/cache/*
 /var/logs/*
+/var/clients/*
+!.gitkeep
+
+.ansible/*.retry
+
+
+
+/src/MBH/Bundle/TestBundle
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 /build/
@@ -31,20 +47,26 @@ nbproject/
 /web/demo
 /web/index.html
 .idea/
-/parameters.yml
-parameters.yml
 /protectedUpload/1C/*
 /protectedUpload/orderDocuments/*
 /protectedUpload/vegaDocuments/*
+/protectedUpload/clients/*
+!/protectedUpload/clients/.gitkeep
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
 web/online
 app/supervisor
 docker_zalex
+web/clients/
+!web/clients/.gitkeep
+backup/
+src/MBH/Bundle/TestBundle/
+docker/php-fpm/keys/*
+!docker/php-fpm/keys/.gitkeep
+docker/nginx/fastcgi_param_client
 
-#for new multiinstall
-/app/config/clients
-/var/clients
+
+
 
 #Eclipse
 tmp/
@@ -111,4 +133,10 @@ ctags
 env
 gtags
 
+scripts/custom/
 
+.vagrant/
+Vagrantfile
+*-console.log
+
+.ansible/default_vars.yml

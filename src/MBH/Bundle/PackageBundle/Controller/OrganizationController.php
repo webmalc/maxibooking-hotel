@@ -2,19 +2,19 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-
 use Doctrine\MongoDB\Query\Expr;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 
+use MBH\Bundle\BaseBundle\Document\ProtectedFile;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Form\OrganizationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -125,10 +125,11 @@ class OrganizationController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
+                /** @var string|null $clientName */
                 $this->dm->persist($organization);
                 $this->dm->flush();
 
-                $organization->upload();
+                $this->addFlash('success', 'controller.organization_controller.organization_successfully_created');
 
                 return $this->redirect($this->generateUrl('organizations', ['type' => $organization->getType()]));
             }
@@ -144,18 +145,20 @@ class OrganizationController extends Controller
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ORGANIZATION_EDIT')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
-     * @Template()
+     * @Template("@MBHPackage/Organization/edit.html.twig")
+     * @param Organization $organization
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAction(Organization $organization, Request $request)
     {
-        $imageUrl = $organization->getStamp() ? $this->generateUrl('stamp', ['id' => $organization->getId()]) : null;
+        $redirectTo = $request->get('redirectTo');
 
         $form = $this->createForm(OrganizationType::class, $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
             'id' => $organization->getId(),
             'type' => $organization->getType(),
             'scenario' => OrganizationType::SCENARIO_EDIT,
-            'imageUrl' => $imageUrl,
             'dm' => $this->dm
         ]);
 
@@ -163,29 +166,26 @@ class OrganizationController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $this->dm->persist($organization);
                 $this->dm->flush();
+                $this->addFlash('success', 'controller.organization_controller.organization_successfully_edited');
 
-                $imagine = new \Imagine\Gd\Imagine();
-                $size = new \Imagine\Image\Box(400, 200);
-                $mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
-                if($stamp = $organization->getStamp() and $stamp instanceof UploadedFile) {
-                    $imagine->open($stamp->getPathname())->thumbnail($size, $mode)->save($stamp->getPathname(), [
-                        'format' => $stamp->getClientOriginalExtension()
-                    ]);
+                if ($this->isSavedRequest()) {
+                    $params = ['id' => $organization->getId()];
+                    if (!empty($redirectTo)) {
+                        $params['redirectTo'] = $redirectTo;
+                    }
 
-                    $organization->upload();
+                    return $this->redirectToRoute('organization_edit', $params);
                 }
 
-                return $this->isSavedRequest() ?
-                    $this->redirectToRoute('organization_edit', ['id' => $organization->getId()]) :
-                    $this->redirectToRoute('organizations');
+                return empty($redirectTo) ? $this->redirectToRoute('organizations') : $this->redirect($redirectTo);
             }
         }
 
         return [
             'form' => $form->createView(),
             'organization' => $organization,
+            'redirectTo' => $redirectTo
         ];
     }
 
@@ -195,13 +195,13 @@ class OrganizationController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_ORGANIZATION_DELETE')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
-     * @Template()
      * @param Organization $organization
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Organization $organization)
     {
         $response = $this->deleteEntity($organization->getId(), 'MBHPackageBundle:Organization', 'organizations');
+
         return $response;
     }
 
@@ -237,7 +237,7 @@ class OrganizationController extends Controller
             'inn',
         ];
 
-        $queryBuilder = $this->dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder('q')
+        $queryBuilder = $this->dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()
             ->field('type')->equals('contragents') // criteria only contragents type
         ;
 
@@ -265,8 +265,8 @@ class OrganizationController extends Controller
                 'phone' => $organization->getPhone(),
                 'inn' => $organization->getInn(),
                 'kpp' => $organization->getKpp(),
-                'city' => $organization->getCity()->getId(),
-                'city_name' => $organization->getCity(),
+                'city' => $organization->getCityId(),
+                'city_name' => $organization->getCityId(),
                 'street' => $organization->getStreet(),
                 'house' => $organization->getHouse(),
                 'index' => $organization->getIndex(),
@@ -274,5 +274,25 @@ class OrganizationController extends Controller
         }
 
         return new JsonResponse($data);
+    }
+
+    /**
+     * @Route("/stamp/{protected}/{organization}/view", name="organization_stamp_view", options={"expose"=true})
+     * @param ProtectedFile $protected
+     * @param Organization $organization
+     * @return Response
+     */
+    public function viewAction(ProtectedFile $protected, Organization $organization)
+    {
+
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW_ALL')
+            && !($this->get('security.authorization_checker')->isGranted('VIEW', $organization)
+                && $this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $downloader = $this->get('mbh.protected.file.downloader');
+
+        return $downloader->steamOutputFileWithFilter($protected, 'thumb_400x200');
     }
 }

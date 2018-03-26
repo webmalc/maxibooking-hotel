@@ -1,27 +1,142 @@
-vega_residence: 'Residence'
-vega_visa: 'Visa'
+vega_residence: Residence
+vega_visa: Visa
 vega_military_spare: 'Military spare'
 vega_temporary_identity: 'Temporary Identity'
 vega_diplomatic_passport: 'Diplomatic Passport'
 vega_travel_passport: 'Travel Passport'
 vega_russian_passport: 'Russian Passport'
-vega_ussr_passports: 'Ussr Passports'
+vega_ussr_passports: 'USSR Passports'
 vega_passport_IG: 'Passport IG'
-vega_seaman: 'Seaman'
-vega_temporary_residence permit_IG: 'Temporary Presidence permit IG'
-vega_predost_temporate_asylum: 'Predost temporate asylum'
-vega_refugee: 'Refugee'
+vega_seaman: 'Passport of the Seaman'
+'vega_temporary_residence permit_IG': 'Temporary residence permit IG'
+vega_predost_temporate_asylum: 'Сertificate of temporary asylum'
+vega_refugee: 'Refugee certificate'
 vega_birth_certificate: 'Birth certificate'
-vega_st_of_birth_ig: 'St of birth ig'
+vega_st_of_birth_ig: 'Foreign citizen birth certificate'
 vega_service_passports: 'Service passports'
 vega_refugee_certificate: 'Refugee certificate'
-vega_id_card_person_of_military: 'Id_card_person_of_military'
-vega_residence_permit_stateless_persons: 'Residence permit stateless persons'
-vega_military_id_soldier: 'Military_id_soldier'
-vega_travel_passport biometrics: 'Travel passport biometrics'
-vega_temporary_residence permit stateless persons: 'Temporary residence permit stateless persons'
+vega_id_card_person_of_military: 'Military ID card'
+vega_residence_permit_stateless_persons: 'Stateless residence certificate'
+vega_military_id_soldier: 'Military ID'
+'vega_travel_passport biometrics': 'Travel biometric passport'
+'vega_temporary_residence permit stateless persons': 'Stateless persons temporary residence permit'
 vega_migration_cart: 'Migration cart'
-vega_ig_arrival_notice: 'Ig_arrival_notice'
+vega_ig_arrival_notice: 'Stateless arrival notice'
 vega_return_certificate: 'Return certificate'
 vega_non_citizen_passport: 'Non citizen passport'
-vega_national_id_republic_of_kazakhstan: 'National id republic of kazakhstan'
+vega_national_id_republic_of_kazakhstan: 'National ID Republic of Kazakhstan'
+'vega_national_id_republic_of_kazakhstan''': 'National ID Republic of Kazakhstan'
+vegabundle.resources.views.ivanov: Smith
+vegabundle.resources.views.ivan: John
+vegabundle.resources.views.ivanovich: James
+vegabundle.resources.views.muzh: Male
+vegabundle.service.kndr: DPRK
+owner: 'Document owner'
+inscribed: 'Mentioned in the document'
+vegabundle.service.sha: USA
+vegabundle.service.sssr: USSR
+vegabundle.service.gdr: 'East Germany'
+vegabundle.service.chessr: CSSR
+vegabundle.service.VV: In
+vegabundle.service.II: And
+vegabundle.service.uar: 'South Africa'
+vegabundle.service.BBez: Without
+vegabundle.service.v: in
+vegabundle.service.bez: without
+vegabundle.service.i: and
+vegabundle.service.obl: disctrict
+vegabundle.service.OObl: Region
+vegabundle.service.RRna: District
+vegabundle.service.RRne: District
+vegabundle.service.PPo: Till
+vegabundle.service.NNa: 'On'
+vegabundle.service.GGor: City
+vegabundle.service.g: city
+vegabundle.service.rna: district
+vegabundle.service.rne: district
+vegabundle.service.po: till
+vegabundle.service.na: 'on'
+vegabundle.service.gor: city
+vegabundle.service.OO: About
+vegabundle.service.RRf: 'Russian Federation'
+vegabundle.service.SSvo-vo: property
+vegabundle.service.SSSr: USSR
+vegabundle.service.CC: since
+vegabundle.service.o: about
+vegabundle.service.aya: 'PO Box'
+vegabundle.service.resp: Republic
+vegabundle.resources.views.Litera: Liters
+vegabundle.service.IIg: 'Foreign Citizen'
+vegabundle.service.LLbg: 'Stateless Citizen'
+vegabundle.service.rf: 'Russian Federation'
+vegabundle.service.ig: 'Foreign citizen'
+vegabundle.service.svo-vo: Сertificate
+vegabundle.service.lbg: 'Stateless person'
+vegabundle.resources.views.RUSSIA: Russia
+vegabundle.resources.views.Russia: Russia
+vegabundle.resources.views.Vladelec: Owner
+vegabundle.resources.views.Dom: House
+vegabundle.resources.views.Kvartira: Apartment
+vegabundle.resources.views.Visa: Visa
+vegabundle.resources.views.Pasport-RF: 'Russian passport'
+vegabundle.resources.views.Passport-Ig: 'Foreign citizen ID'
+vegabundle.resources.views.Document-Ud-Lichnost: 'ID document and general information (name, birth date, photo)'
+vegabundle.service.krasnodarsky: Krasnodar
+vegabundle.service.kry: region
+vegabundle.service.karelia: Kareliya
+vegabundle.service.primorsky: Primorskiy
+vegabundle.service.avt-okrug: 'autonomous region'
+vegabundle.service.komy: Komi
+vegabundle.service.kalmikia: Kalmikiya
+vegabundle.service.tatarstan: Tatarstan
+vegabundle.service.moskwa: Moscow
+vegabundle.service.permsky: Perm
+vegabundle.service.dagestan: Dagestan
+vegabundle.service.yamalo-neneckiy: Yamalo-Nenets
+vegabundle.service.bashkorkostan: Bashkortostan
+vegabundle.service.severnaya-osetia_alania: 'Severnaya Osetiya - Alaniya'
+vegabundle.service.krym: Krym
+vegabundle.service.OOfms: 'Federal migration service office'
+vegabundle.service.OOufms: 'Federal migration service'
+vegabundle.service.chuvashskaya-respublika: 'Chuvashskiy republic'
+vegabundle.service.baykonur: Baikonur
+vegabundle.service.saha-yakutia: Saha
+vegabundle.service.buryatia: Buryatiya
+vegabundle.service.ingushetia: Ingushetiya
+vegabundle.service.adygeya: Adigeya
+vegabundle.service.hakasia: Khakasiya
+vegabundle.service.habarovsky: Khabarovsk
+vegabundle.service.zabaykalsky: Zabaikalskiy
+vegabundle.service.mariy-el: 'Mariy El'
+vegabundle.service.nenecky: Nenetskiy
+vegabundle.service.tiva: Tiva
+vegabundle.service.mordovia: Mordoviya
+vegabundle.service.altaisky: Altayskiy
+vegabundle.service.chukotsky: Chukotskiy
+vegabundle.service.sevastopol: Sevastopol
+vegabundle.service.altay: Altay
+vegabundle.service.OOvd: 'Department of Internal Affairs'
+vegabundle.service.UUfms: 'Migration service'
+vegabundle.service.RRovd: 'Regional internal department office'
+vegabundle.service.GGovd: 'City migration service'
+vegabundle.service.OOm: 'Police office'
+vegabundle.service.GGom: 'City police office'
+vegabundle.service.OOik: 'Federal Penitentiary Service'
+vegabundle.service.TTp: 'Registration oofice'
+vegabundle.service.UUvd: 'Traffic police office'
+vegabundle.service.UUvao: 'Committee of State Security'
+vegabundle.service.hanty-manciysky_avtonomny_okrug: 'Hanti-Mansiyskiy autonomous region'
+vegabundle.service.stavropolsky: Stavropolskiy
+vegabundle.service.sankt-peterburg: 'Saint Petersburg'
+vegabundle.service.UUao: 'South District Moscow'
+vegabundle.service.SSao: 'North Disctrict Moscow'
+vegabundle.service.ZZao: 'West District Moscow'
+vegabundle.service.SSzao: 'North West District Moscow'
+vegabundle.service.VVao: 'East District Moscow'
+vegabundle.service.SSvao: 'North East District Moscow'
+vegabundle.service.UUzao: 'South West District Moscow'
+vegabundle.service.GG: City
+vegabundle.resources.views.KRASNODARSKY-KRY: 'Krasnodar region'
+vegabundle.resources.views.G-Krasnodar: Krasnodar
+vegabundle.resources.views.P-Belozerniy: Belozerniy
+vegabundle.service.c: since

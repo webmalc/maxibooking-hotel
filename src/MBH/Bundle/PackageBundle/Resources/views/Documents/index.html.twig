@@ -55,7 +55,7 @@
                                     <div>{{ document.payer.name }}</div>
                                     {% if document.tourist and document.tourist.birthday %}
                                         <small>{{ document.tourist.birthday|date("d.m.Y") }}
-                                            Возраст: {{ document.tourist.age }}</small>
+                                            {{ 'documents.index.age'|trans}}: {{ document.tourist.age }}</small>
                                     {% endif %}
                                 {% endif %}
                             </td>
@@ -69,20 +69,23 @@
                             </td>
                             <td class="table-actions-td text-center">
                                 <div style="float: right">
-                                    {% if document.isImage %}
-                                        <a href="{{ path('order_document_view', {name: document.name}) }}"
-                                           class="btn btn-primary btn-xs image-fancybox"
-                                           title="{{ 'controller.documentsController.action_view'|trans({}) }}"
+                                    {% if document.file is defined and document.file is not null %}
+                                        {% if document.isImage %}
+                                            <a href="{{ path('order_document_view', {order: entity.id, protected: document.file.id }) }}"
+                                               class="btn btn-primary btn-xs image-fancybox"
+                                               title="{{ 'controller.documentsController.action_view'|trans({}) }}"
+                                               data-toggle="tooltip">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        {% endif %}
+                                        <a href="{{ path('order_document_view', {order: entity.id, protected: document.file.id, download: 1}) }}"
+                                           class="btn btn-info btn-xs"
+                                           title="{{ 'controller.documentsController.action_download'|trans({}) }}"
                                            data-toggle="tooltip">
-                                            <i class="fa fa-eye"></i>
+                                            <i class="fa fa-download"></i>
                                         </a>
                                     {% endif %}
-                                    <a href="{{ path('order_document_view', {name: document.name, download: 1}) }}"
-                                       class="btn btn-info btn-xs"
-                                       title="{{ 'controller.documentsController.action_download'|trans({}) }}"
-                                       data-toggle="tooltip">
-                                        <i class="fa fa-download"></i>
-                                    </a>
+
                                     {% if entity.deletedAt is empty and is_granted('ROLE_ORDER_DOCUMENTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                                     <a rel="main" href="{{ path('order_document_edit',  {'id': entity.id, 'packageId': package.id, 'name': document.name}) }}"
                                        class="btn btn-success btn-xs">

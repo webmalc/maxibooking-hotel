@@ -157,4 +157,55 @@ class OverviewController extends Controller implements CheckHotelControllerInter
             'restrictions' => $restrictions
         ]);
     }
+
+    /**
+     * @Route("/total", name="total_rooms_overview")
+     * @Template()
+     * @return array
+     */
+    public function totalRoomsOverviewAction()
+    {
+        $begin = new \DateTime('midnight');
+        $end = (clone $begin)->add(new \DateInterval('P45D'));
+
+        return [
+            'availableNumberOfRooms' => $this->get('mbh.client_manager')->getAvailableNumberOfRooms(),
+            'begin' => $begin,
+            'end' => $end,
+            'report' => $this->getTotalOverviewReport($begin, $end)
+        ];
+    }
+
+    /**
+     * @Route("/total_table", name="total_rooms_overview_table", options={"expose" = true})
+     * @Template()
+     * @param Request $request
+     * @return array
+     */
+    public function totalRoomsOverviewTableAction(Request $request)
+    {
+        list($begin, $end) = $this->helper->getReportDates($request);
+
+        return [
+            'availableNumberOfRooms' => $this->get('mbh.client_manager')->getAvailableNumberOfRooms(),
+            'begin' => $begin,
+            'end' => $end,
+            'report' => $this->getTotalOverviewReport($begin, $end)
+        ];
+    }
+
+    /**
+     * @param $begin
+     * @param $end
+     * @return \MBH\Bundle\PriceBundle\Models\TotalOverviewReport
+     */
+    private function getTotalOverviewReport($begin, $end)
+    {
+        $fields = ['totalRooms', 'date', 'hotel', 'roomType'];
+        $rawRoomCachesData = $this->dm
+            ->getRepository('MBHPriceBundle:RoomCache')
+            ->getRawExistedRoomCaches($begin, $end, $fields);
+
+        return $this->get('mbh.total_overview_report')->setInitData($rawRoomCachesData, $begin, $end);
+    }
 }

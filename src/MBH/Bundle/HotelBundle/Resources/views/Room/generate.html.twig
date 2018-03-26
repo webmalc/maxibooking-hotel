@@ -1,6 +1,6 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% set small_title_trans = 'views.roomType.generateRooms.beds_generation_for_room_type'|trans({}, 'MBHHotelBundle') %}
+{% set small_title_trans = 'views.roomType.generateRooms.rooms_generation_for_room_type'|trans({}, 'MBHHotelBundle') %}
 {% if entity.isHostel %}
     {% set small_title_trans = 'views.roomType.generateRooms.rooms_generation_for_room_type'|trans({}, 'MBHHotelBundle') %}
 {% endif %}
@@ -15,13 +15,10 @@
     {{ form_widget(form) }}
 
     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
-        <div class="container">
+        <div class="container-fluid">
             <ul class="nav navbar-nav">
                 <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"> </i> {{ 'views.roomType.generateRooms.generate_rooms'|trans({}, 'MBHHotelBundle') }}</button></li><li>
                 <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"> </i> {{ 'views.roomType.generateRooms.cancel'|trans({}, 'MBHHotelBundle') }}</button></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><button data-href="{{ path('room_type_delete', {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"> </i> {{ 'views.roomType.generateRooms.delete'|trans({}, 'MBHHotelBundle') }}</button></li>
             </ul>
         </div>
     </div>

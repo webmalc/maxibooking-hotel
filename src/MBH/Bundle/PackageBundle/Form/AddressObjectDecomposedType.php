@@ -2,39 +2,45 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class AddressObjectDecomposedType
- *
-
  */
 class AddressObjectDecomposedType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $regionHelp = $this->translator->trans('form.AddressObjectDecomposedType.region_id.help',
+            ['%plusButtonHtml%' => '<a class="add-billing-entity-button" data-entity-type="regions"><i class="fa fa-plus"></i></a>']);
+
         $builder
-            ->add('country', DocumentType::class, [
+            ->add('countryTld', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.country',
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                'query_builder' => function(DocumentRepository $repository) {
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
                 'required' => false,
+                'attr' => [
+                    'class' => 'billing-text-select billing-country',
+                    'data-endpoint-name' => 'countries'
+                ],
             ])
-            ->add('region', DocumentType::class, [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+            ->add('regionId', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.region',
-                'query_builder' => function(DocumentRepository $repository) {
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
                 'required' => false,
+                'attr' => [
+                    'class' => 'billing-text-select billing-region',
+                    'data-endpoint-name' => 'regions'
+                ],
+                'help' => $regionHelp
             ])
             ->add('city', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.city',
@@ -60,6 +66,13 @@ class AddressObjectDecomposedType extends AbstractType
                 'label' => 'form.AddressObjectDecomposedType.corpus',
                 'required' => false,
             ])
+            ->add('structure', TextType::class, [
+                'required' => false,
+                'attr' => [
+                    'class' => 'spinner',
+                ],
+                'label' => 'form.AddressObjectDecomposedType.structure.label'
+            ])
             ->add('flat', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.flat',
                 'required' => false,
@@ -71,7 +84,7 @@ class AddressObjectDecomposedType extends AbstractType
             ->add('address_object', TextType::class, [
                 'label' => 'form.TouristExtendedType.address_object',
                 'required' => false,
-                'help' => 'Передача адреса в виде кода (AOID) Федеральной информационной адресной системы (ФИАС)'
+                'help' => 'form.AddressObjectDecomposedType.address_object.help'
             ]);
         ;
     }
@@ -82,7 +95,6 @@ class AddressObjectDecomposedType extends AbstractType
             'data_class' => 'MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed'
         ]);
     }
-
 
     /**
      * Returns the name of this type.

@@ -12,14 +12,14 @@
 
             {% if config is empty %}
                 <div class="alert alert-warning">
-                    <i class="fa fa-exclamation-circle"></i> Необходимо сначала заполнить основные настройки.
+                    <i class="fa fa-exclamation-circle"></i> {{ 'view.myallocator.room.need_fill_main_settings'|trans}}
                 </div>
             {% endif %}
 
             {% if config.token is empty %}
                 <div class="alert alert-warning">
                     <i class="fa fa-exclamation-circle"></i>
-                    Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".
+                    {{ 'view.myallocator.room.need_bind_to_mb'|trans}}
                 </div>
             {% endif %}
 

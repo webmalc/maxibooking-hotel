@@ -1,0 +1,5 @@
+form.region_type.name.label: Регион
+form.region_type.country.label: Страна
+form.city_type.name.label: Город
+form.city_type.region.label: Регион
+form.city_type.country.label: Страна

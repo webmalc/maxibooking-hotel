@@ -4,9 +4,9 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\ProtectedFile;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -22,32 +22,32 @@ class OrderDocument
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      * @Assert\NotNull(message="validator.document.OrderDocument.type")
      */
     protected $type;
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $scanType;
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $name;
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $originalName;
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $comment;
 
@@ -66,36 +66,13 @@ class OrderDocument
      */
     protected $cashDocument;
 
+
     /**
-     * @var UploadedFile
-     * @Assert\File(maxSize="6M", mimeTypes={
-     *          "image/png",
-     *          "image/jpeg",
-     *          "image/jpg",
-     *          "image/gif",
-     *          "application/pdf",
-     *          "application/x-pdf",
-     *          "application/msword",
-     *          "application/xls",
-     *          "application/xlsx",
-     *          "application/vnd.ms-excel"
-     * }, mimeTypesMessage="validator.document.OrderDocument.file_type")
+     * @var ProtectedFile
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\ProtectedFile", cascade={"persist"})
      */
     protected $file;
 
-    /**
-     * Client Original Extension
-     * @var string
-     * @ODM\Field(type="string") 
-     */
-    protected $extension;
-
-
-    /**
-     * @var string
-     * @ODM\Field(type="string") 
-     */
-    protected $mimeType;
 
     /**
      * @return string
@@ -131,72 +108,29 @@ class OrderDocument
     }
 
     /**
-     * @return UploadedFile|null
+     * @return ProtectedFile
      */
     public function getFile()
     {
-        if (!$this->file && $this->name && is_file($this->getPath())) {
-            $this->file = new UploadedFile($this->getPath(), $this->getName());
-        }
-
         return $this->file;
     }
 
     /**
-     * @param UploadedFile $file
+     * @param ProtectedFile $file
      */
-    public function setFile(UploadedFile $file = null)
+    public function setFile(ProtectedFile $file): void
     {
         $this->file = $file;
-        if ($this->file && $this->file->isFile()) {
-            $this->originalName = $this->file->getClientOriginalName();
-            $this->name = uniqid().'.'.$this->file->getClientOriginalExtension();
-            $this->extension = $this->file->getClientOriginalExtension();
-            $this->mimeType = $this->file->getMimeType();
-        }
+
     }
+
 
     /**
      * @return bool
      */
     public function isImage()
     {
-        return in_array($this->extension, ['jpg', 'png', 'jpeg']);
-    }
-
-    /**
-     * The absolute directory path where uploaded
-     * documents should be saved
-     * @return string
-     */
-    public function getUploadRootDir()
-    {
-        return __DIR__.'/../../../../../protectedUpload/orderDocuments';
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->getUploadRootDir().DIRECTORY_SEPARATOR.$this->getName();
-    }
-
-    public function upload()
-    {
-        if (null === $this->getFile()) {
-            return;
-        }
-
-        $this->getFile()->move($this->getUploadRootDir(), $this->getName());
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUploaded()
-    {
-        return is_file($this->getPath());
+        return in_array($this->getExtension(), ['jpg', 'png', 'jpeg']);
     }
 
     /**
@@ -220,7 +154,11 @@ class OrderDocument
      */
     public function getName()
     {
-        return $this->name;
+        if ($this->file) {
+            return $this->file->getOriginalName();
+        }
+
+        return null;
     }
 
     /**
@@ -229,23 +167,6 @@ class OrderDocument
     public function setName($name)
     {
         $this->name = $name;
-    }
-
-    /**
-     * @return bool
-     */
-    public function deleteFile()
-    {
-        if ($this->getFile() && is_writable($this->getFile()->getPathname())) {
-            $result = unlink($this->getFile()->getPathname());
-            if ($result) {
-                $this->file = null;
-            }
-
-            return $result;
-        }
-
-        return false;
     }
 
     /**
@@ -301,16 +222,11 @@ class OrderDocument
      */
     public function getExtension()
     {
-        return $this->extension;
-    }
+        if ($this->file) {
+            return $this->file->getExtension();
+        }
 
-    /**
-     * Client Original Extension
-     * @param string $extension
-     */
-    public function setExtension($extension)
-    {
-        $this->extension = $extension;
+        return null;
     }
 
     /**
@@ -318,15 +234,12 @@ class OrderDocument
      */
     public function getMimeType()
     {
-        return $this->mimeType;
-    }
+        if ($this->file) {
+            return $this->file->getMimeType();
+        }
 
-    /**
-     * @param string $mimeType
-     */
-    public function setMimeType($mimeType)
-    {
-        $this->mimeType = $mimeType;
+        return null;
+
     }
 
     /**

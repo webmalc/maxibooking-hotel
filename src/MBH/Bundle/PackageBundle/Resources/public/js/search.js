@@ -6,6 +6,7 @@ var setSearchDatepickers = function(date) {
     (date === 'undefined') ? date = new Date(): date = new Date(date);
     $('#s_begin').datepicker('setStartDate', date);
 };
+var searchProcess = false;
 
 $(document).ready(function() {
     'use strict';
@@ -43,6 +44,7 @@ $(document).ready(function() {
 
         e.preventDefault();
         guestModal.modal('show');
+        guestModal.find('.select2-container').css('width', '100%');
         button.click(function() {
             errors.hide();
             $.ajax({
@@ -69,7 +71,6 @@ $(document).ready(function() {
 
     var $wrapper = $('#package-search-results-wrapper');
     var $warning = $('#accommodation-alert');
-    var searchProcess = false;
 
     //ajax request
 
@@ -189,7 +190,7 @@ $(document).ready(function() {
             this.$searchRoomsSelect.find('option[value="' + roomID + '"]').attr('disabled', 'disabled');
         }
         this.$searchRoomsSelect.select2({
-            placeholder: 'при заезде',
+            placeholder: Translator.trans("search.upon_arrival"),
             allowClear: true,
             width: 'element'
         });
@@ -234,8 +235,8 @@ $(document).ready(function() {
     var $tariffSelect = $('#s_tariff');
     var $packageSearchForm = $('form[name="s"]'); //#package-search-form //.search-form
     var successCallback = function(data) {
-        searchProcess = false;
         $wrapper.html(data);
+        searchProcess = false;
         $(function() {
             $('[data-toggle="popover"]').popover()
         });
@@ -248,7 +249,7 @@ $(document).ready(function() {
             minimumResultsForSearch: -1
         });
         $searchRoomsSelect.select2({
-            placeholder: 'при заезде',
+            placeholder: Translator.trans("search.upon_arrival"),
             allowClear: true,
             templateResult: select2TemplateResult.appendIcon,
             width: 'element'
@@ -387,7 +388,7 @@ $(document).ready(function() {
                 }
                 //var wrapper = $('#package-search-results-wrapper');
                 window.location.hash = $packageSearchForm.serialize();
-                $wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+                $wrapper.html(mbh.loader.html);
                 send($packageSearchForm.serialize());
             }, 500);
     };

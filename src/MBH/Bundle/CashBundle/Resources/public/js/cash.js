@@ -102,20 +102,21 @@ $(document).ready(function () {
             $('.cash-table-total').html(settings.json.total);
 
             if (parseInt(settings.json.noConfirmedTotalIn) > 0) {
-                $('.cash-table-no-confirmed-total-in').html('Не подтверждено: ' + settings.json.noConfirmedTotalIn).show();
+                $('.cash-table-no-confirmed-total-in').html(Translator.trans("cash.not_confirmed") + ': ' + settings.json.noConfirmedTotalIn).show();
             } else
-                $('.cash-table-no-confirmed-total-in').html('Не подтверждено: ' + settings.json.noConfirmedTotalIn).hide();
+                $('.cash-table-no-confirmed-total-in').html(Translator.trans("cash.not_confirmed") + ' ' + settings.json.noConfirmedTotalIn).hide();
             if (parseInt(settings.json.noConfirmedTotalOut) > 0) {
-                $('.cash-table-no-confirmed-total-out').html('Не подтверждено: ' + settings.json.noConfirmedTotalOut).show();
+                $('.cash-table-no-confirmed-total-out').html(Translator.trans("cash.not_confirmed") + ' ' + settings.json.noConfirmedTotalOut).show();
             } else
-                $('.cash-table-no-confirmed-total-out').html('Не подтверждено: ' + settings.json.noConfirmedTotalOut).hide();
-        }
+                $('.cash-table-no-confirmed-total-out').html(Translator.trans("cash.not_confirmed") + ' ' + settings.json.noConfirmedTotalOut).hide();
+        };
 
     var dataTableOptions = {
         "processing": true,
         "serverSide": true,
         "ordering": true,
         "autoWidth": false,
+        "searchDelay": 2500,
         "ajax": {
             "url": Routing.generate('cash_json'),
             "data": function (d) {

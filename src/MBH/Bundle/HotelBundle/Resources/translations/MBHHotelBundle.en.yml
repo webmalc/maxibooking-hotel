@@ -1,0 +1,140 @@
+views.tasktype.index.name: Title
+views.tasktype.index.status: Status
+views.tasktype.index.default_role: 'Default executor'
+views.tasktype.index.created: Created
+views.task.index.status: Status
+views.task.index.tasktype: 'Task type'
+views.task.index.task: Task
+views.task.index.priority: Priority
+views.task.index.performer: Executor
+views.task.index.group: Group
+views.task.index.isDeleted: Deleted
+views.task.index.deleted: Deleted
+views.task.index.roomType: 'Room type'
+views.task.index.room: Room
+views.task.index.users: Executant
+views.task.index.assign: 'Assigned to'
+views.task.index.guest: Guest
+views.task.index.role: Role
+views.task.index.groups: Groups
+views.task.index.createAt: Created
+views.task.index.dates: Dates
+views.task.index.date: Date
+views.task.index.period: Period
+views.task.index.createdAt: Created
+views.task.index.createdBy: 'Created by'
+views.task.index.description: Description
+views.task.index.number: 'Room number'
+views.task.index.type: Type
+views.task.index.updateAt: Updated
+views.task.index.confirm_in_process: 'Confirm task progress'
+views.task.index.confirm_closed: 'Close task'
+views.task.index.waited: 'In queue'
+views.task.index.in_process: 'In progress'
+views.task.index.info: Information
+views.task.index.cancel: Cancel
+views.task.index.view: View
+views.task.index.close: Close
+views.task.index.take_in_process: 'Take the task'
+views.task.index.tasks_empaty: 'Task is empty'
+views.task.index.detail.role: Role
+views.task.index.detail.type: Task
+views.task.index.detail.performer: Executor
+views.task.index.detail.room: Room
+views.task.index.detail.priority: Priority
+views.task.index.detail.status: Status
+views.task.index.detail.date: Date
+views.task.index.detail.createdAt: Created
+views.task.index.detail.createdBy: 'Created by'
+views.task.index.detail.description: Description
+views.task.priority.low: Low
+views.task.priority.average: Medium
+views.task.priority.high: High
+views.filter.placeholder.status: Status
+views.filter.placeholder.priority: Priority
+views.hotel.edit.editing_number: 'Editing #'
+views.hotel.extended.editing_number: 'Editing #'
+views.hotel.extended.close: Close
+views.hotel.extended.how_to_know_hotel_coordinates: 'How to find hotel coordinates?'
+views.hotel.extended.google_maps: 'Google maps'
+views.hotel.extended.help_is_on_site: 'Help on the website'
+views.hotel.extended.go_to_site: 'Go to the website'
+views.hotel.extended.find_hotel_on_map: 'Hotel can be found on the map. You can use search bar to find it by address.'
+views.hotel.extended.left_click_on_hotel_on_map: 'Click hotel location with left mouse button in order to see location information and coordinates'
+views.hotel.extended.copy_coordinates_like_this: 'Copy coordinates (For example: 55.751948, 37.617456). First number stands for longitude. Second number stands for latitude'
+views.hotel.extended.yandex_maps: 'Yandex maps'
+views.hotel.extended.right_click_on_hotel_on_map: 'Click hotel location with right mouse button and select "What''s here?" to open the left panel with detailed information about the location and coordinates.'
+views.hotel.extended.yandex_copy_coordinates_like_this: 'Copy the coordianes'
+views.hotel.index.name: Title
+views.hotel.index.prefix: 'Legal name'
+views.hotel.index.sale_dates: 'Sales dates'
+views.hotel.index.chosen_by_default: Default
+views.hotel.index.edit_record: Edit
+views.hotel.index.delete_record: Delete
+views.hotel.layout.hotels: Hotels
+views.hotel.notFound.no_hotel_created: 'No hotest created'
+views.hotel.notFound.create_new_hotel_to_continue: 'Create a new hotel please'
+views.hotel.notFound.create_hotel: 'Create a hotel'
+views.hotel.notFound.you_have_no_permissions: 'You lack permission to wirk with this hotel'
+views.hotel.notFound.ask_admin: 'Ask your account administrator for permission'
+views.hotel.tabs.main_info: 'Main information'
+views.hotel.tabs.additional_settings: 'Additional settings'
+views.hotel.tabs.birthplace: 'Birth place'
+views.hotel.tabs.document_relation: 'ID / Passport'
+views.hotel.tabs.address: Address
+views.hotel.tabs.visa: Visa
+views.hotel.tabs.unwelcome: 'Black list'
+views.hotel.tabs.main_info_required: 'Main information required'
+views.roomType.edit.edit_room_type: 'Edit room type #'
+views.roomType.editRoom.edit_room_type: 'Edit room type for room'
+views.roomType.editRoom.edit_room_for_room_type: 'Edit room type for room'
+views.roomType.editRoom.edit_bed_for_room_type: 'Edit bed for room type'
+views.roomType.editRoom.delete: Delete
+views.roomType.generateRooms.beds_generation_for_room_type: 'Bed generation for room type'
+views.roomType.generateRooms.rooms_generation_for_room_type: 'Room generation for room type'
+views.roomType.generateRooms.generate_rooms: 'Generate rooms'
+views.roomType.generateRooms.cancel: Cancel
+views.roomType.generateRooms.delete: Delete
+views.roomType.index.new_room_type: 'New room type'
+views.roomType.index.edit_room_type: 'Edit room type <%name%>'
+views.roomType.index.edit: Edit
+views.roomType.index.create_rooms_for_room_type: 'Create rooms for room type'
+views.roomType.index.add: Add
+views.roomType.index.bed: Bed
+views.roomType.index.room: Room
+views.roomType.index.generate_rooms_for_room_type: 'Generate room numbers for room type <%name%>'
+views.roomType.index.generate: Generate
+views.roomType.index.delete_room_type: 'Delete room type'
+views.roomType.index.delete: Delete
+views.roomType.index.room_fund: Rooms
+views.roomType.index.beds: Beds
+views.roomType.index.name: Title
+views.roomType.index.housing: Housing
+views.roomType.index.floor: Floor
+views.roomType.index.status: Status
+views.roomType.layout.rooms: Rooms
+views.roomType.layout.create_room_type: 'New room type'
+views.roomType.newRoom.create_bed_for_room_type: 'Create bed for room type'
+views.roomType.newRoom.create_room_for_room_type: 'Create room for room type'
+views.roomType.roomListButtons.edit_record: Edit
+views.roomType.roomListButtons.delete_record: Delete
+views.roomType.help.empty_facilities: 'Use room amenities from room type'
+views.hotel.index.confirm_delete: 'Are you sure you want to delete hotel "%hotelname%"?'
+views.task.layout.tasks: Tasks
+views.corpus.name: Title
+views.corpus.internal_name: 'Internal title'
+views.corpus.city: City
+views.corpus.settlement: 'Town (settlement)'
+views.corpus.address: Address
+views.corpus.street: Street
+views.corpus.house: House
+views.corpus.flat: Apartment
+views.corpus.corpus: Wing
+views.corpus: Wing
+view.create_task_type_categoty: 'New category'
+views.roomTypeCaterory.layout.index: 'Room category'
+views.hotel.contact_info.editing_number: 'Editing #'
+views.hotel.images.editing_number: 'Editing #'
+mbhhotelbundle.view.hotel.index.da: 'Yes'
+views.hotel.tabs.images: Photos
+views.hotel.tabs.contact_info: 'Contact info'

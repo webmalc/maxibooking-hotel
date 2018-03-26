@@ -1,7 +1,41 @@
 {% spaceless %}
+    {% if formConfig.isHorizontal %}
+        <style>
+            #mbh-form {
+                width: auto;
+            }
+            #mbh-form-submit {
+                width: 95px;
+            }
+            .mbh-form-row {
+                margin-right: 8px;
+                display: inline-block;
+            }
+            #mbh-form-adults-children-wrapper {
+                display: inline-block;
+                margin-left: 5px;
+            }
+            @-moz-document url-prefix() {
+                #mbh-form-adults-children-wrapper {
+                    display:ruby-text;
+                    padding-bottom: 5px;
+                }
+                .children-ages {
+                    display: inline-table;
+                }
+            }
+            #mbh-form-adults-children-wrapper div.mbh-form-row {
+                float:none;
+            }
+            #mbh-form-wrapper {
+                text-align: center;
+            }
+
+        </style>
+    {% endif %}
+
 {% if hotels|length %}
 <form id="mbh-form" method="get" class="well" target="_parent" action="{{ formConfig.resultsUrl }}">
-
     {% if hotels|length > 1 %}
     <div class="mbh-form-row form-group">
         <label for="mbh-form-hotel">{{ 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
@@ -14,12 +48,12 @@
 
     <div class="mbh-form-row form-group">
         <label for="mbh-form-begin"> {{ 'views.api.form.check_in_date'|trans({}, 'MBHOnlineBundle') }}</label>
-        <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}">
+        <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}" readonly>
     </div>
 
     <div class="mbh-form-row form-group" {% if formConfig.nights %}style='display: none;'{% endif %}>
         <label for="mbh-form-end"> {{ 'views.api.form.check_out_date'|trans({}, 'MBHOnlineBundle') }}</label>
-        <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+        <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}" readonly>
     </div>
 
     {% if formConfig.nights %}
@@ -33,13 +67,20 @@
     </div>
     {% endif %}
 
-    {% if formConfig.roomTypes and hotels|length <= 1 and hotels|first.roomTypes|length %}
-    {% set choices = formConfig.roomTypeChoices %}     
+    {% if formConfig.roomTypes %}
+    {% set choices = formConfig.roomTypeChoices %}
     <div class="mbh-form-row form-group {{ choices|length == 1 ? 'hidden' }}">
         <label for="mbh-form-roomType"> {{ 'views.api.form.room_type'|trans({}, 'MBHOnlineBundle') }}</label>
         <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
             <option></option>
-            {% for roomType in hotels|first.roomTypes if choices is empty or roomType in choices %}
+            {% if choices is empty %}
+                {% set choices = [] %}
+                {% for hotel in hotels %}
+                    {% set choices = choices|merge(hotel.roomTypes) %}
+                {% endfor %}
+            {% endif %}
+            <option value="">- any -</option>
+            {% for roomType in choices %}
                 <option value="{{ roomType.id }}" {{ choices|length == 1 ? 'selected' }}>{{ roomType.localeTitle(app.request.locale) }}</option>
             {% endfor %}
         </select>

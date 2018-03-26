@@ -114,6 +114,7 @@ class OrderInfo
                     ->setInitData($roomType, $currentPackageGuests, $this->config, $this->tariffs, $this->roomTypes);
             }
         }
+
         return $packages;
     }
 

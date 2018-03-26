@@ -1,0 +1,31 @@
+<div class="modal fade" id="dashboard-modal">
+    <div class="modal-dialog modal-xxl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">{{ 'dashboard.modal.header'|trans }}</h4>
+            </div>
+            <div class="modal-body">
+                {% for message in dashboard_messages %}
+                <div class="alert alert-{{ message.type }} alert-dismissible">
+                    {% if is_granted('ROLE_DASHBOARD') %}
+                    <button data-toggle="tooltip" data-placement="top" title="{{ 'dashboard.confirm.tooltip'|trans }}" type="button" class="close dashboard-confirm-button" data-id="{{ message.id }}">×</button>
+                    {% endif %}
+                    {{ message.text|trans|raw }}
+                    {% if message.route %}
+                        <div class="text-right margin-top-sm">
+                            <a href="{{ path(message.route) }}" target="_blank">{{ 'dashboard.link'|trans }}</a>
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-ban"></i> {{ 'cancel'|trans({}) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

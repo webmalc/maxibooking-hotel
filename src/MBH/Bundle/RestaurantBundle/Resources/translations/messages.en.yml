@@ -1,0 +1,200 @@
+restaurant.common.small_title: List
+restaurant.common.save: 'Save changes'
+restaurant.category.form.fullTitle.label: Title
+restaurant.category.form.title.help: 'Title only visible inside MaxiBooking system'
+restaurant.ingredient.add: 'Add ingredient'
+restaurant.ingredient.active: Availability
+restaurant.ingredient.form.fullTitle.placeholder: Title
+restaurant.ingredient.form.title.placeholder: 'Internal title'
+restaurant.ingredient.form.title.help: 'Title only visible inside MaxiBooking system'
+restaurant.ingredient.form.price.help: 'Enter ingredient price'
+restaurant.ingredient.form.calcType.label: 'Measure unit'
+restaurant.ingredient.form.calcType.help: 'Choose measure unit for the ingredient'
+restaurant.ingredient.form.is_enable.label: Show
+restaurant.dishmenu.small_title: List
+restaurant.dishmenu.category.action.new: 'New dish category'
+restaurant.dishmenu.category.form.fullTitle.placeholder: Title
+restaurant.dishmenu.category.form.title.label: 'Internal title'
+restaurant.dishmenu.category.form.title.placeholder: Title
+restaurant.dishmenu.category.form.title.help: 'Title visible in MaxiBooking only'
+restaurant.dishmenu.item.small_title: 'Add dish to the category'
+restaurant.dishmenu.item.edit_small_title: 'Edit dish in the category'
+restaurant.dishmenu.item.action.new: 'Add a new dish'
+restaurant.dishmenu.item.action.edit: 'Edit dish'
+restaurant.dishmenu.item.action.delete: 'Delete dish'
+restaurant.dishmenu.item.helper.new: 'Create a dish in the category'
+restaurant.dishmenu.item.form.fullTitle.label: Title
+restaurant.dishmenu.item.form.fullTitle.placeholder: 'Summer salad'
+restaurant.dishmenu.item.form.fullTitle.help: 'Dish title'
+restaurant.dishmenu.item.form.title.label: 'Internal title'
+restaurant.dishmenu.item.form.title.placeholder: 'Vegetable salad'
+restaurant.dishmenu.item.form.title.help: 'Internal title'
+restaurant.dishmenu.item.form.price.label: Price
+restaurant.dishmenu.item.form.costprice.label: 'Cost price'
+restaurant.dishmenu.item.form.costprice.help: 'Dish cost price'
+restaurant.dishmenu.item.form.description.label: Description
+restaurant.dishmenu.item.form.description.placeholder: 'Delicious summer salad'
+restaurant.dishmenu.item.form.description.help: 'Dish description'
+restaurant.dishmenu.item.form.margin.label: 'Margin %'
+restaurant.dishmenu.item.form.margin.disabled: 'If margin is set, price is generated automatically'
+restaurant.dishmenu.item.form.amount.help: Quantity
+restaurant.dishmenu.item.form.amount.placeholder: 'Number of ingredients'
+restaurant.dishmenu.item.form.dishIngredients.label: 'Dish ingredients'
+restaurant.dishmenu.item.form.is_enable.label: Show
+restaurant.dishmenu.item.form.is_enable.help: 'Show dish in menu'
+restaurant.dishorder.status.payed: Paid
+restaurant.dishorder.title: Orders
+restaurant.dishorder.common.addsuccess: 'Order succesfully created'
+restaurant.dishorder.common.editsuccess: 'Order successfully edited'
+restaurant.dishorder.common.noitems: 'No orders'
+restaurant.dishorder.table.number: 'Order #'
+restaurant.dishorder.table.table: Table
+restaurant.dishorder.table.price: Price
+restaurant.dishorder.table.freezed: Paid
+restaurant.dishorder.table.doing: Actions
+restaurant.dishorder.table.content: Content
+restaurant.dishorder.table.payer: Payer
+restaurant.dishorder.table.time: Date
+restaurant.dishorder.actions.tolist: 'To list'
+restaurant.dishorder.actions.list.small_title: 'Add order'
+restaurant.dishorder.actions.showfreeze.small_title: 'View order'
+restaurant.dishorder.actions.edit: 'Edit order'
+restaurant.dishorder.actions.delete: 'Delete order'
+restaurant.dishorder.actions.isfreezed: Paid
+restaurant.dishorder.form.table.placeholder: 'Enter the table number'
+restaurant.dishorder.form.dishes.label: 'List of dishes'
+restaurant.dishorder.form.order.help: 'Enter reservation or room number'
+restaurant.table.item.helper.inputcountchairs: 'Enter number of adult seats'
+restaurant.table.common.addsuccess: 'Table successfully added'
+restaurant.table.actions.list.small_title: 'List of tables'
+restaurant.table.form.title.help: 'Title only visible inside MaxiBooking system'
+restaurant.table.form.title.placeholder: 'Table near a window'
+restaurant.table.form.is_enable.label: Enabled
+restaurant.exceptions.editsuccsess: 'Entry successfully edited.'
+restaurant.exceptions.danger: 'Warning! Not all settings were saved successfully.'
+restaurantbundle.controller.entity_successful_created: 'Entry successfully added.'
+restaurantbundle.controller.entry_successfully_edited: 'Entry successfully edited.'
+restaurantbundle.controller.attention_not_all_parameter_successful_saved: 'Warning! Not all settings were saved successfully.'
+restaurantbundle.form.paid: Paid
+restaurantbundle.form.not_paid: 'Not paid'
+views.form.amount.add: Add
+restaurant.dishmenu.item.form.is_marging.label: Margin
+restaurant.ingredient.units: 'measure unit'
+restaurant.dishorder.actions.confirm: Confirm
+restaurant.table.item.category.table: Table
+restaurant.table.actions.delete: 'Delete chair'
+restaurant.table.item.helper.addtype: 'Select a type'
+restaurant.dishmenu.item.active: availability
+restaurant.dishorder.common.title: orders
+restaurant.dishorder.actions.freezed: 'cash out'
+restaurant.dishorder.form.id.label: 'Order #'
+restaurant.dishorder.form.amount.help: Quantity
+restaurant.dishorder.form.order.label: Payer
+restaurant.dishorder.form.isfreezed.label: Payment
+restaurant.table.item.helper.counts: Quantity
+restaurant.table.item.helper.childrenchairs: Children
+restaurant.table.item.category.chears: Chairs
+restaurant.table.common.title: Tables
+restaurant.table.actions.add: 'Add table'
+restaurant.table.actions.addchars: 'Add chair'
+restaurant.table.actions.adult: Adult
+restaurant.table.table.name: Title
+restaurant.table.table.isEnable: Enabled
+restaurant.table.table.doing: Actions
+restaurant.table.form.fullTitle.label: Title
+restaurant.table.form.fullTitle.placeholder: 'Table #1'
+restaurant.table.newaction.small_title_addchairs: 'Add chairs'
+restaurant.table.actions.edit: 'Edit table'
+restaurant.table.form.fullTitle.help: 'Table name'
+restaurant.table.form.title.label: 'Internal title'
+restaurant.table.form.is_enable.help: 'Enabled?'
+restaurant.table.category.form.fullTitle.placeholder: 'Second floor'
+restaurant.exceptions.edittables: 'Tables are succesfully edited'
+restaurant.exceptions.delete.ingredientcategory: 'Impossible to delete a category because it is not empty!'
+restaurant.table.item.helper.countchairs: 'Chairs count'
+restaurant.table.item.helper.new: 'Add table to category'
+restaurant.table.item.helper.deletechair: 'Are you sure you want to delete this chair'
+restaurant.table.item.helper.addchairs: 'Add chairs'
+restaurant.table.item.noitems: 'There are no tables in this category'
+restaurant.table.item.nochair: 'There are no chairs for this table'
+restaurant.table.item.category.new: 'New table category'
+restaurant.table.item.category.edit_table_incategory: 'Edit a table in the category'
+restaurant.table.item.category.category_new: 'Table category title'
+restaurant.table.common.editsuccess: 'Table successfully edited'
+restaurant.table.common.noitems: 'No tables in the list'
+restaurant.table.common.shifted: 'Can be joined with tables'
+restaurant.table.newaction.title: 'New table category'
+restaurant.table.newaction.small_title: 'Add table'
+restaurant.dishmenu.item.form.price.help: 'Set the dish price'
+restaurant.dishorder.nodish: 'Add a dish to make an order'
+restaurant.dishorder.payer.noname: 'Is not tied to a reservation'
+restaurant.dishorder.actions.add: 'create orders'
+restaurant.dishorder.actions.pay: 'Do you confirm the payment'
+restaurant.dishorder.form.id.noidplaceholder: 'Order # will be available after creation'
+restaurant.dishorder.form.table.label: 'Order table'
+restaurant.dishorder.form.table.help: 'The table guests ordered'
+restaurant.dishorder.form.price.label: 'Order price'
+restaurant.dishorder.form.price.placeholder: 'Order price is calculated automatically'
+restaurant.dishorder.form.price.help: 'After the price of an order is entered'
+restaurant.dishorder.form.amount.placeholder: 'Dishes count'
+restaurant.descr: Details
+restaurant.ingredient.delete: 'Delete ingredient'
+restaurant.category.new: 'Add new category'
+fixtures.dish_menu_category_data.categories.bread: Bread
+fixtures.dish_menu_category_data.categories.bar: Bar
+fixtures.dish_menu_category_data.categories.salads: Salads
+dish_order.index.paid: Paid
+dish_order.index.prices_filter: Prices
+dish_order.index.dates_filter: Dates
+fixtures.ingredients_category_data.categories.fruit: Fruit
+fixtures.table_type_data.categories.main: Main
+restaurant.amount: Amount
+restaurant.group: 'General information'
+restaurant.pay: Payment
+restaurant.dishconsist: Contains
+restaurant.namelabel: Title
+restaurant.common.title: Ingridients
+restaurant.common.edit: Edit
+restaurant.common.add: Add
+restaurant.common.delete: Delete
+restaurant.common.doing: actions
+restaurant.ingredient.name: Title
+restaurant.ingredient.price: Price
+restaurant.ingredient.costprice: 'Cost price'
+restaurant.ingredient.output: Output
+restaurant.ingredient.form.fullTitle.label: Title
+restaurant.ingredient.form.price.label: Price
+restaurant.ingredient.addincat: 'Add ingredient to category'
+restaurant.ingredient.edit: 'Edit ingredient'
+restaurant.ingredient.newaction.small_title: 'Add ingredient to category'
+restaurant.ingredient.form.fullTitle.help: 'Ingredient title'
+restaurant.ingredient.form.title.label: 'Internal title'
+restaurant.ingredient.form.output.label: 'Output percentage'
+restaurant.ingredient.form.output.help: 'Amount of product remaining after processing'
+restaurant.category.edit: 'Edit category'
+restaurant.category.delete: 'Delete category'
+restaurant.category.noingredients: 'This category doesn''t contain any ingredients'
+restaurant.category.form.fullTitle.placeholder: Bakery
+restaurant.category.form.fullTitle.help: 'Ingredient category title'
+restaurant.category.form.title.label: 'Internal title'
+restaurant.category.newaction.title: 'Add ingredient category'
+restaurant.category.editaction.title: 'Edit ingredient categories'
+restaurant.ingredient.editIngredient.small_title: 'Edit ingredient in <%categoryName%> category'
+restaurantbundle.controller.price_successfully_saved: 'Prices succesfully saved'
+fixtures.dish_menu_category_data.categories.hot_dishes: 'First course'
+fixtures.dish_menu_category_data.categories.beverages: Beverages
+fixtures.ingredients_category_data.categories.vegetables: Vegetables
+fixtures.ingredients_category_data.categories.beverages: Beverages
+restaurant.collectorder: 'Order composition'
+restaurant.collectprice: 'Price formation'
+restaurant.dishorder.noingredients: 'No ingredients to compose a dish'
+restaurant.dishmenu.item.action.new.action.new: 'Add new ingredients'
+restaurant.dishmenu.category.noitems: 'This category doesn''t contain any dishes'
+restaurant.dishmenu.title: Menu
+restaurant.dishmenu.common.edit: edit
+restaurant.dishmenu.common.delete: delete
+restaurant.ingredient.form.is_enable.help: 'Enable the ingredient in the list?'
+restaurant.dishmenu.category.action.edit: 'Edit dishes category'
+restaurant.dishmenu.category.action.delete: 'Delete dishes category'
+restaurant.dishmenu.category.form.fullTitle.label: Title
+restaurant.dishmenu.category.form.fullTitle.help: 'Dishes category title'

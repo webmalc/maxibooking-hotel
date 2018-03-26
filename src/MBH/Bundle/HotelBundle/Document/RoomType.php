@@ -9,12 +9,14 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 /**
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
@@ -48,6 +50,7 @@ class RoomType extends Base implements RoomTypeInterface
     use InternableDocument;
 
     /**
+     * @var Hotel
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
      * @Assert\NotNull(message="validator.document.roomType.hotel_in_not_select")
      * @ODM\Index()
@@ -138,7 +141,7 @@ class RoomType extends Base implements RoomTypeInterface
      * @Assert\Range(
      *      min=0,
      *      minMessage="validator.document.roomType.places_amount_less_zero",
-     *      max=5
+     *      max=10
      * )
      * @ODM\Index()
      */
@@ -154,6 +157,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @var string
+     * @deprecated
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */
@@ -162,7 +166,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
@@ -172,6 +176,12 @@ class RoomType extends Base implements RoomTypeInterface
      * @ODM\EmbedMany(targetDocument="RoomTypeImage")
      */
     private $images = [];
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|Image[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\BaseBundle\Document\Image", cascade={"persist"})
+     */
+    protected $onlineImages;
     /**
      * @var TaskSettings
      * @ODM\EmbedOne(targetDocument="TaskSettings")
@@ -179,7 +189,7 @@ class RoomType extends Base implements RoomTypeInterface
     private $taskSettings;
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $facilities = [];
     /**
@@ -204,6 +214,7 @@ class RoomType extends Base implements RoomTypeInterface
     {
         $this->rooms = new ArrayCollection();
         $this->roomViewsTypes = new ArrayCollection();
+        $this->onlineImages = new ArrayCollection();
     }
 
     /**
@@ -540,30 +551,11 @@ class RoomType extends Base implements RoomTypeInterface
         return $this;
     }
 
-    /**
-     * Add image
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
-     */
-    public function addImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
-    {
-        $this->images[] = $image;
-    }
-
-    /**
-     * Remove image
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
-     */
-    public function removeImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
-    {
-        $this->images->removeElement($image);
-    }
-
     public function getMainImage()
     {
-        foreach ($this->getImages() as $image) {
-            if ($image->getIsMain()) {
+        /** @var Image $image */
+        foreach ($this->onlineImages as $image) {
+            if ($image->isMain()) {
                 return $image;
             }
         }
@@ -573,7 +565,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * Get images
-     *
+     * @deprecated use
      * @return \Doctrine\Common\Collections\Collection|RoomTypeImage[] $images
      */
     public function getImages()
@@ -581,26 +573,33 @@ class RoomType extends Base implements RoomTypeInterface
         return $this->images;
     }
 
-    public function deleteImageById($imageId)
-    {
-        $result = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($this->getImages() as $element) {
-            if ($element->getId() == $imageId) {
-                $imagePath = $element->getPath();
-                if (file_exists($imagePath) && is_readable($imagePath)) {
-                    unlink($imagePath);
-                }
-            } else {
-                $result[] = $element;
-            }
-        }
-        $this->images = $result;
-    }
-
     public function makeMainImageById($imageId)
     {
-        foreach ($this->getImages() as $element) {
-            $element->setIsMain($element->getId() == $imageId);
+        foreach ($this->getOnlineImages() as $onlineImage) {
+            $onlineImage->setIsMain($onlineImage->getId() == $imageId);
+        }
+    }
+
+    /**
+     * @return $this
+     */
+    public function makeFirstImageAsMain()
+    {
+        if (count($this->onlineImages)) {
+            foreach ($this->onlineImages as $onlineImage) {
+                $onlineImage->setIsMain(false);
+            }
+
+            $this->onlineImages->first()->setIsMain(true);
+        }
+
+        return $this;
+    }
+
+    public function makeMainImage(Image $image)
+    {
+        foreach ($this->getOnlineImages() as $onlineImage) {
+            $onlineImage->setIsMain($onlineImage == $image);
         }
     }
 
@@ -703,5 +702,117 @@ class RoomType extends Base implements RoomTypeInterface
         $this->roomViewsTypes = $roomViewsTypes;
 
         return $this;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection|Image[]
+     */
+    public function getOnlineImages()
+    {
+        return $this->onlineImages;
+    }
+
+    /**
+     * @param Image $onlineImage
+     * @internal param \Doctrine\Common\Collections\Collection|Image[] $onlineImages
+     */
+    public function addOnlineImage(Image $onlineImage)
+    {
+        $this->onlineImages->add($onlineImage);
+    }
+
+    public function removeOnlineImage(Image $onlineImage)
+    {
+        $this->onlineImages->removeElement($onlineImage);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOnlineImagesByPriority(): array
+    {
+        $result = [];
+        $images = $this->onlineImages;
+        if (count($images)) {
+            $result = $images->toArray();
+            uasort($result,
+                function ($imageA, $imageB) {
+                    /** @var Image $imageA */
+                    /** @var Image $imageB */
+                    $priorityA = $imageA->getPriority();
+                    $priorityB = $imageB->getPriority();
+                    if ($priorityA === $priorityB) {
+                        return $imageA->getCreatedAt() <=> $imageB->getCreatedAt();
+                    }
+
+                    return $imageA->getPriority() <=> $imageB->getPriority();
+                });
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param UploaderHelper $helper
+     * @param $domain
+     * @return array
+     */
+    public function getRoomTypePhotoData(UploaderHelper $helper, $domain)
+    {
+        $imagesData = [];
+        /** @var Image $image */
+        foreach ($this->getOnlineImages() as $image) {
+            $roomTypeImageData = ['isMain' => $image->getIsDefault()];
+            $roomTypeImageData['url'] = 'https://' . $domain . '/' . $helper->asset($image, 'imageFile');
+            if ($image->getWidth()) {
+                $roomTypeImageData['width'] = (int)$image->getWidth();
+            }
+            if ($image->getHeight()) {
+                $roomTypeImageData['height'] = (int)$image->getHeight();
+            }
+            $imagesData[] = $roomTypeImageData;
+        }
+
+        return $imagesData;
+    }
+
+    /**
+     * @param bool $isFull
+     * @param null $domain
+     * @param UploaderHelper|null $helper
+     * @return array
+     */
+    public function getJsonSerialized($isFull = false, $domain = null, UploaderHelper $helper = null)
+    {
+        $data = [
+            'id' => $this->getId(),
+            'isEnabled' => $this->getIsEnabled(),
+            'hotel' => $this->getHotel()->getId(),
+            'title' => $this->getFullTitle(),
+            'internalTitle' => $this->getTitle(),
+            'description' => $this->getDescription() ?? '',
+            'numberOfPlaces' => $this->getPlaces(),
+            'numberOfAdditionalPlaces' => $this->getAdditionalPlaces(),
+            'places' => $this->getPlaces(),
+            'additionalPlaces' => $this->getAdditionalPlaces()
+        ];
+        if ($isFull) {
+            $comprehensiveData = [
+                'isSmoking' => $this->isIsSmoking(),
+                'isHostel' => $this->getIsHostel(),
+                'facilities' => $this->getFacilities(),
+            ];
+            if ($this->getRoomSpace()) {
+                $comprehensiveData['roomSpace'] = $this->getRoomSpace();
+            }
+            if (!is_null($helper)) {
+                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($helper, $domain);
+            }
+            $data = array_merge($data, $comprehensiveData);
+        }
+
+        return $data;
     }
 }

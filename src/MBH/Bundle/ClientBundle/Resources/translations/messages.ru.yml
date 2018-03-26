@@ -6,56 +6,120 @@ form.clientConfigType.main_group: 'Основные параметры'
 form.clientConfigType.search_group: 'Параметры подбора броней'
 form.clientConfigType.search_windows: 'Использовать систему "окна"?'
 form.clientConfigType.search_windows_desc: 'Подбор номеров без создания "окон"'
+form.clientConfigType.time_zone.label: 'Временная зона'
+form.clientConfigType.currency.label: Валюта
+form.clientConfigType.currency.options.rub: Рубли
+form.clientConfigType.currency.options.eur: Евро
+form.clientConfigType.currency.options.uah: Гривны
+form.clientConfigType.currency.options.kzt: Тенге
+form.clientConfigType.currency.options.gel: 'Грузинские лари'
+form.clientConfigType.currency.options.usd: Доллары
 form.clientConfigType.sms_notification: 'Смс оповещение?'
 form.clientConfigType.notice_unpaid: Уведомление
-form.clientConfigType.is_notice_unpaid: Отправлять уведомление о неоплаченной брони, через указанное колличество дней
-form.clientConfigType.search_dates: Дополнительные дни поиска
-form.clientConfigType.search_dates_desc: Количество дополнительных дней для подбора броней.
-form.clientConfigType.is_disabled_room_type_category: Группы для типов номеров
-form.clientConfigType.is_enabled_work_shift: Рабочие смены
-form.clientConfigType.instant_search: Быстрый поиск
-form.clientConfigType.instant_search_help: Поиск сразу при изменении полей?
-form.clientConfigType.default_notice_doc: Принимающая сторона
-form.clientConfigType.default_notice_doc_desc: Принимающая сторона иностранного гражданина по умолчанию
-form.clientConfigType.is_sms_notification_turned_on: Включено ли смс оповещение клиентов?
-form.clientPaymentSystemType.payment_system: Платежная система
-form.clientPaymentSystemType.robokassa_service: Сервис ROBOKASSA
-form.clientPaymentSystemType.payanyway_service: Сервис PAYANYWAY
-form.clientPaymentSystemType.moneymail_service: Сервис MoneyMail
-form.clientPaymentSystemType.moneymail_shop_id: ID магазина (Shop_IDP)
-form.clientPaymentSystemType.moneymail_key: Ключ магазина (Key)
-form.clientPaymentSystemType.uniteller_shop_id: ID магазина (Shop_IDP)
-form.clientPaymentSystemType.uniteller_password: Пароль магазина (Password)
-form.clientPaymentSystemType.rbk_eshop_id: ID магазина (eshopId)
-form.clientPaymentSystemType.rbk_secret_key: Ключ магазина (secretKey)
-form.clientPaymentSystemType.shop_login: Логин магазина
-form.clientPaymentSystemType.password_one: Пароль 1
-form.clientPaymentSystemType.password_two: Пароль 2
-form.clientPaymentSystemType.extended_account_number: Номер расширенного счета
-form.clientPaymentSystemType.data_integrity_code: Код проверки целостности данных
+form.clientConfigType.is_notice_unpaid: 'Отправлять уведомление о неоплаченной брони через указанное количество дней'
+form.clientConfigType.search_dates: 'Дополнительные дни поиска'
+form.clientConfigType.search_dates_desc: 'Количество дополнительных дней для подбора броней.'
+form.clientConfigType.is_disabled_room_type_category: 'Группы для типов номеров'
+form.clientConfigType.is_send_mail_at_payment_confirmation.label: 'Оповещать о подтверждении платежа?'
+form.clientConfigType.is_send_mail_at_payment_confirmation.help: 'Отправлять ли письмо по умолчанию при подтверждении кассового документа?'
+form.clientConfigType.is_enabled_work_shift: 'Рабочие смены'
+form.clientConfigType.instant_search: 'Быстрый поиск'
+form.clientConfigType.show_label_tips.label: 'Показывать описания'
+form.clientConfigType.show_label_tips.help: 'Показывать ли описания в формах и отчетах?'
+form.clientConfigType.instant_search_help: 'Поиск сразу при изменении полей?'
+form.clientConfigType.default_notice_doc: 'Принимающая сторона'
+form.clientConfigType.default_notice_doc_desc: 'Принимающая сторона иностранного гражданина по умолчанию'
+form.clientConfigType.is_sms_notification_turned_on: 'Включено ли смс оповещение клиентов?'
+form.clientPaymentSystemType.payment_system: 'Платежная система'
+form.clientPaymentSystemType.robokassa_service: 'Сервис ROBOKASSA'
+form.clientPaymentSystemType.payanyway_service: 'Сервис PAYANYWAY'
+form.clientPaymentSystemType.moneymail_service: 'Сервис MoneyMail'
+form.clientPaymentSystemType.moneymail_shop_id: 'ID магазина (Shop_IDP)'
+form.clientPaymentSystemType.moneymail_key: 'Ключ магазина (Key)'
+form.clientPaymentSystemType.uniteller_is_with_fiscalization.label: 'С фискализацией платежа?'
+form.clientPaymentSystemType.uniteller_shop_id: 'ID магазина (Shop_IDP)'
+form.clientPaymentSystemType.uniteller_password: 'Пароль магазина (Password)'
+form.clientPaymentSystemType.key.label: 'Ключ шифрования'
+form.clientPaymentSystemType.shop_id: 'ID магазина (Shop_IDP)'
+form.clientPaymentSystemType.uniteller.taxation_rate_code: 'Код ставки налогообложения'
+form.clientPaymentSystemType.uniteller.taxation_system_code: 'Код системы налогообложения'
+form.clientPaymentSystemType.rbk_eshop_id: 'ID магазина (eshopId)'
+form.clientPaymentSystemType.rbk_secret_key: 'Ключ магазина (secretKey)'
+form.clientPaymentSystemType.invoice_document.label: 'Документ счета'
+form.clientPaymentSystemType.stripe_pub_token.label: 'Публичный ключ'
+form.clientPaymentSystemType.stripe_secret_key.label: 'Секретный ключ'
+form.clientPaymentSystemType.stripe_commission.label: 'Размер комиссии (в процентах)'
+form.clientPaymentSystemType.shop_login: 'Логин магазина'
+form.clientPaymentSystemType.password_one: 'Пароль 1'
+form.clientPaymentSystemType.password_two: 'Пароль 2'
+form.clientPaymentSystemType.extended_account_number: 'Номер расширенного счета'
+form.clientPaymentSystemType.data_integrity_code: 'Код проверки целостности данных'
+controller.clientConfig.change_time_zone_contact_support: 'Для изменения временной зоны, пожалуйста, обратитесь в службу тех.поддержки по адресу: "%supportEmail%"'
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'
-form.clientPaymentSystemType.successUrl: URl успешной оплаты
-form.clientPaymentSystemType.failUrl: URl неуспешной оплаты
-form.clientPaymentSystemType.successUrlDesc: URl для перенаправления пользователя после успешной оплаты
-form.clientPaymentSystemType.failUrlDesc: URl для перенаправления пользователя после неуспешной оплаты
-form.clientPaymentSystemType.payment_system_group: Платежная система
+form.clientPaymentSystemType.successUrl: 'URL успешной оплаты'
+form.clientPaymentSystemType.failUrl: 'URL неуспешной оплаты'
+form.clientPaymentSystemType.successUrlDesc: 'URL для перенаправления пользователя после успешной оплаты'
+form.clientPaymentSystemType.failUrlDesc: 'URl для перенаправления пользователя после неуспешной оплаты'
+form.clientPaymentSystemType.payment_system_group: 'Платежная система'
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
-mailer.notice.unpaid.packages: Неоплаченные брони
-mailer.notice.unpaid.order.list: Список броней с просроченной оплатой
-mailer.notice.unpaid.package.list: № Заказа
-mailer.notice.unpaid.need.price: Сумма к оплате
+mailer.notice.unpaid.packages: 'Неоплаченные брони'
+mailer.notice.unpaid.order.list: 'Список броней с просроченной оплатой'
+mailer.notice.unpaid.package.list: '№ Заказа'
+mailer.notice.unpaid.need.price: 'Сумма к оплате'
 mailer.notice.unpaid.paid: Оплачено
 mailer.notice.unpaid.phone: Телефон
-mailer.notice.unpaid.mobile.phone: Мобильный телефон
-mailer.notice.unpaid.no.data: Нет данных
+mailer.notice.unpaid.mobile.phone: 'Мобильный телефон'
+mailer.notice.unpaid.no.data: 'Нет данных'
 mailer.notice.unpaid.full_name: ФИО
-form.clientConfigType.search_tariffs: Количество тарифов
-form.clientConfigType.search_tariffs_desc: Количество тарифов выводимое по умолчанию при подборе
-form.clientConfigType.add_start_date: Начальная дата
-form.clientConfigType.is_book_without_payer.label: Бронировать без плательщика?
-form.clientConfigType.is_book_without_payer.help: Разрешено ли создавать заказы без указания плательщика?
+form.clientConfigType.round.label: 'Округление цены брони'
+form.clientConfigType.round.help: 'Порядок дробной части, до которого будут производится округление. 0 - для отбрасывания дробной части.'
+form.clientConfigType.search_tariffs: 'Количество тарифов'
+form.clientConfigType.search_tariffs_desc: 'Количество тарифов выводимое по умолчанию при подборе'
+form.clientConfigType.add_start_date: 'Начальная дата'
+form.clientConfigType.begin_date_offset.label: 'Смещение начальной даты'
+form.clientConfigType.begin_date_offset.help: 'Смещение начальной даты от текущего числа'
+form.clientConfigType.number_of_days_for_payment.label: 'Период оплаты брони'
+form.clientConfigType.number_of_days_for_payment.help: 'Период от создания брони до момента, когда отсутствие оплаты означает, что она просрочена'
+form.clientConfigType.currency_ratio_fix.label: 'Коэффициент корректировки курса валюты'
+form.clientConfigType.currency_ratio_fix.help: 'Коэффициент, на который умножается цена при преобразовании в другую валюту'
+form.clientConfigType.is_book_without_payer.label: 'Бронировать без плательщика?'
+form.clientConfigType.is_book_without_payer.help: 'Разрешено ли создавать заказы без указания плательщика?'
+form.clientConfigType.default_adults_quantity.label: 'Количество взрослых'
+form.clientConfigType.default_adults_quantity.help: 'Количество взрослых в форме поиска по умолчанию'
+form.clientConfigType.default_children_quantity.label: 'Количество детей'
+form.clientConfigType.default_children_quantity.help: 'Количество детей в форме поиска по умолчанию'
 form.clientPaymentSystemType.payment_system_paypal_login: Логин
 form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
-
+clientbundle.controller.documentTemplateController.entry_successfully_eited: 'Запись успешно отредактирована.'
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
+form.clientConfigType.queryStat.label: 'Статистика запросов'
+form.clientConfigType.queryStat.help: 'Включить/выключить сбор статистики запросов'
+room_controller.limit_of_room_fund_exceeded: 'Количество номеров в номерном фонде превышает максимально разрешенное по тарифу. Доступно по тарифу: %availableNumberOfRooms%. Подробнее <a target="_blank" href="%overviewUrl%">информация по номерам</a>'
+controller.color_settings_action.config_successful_saved: 'Настройки успешно сохранены'
+controller.color_settings_action.config_successful_reset: 'Установлены стандартные настройки'
+form.colors_type.group.packages: Брони
+form.colors_type.success_color.label: Оплаченная
+form.colors_type.success_color.help: 'Цвет оплаченной брони'
+form.colors_type.success_additional_color.label: Оплаченная(доп.)
+form.colors_type.success_additional_color.help: 'Дополнительный цвет оплаченной брони'
+form.colors_type.warning_color.label: 'Частично оплаченная'
+form.colors_type.warning_color.help: 'Цвет частино оплаченной брони'
+form.colors_type.warning_additional_color.label: 'Частично оплаченная(доп.)'
+form.colors_type.warning_additional_color.help: 'Дополнительный цвет частично оплаченной брони'
+form.colors_type.danger_color.label: Неоплаченная
+form.colors_type.danger_color.help: 'Цвет неоплаченной брони'
+form.colors_type.danger_additional_color.label: Неоплаченная(доп.)
+form.colors_type.danger_additional_color.help: 'Дополнительный цвет неоплаченной брони'
+form.colors_type.group.chessboard: Шахматка
+form.colors_type.left_rooms_positive.label: 'Положительное кол-во'
+form.colors_type.left_rooms_positive.help: 'Цвет ячеек таблицы, отображающих положительное число оставшихся номеров'
+form.colors_type.left_rooms_zero.label: 'Нулевое кол-во'
+form.colors_type.left_rooms_zero.help: 'Цвет ячеек таблицы, отображающих нулевое количество оставшихся номеров'
+form.colors_type.left_rooms_negative.label: 'Отрицательное кол-во'
+form.colors_type.left_rooms_negative.help: 'Цвет ячеек таблицы, отображающих отрицательное количество оставшихся номеров'
+form.colors_type.unplaced_color.label: Неразмещенные
+form.colors_type.unplaced_color.help: 'Цвет ячеек таблицы, отображающих количество неразмещенных броней за день'
+views.payment_systems.invoice.download_button.text: 'Скачать счет'
+mbh.payment_systems.by_invoice: 'По счету'
+views.uniteller.pay_button.text: 'Оплатить %amount% %currency%'

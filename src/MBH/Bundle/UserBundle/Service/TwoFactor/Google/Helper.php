@@ -4,6 +4,7 @@ namespace MBH\Bundle\UserBundle\Service\TwoFactor\Google;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Google\Authenticator\GoogleAuthenticator as BaseGoogleAuthenticator;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Service\TwoFactor\HelperInterface;
@@ -95,6 +96,7 @@ class Helper implements HelperInterface
         $message->setSubject('mailer.two_factor.subject');
         $message->setText($this->getUrl($user));
         $message->setTemplate('MBHBaseBundle:Mailer:googleAuth.html.twig');
+        $message->setMessageType(NotificationType::AUTH_TYPE);
         $message->setAdditionalData([
             'spool' => true
         ]);

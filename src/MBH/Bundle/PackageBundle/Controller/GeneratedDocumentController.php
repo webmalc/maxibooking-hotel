@@ -85,7 +85,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
         if($type == XlsGeneratorFactory::TYPE_NOTICE) {
             $options['tourists'] = $this->dm->getRepository('MBHPackageBundle:Tourist')->getForeignTouristsByPackage($entity);
             if(empty($options['tourists'])) {
-                $error = 'В данной брони нет иностранных граждан';
+                $error = $this->get('translator')->trans('controller.generated_document_controller.document_modal_form.package_has_not_foreign');
             }
         }
 
@@ -123,11 +123,15 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
      */
     public function stampAction(Organization $entity)
     {
+        /** TODO: Переделать под показ данных из контроллера. Создать для этого сервис. */
+        /** @var string|null $client */
+        $client = $this->container->get('kernel')->getClient();
+
         if (!$entity->getStamp()) {
             throw $this->createNotFoundException();
         }
 
-        $fp = fopen($entity->getStamp()->getPathname(), "rb");
+        $fp = fopen($entity->getStamp($client)->getPathname(), "rb");
         $str = stream_get_contents($fp);
         fclose($fp);
 
@@ -137,7 +141,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
         $str = $binary->getContent();*/
 
         $response = new Response($str, 200);
-        $response->headers->set('Content-Type', $entity->getStamp()->getMimeType());
+        $response->headers->set('Content-Type', $entity->getStamp($client)->getMimeType());
 
         return $response;
     }

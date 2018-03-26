@@ -3,6 +3,7 @@
 namespace MBH\Bundle\UserBundle\Service\TwoFactor\Email;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Service\TwoFactor\HelperInterface;
@@ -56,6 +57,7 @@ class Helper implements HelperInterface
 
         $message->setSubject('mailer.two_factor.subject');
         $message->setText($user->getTwoFactorCode());
+        $message->setMessageType(NotificationType::AUTH_TYPE);
         $message->setAdditionalData([
             'spool' => true
         ]);

@@ -1,6 +1,6 @@
 {% extends 'MBHPriceBundle:Service:layout.html.twig' %}
 
-{% set small_title = "список" %}
+{% set small_title = "mbhpricebundle.view.service.index.small_title"|trans %}
 {% set layout = "tabs" %}
 
 {% block content %}
@@ -31,13 +31,13 @@
                 <!-- Tab actions -->
                 <div class="btn-list spacer-bottom text-right">
                     {% if not entity.system and is_granted('ROLE_SERVICE_CATEGORY_EDIT') %}
-                        <a href="{{ path('price_service_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'mbhpricebundle.view.service.index.redaktirovat.kategoriyu.uslug'|trans }} <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
+                        <a href="{{ path('price_service_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'mbhpricebundle.view.service.index.redaktirovat.kategoriyu.uslug'|trans }} <{{entity.name}}>"><i class="fa fa-edit"></i> {{ 'mbhpricebundle.view.service.index.edit'|trans}}</a>
                     {% endif %}
                     {% if is_granted('ROLE_SERVICE_CATEGORY_NEW') %}
-                        <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать услугу в категории <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить услугу</a>
+                        <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="{{ 'mbhpricebundle.view.service.index.create_service'|trans({"%categoryName%" : '<' ~ entity.name ~ '>'}) }}"><i class="fa fa-plus"></i> {{ 'mbhpricebundle.view.service.index.add_service'|trans}}</a>
                     {% endif %}
                     {% if not entity.system and is_granted('ROLE_SERVICE_CATEGORY_DELETE') %}
-                        <a href="{{ path('price_service_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="Удалить категорию услуг <{{entity.name}}>"><i class="fa fa-trash-o"></i> Удалить</a>
+                        <a href="{{ path('price_service_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="{{ 'mbhpricebundle.view.service.index.remove_category'|trans({"%categoryName%" : '<' ~ entity.name ~ '>'}) }}"><i class="fa fa-trash-o"></i> {{ 'mbhpricebundle.view.service.index.remove'|trans}}</a>
                     {% endif %}
                 </div>
 
@@ -61,9 +61,9 @@
                                     <td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
                                         <span class="hidden">{{ entry.price }}</span>
-                                        <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
+                                        <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="{{ 'mbhpricebundle.view.service.index.service_not_used'|trans }}" value="{{ entry.price }}">
                                     </td>
-                                    <td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>
+                                    <td class="text-center">{{ config.calcTypes[entry.calcType]|default('mbhpricebundle.view.service.index.thing')|trans }}</td>
                                     <td class="text-center">{% if entry.date %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                                     <td class="text-center">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
@@ -71,12 +71,12 @@
                                     <td class="text-center">
                                         <div class='btn-list'>
                                             {% if is_granted('ROLE_SERVICE_EDIT') %}
-                                                <a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'mbhpricebundle.view.service.index.redaktirovaniye.zapisi'|trans }} ' data-toggle='tooltip'>
+                                                <a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'mbhpricebundle.view.service.index.redaktirovaniyezapisi'|trans }} ' data-toggle='tooltip'>
                                                     <i class='fa fa-pencil-square-o'></i>
                                                 </a>
                                             {% endif %}
                                             {% if not entry.system and is_granted('ROLE_SERVICE_DELETE') %}
-                                                <a href='{{ path('price_service_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'mbhpricebundle.view.service.index.udaleniye.zapisi'|trans }} ' data-toggle='tooltip'>
+                                                <a href='{{ path('price_service_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'mbhpricebundle.view.service.index.udaleniyezapisi'|trans }} ' data-toggle='tooltip'>
                                                     <i class='fa fa-trash-o'></i>
                                                 </a>
                                             {% endif %}
@@ -87,17 +87,17 @@
                         </tbody>
                     </table>
                 {% else %}
-                    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> В этой категории нет ни одной услуги. <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}">Добавить услугу?</a></div>
+                    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'mbhpricebundle.view.service.index.no_services_in_this_category'|trans}}. <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}">{{ 'mbhpricebundle.view.service.index.add_service'|trans}}?</a></div>
                 {% endif %}
 
                 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                     <div class="container-fluid">
                         <ul class="nav navbar-nav">
                             {% if is_granted('ROLE_SERVICE_EDIT') %}
-                                <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить изменения</button></li>
+                                <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'mbhpricebundle.view.service.index.save_changes'|trans}}</button></li>
                             {% endif %}
                             {% if is_granted('ROLE_SERVICE_CATEGORY_NEW') %}
-                                <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> Добавить новую категорию</button></li>
+                                <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> {{ 'mbhpricebundle.view.service.index.add_new_service'|trans}}</button></li>
                             {% endif %}
                         </ul>
                         <ul class="nav navbar-nav navbar-right">

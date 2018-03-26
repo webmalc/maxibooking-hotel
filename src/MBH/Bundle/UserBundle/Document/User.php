@@ -8,6 +8,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
@@ -18,17 +19,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * @ODM\Document(collection="Users")
+ * @ODM\Document(collection="Users", repositoryClass="UserRepository")
  * @Gedmo\Loggable
  * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
+ * @MongoDBUnique(fields="email", message="validator.user.email_is_busy")
  * @MongoDBUnique(fields="username", message="mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan")
  */
 class User extends BaseUser implements RecipientInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
     const TWO_FACTOR_TYPES = ['email', 'google'];
+    const SYSTEM_USER = 'mb';
+
+    use AllowNotificationTypesTrait;
 
     /**
      * @var string
@@ -76,7 +80,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="birthday")
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $birthday;
@@ -84,16 +88,17 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     protected $notifications = true;
 
+
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -102,7 +107,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -112,7 +117,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -138,7 +143,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $defaultNoticeDoc = false;
@@ -146,7 +151,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -180,7 +185,19 @@ class User extends BaseUser implements RecipientInterface
      * @var string
      * @ODM\Field(type="string")
      */
-    protected $locale = 'en';
+    protected $locale;
+
+    /**
+     * @ODM\Field(type="date")
+     * @Assert\DateTime()
+     */
+    protected $expiresAt;
+
+    /**
+     * @var AuthorizationToken
+     * @ODM\EmbedOne(targetDocument="AuthorizationToken")
+     */
+    protected $apiToken;
 
     /**
      * Hook timestampable behavior
@@ -206,6 +223,35 @@ class User extends BaseUser implements RecipientInterface
     }
 
     /**
+     * @return AuthorizationToken
+     */
+    public function getApiToken(): ?AuthorizationToken
+    {
+        return $this->apiToken;
+    }
+
+    /**
+     * @param AuthorizationToken $apiToken
+     * @return User
+     */
+    public function setApiToken(AuthorizationToken $apiToken): User
+    {
+        $this->apiToken = $apiToken;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function removeApiToken()
+    {
+        $this->apiToken = null;
+
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     public function isLocked()
@@ -228,6 +274,19 @@ class User extends BaseUser implements RecipientInterface
     {
         return $this->expiresAt;
     }
+
+    /**
+     * @param mixed $expiresAt
+     * @return User
+     */
+    public function setExpiresAt(\DateTime $expiresAt = null)
+    {
+        $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+
 
     /**
      * Get firstName
@@ -599,6 +658,5 @@ class User extends BaseUser implements RecipientInterface
     {
         $this->locale = $locale;
     }
-
 
 }

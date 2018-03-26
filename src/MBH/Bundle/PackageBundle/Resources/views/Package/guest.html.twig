@@ -19,7 +19,6 @@
         <div class="tab-pane active" id="home">
 
             {% set totalGuests = package.children + package.adults %}
-
             {% if package.tourists|length < totalGuests %}
                 <div class="alert alert-warning alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -33,7 +32,7 @@
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
-                        <th>{{ 'mbhpackagebundle.view.package.guest.fio'|trans }} </th>
+                        <th>{{ 'package.guest.fio'|trans}}</th>
                         <th class="td-md">{{ 'package.guest.phone'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md">{{ 'package.guest.email'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md">{{ 'package.guest.birth_date'|trans({}, 'MBHPackageBundle') }}</th>
@@ -48,15 +47,15 @@
                         <tr>
                             <td class="text-center table-icon"><i class="fa fa-male"></i></td>
                             <td>
-                                <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}" rel="main"
+                                <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id, 'redirectTo': app.request.uri}) }}" rel="main"
                                    title=" {{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">{{ tourist.fullName }}</a>
                                 &nbsp;
                                 {% if tourist.isUnwelcome %}
                                     <a href='{{ path('tourist_edit_unwelcome', {id: tourist.id}) }}'>
-                                        <i data-toggle='tooltip' data-original-title='{{ 'mbhpackagebundle.view.package.guest.kliyent.v.chernom.spiske'|trans }} ' class='fa fa-user-secret unwelcome-icon'></i>
+                                        <i data-toggle='tooltip' data-original-title='{{ 'package.guest.client_in_black_list'|trans }}' class='fa fa-user-secret unwelcome-icon'></i>
                                     </a>
                                 {% else %}
-                                    <i style='opacity:0.4' data-toggle='tooltip' data-original-title='{{ 'mbhpackagebundle.view.package.guest.kliyent.ne.v.chernom.spiske'|trans }} ' class='fa fa-check-circle'></i>
+                                    <i style='opacity:0.4' data-toggle='tooltip' data-original-title='{{ 'package.guest.client_not_in_black_list'|trans }}' class='fa fa-check-circle'></i>
                                 {% endif %}
                             </td>
                             <td>{% if tourist.phone %}{{ tourist.phone }}{% endif %}</td>
@@ -80,7 +79,7 @@
                             <td class="table-actions-td text-center">
                                 {% if package.deletedAt is empty %}
                                     {% if is_granted('ROLE_TOURIST_EDIT') %}
-                                    <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}"
+                                    <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id, 'redirectTo': app.request.uri }) }}"
                                        class="btn btn-success btn-xs" title="{{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
@@ -103,10 +102,10 @@
 
             {% if not package.tourists|length < totalGuests %}
                 <div class="bg-gray color-palette alert" id="guest-overflow-alert">
-                    <i class="fa fa-info-circle"></i> {{ 'mbhpackagebundle.view.package.guest.dobavleno_maksimalnoe_kolichestvo_gostey'|trans }}
+                    <i class="fa fa-info-circle"></i> {{ 'package.guest.added_max_guests'|trans}}
                     &nbsp;
                     <div class="btn btn-default btn-xs">
-                        <i class="fa fa-plus"></i> {{ 'mbhpackagebundle.view.package.guest.dobavit_eshe'|trans }}
+                        <i class="fa fa-plus"></i> {{ 'package.guest.add_more'|trans}}
                     </div>
                 </div>
             {% endif %}

@@ -1,35 +1,28 @@
-validator.document.ingredient.notunique: Такой ингредиент уже существует
-validator.document.ingredientcategory.notunique: Такая категория уже существует
-validator.document.ingredientcategory.min_name: Имя категории должно быть менее 2-х символов
-validator.document.ingredientcategory.max_name: Превышено допустимое количество символов
-validator.document.ingredientcategory.hotel: Поле "отель" не должно быть пустым
-
-
-validator.document.dishMenuCategory.min_name: Имя категории должно быть не менее 2-символов
-validator.document.dishMenuCategory.max_name: Превышено допустимое количество символов
-validator.document.dishMenuCategory.hotel: Поле "отель" не должно быть пустым
-
-validator.document.dishmenuitem.min_name: Имя блюда должно быть не менее 2-символов
-validator.document.dishmenuitem.max_name: Превышено допустимое количество символов
-validator.document.dishmenuitem.null_price: Цена не может быть меньше нуля
-validator.document.dishmenuitem.null_margom: Наценка не может быть меньше нуля
-validator.document.dishmenuitem.min_desc: Слишком короткое описание
-validator.document.dishmenuitem.max_desc: Слишком длинное описание
-
-validator.document.dishorderitem.hotel: Поле "отель" не должно быть пустым
-
-validator.document.ingredient.min_name: Имя ингредиента должно быть менее 2-х символов
-validator.document.ingredient.max_name: Превышено допустимое количество символов
-validator.document.ingredient.null_price: Цена не может быть меньше нуля
-validator.document.ingredient.null_output: Выход продукта не может быть 0%
-validator.document.ingredient.full_output: Выход продукта не может быть больше 100%
-
-validator.document.table.hotel: Поле "отель" не должно быть пустым
-validator.document.table.min_name: Имя стола должно быть менее одного символа
-validator.document.table.max_name: Превышено допустимое количество символов
-
-validator.document.tableType.min_name: Имя категории должно быть менее одного символа
-validator.document.tableType.max_name: Превышено допустимое количество символов
-
-validator.document.category.unique: Такая категория уже существует
-validator.document.table.unique: Такой стол уже существует
+validator.document.ingredient.notunique: 'Такой ингредиент уже существует'
+validator.document.ingredientcategory.notunique: 'Такая категория уже существует'
+validator.document.ingredientcategory.min_name: 'Имя категории должно быть менее 2-х символов'
+validator.document.ingredientcategory.max_name: 'Превышено допустимое количество символов'
+validator.document.ingredientcategory.hotel: 'Поле "отель" не должно быть пустым'
+validator.document.dishMenuCategory.min_name: 'Имя категории должно быть не менее 2-символов'
+validator.document.dishMenuCategory.max_name: 'Превышено допустимое количество символов'
+validator.document.dishMenuCategory.hotel: 'Поле "отель" не должно быть пустым'
+validator.document.dishmenuitem.min_name: 'Имя блюда должно быть не менее 2-символов'
+validator.document.dishmenuitem.max_name: 'Превышено допустимое количество символов'
+validator.document.dishmenuitem.null_price: 'Цена не может быть меньше нуля'
+validator.document.dishmenuitem.null_margom: 'Наценка не может быть меньше нуля'
+validator.document.dishmenuitem.min_desc: 'Слишком короткое описание'
+validator.document.dishmenuitem.max_desc: 'Слишком длинное описание'
+validator.document.dishorderitem.hotel: 'Поле "отель" не должно быть пустым'
+validator.document.ingredient.min_name: 'Имя ингредиента должно быть менее 2-х символов'
+validator.document.ingredient.max_name: 'Превышено допустимое количество символов'
+validator.document.ingredient.null_price: 'Цена не может быть меньше нуля'
+validator.document.ingredient.null_output: 'Выход продукта не может быть 0%'
+validator.document.ingredient.full_output: 'Выход продукта не может быть больше 100%'
+validator.document.table.hotel: 'Поле "отель" не должно быть пустым'
+validator.document.table.min_name: 'Имя стола должно быть более одного символа'
+validator.document.table.max_name: 'Превышено допустимое количество символов'
+validator.document.tableType.min_name: 'Имя категории должно быть более одного символа'
+validator.document.tableType.max_name: 'Превышено допустимое количество символов'
+validator.document.category.unique: 'Такая категория уже существует'
+validator.document.table.unique: 'Такой стол уже существует'
+validator.document.table.table_can_have_less_chairs: 'Всего стол может иметь 20 стульев'

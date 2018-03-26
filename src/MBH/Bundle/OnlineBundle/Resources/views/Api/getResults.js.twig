@@ -22,14 +22,13 @@ function priceSeparator(amount) {
 
 jQuery(document).ready(function() {
     var resize = function() {
-        // console.log(document.body.scrollHeight);
-        // console.log($( 'body' ).height());
         window.parent.postMessage({
             type: 'mbh',
                 action: 'resize',
                 height: $('body').height()
             }, "*");
         };
+
         resize();
         setInterval(function() {
             resize();
@@ -41,8 +40,7 @@ jQuery(document).ready(function() {
                 return jQuery('#mbh-form-locale').val();
             },
             waiting = function() {
-                var locale = getLocale();
-                var text = !locale || locale == 'ru' ?'Подождите...' : 'Please wait...';
+                var text = '{{ "package.processing"|trans({}, 'front_messages')}}';
                 wrapper.html('<div class="mbh-results-info alert alert-info"><i class="fa fa-spinner fa-spin"></i> ' + text + '</div>');
             },
             getUrlVars = function() {
@@ -65,7 +63,6 @@ jQuery(document).ready(function() {
                 });
             },
             query = getUrlVars();
-        //var errorHtml = '<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>';
         var errorHtml = jQuery('#mbh-date-error').clone().removeClass('hide').attr('id', '');
         if (!query.begin || !query.end) {
             wrapper.html(errorHtml);
@@ -140,7 +137,7 @@ jQuery(document).ready(function() {
                         if (parseInt(per_person.attr('data-change'), 10)) {
                             var touriststHash = touristVal.split('_'),
                                 totalTourists = parseInt(touriststHash[0], 10) + parseInt(touriststHash[1], 10);
-                            var touristsPhrase = (totalTourists === 1) ? ' человека' : ' человек';;
+                            var touristsPhrase = (totalTourists === 1) ? ' человека' : ' человек';
 
                             per_person.html('цена за ' + totalTourists + touristsPhrase);
                         }
@@ -151,6 +148,30 @@ jQuery(document).ready(function() {
                     jQuery('.mbh-results-tourists-select').each(function() {
                         show(jQuery(this).closest('tr'));
                     });
+
+                    (function setFancyBoxOffset() {
+                        var frameOffset = 0;
+                        window.addEventListener('message', function(event) {
+                            var parentWindowData = event.data;
+                            if (parentWindowData.type === 'onScroll') {
+                                frameOffset = parentWindowData.frameTopOffset;
+                            }
+                        });
+                        if (document.body.scrollHeight > screen.height) {
+                            $('.fancybox').fancybox({
+                                'afterLoad': function () {
+                                    var fancyTopOffset = screen.height / 2 - frameOffset - document.body.scrollHeight / 2;
+                                    var offsetLimit = document.body.scrollHeight / 2 - screen.height / 2 + 30;
+                                    if (fancyTopOffset > offsetLimit) {
+                                        fancyTopOffset = offsetLimit;
+                                    } else if (fancyTopOffset * (-1) > offsetLimit) {
+                                        fancyTopOffset = (-1) * offsetLimit;
+                                    }
+                                    $('.fancybox-placeholder').css('top', fancyTopOffset);
+                                }
+                            });
+                        }
+                    })();
                 }());
 
                 //colorize tr
@@ -253,7 +274,7 @@ jQuery(document).ready(function() {
                         }
                     };
                     calc();
-                    jQuery('.mbh-results-tourists-select, .mbh-results-packages-count, .mbh-results-services-count').click(function() {
+                    jQuery('.mbh-results-tourists-select, .mbh-results-packages-count, .mbh-results-services-count').on('click change', function() {
                         calc();
                     });
                 }());
@@ -274,6 +295,7 @@ jQuery(document).ready(function() {
                             requestParams.packages = [];
                             requestParams.services = [];
                             requestParams.locale = getLocale();
+                            requestParams.configId = "{{ configId }}";
                             roomCount.each(function() {
                             if (jQuery(this).val() > 0) {
                                 var tr = jQuery(this).closest('tr'),
@@ -332,23 +354,23 @@ jQuery(document).ready(function() {
                             success: function(data) {
                                 wrapper.html('{{ styles|escape("js") }}' + data);
 
+                                wrapper.trigger('user-form-load-event');
+
                                 setSelect2();
                                 var prevUser = jQuery.cookie('mbh.user');
                                 var prevPackage = jQuery.cookie('mbh.package');
 
                                 if (prevUser) {
                                     prevUser = JSON.parse(prevUser);
-                                    jQuery('#mbh-user-form-firstName').val(prevUser.firstName),
-                                        jQuery('#mbh-user-form-lastName').val(prevUser.lastName),
-                                        jQuery('#mbh-user-form-phone').val(prevUser.phone),
-                                        jQuery('#mbh-user-form-email').val(prevUser.email),
-                                        jQuery('#mbh-user-form-birthday').val(prevUser.birthday)
+                                    jQuery('#mbh-user-form-firstName').val(prevUser.firstName);
+                                    jQuery('#mbh-user-form-lastName').val(prevUser.lastName);
+                                    jQuery('#mbh-user-form-phone').val(prevUser.phone);
+                                    jQuery('#mbh-user-form-email').val(prevUser.email);
+                                    jQuery('#mbh-user-form-birthday').val(prevUser.birthday);
                                 }
 
                                 if (prevPackage) {
                                     prevPackage = JSON.parse(prevPackage);
-                                    jQuery('#mbh-user-form-arrival').val(prevPackage.arrival),
-                                        jQuery('#mbh-user-form-departure').val(prevPackage.departure),
                                         jQuery('#mbh-user-form-note').val(prevPackage.note)
                                 }
 
@@ -359,18 +381,23 @@ jQuery(document).ready(function() {
                                 });
 
                                 var getUser = function() {
+                                    var $innInput = jQuery('#mbh-user-form-inn');
+                                    var $documentNumber = jQuery('#mbh-user-form-document-number');
+                                    var $patronymicInput = jQuery('#mbh-user-form-patronymic');
+
                                     return {
                                         firstName: jQuery('#mbh-user-form-firstName').val(),
                                         lastName: jQuery('#mbh-user-form-lastName').val(),
                                         phone: jQuery('#mbh-user-form-phone').val(),
                                         email: jQuery('#mbh-user-form-email').val(),
-                                        birthday: jQuery('#mbh-user-form-birthday').val()
+                                        birthday: jQuery('#mbh-user-form-birthday').val(),
+                                        inn: $innInput.length > 0 ? $innInput.val() : null,
+                                        documentNumber: $documentNumber.length > 0 ? $documentNumber.val() : null,
+                                        patronymic: $patronymicInput.length > 0 ? $patronymicInput.val() : null
                                     };
                                 };
                                 var getPackageInfo = function() {
                                     return {
-                                        'arrival': jQuery('#mbh-user-form-arrival').val(),
-                                        'departure': jQuery('#mbh-user-form-departure').val(),
                                         'note': jQuery('#mbh-user-form-note').val()
                                     };
                                 };
@@ -398,7 +425,7 @@ jQuery(document).ready(function() {
                                             var nextButton = jQuery('#mbh-user-form-next');
                                             nextButton.prop('disabled', false);
                                             inputs.each(function() {
-                                                if (!jQuery(this).val()) {
+                                                if (!jQuery(this).val() || (this.type == 'checkbox' && !$(this).is(':checked'))) {
                                                     nextButton.prop('disabled', true);
                                                     return false;
                                                 }
@@ -443,6 +470,11 @@ jQuery(document).ready(function() {
                                     total += totalServices;
                                     requestParams.total = String(total);
                                     requestParams.totalServices = String(totalServices);
+
+                                    var $personalDataCheckbox = $('#mbh-form-personal-data');
+                                    requestParams.isConfrmWithPersDataProcessing
+                                        = $personalDataCheckbox.length == 1 && $personalDataCheckbox.is(':checked');
+                                    requestParams.configId = "{{ configId }}";
                                     waiting();
 
                                     // ------------------------------ STEP 3: load payment type -------------------------
@@ -463,11 +495,16 @@ jQuery(document).ready(function() {
                                                 window.location.reload();
                                             });
 
+                                            var onlinePaymentTypes = ['online_full', 'online_half', 'online_first_day'];
                                             // user payment form validate & calc total
                                             (function() {
                                                 var validate = function() {
-                                                    jQuery('#mbh-payment-types-next').prop('disabled', !jQuery('.mbh-payment-types-radio:checked').length);
+                                                    var $selectedPaymentType = jQuery('.mbh-payment-types-radio:checked');
+                                                    var isFormNotValid = !$selectedPaymentType.length
+                                                        || (onlinePaymentTypes.indexOf($selectedPaymentType.val()) > -1 && !jQuery('#mbh-form-payment-system').val());
+                                                    jQuery('#mbh-payment-types-next').prop('disabled', isFormNotValid);
                                                 };
+
                                                 var calc = function() {
                                                     var type = jQuery('.mbh-payment-types-radio:checked'),
                                                         totalWrapper = jQuery('#mbh-package-info-total'),
@@ -476,13 +513,12 @@ jQuery(document).ready(function() {
                                                         sum = total,
                                                         sumHidden = total,
                                                         sumPackages = totalPackages;
-                                                    if (type.length && type.val() === 'online_first_day') {
+                                                    if (type.length && (type.val() === 'online_first_day' || type.val() === 'by_receipt_first_day')) {
                                                         sumPackages = Math.round(totalPackages / requestParams.nights);
                                                         sum = parseInt(totalPackages, 10) + parseInt(totalServices, 10);
                                                         sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
                                                     }
-                                                    if (type.length && type.val() === 'online_half') {
-
+                                                    if (type.length && (type.val() === 'online_half' || type.val() === 'by_receipt_half')) {
                                                         sumPackages = Math.round(totalPackages / 2);
                                                         sum = parseInt(totalPackages, 10) + parseInt(totalServices, 10);
                                                         sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
@@ -492,10 +528,20 @@ jQuery(document).ready(function() {
                                                     totalPackagesWrapper.html(sumPackages);
 
                                                 }
+                                                var togglePaymentSystemVisibility = function () {
+                                                    var selectedPaymentType = jQuery('.mbh-payment-types-radio:checked').val();
+                                                    var $paymentSystemsBlock = $('#mbh-payment-systems');
+                                                    if (onlinePaymentTypes.indexOf(selectedPaymentType) > -1) {
+                                                        $paymentSystemsBlock.show();
+                                                    } else {
+                                                        $paymentSystemsBlock.hide();
+                                                    }
+                                                }
                                                 validate();
-                                                jQuery('.mbh-payment-types-radio').change(function() {
+                                                jQuery('.mbh-payment-types-radio, #mbh-form-payment-system').change(function() {
                                                     validate();
                                                     calc();
+                                                    togglePaymentSystemVisibility();
                                                 });
                                             }());
 
@@ -503,7 +549,7 @@ jQuery(document).ready(function() {
                                             jQuery('#mbh-payment-types-next').click(function() {
                                                 requestParams.total = jQuery('#mbh-package-info-total-hidden').text();
                                                 requestParams.paymentType = jQuery('.mbh-payment-types-radio:checked').val();
-
+                                                requestParams.paymentSystem = jQuery('#mbh-form-payment-system').val();
                                                 waiting();
 
                                                 // STEP 4: results

@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
 
-{% set small_title = "редактирование гостя #" ~ entity.id %}
+{% set small_title = "tourist.edit.small_title"|trans ~ entity.id %}
 {% set layout = 'tabs' %}
 
 {% block content %}
@@ -9,7 +9,8 @@
     <div class="tab-content">
     {{ form_start(form, {'action': path('tourist_update', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'tourist' } %}
+        <input type="hidden" value="{{ redirectTo }}" name="redirectTo">
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'tourist', 'redirectTo' : redirectTo } %}
     {{ form_end(form) }}
 
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs } %}

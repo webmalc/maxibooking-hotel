@@ -2,11 +2,9 @@
 
 namespace MBH\Bundle\ClientBundle\Controller;
 
-
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\ClientBundle\Form\DocumentTemplateType;
-use MBH\Bundle\ClientBundle\Service\TemplateFormatter;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -15,7 +13,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 
 /**
  * Class DocumentTemplateController
@@ -47,6 +44,8 @@ class DocumentTemplateController extends BaseController
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_NEW')")
      * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function newAction(Request $request)
     {
@@ -59,7 +58,7 @@ class DocumentTemplateController extends BaseController
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('clientbundle.controller.documentTemplateController.entry_successfully_created'));
+            $this->addFlash('success', 'clientbundle.controller.documentTemplateController.entry_successfully_created');
             return $this->afterSaveRedirect('document_templates', $entity->getId());
         }
 
@@ -75,6 +74,9 @@ class DocumentTemplateController extends BaseController
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_EDIT')")
      * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
+     * @param DocumentTemplate $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAction(DocumentTemplate $entity, Request $request)
     {
@@ -85,6 +87,7 @@ class DocumentTemplateController extends BaseController
             if($form->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();
+                $this->addFlash('success', 'clientbundle.controller.documentTemplateController.entry_successfully_eited');
 
                 return $this->afterSaveRedirect('document_templates', $entity->getId());
             }
@@ -102,13 +105,14 @@ class DocumentTemplateController extends BaseController
      * @Method("GET")
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_VIEW')")
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
+     * @param DocumentTemplate $documentTemplate
      * @return Response
      * @deprecated
      */
     public function previewAction(DocumentTemplate $documentTemplate)
     {
         $entity = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy([]);
-        $html = (new TemplateFormatter())->prepareHtml($documentTemplate, $entity);
+        $html = $this->get('mbh.template_formatter')->prepareHtml($documentTemplate, $entity);
         $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html);
         return new Response($content, 200, [
             'Content-Type' => 'application/pdf'
@@ -127,25 +131,8 @@ class DocumentTemplateController extends BaseController
      */
     public function showAction(DocumentTemplate $doc, Package $package)
     {
-        $env = new \Twig_Environment(new \Twig_Loader_String());
-        $env->addExtension($this->get('mbh.twig.extension'));
+        $content = $this->get('mbh.template_formatter')->generateDocumentTemplate($doc, $package, $this->getUser());
 
-        $order = $package->getOrder();
-        $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
-        $organization = $doc->getOrganization() ? $doc->getOrganization() : $hotel->getOrganization();
-        $content = $this->get('knp_snappy.pdf')->getOutputFromHtml(
-            $env->render(
-                $doc->getContent(),
-                [
-                    'package' => $package,
-                    'order' => $order,
-                    'hotel' => $hotel,
-                    'payer' => $order->getPayer(),
-                    'organization' => $organization,
-                    'user' => $this->getUser()
-                ]
-            )
-        );
         return new Response($content, 200, [
             'Content-Type' => 'application/pdf'
         ]);
@@ -155,8 +142,9 @@ class DocumentTemplateController extends BaseController
      * @Route("/delete/{id}", name="document_templates_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_DELETE')")
-     * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
+     * @param DocumentTemplate $entity
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(DocumentTemplate $entity)
     {

@@ -8,18 +8,19 @@ var ActionManager = (function () {
         var self = this;
         var $packageDeleteModal = $('#modal_delete_package');
         $packageDeleteModal.modal('show');
-        $packageDeleteModal.find('.modal-body').html(mbh.loader.html);
-        return $.ajax({
+        var $modalContainer = $('#delete-modal-form-container');
+        $modalContainer.html(mbh.loader.html);
+        $.ajax({
             url: Routing.generate('package_delete', { 'id': packageId }),
             type: "GET",
             success: function (modalBodyHTML) {
-                $('#modal_delete_package').html(modalBodyHTML);
+                $modalContainer.html(modalBodyHTML);
                 $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
-                var $removeButton = $packageDeleteModal.find('button[type="submit"]');
+                var $removeButton = $packageDeleteModal.find('#package-delete-modal-button');
                 $removeButton.attr('type', 'button');
+                $removeButton.unbind('click');
                 $removeButton.click(function () {
-                    self.dataManager.deletePackageRequest(packageId);
-                    $packageDeleteModal.modal('hide');
+                    self.dataManager.deletePackageRequest(packageId, $modalContainer, $packageDeleteModal);
                 });
             }
         });
@@ -252,26 +253,41 @@ var ActionManager = (function () {
         var modalAlertDiv = document.getElementById('package-modal-change-alert');
         modalAlertDiv.innerHTML = '';
         var newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
-        if (intervalData && changedSide) {
-            var alertMessageData = ActionManager.getAlertData(changedSide, intervalData, newIntervalData);
+        var isNewAccommodationInAnotherRoomType = ActionManager.isNewAccommodationInAnotherRoomType(newIntervalData, intervalData);
+        if (isNewAccommodationInAnotherRoomType || (intervalData && changedSide)) {
+            var alertMessageData = this.getAlertMessage(newIntervalData, intervalData, isNewAccommodationInAnotherRoomType);
             if (alertMessageData) {
                 ActionManager.showAlertMessage(alertMessageData, $updateForm);
             }
         }
         ActionManager.showEditedUpdateModal(intervalData, newIntervalData, isDivide, changedSide);
     };
-    ActionManager.getAlertData = function (changedSide, intervalData, newIntervalData) {
-        if (changedSide == 'right') {
-            return ActionManager.getAlertMessage(newIntervalData, intervalData);
-        }
-        else if (changedSide == 'left') {
-            return ActionManager.getAlertMessage(newIntervalData, intervalData);
-        }
-        else if (changedSide == 'both') {
-            return ActionManager.getAlertMessage(newIntervalData, intervalData);
-        }
+    ActionManager.isNewAccommodationInAnotherRoomType = function (accommodationData, intervalData) {
+        var isNewAccommodation = !intervalData.isAccommodationInterval
+            || ActionManager.isPackageBeginChanged(accommodationData, intervalData)
+            || ActionManager.isPackageEndChanged(accommodationData, intervalData);
+        return accommodationData.roomType !== intervalData.packageRoomTypeId && isNewAccommodation;
     };
-    ActionManager.getAlertMessage = function (newIntervalData, intervalData) {
+    ActionManager.prototype.getAlertMessage = function (newIntervalData, intervalData, isNewAccommodationInAnotherRoomType) {
+        if (isNewAccommodationInAnotherRoomType) {
+            var packageAccommodations = this.dataManager.getPackageAccommodations(intervalData.packageId);
+            var existsAccommodationWithCurrentRoomType = packageAccommodations.some(function (accommodationData) {
+                return accommodationData.packageRoomTypeId === accommodationData.roomTypeId;
+            });
+            var warningMessageId = existsAccommodationWithCurrentRoomType
+                ? 'package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation'
+                : 'package_bundle.accommodations.warning_before_setting_accoommodation';
+            return {
+                message: Translator.trans(warningMessageId, {
+                    accommodationRoomTypeName: roomTypes[newIntervalData.roomType],
+                    packageRoomType: roomTypes[intervalData.packageRoomTypeId],
+                    chessboard_route: Routing.generate('chess_board_home'),
+                    packages_route: Routing.generate('package')
+                }),
+                resolved: true,
+                modalContentClass: 'modal-danger'
+            };
+        }
         var packageBeginChanged = ActionManager.isPackageBeginChanged(newIntervalData, intervalData);
         var packageEndChanged = ActionManager.isPackageEndChanged(newIntervalData, intervalData);
         var packageBeginAndEndChanged = packageBeginChanged && packageEndChanged;
@@ -353,7 +369,22 @@ var ActionManager = (function () {
             $continueButton.show();
         }
         var $modalAlertDiv = $('#package-modal-change-alert');
-        $modalAlertDiv.text(alertMessageData.message);
+        $modalAlertDiv.html(alertMessageData.message);
+        if (alertMessageData.modalContentClass) {
+            var $modalContent_1 = $updateForm.closest('.modal-content');
+            $modalContent_1.addClass(alertMessageData.modalContentClass);
+            $('#package-modal-change-alert').removeClass('text-center');
+            var onWithModalClassWindowClosed_1 = function () {
+                $modalContent_1.removeClass(alertMessageData.modalContentClass);
+                $('#package-modal-change-alert').addClass('text-center');
+            };
+            $continueButton.click(function () {
+                onWithModalClassWindowClosed_1();
+            });
+            $('#packageModal').on('hidden.bs.modal', function () {
+                onWithModalClassWindowClosed_1();
+            });
+        }
         $modalAlertDiv.show();
         var $confirmButton = $('#packageModalConfirmButton');
         $confirmButton.hide();
@@ -404,6 +435,7 @@ var ActionManager = (function () {
         modal.find('#modal-end-date').text(intervalEnd);
         modal.find('#modal-room-id').text(newIntervalData.accommodation);
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
+        modal.find('#modal-room-type-id').text(newIntervalData.roomType);
         modal.find('#modal-room-name').text(newIntervalData.accommodation
             ? rooms[newIntervalData.accommodation] : Translator.trans('action_manager.update_modal.without_accommodation'));
         modal.modal('show');
@@ -412,7 +444,7 @@ var ActionManager = (function () {
         var modal = $('#packageModal');
         var payerText;
         var payerName = modal.find('#modal-package-payer').text();
-        if (payerName != 'Не указан') {
+        if (payerName != Translator.trans('action_manager.update_modal.not_specified')) {
             payerText = payerName;
         }
         else {
@@ -425,6 +457,7 @@ var ActionManager = (function () {
             'begin': modal.find('#modal-begin-date').text(),
             'end': modal.find('#modal-end-date').text(),
             'roomId': modal.find('#modal-room-id').text(),
+            'roomTypeId': modal.find('#modal-room-type-id').text(),
             'isDivide': modal.find('input.isDivide').val(),
             'payer': payerText
         };

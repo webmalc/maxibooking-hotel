@@ -36,26 +36,27 @@
                         <span class="mbh-results-tariff"
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
                                     <div id="mbh-results-image-wrapper">
-                                    {% if result.roomType.getMainImage is not empty %}
+                                    {% if result.roomType.mainImage is not empty %}
                                        {% set image = result.roomType.getMainImage %}
-                                        <a href="{{ asset(image.getPath()) | imagine_filter('scaler') }}"
+                                        <a href="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('scaler')) }}"
                                             class="fancybox" data-fancybox="group-{{ result.roomType.id }}">
-                                        <img class="main" src="{{ asset(image.getPath()) | imagine_filter('thumb_155x155') }}">
+                                        <img class="main" src="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_155x155')) }}">
                                         </a>
                                     {% endif %}
-                                    {% for image in result.roomType.images if not image.isMain %}
-                                        <a href="{{ asset(image.getPath()) | imagine_filter('scaler') }}"
+                                    {% for image in result.roomType.onlineImagesByPriority if not image.isMain %}
+                                        <a href="{{ asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('scaler')) }}"
                                         class="fancybox" data-fancybox="group-{{ result.roomType.id }}">
-                                            <img src="{{ asset(image.getPath()) | imagine_filter('thumb_50x50') }}">
+                                            <img src="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_50x50')) }}">
                                         </a>
                                     {% endfor %}
                                     </div>
+                                    <input type="hidden" id="mbh-form-locale" value="{{ app.request.locale }}">
                                     <span class="mbh-results-roomType"
                                           data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle(app.request.locale) }}</span>
                                     <span class="mbh-results-hotel"
                                                                     data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>
                                         {% if result.roomType.facilities is not empty %}
-                                            <!-- <h3>{{ 'views.api.getresultstable.facilities'|trans({}, 'mbhonlinebundle') }}</h3> -->
+                                            <!-- <h3>{{ 'views.api.getresultstable.facilities'|trans({}, 'MBHOnlineBundle') }}</h3> -->
                                             <ul class="inline-facility spacer-top">
                                                 {% for facility in result.roomType.facilities %}
                                                     <li><span class="fa fa-lg mbf-{{ facility }}" data-title="{% for key, val in facilityArray %}{% if key == facility %}{{ val }}{% endif %}{% endfor %}"></span></li>
@@ -78,7 +79,7 @@
                                         {% for priceTourists, price  in result.prices %}
                                             {% set arr = priceTourists|split('_') %}
                                             <option value="{{ priceTourists }}">
-                                                {% if arr[0] %}{{ arr[0] }} вз.{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} рб.{% endif %}
+                                                {% if arr[0] %}{{ arr[0] }} {{ 'views.api.getResultsTable.number_of_adults'|trans}}{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} {{ 'views.api.getResultsTable.number_of_children'|trans}}{% endif %}
                                             </option>
                                         {% endfor %}
                                     </select>
@@ -97,7 +98,7 @@
 
                                         <ul class="mbh-results-prices">
                                             <li data-value="{{ price }}"
-                                                class="{{ priceTourists }}">{{ price|number_format }} {{ currency().text }}
+                                                class="{{ priceTourists }}">{{ price|number_format }} {{ currency().text|trans }}
                                         </ul>
 
                                     {% endfor %}
@@ -137,13 +138,13 @@
                 <div id="mbh-results-actions">
                     <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}
                         <span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
-                                class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
+                                class="mbh-results-total-sum">{{ currency().text|trans }}</span></span> &nbsp;
                     <span id="mbh-results-services-total" style="display: none;"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}
                         <span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
-                                class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
+                                class="mbh-results-total-sum">{{ currency().text|trans }}</span></span> &nbsp;
                     <span id="mbh-results-total">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}
                         <span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
-                                class="mbh-results-total-sum">{{ currency().text }}</span></span>
+                                class="mbh-results-total-sum">{{ currency().text|trans }}</span></span>
                     <button id="mbh-results-next"
                             class="button btn btn-primary spacer-left-sm"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
                         <small><i class="fa fa-chevron-right "></i></small>

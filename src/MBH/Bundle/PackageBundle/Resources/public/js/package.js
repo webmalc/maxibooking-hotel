@@ -32,7 +32,6 @@ var initAccommodationTab = function () {
         $arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
         $departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
         datepickerOptions = {
-            language: "ru",
             autoclose: true,
             format: 'dd.mm.yyyy'
         };
@@ -121,7 +120,7 @@ var initAccommodationTab = function () {
         if (!confirmed) {
             var text = [];
             if ($checkOut.is(':checked') && Package.debt > 0) {
-                text.push('Заказ не оплачен');
+                text.push(Translator.trans("package.order_is_not_paid"));
             }
             var confirmText = getConfirmText();
             if (confirmText) {
@@ -129,57 +128,78 @@ var initAccommodationTab = function () {
             }
             if (text.length > 0) {
                 e.preventDefault();
-                mbh.alert.show(null, 'Подтверждение', text.join('<br>'), 'Продолжить', null, 'danger', function () {
+                mbh.alert.show(null, Translator.trans("package.confirmation"), text.join('<br>'), Translator.trans("package.continue"), null, 'danger', function () {
                     mbh.alert.hide();
                     confirmed = true;
                     $('button[type=submit][name=save]').trigger('click');
                 })
             }
         }
-    }
+    };
 
     $form.on('submit', function (e) {
         formHandler(e);
     });
-}
+};
 
-var deleteUndaid = function () {
-    $('.booking-delete-link').on('click', function (e) {
+var initRemovePackageButton = function () {
+    var $formContainer = $('#delete-modal-form-container');
+    var $deleteModalButton = $('#package-delete-modal-button');
+
+    $('.booking-delete-link, .order-booking-delete-link').unbind('click');
+    $('.booking-delete-link, .order-booking-delete-link').on('click', function (e) {
+        var orderId = this.getAttribute('data-order-id');
+        var isRemoveFromOrderInterface = orderId !== null;
+        console.log(orderId);
         e.preventDefault();
-        $('#modal_delete_package').attr('data-order', $(this).data('order'));
-        $('.modal-body').html(mbh.loader.html);
 
-        return $.ajax({
-            url: Routing.generate('package_delete', {'id': $(this).data('id')}),
+        var isRemovePackage = this.classList.contains('booking-delete-link');
+        var urlName = isRemovePackage ? 'package_delete' : 'order_delete';
+        var entityId = $(this).data('id');
+
+        $formContainer.html(mbh.loader.html);
+
+        $.ajax({
+            url: Routing.generate(urlName, {'id': entityId}),
             type: "GET",
-            data: {},
-            success: function (urlFromController) {
-                $('#modal_delete_package').html(urlFromController);
-                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
+            success: function (response) {
+                $formContainer.html(response);
                 $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+            }, error: function () {
+                $formContainer.html(mbh.error.html);
             }
         });
-    });
-    $('.order-booking-delete-link').on('click', function (e) {
-        e.preventDefault();
-        $('.modal-body').html(mbh.loader.html);
 
-        return $.ajax({
-            url: Routing.generate('order_delete', {'id': $(this).data('id')}),
-            type: "GET",
-            data: {},
-            success: function (urlFromController) {
-                $('#modal_delete_package').html(urlFromController);
-                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
-                $('select#mbh_bundle_packagebundle_order_delete_reason_type_deleteReason').select2();
-            }
-        });
+        $deleteModalButton.unbind('click');
+        $deleteModalButton.click(function () {
+            var data = $formContainer.find('form').serialize();
+            $formContainer.html(mbh.loader.html);
+            var urlAfterRedirect = isRemovePackage && isRemoveFromOrderInterface
+                ? Routing.generate('package_order_edit', {'id' : orderId, 'packageId' : entityId})
+                : Routing.generate('package');
+
+            $.ajax({
+                url: Routing.generate(urlName, {'id': entityId}),
+                type: "POST",
+                data: data,
+                success: function (response) {
+                    $formContainer.html(response)
+                },
+                error: function (response) {
+                    if (response.status === 302) {
+                        window.location.href = urlAfterRedirect;
+                    } else {
+                        $formContainer.html(mbh.error.html)
+                    }
+                }
+            });
+        })
     });
-}
+};
 
 var docReadyPackages = function () {
     'use strict';
-    deleteUndaid();
+    initRemovePackageButton();
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
@@ -211,7 +231,7 @@ var docReadyPackages = function () {
     $('.price-spinner').TouchSpin({
         min: 0,
         max: 9999999999999999,
-        step: 0.1,
+        step: 0.01,
         decimals: 2,
         boostat: 10,
         maxboostedstep: 20,
@@ -226,7 +246,7 @@ var docReadyPackages = function () {
             return '<span><i class="' + $(originalOption).data('icon') + '"></i> ' + icon.text + '</span>';
         };
 
-        $('#package-filter-status').each(function () {
+        $('#package-filter-status, #package-source-filter').each(function () {
             $(this).select2({
                 placeholder: $(this).prop('data-placeholder'),
                 allowClear: true,
@@ -238,7 +258,22 @@ var docReadyPackages = function () {
     }());
 
     //package datatable
-    var pTable = $('#package-table').dataTable({
+    var pTable = $('#package-table')
+        .on('init.dt', function () {
+            var  timeout = 0;
+            var $input = $('.dataTables_filter input');
+            $input.unbind();
+            $input.on('keyup keydown', function (event) {
+                clearTimeout(timeout);
+                var that = this;
+                timeout = setTimeout(function () {
+                    searchTable(event, $(that))
+                }, 500);
+            });
+
+        })
+        .dataTable({
+        searchDelay: 350,
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
             {
@@ -257,12 +292,11 @@ var docReadyPackages = function () {
             {
                 text: '<i class="fa fa-file-excel-o" title="CSV" data-toggle="tooltip" data-placement="bottom"></i>',
                 className: 'btn btn-default btn-sm',
-                action: function ( e, dt, button, config ) {
+                action: function (e, dt, button, config) {
                     $.ajax({
                         url: Routing.generate('package_csv'),
-                        type:'POST',
-                        data: {
-                        } ,
+                        type: 'POST',
+                        data: {},
                         success: function (response) {
 
                             $('<div id="template-document-csv-modal" class="modal"> </div> ').insertAfter($('.content-wrapper'));
@@ -274,13 +308,13 @@ var docReadyPackages = function () {
 
                             $modal.find('input[type=checkbox]').bootstrapSwitch({
                                 'size': 'mini',
-                                'onColor' : 'success',
-                                'onText': 'да',
-                                'offText': 'нет'
+                                'onColor': 'success',
+                                'onText': Translator.trans("package.yes"),
+                                'offText': Translator.trans("package.no")
                             });
                             var form = $modal.find("form");
 
-                            form.submit(function(){
+                            form.submit(function () {
                                 $('#mbh_bundle_packagebundle_package_csv_type_roomType').val($('#package-filter-roomType').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_status').val($('#package-filter-status').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_deleted').val($('#package-filter-deleted').val())
@@ -290,13 +324,13 @@ var docReadyPackages = function () {
                                 $('#mbh_bundle_packagebundle_package_csv_type_paid').val($('#package-filter-paid').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_confirmed').val($('#package-filter-confirmed').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_deleted').val(($('#package-filter-deleted').is(':checked')) ? 1 : 0)
-                                $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'))
+                                $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'));
+                                $('#mbh_bundle_packagebundle_package_csv_type_query').val($('#package-table_filter').find('input[type="search"]').val());
+                                $('#mbh_bundle_packagebundle_package_csv_type_source').val($('#package-source-filter').val());
                                 $('.modal.in').modal('hide')
                             });
-
                         }
                     });
-
                 }
             }
         ],
@@ -309,6 +343,7 @@ var docReadyPackages = function () {
                 d.begin = $('#package-filter-begin').val();
                 d.end = $('#package-filter-end').val();
                 d.roomType = $('#package-filter-roomType').val();
+                d.source = $('#package-source-filter').val();
                 d.status = $('#package-filter-status').val();
                 d.deleted = ($('#package-filter-deleted').is(':checked')) ? 1 : 0;
                 d.dates = $('#package-filter-dates').val();
@@ -336,7 +371,7 @@ var docReadyPackages = function () {
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
             $('.booking-delete-link').attr('data-toggle', 'modal');
 
-            deleteUndaid();
+            initRemovePackageButton();
 
             //summary
             $('#package-summary-total').html(settings.json.package_summary_total || '-');
@@ -347,7 +382,13 @@ var docReadyPackages = function () {
         }
     });
 
-    // package datatable filter
+    var searchTable = function (event, $search) {
+        var value = $search.val();
+        if (value.length >= 4 || event.keyCode === 13 || value.length === 0) {
+            pTable.api().search(value).draw();
+        }
+    };
+
     (function () {
 
         $('#package-table-quick-links li').each(function () {
@@ -361,9 +402,13 @@ var docReadyPackages = function () {
                 .removeClass('btn-default').addClass('btn-primary');
         }
 
-        $('.package-filter').on('change switchChange.bootstrapSwitch', function () {
+        $('.package-filter:not(#package-filter-begin):not(#package-filter-end)').on('change switchChange.bootstrapSwitch', function () {
             $('#package-table').dataTable().fnDraw();
         });
+        $('#package-filter-begin, #package-filter-end').on('changeDate', function () {
+            $('#package-table').dataTable().fnDraw();
+        });
+
         $('#package-table-quick-links a').click(function () {
             var input = $('#package-filter-quick-link');
             $('#package-table-quick-links a').removeClass('btn-primary').addClass('btn-default');
@@ -460,8 +505,8 @@ var docReadyPackages = function () {
                 if (!response.error) {
                     $body.find("input[type=checkbox]").bootstrapSwitch({
                         'size': 'small',
-                        'onText': 'да',
-                        'offText': 'нет',
+                        'onText': Translator.trans("package.yes"),
+                        'offText': Translator.trans("package.no"),
                         'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>'
                     });
                     $body.find("select").select2();
@@ -480,12 +525,33 @@ var docReadyPackages = function () {
 
 
     discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'), $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'))
+};
+
+function setPaymentCardVisibility() {
+    var $paymentCardInfo = $('#payment-card-info');
+    if ($paymentCardInfo.length === 1) {
+        var $showInfoBtn = $('#show-payment-info-button');
+        var $hideInfoBtn = $('#hide-payment-info-button');
+
+        $showInfoBtn.click(function () {
+            $paymentCardInfo.show();
+            $showInfoBtn.hide();
+            $hideInfoBtn.show();
+        });
+
+        $hideInfoBtn.click(function () {
+            $paymentCardInfo.hide();
+            $showInfoBtn.show();
+            $hideInfoBtn.hide();
+        });
+    }
 }
 
 
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
+    setPaymentCardVisibility();
     //package ajax tabs
     (function () {
         var tabs = $('#package-tabs');
@@ -493,8 +559,9 @@ $(document).ready(function () {
             return null;
         }
         tabs.find('li > a').click(function (e) {
+            setPaymentCardVisibility();
             e.preventDefault();
-            $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>' + Translator.trans("package.processing") + '...</div>');
             tabs.find('li').removeClass('active');
             $(this).closest('li').addClass('active');
             var href = $(this).attr('href');

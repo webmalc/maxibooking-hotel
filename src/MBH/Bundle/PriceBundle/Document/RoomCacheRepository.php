@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -9,6 +10,37 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class RoomCacheRepository extends DocumentRepository
 {
+    /**
+     * @param int $period
+     * @return array
+     */
+    public function findForDashboard(int $period): array
+    {
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight +' . $period . ' days');
+        $result = [];
+        $caches =  $this->createQueryBuilder()
+            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'totalRooms')
+            ->field('date')->gte($begin)->lte($end)
+            ->sort('date')->sort('hotel.id')->sort('roomType.id')
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()->toArray();
+
+        foreach ($caches as $cache) {
+            $cache['id'] = (string) $cache['_id'];
+            $cache['date'] = $cache['date']->toDateTime();
+            $cache['date']->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+            $cache['hotel'] = (string) $cache['hotel']['$id'];
+            $cache['roomType'] = (string) $cache['roomType']['$id'];
+            $cache['tariff'] = isset($cache['tariff']) ? (string) $cache['tariff']['$id'] : 0;
+            unset($cache['_id']);
+            $result[$cache['hotel']][$cache['roomType']][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
+        }
+
+        return $result;
+    }
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -60,7 +92,7 @@ class RoomCacheRepository extends DocumentRepository
         array $roomTypes = [],
         $tariffs = false
     ) {
-        $qb = $this->createQueryBuilder('q');
+        $qb = $this->createQueryBuilder();
 
         // hotel
         if (!empty($hotel)) {
@@ -99,7 +131,7 @@ class RoomCacheRepository extends DocumentRepository
      */
     public function findOneByDate(\DateTime $date, RoomType $roomType, Tariff $tariff = null)
     {
-        $qb = $this->createQueryBuilder('q');
+        $qb = $this->createQueryBuilder();
         $qb
             ->field('date')->equals($date)
             ->field('roomType.id')->equals($roomType->getId())
@@ -120,7 +152,7 @@ class RoomCacheRepository extends DocumentRepository
      * @param mixed $tariffs
      * @param boolean $grouped
      * @param Cache $memcached
-     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     * @return array|\Doctrine\ODM\MongoDB\Query\Builder|Cursor
      */
     public function fetch(
         \DateTime $begin = null,
@@ -147,6 +179,7 @@ class RoomCacheRepository extends DocumentRepository
             return $caches;
         }
         $result = [];
+        /** @var RoomCache $cache */
         foreach ($caches as $cache) {
             $result[$cache->getRoomType()->getId()][!empty($cache->getTariff()) ? $cache->getTariff()->getId() : 0][$cache->getDate()->format('d.m.Y')] = $cache;
         }
@@ -155,5 +188,25 @@ class RoomCacheRepository extends DocumentRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array $selectedFields
+     * @return array
+     */
+    public function getRawExistedRoomCaches(\DateTime $begin, \DateTime $end, array $selectedFields = [])
+    {
+        $qb = $this->fetchQueryBuilder($begin, $end, null, [], null);
+        if (count($selectedFields) > 0) {
+            $qb->select($selectedFields);
+        }
+
+        return $qb
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 }

@@ -18,19 +18,20 @@ class ActionManager {
         let self = this;
         let $packageDeleteModal = $('#modal_delete_package');
         $packageDeleteModal.modal('show');
-        $packageDeleteModal.find('.modal-body').html(mbh.loader.html);
+        const $modalContainer = $('#delete-modal-form-container');
+        $modalContainer.html(mbh.loader.html);
 
-        return $.ajax({
+        $.ajax({
             url: Routing.generate('package_delete', {'id': packageId}),
             type: "GET",
             success: function (modalBodyHTML) {
-                $('#modal_delete_package').html(modalBodyHTML);
+                $modalContainer.html(modalBodyHTML);
                 $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
-                let $removeButton = $packageDeleteModal.find('button[type="submit"]');
+                let $removeButton = $packageDeleteModal.find('#package-delete-modal-button');
                 $removeButton.attr('type', 'button');
+                $removeButton.unbind('click');
                 $removeButton.click(function () {
-                    self.dataManager.deletePackageRequest(packageId);
-                    $packageDeleteModal.modal('hide');
+                    self.dataManager.deletePackageRequest(packageId, $modalContainer, $packageDeleteModal);
                 })
             }
         });
@@ -269,7 +270,7 @@ class ActionManager {
         ActionManager.hideLoadingIndicator();
     }
 
-    private static showMessage(isSuccess, message, messageBlockId = 'chessboard-messages') {
+    public static showMessage(isSuccess, message, messageBlockId = 'chessboard-messages') {
         let messageDiv = document.createElement('div');
         messageDiv.className = 'alert alert-dismissable autohide';
         messageDiv.classList.add(isSuccess ? 'alert-success' : 'alert-danger');
@@ -291,8 +292,9 @@ class ActionManager {
         let modalAlertDiv = document.getElementById('package-modal-change-alert');
         modalAlertDiv.innerHTML = '';
         let newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
-        if (intervalData && changedSide) {
-            let alertMessageData = ActionManager.getAlertData(changedSide, intervalData, newIntervalData);
+        let isNewAccommodationInAnotherRoomType = ActionManager.isNewAccommodationInAnotherRoomType(newIntervalData, intervalData);
+        if (isNewAccommodationInAnotherRoomType || (intervalData && changedSide)) {
+            let alertMessageData = this.getAlertMessage(newIntervalData, intervalData, isNewAccommodationInAnotherRoomType);
             if (alertMessageData) {
                 ActionManager.showAlertMessage(alertMessageData, $updateForm);
             }
@@ -301,17 +303,36 @@ class ActionManager {
         ActionManager.showEditedUpdateModal(intervalData, newIntervalData, isDivide, changedSide);
     }
 
-    private static getAlertData(changedSide, intervalData, newIntervalData) {
-        if (changedSide == 'right') {
-            return ActionManager.getAlertMessage(newIntervalData, intervalData);
-        } else if (changedSide == 'left') {
-            return ActionManager.getAlertMessage(newIntervalData, intervalData);
-        } else if (changedSide == 'both') {
-            return ActionManager.getAlertMessage(newIntervalData, intervalData)
-        }
+    protected static isNewAccommodationInAnotherRoomType(accommodationData, intervalData) {
+        let isNewAccommodation = !intervalData.isAccommodationInterval
+            || ActionManager.isPackageBeginChanged(accommodationData, intervalData)
+            || ActionManager.isPackageEndChanged(accommodationData, intervalData);
+
+        return accommodationData.roomType !== intervalData.packageRoomTypeId && isNewAccommodation;
     }
 
-    private static getAlertMessage(newIntervalData, intervalData) {
+    private getAlertMessage(newIntervalData, intervalData, isNewAccommodationInAnotherRoomType) {
+        if (isNewAccommodationInAnotherRoomType) {
+            let packageAccommodations = this.dataManager.getPackageAccommodations(intervalData.packageId);
+            let existsAccommodationWithCurrentRoomType = packageAccommodations.some((accommodationData) => {
+                return accommodationData.packageRoomTypeId === accommodationData.roomTypeId;
+            });
+            let warningMessageId = existsAccommodationWithCurrentRoomType
+                ? 'package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation'
+                : 'package_bundle.accommodations.warning_before_setting_accoommodation';
+
+            return {
+                message: Translator.trans(warningMessageId, {
+                    accommodationRoomTypeName: roomTypes[newIntervalData.roomType],
+                    packageRoomType: roomTypes[intervalData.packageRoomTypeId],
+                    chessboard_route: Routing.generate('chess_board_home'),
+                    packages_route: Routing.generate('package')
+                }),
+                resolved: true,
+                modalContentClass: 'modal-danger'
+            }
+        }
+
         let packageBeginChanged = ActionManager.isPackageBeginChanged(newIntervalData, intervalData);
         let packageEndChanged = ActionManager.isPackageEndChanged(newIntervalData, intervalData);
         let packageBeginAndEndChanged = packageBeginChanged && packageEndChanged;
@@ -354,7 +375,7 @@ class ActionManager {
                 return {
                     message: Translator.trans('action_manager.modal.need_changepackage_end.title') + '. '
                     + Translator.trans('action_manager.modal.have_not_rights') + '.',
-                    resolved: false
+                    resolved: false,
                 };
             }
         }
@@ -370,8 +391,8 @@ class ActionManager {
         }
         let packageEndDate = ChessBoardManager.getMomentDate(intervalData.packageEnd);
         return ((intervalData.position == 'full' || intervalData.position == 'right')
-        && newIntervalEndDate.isAfter(packageEndDate)
-        || (intervalEndDate.isSame(packageEndDate) && newIntervalEndDate.isBefore(packageEndDate)));
+            && newIntervalEndDate.isAfter(packageEndDate)
+            || (intervalEndDate.isSame(packageEndDate) && newIntervalEndDate.isBefore(packageEndDate)));
     }
 
     private static isPackageBeginChanged(newIntervalData, intervalData) {
@@ -381,7 +402,7 @@ class ActionManager {
         }
         let packageStartDate = ChessBoardManager.getMomentDate(intervalData.packageBegin);
         return ((intervalData.position == 'left' || intervalData.position == 'full')
-        && !newIntervalStartDate.isSame(packageStartDate));
+            && !newIntervalStartDate.isSame(packageStartDate));
     }
 
     private static showAlertMessage(alertMessageData, $updateForm) {
@@ -390,7 +411,24 @@ class ActionManager {
             $continueButton.show();
         }
         let $modalAlertDiv = $('#package-modal-change-alert');
-        $modalAlertDiv.text(alertMessageData.message);
+        $modalAlertDiv.html(alertMessageData.message);
+
+        if (alertMessageData.modalContentClass) {
+            let $modalContent = $updateForm.closest('.modal-content');
+            $modalContent.addClass(alertMessageData.modalContentClass);
+            $('#package-modal-change-alert').removeClass('text-center');
+            let onWithModalClassWindowClosed = function () {
+                $modalContent.removeClass(alertMessageData.modalContentClass);
+                $('#package-modal-change-alert').addClass('text-center');
+            };
+            $continueButton.click(function () {
+                onWithModalClassWindowClosed();
+            });
+            $('#packageModal').on('hidden.bs.modal', function () {
+                onWithModalClassWindowClosed();
+            });
+        }
+
         $modalAlertDiv.show();
         let $confirmButton = $('#packageModalConfirmButton');
         $confirmButton.hide();
@@ -444,6 +482,7 @@ class ActionManager {
         modal.find('#modal-end-date').text(intervalEnd);
         modal.find('#modal-room-id').text(newIntervalData.accommodation);
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
+        modal.find('#modal-room-type-id').text(newIntervalData.roomType);
         modal.find('#modal-room-name').text(newIntervalData.accommodation
             ? rooms[newIntervalData.accommodation] : Translator.trans('action_manager.update_modal.without_accommodation'));
         modal.modal('show');
@@ -453,7 +492,8 @@ class ActionManager {
         let modal = $('#packageModal');
         let payerText;
         let payerName = modal.find('#modal-package-payer').text();
-        if (payerName != 'Не указан') {
+
+        if (payerName != Translator.trans('action_manager.update_modal.not_specified')) {
             payerText = payerName;
         } else {
             payerText = modal.find('#modal-package-payer').text();
@@ -466,6 +506,7 @@ class ActionManager {
             'begin': modal.find('#modal-begin-date').text(),
             'end': modal.find('#modal-end-date').text(),
             'roomId': modal.find('#modal-room-id').text(),
+            'roomTypeId': modal.find('#modal-room-type-id').text(),
             'isDivide': modal.find('input.isDivide').val(),
             'payer': payerText
         }

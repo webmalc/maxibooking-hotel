@@ -19,3 +19,10 @@ monolog:
             level: debug
         console:
             type:  console
+
+services:
+    mbh.exception_subscriber:
+        class: MBH\Bundle\BaseBundle\EventListener\ExceptionSubscriber
+        arguments: ['@kernel', '@exception_notifier']
+        tags:
+            - {name: kernel.event_subscriber}

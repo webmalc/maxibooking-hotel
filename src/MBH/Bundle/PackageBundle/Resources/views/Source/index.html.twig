@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "source.index.reservation_source"|trans({}, "MBHPackageBundle")  %}
+{% set small_title = "source.index.reservation_source"|trans({}, "MBHPackageBundle") %}
 {% set layout='box' %}
 
 {% block content %}
@@ -19,17 +19,24 @@
             <tr>
                 <td class="text-center table-icon"><i class="fa fa-compass"></i></td>
                 <td>
-                    <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.fullTitle }}{% if entity.system %} <small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</a>
+                    <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" rel="main"
+                       title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}"
+                       data-toggle="tooltip">{{ entity.fullTitle }}{% if entity.system %}
+                            <small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}</a>
                 </td>
                 <td>{{ entity.createdAt|date('d.m.Y') }}</td>
                 <td class="table-actions-td text-center">
-                    <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                    <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs"
+                       title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
                         <i class="fa fa-pencil-square-o"></i>
                     </a>
-                    {% if entity.system == false  %}
-                    <a href="{{ path('package_source_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                        <i class="fa fa-trash-o"></i>
-                    </a>
+                    {% if entity.system == false and is_granted('ROLE_SOURCE_DELETE') %}
+                        <a href="{{ path('package_source_delete', { 'id': entity.id }) }}"
+                           class="btn btn-danger btn-xs delete-link "
+                           title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}"
+                           data-toggle="tooltip">
+                            <i class="fa fa-trash-o"></i>
+                        </a>
                     {% endif %}
                 </td>
             </tr>
@@ -37,9 +44,11 @@
         </tbody>
     </table>
 
-    {{ form_start(form, {'action': path('package_source'), 'attr': {'class': 'hidden-print form-horizontal'}}) }}
-    {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:new_plus_actions.html.twig' with {'save_close': false} %}
-    {{ form_end(form) }}
+    {% if is_granted('ROLE_SOURCE_NEW') %}
+        {{ form_start(form, {'action': path('package_source'), 'attr': {'class': 'hidden-print form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:new_plus_actions.html.twig' with {'save_close': false} %}
+        {{ form_end(form) }}
+    {% endif %}
 
 {% endblock %}

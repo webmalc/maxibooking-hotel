@@ -1,34 +1,228 @@
 chessboard_manager.remove_button.popup: Удалить
 chessboard_manager.divide_button.popup: Переселить
-chessboard_manager.info_button.popup.title: Информация о брони
-chessboard_manager.edit_button.popup.title: Перейти в окно редактирования
+chessboard_manager.info_button.popup.title: 'Информация о брони'
+chessboard_manager.edit_button.popup.title: 'Перейти в окно редактирования'
 chessboard_manager.left_rooms_count.tooltip_title: 'Осталось %count% номеров'
-
-action_manager.modal.remove_confirmation.title: Подтверждение удаления
-action_manager.modal.remove_confirmation.text: Вы действительно хотите удалить эту бронь
-action_manager.modal.package_blocked.title: Бронь заблокирована для изменений
-action_manager.modal.package_blocked.text: Если вы хотите разблокировать эту бронь, перейдите в раздел редактирования брони
-action_manager.modal.package_begin_date_abroad.title: Дата заезда брони находится за границей заданного периода
-action_manager.modal.package_begin_date_abroad.text: Если вы хотите изменить эту бронь, измените дату начала просмотра броней
-action_manager.modal.package_end_date_abroad.title: Дата выезда брони находится за границей заданного периода
-action_manager.modal.package_end_date_abroad.text: Если вы хотите изменить эту бронь, измените дату окончания просмотра броней
-action_manager.modal.package_begin_and_end_date_abroad.title: Дата выезда и дата заезда брони находятся за границей заданного периода
-action_manager.modal.package_begin_and_end_date_abroad.text: Если вы хотите изменить эту бронь, измените дату начала и дату окончания просмотра броней
-action_manager.modal.package_to_large.title: Бронь не помещается на экран
-action_manager.modal.package_to_large.text: Если вы хотите изменить эту бронь, воспользуйтесь режимом редактирования брони
-action_manager.message.unexpected_error: Произошла непредвиденная ошибка
-aciton_manager.modal.change_package_begin_and_end.confirmation: Вы действительно хотите изменить дату заезда и выезда брони
-action_manager.modal.have_not_rights: У Вас недостаточно прав для редактирование брони
-action_manager.modal.need_changepackage_begin_and_end: Для выполнения данного действия необходимо изменить дату заезда или дату выезда
-aciton_manager.modal.change_package_begin.confirmation: Вы действительно хотите изменить дату заезда брони
-action_manager.modal.need_changepackage_begin.title: Для выполнения данного действия необходимо изменить дату заезда
-aciton_manager.modal.change_package_end.confirmation: Вы действительно хотите изменить дату выезда брони
-action_manager.modal.need_changepackage_end.title: Для выполнения данного действия необходимо изменить дату выезда
+chessboard_manager.package_tooltip.package_number: Номер
+chessboard_manager.package_tooltip.payer: Плательщик
+chessboard_manager.package_tooltip.price: Цена
+chessboard_manager.package_tooltip.package_begin: 'Заезд брони'
+chessboard_manager.package_tooltip.package_end: 'Выезд брони'
+chessboard_manager.package_tooltip.is_checkin: Заехали
+chessboard_manager.package_tooltip.is_checkout: Выехали
+chessboard.package_remove.success: 'Бронь успешно удалена'
+action_manager.modal.remove_confirmation.title: 'Подтверждение удаления'
+action_manager.modal.remove_confirmation.text: 'Вы действительно хотите удалить эту бронь'
+action_manager.modal.package_blocked.title: 'Бронь заблокирована для изменений'
+action_manager.modal.package_blocked.text: 'Если вы хотите разблокировать эту бронь, перейдите в раздел редактирования брони'
+action_manager.modal.package_begin_date_abroad.title: 'Дата заезда брони находится за границей заданного периода'
+action_manager.modal.package_begin_date_abroad.text: 'Если вы хотите изменить эту бронь, измените дату начала просмотра броней'
+action_manager.modal.package_end_date_abroad.title: 'Дата выезда брони находится за границей заданного периода'
+action_manager.modal.package_end_date_abroad.text: 'Если вы хотите изменить эту бронь, измените дату окончания просмотра броней'
+action_manager.modal.package_begin_and_end_date_abroad.title: 'Дата выезда и дата заезда брони находятся за границей заданного периода'
+action_manager.modal.package_begin_and_end_date_abroad.text: 'Если вы хотите изменить эту бронь, измените дату начала и дату окончания просмотра броней'
+action_manager.modal.package_to_large.title: 'Бронь не помещается на экран'
+action_manager.modal.package_to_large.text: 'Если вы хотите изменить эту бронь, воспользуйтесь режимом редактирования брони'
+action_manager.message.unexpected_error: 'Произошла непредвиденная ошибка'
+aciton_manager.modal.change_package_begin_and_end.confirmation: 'Вы действительно хотите изменить дату заезда и выезда брони'
+action_manager.modal.have_not_rights: 'У Вас недостаточно прав для редактирование брони'
+action_manager.modal.need_changepackage_begin_and_end: 'Для выполнения данного действия необходимо изменить дату заезда или дату выезда'
+aciton_manager.modal.change_package_begin.confirmation: 'Вы действительно хотите изменить дату заезда брони'
+action_manager.modal.need_changepackage_begin.title: 'Для выполнения данного действия необходимо изменить дату заезда'
+aciton_manager.modal.change_package_end.confirmation: 'Вы действительно хотите изменить дату выезда брони'
+action_manager.modal.need_changepackage_end.title: 'Для выполнения данного действия необходимо изменить дату выезда'
 action_manager.modal.book_button.title: 'Бронировать номер. Всего номеров %roomsCount%'
-action_manager.modal.disabled_book_button.title: Для создания брони необходимо указать плательщика
-
-action_manager.update_modal.without_accommodation: Без размещения
-action_manager.update_modal.not_specified: Не указан
-
+action_manager.modal.disabled_book_button.title: 'Для создания брони необходимо указать плательщика'
+action_manager.update_modal.without_accommodation: 'Без размещения'
+action_manager.update_modal.not_specified: 'Не указан'
 search.book_button.title: 'Бронировать номер. Всего номеров %roomsCount%'
-search.disabled_book_button.title: Для создания брони необходимо указать плательщика
+search.disabled_book_button.title: 'Для создания брони необходимо указать плательщика'
+unwelcome.levels.minor: Незначительная
+unwelcome.levels.low: Низкая
+unwelcome.levels.middle: Средняя
+unwelcome.levels.high: Высокая
+unwelcome.levels.very_high: 'Очень высокая'
+work_shift.close_work_shift: 'Завершить смену'
+work_shift.take_shift: 'Принять смену'
+work_shift.and_confirm_payments: 'и подтвердить N платежей на сумму'
+tourist.make_a_choice: 'Сделайте выбор'
+tourist.inn: ИНН
+tourist.new_country.error.field_is_empty: 'Поле названия страны не заполнено'
+service.service_for_addtition_to_package: 'Услуга для добавления к броне'
+service.price_for_amount: 'за  %amount%  шт.'
+service.for_one_man: 'за 1 человека'
+list.sProcessing: Подождите
+list.sLengthMenu: 'Показать %menu% записей'
+list.sZeroRecords: 'Записи отсутствуют.'
+list.sInfo: 'Записи с %start% до %end% из %total% записей'
+list.sInfoEmpty: 'Нет записей'
+list.sInfoFiltered: 'Отфильтровано из %max% записей'
+list.sEmptyTable: 'Ничего не найдено'
+list.sSearch: Поиск
+list.sFirst: Первая
+list.sPrevious: Назад
+list.sNext: Вперед
+list.sLast: Последняя
+list.sSortAscending: 'активировать для сортировки столбцы по возрастанию'
+list.sSortDescending: 'активировать для сортировки столбцов по убыванию'
+package.order_is_not_paid: 'Заказ не оплачен'
+package.confirmation: Подтверждение
+package.continue: Продолжить
+package.yes: Да
+package.no: Нет
+package.processing: Подождите
+analytics.months.jan_abbr: Янв
+analytics.months.feb_abbr: Фев
+analytics.months.mar_abbr: Мар
+analytics.months.apr_abbr: Апр
+analytics.months.may_abbr: Май
+analytics.months.jun_abbr: Июн
+analytics.months.jul_abbr: Июл
+analytics.months.aug_abbr: Авг
+analytics.months.sep_abbr: Сен
+analytics.months.okt_abbr: Окт
+analytics.months.nov_abbr: Ноя
+analytics.months.dec_abbr: Дек
+analytics.months.jan: Январь
+analytics.months.feb: Февраль
+analytics.months.mar: Март
+analytics.months.apr: Апрель
+analytics.months.may: Май
+analytics.months.jun: Июнь
+analytics.months.jul: Июль
+analytics.months.aug: Август
+analytics.months.sep: Сентябрь
+analytics.months.okt: Октябрь
+analytics.months.nov: Ноябрь
+analytics.months.dec: Декабрь
+analytics.days_of_week.sun: Воскресенье
+analytics.days_of_week.mon: Понедельник
+analytics.days_of_week.tue: Вторник
+analytics.days_of_week.wed: Среда
+analytics.days_of_week.thu: Четверг
+analytics.days_of_week.fri: Пятница
+analytics.days_of_week.sat: Суббота
+analytics.downloadJPEG: 'Сохранить как JPEG'
+analytics.downloadPNG: 'Сохранить как PNG'
+analytics.downloadPDF: 'Сохранить как PDF'
+analytics.downloadSVG: 'Сохранить как SVG'
+analytics.loading: Загрузка
+analytics.printChart: 'Версия для печати'
+analytics.resetZoom: 'Сбросить приближение'
+analytics.resetZoomTitle: 'Размер 1:1'
+analytics.error_occurred: 'Произошла ошибка при постороении отчета'
+polls_user_script.disgusting: Отвратительно
+polls_user_script.terribble: Ужасно
+polls_user_script.bad: Плохо
+polls_user_script.bad_enogh: 'Достаточно плохо'
+polls_user_script.passably: Удовлетворительно
+polls_user_script.acceptable: Приемлемо
+polls_user_script.good_enough: 'Достаточно хорошо'
+polls_user_script.good: Хорошо
+polls_user_script.very_good: 'Очень хорошо'
+polls_user_script.excellent: Превосходно
+polls_user_script.reset_rating: 'Сбросить оценку'
+polls_user_script.no_answer: 'Без ответа'
+polls_user_script.please_set_rating: 'Пожалуйста, выставите вашу оценку по крайней мере по 5 пунктам!'
+polls_user_script.many_thanks: 'Большое спасибо'
+late_early_date_checker.guests_arrived_earlier: 'Гости заехали раньше назначенного времени'
+late_early_date_checker.guests_departured_earlier: 'Гости выезжают позже назначенного времени'
+late_early_date_checker.guests_check_in_earlier: 'Гости заехали раньше и выехали позже назначенного времени.'
+search.upon_arrival: 'При заезде'
+020_user.bad: Плохой
+020_user.normal: Обычный
+020_user.good: Хороший
+020_user.excellent: Отличный
+020_user.super: Супер
+020_user.make_a_choice: 'Сделайте выбор'
+003-task.chose_all: 'Выбрать все'
+003-task.clear: Очистить
+003-task.take_to_work: 'Взять в работу'
+003-task.complete: Завершить
+api.get_results.price_for: '{1} Цена за человека|]1,19] Цена за %number_of_tourist% человек'
+online.online-calendar.close: Закрыть
+online.online-calendar.prev_abbr: Пред
+online.online-calendar.next_abbr: След
+online.online-calendar.today: Сегодня
+online.online-calendar.sun_abbr: вск
+online.online-calendar.mon_abbr: пнд
+online.online-calendar.tue_abbr: втр
+online.online-calendar.wed_abbr: срд
+online.online-calendar.thu_abbr: чтв
+online.online-calendar.fri_abbr: птн
+online.online-calendar.sat_abbr: сбт
+online.online-calendar.sun_abbr_min: Вс
+online.online-calendar.mon_abbr_min: Пн
+online.online-calendar.tue_abbr_min: Вт
+online.online-calendar.wed_abbr_min: Ср
+online.online-calendar.thu_abbr_min: Чт
+online.online-calendar.fri_abbr_min: Пт
+online.online-calendar.sat_abbr_min: Сб
+cash.not_confirmed: 'Не подтверждено'
+010-app.error_occured: 'Произошла ошибка во время запроса. Попробуйте еще раз'
+010-app.shift_lock: 'Блокирование смены'
+010-app.sure_block_shift: 'Вы уверены, что хотите блокировать текущую смену'
+010-app.block: Блокировать
+010-app.work_shift_not_closed: 'Рабочая смена не закрыта'
+010-app.go_out: Выйти
+020-forms.chose_organization: 'Выберите организацию'
+020-forms.inn: ИНН
+020-forms.chose_all: 'Выбрать всё'
+020-forms.yes: Да
+020-forms.no: Нет
+020-forms.make_choice: 'Сделайте выбор'
+020-forms.select_city: 'Выберите город'
+020-forms.select_package: 'Выберите бронь'
+020-forms.select_guest: 'Выберите гостя'
+020-forms.on_moderation: 'на модерации'
+004-roomCache.days_will_be_removed: 'Дни будет удалены'
+005-priceCache.price_will_be_removed: 'Цена будет удалена'
+008-special.hide_packages: 'Скрыть брони'
+008-special.show_packages: 'Показать брони'
+060-restriction.price_will_be_removed: 'Цена будет удалена'
+004-calculate-orderprice.make_a_choice: 'Сделайте выбор'
+001-add_dish_item.first_add_dishes: 'Сначала добавьте блюда в %hrefTagStart% соответствующем разделе'
+views.task.index.before: до
+accommodation.modal_title.add_accommodation: 'Добавить размещение'
+accommodation.modal_title.change_accommodation: 'Изменить размещение'
+app.bootstrap_switch_config.yes: да
+app.bootstrap_switch_config.no: нет
+package_bundle.accommodations.warning_before_setting_accoommodation: 'Вы пытаетесь разместить гостей в номер другого типа - "%accommodationRoomTypeName%",тогда как гость забронировал номер типа "%packageRoomType%".Это может привести к неправильному подсчету количества свободных номеров в программе и ошибкам при создании новых броней. <br>Чтобы избежать ошибок:<br>1. Попробуйте оптимизировать размещение гостей через <a target="_blank" href="%chessboard_route%">Шахматку</a> для данного типа номера(%packageRoomType%)<br>2. Проверьте правильность размещения других броней в разделе <a target="_blank" href="%packages_route%">Брони</a>, сверив тип брони и тип номера размещения на выбранные даты. <br>3. Поменяйте тип номера брони(обратите внимание на возможное изменение стоимости проживания). <br>Если Вы уверены в том, что размещение в данном типе номера не приведет к ошибкам,продолжите операцию, нажав кнопку "Продолжить"'
+package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation: 'Вы пытаетесь разместить гостей в номер другого типа - "%accommodationRoomTypeName%",тогда как гость забронировал номер типа "%packageRoomType%".Это может привести к неправильному подсчету количества свободных номеров в программе и ошибкам при создании новых броней. <br>Чтобы избежать ошибок:<br>1. Попробуйте оптимизировать размещение гостей через <a target="_blank" href="%chessboard_route%">Шахматку</a> для данного типа номера(%packageRoomType%)<br>2. Проверьте правильность размещения других броней в разделе <a target="_blank" href="%packages_route%">Брони</a>, сверив тип брони и тип номера размещения на выбранные даты. <br>3. Создайте новую бронь для размещения в новом типе номера и измените дату выезда текущей брони, чтобы корректно отобразить переезд гостей. <br>Если Вы уверены в том, что размещение в данном типе номера не приведет к ошибкам,продолжите операцию, нажав кнопку "Продолжить"'
+dynamic_sales.option_data_type.comparative_graph_name.relative: 'Сравнение относительных значений в категории "%optionName%"'
+dynamic_sales.option_data_type.comparative_graph_name.absolute: 'Сравнение абсолютных значений в категории "%optionName%"'
+guides.next_button.title: 'Далее'
+guides.skip_button.title: 'Выход'
+guides.room_cache.dropdown_click: 'Чтобы выставить номера в продажу нажмите сюда'
+guides.room_cache.menu_item: 'Далее сюда'
+guides.room_cache.generator_button: 'Далее нажмите сюда'
+guides.room_cache.generator_begin: 'Укажите начало периода'
+guides.room_cache.generator_end: 'Укажите конец периода'
+guides.room_cache.generator_room_types: 'Укажите типы номеров'
+guides.room_cache.generator_number_of_rooms: 'Укажите количество номеров'
+guides.room_cache.generator_save_button: 'Нажмите кнопку'
+guides.price_cache.dropdown_menu_click: 'Чтобы установить цены на номера нажмите сюда'
+guides.price_cache.menu_click: 'Далее сюда'
+guides.price_cache.generator_button: 'Для генерации цен нажмите сюда'
+guides.price_cache.generator_begin: 'Укажите начало периода'
+guides.price_cache.generator_end: 'Укажите конец периода'
+guides.price_cache.generator_room_types: 'Укажите типы номеров'
+guides.price_cache.generator_tariffs: 'Укажите тарифы'
+guides.price_cache.generator_price: 'Укажите цену'
+guides.price_cache.generator_save_button: 'Нажмите кнопку'
+guides.reservation.menu_item: 'Забронировать номер для клиента можно здесь'
+guides.reservation.filter_dates: 'Укажите даты брони'
+guides.reservation.filter_adults: 'Укажите количество взрослых'
+guides.reservation.filter_children: 'и детей'
+guides.reservation.filter_room_type: 'Здесь можно выбрать тип номера'
+guides.reservation.filter_find_button: 'Нажмите для поиска вариантов бронирования'
+guides.reservation.filter_book: 'Нажмите, чтобы забронировать'
+guides.reservation.options_not_found: 'Не найдены варианты бронирования.'
+guides.package.payer_surname: 'Укажите фамилию плательщика'
+guides.package.payer_name: 'Укажите имя плательщика'
+guides.package.payer_save_button: 'Сохраните'
+guides.support_guide: 'Вы всегда можете получить справку по программе, нажав сюда'
+guides.first_guide_name: 'Как начать продажи?'
+guides.roomCaches: 'Как выставить номера в продажу?'
+guides.priceCaches: 'Как установить цены на номера?'
+guides.search: 'Как забронировать номер?'

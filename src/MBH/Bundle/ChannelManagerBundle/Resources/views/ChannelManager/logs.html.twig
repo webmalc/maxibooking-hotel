@@ -1,6 +1,6 @@
 {% extends "MBHChannelManagerBundle:ChannelManager:layout.html.twig" %}
 
-{% set small_title = "логи" %}
+{% set small_title = "channel_manager.logs.small_title"|trans %}
 {% set layout = "box" %}
 
 {% block content %}
@@ -8,10 +8,10 @@
         <div class="well scrolling">
             <form action="" method="POST">
             <pre>{{ content|raw }}</pre>
-                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, save_text: 'Очистить' } %}
+                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, save_text: 'channel_manager.logs.clear'|trans } %}
             </form>
         </div>
     {% else %}
-        <div class="alert alert-warning">Нет записей в файле логов.</div>
+        <div class="alert alert-warning">{{ 'channel_manager.logs.no_entries_in_file'|trans}}</div>
     {% endif %}
 {% endblock %}

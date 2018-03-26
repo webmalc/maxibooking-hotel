@@ -1,13 +1,15 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "source.edit.edit_reservation_source"|trans({}, "MBHPackageBundle") ~ entity.id  %}
+{% set small_title = "source.edit.edit_reservation_source"|trans({}, "MBHPackageBundle") ~ entity.id %}
 {% set layout='box' %}
 
 {% block content %}
 
     {{ form_start(form, {'action': path('package_source_update',  {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'delete_route': 'package_source_delete'}%}
+    {% if is_granted('ROLE_SOURCE_NEW') %}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'delete_route': 'package_source_delete'} %}
+    {% endif %}
     {{ form_end(form) }}
 
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}

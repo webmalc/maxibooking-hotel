@@ -33,3 +33,6 @@ monolog:
 
 assetic:
     use_controller: "%use_assetic_controller%"
+
+swiftmailer:
+    delivery_address: ['faainttt@gmail.com']

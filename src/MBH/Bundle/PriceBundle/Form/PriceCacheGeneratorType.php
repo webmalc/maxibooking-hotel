@@ -15,7 +15,6 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\DataCollectorTranslator;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Date;
@@ -29,7 +28,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class PriceCacheGeneratorType extends AbstractType
 {
     /**
-     * @var DataCollectorTranslator
+     * @var TranslatorInterface
      */
     private $translator;
 
@@ -71,7 +70,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'data' => new \DateTime('midnight'),
                 'required' => true,
                 'attr' => [
-                    'class' => 'datepicker begin-datepicker input-remember',
+                    'class' => 'datepicker begin-datepicker',
                     'data-date-format' => 'dd.mm.yyyy'
                 ],
                 'constraints' => [new NotBlank(), new Date()],
@@ -83,7 +82,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
                 'required' => true,
                 'attr' => [
-                    'class' => 'datepicker end-datepicker input-remember',
+                    'class' => 'datepicker end-datepicker',
                     'data-date-format' => 'dd.mm.yyyy'
                 ],
                 'constraints' => [new NotBlank(), new Date()],

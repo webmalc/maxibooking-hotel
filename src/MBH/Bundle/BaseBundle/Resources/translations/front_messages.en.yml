@@ -1,0 +1,195 @@
+chessboard_manager.remove_button.popup: Delete
+chessboard_manager.divide_button.popup: Relocate
+chessboard_manager.info_button.popup.title: 'Reservation information'
+chessboard_manager.edit_button.popup.title: 'Editing mode'
+chessboard_manager.left_rooms_count.tooltip_title: '%count% rooms left'
+chessboard.package_remove.success: 'Reservation successfully deleted'
+action_manager.modal.remove_confirmation.title: 'Confirm deletion'
+action_manager.modal.remove_confirmation.text: 'Are you sure you want to delete this reservation?'
+action_manager.modal.package_blocked.title: 'Reservation is blocked for changes'
+action_manager.modal.package_blocked.text: 'To unlock this reservation, please, proceed to reservation editing mode'
+action_manager.modal.package_begin_date_abroad.title: 'Reservation check in date is outside of selected period'
+action_manager.modal.package_begin_date_abroad.text: 'To change this reservation, please, change observed starting date'
+action_manager.modal.package_end_date_abroad.title: 'Reservation check out date is outside of selected period'
+action_manager.modal.package_end_date_abroad.text: 'To change this reservation, please, change observed ending date'
+action_manager.modal.package_begin_and_end_date_abroad.title: 'Reservation check in and check out dates are outside of selected period'
+action_manager.modal.package_begin_and_end_date_abroad.text: 'To change this reservation, please, change observed beginning and ending dates'
+action_manager.modal.package_to_large.title: 'Reservation can''t fit on the screen'
+action_manager.modal.package_to_large.text: 'To change this reservation, please use edit mode'
+action_manager.message.unexpected_error: 'Unexpected error'
+aciton_manager.modal.change_package_begin_and_end.confirmation: 'Are you sure you want to change check in and check out dates for this reservation'
+action_manager.modal.have_not_rights: 'You don''t have a permission to edit reservations'
+action_manager.modal.need_changepackage_begin_and_end: 'To perform this action check in or check out date must be changed'
+aciton_manager.modal.change_package_begin.confirmation: 'Are you sure you want to change a check in date'
+action_manager.modal.need_changepackage_begin.title: 'To perform this action check in date must be changed'
+aciton_manager.modal.change_package_end.confirmation: 'Are you sure you want to change check out date'
+action_manager.modal.need_changepackage_end.title: 'To perform this action check out date must be changed'
+action_manager.modal.book_button.title: 'Reserve a room. Total rooms: %roomsCount%'
+action_manager.modal.disabled_book_button.title: 'To create a reservation, please add the payer.'
+action_manager.update_modal.without_accommodation: 'Without allocation'
+action_manager.update_modal.not_specified: 'Not specified'
+search.book_button.title: 'Reserve a room. %roomsCount% total rooms left.'
+search.disabled_book_button.title: 'To create a reservation, please add a payer.'
+unwelcome.levels.minor: Minor
+unwelcome.levels.low: Low
+unwelcome.levels.middle: Moderate
+unwelcome.levels.high: High
+unwelcome.levels.very_high: 'Very high'
+work_shift.close_work_shift: 'Close shift'
+work_shift.take_shift: 'Take shift'
+work_shift.and_confirm_payments: 'confirm payments for the sum of'
+tourist.make_a_choice: 'Make a choice'
+service.service_for_addtition_to_package: 'Service to be added to the reservation'
+service.price_for_amount: 'for %amount% units'
+service.for_one_man: 'Per person'
+list.sProcessing: 'Please, wait.'
+list.sLengthMenu: 'Show %menu% entries'
+list.sZeroRecords: 'No entries'
+list.sInfo: 'Records from %start% to %end% of total  %total%'
+list.sInfoEmpty: 'No entries'
+list.sInfoFiltered: 'Filtered from %max% records'
+list.sEmptyTable: 'No results found'
+list.sSearch: Search
+list.sFirst: First
+list.sPrevious: Previous
+list.sNext: Next
+list.sLast: Last
+list.sSortAscending: 'Activate to sort columns in ascending order'
+list.sSortDescending: 'Activate to sort columns in descending order'
+package.order_is_not_paid: 'Order is not paid'
+package.confirmation: Confirmation
+package.continue: Continue
+package.yes: 'Yes'
+package.no: 'No'
+package.processing: 'Please, wait.'
+analytics.months.jan_abbr: Jan
+analytics.months.feb_abbr: Feb
+analytics.months.mar_abbr: Mar
+analytics.months.apr_abbr: Apr
+analytics.months.may_abbr: May
+analytics.months.jun_abbr: Jun
+analytics.months.jul_abbr: Jul
+analytics.months.aug_abbr: Aug
+analytics.months.sep_abbr: Sep
+analytics.months.okt_abbr: Oct
+analytics.months.nov_abbr: Nov
+analytics.months.dec_abbr: Dec
+analytics.months.jan: January
+analytics.months.feb: February
+analytics.months.mar: March
+analytics.months.apr: April
+analytics.months.may: May
+analytics.months.jun: June
+analytics.months.jul: July
+analytics.months.aug: August
+analytics.months.sep: September
+analytics.months.okt: October
+analytics.months.nov: November
+analytics.months.dec: December
+analytics.days_of_week.sun: Sunday
+analytics.days_of_week.mon: Monday
+analytics.days_of_week.tue: Tuesday
+analytics.days_of_week.wed: Wednesday
+analytics.days_of_week.thu: Thursday
+analytics.days_of_week.fri: Friday
+analytics.days_of_week.sat: Saturday
+analytics.downloadJPEG: 'Save as JPEG'
+analytics.downloadPNG: 'Save as PNG'
+analytics.downloadPDF: 'Save as PDF'
+analytics.downloadSVG: 'Save as SVG'
+analytics.loading: Loading
+analytics.printChart: 'Print version'
+analytics.resetZoom: 'Reset zoom'
+analytics.resetZoomTitle: 'Scale 1:1'
+analytics.error_occurred: 'An error ocurred during report generation'
+polls_user_script.disgusting: Awful
+polls_user_script.terribble: 'Very bad'
+polls_user_script.bad: Bad
+polls_user_script.bad_enogh: 'Pretty bad'
+polls_user_script.passably: Mediocre
+polls_user_script.acceptable: Acceptable
+polls_user_script.good_enough: OK
+polls_user_script.good: Good
+polls_user_script.very_good: 'Very good'
+polls_user_script.excellent: Excellent
+polls_user_script.reset_rating: 'Reset rating'
+polls_user_script.no_answer: 'No answer'
+polls_user_script.please_set_rating: 'Please, rate at least 5 points in the questionnaire!'
+polls_user_script.many_thanks: 'Thank you!'
+late_early_date_checker.guests_arrived_earlier: 'Guests have arrived earlier than expected.'
+late_early_date_checker.guests_departured_earlier: 'Guests have departed later than expected.'
+late_early_date_checker.guests_check_in_earlier: 'Guests have arrived earlier and departed later than expected.'
+search.upon_arrival: 'On check in'
+020_user.bad: Bad
+020_user.normal: Average
+020_user.good: Good
+020_user.excellent: Great
+020_user.super: Perfect
+020_user.make_a_choice: 'Select one'
+003-task.chose_all: 'Select all'
+003-task.clear: Clear
+003-task.take_to_work: Take
+003-task.complete: Close
+api.get_results.price_for: '{1} Price per person|]1,19]Price for %number_of_tourist% people'
+online.online-calendar.close: Close
+online.online-calendar.prev_abbr: Prev
+online.online-calendar.next_abbr: Next
+online.online-calendar.today: Today
+online.online-calendar.sun_abbr: Sun
+online.online-calendar.mon_abbr: Mon
+online.online-calendar.tue_abbr: Tue
+online.online-calendar.wed_abbr: Wed
+online.online-calendar.thu_abbr: Thu
+online.online-calendar.fri_abbr: Fri
+online.online-calendar.sat_abbr: Sat
+online.online-calendar.sun_abbr_min: Sun
+online.online-calendar.mon_abbr_min: Mon
+online.online-calendar.tue_abbr_min: Tue
+online.online-calendar.wed_abbr_min: Wed
+online.online-calendar.thu_abbr_min: Thu
+online.online-calendar.fri_abbr_min: Fri
+online.online-calendar.sat_abbr_min: Sat
+cash.not_confirmed: 'Not confirmed'
+010-app.error_occured: 'Request error. Please try again.'
+010-app.shift_lock: 'Lock shift'
+010-app.sure_block_shift: 'Are you sure you want to lock current shift?'
+010-app.block: Lock
+010-app.work_shift_not_closed: 'Shift is not closed'
+010-app.go_out: Exit
+020-forms.chose_organization: 'Select company'
+020-forms.chose_all: 'Select all'
+020-forms.yes: 'Yes'
+020-forms.no: 'No'
+020-forms.make_choice: 'Select one'
+020-forms.select_city: 'Select city'
+020-forms.select_package: 'Select reservation'
+020-forms.select_guest: 'Select guest'
+004-roomCache.days_will_be_removed: 'Days will be deleted'
+005-priceCache.price_will_be_removed: 'Price will be deleted'
+008-special.hide_packages: 'Hide reservations'
+008-special.show_packages: 'Show reservations'
+060-restriction.price_will_be_removed: 'Price will be deleted'
+004-calculate-orderprice.make_a_choice: 'Select one'
+001-add_dish_item.first_add_dishes: 'First add dishes to %hrefTagStart% in a corrsponding menu'
+views.task.index.before: Before
+tourist.inn: TIN
+app.bootstrap_switch_config.yes: 'Yes'
+app.bootstrap_switch_config.no: 'No'
+020-forms.inn: TIN
+tourist.new_country.error.field_is_empty: 'Country field is not filled'
+accommodation.modal_title.add_accommodation: 'Add accommodation'
+accommodation.modal_title.change_accommodation: 'Delete accommodation'
+dynamic_sales.option_data_type.comparative_graph_name.relative: 'Comparison of relative values in the category "% optionName%"'
+dynamic_sales.option_data_type.comparative_graph_name.absolute: 'Comparison of absolute values in the category "% optionName%"'
+package_bundle.accommodations.warning_before_setting_accoommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Reservation calendar</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
+package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Chessboard</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
+chessboard_manager.package_tooltip.package_number: Number
+chessboard_manager.package_tooltip.payer: Payer
+chessboard_manager.package_tooltip.price: Price
+chessboard_manager.package_tooltip.package_begin: 'Check in date'
+chessboard_manager.package_tooltip.package_end: 'Check out date'
+chessboard_manager.package_tooltip.is_checkin: 'Checked in'
+chessboard_manager.package_tooltip.is_checkout: 'Checked out'
+
+guides.next_button.title: 'Next'
+guides.skip_button.title: 'Exit'

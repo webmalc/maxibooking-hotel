@@ -29,3 +29,8 @@ parameters:
           service: 'mbh.channelmanager.oktogo'
           api_username: .maxiBooking_api
           api_password: qdcmBz9K
+        expedia:
+          title: 'Expedia'
+          service: 'mbh.channelmanager.expedia'
+          username: EQCMaxibooking
+          password: '%expedia_pass%'

@@ -119,7 +119,9 @@ class CashController extends Controller
             $params['noConfirmedTotalOut'] = $repository->total('out', $queryCriteria);
         }
 
-        $this->dm->getFilterCollection()->enable('softdeleteable');
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
 
         if ($isByDay) {
             return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', $params + ['data' => $results]);
@@ -266,11 +268,8 @@ class CashController extends Controller
         $cashDocument->setMethod('cash');
 
         $form = $this->createForm(NewCashDocumentType::class, $cashDocument, [
-            'methods' => $this->container->getParameter('mbh.cash.methods'),
-            'operations' => $this->container->getParameter('mbh.cash.operations'),
             'payers' => [],
             'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER'),
-            'dm' => $this->dm
         ]);
 
         if ($request->isMethod("POST")) {
@@ -331,10 +330,7 @@ class CashController extends Controller
         $formType = $cashDocument->getOrder() ? CashDocumentType::class : NewCashDocumentType::class;
 
         $options = [
-            'methods' => $this->container->getParameter('mbh.cash.methods'),
-            'operations' => $this->container->getParameter('mbh.cash.operations'),
             'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER'),
-            'dm' => $this->dm
         ];
         if($cashDocument->getOrder()) {
             $cashDocumentRepository = $this->dm->getRepository(CashDocument::class);
@@ -426,13 +422,13 @@ class CashController extends Controller
         $order = $entity->getOrder();
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         if ($entity->getHotel() && !$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()) || !$order->getCreditCard()
-            || !$clientConfig || $clientConfig->getPaymentSystem() != 'uniteller'
+            || !$clientConfig || $clientConfig->getPaymentSystems() != 'uniteller'
         ) {
             throw $this->createNotFoundException();
         }
 
         /** @var Uniteller $uniteller */
-        $uniteller = $clientConfig->getPaymentSystemDoc();
+        $uniteller = $clientConfig->getPaymentSystemDocs();
 
         try {
 

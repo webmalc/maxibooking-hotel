@@ -3,15 +3,20 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Добавить размещение?</h4>
+                <h4 class="modal-title">{{ 'package.accommodation_modal.add_accommodation'|trans}}?</h4>
             </div>
             <div class="modal-body">
-                <p></p>
-                12
+                <div id="room-type-warning" class="hidden" style="text-indent: 20px;">
+                </div>
+                <div id="accommodation-form-content">
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> {{ 'cancel'|trans|capitalize }}</button>
+                <a href="{{ path('package_edit', { id: package.id }) }}" target="_blank" id="accommodation-change-room-type-button" class="btn btn-outline hidden"><i class="fa fa-pencil-square-o"></i> {{ 'package.accommodaton_modal.change_room_type'|trans }}</a>
+                <a href="{{ path('chess_board_home') }}" target="_blank" id="modal-chessboard-button" class="btn btn-outline hidden"><i class="fa fa-table"></i> {{ 'package.accommodaton_modal.chessboard_button.text'|trans}}</a>
                 <button type="button" id="modal-submit" class="btn btn-primary"> {{ 'save'|trans|capitalize }}</button>
+                <button type="button" id="modal-continue-button" class="btn btn-outline hidden"> {{ 'package.accommodaton_modal.continue_button.text'|trans}}</button>
             </div>
         </div>
     </div>

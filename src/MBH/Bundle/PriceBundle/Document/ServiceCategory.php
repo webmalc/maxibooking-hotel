@@ -2,12 +2,14 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -42,7 +44,7 @@ class ServiceCategory extends Base
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="servicesCategories")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="document.service_category.hotel.hotel_not_chosen")
      */
     protected $hotel;
 
@@ -51,11 +53,12 @@ class ServiceCategory extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
+     * @Gedmo\Translatable
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="document.service_category.full_title.too_short",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="document.service_category.full_title.too_long"
      * )
      */
     protected $fullTitle;
@@ -66,9 +69,9 @@ class ServiceCategory extends Base
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="document.service_category.title.too_long",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="document.service_category.title.too_long"
      * )
      */
     protected $title;
@@ -79,9 +82,9 @@ class ServiceCategory extends Base
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое описание",
+     *      minMessage="document.service_category.description.too_short",
      *      max=300,
-     *      maxMessage="Слишком длинное описание"
+     *      maxMessage="document.service_category.description.too_long"
      * )
      */
     protected $description;
@@ -89,15 +92,39 @@ class ServiceCategory extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     protected $system = false;
 
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
+
     public function __construct()
     {
-        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new ArrayCollection();
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     * @return ServiceCategory
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+
+        return $this;
     }
     
     /**
@@ -105,7 +132,7 @@ class ServiceCategory extends Base
      *
      * @param \MBH\Bundle\PriceBundle\Document\Service $service
      */
-    public function addService(\MBH\Bundle\PriceBundle\Document\Service $service)
+    public function addService(Service $service)
     {
         $this->services[] = $service;
     }
@@ -115,7 +142,7 @@ class ServiceCategory extends Base
      *
      * @param \MBH\Bundle\PriceBundle\Document\Service $service
      */
-    public function removeService(\MBH\Bundle\PriceBundle\Document\Service $service)
+    public function removeService(Service $service)
     {
         $this->services->removeElement($service);
     }
@@ -123,7 +150,7 @@ class ServiceCategory extends Base
     /**
      * Get services
      *
-     * @return \MBH\Bundle\PriceBundle\Document\Service[] $services
+     * @return \MBH\Bundle\PriceBundle\Document\Service[]|ArrayCollection $services
      */
     public function getServices()
     {
@@ -133,12 +160,13 @@ class ServiceCategory extends Base
     /**
      * Set hotel
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @param Hotel $hotel
      * @return self
      */
-    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
+
         return $this;
     }
 

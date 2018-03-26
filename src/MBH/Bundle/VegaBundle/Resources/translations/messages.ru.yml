@@ -1,5 +1,5 @@
 vega_residence: 'ВИД НА ЖИТЕЛЬСТВО ИГ'
-vega_visa: 'ВИЗА'
+vega_visa: ВИЗА
 vega_military_spare: 'ВОЕННЫЙ БИЛЕТ ОФИЦЕРА ЗАПАСА'
 vega_temporary_identity: 'ВРЕМЕННОЕ УДОСТОВЕРЕНИЕ ЛИЧНОСТИ'
 vega_diplomatic_passport: 'ДИПЛОМАТИЧЕСКИЙ ПАСПОРТ'
@@ -8,7 +8,7 @@ vega_russian_passport: 'ПАСПОРТ РФ'
 vega_ussr_passports: 'ПАСПОРТ СССР'
 vega_passport_IG: 'ПАСПОРТ ИГ'
 vega_seaman: 'ПАСПОРТ МОРЯКА'
-vega_temporary_residence permit_IG: 'РАЗРЕШЕНИЕ НА ВРЕМЕННОЕ ПРОЖИВАНИЕ ИГ'
+'vega_temporary_residence permit_IG': 'РАЗРЕШЕНИЕ НА ВРЕМЕННОЕ ПРОЖИВАНИЕ ИГ'
 vega_predost_temporate_asylum: 'СВ-ВО О ПРЕДОСТ. ВРЕМЕННОГО УБЕЖИЩА'
 vega_refugee: 'СВ-ВО О РАССМ. ХОД-ВА О ПРИЗН. БЕЖЕНЦЕМ'
 vega_birth_certificate: 'СВИДЕТЕЛЬСТВО О РОЖДЕНИИ'
@@ -18,17 +18,15 @@ vega_refugee_certificate: 'УДОСТОВЕРЕНИЕ БЕЖЕНЦА'
 vega_id_card_person_of_military: 'УДОСТОВ. ЛИЧНОСТИ ВОЕННОСЛУЖАЩЕГО'
 vega_residence_permit_stateless_persons: 'ВИД НА ЖИТЕЛЬСТВО ЛБГ'
 vega_military_id_soldier: 'ВОЕННЫЙ БИЛЕТ СОЛДАТА'
-vega_travel_passport biometrics: 'ЗАГРАН. ПАСПОРТ НОВОГО ПОКОЛЕНИЯ (С БИОМЕТРИЕЙ)'
-vega_temporary_residence permit stateless persons: 'РАЗРЕШЕНИЕ НА ВРЕМЕННОЕ ПРОЖИВАНИЕ ЛБГ'
+'vega_travel_passport biometrics': 'ЗАГРАН. ПАСПОРТ НОВОГО ПОКОЛЕНИЯ (С БИОМЕТРИЕЙ)'
+'vega_temporary_residence permit stateless persons': 'РАЗРЕШЕНИЕ НА ВРЕМЕННОЕ ПРОЖИВАНИЕ ЛБГ'
 vega_migration_cart: 'МИГРАЦИОННАЯ КАРТА'
-vega_ig_arrival_notice:  'УВЕДОМЛЕНИЕ О ПРИБЫТИИ ИГ/ЛБГ В МЕСТО ПРЕБЫВАНИЯ'
+vega_ig_arrival_notice: 'УВЕДОМЛЕНИЕ О ПРИБЫТИИ ИГ/ЛБГ В МЕСТО ПРЕБЫВАНИЯ'
 vega_return_certificate: 'СВИДЕТЕЛЬСТВО НА ВОЗВРАЩЕНИЕ'
 vega_non_citizen_passport: 'ПАСПОРТ НЕГРАЖДАНИНА'
 vega_national_id_republic_of_kazakhstan: 'УДОСТОВЕРЕНИЕ ЛИЧНОСТИ ГРАЖДАНИНА РЕСПУБЛИКИ КАЗАХСТАН'
-
-owner: Владелец документа
-inscribed: Вписан в документ
-
+owner: 'Владелец документа'
+inscribed: 'Вписан в документ'
 vegabundle.service.sha: США
 vegabundle.service.sssr: СССР
 vegabundle.service.kndr: КНДР
@@ -43,43 +41,42 @@ vegabundle.service.i: и
 vegabundle.service.v: в
 vegabundle.service.aya: ая
 vegabundle.service.obl: обл
-vegabundle.service.resp: 'респ.'
+vegabundle.service.resp: респ.
 vegabundle.service.krasnodarsky: Краснодарский
-vegabundle.service.kry: 'край'
+vegabundle.service.kry: край
 vegabundle.service.hanty-manciysky_avtonomny_okrug: 'Ханты-Мансийский Автономный Округ - Югра'
 vegabundle.service.karelia: Карелия
 vegabundle.service.primorsky: Приморский
-vegabundle.service.severnaya-osetia_alania: Северная Осетия - Алания
-vegabundle.service.bashkorkostan: 'Башкортостан'
+vegabundle.service.severnaya-osetia_alania: 'Северная Осетия - Алания'
+vegabundle.service.bashkorkostan: Башкортостан
 vegabundle.service.avt-okrug: 'авт. округ'
-vegabundle.service.komy: 'Коми'
-vegabundle.service.kalmikia: 'Калмыкия'
-vegabundle.service.tatarstan: 'Татарстан'
-vegabundle.service.yamalo-neneckiy: 'Ямало-Ненецкий'
-vegabundle.service.moskwa: 'Москва'
-vegabundle.service.permsky: 'Пермский'
-vegabundle.service.dagestan: 'Дагестан'
-vegabundle.service.baykonur: 'Байконур'
+vegabundle.service.komy: Коми
+vegabundle.service.kalmikia: Калмыкия
+vegabundle.service.tatarstan: Татарстан
+vegabundle.service.yamalo-neneckiy: Ямало-Ненецкий
+vegabundle.service.moskwa: Москва
+vegabundle.service.permsky: Пермский
+vegabundle.service.dagestan: Дагестан
+vegabundle.service.baykonur: Байконур
 vegabundle.service.saha-yakutia: 'Саха /якутия/'
-vegabundle.service.buryatia: 'Бурятия'
-vegabundle.service.ingushetia: 'Ингушетия'
-vegabundle.service.adygeya: 'Адыгея'
-vegabundle.service.hakasia: 'Хакасия'
-vegabundle.service.habarovsky: 'Хабаровский'
-vegabundle.service.zabaykalsky: 'Забайкальский'
-vegabundle.service.stavropolsky: 'Ставропольский'
+vegabundle.service.buryatia: Бурятия
+vegabundle.service.ingushetia: Ингушетия
+vegabundle.service.adygeya: Адыгея
+vegabundle.service.hakasia: Хакасия
+vegabundle.service.habarovsky: Хабаровский
+vegabundle.service.zabaykalsky: Забайкальский
+vegabundle.service.stavropolsky: Ставропольский
 vegabundle.service.mariy-el: 'Марий Эл'
-vegabundle.service.nenecky: 'Ненецкий'
-vegabundle.service.tiva: 'Тыва'
-vegabundle.service.mordovia: 'Мордовия'
-vegabundle.service.altaisky: 'Алтайский'
-vegabundle.service.chuvashskaya-respublika: 'Чувашская Республика -'
-vegabundle.service.chukotsky: 'Чукотский'
-vegabundle.service.krasnodarsky: 'Красноярский'
-vegabundle.service.sankt-peterburg: 'Санкт-Петербург'
-vegabundle.service.sevastopol: 'Севастополь'
-vegabundle.service.altay: 'Алтай'
-vegabundle.service.krym: 'Крым'
+vegabundle.service.nenecky: Ненецкий
+vegabundle.service.tiva: Тыва
+vegabundle.service.mordovia: Мордовия
+vegabundle.service.altaisky: Алтайский
+vegabundle.service.chuvashskaya-respublika: 'Чувашская Республика'
+vegabundle.service.chukotsky: Чукотский
+vegabundle.service.sankt-peterburg: Санкт-Петербург
+vegabundle.service.sevastopol: Севастополь
+vegabundle.service.altay: Алтай
+vegabundle.service.krym: Крым
 vegabundle.service.OOvd: Овд
 vegabundle.service.UUfms: Уфмс
 vegabundle.service.OOfms: Офмс
@@ -99,58 +96,47 @@ vegabundle.service.UUao: Юао
 vegabundle.service.VVao: Вао
 vegabundle.service.SSvao: Свао
 vegabundle.service.UUzao: Юзао
-vegabundle.service.UUvao: Ювао
 vegabundle.service.GG: ' Г. '
-vegabundle.service.OObl: 'Обл.'
-vegabundle.service.RRna: 'Р-на'
-vegabundle.service.RRne: 'Р-не'
+vegabundle.service.OObl: Обл.
+vegabundle.service.RRna: Р-на
+vegabundle.service.RRne: Р-не
 vegabundle.service.PPo: ' По '
-vegabundle.service.VV: ' В '
 vegabundle.service.NNa: ' На '
 vegabundle.service.GGor: ' Гор. '
 vegabundle.service.g: ' г. '
-vegabundle.service.obl: 'обл.'
-vegabundle.service.rna: 'р-на'
-vegabundle.service.rne: 'р-не'
+vegabundle.service.rna: р-на
+vegabundle.service.rne: р-не
 vegabundle.service.po: ' по '
-vegabundle.service.v: ' в '
 vegabundle.service.na: ' на '
 vegabundle.service.gor: ' гор. '
-vegabundle.service.PPo: ' По '
-vegabundle.service.OO: 'О'
-vegabundle.service.VV: ' В '
-vegabundle.service.NNa: ' На '
-vegabundle.service.RRf: 'Рф'
-vegabundle.service.IIg: 'Иг'
-vegabundle.service.SSvo-vo: 'Св-Во'
-vegabundle.service.LLbg: 'Лбг'
-vegabundle.service.SSSr: 'Ссср'
+vegabundle.service.OO: О
+vegabundle.service.RRf: Рф
+vegabundle.service.IIg: Иг
+vegabundle.service.SSvo-vo: Св-Во
+vegabundle.service.LLbg: Лбг
+vegabundle.service.SSSr: Ссср
 vegabundle.service.CC: 'С '
-vegabundle.service.po: ' по '
-vegabundle.service.o: 'о'
-vegabundle.service.v: ' в '
-vegabundle.service.na: ' на '
-vegabundle.service.rf: 'РФ'
-vegabundle.service.ig: 'ИГ'
-vegabundle.service.svo-vo: 'Св-во'
-vegabundle.service.lbg: 'ЛБГ'
-vegabundle.service.sssr: 'СССР'
+vegabundle.service.o: о
+vegabundle.service.rf: РФ
+vegabundle.service.ig: ИГ
+vegabundle.service.svo-vo: Св-во
+vegabundle.service.lbg: ЛБГ
 vegabundle.service.c: 'с '
-
 vegabundle.resources.views.ivanov: Иванов
 vegabundle.resources.views.ivan: Иван
 vegabundle.resources.views.ivanovich: Иванович
 vegabundle.resources.views.muzh: МУЖ
 vegabundle.resources.views.RUSSIA: РОССИЯ
-vegabundle.resources.views.KRASNODARSKY-KRY: КРАСНОДАРСКИЙ КРАЙ
-vegabundle.resources.views.G-Krasnodar: Г. КРАСНОДАР
-vegabundle.resources.views.P-Belozerniy: П. БЕЛОЗЕРНЫЙ
+vegabundle.resources.views.KRASNODARSKY-KRY: 'КРАСНОДАРСКИЙ КРАЙ'
+vegabundle.resources.views.G-Krasnodar: 'Г. КРАСНОДАР'
+vegabundle.resources.views.P-Belozerniy: 'П. БЕЛОЗЕРНЫЙ'
 vegabundle.resources.views.Russia: РОССИЯ
-vegabundle.resources.views.Pasport-RF: ПАСПОРТ РФ
+vegabundle.resources.views.Pasport-RF: 'ПАСПОРТ РФ'
 vegabundle.resources.views.Vladelec: ВЛАДЕЛЕЦ
 vegabundle.resources.views.Dom: ДОМ
 vegabundle.resources.views.Litera: ЛИТЕРА
 vegabundle.resources.views.Kvartira: КВАРТИРА
 vegabundle.resources.views.Visa: ВИЗА
-vegabundle.resources.views.Passport-Ig: ПАСПОРТ ИГ
-vegabundle.resources.views.Document-Ud-Lichnost: ДОКУМЕНТ, УД. ЛИЧНОСТЬ - УСТАНОВОЧНЫЕ ДАННЫЕ ЛИЦА (ФИО, Д.Р., ФОТО)
+vegabundle.resources.views.Passport-Ig: 'ПАСПОРТ ИГ'
+vegabundle.resources.views.Document-Ud-Lichnost: 'ДОКУМЕНТ, УД. ЛИЧНОСТЬ - УСТАНОВОЧНЫЕ ДАННЫЕ ЛИЦА (ФИО, Д.Р., ФОТО)'
+'vega_national_id_republic_of_kazakhstan''': 'УДОСТОВЕРЕНИЕ ЛИЧНОСТИ ГРАЖДАНИНА РЕСПУБЛИКИ КАЗАХСТАН'

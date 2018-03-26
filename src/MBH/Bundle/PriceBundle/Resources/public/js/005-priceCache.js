@@ -80,7 +80,7 @@ $(document).ready(function () {
             if (wrapper.length === 0) {
                 return false;
             }
-            wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            wrapper.html(mbh.loader.html);
             if (!pricesProcessing) {
                 $.ajax({
                     url: Routing.generate('price_cache_overview_table'),
@@ -115,7 +115,7 @@ $(document).ready(function () {
         var prices = $('input.delete-prices'),
             showMessage = function () {
                 prices.each(function () {
-                    var text = parseInt($(this).val(), 10) === -1 ? 'Цена будет удалена' : '';
+                    var text = parseInt($(this).val(), 10) === -1 ? Translator.trans("005-priceCache.price_will_be_removed") : '';
                     $(this).closest('.col-sm-6').
                         next('.col-sm-4').
                         html('<span class="text-danger text-left input-errors">' + text + '</span>');
@@ -123,6 +123,7 @@ $(document).ready(function () {
             };
         showMessage();
         prices.change(showMessage);
+        setGeneratorData();
     }());
 
     (function () {

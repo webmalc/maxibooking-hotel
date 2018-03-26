@@ -5,7 +5,6 @@ namespace MBH\Bundle\PackageBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\NoteTrait;
-use MBH\Bundle\BaseBundle\Document\Traits\PackageTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -24,6 +23,7 @@ use MBH\Bundle\PackageBundle\Validator\Constraints as MBHConstraints;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  * @MBHConstraints\PackageAccommodations()
+ * @ODM\Index(keys={"begin"="asc","end"="asc"})
  */
 
 class PackageAccommodation extends Base implements \JsonSerializable
@@ -36,12 +36,10 @@ class PackageAccommodation extends Base implements \JsonSerializable
 
     use NoteTrait;
 
-    use PackageTrait;
-
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="begin")
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message="not_null")
      * @Assert\Date()
      */
@@ -50,7 +48,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="end")
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message="not_null")
      * @Assert\Date()
      */
@@ -63,6 +61,57 @@ class PackageAccommodation extends Base implements \JsonSerializable
      * @Assert\NotNull(message="not_null")
      */
     protected $accommodation;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull
+     */
+    protected $isAutomaticallyChangeable = true;
+
+    /**
+     * this field used only for validator
+     * @var Package
+     */
+    protected $packageForValidator;
+
+    /**
+     * @param Package $package
+     * @return $this
+     */
+    public function setPackageForValidator(Package $package)
+    {
+        $this->packageForValidator = $package;
+
+        return $this;
+    }
+
+    /**
+     * @return Package
+     */
+    public function getPackageForValidator(): ?Package
+    {
+        return $this->packageForValidator;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAutomaticallyChangeable(): ?bool
+    {
+        return $this->isAutomaticallyChangeable;
+    }
+
+    /**
+     * @param bool $isAutomaticallyChangeable
+     * @return PackageAccommodation
+     */
+    public function setIsAutomaticallyChangeable(bool $isAutomaticallyChangeable): PackageAccommodation
+    {
+        $this->isAutomaticallyChangeable = $isAutomaticallyChangeable;
+
+        return $this;
+    }
 
     /**
      * @return array

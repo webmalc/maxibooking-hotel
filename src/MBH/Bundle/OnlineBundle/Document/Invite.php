@@ -34,14 +34,14 @@ class Invite extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $arrival;
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $departure;

@@ -1,0 +1,4 @@
+all:
+  hosts:
+    maxibooking.mb:
+      ansible_user: vagrant

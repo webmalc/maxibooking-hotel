@@ -4,38 +4,46 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\BaseBundle\Form\ProtectedFileType;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * Class OrderDocumentType
  * @package MBH\Bundle\PackageBundle\Form
-
  */
 class OrderDocumentType extends AbstractType
 {
     const SCENARIO_ADD = 'add';
     const SCENARIO_EDIT = 'edit';
 
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $mainGroupTitles = [
-            self::SCENARIO_ADD => 'Добавить документ',
-            self::SCENARIO_EDIT => 'Редактировать документ',
+            self::SCENARIO_ADD => 'form.order_document_type.add_document',
+            self::SCENARIO_EDIT => 'form.order_document_type.edit_document',
         ];
 
         $groupTitle = $mainGroupTitles[$options['scenario']];
 
         $builder->add(
-            'type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
+            'type',  InvertChoiceType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.tip',
+                'label' => 'form.order_document_type.type.label',
                 'required' => true,
                 'placeholder' => '',
                 'choices' => $options['documentTypes']
@@ -43,10 +51,10 @@ class OrderDocumentType extends AbstractType
         );
 
         $builder->add(
-            'scanType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
+            'scanType',  InvertChoiceType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.tip.skana',
+                'label' => 'form.order_document_type.scan_type',
                 'required' => false,
                 'placeholder' => '',
                 'choices' => $options['scanTypes']
@@ -60,10 +68,14 @@ class OrderDocumentType extends AbstractType
             DocumentType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.client',
+                'label' => 'form.order_document_type.client.label',
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
-                'choice_label' => 'generateFullNameWithAge',
+                'choice_label' => function ($tourist) {
+                    return $tourist->generateFullName() . ($tourist->getBirthday() ? ' (' . $tourist->getBirthday()->format('d.m.Y') . '), '
+                            . $this->translator->trans('package.document_type.tourist_age')
+                            . ': ' . $tourist->getAge() : '');
+                },
                 'query_builder' => function(DocumentRepository $er) use($touristIds) {
                     return $er->createQueryBuilder()->field('_id')->in($touristIds);
                 },
@@ -84,10 +96,10 @@ class OrderDocumentType extends AbstractType
 
         $builder->add(
             'file',
-            FileType::class,
+            ProtectedFileType::class,
             [
                 'group' => $groupTitle,
-                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'mbhpackagebundle.form.orderdocumenttype.zamenit.fayl' : 'mbhpackagebundle.form.orderdocumenttype.file',
+                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'form.order_document_type.change_file' : 'form.order_document_type.file',
                 'required' => $options['scenario'] == self::SCENARIO_ADD,
             ] + ($options['scenario'] == self::SCENARIO_EDIT ? ['help' => '<i class="fa '.(isset($typeIcons[strtolower($document->getExtension())]) ? $typeIcons[strtolower($document->getExtension())] : null).'"></i> '.$document->getOriginalName()] : [])
         );
@@ -97,7 +109,7 @@ class OrderDocumentType extends AbstractType
             TextareaType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.comment',
+                'label' => 'form.order_document_type.note',
                 'required' => false,
                 'constraints' => [
                     new Length(['min' => 2, 'max' => 300])
@@ -124,6 +136,7 @@ class OrderDocumentType extends AbstractType
             'touristIds' => [],
             'scenario' => self::SCENARIO_ADD,
             'document' => null,
+            'data_class' => OrderDocument::class
         ]);
     }
 }

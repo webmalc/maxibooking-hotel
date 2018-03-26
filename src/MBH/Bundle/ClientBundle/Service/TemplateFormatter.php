@@ -2,16 +2,29 @@
 
 namespace MBH\Bundle\ClientBundle\Service;
 
+use Liip\ImagineBundle\Templating\ImagineExtension;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
+use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\UserBundle\Document\User;
+use Psr\Container\ContainerInterface;
+use Symfony\Bridge\Twig\Extension\AssetExtension;
+use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
+use Symfony\Component\HttpFoundation\Response;
+use Vich\UploaderBundle\Twig\Extension\UploaderExtension;
 
-/**
- * Class TemplateFormatter
- *
-
- */
 class TemplateFormatter
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
     /**
      * Get document html from DocumentTemplate
      *
@@ -53,5 +66,69 @@ class TemplateFormatter
         }, $html);
 
         return $html;
+    }
+
+    public function generateDocumentTemplate(DocumentTemplate $doc, Package $package, ?User $user)
+    {
+        $order = $package->getOrder();
+        $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
+        $organization = $doc->getOrganization() ? $doc->getOrganization() : $hotel->getOrganization();
+        $params = [
+            'package' => $package,
+            'order' => $order,
+            'hotel' => $hotel,
+            'payer' => $order->getPayer(),
+            'organization' => $organization,
+            'user' => $user,
+            'arrivalTimeDefault' => $hotel->getPackageArrivalTime(),
+            'departureTimeDefault' => $hotel->getPackageDepartureTime(),
+            'documentTypes' => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes()
+        ];
+
+        $params = $this->addCalculatedParams($params, $package);
+        $twig = $this->container->get('twig');
+        $renderedTemplate = $twig->createTemplate($doc->getContent())->render($params);
+
+        return  $this->container->get('knp_snappy.pdf')->getOutputFromHtml($renderedTemplate);
+    }
+
+
+    /**
+     * @param array $params
+     * @param Package $package
+     * @return array
+     * @throws \Exception
+     */
+    private function addCalculatedParams(array $params, Package $package)
+    {
+        /** @var PackageService[] $packageServices */
+        $packageServices = [];
+
+        /** @var PackageServiceGroupByService[] $packageServicesByType */
+        $packageServicesByType = [];
+
+        $total = 0;
+        $packages = $package->getOrder()->getPackages();
+
+        /** @var Package $package */
+        foreach($packages as $package) {
+            $packageServices = array_merge(iterator_to_array($package->getServices()), $packageServices);
+            $total += $package->getPackagePrice(true);
+        }
+
+        foreach($packageServices as $ps) {
+            $service = $ps->getService();
+            $groupBy = $ps->getPrice().$service->getId();
+            if(!array_key_exists($groupBy, $packageServicesByType)) {
+                $packageServicesByType[$groupBy] = new PackageServiceGroupByService($service, $ps->getPrice());
+            }
+            $packageServicesByType[$groupBy]->add($ps);
+            $total += $ps->getTotal();
+        }
+
+        return $params + [
+                'total' => $total,
+                'packageServicesByType' => $packageServicesByType
+            ];
     }
 }

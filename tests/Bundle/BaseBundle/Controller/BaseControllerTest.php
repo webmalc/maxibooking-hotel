@@ -7,6 +7,22 @@ use Symfony\Component\Routing\Route;
 
 class BaseControllerTest extends WebTestCase
 {
+    const EXCLUDED_ROUTES = [
+        'fos_user_security_logout',
+        'distribution_report_table',
+        'export_to_kontur',
+        'dynamic_sales_table',
+        'add_tip',
+        'user_tariff',
+        'fos_user_profile_edit',
+        'lexik_translation_invalidate_cache',
+        'fos_user_profile_show',
+        'booking_packages_sync',
+        'remove_payment_system',
+        'reset_color_settings',
+        'booking_all_packages_sync',
+    ];
+
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -39,19 +55,19 @@ class BaseControllerTest extends WebTestCase
      */
     public function urlProvider()
     {
-        $routers = array_filter($this->getContainer()->get('router')->getRouteCollection()->all(), function (Route $route) {
+        $routers = array_filter($this->getContainer()->get('router')->getRouteCollection()->all(), function (Route $route, string $routeName) {
             $path = $route->getPath();
             if (isset($path[1]) && $path[1] == '_') {
                 return false;
             }
-            if (in_array($route, ['fos_user_security_logout'])) {
+            if (in_array($routeName, self::EXCLUDED_ROUTES)) {
                 return false;
             }
             if (mb_strpos($path, '{') !== false) {
                 return false;
             }
             return !$route->getMethods() || in_array('GET', $route->getMethods());
-        });
+        }, ARRAY_FILTER_USE_BOTH);
 
         return array_map(function ($route) {
             return [$route->getPath()];

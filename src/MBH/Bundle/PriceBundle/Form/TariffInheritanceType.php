@@ -2,41 +2,45 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class TariffInheritanceType
-
  */
 class TariffInheritanceType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
-        $group = 'Наследование от тарифа <' . $options['parent'] . '>';
+        $group = $this->translator->trans('mbhpricebundle.form.tariff_inheritance_type.group.inheritance') . ' <' . $options['parent'] . '>';
 
         $builder
             ->add('inheritPrices', CheckboxType::class, [
                 'label' => 'mbhpricebundle.form.tariffinheritancetype.tseny',
                 'group' => $group,
                 'required' => false,
-                'help' => 'Наследовать ли цены от родительского тарифа'
+                'help' => 'mbhpricebundle.form.tariffinheritancetype.tseny.help'
             ])
             ->add('inheritRestrictions', CheckboxType::class, [
-                'label' => 'mbhpricebundle.form.tariffinheritancetype.usloviya.i.ogranicheniya',
+                'label' => 'mbhpricebundle.form.tariffinheritancetype.usloviyaiogranicheniya',
                 'group' => $group,
                 'required' => false,
-                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹ.li.usloviya.i.ogranicheniya.ot.roditelʹskogo.tarifa'
+                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹliusloviyaiogranicheniyaotroditelʹskogotarifa'
             ])
             ->add('inheritRooms', CheckboxType::class, [
                 'label' => 'mbhpricebundle.form.tariffinheritancetype.kvoty',
                 'group' => $group,
                 'required' => false,
-                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹ.li.kvoty.nomerov.ot.roditelʹskogo.tarif'
+                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹlikvotynomerovotroditelʹskogotarif'
             ])
         ;
     }

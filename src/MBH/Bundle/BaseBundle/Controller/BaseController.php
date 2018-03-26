@@ -6,9 +6,13 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Gedmo\Tool\Wrapper\MongoDocumentWrapper;
+use Doctrine\ODM\MongoDB\Cursor;
 
 /**
  * Base Controller
@@ -71,13 +75,26 @@ class BaseController extends Controller
             return null;
         }
 
-        $logs = $this->dm->getRepository('Gedmo\Loggable\Document\LogEntry')->getLogEntries($entity);
+        $repo = $this->dm->getRepository('Gedmo\Loggable\Document\LogEntry');
+
+        $wrapped = new MongoDocumentWrapper($entity, $this->dm);
+        $objectId = $wrapped->getIdentifier();
+        $qb = $repo->createQueryBuilder();
+        $qb->field('objectId')->equals($objectId);
+        $qb->field('objectClass')->equals($wrapped->getMetadata()->name);
+        $qb->limit($this->container->getParameter('mbh.logs.max'));
+        $qb->sort('version', 'DESC');
+        $q = $qb->getQuery();
+        $logs = $q->execute();
+        if ($logs instanceof Cursor) {
+            $logs = $logs->toArray();
+        }
 
         if (empty($logs)) {
             return null;
         }
 
-        return array_slice($logs, 0, $this->container->getParameter('mbh.logs.max'));
+        return $logs;
     }
 
     /**
@@ -93,6 +110,29 @@ class BaseController extends Controller
         return $this->isSavedRequest() ?
             $this->redirectToRoute($route . $suffix, array_merge(['id' => $id], $params)) :
             $this->redirectToRoute($route, $params);
+    }
+
+    /**
+     * @param $route
+     * @param $id
+     * @param array $params
+     * @param string $suffix
+     * @param null $redirectPath
+     * @return RedirectResponse
+     */
+    public function afterSaveRedirectExtended($route, $id, array $params = [], $suffix = '_edit', $redirectPath = null)
+    {
+        if ($this->isSavedRequest()) {
+            $mergingParams = ['id' => $id];
+            if (!empty($redirectPath)) {
+                $mergingParams['redirectTo'] = $redirectPath;
+            }
+            $params = array_merge($mergingParams, $params);
+
+            return $this->redirectToRoute($route . $suffix, $params);
+        }
+
+        return empty($redirectPath) ? $this->redirectToRoute($route, $params) : $this->redirect($redirectPath);
     }
 
     /**
@@ -128,6 +168,10 @@ class BaseController extends Controller
                 }
             }
 
+            if (method_exists($entity, 'getDeletedAt') && !empty($entity->getDeletedAt())) {
+                throw new DeleteException('controller.baseController.document_is_deleted');
+            }
+
             if ($entity instanceof Hotel) {
                 if (!$this->get('mbh.hotel.selector')->checkPermissions($entity)) {
                     throw $this->createNotFoundException();
@@ -139,7 +183,6 @@ class BaseController extends Controller
 
             $this->getRequest()->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.baseController.delete_record_success'));
-
         } catch (DeleteException $e) {
             $this->getRequest()->getSession()->getFlashBag()
                 ->set('danger', $this->get('translator')->trans($e->getMessage(), ['%total%' => $e->total]));
@@ -154,6 +197,8 @@ class BaseController extends Controller
         $locale = $request->get('locale');
         if ($locale) {
             $this->setLocale($locale);
+        } else {
+            $this->setLocale($this->getParameter('locale'));
         }
     }
 
