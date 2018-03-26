@@ -9,7 +9,7 @@
             {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-inline search-form filter-form mbh-start-date mbh-start-date-search', 'id': 'package-search-form'}}) }}
             {{ form_errors(form) }}
             <div class="input">
-                <i class="fa fa-calendar fa_custom_style"
+                <i class="fa fa-calendar fa-custom-style"
                    title='{{ 'form.searchType.check_in'|trans() }}'
                    data-toggle='tooltip'></i>
                 {{ form_widget(form.begin) }}
@@ -19,21 +19,21 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-calendar-plus-o fa_custom_style"
+                <i class="fa fa-calendar-plus-o fa-custom-style"
                    title='{{ 'form.searchType.range'|trans() }}'
                    data-toggle='tooltip'></i>
                 {{ form_widget(form.range) }}
             </div>
 
-            <div class="group_human_input">
+            <div class="group-human-input">
                 <div class="input">
-                    <i class="fa fa-male fa_custom_style"
+                    <i class="fa fa-male fa-custom-style"
                        title='{{ 'form.searchType.adults'|trans() }}'
                        data-toggle='tooltip'></i>
                     {{ form_widget(form.adults) }}
                 </div>
                 <div class="input">
-                    <i class="fa fa-child fa_custom_style"
+                    <i class="fa fa-child fa-custom-style"
                        title='{{ 'form.searchType.children'|trans() }}'
                        data-toggle='tooltip'></i>
                     {{ form_widget(form.children) }}
@@ -44,20 +44,20 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-bed fa_custom_style"
+                <i class="fa fa-bed fa-custom-style"
                    title='{{ 'form.searchType.room_type'|trans() }}'
                    data-toggle='tooltip'></i>
                 {{ form_widget(form.roomType) }}
             </div>
             <div class="input">
-                <i class="fa fa-file-text-o fa_custom_style"
+                <i class="fa fa-file-text-o fa-custom-style"
                    title='{{ 'form.searchType.order'|trans() }}'
                    data-toggle='tooltip'></i>
                 {{ form_widget(form.order) }}
             </div>
 
             <div class="input">
-                <i class="fa fa-users fa_custom_style"
+                <i class="fa fa-users fa-custom-style"
                    title='{{ 'form.searchType.payer'|trans() }}'
                    data-toggle='tooltip'></i>
                 {{ form_widget(form.tourist) }}
@@ -73,7 +73,7 @@
 
             {% if is_granted('ROLE_FORCE_BOOKING') %}
                 <div class="input">
-                    <i class="fa fa-exclamation-circle fa_custom_style"
+                    <i class="fa fa-exclamation-circle fa-custom-style"
                        title='{{ 'form.searchType.forceBooking'|trans() }}'
                        data-toggle='tooltip'></i>
                     {{ form_widget(form.forceBooking) }}
