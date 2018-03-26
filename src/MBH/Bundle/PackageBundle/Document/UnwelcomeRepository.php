@@ -62,7 +62,7 @@ class UnwelcomeRepository
 
     private function fillUnwelcome(Unwelcome $unwelcome, Tourist $tourist)
     {
-        $unwelcome->setTouristCitizenship($tourist->getCitizenshipTld() ? $tourist->getCitizenshipTld()->getName() : null);
+        $unwelcome->setTouristCitizenship($tourist->getCitizenshipTld());
         $unwelcome->setTouristEmail($tourist->getEmail());
         $unwelcome->setTouristPhone($tourist->getPhone());
     }

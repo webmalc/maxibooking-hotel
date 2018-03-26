@@ -72,7 +72,7 @@
                                     {% endif %}
                                     <div id="price-by-days"
                                          {% if package.prices|length > 5 %}style="display: none;"{% endif %}>
-                                        {% for price in package.prices %}
+                                        {% for price in package.getPackagePricesWithDiscount() %}
                                             <small>
                                                 {{ price.date|date('d.m.Y') }} -
                                                 <strong>{{ price.price|number_format(2) }}</strong> -

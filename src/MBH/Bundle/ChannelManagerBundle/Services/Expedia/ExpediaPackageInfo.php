@@ -64,9 +64,10 @@ class ExpediaPackageInfo extends AbstractPackageInfo
      */
     public function getPrices() {
         if (!$this->isPricesInit) {
+            $helper = $this->container->get('mbh.helper');
             foreach ($this->packageDataXMLElement->PerDayRates->PerDayRate as $perDayRate) {
                 /** @var \SimpleXMLElement $perDayRate */
-                $currentDate = \DateTime::createFromFormat('Y-m-d', $perDayRate->attributes()['stayDate']);
+                $currentDate = $helper->getDateFromString($perDayRate->attributes()['stayDate'], 'Y-m-d');
                 $baseRate = (float)$perDayRate->attributes()['baseRate'];
                 $extraPersonFee = isset($perDayRate->attributes()['extraPersonFees'])
                     ? (float)$perDayRate->attributes()['extraPersonFees']

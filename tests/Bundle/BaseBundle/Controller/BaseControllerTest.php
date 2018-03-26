@@ -7,7 +7,21 @@ use Symfony\Component\Routing\Route;
 
 class BaseControllerTest extends WebTestCase
 {
-    const EXCLUDED_ROUTES = ['fos_user_security_logout', 'distribution_report_table', 'export_to_kontur', 'dynamic_sales_table', 'add_tip', 'user_tariff', 'fos_user_profile_edit', 'lexik_translation_invalidate_cache', 'fos_user_profile_show'];
+    const EXCLUDED_ROUTES = [
+        'fos_user_security_logout',
+        'distribution_report_table',
+        'export_to_kontur',
+        'dynamic_sales_table',
+        'add_tip',
+        'user_tariff',
+        'fos_user_profile_edit',
+        'lexik_translation_invalidate_cache',
+        'fos_user_profile_show',
+        'booking_packages_sync',
+        'remove_payment_system',
+        'reset_color_settings',
+        'booking_all_packages_sync',
+    ];
 
     public static function setUpBeforeClass()
     {

@@ -76,7 +76,7 @@ $(document).ready(function () {
         $dailyList.find('.fa-times').on('click', function () {
             $(this).closest('.form-inline').remove();
         });
-    }
+    };
     $addDailyBtn.on('click', function () {
         var newPrototype = prototype.replace(/__name__/g, index);
         $dailyList.append(newPrototype);

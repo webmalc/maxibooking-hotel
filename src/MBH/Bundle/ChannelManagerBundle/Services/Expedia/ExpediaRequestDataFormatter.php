@@ -71,6 +71,12 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         foreach ($requestDataArray as $roomTypeId => $pricesByTariffs) {
             $numberOfRoomType++;
             foreach ($pricesByTariffs as $tariffId => $pricesByDates) {
+                $tariffData = $serviceTariffs[$tariffId];
+                if (isset($tariffData['derivationRules']['rateDerivationRules'])
+                    && !empty($tariffData['derivationRules']['rateDerivationRules'])) {
+                    continue;
+                }
+
                 $cmHelper = $this->container->get('mbh.channelmanager.helper');
                 $comparePropertyMethods = ['getPrice', 'getIsPersonPrice', 'getAdditionalPrice', 'getAdditionalChildrenPrice', 'getSinglePrice', 'getChildPrice'];
                 $periodsData = $cmHelper->getPeriodsFromDayEntities($begin, $end, $pricesByDates, $comparePropertyMethods, 'Y-m-d');
@@ -117,11 +123,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 }
             }
 
-            if ($numberOfRoomType % 2 === 0) {
-                $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
-                    'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
-                $xmlElements = [];
-            }
+            $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+            $xmlElements = [];
         }
 
         return $pricesRequestData;
@@ -216,15 +220,24 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $roomTypes,
         $serviceTariffs,
         ChannelManagerConfigInterface $config
-    )
-    {
+    ) {
+        $restrictionRequestData = [];
         $xmlElements = [];
         $comparePropertyMethods = ['getMinStay', 'getMaxStay', 'getClosedOnArrival', 'getClosedOnDeparture', 'getClosed'];
         $requestDataArray = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $cmHelper = $this->container->get('mbh.channelmanager.helper');
         foreach ($requestDataArray as $roomTypeId => $restrictionsByTariffs) {
-
             foreach ($restrictionsByTariffs as $tariffId => $restrictionsByDates) {
+                $tariffData = $serviceTariffs[$tariffId];
+                $hasDerivationRules = isset($tariffData['derivationRules']);
+                if ($hasDerivationRules
+                    && $tariffData['derivationRules']['deriveLengthOfStayRestriction']
+                    && $tariffData['derivationRules']['deriveClosedToArrival']
+                    && $tariffData['derivationRules']['deriveClosedToDeparture']
+                ) {
+                    continue;
+                }
+
                 $periodsData = $cmHelper->getPeriodsFromDayEntities($begin, $end, $restrictionsByDates, $comparePropertyMethods, 'Y-m-d');
                 foreach ($periodsData as $periodData) {
                     $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
@@ -248,17 +261,29 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $ratePlanElement->addAttribute('closed', $restrictionData['isClosed']);
 
                     $restrictionsElement = $ratePlanElement->addChild('Restrictions');
-                    $restrictionsElement->addAttribute('closedToArrival', $restrictionData['isClosedToArrival']);
-                    $restrictionsElement->addAttribute('closedToDeparture', $restrictionData['isClosedToDeparture']);
-                    $restrictionsElement->addAttribute('minLOS', $restrictionData['minStay']);
-                    $restrictionsElement->addAttribute('maxLOS', $restrictionData['maxStay']);
+                    if (!$hasDerivationRules || $tariffData['derivationRules']['deriveClosedToArrival'] === false) {
+                        $restrictionsElement->addAttribute('closedToArrival', $restrictionData['isClosedToArrival']);
+                    }
+                    if (!$hasDerivationRules || $tariffData['derivationRules']['deriveClosedToDeparture'] === false) {
+                        $restrictionsElement->addAttribute('closedToDeparture', $restrictionData['isClosedToDeparture']);
+                    }
+                    if (!$hasDerivationRules || $tariffData['derivationRules']['deriveLengthOfStayRestriction'] === false) {
+                        $restrictionsElement->addAttribute('minLOS', $restrictionData['minStay']);
+                        $restrictionsElement->addAttribute('maxLOS', $restrictionData['maxStay']);
+                    }
+
                     $xmlElements[] = $xmlRoomTypeData;
                 }
             }
+
+            if (!empty($xmlElements)) {
+                $restrictionRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                    'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+                $xmlElements = [];
+            }
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config,
-            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+        return $restrictionRequestData;
     }
 
     /**
@@ -328,7 +353,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
             $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
 
             $startDate = new \DateTime();
-            $endDate = new \DateTime('+2 years');
+            $endDate = new \DateTime('+1 years');
             $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
             $dateRangeElement->addAttribute('from', $startDate->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING));
             $dateRangeElement->addAttribute('to', $endDate->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING));

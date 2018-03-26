@@ -48,6 +48,9 @@ class Package extends Base implements \JsonSerializable
     const ROOM_STATUS_OUT_TOMORROW = 'out_tomorrow'; // Выезд завтра
     const ROOM_STATUS_NOT_OUT = 'not_out'; // Не выехал
 
+    private $packagePricesWithDiscount = [];
+    private $isPackagePricesWithDiscountInit = false;
+
     /**
      * @var Order
      * @Gedmo\Versioned
@@ -1586,6 +1589,29 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getPackagePricesWithDiscount()
+    {
+        if (!$this->isPackagePricesWithDiscountInit) {
+            foreach ($this->getPrices() as $price) {
+                $priceFraction = $price->getPrice() / $this->getPackagePrice();
+
+                $clonedPrice = clone $price;
+                $priceWithDiscount = $this->isPercentDiscount
+                    ? $price->getPrice() * (1 - $this->getDiscount(false))
+                    : $this->discount * $priceFraction;
+                $clonedPrice->setPrice($priceWithDiscount);
+                $this->packagePricesWithDiscount[] = $clonedPrice;
+            }
+            $this->isPackagePricesWithDiscountInit = true;
+        }
+
+        return $this->packagePricesWithDiscount;
+    }
+
+
+    /**
      * @param array $prices
      * @return Package
      */
@@ -1805,12 +1831,14 @@ class Package extends Base implements \JsonSerializable
 
     /**
      * @param \DateTime $date
+     * @param bool $withDiscount
      * @return PackagePrice|null
      */
-    public function getPackagePriceByDate(\DateTime $date)
+    public function getPackagePriceByDate(\DateTime $date, bool $withDiscount = false)
     {
+        $prices = $withDiscount ? $this->getPackagePricesWithDiscount() : $this->getPrices();
         /** @var PackagePrice $price */
-        foreach ($this->getPrices() as $price) {
+        foreach ($prices as $price) {
             if ($price->getDate() == $date) {
                 return $price;
             }

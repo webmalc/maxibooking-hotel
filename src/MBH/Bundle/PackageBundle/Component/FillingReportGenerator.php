@@ -229,11 +229,12 @@ class FillingReportGenerator
                         ++$packageDaysTotal;
                     }
 
+                    /** @var Package $package */
                     foreach($filteredPackages as $package) {
-                        $priceByDate = $package->getPricesByDateWithDiscount();
                         $packagePrice = 0;
-                        if(isset($priceByDate[$date->format('d_m_Y')])) {
-                            $packagePrice = $priceByDate[$date->format('d_m_Y')];
+                        $packagePriceWithDiscount = $package->getPackagePriceByDate($date, true);
+                        if(!is_null($packagePriceWithDiscount)) {
+                            $packagePrice = $packagePriceWithDiscount->getPrice();
                         }
                         $packageRowData['packagePrice'] += $packagePrice;
 

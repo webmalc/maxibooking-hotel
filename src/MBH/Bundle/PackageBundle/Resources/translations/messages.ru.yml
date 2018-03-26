@@ -796,7 +796,6 @@ modal.chessBoard.end: 'Дата выезда'
 modal.chessBoard.payer: Плательщик
 controller.chessboard.package_create.success: 'Бронь успешно создана'
 controller.chessboard.package_update.success: 'Бронь успешно обновлена'
-controller.chessboard.package_remove.success: 'Бронь успешно удалена'
 controller.chessboard.accommodation_update.success: 'Размещение успешно изменено'
 controller.chessboard.accommodation_divide.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет размещена в номере %roomName%'
 controller.chessboard.accommodation_remove.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет без размещения'

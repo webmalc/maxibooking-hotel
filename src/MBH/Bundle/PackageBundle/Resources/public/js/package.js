@@ -135,50 +135,71 @@ var initAccommodationTab = function () {
                 })
             }
         }
-    }
+    };
 
     $form.on('submit', function (e) {
         formHandler(e);
     });
-}
+};
 
-var deleteUndaid = function () {
-    $('.booking-delete-link').on('click', function (e) {
+var initRemovePackageButton = function () {
+    var $formContainer = $('#delete-modal-form-container');
+    var $deleteModalButton = $('#package-delete-modal-button');
+
+    $('.booking-delete-link, .order-booking-delete-link').unbind('click');
+    $('.booking-delete-link, .order-booking-delete-link').on('click', function (e) {
+        var orderId = this.getAttribute('data-order-id');
+        var isRemoveFromOrderInterface = orderId !== null;
+        console.log(orderId);
         e.preventDefault();
-        $('#modal_delete_package').attr('data-order', $(this).data('order'));
-        $('.modal-body').html(mbh.loader.html);
 
-        return $.ajax({
-            url: Routing.generate('package_delete', {'id': $(this).data('id')}),
+        var isRemovePackage = this.classList.contains('booking-delete-link');
+        var urlName = isRemovePackage ? 'package_delete' : 'order_delete';
+        var entityId = $(this).data('id');
+
+        $formContainer.html(mbh.loader.html);
+
+        $.ajax({
+            url: Routing.generate(urlName, {'id': entityId}),
             type: "GET",
-            data: {},
-            success: function (urlFromController) {
-                $('#modal_delete_package').html(urlFromController);
-                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
+            success: function (response) {
+                $formContainer.html(response);
                 $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+            }, error: function () {
+                $formContainer.html(mbh.error.html);
             }
         });
-    });
-    $('.order-booking-delete-link').on('click', function (e) {
-        e.preventDefault();
-        $('.modal-body').html(mbh.loader.html);
 
-        return $.ajax({
-            url: Routing.generate('order_delete', {'id': $(this).data('id')}),
-            type: "GET",
-            data: {},
-            success: function (urlFromController) {
-                $('#modal_delete_package').html(urlFromController);
-                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
-                $('select#mbh_bundle_packagebundle_order_delete_reason_type_deleteReason').select2();
-            }
-        });
+        $deleteModalButton.unbind('click');
+        $deleteModalButton.click(function () {
+            var data = $formContainer.find('form').serialize();
+            $formContainer.html(mbh.loader.html);
+            var urlAfterRedirect = isRemovePackage && isRemoveFromOrderInterface
+                ? Routing.generate('package_order_edit', {'id' : orderId, 'packageId' : entityId})
+                : Routing.generate('package');
+
+            $.ajax({
+                url: Routing.generate(urlName, {'id': entityId}),
+                type: "POST",
+                data: data,
+                success: function (response) {
+                    $formContainer.html(response)
+                },
+                error: function (response) {
+                    if (response.status === 302) {
+                        window.location.href = urlAfterRedirect;
+                    } else {
+                        $formContainer.html(mbh.error.html)
+                    }
+                }
+            });
+        })
     });
-}
+};
 
 var docReadyPackages = function () {
     'use strict';
-    deleteUndaid();
+    initRemovePackageButton();
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
@@ -350,7 +371,7 @@ var docReadyPackages = function () {
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
             $('.booking-delete-link').attr('data-toggle', 'modal');
 
-            deleteUndaid();
+            initRemovePackageButton();
 
             //summary
             $('#package-summary-total').html(settings.json.package_summary_total || '-');
@@ -538,6 +559,7 @@ $(document).ready(function () {
             return null;
         }
         tabs.find('li > a').click(function (e) {
+            setPaymentCardVisibility();
             e.preventDefault();
             $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>' + Translator.trans("package.processing") + '...</div>');
             tabs.find('li').removeClass('active');

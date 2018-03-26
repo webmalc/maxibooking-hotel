@@ -7,7 +7,6 @@ use MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use MBH\Bundle\ChannelManagerBundle\Lib\Response;
 use MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\PackageInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -18,6 +17,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use Symfony\Component\HttpFoundation\Response;
 
 class HundredOneHotels extends Base
 {
@@ -437,12 +437,12 @@ class HundredOneHotels extends Base
                 ) {
                     $result = $this->createOrder($orderInfo, null);
                     $order = $result;
-//                    $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'new');
+                    $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'new');
                 } elseif ($orderInfo->getLastAction() == 'modified'
                     && $order && $order->getChannelManagerEditDateTime() != $orderInfo->getModifiedDate()
                 ) {
                     $result = $this->createOrder($orderInfo, $order);
-//                    $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'edit');
+                    $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'edit');
                 } elseif ($orderInfo->getLastAction() == 'canceled' && $order) {
                     $order->setChannelManagerStatus('cancelled');
                     $this->dm->persist($order);
@@ -453,15 +453,15 @@ class HundredOneHotels extends Base
                     $result = true;
                 };
 
-//                if (!$order) {
-//                    if ($orderInfo->getLastAction() === 'modified') {
-//                        $result = $this->createOrder($orderInfo, null);
-//                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, true));
-//                    }
-//                    if ($orderInfo->getLastAction() === 'cancelled') {
-//                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, false));
-//                    }
-//                }
+                if (!$order) {
+                    if ($orderInfo->getLastAction() === 'modified') {
+                        $result = $this->createOrder($orderInfo, null);
+                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, true));
+                    }
+                    if ($orderInfo->getLastAction() === 'cancelled') {
+                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, false));
+                    }
+                }
             };
         }
 
@@ -556,8 +556,6 @@ class HundredOneHotels extends Base
             }
         }
 
-        $this->dm->refresh($order);
-        $this->dm->clear(Package::class);
         foreach ($orderInfo->getPackages() as $packageInfo) {
             $package = $this->createPackage($packageInfo, $order);
             $order->addPackage($package);
@@ -702,7 +700,7 @@ class HundredOneHotels extends Base
     /**
      * Close sales on service
      * @param ChannelManagerConfigInterface $config
-     * @return bool|void
+     * @return bool
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
@@ -729,6 +727,7 @@ class HundredOneHotels extends Base
         }
 
         $this->log($sendResult);
+
         return $result;
     }
 

@@ -89,12 +89,16 @@ class ExpediaResponseHandler extends AbstractResponseHandler
                     $roomTypeId = $this->getRoomTypeIdFromUrlString($requestedUrl);
                     $roomTypeName = $roomTypes[$roomTypeId];
                     $tariffs[$data['expediaId']] = [
-                        'title' => $tariffInfo['name'] . " ( $roomTypeName, {$data['distributionModel']} )" ,
+                        'title' => $tariffInfo['name'] . " ($roomTypeName, {$data['distributionModel']})" ,
                         'rooms' => [$roomTypeId],
                         'readonly' => $tariffInfo['pricingModel'] === self::OCCUPANCY_BASED_PRICING ? false : true,
                         'minLOSDefault' => $tariffInfo['minLOSDefault'],
                         'maxLOSDefault' => $tariffInfo['maxLOSDefault'],
                     ];
+
+                    if (isset($tariffInfo['ratePlanLinkage'])) {
+                        $tariffs[$data['expediaId']]['derivationRules'] = $tariffInfo['ratePlanLinkage'];
+                    }
                 }
             }
         }
@@ -135,10 +139,10 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         return substr($url, $roomTypeIdStartPosition, $roomTypeIdStringLength);
     }
 
-    private function removeXmlnsString($xmlString)
+    public function removeXmlnsString($xmlString)
     {
-        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns');
-        $firstQuotesPosition = $xmlnsStringStartPosition + 8;
+        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns:ns');
+        $firstQuotesPosition = $xmlnsStringStartPosition + 10;
         $xmlnsStringEndPosition = strpos($xmlString, '"', $firstQuotesPosition) + 1;
         $xmlnsString = substr($xmlString, $xmlnsStringStartPosition, $xmlnsStringEndPosition - $xmlnsStringStartPosition);
 
