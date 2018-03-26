@@ -46,8 +46,6 @@ class ChannelManagerController extends Controller
     {
         $content = null;
 
-        $root = $this->get('kernel')->getRootDir();
-        $env = $this->get('kernel')->getEnvironment();
         $file = $this->container->get('mbh.channelmanager.logger_handler')->getUrl();
 
         if (file_exists($file) && is_readable($file)) {

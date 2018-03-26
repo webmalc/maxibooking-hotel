@@ -16,15 +16,20 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 class ExpediaOrderInfo extends AbstractOrderInfo
 {
     //TODO: Генерировать, наверное нужно
-    const DEFAULT_CONFIRM_NUMBER = '2202199119TZ';
+    const DEFAULT_CONFIRM_NUMBER = '3202199119TZ';
     /** @var ChannelManagerConfigInterface $config */
     private $config;
     /** @var \SimpleXMLElement $orderDataXMLElement */
     private $orderDataXMLElement;
     private $roomTypes;
     private $tariffs;
+
     private $isPackagesDataInit = false;
     private $packagesData = [];
+    private $payer;
+    private $isPayerInit = false;
+    private $source;
+    private $isSourceInit = false;
 
     public function setInitData(\SimpleXMLElement $orderInfoElement, ExpediaConfig $config, $tariffs, $roomTypes)
     {
@@ -32,20 +37,31 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         $this->orderDataXMLElement = $orderInfoElement;
         $this->tariffs = $tariffs;
         $this->roomTypes = $roomTypes;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getChannelManagerOrderId(): string
     {
         return (string)$this->getCommonOrderData('id');
     }
 
+    /**
+     * @return int
+     */
     public function getHotelId()
     {
         return (int)$this->getMandatoryDataByXPath($this->orderDataXMLElement->Hotel[0], '@id',
             $this->translator->trans('order_info.expedia.required_hotel_id'));
     }
 
+    /**
+     * @param $param
+     * @return \SimpleXMLElement
+     */
     private function getCommonOrderData($param)
     {
         return $this->getMandatoryDataByXPath($this->orderDataXMLElement, "@$param",
@@ -54,31 +70,37 @@ class ExpediaOrderInfo extends AbstractOrderInfo
 
     public function getPayer(): Tourist
     {
-        /** @var \SimpleXMLElement $primaryGuestDataElement */
-        $primaryGuestDataElement = $this->orderDataXMLElement->PrimaryGuest;
-        $lastNameString = trim((string)$primaryGuestDataElement->Name->attributes()['surname']);
-        $firstNameString = trim((string)$primaryGuestDataElement->Name->attributes()['givenName']);
-        $lastName = empty($lastNameString) ? $this->getChannelManagerOrderId() : $lastNameString;
-        $phoneNumber = null;
-        if ((string)$primaryGuestDataElement->Phone) {
-            $phoneAttributes = $primaryGuestDataElement->Phone->attributes();
-            $phoneNumber = $phoneAttributes['countryCode'] . $phoneAttributes['cityAreaCode'] . $phoneAttributes['number'];
+        if (!$this->isPayerInit) {
+            /** @var \SimpleXMLElement $primaryGuestDataElement */
+            $primaryGuestDataElement = $this->orderDataXMLElement->PrimaryGuest;
+            $lastNameString = trim((string)$primaryGuestDataElement->Name->attributes()['surname']);
+            $firstNameString = trim((string)$primaryGuestDataElement->Name->attributes()['givenName']);
+            $lastName = empty($lastNameString) ? $this->getChannelManagerOrderId() : $lastNameString;
+            $phoneNumber = null;
+            if (isset($primaryGuestDataElement->Phone)) {
+                $phoneAttributes = $primaryGuestDataElement->Phone->attributes();
+                $phoneNumber = ((string)$phoneAttributes['countryCode'] !== '0' ? $phoneAttributes['countryCode'] : '')
+                    . ((string)$phoneAttributes['cityAreaCode'] !== '0' ? $phoneAttributes['cityAreaCode'] : '')
+                    . $phoneAttributes['number'];
+            }
+            $email = (string)$primaryGuestDataElement->Email ? (string)$primaryGuestDataElement->Email : null;
+
+            $this->payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                $lastName,
+                empty($firstNameString) ? null : $firstNameString,
+                null,
+                null,
+                $email,
+                $phoneNumber
+            );
+            $this->isPayerInit = true;
         }
-        $email = (string)$primaryGuestDataElement->Email ? (string)$primaryGuestDataElement->Email : null;
-
-        $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-            $lastName,
-            empty($firstNameString) ? null : $firstNameString,
-            null,
-            null,
-            $email,
-            $phoneNumber
-        );
-
-        return $payer;
+        return $this->payer;
     }
 
-
+    /**
+     * @return array
+     */
     public function getPackagesData(): array
     {
         if (!$this->isPackagesDataInit) {
@@ -95,6 +117,9 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $this->packagesData;
     }
 
+    /**
+     * @return bool
+     */
     public function getIsSmoking(): bool
     {
         $isSmokingElement = $this->orderDataXMLElement->xpath('SpecialRequest[starts-with(@code, "2")]');
@@ -110,6 +135,10 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $isSmoking;
     }
 
+    /**
+     * @param Order $order
+     * @return array
+     */
     public function getCashDocuments(Order $order)
     {
         $cashDocuments = [];
@@ -149,16 +178,25 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $cashDocuments;
     }
 
+    /**
+     * @return bool
+     */
     public function isOrderModified(): bool
     {
         return $this->checkOrderStatusType('Modify');
     }
 
+    /**
+     * @return bool
+     */
     public function isOrderCreated(): bool
     {
         return $this->checkOrderStatusType('Book');
     }
 
+    /**
+     * @return bool
+     */
     public function isOrderCancelled(): bool
     {
         return $this->checkOrderStatusType('Cancel');
@@ -173,16 +211,34 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return (string)$this->getCommonOrderData('type');
     }
 
+    /**
+     * @param $status
+     * @return bool
+     */
     private function checkOrderStatusType($status): bool
     {
         return $this->getOrderStatusType() === $status;
     }
 
+    /**
+     * @return string
+     */
+    private function getOrderStatus()
+    {
+        return (string)$this->getCommonOrderData('status');
+    }
+
+    /**
+     * @return mixed
+     */
     public function getPrice()
     {
         return current($this->getPackagesData())->getPrice();
     }
 
+    /**
+     * @return mixed
+     */
     public function getOriginalPrice()
     {
         return current($this->getPackagesData())->getOriginalPrice();
@@ -193,7 +249,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsNew(?Order $order): bool
+    public function isHandledAsNew(?Order $order): bool
     {
         return $this->checkOrderStatusType('Book') && !$order;
     }
@@ -203,7 +259,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsModified(?Order $order): bool
+    public function isHandledAsModified(?Order $order): bool
     {
         return $this->isOrderModified() && $order;
     }
@@ -213,7 +269,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsCancelled(?Order $order): bool
+    public function isHandledAsCancelled(?Order $order): bool
     {
         return $this->isOrderCancelled() && $order;
     }
@@ -244,6 +300,13 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $card;
     }
 
+    /**
+     * @param \SimpleXMLElement $element
+     * @param $xpath
+     * @param $exceptionMessage
+     * @return \SimpleXMLElement
+     * @throws ChannelManagerException
+     */
     private function getMandatoryDataByXPath(\SimpleXMLElement $element, $xpath, $exceptionMessage)
     {
         $mandatoryData = $element->xpath($xpath);
@@ -256,50 +319,40 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     }
 
     /**
-     * Возвращает значение, необходимое для подтверждения получения брони с сервера
-     * @return null|string
+     * @return string
      */
-    public function getConfirmNumber()
-    {
-        $confirmNumberElement = $this->orderDataXMLElement->xpath("/Booking/@confirmNumber");
-        if ($confirmNumberElement) {
-
-            return (string)$confirmNumberElement[0];
-        }
-
-        return self::DEFAULT_CONFIRM_NUMBER;
-    }
-
     public function getNote(): string
     {
-        foreach ($this->orderDataXMLElement->SpecialRequest as $specialRequest) {
-            $codeString = (string)$specialRequest->attributes()['code'][0];
-            $specialRequestString = (string)$specialRequest;
-            /**
-             * 1.xx : bedding preferences, different codes for beddings
-             * 2.1 Non-smoking
-             * 2.2 Smoking
-             * 3 Multi room booking and Mixed Rate Bookings
-             * 4 Free text
-             * 5 payment instruction
-             * 6 Value Add Promotions
-             */
-            switch (substr($codeString, 0, 1)) {
-                case "1":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.bedding_preferences');
-                    break;
-                case "3":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.multi_room_booking_info');
-                    break;
-                case "4":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.user_comment');
-                    break;
-                case "5":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.payment_instructions');
-                    break;
-                case "6":
-                    $this->addOrderNote($specialRequestString, 'order_info.expedia.add_promotion');
-                    break;
+        if (!empty((string)$this->orderDataXMLElement->SpecialRequest)) {
+            foreach ($this->orderDataXMLElement->SpecialRequest as $specialRequest) {
+                $codeString = (string)$specialRequest->attributes()['code'][0];
+                $specialRequestString = (string)$specialRequest;
+                /**
+                 * 1.xx : bedding preferences, different codes for beddings
+                 * 2.1 Non-smoking
+                 * 2.2 Smoking
+                 * 3 Multi room booking and Mixed Rate Bookings
+                 * 4 Free text
+                 * 5 payment instruction
+                 * 6 Value Add Promotions
+                 */
+                switch (substr($codeString, 0, 1)) {
+                    case "1":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.bedding_preferences');
+                        break;
+                    case "3":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.multi_room_booking_info');
+                        break;
+                    case "4":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.user_comment');
+                        break;
+                    case "5":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.payment_instructions');
+                        break;
+                    case "6":
+                        $this->addOrderNote($specialRequestString, 'order_info.expedia.add_promotion');
+                        break;
+                }
             }
         }
 
@@ -316,20 +369,36 @@ class ExpediaOrderInfo extends AbstractOrderInfo
 
     public function getSource(): ?PackageSource
     {
-        return $this->dm->getRepository('MBHPackageBundle:PackageSource')
-            ->findOneBy(['code' => $this->getChannelManagerName()]);
+        if (!$this->isSourceInit) {
+            $this->source = $this->dm->getRepository('MBHPackageBundle:PackageSource')
+                ->findOneBy(['code' => $this->getChannelManagerName()]);
+
+            $this->isSourceInit = true;
+        }
+
+        return $this->source;
     }
 
+    /**
+     * @return string
+     */
     public function getChannelManagerName(): string
     {
         $sourceString = (string)$this->getCommonOrderData('source');
 
-        if (strpos($sourceString, 'Hotels') !== false) {
-            return 'hotels';
-        } elseif (strpos($sourceString, 'Venere') !== false) {
-            return 'venere';
-        }
+        return self::removeChannelManagerNamePrefix($sourceString);
+    }
 
-        return 'expedia';
+    /**
+     * @param $sourceString
+     * @return string
+     */
+    public static function removeChannelManagerNamePrefix($sourceString)
+    {
+        $prefix = 'A-';
+        $prefixPosition = strpos($sourceString, $prefix);
+        $requestorName = $prefixPosition === false ? $sourceString : substr($sourceString, strlen($prefix));
+
+        return strtolower($requestorName);
     }
 }

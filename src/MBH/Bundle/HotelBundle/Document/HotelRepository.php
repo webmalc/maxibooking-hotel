@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
@@ -26,6 +27,20 @@ class HotelRepository extends DocumentRepository
         return $hotel;
     }
 
+    /**
+     * @param array $hotelsIds
+     * @param bool $isEmptyAsAll
+     * @return Cursor|Hotel[]
+     */
+    public function getByIds(array $hotelsIds, $isEmptyAsAll = true)
+    {
+        $qb = $this->createQueryBuilder();
+        if (!(count($hotelsIds) == 0 && $isEmptyAsAll)) {
+            $qb->field('id')->in($hotelsIds);
+        }
+
+        return $qb->getQuery()->execute();
+    }
     public function getHotelWithFilledContacts()
     {
         return $this->createQueryBuilder()

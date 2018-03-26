@@ -23,6 +23,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -302,7 +303,7 @@ class TaskController extends Controller
                 ->setSubject('mailer.new_task.subject')
                 ->setText('mailer.new_task.text')
                 ->setTranslateParams(['%taskType%' => $task->getType()->getTitle()])
-                ->setLink($this->generateUrl('task'))
+                ->setLink($this->generateUrl('task', [], UrlGeneratorInterface::ABSOLUTE_URL))
                 ->setMessageType(NotificationType::TASK_TYPE);
             foreach ($recipients as $recipient) {
                 $message->addRecipient($recipient);
@@ -348,7 +349,7 @@ class TaskController extends Controller
                     'MBHHotelBundle') :
                 '',
             'status' => $entity->getStatus() ?
-                $this->container->getParameter('mbh.task.statuses')[$entity->getStatus()]['title'] :
+                $this->get('translator')->trans($this->container->getParameter('mbh.task.statuses')[$entity->getStatus()]['title']) :
                 '',
         ];
 

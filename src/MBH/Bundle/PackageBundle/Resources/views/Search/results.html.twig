@@ -96,7 +96,7 @@
                 {% if row.roomType.facilities %}
                     <small>
                         {% for facility in row.roomType.facilities %}
-                            <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
+                            <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility]|trans }}" class="fa fa-lg mbf-{{ facility }}"></i>
                         {% endfor %}
                     </small>
                 {% endif %}
@@ -185,7 +185,9 @@
                                 begin: result.begin|date('d.m.Y'),
                                 end: result.end|date('d.m.Y'),
                                 forceBooking: result.forceBooking,
-                                infants: result.infants
+                                infants: result.infants,
+                                query_id: result.queryId
+
                             })) }}"
                                target="_blank"
                                class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden' }}"

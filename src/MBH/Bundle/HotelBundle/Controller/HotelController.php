@@ -15,10 +15,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Process\Process;
 
 class HotelController extends Controller
 {
@@ -41,6 +39,9 @@ class HotelController extends Controller
      * @Route("/{id}/select", name="hotel_select")
      * @Method("GET")
      * @Security("is_granted('ROLE_HOTEL_VIEW')")
+     * @param Request $request
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function selectHotelAction(Request $request, $id)
     {
@@ -63,14 +64,14 @@ class HotelController extends Controller
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('s')
+        $entities = $this->dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder()
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
 
-        return array(
+        return [
             'entities' => $entities,
-        );
+        ];
     }
 
     /**
@@ -86,9 +87,9 @@ class HotelController extends Controller
         $entity = new Hotel();
         $form = $this->createForm(HotelType::class, $entity);
 
-        return array(
-            'form' => $form->createView(),
-        );
+        return [
+            'form' => $form->createView()
+        ];
     }
 
     /**
@@ -99,6 +100,8 @@ class HotelController extends Controller
      * @Security("is_granted('ROLE_HOTEL_NEW')")
      * @Template("MBHHotelBundle:Hotel:new.html.twig")
      * @see HotelManager::create
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createAction(Request $request)
     {
@@ -107,27 +110,16 @@ class HotelController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $entity->uploadFile();
-
-            $this->dm->persist($entity);
-            $this->dm->flush();
-
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'));
-
-            //todo: create services
-            $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-            $client = $this->container->getParameter('client');
-            $process = new Process('nohup php ' . $console . 'doctrine:mongodb:fixtures:load --append --no-debug > /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $client]);
-            $process->run();
+            $this->get('mbh.hotel.hotel_manager')->create($entity);
+            $this->addFlash('success', 'controller.hotelController.record_created_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
-        );
+        ];
     }
 
     /**
@@ -138,6 +130,9 @@ class HotelController extends Controller
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template("MBHHotelBundle:Hotel:edit.html.twig")
      * @ParamConverter("entity", class="MBHHotelBundle:Hotel")
+     * @param Request $request
+     * @param Hotel $entity
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateAction(Request $request, Hotel $entity)
     {
@@ -146,16 +141,15 @@ class HotelController extends Controller
         if ($form->isValid()) {
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'));
+            $this->addFlash('success', 'controller.hotelController.record_edited_success');
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -176,15 +170,39 @@ class HotelController extends Controller
 
         $logoImageDeleteUrl = $this->generateUrl('hotel_delete_logo_image', ['id' => $entity->getId()]);
 
+        $logoDownloadUrl = null;
+        if ($entity->getLogoImage()) {
+            $logoImageId = $entity->getLogoImage()->getId();
+            $logoDownloadUrl = $this->generateUrl('hotel_logo_download', ['id' => $logoImageId]);
+        }
+
         $form = $this->createForm(HotelType::class, $entity, [
-            'logo_image_delete_url' => $logoImageDeleteUrl
+            'logo_image_delete_url' => $logoImageDeleteUrl,
+            'logo_image_download_url' => $logoDownloadUrl
         ]);
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
+    }
+
+
+    /**
+     * Download Logo
+     *
+     * @Route("/{id}/logo/download", name="hotel_logo_download")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
+     * @param Image $image
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function downloadLogo(Image $image)
+    {
+        $downloader = $this->get('mbh.protected.file.downloader');
+
+        return $downloader->downloadPublicImage($image);
     }
 
     /**
@@ -254,6 +272,7 @@ class HotelController extends Controller
      * @Method("POST")
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template("MBHHotelBundle:Hotel:extended.html.twig")
+     * @param Request $request
      * @param Hotel $entity
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
@@ -278,11 +297,11 @@ class HotelController extends Controller
             return $this->afterSaveRedirect('hotel', $entity->getId(), [], '_edit_extended');
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -421,67 +440,13 @@ class HotelController extends Controller
     }
 
     /**
-     * Get city by query
-     *
-     * @Route("/city/{id}", name="hotel_city", options={"expose"=true})
-     * @Method("GET")
-     * @Security("is_granted('ROLE_CITY_VIEW')")
-     * @return JsonResponse
-     */
-    public function cityAction(Request $request, $id = null)
-    {
-        if (empty($id) && empty($request->get('query'))) {
-            return new JsonResponse([]);
-        }
-
-        if (!empty($id)) {
-            $city = $this->dm->getRepository('MBHHotelBundle:City')->find($id);
-
-            if ($city) {
-                return new JsonResponse([
-                    'id' => $city->getId(),
-                    'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' . $city->getTitle()
-                ]);
-            }
-        }
-
-        $cities = $this->dm->getRepository('MBHHotelBundle:City')->createQueryBuilder('q')
-            ->field('title')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
-            ->getQuery()
-            ->execute();
-
-        $data = [];
-
-        foreach ($cities as $city) {
-            $data[] = [
-                'id' => $city->getId(),
-                'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' . $city->getTitle()
-            ];
-        }
-
-        $regions = $this->dm->getRepository('MBHHotelBundle:Region')->createQueryBuilder('q')
-            ->field('title')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
-            ->getQuery()
-            ->execute();
-
-        foreach ($regions as $region) {
-            foreach ($region->getCities() as $city) {
-                $data[] = [
-                    'id' => $city->getId(),
-                    'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' . $city->getTitle()
-                ];
-            }
-        }
-
-        return new JsonResponse(['results' => $data]);
-    }
-
-    /**
      * Delete entity.
      *
      * @Route("/{id}/delete", name="hotel_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_HOTEL_DELETE')")
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction($id)
     {

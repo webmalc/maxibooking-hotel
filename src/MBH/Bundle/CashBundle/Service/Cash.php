@@ -72,7 +72,13 @@ class Cash
         $notifier = $this->container->get('mbh.notifier.mailer');
         $message = $notifier::createMessage();
 
-        $localCurrency = $this->container->getParameter('locale.currency');
+        $clientConfig = $this->container
+            ->get('doctrine.odm.mongodb.document_manager')
+            ->getRepository('MBHClientBundle:ClientConfig')
+            ->fetchConfig();
+
+        $localCurrency = $clientConfig->getCurrency();
+
         $currencyText = $this->container->getParameter('mbh.currency.data')[$localCurrency]['text'];
         $sumString = '<strong>' . $cashDocument->getTotal() . ' ' . $currencyText . '</strong>';
 
@@ -81,7 +87,7 @@ class Cash
             . '</span>';
 
         $message
-            ->setRecipients([$order->getMainTourist()])
+            ->setRecipients([$order->getPayer()])
             ->setFrom('system')
             ->setType('info')
             ->setLink('hide')

@@ -11,6 +11,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @deprecated
  * @ODM\EmbeddedDocument
  * @Gedmo\Loggable
  */

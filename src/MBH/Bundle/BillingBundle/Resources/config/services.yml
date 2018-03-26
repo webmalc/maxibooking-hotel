@@ -11,7 +11,6 @@ services:
         class: MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager
         calls:
             - [addMaintenance, ['@mbh.parameters.maintenance']]
-            - [addMaintenance, ['@mbh.nginx.maintenance']]
             - [addMaintenance, ['@mbh.mongo.maintenance']]
 
     mbh.maintenance.abstract:
@@ -31,8 +30,7 @@ services:
 
     mbh.mongo.maintenance:
         public: true
-        arguments: ["@service_container", {sampleDbName: "%mongodb_database%"}]
-
+        arguments: ["@service_container", "@mbh.billing_mongo_client"]
         class: MBH\Bundle\BillingBundle\Lib\Maintenance\MongoMaintenance
 
     mbh.billing.client.converter:
@@ -43,15 +41,24 @@ services:
 
     mbh.billing.api:
         class: MBH\Bundle\BillingBundle\Service\BillingApi
-        arguments: ['@mbh.billing.logger']
+        arguments:
+            - '@mbh.billing.logger'
+            - '@kernel'
+            - '@serializer'
+            - '%locale%'
+            - '@security.token_storage'
 
     mbh.billing.logger:
         class:     Symfony\Bridge\Monolog\Logger
-        arguments: ['installer']
+        arguments: ["installer.%client%"]
         calls:
             - [pushHandler, ['@mbh.billing.logger_handler']]
 
     mbh.billing.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.installer.log", 200]
+
+    mbh.billing.logger_handler_overall:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.installer.log", 200]
 
@@ -67,8 +74,57 @@ services:
 
     mbh.console.billing_install:
         class: MBH\Bundle\BillingBundle\Command\BillingInstallCommand
-        arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger"]
+        arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger", "@workflow.installation", "@mbh.service.client_list_getter"]
+        tags: ['console.command']
+
+    mbh.console.billing_remove:
+        class: MBH\Bundle\BillingBundle\Command\BillingRemoveCommand
+        arguments: ["@mbh.billing.logger", "@mbh.service.client_list_getter", "@mbh.maintenance.manager"]
+        tags: ['console.command']
+
+    mbh.console.billing_credentials_install:
+        class: MBH\Bundle\BillingBundle\Command\BillingCredentialsInstall
+        arguments: ['@mbh.client_instance_manager', '@mbh.billing.logger']
         tags: ['console.command']
 
     mbh.service.ssh_commands:
         class: MBH\Bundle\BillingBundle\Service\SshCommands
+
+    mbh.billing_mongo_client:
+        class: MBH\Bundle\BillingBundle\Service\BillingMongoClient
+        arguments: ["%mongodb_admin_login%","%mongodb_admin_password%","%mongodb_host%","admin","%mongodb_options%"]
+
+
+    mbh.client_instance_manager:
+        class: MBH\Bundle\BillingBundle\Service\ClientInstanceManager
+        arguments:
+            - '@mbh.maintenance.manager'
+            - '@mbh.billing.logger'
+            - '@mbh.service.client_list_getter'
+            - '@mbh.helper'
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@kernel'
+            - '@mbh.billing.api'
+            - '@mbh.hotel.room_type_manager'
+            - '@mbh.hotel.hotel_manager'
+            - '@fos_user.user_manager'
+            - '@workflow.fixtures_installation'
+            - '@mbh.acl_document_owner_maker'
+            - '@old_sound_rabbit_mq.task_command_runner_producer'
+            - '%domain%'
+
+    mbh.billing_response_handler:
+        class: MBH\Bundle\BillingBundle\Service\BillingResponseHandler
+        arguments: ['%support%', '@translator']
+
+    mbh.billing_payer_form_handler:
+        class: MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler
+        shared: false
+
+    mbh.billing_data_handler:
+        class: MBH\Bundle\BillingBundle\Service\BillingDataHandler
+        arguments:
+            - '@mbh.billing.api'
+            - '@serializer'
+            - '@mbh.form_data_handler'
+            - '@kernel'

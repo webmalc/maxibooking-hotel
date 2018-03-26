@@ -1,19 +1,18 @@
 {% block vich_image_widget %}
+
     {% spaceless %}
         <div class="vich-image">
-
             {% if form.delete is defined %}
                 <div class="print-clearfix"></div>
                 <div class="col-sm-4">
                 {{ form_label(form.delete) }}
                 </div>
-
                 {{ form_widget(form.delete) }}
             {% endif %}
 
             {% if image_uri %}
                 <div class="print-clearfix"></div>
-                <a href="{{ image_uri }}" class="fancybox"><img src="{{ asset(image_uri|imagine_filter('thumb_95x80')) }}" alt="" /></a>
+                <a href="{{ asset(image_uri|imagine_filter('scaler')) }}" class="fancybox"><img src="{{ asset(image_uri|imagine_filter('thumb_95x80')) }}" alt="" /></a>
             {% endif %}
             {% if download_uri %}
                 <p>

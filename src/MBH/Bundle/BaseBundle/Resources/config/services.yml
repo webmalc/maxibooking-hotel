@@ -23,12 +23,6 @@ services:
       tags:
         - { name: validator.constraint_validator, alias: doctrine_odm.mongodb.unique }
 
-    mbh.base_on_request_listener:
-        class: MBH\Bundle\BaseBundle\EventListener\OnRequest
-        arguments: ['@service_container']
-        tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
-
     mbh.base_on_controller_listener:
         class: MBH\Bundle\BaseBundle\EventListener\OnController
         arguments: ['@service_container']
@@ -166,7 +160,7 @@ services:
         class: MBH\Bundle\BaseBundle\EventListener\GenerateInternationalListener
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
-
+ 
     mbh.cache:
         class: MBH\Bundle\BaseBundle\Service\Cache
         arguments:
@@ -225,7 +219,7 @@ services:
     mbh.base.lib.services_translator:
         class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\ServicesTranslateConverter
         parent: mbh.base.lib.abstract_translator
-
+        
     mbh.cache.logger:
         class:     Symfony\Bridge\Monolog\Logger
         arguments: [app]
@@ -246,7 +240,7 @@ services:
 
     mbh.universal_command.logger_handler:
         class:     Monolog\Handler\StreamHandler
-        arguments: ["%kernel.logs_dir%/%kernel.environment%.mailer.log", 200]
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.universal.log", 200]
 
     mbh.universal_command.logger:
         class:     Symfony\Bridge\Monolog\Logger
@@ -273,9 +267,21 @@ services:
 
     mbh.locale.subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\LocaleSubscriber
-        arguments: ['%kernel.default_locale%']
+        arguments: ['%kernel.default_locale%', '@gedmo.listener.translatable', '@translator']
         tags:
           - { name: kernel.event_subscriber }
+
+    mbh.base_on_request_listener:
+        class: MBH\Bundle\BaseBundle\EventListener\OnRequest
+        arguments: ['@service_container']
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    mbh.time_zone.subscriber:
+        class: MBH\Bundle\BaseBundle\EventListener\TimeZoneSubscriber
+        arguments: ['@mbh.helper']
+        tags:
+            - {name: kernel.event_subscriber}
 
     mbh.mongodb.context_service:
         class: 'resource'
@@ -303,14 +309,19 @@ services:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.image_migrate.log", 200]
 
-    mbh.export_data_handler:
-        class: MBH\Bundle\BaseBundle\Service\Export\ExportDataHandler
+    mbh.raw_mongo_data_handler:
+        class: MBH\Bundle\BaseBundle\Service\Export\RawMongoDataHandler
+        arguments:
+            - '@mbh.helper'
 
     mbh.entities_exporter:
         class: MBH\Bundle\BaseBundle\Service\Export\CSVExporter
         arguments:
-            - '@mbh.export_data_handler'
+            - '@mbh.raw_mongo_data_handler'
             - '@translator'
+
+    mbh.zip_manager:
+        class: MBH\Bundle\BaseBundle\Service\Export\ZipManager
 
     mbh.command.image_migrate:
         class: MBH\Bundle\BaseBundle\Command\ImageMigrateCommand
@@ -336,8 +347,121 @@ services:
         arguments: ["@mbh.swiftmailer.array.logger"]
         tags:
             - { name: 'swiftmailer.default.plugin' }
+    mbh.report:
+        class: MBH\Bundle\BaseBundle\Lib\Report\Report
+        shared: false
+        arguments:
+            - '@templating'
+
+    mbh.csv_reader:
+        class: MBH\Bundle\BaseBundle\Service\CsvReader
+        arguments:
+            - '@kernel'
+
+    mbh.aws_s3.client:
+        class: Aws\S3\S3Client
+        factory: [Aws\S3\S3Client, 'factory']
+        arguments:
+            -
+              version: latest
+              region: '%s3_region%'
+              credentials:
+                  key: '%s3_id%'
+                  secret: '%s3_secret%'
+
+    mbh.imagine.cache.resolver.amazon_s3:
+        class: Liip\ImagineBundle\Imagine\Cache\Resolver\AwsS3Resolver
+        arguments:
+            - '@mbh.aws_s3.client'
+            - '%s3_bucket%'
+        calls:
+            - [ setCachePrefix, ["cache"]]
+
+    mbh.imagine.protected.cache.resolver.amazon_s3:
+        class: Liip\ImagineBundle\Imagine\Cache\Resolver\AwsS3Resolver
+        arguments:
+            - '@mbh.aws_s3.client'
+            - '%s3_protected_bucket%'
+        calls:
+            - [ setCachePrefix, ["protected_cache"]]
+
+    mbh.imagine.cache.resolver.amazon_s3.cache:
+        class: Liip\ImagineBundle\Imagine\Cache\Resolver\CacheResolver
+        arguments:
+            - "@cache.memcache"
+            - "@mbh.imagine.cache.resolver.amazon_s3"
+            - { prefix: "amazon_s3" }
+        tags:
+            - { name: "liip_imagine.cache.resolver", resolver: "public_cached_images" }
+
+    mbh.imagine.protected.cache.resolver.amazon_s3.cache:
+        class: Liip\ImagineBundle\Imagine\Cache\Resolver\CacheResolver
+        arguments:
+            - "@cache.memcache"
+            - "@mbh.imagine.protected.cache.resolver.amazon_s3"
+            - { prefix: "protected_amazon_s3" }
+        tags:
+            - { name: "liip_imagine.cache.resolver", resolver: "protected_cached_images" }
+
+#Didn't work
+#    mbh.imagine.cache.resolver.proxy:
+#        class: Liip\ImagineBundle\Imagine\Cache\Resolver\ProxyResolver
+#        arguments:
+#            - "@mbh.imagine.cache.resolver.amazon_s3.cache"
+#            - [ "http://localhost:9090"]
+#        tags:
+#            - { name: "liip_imagine.cache.resolver", resolver: "proxy"}
+    memcache:
+        class: Memcache
+        calls:
+            - [connect, ["%memcache_host%", 11211 ]]
+
+    cache.memcache:
+        class: Doctrine\Common\Cache\MemcacheCache
+        calls:
+            - [ setMemcache, ["@memcache"]]
+
+    mbh.form_data_handler:
+        class: MBH\Bundle\BaseBundle\Service\FormDataHandler
+
+    mbh.protected.file.downloader:
+        class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
+        arguments: ["@vich_uploader.download_handler", "@vich_uploader.templating.helper.uploader_helper","@liip_imagine.data.manager", "@liip_imagine.filter.manager"]
 
 
+    mbh.mongodb.client:
+        class: MongoClient
+        arguments: ["mongodb://%mongodb_login%:%mongodb_password%@%mongodb_host%/%mongodb_database%%mongodb_options%"]
+
+
+    mbh.session.handler.mongodb:
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\MongoDbSessionHandler
+        arguments: ["@mbh.mongodb.client", {database: '%mongodb_database%', collection: "sessions" }]
+
+    exception_notifier:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
+        arguments: ['@service_container', '@logger']
+        calls:
+            - [attach, ["@sentry_messenger"]]
+
+    sentry_messenger:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\SentryMessenger
+        arguments: ['@mbh.sentry_logger']
+
+    mbh.sentry_logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: ['sentry']
+        calls:
+            - [pushHandler, ['@mbh.raven_handler']]
+
+    mbh.raven_handler:
+        class: Monolog\Handler\RavenHandler
+        arguments: ['@mbh.raven_client']
+
+    mbh.raven_client:
+        class: Raven_Client
+        arguments: ['%sentry_dsn%']
+        public: false
 
     mbh.yandex_translator:
         class: MBH\Bundle\BaseBundle\Service\YandexTranslator

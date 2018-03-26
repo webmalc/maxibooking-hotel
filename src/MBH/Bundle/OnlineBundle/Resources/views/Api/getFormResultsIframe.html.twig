@@ -13,11 +13,18 @@
 </head>
 
 <body>
-    <div id="mbh-results-wrapper" style="overflow: hidden; width: auto; height: auto; padding: 10px 20px; overflow: visible;"></div>
+    <div id="mbh-results-wrapper" style=" width: auto; height: auto; padding: 10px 20px; overflow: auto;"></div>
     {% if formConfig and formConfig.css %}
         <style>
          {{ formConfig.css }}
-        </style>  
+        </style>
+    {% endif %}
+    {% if formConfig.js %}
+        <script>
+            window.onload = function () {
+                {{ formConfig.js|raw }}
+            };
+        </script>
     {% endif %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"></script>

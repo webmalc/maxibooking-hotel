@@ -1,5 +1,55 @@
 /*global window, document, Routing, fole, str, $, select2, localStorage, mbh */
 
+var BILLING_URL = 'https://billing.maxi-booking.com/';
+var BILLING_API_SETTINGS = {
+    fms: {
+        url: BILLING_URL + document.documentElement.lang + '/fms-fms',
+        id: 'internal_id',
+        text: 'name'
+    },
+    countries: {
+        url: BILLING_URL + document.documentElement.lang + '/countries',
+        id: 'tld',
+        text: 'name'
+    },
+    regions: {
+        url: BILLING_URL + document.documentElement.lang + '/regions',
+        id: 'id',
+        text: 'name',
+        creationRouteName: 'create_region',
+        fieldClass: 'billing-region',
+        initFormFunc: function (formResponse) {
+            $('#modal-with-form-body').html(formResponse['data']['html']);
+            $('#mbhbilling_bundle_region_type_country').val($('.billing-country').val());
+            initSelect2TextForBilling('mbhbilling_bundle_region_type_country', BILLING_API_SETTINGS.countries);
+        },
+        checkable: true
+    },
+    cities: {
+        url: BILLING_URL + document.documentElement.lang + '/cities',
+        id: 'id',
+        text: 'full_name',
+        creationRouteName: 'create_city',
+        fieldClass: 'billing-city',
+        initFormFunc: function (response) {
+            $('#modal-with-form-body').html(response['data']['html']);
+            initSelect2TextForBilling('mbhbilling_bundle_city_type_country', BILLING_API_SETTINGS.countries);
+            initSelect2TextForBilling('mbhbilling_bundle_city_type_region', BILLING_API_SETTINGS.regions);
+        },
+        checkable: true
+    },
+    fmsKpp: {
+        url: BILLING_URL + document.documentElement.lang + '/fms-kpp',
+        id: 'internal_id',
+        text: 'name'
+    },
+    services: {
+        url: BILLING_URL + document.documentElement.lang + '/services/',
+        id: 'id',
+        text: 'title'
+    }
+};
+
 mbh.datarangepicker = {
     options: {
         'dateLimit': 365,
@@ -139,10 +189,10 @@ $.fn.mbhGuestSelectPlugin = function () {
             },
             dropdownCssClass: "bigdrop"
         });
-    })
+    });
 
     return this;
-}
+};
 
 $.fn.mbhOrganizationSelectPlugin = function () {
     this.each(function () {
@@ -256,7 +306,8 @@ var docReadyForms = function () {
 
 
     $('form.remember input:not(.not-remember), form.remember select:not(.not-remember), form.remember textarea:not(.not-remember)').phoenix({
-        webStorage: 'sessionStorage'
+        webStorage: 'sessionStorage',
+        namespace: 'phoenixStorage' + mbh.currentHotel
     });
 
     $(".timepicker").timepicker({
@@ -469,43 +520,36 @@ var docReadyForms = function () {
         });
     }());
 
-    //city select
     (function () {
         var citySelect = $('.citySelect');
         if (citySelect.length !== 1) {
             return;
         }
+        initSelect2TextForBilling(citySelect.get(0).id, BILLING_API_SETTINGS.cities);
+    }());
 
-        select2Text(citySelect)
-            .select2({
-                minimumInputLength: 3,
-                allowClear: true,
-                placeholder: Translator.trans("020-forms.select_city"),
-                ajax: {
-                    url: Routing.generate('hotel_city'),
-                    dataType: 'json',
-                    data: function (params) {
-                        return {
-                            query: params.term // search term
-                        };
-                    },
-                    results: function (data) {
-                        return {results: data};
-                    }
-                },
-                initSelection: function (element, callback) {
-                    var id = $(element).val();
-                    if (id !== "") {
-                        $.ajax(Routing.generate('hotel_city') + '/' + id, {
-                            dataType: "json"
-                        }).done(function (data) {
-                            callback(data);
-                        });
-                    }
-                },
+    (function () {
+        var $billingTextSelect = $('.billing-text-select');
+        $billingTextSelect.each(function (index, element) {
+            var endpointName = element.getAttribute('data-endpoint-name');
+            initSelect2TextForBilling(element.id, BILLING_API_SETTINGS[endpointName]);
+        });
+    }());
 
-                dropdownCssClass: "bigdrop"
+    (function () {
+        $('.mbh-spinner').each(function (index, element) {
+            var min = element.getAttribute('spinner-min') ? parseFloat(element.getAttribute('spinner-min')) : 0;
+            var max = element.getAttribute('spinner-max') ? parseFloat(element.getAttribute('spinner-max')) : 100000000;
+            var step = element.getAttribute('step') ? parseFloat(element.getAttribute('step')) : 1;
+            var decimals = element.getAttribute('decimals') ? parseInt(element.getAttribute('decimals'), 10) : 0;
+
+            $(element).TouchSpin({
+                min: min,
+                max: max,
+                step: step,
+                decimals: decimals
             });
+        });
     }());
 
     //order select
@@ -829,7 +873,6 @@ var select2TemplateResult = {
     };
 })(window.jQuery);
 
-
 /**
  * @author Alexandr Arofikin <sashaaro@gmail.com>
  * @param filter function
@@ -913,8 +956,9 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
 var mbhStartDate = function (e) {
     if ($('form').is('.mbh-start-date')) {
         if (!($('.begin-datepicker').val()) && !($('.end-datepicker').val())) {
-            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
+            var beginDate = moment(($('form').is('.mbh-start-date-search') ? mbh.searchBeginDate : mbh.startDatePick), "DD.MM.YYYY");
+            $('.daterangepicker-input').data('daterangepicker').setStartDate(beginDate.toDate());
+            $('.daterangepicker-input').data('daterangepicker').setEndDate(beginDate.add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
             $('.begin-datepicker').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
             $('.end-datepicker').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
         }
@@ -927,7 +971,10 @@ var disableCheckboxListen = function () {
     $disableCheckBox.on('switchChange.bootstrapSwitch', function () {
         var disableMode = !$disableCheckBox.bootstrapSwitch('state') ? 'true' : 'false';
         var routeName = $disableCheckBox.attr('data-route-name');
-        window.location.href = Routing.generate('change_room_type_enableable_mode', {disableMode: disableMode, route : routeName});
+        window.location.href = Routing.generate('change_room_type_enableable_mode', {
+            disableMode: disableMode,
+            route: routeName
+        });
     });
 };
 
@@ -937,23 +984,23 @@ function getExportButtonSettings(entityName, format, filterDataCallback) {
         text: '<i class="fa fa-file-excel-o" title="' + format + '" data-toggle="tooltip" data-placement="bottom"></i>',
         className: 'btn btn-default btn-sm',
         action: function () {
-        $.ajax({
-            url: exportUrl,
-            type:'GET',
-            success: function (response) {
-                $('<div id="template-document-csv-modal" class="modal"></div>').insertAfter($('.content-wrapper'));
-                var $modal = $('#template-document-csv-modal');
-                $modal.html(response);
-                $modal.find('select').css('width', '100%').select2();
-                $modal.modal('show');
+            $.ajax({
+                url: exportUrl,
+                type: 'GET',
+                success: function (response) {
+                    $('<div id="template-document-csv-modal" class="modal"></div>').insertAfter($('.content-wrapper'));
+                    var $modal = $('#template-document-csv-modal');
+                    $modal.html(response);
+                    $modal.find('select').css('width', '100%').select2();
+                    $modal.modal('show');
 
-                var $form = $modal.find("form");
-                $form.find('#export-send-button').click(function() {
-                    window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
-                    $modal.modal('hide');
-                });
-            }
-        });
+                    var $form = $modal.find("form");
+                    $form.find('#export-send-button').click(function () {
+                        window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
+                        $modal.modal('hide');
+                    });
+                }
+            });
         }
     }
 }
@@ -971,7 +1018,7 @@ function onHideCheckboxChange() {
             $boxFormGroups = $checkbox.closest('.box').find('.visibility-changeable').closest('.form-group');
         }
 
-        var $hideFormGroups =  $boxFormGroups.not($checkbox.closest('.form-group'));
+        var $hideFormGroups = $boxFormGroups.not($checkbox.closest('.form-group'));
         var isOn = $checkbox.bootstrapSwitch('state');
         isOn ? $hideFormGroups.show() : $hideFormGroups.hide();
     };
@@ -985,6 +1032,249 @@ function onHideCheckboxChange() {
     });
 }
 
+function addAndSetSelect2Option($select2input, value, text) {
+    $select2input
+        .append('<option value="' + value + '">' + text + '</option>')
+        .val(value)
+        .trigger('change');
+}
+
+function initSelect2TextForBilling(inputId, apiSettings) {
+    var $select2Field = select2Text($('#' + inputId));
+    var selectedValue = $select2Field.val();
+
+    $select2Field.select2({
+        minimumInputLength: 3,
+        placeholder: Translator.trans('tourist.make_a_choice'),
+        allowClear: true,
+        ajax: {
+            headers: {
+                Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+            },
+            url: apiSettings['url'] + '/',
+            dataType: 'json',
+            data: function (params) {
+                var queryParams = {
+                    search: params.term
+                };
+                if (apiSettings['checkable']) {
+                    queryParams['is_enabled'] = true;
+                    queryParams['is_checked'] = true;
+                }
+                return queryParams;
+            },
+            processResults: function (data) {
+                var options = [];
+
+                data.results.forEach(function (option) {
+                    var optionId = option[apiSettings['id']];
+
+                    //fix error because of empty text in default option
+                    if (optionId === selectedValue) {
+                        $select2Field.find('option[value="' + optionId + '"]').first().remove();
+                    }
+
+                    options.push({
+                        id: optionId,
+                        text: option[apiSettings['text']]
+                    });
+                });
+
+                return {results: options};
+            }
+        },
+        initSelection: function (element, callback) {
+            var id = $(element).val();
+            if (id) {
+                $.ajax(apiSettings['url'] + '/' + id + '/', {
+                    dataType: "json",
+                    headers: {
+                        Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+                    }
+                }).done(function (data) {
+                    var optionId = data[apiSettings['id']];
+                    var optionTitle = data[apiSettings['text']];
+
+                    if (apiSettings['checkable'] && data['is_checked'] === false) {
+                        optionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
+                    }
+
+                    var selectedOrgan = {
+                        id: optionId,
+                        text: optionTitle
+                    };
+                    callback(selectedOrgan);
+                });
+            }
+        },
+        dropdownCssClass: "bigdrop"
+    });
+}
+
+function initLabelTips() {
+    if (mbh.showLabelTips) {
+        var currentLang = document.documentElement.lang;
+        var languageSettings = (currentLang === 'ru' || (tips_en === undefined) ? tips_ru : tips_en);
+        for (var formName in languageSettings) {
+            var $form = $('form[name="' + formName + '"]');
+            $form.find('label').each(function (index, label) {
+                var fieldId = label.getAttribute('for');
+                var tipText = languageSettings[formName][fieldId];
+                if (tipText) {
+                    var span = document.createElement('span');
+                    span.classList.add('dotted-bottom-border');
+                    span.innerHTML = label.innerHTML;
+                    span.setAttribute('data-toggle', "tooltip");
+                    span.setAttribute('title', tipText);
+                    label.innerHTML = span.outerHTML;
+                }
+            });
+        }
+    }
+}
+
+function initAddTipModal() {
+    if (mbh.canAddTips) {
+        $('input,label').dblclick(function () {
+            var $tipsModal = $('#add-tips-modal');
+            var $form = $(this).closest('form');
+            var formName = $form.attr('name');
+            var inputId = this.nodeName === 'input' ? this.id : this.getAttribute('for');
+            if (!inputId) {
+                alert('Невозможно добавить подсказку к этому полю. Обратитесь к Дане, пожалуйста.');
+            } else {
+                $tipsModal.find('#tips-form-id').val(formName);
+                $tipsModal.find('#tips-field-id').val(inputId);
+                $tipsModal.modal('show');
+                setTipText(formName, inputId);
+                $('#tips-tip-lang').change(function () {
+                    setTipText(formName, inputId);
+                });
+                $('#tips-modal-save-button').click(function () {
+                    $.ajax({
+                        url: Routing.generate('add_tip'),
+                        data: $tipsModal.find('form').serialize(),
+                        success: function () {
+                            $('#tips-tip-text').val('');
+                            $tipsModal.modal('hide');
+                        },
+                        error: function () {
+                            alert('Дайте Дане по рукам! Какой-то косяк на серваке!');
+                        }
+                    });
+                });
+            }
+        });
+    }
+}
+
+function setTipText(formName, inputId) {
+    var lang = $('#tips-tip-lang').val();
+    var languageSettings = (lang === 'ru' || (typeof tips_en !== 'undefined') ? tips_ru : null);
+    var text;
+    if (languageSettings && languageSettings[formName] && languageSettings[formName][inputId]) {
+        text = languageSettings[formName][inputId];
+    } else {
+        text = '';
+    }
+
+    $('#tips-tip-text').val(text);
+}
+function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $updateButton, filterDataCallback, drawCallback) {
+    var process = false;
+    $table.dataTable({
+        serverSide: true,
+        processing: true,
+        ordering: false,
+        "drawCallback": function () {
+            process = false;
+            if (drawCallback) {
+                drawCallback();
+            }
+        },
+        "ajax": {
+            "method": "POST",
+            "url": url,
+            "data": function (requestData) {
+                process = true;
+                requestData.form = filterDataCallback ? filterDataCallback() : $form.serializeObject();
+
+                return requestData;
+            }
+        }
+    });
+
+    if ($updateButton) {
+        $updateButton.click(function () {
+            if (!process) {
+                $table.dataTable().fnDraw();
+            }
+        });
+    } else {
+        $form.find('input, select').on('change switchChange.bootstrapSwitch', function () {
+            if (!process) {
+                $table.dataTable().fnDraw();
+            }
+        });
+    }
+}
+
+function handleAddingNewBillingEntity() {
+    $('.add-billing-entity-button').click(function () {
+        var saveButton = this;
+        var $formModal = $("#modal-with-form");
+        $formModal.modal('show');
+        var $modalBody = $formModal.find('#modal-with-form-body');
+        $modalBody.html(mbh.loader.html);
+
+        var entityType = saveButton.getAttribute('data-entity-type');
+        var entitySettings = BILLING_API_SETTINGS[entityType];
+        var entityRoute = Routing.generate(entitySettings['creationRouteName']);
+        var initFormFunc = entitySettings['initFormFunc'];
+
+        $.ajax({
+            url: entityRoute,
+            method: 'GET',
+            error: function () {
+                $modalBody.html(mbh.error.html);
+            },
+            success: function (response) {
+                console.log(entityRoute);
+                initFormFunc(response);
+                saveButton.removeAttribute('disabled');
+                $('#modal-with-form-save-button').click(function () {
+                    var saveButton = this;
+                    saveButton.setAttribute('disabled', true);
+                    var entityData = $modalBody.find('form').serialize();
+                    $modalBody.html(mbh.loader.html);
+                    $.ajax({
+                        url: entityRoute,
+                        method: "POST",
+                        data: entityData,
+                        success: function (result) {
+                            saveButton.removeAttribute('disabled');
+                            if (result.success) {
+                                var entity = result['data'];
+                                var newEntitySelectOptionTitle = entity[entitySettings['text']];
+                                if (entitySettings['checkable'] !== undefined && entity['is_checked'] !== true) {
+                                    newEntitySelectOptionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
+                                }
+
+                                addAndSetSelect2Option($('.' + entitySettings['fieldClass']), entity[entitySettings['id']], newEntitySelectOptionTitle);
+                                $formModal.modal('hide');
+                            } else {
+                                initFormFunc(result);
+                            }
+                        },
+                        error: function () {
+                            $modalBody.html(mbh.error.html);
+                        }
+                    });
+                });
+            }
+        })
+    });
+}
 
 $(document).ready(function () {
     'use strict';
@@ -993,4 +1283,8 @@ $(document).ready(function () {
     mbhStartDate();
     onHideCheckboxChange();
     disableCheckboxListen();
+    initLabelTips();
+    initAddTipModal();
+    runGuides();
+    handleAddingNewBillingEntity();
 });

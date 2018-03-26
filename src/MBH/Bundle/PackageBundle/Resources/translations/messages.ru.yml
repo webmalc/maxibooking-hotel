@@ -37,6 +37,7 @@ mbhpackagebundle.view.report.invite.tip.vizy: 'Тип визы'
 mbhpackagebundle.view.report.roomtypestable.mest: мест
 mbhpackagebundle.view.report.fillingtable.itog: Итог
 form.AddressObjectDecomposedType.corpus: Корпус
+form.AddressObjectDecomposedType.structure.label: Строение
 mbhpackagebundle.view.package.accommodation.etazh: Этаж
 mbhpackagebundle.view.package.index.status.oplaty: 'Статус оплаты'
 mbhpackagebundle.view.report.usertable.itogo: Итого
@@ -92,7 +93,7 @@ mbhpackagebundle.view.tourist.editunwelcome.dobavleno: Добавлено
 mbhpackagebundle.view.package.accommodation.udaleniye.zapisi: 'Удаление записи'
 mbhpackagebundle.view.tourist.index.inostrannyye.grazhdane: 'Иностранные граждане'
 tourist.new_country_modal.country_creation: 'Добавление страны'
-tourist.new_country_modal.country_name: Название страны
+tourist.new_country_modal.country_name: 'Название страны'
 tourist.new_country_modal.close: Закрыть
 tourist.new_country_modal.add: Добавить
 form.packageGuestType.fio: ФИО
@@ -140,6 +141,7 @@ form.touristType.gender: Пол
 mbhpackagebundle.view.documents.pdftemplates.registration_card.firma: Фирма
 mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan: Выдан
 form.AddressObjectDecomposedType.country: Страна
+form.AddressObjectDecomposedType.region_id.help: 'Если регион не найден, нажмите %plusButtonHtml% для добавления'
 form.organizationType.index: Индекс
 form.AddressObjectDecomposedType.city: Город
 form.AddressObjectDecomposedType.street: Улица
@@ -165,6 +167,7 @@ csv.type.adults: Взрослых
 csv.type.children: Детей
 mbhpackagebundle.form.packagemaintype.nomer.broni: 'Номер брони'
 tourist.visa.type_number: Номер
+tourist.visa.identifier: Идентификатор
 form.packageGuestType.find_guest: 'Найти гостя'
 form.packageGuestType.placeholder_fio: 'Иванов Иван Иванович'
 form.touristType.placeholder_surname: Иванов
@@ -190,7 +193,7 @@ form.orderType.is_confirmed: 'Подтвержден?'
 form.packageAccommodationType.room_or_bed: Комната/койко-место
 form.packageAccommodationType.choose_placement: 'Информация о размещении'
 form.packageAccommodationType.are_guests_checked_in: 'Гости заехали?'
-form.packageAccommodationType.are_guests_checked_in_help: 'Заехал ли гости в номер?'
+form.packageAccommodationType.are_guests_checked_in_help: 'Заехали ли гости в номер?'
 form.packageAccommodationType.are_guests_checked_out: 'Гости выехали?'
 form.packageAccommodationType.are_guests_checked_out_help: 'Выехали ли гости из номера?'
 form.packageAccommodationType.help: 'Выехали ли гости из номера?'
@@ -285,7 +288,7 @@ form.touristType.general_info: 'Общая информация'
 form.touristType.communication_language: 'Язык общения'
 form.touristType.sex_male: Муж.
 form.touristType.sex_female: Жен.
-form.touristType.sex_unknown: '-'
+form.touristType.sex_unknown: Неизвестен
 form.touristType.address: Адрес
 form.touristType.contact_info: 'Контактная информация'
 form.touristType.placeholder_address: 'г. Москва, пр-кт Мира, д.6'
@@ -299,7 +302,7 @@ form.touristType.placeholder_phone: 'Номер телефона'
 form.touristType.email: E-mail
 form.touristType.placeholder_email: mail@example.com
 form.touristType.note: Примечание
-package.accommodaton_modal.change_room_type: Изменить тип номера
+package.accommodaton_modal.change_room_type: 'Изменить тип номера'
 package.accommodaton_modal.continue_button.text: Продолжить
 package.accommodaton_modal.chessboard_button.text: Шахматка
 form.package_accommodation_type.check_in: Заезд
@@ -363,18 +366,21 @@ controller.documentsController.action_view: Просмотр
 controller.documentsController.confirm_remove: 'Вы действительно хотите удалить файл "%filename%"?'
 controller.documentsController.alert_no_documents: 'Не загружено ни одного документа.'
 controller.generated_document_controller.document_modal_form.package_has_not_foreign: 'В данной брони нет иностранных граждан'
+controller.organization_controller.organization_successfully_created: 'Огранизация успешно создана.'
+controller.organization_controller.organization_successfully_edited: 'Организация успешно отредактирована.'
 form.organizationType.short_name: 'Краткое название'
 form.organizationType.director_fio: 'ФИО руководителя'
 form.organizationType.accountant_fio: 'ФИО бухгалтера'
 form.organizationType.inn: ИНН
 form.organizationType.kpp: КПП
 form.organizationType.registration_date: 'Дата гос.регистрации'
-form.organizationType.registration_number: 'Регистраиционный номер в ПФР'
+form.organizationType.registration_number: 'Регистрационный номер в ПФР'
 form.organizationType.activity_code: 'Код основной деятельности'
 form.organizationType.okpo_code: 'Код по ОКПО'
 form.organizationType.writer_fio: 'ФИО подписанта в род. падеже'
 form.organizationType.reason: 'Действует на основании'
 form.organizationType.city: Город
+form.organization_type.city.help: 'Если город не найден, нажмите %plusButtonHtml% для добавления'
 form.organizationType.street: Улица
 form.organizationType.house: Дом
 form.organizationType.corpus: Корпус
@@ -423,6 +429,7 @@ package.document.type_train_tickets: 'Ж/д билеты'
 package.document.type_info: Информация
 package.document.type_letter: Письмо
 package.document.type_other: Прочее
+package.document_type.tourist_age: возраст
 tourist.json.clients_in_black_list: 'Клиент в черном списке'
 tourist.json.client_not_in_black_list: 'Клиент не в черном списке'
 tourist.json.issued_date: выдан
@@ -442,6 +449,7 @@ tourist.index.foreign_citizens: 'Иностранные граждане'
 tourist.index.dates: Даты
 tourist.index.fio: ФИО
 tourist.index.main_document: 'Основной документ'
+tourist.index.button.export_to_kontur.text: 'Контур ФМС'
 tourist.index.visa: Виза
 tourist.index.migration_card: 'Миграционная карта'
 tourist.index.documents: Документы
@@ -489,7 +497,7 @@ tourist.edit.small_title: 'Редактирование гостя #'
 form.DocumentRelation.type: 'Тип документа'
 form.DocumentRelation.authority_organ: 'Код подразделения ФМС'
 form.DocumentRelation.authority: 'Орган выдачи документа'
-form.DocumentRelation.authorityOrganCode: 'Код подразделения'
+form.DocumentRelation.authority.help: 'Название или код органа выдачи документа'
 form.DocumentRelation.series: Серия
 form.DocumentRelation.number: Номер
 form.DocumentRelation.issued: 'Дата выдачи'
@@ -527,12 +535,14 @@ report.filling_table_rows.number_of_rooms: 'Номерной фонд'
 report.filling_table_rows.number_of_busy_rooms: 'Забронировано номеров'
 report.filling_table_rows.balance_on_sale: 'Остаток (в продаже)'
 report.filling_table_rows.balanse_number_of_rooms: 'Остаток (номерной фонд)'
+report.filling_table_rows.reserved_rooms_from_room_fund: 'Заполненность ном. фонда'
 report.filling_table_rows.reserved_rooms: 'Забронировано номеров %'
 report.filling_table_rows.number_of_rooms_without_payment: 'Номера без оплаты (брони)'
 report.filling_table_rows.total_number_of_guests: 'Гостей всего'
 report.filling_table_rows.guests_per_room: 'Гостей на 1 номер'
 report.filling_table_rows.cost_of_living: 'Стоимость проживания'
 report.filling_table_rows.cost_of_services: 'Стоимость услуг'
+report.filling_table_rows.average_price_for_room_night_realtion: 'Ср.цена за номер/ночь'
 report.filling_table_rows.total_cost: 'Общая стоимость'
 report.filling_table_rows.received_in_fact: 'Получено фактически'
 report.filling_table_rows.received_in_fact_in_percents: 'Получено фактически %'
@@ -610,6 +620,13 @@ tourist.migration.type_series: Серия
 tourist.migration.type_representative: 'Сведения о законных представителях'
 tourist.migration.type_address: 'Адрес прежнего места пребывания'
 tourist.visa.type_type: Тип
+tourist.visa.multiplicity_type.label: Кратность
+tourist.visa.visa_category.label: 'Категория визы'
+tourist.visa.visit_purpose.label: 'Цель поездки'
+tourist.visa.special_status.label: 'Участник гос. программы'
+tourist.visa.entry_goal.label: 'Цель въезда'
+tourist.visa.fms_kpp_id.label: 'КПП въезда'
+tourist.visa.fms_kpp_id.help: 'Название или код КПП'
 tourist.visa.type_series: Серия
 tourist.visa.type_profession: Профессия
 tourist.visa.arrival_time: 'Дата въезда'
@@ -694,11 +711,11 @@ manager.channel_manager.oktogo: Oktogo
 manager.channel_manager.expedia: Expedia
 manager.channel_manager.hotels: Hotels
 manager.channel_manager.venere: Venere
-validator.form.image.min.error: Превышено минимальное значение
-validator.form.image.max.error: Превышено максимальное занчение
-validator.form.image.type.error: Не корректное значение данных
-csv.type.package: Тип брони
-csv.type.order.type: Тип заказа
+validator.form.image.min.error: 'Превышено минимальное значение'
+validator.form.image.max.error: 'Превышено максимальное занчение'
+csv.type.package: 'Тип брони'
+csv.type.order.type: 'Канал продаж'
+csv.type.order.source: 'Источник продаж'
 csv.type.begin: С
 csv.type.end: По
 csv.type.tariffAccomodation: Размещение
@@ -779,12 +796,11 @@ modal.chessBoard.end: 'Дата выезда'
 modal.chessBoard.payer: Плательщик
 controller.chessboard.package_create.success: 'Бронь успешно создана'
 controller.chessboard.package_update.success: 'Бронь успешно обновлена'
-controller.chessboard.package_remove.success: 'Бронь успешно удалена'
 controller.chessboard.accommodation_update.success: 'Размещение успешно изменено'
 controller.chessboard.accommodation_divide.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет размещена в номере %roomName%'
 controller.chessboard.accommodation_remove.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет без размещения'
 controller.chessboard.can_not_change_room_type_for_package_with_accommodations: 'Нельзя изменить тип номера для брони, имеющей размещения'
-controller.chessboard.accommodation_divide.error: 'Дата разделения размещение не может быть меньше начала размещения или больше конца размещения'
+controller.chessboard.accommodation_divide.error: 'Дата разделения размещения не может быть меньше начала размещения или больше конца размещения'
 controller.chessboard.accommodation_divide.error.empty_date_string: 'Передана пустая строка даты разделения размещения'
 controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: 'Ошибка! Недопустимо изменение промежуточного размещения'
 controller.chessboard.payer: Плательщик
@@ -793,7 +809,7 @@ chessboard_manager.size_slider.title: Масштаб
 chessboard_manager.room_type.title: 'Тип номера'
 chessboard_manager.housing.title: Корпус
 chessboard_manager.floor.title: Этаж
-chessboard_manager.filter.button.text: Выбрать
+chessboard_manager.filter.button.text: Применить
 chessboard_manager.without_accommodation.tile.text: 'Без размещения'
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
 accommodation_manipulator.error.edited_room_busy: 'Невозможно изменить размещение, так как в указанные дни комната "%roomName%" занята.'
@@ -825,6 +841,8 @@ package.guest.add_more: 'Добавить ещё'
 package.index.dates: Даты
 package.index.room_type: 'Тип номера'
 package.index.package_type: 'Тип брони'
+package.index.filter.package_source.title: 'Источник продаж'
+package.index.filter.package_source.placeholder: 'Источник продаж'
 package.index.payment_status: 'Статус оплаты'
 package.late_early_check_modal.add_new_service: 'Добавить новую услугу'
 package.late_early_check_modal.quantity: Количество
@@ -846,7 +864,7 @@ modal.form.delete.delete_reason_package: 'Причина удаления бро
 delete_reasons.index.yes: Да
 delete_reasons.index.no: Нет
 windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'
-controller.packageController.record_edited_success_services: 'Даты услуг измены вместе с бронью'
+controller.packageController.record_edited_success_services: 'Даты услуг изменены вместе с бронью'
 search.index.search_submit_button.title: Найти
 search.results.number_of_places: мест
 search.results.all_tariffs: 'Все тарифы'
@@ -872,6 +890,8 @@ report.filling.filling_table.total: Итог
 report.filling.filling_table.number_of_places: мест
 report.filling.filling.dates: Даты
 report.filling.filling.room_types: 'Тип номера'
+report.filling.filling.room_status: 'Статус комнаты'
+report.filling.filling.only_enabled: 'Только влюченные?'
 report.polls_view.number_of_order: Заказ
 report.polls_view.hotel: Отель
 report.polls: Даты
@@ -1208,9 +1228,52 @@ mbhpackagebundle.view.report.workshiftlist.status: Статус
 mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny: 'Не найдено ни одной рабочей смены'
 mbhpackagebundle.view.report.workshiftlist.rabochaya_smena: 'Рабочая смена'
 mbhpackagebundle.view.tourist.jsonbuttons.udaleniye.zapisi: 'Удаленные записи'
-validator.form.image.min.error: Превышено минимальное значение
-validator.form.image.max.error: Превышено максимальное занчение
-validator.form.image.type.error: Не корректное значение данных
+validator.form.image.type.error: 'Некорректное значение данных'
 mbh.package_bundle.fixtures.delete_reason_data.denial: Отказ
 mbh.package_bundle.fixtures.delete_reason_data.error: Ошибка
 mbh.package_bundle.fixtures.delete_reason_data.rebooking: Перебронирование
+report.packages_daily_report_compiler.non_cash_receipts: 'Приход безнал'
+report.packages_daily_report_compiler.cash_receipts: 'Приход наличные'
+report.packages_daily_report_compiler.cancellation_of_unpaid_packages: 'Аннуляция неоплаченных броней'
+report.packages_daily_report_compiler.receivables_not_paid_vouchers: 'Дебиторская задолженность неоплаченных путевок'
+report.packages_daily_report_compiler.receivables_partially_paid_vouchers: 'Дебиторская задолженность частично оплаченных путевок'
+report.packages_daily_report_compiler.cash_debt: 'Кредиторская задолженность наличные'
+report.packages_daily_report_compiler.non_cash_debt: 'Кредиторская задолженность б/н'
+report.packages_daily_report_compiler.number_of_packages: 'Количество броней за день'
+report.packages_daily_report_compiler.sum_for_day: 'Сумма броней за день'
+report.packages_daily_report_compiler.total_sum_for_day: 'Всего за день'
+report.packages_daily_report_compiler.sum_for_packages: 'Приход за брони'
+report.packages_daily_report_compiler.cancellation_for_packages: 'Аннуляция за брони'
+report.packages_daily_report_compiler.return_for_packages: 'Вернули за брони'
+views.report.packages_daily_report.title: 'Денежные средства'
+views.report.packages_daily_report.mail_title: 'Отчет по денежным средствам'
+views.report.packages_daily_report.dates_input.title: 'Даты бронирования'
+views.report.packages_daily_report.calculation_dates.title: 'Даты проживания'
+views.report.packages_daily_report.hotels.title: Отели
+views.report.packages_daily_report.hotels.placeholder: Отели
+views.report.packages_daily_report.update_button: Применить
+views.report.distribution_report.group_by.by_arrival_date: 'По дате заезда'
+views.report.distribution_report.group_by.by_departure_date: 'По дате выезда'
+views.report.distribution_report.packages_types.actual: Актуальные
+views.report.distribution_report.packages_types.all: Все
+views.report.distribution_report.packages_types.deleted: Удаленные
+views.report.distribution_report.creation_date.title: 'Дата создания'
+distribution_by_days_report.title.number_of_packages: 'Кол-во броней'
+distribution_by_days_report.title.sum: Сумма
+distribution_by_days_report.title: Заезд/Выезд
+distribution_by_days_report.title.relative_value: '% соотношение'
+distribution_by_days_report.days_of_week_abbr.mon: Пн
+distribution_by_days_report.days_of_week_abbr.tue: Вт
+distribution_by_days_report.days_of_week_abbr.wed: Ср
+distribution_by_days_report.days_of_week_abbr.thu: Чт
+distribution_by_days_report.days_of_week_abbr.fri: Пт
+distribution_by_days_report.days_of_week_abbr.sat: Сб
+distribution_by_days_report.days_of_week_abbr.sun: Вс
+distribution_by_days_report.total_row: Итого
+mbh.analytics.types.sales_packages: 'Динамика продаж по количеству броней'
+mbh.analytics.types.sales_cash: 'Динамика продаж по стоимости броней'
+mbh.analytics.types.sales_cash_documents: 'Динамика продаж в полученных деньгах'
+mbh.analytics.types.sales_sources: 'Источники продаж'
+mbh.analytics.types.hotel_occupancy: 'Заполняемость отеля'
+mbh.analytics.types.sales_services: 'Динамика реализации услуг'
+mbh.analytics.types.sales_managers: 'Менеджеры и брони'

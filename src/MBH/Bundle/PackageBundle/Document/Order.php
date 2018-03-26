@@ -137,7 +137,7 @@ class Order extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      * @ODM\Index()
      */
@@ -146,7 +146,7 @@ class Order extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      * @ODM\Index()
      */
@@ -266,6 +266,7 @@ class Order extends Base
     {
         $this->packages = new ArrayCollection();
         $this->documents = new ArrayCollection();
+        $this->cashDocuments = new ArrayCollection();
     }
 
     public static function getOnlinePaymentTypesList()
@@ -1018,5 +1019,23 @@ class Order extends Base
     public static function getChannelManagerNames()
     {
         return AbstractChannelManagerService::CHANNEL_MANAGER_NAMES;
+    }
+
+    /**
+     * @return array
+     */
+    public function getJsonSerialized()
+    {
+        $packages = array_map(function(Package $package) {
+            return $package->getJsonSerialized();
+        }, $this->getPackages()->toArray());
+
+        return [
+            'id' => $this->getId(),
+            'note' => $this->getNote(),
+            'mainTourist' => $this->getMainTourist()->jsonSerialize(),
+            'price' => $this->getPrice(),
+            'packages' => $packages
+        ];
     }
 }

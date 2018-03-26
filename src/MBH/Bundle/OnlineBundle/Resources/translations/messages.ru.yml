@@ -16,7 +16,7 @@ form.formType.hotels_desc: 'Отели используемые в онлайн 
 form.formType.hotels_placeholder: 'Все отели'
 form.formType.parameters: Параметры
 form.formType.use_online_form: 'Использовать ли онлайн форму?'
-form.formType.room_types: 'Типы номеров?'
+form.formType.room_types: 'Показывать номера?'
 form.formType.should_we_use_room_type_field_in_online_form: 'Использовать ли поле "Тип номера" в онлайн форме?'
 form.formType.are_there_guests: 'Гости?'
 form.formType.should_we_use_guests_amount_field_in_online_form: 'Использовать ли поле "Количестов гостей" в онлайн форме?'
@@ -27,6 +27,16 @@ form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: 'Ис�
 form.formType.payment: Оплата
 form.formType.max_packages.help: 'Максимальное количество броней доступных для бронирования за раз'
 form.formType.max_packages.label: 'Максимальное количество броней'
+form.formType.pers_data_policies_url.label: 'Страница политики обработки персональных данных'
+form.formType.pers_data_policies_url.help: 'URL страницы с Политикой обработки персональных данных'
+form.formType.is_request_inn.label: 'Данные об ИНН'
+form.formType.is_request_inn.kaz.label: 'Данные об ИИН'
+form.formType.is_request_inn.help: 'Запрашивать ли при бронировании данные об ИНН туриста?'
+form.formType.is_request_inn.kaz.help: 'Запрашивать ли при бронировании данные об ИИН туриста?'
+form.formType.is_request_tourist_document_number.label: 'Номер документа'
+form.formType.is_request_tourist_document_number.help: 'Запрашивать ли при бронировании данные о номере удостоверения личности/паспорта туриста?'
+form.formType.is_request_tourist_patronymic.label: Отчество
+form.formType.is_request_tourist_patronymic.help: 'Запрашиать ли при бронировании отчество туриста'
 form.formType.room_type_choices: 'Типы номеров'
 form.formType.room_type_choices_desc: 'Типы номеров доступные для бронирования'
 form.formType.payment_type: 'Типы оплаты'
@@ -40,34 +50,33 @@ controller.apiController.thank_you: 'Большое спасибо. '
 controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.<br>'
 controller.apiController.your_order_number: 'Номер вашего заказа: '
 controller.formController.settings_saved_success: 'Настройки успешно сохранены.'
-controller.formController.frame_sizes_changed: 'Изменены значения размеров онлайн-формы. Обновите код формы на сайте.'
-
+controller.formController.frame_sizes_changed: 'Изменены значения размеров онлайн-формы.  Обновите код формы на сайте.'
 form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
 online_invite.voting_code: 'Код голосования для вставки на сайт'
 form.formType.css_label: css
+form.formType.is_horizontal.label: 'Горизонтальная?'
+form.formType.is_horizontal.help: 'Поля формы расположены в одну линию?'
 form.formType.css: Оформление
 form.formType.css_help: 'Дополнительные css-стили для онлайн формы'
 form.formType.js_label: javascript
 form.formType.js_group: Javascript
-form.formType.theme_label: 'Тема'
+form.formType.theme_label: Тема
 form.formType.resultsUrl_label: 'Страница результатов'
 form.formType.resultsUrl_help: 'URL страницы для вывода результатов поиска'
+form.formType.frame_width.is_full_width.label: 'На всю ширину?'
+form.formType.frame_width.is_full_width.help: 'Форма занимает 100% свободного места'
 form.formType.resultsUrl_label: 'Страница результатов'
 form.formType.resultsUrl_help: 'URL страницы для вывода результатов поиска'
-form.formType.frame_width.is_full_width.label: На всю ширину?
-form.formType.frame_width.is_full_width.help: Форма занимает 100% свободного места
-form.formType.frame_width.label: Ширина
-form.formType.frame_width.help: Ширина фрейма
+form.formType.frame_width.label: 'Ширина'
+form.formType.frame_width.help: 'Ширина фрейма'
 form.formType.frame_height.label: Высота
-form.formType.frame_height.help: Высота фрейма
-form.formType.label.css_libraries: CSS библиотеки
-form.formType.help.css_libraries: Подключение дополнительных css библиотек
-
+form.formType.frame_height.help: 'Высота фрейма'
+form.formType.label.css_libraries: 'CSS библиотеки'
+form.formType.help.css_libraries: 'Подключение дополнительных css библиотек'
 form.formType.template: Шаблоны
-form.formType.template_label: Шаблон формы
-form.formType.template_help: Шаблон формы поиска
-
+form.formType.template_label: 'Шаблон формы'
+form.formType.template_help: 'Шаблон формы поиска'
 onlinebundle.resources.views.hotels: Отели
 onlinebundle.resources.views.room_types: 'Типы номеров'
 onlinebundle.resources.views.guests: Гости
@@ -102,6 +111,18 @@ payment_types.in_hotel: 'Оплата при заселении'
 payment_types.online_full: 'Онлайн оплата (100%)'
 payment_types.online_first_day: 'Онлайн оплата (одни сутки)'
 payment_types.online_half: 'Онлайн оплата (50%)'
+payment_types.by_receipt_full: 'Оплата по счету через банк (100%)'
+payment_types.by_receipt_half: 'Оплата по счету через банк (50%)'
+payment_types.by_receipt_first_day: 'Оплата по счету через банк (одни сутки)'
+payment_types.by_receipt: 'Оплата по счету через банк'
+external_api_controller.online_form_config.not_found: 'Онлайн формы с ID = "%formId%" не существует'
+external_api_controller.online_form_config.not_enabled: 'Указанная онлайн-форма недоступна'
+external_api_controller.missing_fields.error: 'Отсутствует обязательно поле "%field%"'
+external_api_controller.field_must_be_type_of_array: 'Поле "%field%" должно быть массивом'
+external_api_controller.error.hotel_with_specified_id_not_exists: 'Отеля с ID = "%hotelId%" не существует'
+external_api_controller.error.specified_room_type_not_contains_in_form_config: 'Тип номера с ID = "%roomTypeId%" не указан в списке типов номеров конфигурации указанной онлайн-формы'
+external_api_controller.error.specified_hotel_not_contains_in_form_config: 'Отель с ID = "%hotelId%" не указан списке отелей конфигурации указанной онлайн-формы'
+external_api_controller.error.room_type_with_specified_id_not_exists: 'Тип комнат с ID = "%roomTypeId%" не существует'
 
 #booking confirmation
 booking_confirmation.order_successfull_created: Заказ успешно создан.

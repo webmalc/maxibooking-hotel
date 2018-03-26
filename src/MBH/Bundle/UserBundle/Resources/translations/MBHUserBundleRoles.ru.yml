@@ -9,6 +9,7 @@ ROLE_USER: Пользователь
 ROLE_READ_ONLY: Гость
 ROLE_BASE_USER: 'Базовый пользователь'
 ROLE_DASHBOARD: 'Системные сообщения'
+ROLE_PAYMENT_CARD_INFO: 'Информация о платежной карте'
 ROLE_STAFF: 'Обслуживающий персонал'
 ROLE_CLEANING: Уборка
 ROLE_COOKING: Кухня
@@ -122,6 +123,8 @@ ROLE_ONLINE_FORM_DELETE: 'Удаление онлайн форм'
 ROLE_POLLS: Голосования
 ROLE_REPORTS: Отчеты
 ROLE_ANALYTICS: Аналитика
+ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT: 'Отчет "Заезд/Выезд"'
+ROLE_DAILY_REPORT_BY_PACKAGES: 'Отчет "Денежные средства"'
 ROLE_PACKAGE: Брони
 ROLE_SEARCH: Подбор
 ROLE_PACKAGE_VIEW: 'Просмотр брони'
@@ -139,18 +142,24 @@ ROLE_PACKAGE_DELETE: 'Удаление брони'
 ROLE_PACKAGE_VIEW_ALL: 'Просмотр любой брони'
 ROLE_PACKAGE_EDIT_ALL: 'Редактирование любой брони'
 ROLE_PACKAGE_DELETE_ALL: 'Удаление любой брони'
-ROLE_PACKAGE_DOCS: 'Документы заказа'
 ROLE_ORDER_AUTO_CONFIRMATION: 'Автоподтверждение заказа'
 ROLE_PACKAGE_PRICE_EDIT: 'Редактирование цены брони'
 ROLE_INDIVIDUAL_PROMOTION_ADD: 'Добавление индивидуальной акции'
 ROLE_PROMOTION_ADD: 'Добавление акции'
+ROLE_SPECIAL: Спецпредложения
+ROLE_SPECIAL_ADD: 'Добавление спецпредложений'
+ROLE_SPECIAL_VIEW: 'Просмотр спецпредложений'
+ROLE_SPECIAL_NEW: 'Добавление спецпредложений'
+ROLE_SPECIAL_EDIT: 'Редактирование спецпредложений'
+ROLE_SPECIAL_DELETE: 'Удаление спецпредложений'
 ROLE_FORCE_BOOKING: 'Принудительное бронирование'
+ROLE_NO_OWN_ONLINE_VIEW: 'Просмотр броней, созданных не пользователем'
 ROLE_PACKAGE_DELETE_REASON: 'Причина удаления брони'
 ROLE_PRICE_SUMMARY: 'Просмотр итоговых значений броней по суммам'
 ROLE_TOURIST: Клиенты
 ROLE_TOURIST_REPORT: 'Отчет по клиентам'
 ROLE_PORTER_REPORT: 'Отчет портье'
-ROLE_ACCOMMODATION_REPORT: 'Шахматка'
+ROLE_ACCOMMODATION_REPORT: Шахматка
 ROLE_SERVICES_REPORT: 'Отчет по услугам'
 ROLE_ORGANIZATION: Организации
 ROLE_MANAGERS_REPORT: 'Отчет по менеджерам'
@@ -247,3 +256,9 @@ ROLE_RESTAURANT_TABLE_ITEM_DELETE: 'Удалить стул'
 ROLE_RESTAURANT_TABLE_CATEGORY_NEW: 'Добавить категорию'
 ROLE_RESTAURANT_TABLE_CATEGORY_EDIT: 'Редактировать категорию'
 ROLE_RESTAURANT_TABLE_CATEGORY_DELETE: 'Удалить категорию'
+ROLE_DYNAMIC_SALES: 'Динамика продаж'
+ROLE_DYNAMIC_SALES_VIEW: 'Отчет продаж'
+ROLE_PERSONAL_ACCOUNT: 'Личный кабинет'
+ROLE_PASSWORD: 'Личный кабинет - Пароль'
+ROLE_PAYMENTS: 'Личный кабинет — Платежи'
+ROLE_PACKAGE_DOCS: 'Документы заказа'

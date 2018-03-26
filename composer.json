@@ -16,7 +16,7 @@
   "require": {
     "php": ">=7.1.0",
     "alcaeus/mongo-php-adapter": "1.*@stable",
-    "symfony/symfony": "3.*@stable",
+    "symfony/symfony": "3.3.*@stable",
     "twig/twig": "*@stable",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
@@ -41,7 +41,7 @@
     "jms/security-extra-bundle": "*@stable",
     "ob/highcharts-bundle": "*@stable",
     "knplabs/knp-snappy-bundle": "*@stable",
-    "liip/imagine-bundle": "*@stable",
+    "liip/imagine-bundle": "1.9.1",
     "jms/di-extra-bundle": "*@stable",
     "liuggio/excelbundle": "^2.0@dev",
     "ornicar/gravatar-bundle": "^1.1@dev",
@@ -59,7 +59,16 @@
     "willdurand/js-translation-bundle": "^2.6",
     "vich/uploader-bundle": "^1.4",
     "theofidry/psysh-bundle": "3.0.0",
-    "mongodb/mongodb": "^1.1"
+    "mongodb/mongodb": "^1.1",
+    "symfony/dotenv": "^4.0",
+    "maennchen/zipstream-php": "^0.5.1",
+    "aws/aws-sdk-php": "^3.48",
+    "oneup/flysystem-bundle": "@stable",
+    "league/flysystem-aws-s3-v3": "^1.0",
+    "knplabs/knp-gaufrette-bundle": "~0.5",
+    "stripe/stripe-php": "^5.7",
+    "symfony/workflow": "3.4.*@stable",
+    "sentry/sentry": "^1.8"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

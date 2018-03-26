@@ -109,7 +109,7 @@
     </div>
     {% if hotel and hotel.logoImage %}
         <div class="logo">
-            <img src="{{ asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80')) }}">
+            <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80'))) }}">
         </div>
     {% endif %}
     <div style="clear: both"></div>
@@ -121,8 +121,8 @@
     <p class="indent">
         <strong>{{ package.address.name }}</strong>, {{ "package.pdf.with_an_address"|trans({}, "MBHPackageBundle") }}
         {{ "package.pdf.address"|trans({}, "MBHPackageBundle") }}
-        : {% if package.address and package.address.country and package.address.city and package.address.street %}
-        {{ package.address.country.title }}, {% if package.address.region %}{{ package.address.region.title }},{% endif %} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.city.title }}{% if package.address.settlement is defined %}, {{ package.address.settlement }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.street }},
+        : {% if package.address and package.address.countryTld and package.address.cityId and package.address.street %}
+        {{ get_country(package.address.countryTld).name }}, {% if package.address.regionId %}{{ get_region(package.address.regionId).name }},{% endif %} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}. {{ get_city(package.address.cityId).name}}{% if package.address.settlement is defined %}, {{ package.address.settlement }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.street }},
         {% if package.address.house %} {{ "package.pdf.short_home_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.house }}{% endif %}{% if package.address.corpus %}, {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.corpus }}{% endif %}{% if package.address.flat %}, {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.flat }}{% endif %}{% else %}_________________________________________{% endif %}
         ,
         {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if package.address.inn is defined %}{{ package.address.inn }}{% else %}________________________{% endif %}
@@ -156,8 +156,8 @@
                 <td style="width: 20px">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.adres'|trans }} </td>
                 <td>
                     <div class="area">&nbsp
-                        {% if tourist and tourist.addressObjectDecomposed %}
-                            {{ tourist.addressObjectDecomposed.country }}, {{ tourist.addressObjectDecomposed.region }}{% if tourist.addressObjectDecomposed.city %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
+                        {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.countryTld and tourist.addressObjectDecomposed.regionId %}
+                            {{ get_country(tourist.addressObjectDecomposed.countryTld).name }}, {{ get_region(tourist.addressObjectDecomposed.regionId).name }}{% if tourist.addressObjectDecomposed.city %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
                             {{ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans }}. {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.kor'|trans }}. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.kv'|trans }}. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
                         {% endif %}
                         {% endif %}
@@ -172,7 +172,7 @@
                 <td>{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.tip.dokumenta'|trans }} </td>
                 <td style="width: 45%">
                     <div class="area">
-                        &nbsp{% if documentRelation and documentRelation.type %}{{ vegaDocumentTypes[documentRelation.type] }}{% endif %}</div>
+                        &nbsp{% if documentRelation and documentRelation.type %}{{ documentTypes[documentRelation.type] }}{% endif %}</div>
                 </td>
 
                 <td>{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.seriya'|trans }} </td>
@@ -239,7 +239,7 @@
                 <tr>
                     <td align="center">{{ counter }}</td>
                     <td>
-                        {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace('_', '.') }}
+                        {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace({'_': '.'}) }}
                         {% if package.roomType and package.roomType.fullTitle %}
                             ({{ package.roomType.fullTitle }})
                         {% endif %}
@@ -279,7 +279,7 @@
     </table>
 
     <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ package.services|length + packages|length }}
-        , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}
+        , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text|trans }}
         <br>
         <strong>{{ total|num2str|capitalize }}</strong>
     </p>
@@ -312,10 +312,10 @@
     </table>
 
 
-    {% if hotel.organization and hotel.organization.stamp %}
-        <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px"
-             src="{{ hotel.organization.stamp }}">
-    {% endif %}
+    {#{% if hotel.organization and hotel.organization.stamp %}#}
+        {#<img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px"#}
+             {#src="{{ hotel.organization.stamp }}">#}
+    {#{% endif %}#}
 
     <style>
         .signatures {

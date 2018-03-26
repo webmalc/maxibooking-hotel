@@ -10,10 +10,8 @@ use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
 class ExpediaPackageInfo extends AbstractPackageInfo
 {
-
     /** @var ExpediaConfig $config */
     private $config;
-
     /**
      * Данные о брони, в виде объекта SimpleXMLElement
      * @var \SimpleXMLElement $orderDataXMLElement
@@ -47,6 +45,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         $this->packageDataXMLElement = $packageData;
         $this->tariffs = $tariffs;
         $this->roomTypes = $roomTypes;
+
         return $this;
     }
 
@@ -66,14 +65,24 @@ class ExpediaPackageInfo extends AbstractPackageInfo
      */
     public function getPrices() {
         if (!$this->isPricesInit) {
+            $helper = $this->container->get('mbh.helper');
             foreach ($this->packageDataXMLElement->PerDayRates->PerDayRate as $perDayRate) {
                 /** @var \SimpleXMLElement $perDayRate */
-                $currentDate = \DateTime::createFromFormat('Y-m-d', $perDayRate->attributes()['stayDate']);
-                $price = (float)$perDayRate->attributes()['baseRate'];
+                $currentDate = $helper->getDateFromString($perDayRate->attributes()['stayDate'], 'Y-m-d');
+                $baseRate = (float)$perDayRate->attributes()['baseRate'];
+                $extraPersonFee = isset($perDayRate->attributes()['extraPersonFees'])
+                    ? (float)$perDayRate->attributes()['extraPersonFees']
+                    : 0;
+                $hotelServicesFees = isset($perDayRate->attributes()['hotelServiceFees'])
+                    ? (float)$perDayRate->attributes()['hotelServiceFees']
+                    : 0;
+
+                $price = $baseRate + $extraPersonFee + $hotelServicesFees;
                 $this->prices[] = new PackagePrice($currentDate, $price, $this->getTariff());
             }
             $this->isPricesInit = true;
         }
+
         return $this->prices;
     }
 
@@ -110,6 +119,8 @@ class ExpediaPackageInfo extends AbstractPackageInfo
             $serviceTariffId = $this->getPackageCommonData('ratePlanID');
             if (isset($this->tariffs[$serviceTariffId])) {
                 $this->tariff = $this->tariffs[$serviceTariffId]['doc'];
+            } elseif (isset($this->tariffs[$serviceTariffId . 'A'])) {
+                $this->tariff = $this->tariffs[$serviceTariffId . 'A']['doc'];
             } else {
                 $this->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
                     [
@@ -166,15 +177,26 @@ class ExpediaPackageInfo extends AbstractPackageInfo
             /** @var PackagePrice $packagePrice */
             $totalPrice += $packagePrice->getPrice();
         }
+
         return $totalPrice;
     }
 
     public function getNote()
     {
+        foreach ($this->packageDataXMLElement->PerDayRates->PerDayRate as $perDayRate) {
+            if (isset($perDayRate->attributes()['promoName'])) {
+                $promoName = (string)$perDayRate->attributes()['promoName'];
+                $this->addPackageNote($promoName,
+                    $this->translator->trans('package_info.expedia.promoName',
+                        ['%dateString%' => (string)$perDayRate->attributes()['stayDate']]));
+            }
+        }
+
         foreach ($this->packageDataXMLElement->GuestCount->Child as $childNode) {
             /** @var \SimpleXMLElement $childNode */
             $this->addPackageNote($childNode->attributes()['age'], $this->translator->trans('package_info.expedia.child_age'));
         }
+
         return $this->note;
     }
 

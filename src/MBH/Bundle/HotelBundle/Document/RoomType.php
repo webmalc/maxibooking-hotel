@@ -16,6 +16,7 @@ use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as ChannelManagerValidator;
 
 /**
@@ -51,6 +52,7 @@ class RoomType extends Base implements RoomTypeInterface
     use InternableDocument;
 
     /**
+     * @var Hotel
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
      * @Assert\NotNull(message="validator.document.roomType.hotel_in_not_select")
      * @ODM\Index()
@@ -157,6 +159,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @var string
+     * @deprecated
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */
@@ -165,7 +168,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
@@ -188,7 +191,7 @@ class RoomType extends Base implements RoomTypeInterface
     private $taskSettings;
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $facilities = [];
     /**
@@ -668,7 +671,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @return bool
      */
-    public function getIsSmoking(): ?bool
+    public function isIsSmoking(): ?bool
     {
         return $this->isSmoking;
     }
@@ -753,5 +756,65 @@ class RoomType extends Base implements RoomTypeInterface
         return $result;
     }
 
+    /**
+     * @param UploaderHelper $helper
+     * @param $domain
+     * @return array
+     */
+    public function getRoomTypePhotoData(UploaderHelper $helper, $domain)
+    {
+        $imagesData = [];
+        /** @var Image $image */
+        foreach ($this->getOnlineImages() as $image) {
+            $roomTypeImageData = ['isMain' => $image->getIsDefault()];
+            $roomTypeImageData['url'] = 'https://' . $domain . '/' . $helper->asset($image, 'imageFile');
+            if ($image->getWidth()) {
+                $roomTypeImageData['width'] = (int)$image->getWidth();
+            }
+            if ($image->getHeight()) {
+                $roomTypeImageData['height'] = (int)$image->getHeight();
+            }
+            $imagesData[] = $roomTypeImageData;
+        }
 
+        return $imagesData;
+    }
+
+    /**
+     * @param bool $isFull
+     * @param null $domain
+     * @param UploaderHelper|null $helper
+     * @return array
+     */
+    public function getJsonSerialized($isFull = false, $domain = null, UploaderHelper $helper = null)
+    {
+        $data = [
+            'id' => $this->getId(),
+            'isEnabled' => $this->getIsEnabled(),
+            'hotel' => $this->getHotel()->getId(),
+            'title' => $this->getFullTitle(),
+            'internalTitle' => $this->getTitle(),
+            'description' => $this->getDescription() ?? '',
+            'numberOfPlaces' => $this->getPlaces(),
+            'numberOfAdditionalPlaces' => $this->getAdditionalPlaces(),
+            'places' => $this->getPlaces(),
+            'additionalPlaces' => $this->getAdditionalPlaces()
+        ];
+        if ($isFull) {
+            $comprehensiveData = [
+                'isSmoking' => $this->isIsSmoking(),
+                'isHostel' => $this->getIsHostel(),
+                'facilities' => $this->getFacilities(),
+            ];
+            if ($this->getRoomSpace()) {
+                $comprehensiveData['roomSpace'] = $this->getRoomSpace();
+            }
+            if (!is_null($helper)) {
+                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($helper, $domain);
+            }
+            $data = array_merge($data, $comprehensiveData);
+        }
+
+        return $data;
+    }
 }

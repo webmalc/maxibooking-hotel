@@ -76,30 +76,38 @@ form.myallocatorType.password_desc: 'Пароль для доступа в ли�
 form.myallocatorType.isEnabled: 'Включен?'
 form.myallocatorType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
 form.myallocatorType.hotels: Отели
-controller.myallocatorController.settings_saved_success: Настройки успешно сохранены
-controller.myallocatorController.invalid_credentials: Неверные логин/пароль для от личного кабинета
-
-#expedia
+controller.myallocatorController.settings_saved_success: 'Настройки успешно сохранены'
+controller.myallocatorController.invalid_credentials: 'Неверные логин/пароль для от личного кабинета'
+view.myallocator.tariff.need_fill_main_settings: 'Необходимо сначала заполнить основные настройки.'
+view.myallocator.tariff.need_bind_to_mb: 'Channel Manager должен быть прикреплен в МаксиБукинг в Основных настройках'
+view.myallocator.layout.additional_channels: 'Дополнительные каналы'
+view.myallocator.index.cm_bind_tomb: 'Channel Manager был успешно прикреплен к МксиБукинг'
+view.myallocator.index.remove_user: 'Удалить пользователя'
+view.myallocator.index.choose_hotel: 'Выберите соответствующий отель в поле ниже для связи с МаксиБукинг'
+view.myallocator.index.enter_login_and_pass: 'Введите свой логин и пароль для подключения изначального канала к MaxiBooking'
+view.myallocator.room.need_fill_main_settings: 'Необходимо сначала заполнить основные настройки.'
+view.myallocator.room.need_bind_to_mb: 'Channel manager должен быть прикреплен к MaxiBooking на вкладке «Общие настройки»'
 controller.expediaController.settings_saved_success: 'Настройки успешно сохранены.'
-services.expedia.invalid_tariff_id: Тариф для данной брони не синхронизирован с тарифом Maxibooking
-services.expedia.nor_one_tariff: Не найдено ни одного тарифа для данного отеля
-services.expedia.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking
-services.expedia.nor_one_room_type: Не найдено ни одного типа комнат для данного отеля
-services.expedia.invalid_authorization_data: Введены некорректные имя пользователя или пароль
-services.expedia.booking_notification.error: Ошибка в оповещении сервиса о принятия заказа
-form.expedia.isEnabled: Включен?
-form.expedia.should_we_use_in_channel_manager: Использовать ли в Channel manager?
-form.expedia.hotel_id: ID отеля
-form.expedia.hotel_id.help: ID отеля в Expedia Partner Central
+controller.expediaController.old_ordes_sync_start: 'Синхронизация броней успешно запущена. Уведомления о бронях придет на email.'
+services.expedia.invalid_tariff_id: 'Тариф для данной брони не синхронизирован с тарифом Maxibooking'
+services.expedia.nor_one_tariff: 'Не найдено ни одного тарифа для данного отеля'
+services.expedia.invalid_room_type_id: 'Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking'
+services.expedia.nor_one_room_type: 'Не найдено ни одного типа комнат для данного отеля'
+services.expedia.invalid_authorization_data: 'Введены некорректные имя пользователя или пароль'
+services.expedia.booking_notification.error: 'Ошибка в оповещении сервиса о принятия заказа'
+form.expedia.isEnabled: 'Включен?'
+form.expedia.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
+form.expedia.hotel_id: 'ID отеля'
+form.expedia.hotel_id.help: 'ID отеля в Expedia Partner Central'
 form.expedia.password.label: Пароль
-form.expedia.password.help: Пароль для входа в аккаунт Expedia
+form.expedia.password.help: 'Пароль для входа в аккаунт Expedia'
 form.expedia.password.placeholder: Пароль
-form.expedia.username.label: Имя пользователя
-form.expedia.username.help: Имя пользователя для входа в аккаунт Expedia
-form.expedia.username.placeholder: Имя пользователя
-order_info.expedia.need_сonfirm_cash_payment_document: Необходимо подвердить кассовый документ о платеже
-order_info.expedia.need_сonfirm_cash_tax_document: Необходимо подвердить кассовый документ о комиссии
-order_info.expedia.required_data_missing: Ошибка при обработке синхронизации броней. В полученных от сервиса данных отсутствуют %elementDescription%
+form.expedia.username.label: 'Имя пользователя'
+form.expedia.username.help: 'Имя пользователя для входа в аккаунт Expedia'
+form.expedia.username.placeholder: 'Имя пользователя'
+order_info.expedia.need_сonfirm_cash_payment_document: 'Необходимо подвердить кассовый документ о платеже'
+order_info.expedia.need_сonfirm_cash_tax_document: 'Необходимо подвердить кассовый документ о комиссии'
+order_info.expedia.required_data_missing: 'Ошибка при обработке синхронизации броней. В полученных от сервиса данных отсутствуют %elementDescription%'
 order_info.expedia.required_order_data: 'обязательные данные: "%dataAttribute% заказа"'
 order_info.expedia.required_hotel_id: 'данные об id отеля'
 order_info.expedia.user_comment: 'Комментарий заказчика'
@@ -109,29 +117,29 @@ order_info.expedia.bedding_preferences: 'Пожелание по размеще�
 order_info.expedia.multi_room_booking_info: 'Доп.информация о множественном  бронировании'
 expedia_request_data_formatter.max_stay.error: 'В сервисе Expedia.com по умолачнию установлен максимальный срок брони %count% дней'
 expedia_request_data_formatter.min_stay.error: 'В сервисе Expedia.com по умолачнию установлен минимальный срок брони %count% дней'
-package_info.expedia.child_age: Возраст ребенка
-
-form.roomTypeTasks.checkIn: При заселении
-form.roomTypeTasks.checkIn.help: Задачи, создаваемые при заезде гостя
-form.roomTypeTasks.checkOut: При выезде
-form.roomTypeTasks.checkOut.help: При выезде гостя
-form.roomTypeTasks.daily: Каждые n дней проживания
-channelmanager.notifications.prices: "В разделе \"Цены\" указаны неподдерживаемые поля"
-channelmanager.notifications.restrictions: "В разделе \"Условия и ограничения\" указаны неподдерживаемые поля"
-channelmanager.notifications.prices.type.isPersonPrice: "Цена за человека"
-channelmanager.notifications.prices.type.additionalPrice: "Цена за взрослое доп. место"
-channelmanager.notifications.prices.type.additionalChildrenPrice: "Цена за детское доп. место"
-channelmanager.notifications.restrictions.type.minBeforeArrival: "Мин. дней до заезда"
-channelmanager.notifications.restrictions.type.maxBeforeArrival: "Макс. дней до заезда"
-channelmanager.notifications.restrictions.type.minStay: "Мин. длина брони (сквозное)"
-channelmanager.notifications.restrictions.type.maxStay: "Макс. длина брони (сквозное)"
-channelmanager.notifications.restrictions.type.minStayArrival: "Мин. длина брони (заезд)"
-channelmanager.notifications.restrictions.type.maxStayArrival: "Макс. длина брони (заезд)"
-channelmanager.notifications.restrictions.type.maxGuest: "Макс. количество гостей"
-channelmanager.notifications.restrictions.type.minGuest: "Мин. количество гостей"
-channelmanager.notifications.restrictions.type.closedOnArrival: "Нет заезда"
-channelmanager.notifications.restrictions.type.closedOnDeparture: "Нет выезда"
-prices: 'Цены'
+package_info.expedia.child_age: 'Возраст ребенка'
+package_info.expedia.promoName: '%dateString% по акции:'
+form.roomTypeTasks.checkIn: 'При заселении'
+form.roomTypeTasks.checkIn.help: 'Задачи, создаваемые при заезде гостя'
+form.roomTypeTasks.checkOut: 'При выезде'
+form.roomTypeTasks.checkOut.help: 'При выезде гостя'
+form.roomTypeTasks.daily: 'Каждые n дней проживания'
+channelmanager.notifications.prices: 'В разделе "Цены" указаны неподдерживаемые поля'
+channelmanager.notifications.restrictions: 'В разделе "Условия и ограничения" указаны неподдерживаемые поля'
+channelmanager.notifications.prices.type.isPersonPrice: 'Цена за человека'
+channelmanager.notifications.prices.type.additionalPrice: 'Цена за взрослое доп. место'
+channelmanager.notifications.prices.type.additionalChildrenPrice: 'Цена за детское доп. место'
+channelmanager.notifications.restrictions.type.minBeforeArrival: 'Мин. дней до заезда'
+channelmanager.notifications.restrictions.type.maxBeforeArrival: 'Макс. дней до заезда'
+channelmanager.notifications.restrictions.type.minStay: 'Мин. длина брони (сквозное)'
+channelmanager.notifications.restrictions.type.maxStay: 'Макс. длина брони (сквозное)'
+channelmanager.notifications.restrictions.type.minStayArrival: 'Мин. длина брони (заезд)'
+channelmanager.notifications.restrictions.type.maxStayArrival: 'Макс. длина брони (заезд)'
+channelmanager.notifications.restrictions.type.maxGuest: 'Макс. количество гостей'
+channelmanager.notifications.restrictions.type.minGuest: 'Мин. количество гостей'
+channelmanager.notifications.restrictions.type.closedOnArrival: 'Нет заезда'
+channelmanager.notifications.restrictions.type.closedOnDeparture: 'Нет выезда'
+prices: Цены
 restrictions: 'Условия и ограничения'
 channel_manager.logs.no_entries_in_file: 'Нет записей в файле логов.'
 channel_manager.logs.small_title: логи

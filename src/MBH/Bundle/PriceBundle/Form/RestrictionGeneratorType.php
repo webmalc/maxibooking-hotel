@@ -32,7 +32,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'mbhpricebundle.form.restrictiongeneratortype.setting',
                 'data' => new \DateTime('midnight'),
                 'required' => true,
-                'attr' => array('class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => array('class' => 'datepicker begin-datepicker', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('end', DateType::class, array(
@@ -41,7 +41,7 @@ class RestrictionGeneratorType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'group' => 'mbhpricebundle.form.restrictiongeneratortype.setting',
                 'required' => true,
-                'attr' => array('class' => 'datepicker end-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => array('class' => 'datepicker end-datepicker', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('weekdays',  InvertChoiceType::class, [

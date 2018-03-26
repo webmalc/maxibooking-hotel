@@ -43,12 +43,9 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function newAction(Request $request)
     {
-        $this->setLocaleByRequest();
-
         $entity = new FormConfig();
 
         $form = $this->createForm(FormType::class, $entity, [
-            'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types'],
             'user' => $this->getUser()->getUserName()
         ]);
 
@@ -59,9 +56,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.formController.settings_saved_success'))
-            ;
+            $this->addFlash('success', 'controller.formController.settings_saved_success');
 
             return $this->afterSaveRedirect('online_form', $entity->getId());
         }
@@ -81,13 +76,11 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function editAction(Request $request, FormConfig $entity)
     {
-        $this->setLocaleByRequest();
         $oldConfigWidth = $entity->getFrameWidth();
         $oldConfigHeight = $entity->getFrameHeight();
         $onFullWidth = $entity->isFullWidth();
 
         $form = $this->createForm(FormType::class, $entity, [
-            'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types'],
             'user' => $this->getUser()->getUserName()
         ]);
 
@@ -123,6 +116,8 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      * @Route("/{id}/delete", name="online_form_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_ONLINE_FORM_DELETE')")
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction($id)
     {

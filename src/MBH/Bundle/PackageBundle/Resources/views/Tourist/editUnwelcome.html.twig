@@ -7,6 +7,16 @@
     {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 5, 'entity': tourist} %}
 
     <div class="tab-content">
+        {% if tourist.isUnwelcome %}
+            <div class="bg-gray color-palette alert">
+                <i class="fa fa-user-secret"></i> {{ 'tourist.edit_unwelcome.added_client_to_black_list'|trans}}
+                <div class="pull-right">
+                    <a class="btn btn-xs btn-danger delete-link" href="{{ path('tourist_delete_unwelcome', {'id': tourist.id}) }}" title="" data-toggle="tooltip" data-original-title="{{ 'unwelcome.actions.delete'|trans }}">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </div>
+            </div>
+        {% else %}
         {% if isTouristValid %}
             {% if unwelcome.isMy %}
                 <div class="bg-gray color-palette alert">
@@ -70,7 +80,9 @@
                             <td>
                                 {% if unwelcome.hotel %}
                                     <div>{{ unwelcome.hotel.title }}</div>
-                                    <small>{{ unwelcome.hotel.city }}</small>
+                                    {% if unwelcome.hotel.cityId %}
+                                        <small>{{ get_city(unwelcome.hotel.cityId).name }}</small>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                             <td>
@@ -102,6 +114,7 @@
                 <div>
             </div>
         {% endif %}
+                    {% endif %}
     </div>
 
 {% endblock %}

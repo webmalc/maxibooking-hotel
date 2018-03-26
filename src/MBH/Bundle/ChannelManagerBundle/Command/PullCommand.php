@@ -22,12 +22,20 @@ class PullCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = new \DateTime();
+        $logger = $this->getContainer()->get('mbh.channelmanager.logger');
+        $logger->addInfo(
+            'ChannelManager Pull command started'
+        );
         $this->getContainer()->get('mbh.channelmanager')->pullOrders(
             $input->getOption('service'),
             $input->getOption('old')
         );
 
         $time = $start->diff(new \DateTime());
-        $output->writeln('Command complete. Elapsed time: ' . $time->format('%H:%I:%S'));
+        $message = 'Command complete. Elapsed time: '.$time->format('%H:%I:%S');
+        $logger->addInfo(
+            'ChannelManager Pull command ended. '.$message
+        );
+        $output->writeln($message);
     }
 }

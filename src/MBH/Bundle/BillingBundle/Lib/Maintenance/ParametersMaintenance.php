@@ -1,12 +1,9 @@
 <?php
 
-
 namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
-
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Yaml\Yaml;
 
 final class ParametersMaintenance extends AbstractMaintenance
 {
@@ -15,17 +12,21 @@ final class ParametersMaintenance extends AbstractMaintenance
 
     public function install(string $clientName)
     {
-        $sampleConfig = $this->getMainConfig();
-        $overridesConfig = $this->generateConfigOverrides($clientName);
-        $resultConfig = array_replace_recursive($sampleConfig, $overridesConfig);
-        $newConfig = Yaml::dump($resultConfig, 5);
-
+        $newConfig = $this->createEnvConfig($clientName);
         if (empty($newConfig)) {
             throw new ClientMaintenanceException('Client config is empty!');
         }
 
         $this->saveClientParameters($clientName, $newConfig);
+    }
 
+    private function createEnvConfig(string $clientName) {
+        $env = '';
+        $env .= 'MONGODB_DATABASE='.$this->getDatabaseName($clientName).PHP_EOL;
+        $env .= 'MONGODB_LOGIN='.$clientName.PHP_EOL;
+        $env .= 'MONGODB_PASSWORD='.$this->getContainer()->get('mbh.helper')->getRandomString().PHP_EOL;
+
+        return $env;
     }
 
     public function rollBack(string $clientName)
@@ -36,7 +37,7 @@ final class ParametersMaintenance extends AbstractMaintenance
     public function remove(string $clientName)
     {
         $this->backup($clientName);
-        $this->removeFile($this->getClientConfigFileName($clientName));
+//        $this->removeFile($this->getClientConfigFileName($clientName));
     }
 
     public function update(string $clientName, string $serverIp = null)
@@ -76,7 +77,9 @@ final class ParametersMaintenance extends AbstractMaintenance
     }
 
 
-
+    /**
+     * @deprecated
+     * Old install need to remove or move to yaml installer? */
     private function generateConfigOverrides(string $clientName, array $newConfig = []): array
     {
         $overrides = $newConfig ?: [
@@ -84,6 +87,8 @@ final class ParametersMaintenance extends AbstractMaintenance
                 'mongodb_database' => self::DB_NAME_PREFIX.$clientName,
                 'secret' => $this->getContainer()->get('mbh.helper')->getRandomString(),
                 'router.request_context.host' => $clientName.'.maxibooking.ru',
+                'mongodb_login' => $clientName,
+                'mongodb_password' => $clientName,
                 'mbh_cache' => [
                     'prefix' => $clientName,
                 ],
@@ -99,10 +104,15 @@ final class ParametersMaintenance extends AbstractMaintenance
         $this->dumpFile($this->getClientConfigFileName($clientName), $parameters);
     }
 
+    private function getDatabaseName(string $clientName)
+    {
+        return static::DB_NAME_PREFIX.$clientName;
+    }
+
+
     protected function configureOptions(OptionsResolver $resolver)
     {
         parent::configureOptions($resolver);
 
     }
-
 }

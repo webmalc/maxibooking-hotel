@@ -6,11 +6,9 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
 use MBH\Bundle\HotelBundle\Document\TaskSettings;
 use MBH\Bundle\HotelBundle\Form\ImagePriorityType;
 use MBH\Bundle\HotelBundle\Form\OnlineImageFileType;
-use MBH\Bundle\HotelBundle\Form\RoomTypeImageType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeTasksType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -74,7 +72,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity = new RoomType();
         $entity->setIsHostel($this->hotel->getIsHostel());
         $form = $this->createForm(RoomTypeType::class, $entity, [
-            'facilities' => $this->getParameter('mbh.hotel')['facilities'],
             'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory(),
             'hotel' => $this->hotel
         ]);
@@ -97,7 +94,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity = new RoomType();
         $entity->setHotel($this->hotel);
         $form = $this->createForm(RoomTypeType::class, $entity, [
-            'facilities' => $this->getParameter('mbh.hotel')['facilities'],
             'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory(),
             'hotel' => $entity->getHotel()
         ]);
@@ -245,7 +241,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
                 $this->dm->persist($roomType->getTaskSettings());
                 $this->dm->flush();
 
-                $this->ad(
+                $this->addFlash(
                     'success',
                     $this->get('translator')->trans('controller.roomTypeController.record_edited_success')
                 );
@@ -331,7 +327,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
                 'id' => $roomType->getId()
             ]);
         }
-
 
         $images = $roomType->getOnlineImagesByPriority();
 

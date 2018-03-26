@@ -75,7 +75,7 @@ class DashboardEntry extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @ODM\Index()
      */

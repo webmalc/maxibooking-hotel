@@ -2,14 +2,17 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
+use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Model\Expedia\NotificationRequestData;
 
 class ExpediaResponseHandler extends AbstractResponseHandler
 {
     const OCCUPANCY_BASED_PRICING = 'OccupancyBasedPricing';
     private $response;
     private $config;
+
     private $isOrderInfosInit = false;
     private $orderInfos = [];
 
@@ -34,7 +37,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
             $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
             $tariffsSyncData = $channelManagerHelper->getTariffsSyncData($this->config, true);
             $roomTypesSyncData = $channelManagerHelper->getRoomTypesSyncData($this->config, true);
-            
+
             foreach ($responseXML->Bookings->Booking as $bookingElement) {
                 $this->orderInfos[] = $this->container->get('mbh.channelmanager.expedia_order_info')
                     ->setInitData($bookingElement, $this->config, $tariffsSyncData, $roomTypesSyncData);
@@ -86,12 +89,16 @@ class ExpediaResponseHandler extends AbstractResponseHandler
                     $roomTypeId = $this->getRoomTypeIdFromUrlString($requestedUrl);
                     $roomTypeName = $roomTypes[$roomTypeId];
                     $tariffs[$data['expediaId']] = [
-                        'title' => $tariffInfo['name'] . " ( $roomTypeName, {$data['distributionModel']} )" ,
+                        'title' => $tariffInfo['name'] . " ($roomTypeName, {$data['distributionModel']})" ,
                         'rooms' => [$roomTypeId],
                         'readonly' => $tariffInfo['pricingModel'] === self::OCCUPANCY_BASED_PRICING ? false : true,
                         'minLOSDefault' => $tariffInfo['minLOSDefault'],
                         'maxLOSDefault' => $tariffInfo['maxLOSDefault'],
                     ];
+
+                    if (isset($tariffInfo['ratePlanLinkage'])) {
+                        $tariffs[$data['expediaId']]['derivationRules'] = $tariffInfo['ratePlanLinkage'];
+                    }
                 }
             }
         }
@@ -110,11 +117,12 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         return $roomTypesData;
     }
 
+    /**
+     * @return bool
+     */
     private function isXMLResponse()
     {
-        $result = simplexml_load_string($this->response, 'SimpleXmlElement', LIBXML_NOERROR+LIBXML_ERR_FATAL+LIBXML_ERR_NONE);
-
-        return $result->__toString() === '' ? false : true;
+        return $this->container->get('mbh.helper')->isXMLValid($this->response);
     }
 
     /**
@@ -127,17 +135,78 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         $roomTypeIdStartPosition = strpos($url, 'roomTypes/') + strlen('roomTypes/');
         $roomTypeIdEndPosition = strpos($url, '/ratePlans');
         $roomTypeIdStringLength = $roomTypeIdEndPosition - $roomTypeIdStartPosition;
+
         return substr($url, $roomTypeIdStartPosition, $roomTypeIdStringLength);
     }
 
-    private function removeXmlnsString($xmlString)
+    public function removeXmlnsString($xmlString)
     {
-        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns');
-        $firstQuotesPosition = $xmlnsStringStartPosition + 8;
+        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns:ns');
+        $firstQuotesPosition = $xmlnsStringStartPosition + 10;
         $xmlnsStringEndPosition = strpos($xmlString, '"', $firstQuotesPosition) + 1;
         $xmlnsString = substr($xmlString, $xmlnsStringStartPosition, $xmlnsStringEndPosition - $xmlnsStringStartPosition);
 
         return str_replace($xmlnsString, "", $xmlString);
     }
 
+    /**
+     * @param NotificationRequestData $requestData
+     * @return ExpediaNotificationOrderInfo
+     */
+    public function getNotificationOrderInfo()
+    {
+        $simpleXml = $this->getSimpleXmlByRequestXml();
+
+        $expediaConfig = $this->getExpediaConfigByNotificationRequest();
+        $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
+        $tariffsSyncData = $channelManagerHelper->getTariffsSyncData($expediaConfig, true);
+        $roomTypesSyncData = $channelManagerHelper->getRoomTypesSyncData($expediaConfig, true);
+
+        return $this->container
+            ->get('mbh.channel_manager.expedia_notification_order_info')
+            ->setInitData($simpleXml, $expediaConfig, $tariffsSyncData, $roomTypesSyncData);
+    }
+
+    /**
+     * @return ExpediaConfig
+     */
+    public function getExpediaConfigByNotificationRequest()
+    {
+        $simpleXml = $this->getSimpleXmlByRequestXml();
+        $hotelId = (string)$simpleXml->Header->Interface->PayloadInfo->PayloadDescriptor->PayloadReference->attributes()['DistributorHotelId'];
+
+        return $this->container
+            ->get('doctrine_mongodb.odm.default_document_manager')
+            ->getRepository('MBHChannelManagerBundle:ExpediaConfig')
+            ->findOneBy(['hotelId' => $hotelId]);
+    }
+
+    /**
+     * @return NotificationRequestData
+     */
+    public function getNotificationRequestData(): NotificationRequestData
+    {
+        $simpleXml = $this->getSimpleXmlByRequestXml();
+        /** @var \SimpleXMLElement $payloadInfoNode */
+        $payloadInfoNode = $simpleXml->Header->Interface->PayloadInfo;
+        $payloadInfoAttributes = $payloadInfoNode->attributes();
+
+        $commdescriptorAttributes = $payloadInfoNode->CommDescriptor->attributes();
+
+        return (new NotificationRequestData())
+            ->setRequestId($payloadInfoAttributes['RequestId'])
+            ->setRequestorId($payloadInfoAttributes['RequestorId'])
+            ->setResponderId($payloadInfoAttributes['ResponderId'])
+            ->setDestinationId($commdescriptorAttributes['DestinationId'])
+            ->setSourceId($commdescriptorAttributes['SourceId'])
+            ->setVersion($payloadInfoNode->PayloadDescriptor->attributes()['Version'])
+            ->setMbhHotelId($payloadInfoNode->PayloadDescriptor->PayloadReference->attributes()['SupplierHotelCode']);
+    }
+
+    private function getSimpleXmlByRequestXml()
+    {
+        $requestXml = str_replace("soap-env:", '', $this->response);
+
+        return new \SimpleXMLElement($requestXml);
+    }
 }

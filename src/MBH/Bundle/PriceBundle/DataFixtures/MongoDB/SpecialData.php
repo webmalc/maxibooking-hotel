@@ -57,6 +57,6 @@ class SpecialData extends AbstractFixture implements OrderedFixtureInterface
      */
     protected function getEnvs(): array
     {
-        return ['test'];
+        return ['test', 'dev'];
     }
 }

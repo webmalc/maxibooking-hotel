@@ -19,6 +19,7 @@ use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -102,7 +103,7 @@ class DocumentsRelationships
             ],
             Room::class => [
                 new Relationship(Task::class, 'room', 'exception.room_relation_delete.message.task'),
-                new Relationship(Package::class, 'accommodation', 'exception.room_relation_delete.message.package')
+                new Relationship(PackageAccommodation::class, 'accommodation', 'exception.room_relation_delete.message.package')
             ],
             User::class => [
                 new Relationship(Task::class, 'performer', 'exception.user_relation_delete.message.task'),

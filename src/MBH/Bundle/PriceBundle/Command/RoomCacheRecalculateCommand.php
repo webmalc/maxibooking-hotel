@@ -16,8 +16,7 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
             ->setDescription('Recalculate RoomCaches package count')
             ->addOption('roomTypes', null, InputOption::VALUE_REQUIRED, 'RoomTypes ids (comma-separated)')
             ->addOption('begin', null, InputOption::VALUE_REQUIRED, 'Recalculate from (date - d.m.Y)')
-            ->addOption('end', null, InputOption::VALUE_REQUIRED, 'Recalculate to (date - d.m.Y)')
-        ;
+            ->addOption('end', null, InputOption::VALUE_REQUIRED, 'Recalculate to (date - d.m.Y)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -29,17 +28,27 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
 
         if ($input->getOption('roomTypes')) {
             $roomTypes = explode(',', trim($input->getOption('roomTypes'), ','));
+        } else {
+            $roomTypes = $helper
+                ->toIds($this->getContainer()
+                    ->get('doctrine.odm.mongodb.document_manager')
+                    ->getRepository('MBHHotelBundle:RoomType')
+                    ->findAll());
         }
 
-        $num += $this->getContainer()->get('mbh.room.cache')->recalculateByPackages(
+        $recalculationResult = $this->getContainer()->get('mbh.room.cache')->recalculateByPackages(
             $helper->getDateFromString($input->getOption('begin')),
             $helper->getDateFromString($input->getOption('end')),
             isset($roomTypes) ? $roomTypes : []
         );
 
+        $num += $recalculationResult['total'];
+        $numberOfInconsistencies = $recalculationResult['numberOfInconsistencies'];
+
         $time = $start->diff(new \DateTime());
         $output->writeln(
             sprintf('Recalculate complete. Entries: %s. Elapsed time: %s', number_format($num), $time->format('%H:%I:%S'))
         );
+        $output->writeln($numberOfInconsistencies == 0 ? 'Inconsistencies not found' : 'Number of inconsistencies: ' . $numberOfInconsistencies);
     }
 }

@@ -6,6 +6,7 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,7 +28,9 @@ abstract class AbstractMaintenance implements MaintenanceInterface
     protected $options;
     /** @var  Filesystem */
     private $fileSystem;
-    /** @var  array */
+    /** @var  array
+     * @deprecated MUST REMOVE cause ENV file as config
+     */
     protected $mainConfig;
 
 
@@ -35,6 +38,7 @@ abstract class AbstractMaintenance implements MaintenanceInterface
      * AbstractInstaller constructor.
      * @param ContainerInterface $container
      * @param array $options
+     * @throws ClientMaintenanceException
      */
     public function __construct(ContainerInterface $container, array $options = [])
     {
@@ -44,7 +48,6 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
         $this->options = $resolver->resolve($options);
-
     }
 
     protected function getContainer()
@@ -52,6 +55,10 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->container;
     }
 
+    /**
+     * @return array
+     * @throws ClientMaintenanceException
+     */
     protected function getMainConfig(): array
     {
         if (!$this->mainConfig) {
@@ -63,13 +70,39 @@ abstract class AbstractMaintenance implements MaintenanceInterface
     }
 
 
+    /**
+     * @param string $clientName
+     * @return array
+     * @throws ClientMaintenanceException
+     */
     protected function getClientConfig(string $clientName): array
     {
         $fileName = $this->getClientConfigFileName($clientName);
 
-        return $this->yamlParse($fileName);
+        return $this->dotEnvParse($fileName);
     }
 
+    protected function dotEnvParse(string $fileName)
+    {
+        if (!$this->isFileExists($fileName)) {
+            throw new ClientMaintenanceException('Config file not found. '.$fileName);
+        }
+        try {
+            $dotEnv = new Dotenv();
+
+            $result = $dotEnv->parse(file_get_contents($fileName));
+        } catch (ParseException $e) {
+            throw new ClientMaintenanceException($e->getMessage());
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $fileName
+     * @param string $file
+     * @throws ClientMaintenanceException
+     */
     protected function dumpFile(string $fileName, string $file)
     {
         try {
@@ -80,6 +113,10 @@ abstract class AbstractMaintenance implements MaintenanceInterface
 
     }
 
+    /**
+     * @param string $fileName
+     * @throws ClientMaintenanceException
+     */
     protected function removeFile(string $fileName)
     {
         try {
@@ -91,6 +128,11 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         }
     }
 
+    /**
+     * @param string $sourceFile
+     * @param string $targetFile
+     * @throws ClientMaintenanceException
+     */
     protected function copyFile(string $sourceFile, string $targetFile)
     {
         try {
@@ -100,6 +142,11 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         }
     }
 
+    /**
+     * @param string $source
+     * @param string $target
+     * @throws ClientMaintenanceException
+     */
     protected function createSymLink(string $source, string $target)
     {
         if (!$this->isFileExists($source)) {
@@ -113,6 +160,11 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->fileSystem->exists($fileName);
     }
 
+    /**
+     * @param string $fileName
+     * @return array
+     * @throws ClientMaintenanceException
+     */
     protected function yamlParse(string $fileName): array
     {
         if (!$this->isFileExists($fileName)) {
@@ -136,7 +188,7 @@ abstract class AbstractMaintenance implements MaintenanceInterface
 
     protected function getConfigName(string $clientName): string
     {
-        $configName = 'parameters_'.$clientName.'.yml';
+        $configName = $clientName.'.env';
 
         return $configName;
     }
@@ -146,6 +198,13 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->options['backupDir'].'/'.$clientName;
     }
 
+    /**
+     * @param string $command
+     * @param string|null $cwd
+     * @param array|null $env
+     * @return null|string
+     * @throws ClientMaintenanceException
+     */
     protected function executeConsoleCommand(string $command, string $cwd = null, array $env = null): ?string
     {
         $cwd = $cwd??$this->container->get('mbh.kernel_root_dir').'/../bin';
@@ -157,6 +216,13 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->executeCommand($command, $cwd, $env);
     }
 
+    /**
+     * @param string $command
+     * @param string|null $cwd
+     * @param array|null $env
+     * @return null|string
+     * @throws ClientMaintenanceException
+     */
     protected function executeCommand(string $command, string $cwd = null, array $env = null): ?string
     {
 
@@ -175,6 +241,8 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         $resolver
             ->setRequired(['backupDir', 'clientConfigDir'])
             ->setDefault('backupDir', self::BACKUP_DIR)
-            ->setDefault('clientConfigDir', $this->getContainer()->get('kernel')->getClientConfigFolder());
+            ->setDefault('clientConfigDir', $this->getContainer()->get('kernel')->getRootDir().'/..'.\AppKernel::CLIENTS_CONFIG_FOLDER)
+
+        ;
     }
 }

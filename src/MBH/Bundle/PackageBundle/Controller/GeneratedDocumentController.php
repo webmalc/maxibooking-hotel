@@ -123,10 +123,11 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
      */
     public function stampAction(Organization $entity)
     {
+        /** TODO: Переделать под показ данных из контроллера. Создать для этого сервис. */
         /** @var string|null $client */
         $client = $this->container->get('kernel')->getClient();
 
-        if (!$entity->getStamp($client)) {
+        if (!$entity->getStamp()) {
             throw $this->createNotFoundException();
         }
 

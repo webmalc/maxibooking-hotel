@@ -1,9 +1,13 @@
 {% extends 'MBHPriceBundle:Overview:layout.html.twig' %}
 
 {% set small_title = 'price.views.overview.index.small_title'|trans({},'MBHPriceBundle') %}
-{% set layout = 'box' %}
+{% set layout = 'tabs' %}
 
 {% block content %}
+    {% include 'MBHPriceBundle:Overview:tabs.html.twig' with {'active': 1 } %}
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'room-overview-filter-widget' } %}
     <form id="room-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
             <div class="input">
@@ -37,6 +41,6 @@
     </div></div>
 
     <div id="room-overview-table-wrapper" class="scrolling"></div>
-
+    </div></div>
 {% endblock %} 
 

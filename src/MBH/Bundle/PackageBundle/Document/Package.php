@@ -48,6 +48,9 @@ class Package extends Base implements \JsonSerializable
     const ROOM_STATUS_OUT_TOMORROW = 'out_tomorrow'; // Выезд завтра
     const ROOM_STATUS_NOT_OUT = 'not_out'; // Не выехал
 
+    private $packagePricesWithDiscount = [];
+    private $isPackagePricesWithDiscountInit = false;
+
     /**
      * @var Order
      * @Gedmo\Versioned
@@ -67,7 +70,7 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Index()
      */
     protected $tariff;
-    
+
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
@@ -94,7 +97,7 @@ class Package extends Base implements \JsonSerializable
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
     protected $virtualRoom;
-    
+
     /**
      * @ODM\ReferenceMany(targetDocument="Tourist", inversedBy="packages")
      * @MBH\Versioned()
@@ -102,7 +105,6 @@ class Package extends Base implements \JsonSerializable
     protected $tourists;
 
     /**
-
      * @ODM\ReferenceMany(targetDocument="RestarauntSeat", mappedBy="package")
      */
     protected $restarauntSeat;
@@ -114,7 +116,7 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Index()
      */
     protected $number;
-    
+
 
     /**
      * @var int
@@ -138,8 +140,8 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Index()
      */
     protected $adults;
-    
-    
+
+
     /**
      * @var int
      * @Gedmo\Versioned
@@ -153,21 +155,21 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Index()
      */
     protected $children;
-    
+
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="begin")
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message= "validator.document.package.begin_not_specified")
      * @Assert\Date()
      * @ODM\Index()
      */
     protected $begin;
-    
+
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="end")
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message= "validator.document.package.end_not_specified")
      * @Assert\Date()
      * @ODM\Index()
@@ -239,7 +241,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Hash()
+     * @ODM\Field(type="hash")
      * @Assert\Type(type="array")
      * @deprecated
      */
@@ -304,7 +306,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\DateTime()
      */
     protected $arrivalTime;
@@ -312,7 +314,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\DateTime()
      */
     protected $departureTime;
@@ -334,7 +336,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      */
     protected $isPercentDiscount = true;
@@ -342,7 +344,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isCheckIn = false;
@@ -350,7 +352,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isCheckOut = false;
@@ -358,7 +360,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isSmoking = false;
@@ -366,7 +368,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $corrupted = false;
@@ -374,7 +376,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isLocked = false;
@@ -382,16 +384,22 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     protected $isForceBooking = false;
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      */
     protected $childAges = [];
+
+    /**
+     * @var SearchQuery
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\SearchQuery")
+     */
+    protected $searchQuery;
 
     /**
      * Set tariff
@@ -750,7 +758,7 @@ class Package extends Base implements \JsonSerializable
     {
         return $this->purposeOfArrival;
     }
-   
+
     public function __construct()
     {
         $this->services = new ArrayCollection();
@@ -758,6 +766,7 @@ class Package extends Base implements \JsonSerializable
         $this->tourists = new ArrayCollection();
         $this->accommodations = new ArrayCollection();
         $this->prices = new ArrayCollection();
+        $this->searchQuery = new ArrayCollection();
     }
 
 
@@ -812,7 +821,15 @@ class Package extends Base implements \JsonSerializable
     {
         return $this->getOrder()->getPaid();
     }
-    
+
+    /**
+     * @return float|int
+     */
+    public function getCalculatedPayment()
+    {
+        return $this->getOrder()->getPrice() == 0 ? 0 : round($this->getPrice() / $this->getOrder()->getPrice() * $this->getPaid(), 2);
+    }
+
     /**
      * @return int
      */
@@ -882,11 +899,11 @@ class Package extends Base implements \JsonSerializable
     {
         $title = $this->getNumberWithPrefix();
         if ($accommodation && $this->getAccommodation()) {
-            $title .=' Номер: '.$this->getAccommodation()->getName().'. ';
+            $title .= ' ' . $this->getAccommodation()->getName() . '. ';
         }
         /** @var Tourist|Organization $name */
         if ($payer && $name = $this->getOrder()->getPayer()) {
-            $title .= ' Плательщик: '.$name.'. ';
+            $title .= ' ' . $name . '. ';
         }
         return $title;
     }
@@ -942,7 +959,7 @@ class Package extends Base implements \JsonSerializable
      */
     public function getDiscount($percent = true)
     {
-        return ($percent) ? $this->discount : $this->discount/100;
+        return ($percent) ? $this->discount : $this->discount / 100;
     }
 
     /**
@@ -1143,16 +1160,16 @@ class Package extends Base implements \JsonSerializable
         $date = null;
 
         if ($day instanceof \DateTime) {
-            $date = $day>format('d_m_Y');
+            $date = $day > format('d_m_Y');
         }
-        if (preg_match('/^\d{2}\.\d{2}.\d{4}$/ui', (string) $day)) {
+        if (preg_match('/^\d{2}\.\d{2}.\d{4}$/ui', (string)$day)) {
             $date = str_replace('.', '_', $day);
         }
 
         if (!$date || empty($this->pricesByDate[$date])) {
-            return round($this->getPackagePrice()/$this->getNights(), 2);
+            return round($this->getPackagePrice() / $this->getNights(), 2);
         } else {
-            return (float) $this->pricesByDate[$date];
+            return (float)$this->pricesByDate[$date];
         }
     }
 
@@ -1203,6 +1220,27 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @param \DateTime|null $date
+     * @return float
+     */
+    public function getPriceByDate(\DateTime $date = null): float
+    {
+        if (!is_null($date)) {
+            if ($this->getPrices()->count() > 0 && $this->getPackagePriceByDate($date)) {
+                return $this->getPackagePriceByDate($date)->getPrice();
+            }
+
+            $firstDateString = $date->format('d.m.Y');
+            if (!empty($this->pricesByDate) && isset($this->pricesByDate[$firstDateString])) {
+                return $this->pricesByDate[$firstDateString];
+            }
+        }
+
+        return $this->getPackagePrice(true) / $this->getNights();
+    }
+
+
+    /**
      * @return array
      */
     public function getPricesByDateByPrice()
@@ -1215,9 +1253,9 @@ class Package extends Base implements \JsonSerializable
         $nights = 1;
         for ($i = 0; $i < count($prices); ++$i) {
             $price = $prices[$i];
-            $nextPrice = @$prices[$i+1];
+            $nextPrice = @$prices[$i + 1];
             $date = $dates[$i];
-            $nextDate = @$dates[$i+1];
+            $nextDate = @$dates[$i + 1];
             if ($nextPrice) {
                 if ($price == $nextPrice) {
                     if ($begin == null) {
@@ -1225,7 +1263,7 @@ class Package extends Base implements \JsonSerializable
                     }
                     ++$nights;
                 } else {
-                    $result[$begin == null || $begin == $date ? ($date.' - '.$nextDate) : ($begin.' - '.$nextDate)] = [
+                    $result[$begin == null || $begin == $date ? ($date . ' - ' . $nextDate) : ($begin . ' - ' . $nextDate)] = [
                         'price' => $price,
                         'nights' => $nights
                     ];
@@ -1236,7 +1274,7 @@ class Package extends Base implements \JsonSerializable
                 if (!$nextDate) {
                     $nextDate = \DateTime::createFromFormat('d_m_Y', $date)->modify('+1 day')->format('d_m_Y');
                 }
-                $result[$begin.' - '.$nextDate] = [
+                $result[$begin . ' - ' . $nextDate] = [
                     'price' => $price,
                     'nights' => $nights
                 ];
@@ -1397,9 +1435,9 @@ class Package extends Base implements \JsonSerializable
         return [
             'packageKey' => $this->getId(),
             'number' => $this->getNumberWithPrefix(),
-            'hotel' => (string) $this->getRoomType()->getHotel(),
-            'roomType' => (string) $this->getRoomType(),
-            'payer' => (string) $this->getOrder()->getPayer(),
+            'hotel' => (string)$this->getRoomType()->getHotel(),
+            'roomType' => (string)$this->getRoomType(),
+            'payer' => (string)$this->getOrder()->getPayer(),
             'price' => $this->getPrice(),
             'begin' => $this->getBegin()->format('d.m.Y'),
             'end' => $this->getEnd()->format('d.m.Y'),
@@ -1550,6 +1588,29 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getPackagePricesWithDiscount()
+    {
+        if (!$this->isPackagePricesWithDiscountInit) {
+            foreach ($this->getPrices() as $price) {
+                $priceFraction = $price->getPrice() / $this->getPackagePrice();
+
+                $clonedPrice = clone $price;
+                $priceWithDiscount = $this->isPercentDiscount
+                    ? $price->getPrice() * (1 - $this->getDiscount(false))
+                    : $this->discount * $priceFraction;
+                $clonedPrice->setPrice($priceWithDiscount);
+                $this->packagePricesWithDiscount[] = $clonedPrice;
+            }
+            $this->isPackagePricesWithDiscountInit = true;
+        }
+
+        return $this->packagePricesWithDiscount;
+    }
+
+
+    /**
      * @param array $prices
      * @return Package
      */
@@ -1591,7 +1652,7 @@ class Package extends Base implements \JsonSerializable
     public function clearServices()
     {
         $this->services = new ArrayCollection();
-        
+
         return $this;
     }
 
@@ -1671,9 +1732,9 @@ class Package extends Base implements \JsonSerializable
     {
         $data = $this->accommodations->toArray();
         usort($data, function ($a, $b) {
-            /** @var PackageAccommodation $a*/
-            /** @var PackageAccommodation $b*/
-            return ($a->getBegin() < $b->getBegin())? -1 : 1;
+            /** @var PackageAccommodation $a */
+            /** @var PackageAccommodation $b */
+            return ($a->getBegin() < $b->getBegin()) ? -1 : 1;
         });
 
         return new ArrayCollection($data);
@@ -1792,17 +1853,59 @@ class Package extends Base implements \JsonSerializable
 
     /**
      * @param \DateTime $date
+     * @param bool $withDiscount
      * @return PackagePrice|null
      */
-    public function getPackagePriceByDate(\DateTime $date)
+    public function getPackagePriceByDate(\DateTime $date, bool $withDiscount = false)
     {
+        $prices = $withDiscount ? $this->getPackagePricesWithDiscount() : $this->getPrices();
         /** @var PackagePrice $price */
-        foreach ($this->getPrices() as $price) {
+        foreach ($prices as $price) {
             if ($price->getDate() == $date) {
                 return $price;
             }
         }
 
         return null;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getSearchQuery()
+    {
+        return $this->searchQuery;
+    }
+
+    /**
+     * @param SearchQuery $searchQuery
+     * @return Package
+     */
+    public function addSearchQuery(SearchQuery $searchQuery): Package
+    {
+        $this->searchQuery->add($searchQuery);
+
+        return $this;
+    }
+
+    /**
+     * @return array]
+     */
+    public function getJsonSerialized()
+    {
+        $services = array_map(function (PackageService $packageService) {
+            return $packageService->getService()->getJsonSerialized();
+        }, $this->getServices()->toArray());
+
+        return [
+            'id' => $this->getId(),
+            'roomTypeId' => $this->getRoomType()->getId(),
+            'tariffId' => $this->getTariff()->getId(),
+            'adults' => $this->getAdults(),
+            'children' => $this->getChildren(),
+            'begin' => $this->getBegin()->format('d.m.Y'),
+            'end' => $this->getEnd()->format('d.m.Y'),
+            'services' => $services
+        ];
     }
 }

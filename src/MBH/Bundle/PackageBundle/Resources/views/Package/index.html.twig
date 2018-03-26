@@ -10,7 +10,7 @@
                 <i class="fa fa-calendar" title='{{ 'package.index.dates'|trans }}' data-toggle='tooltip'></i>&nbsp <input type="text"
                                                                                               id="package-filter-begin"
                                                                                               class="datepicker package-filter begin-datepicker form-control input-sm"
-                                                                                              data-date-format="dd.mm.yyyy" value="{{ filter_begin_date()|date('d.m.Y') }}">
+                                                                                              data-date-format="dd.mm.yyyy" value="{{ client_config().getActualBeginDate()|date('d.m.Y') }}">
             </div>
             <div class="input">
                 — &nbsp <input type="text" id="package-filter-end"
@@ -43,7 +43,17 @@
                     <option></option>
                     {% for key, status in statuses %}
                         <option value="{{ key }}" data-class="{{ status.class }}"
-                                data-icon="{{ status.icon }}">{{ status.title }}</option>
+                                data-icon="{{ status.icon }}">{{ status.title|trans }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input">
+                <i class="fa fa-compass" title='{{ 'package.index.filter.package_source.title'|trans }}' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="{{ 'package.index.filter.package_source.placeholder'|trans }}" id="package-source-filter"
+                        class="package-filter form-control input-sm plain-html">
+                    <option></option>
+                    {% for source in packageSources %}
+                        <option value="{{ source.id }}">{{ source.name }}</option>
                     {% endfor %}
                 </select>
             </div>

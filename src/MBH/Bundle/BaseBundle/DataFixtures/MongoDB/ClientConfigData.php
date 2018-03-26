@@ -13,6 +13,7 @@ class ClientConfigData extends AbstractFixture implements OrderedFixtureInterfac
     public function load(ObjectManager $manager)
     {
         $clientConfig = $manager->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $manager->persist($clientConfig);
         $notificationTypes = $manager->getRepository('MBHBaseBundle:NotificationType')->getClientType()->toArray();
         $clientConfig->setAllowNotificationTypes($notificationTypes);
 

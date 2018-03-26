@@ -50,6 +50,8 @@ price.views.overview.index.small_title: обзор
 price.views.overview.index.date: Даты
 price.views.overview.index.type: 'Тип номера'
 price.views.overview.index.rate: Тариф
+price.views.overview.index.tab_name: Обзор
+price.views.overview.limits.tab_name: Лимиты
 tariff.filter.status: 'Статус тарифа'
 tariff.filter.state: 'Показывать выключенные?'
 tariff.table.name: Название

@@ -165,19 +165,27 @@ var DataManager = (function () {
             dataType: 'html'
         });
     };
-    DataManager.prototype.deletePackageRequest = function (packageId) {
-        ActionManager.showLoadingIndicator();
+    DataManager.prototype.deletePackageRequest = function (packageId, $formContainer, $packageDeleteModal) {
         var self = this;
         this.deleteAccommodationsByPackageId(packageId);
+        var data = $formContainer.find('form').serialize();
+        $formContainer.html(mbh.loader.html);
         $.ajax({
-            url: Routing.generate('chessboard_remove_package', { id: packageId }),
-            type: "DELETE",
-            success: function (data) {
-                ActionManager.hideLoadingIndicator();
-                self.handleResponse(data);
+            url: Routing.generate('package_delete', { id: packageId, from_chessboard: true }),
+            type: "POST",
+            data: data,
+            success: function (response) {
+                $formContainer.html(response);
             },
-            error: function () {
-                self.handleError();
+            error: function (response) {
+                $packageDeleteModal.modal('hide');
+                if (response.status === 302) {
+                    self.updatePackagesData();
+                    ActionManager.showMessage(true, Translator.trans('chessboard.package_remove.success'));
+                }
+                else {
+                    self.handleError();
+                }
             }
         });
     };
@@ -271,6 +279,23 @@ var DataManager = (function () {
         this.noAccommodationIntervals = tableData.noAccommodationIntervals;
         this._leftRoomCounts = tableData.leftRoomCounts;
         this.noAccommodationCounts = tableData.noAccommodationCounts;
+    };
+    DataManager.prototype.getAccommodationNeighbors = function (accommodationId) {
+        var neighborsBySides = {};
+        var accommodationData = this._accommodations[accommodationId];
+        for (var id in this._accommodations) {
+            var iteratedAccommodation = this._accommodations[id];
+            if (this._accommodations.hasOwnProperty(id)
+                && iteratedAccommodation.accommodation == accommodationData.accommodation) {
+                if (iteratedAccommodation.end === accommodationData.begin) {
+                    neighborsBySides['left'] = iteratedAccommodation;
+                }
+                else if (iteratedAccommodation.begin === accommodationData.end) {
+                    neighborsBySides['right'] = iteratedAccommodation;
+                }
+            }
+        }
+        return neighborsBySides;
     };
     return DataManager;
 }());

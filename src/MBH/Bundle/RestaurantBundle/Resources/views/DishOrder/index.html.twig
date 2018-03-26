@@ -53,11 +53,15 @@
             </thead>
 
             <tbody>
-
-
             </tbody>
         </table>
     </div> <!-- /.box-body -->
+    <div class="text-center bg-gray color-palette alert" id="order-summary">
+        <span class="package-summary-row"><b>{{ 'order.index.summary.total'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="order-summary-total">-</span>
+        </span>
+
+    </div>
     {% if isDishes %}
         {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'restaurant_dishorder_new', 'role': 'RESTAURANT_DISHORDER'} %}
     {% else %}

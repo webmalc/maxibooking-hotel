@@ -1,25 +1,30 @@
 <?php
 
-
 namespace MBH\Bundle\BaseBundle\EventListener;
 
-
+use Gedmo\Translatable\TranslatableListener;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class LocaleSubscriber implements EventSubscriberInterface
 {
     /** @var string  */
     private $defaultLocale;
+    private $translatableListener;
+    private $translator;
 
     /**
      * LocaleListener constructor.
-     * @param $defaultLocale
+     * @param string $defaultLocale
+     * @param TranslatableListener $translatableListener
      */
-    public function __construct($defaultLocale = 'ru')
+    public function __construct($defaultLocale = 'ru', TranslatableListener $translatableListener, TranslatorInterface $translator)
     {
         $this->defaultLocale = $defaultLocale;
+        $this->translatableListener = $translatableListener;
+        $this->translator = $translator;
     }
 
     /**
@@ -33,8 +38,10 @@ class LocaleSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $request->setLocale($request->getSession()->get('_locale', $this->defaultLocale));
-
+        $locale = $request->getSession()->get('_locale', $this->defaultLocale);
+        $request->setLocale($locale);
+        $this->translator->setLocale($locale);
+        $this->translatableListener->setDefaultLocale($this->defaultLocale);
     }
 
     public static function getSubscribedEvents()

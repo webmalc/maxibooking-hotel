@@ -37,29 +37,29 @@
                         placeholder="{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}">
                     <option></option>
                     {% for type, name in methods %}
-                        <option value="{{ type }}">{{ name }}</option>
+                        <option value="{{ type }}">{{ name|trans({}, 'MBHCashBundle') }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="input">
-                <i class="fa fa-paperclip" title='{{ 'views.cash.index.article'|trans({}, 'MBHCashBundle') }}'
-                   data-toggle='tooltip'></i>
-                &nbsp
-                <select name="article" id="article" placeholder="{{ 'views.cash.index.article'|trans({}, 'MBHCashBundle') }}">
-                    <option></option>
-                    {% for article in articles %}
-                        {#<optgroup label="{{ article }}">
-                            % if article.children|length == 0 %#}
-                                <option value="{{ article.id }}">{{ article.code }} {{ article.title }}</option>
-                            {#% else %
-                                {% for article in article.children %}
-                                    <option value="{{ article.id }}">{{ article.code }} {{ article.title }}</option>
-                                {% endfor %}
-                            % endif %
-                        </optgroup>#}
-                    {% endfor %}
-                </select>
-            </div>
+            {#<div class="input">#}
+                {#<i class="fa fa-paperclip" title='{{ 'views.cash.index.article'|trans({}, 'MBHCashBundle') }}'#}
+                   {#data-toggle='tooltip'></i>#}
+                {#&nbsp#}
+                {#<select name="article" id="article" placeholder="{{ 'views.cash.index.article'|trans({}, 'MBHCashBundle') }}">#}
+                    {#<option></option>#}
+                    {#{% for article in articles %}#}
+                        {#<optgroup label="{{ article }}">#}
+                            {#% if article.children|length == 0 %#}
+                                {#<option value="{{ article.id }}">{{ article.code }} {{ article.title }}</option>#}
+                            {#% else %#}
+                                {#{% for article in article.children %}#}
+                                    {#<option value="{{ article.id }}">{{ article.code }} {{ article.title }}</option>#}
+                                {#{% endfor %}#}
+                            {#% endif %#}
+                        {#</optgroup>#}
+                    {#{% endfor %}#}
+                {#</select>#}
+            {#</div>#}
             <div class="input">
                 <i class="fa fa-user" title='{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}'
                    data-toggle='tooltip'></i>
@@ -237,16 +237,18 @@ display: none;
     <i class="fa fa-plus"></i> {{ 'views.cash.index.create'|trans({}, 'MBHCashBundle') }}
 </button>
 </li>
-<li>
-<div class="dropup">
-    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true">
-        <i class="fa fa-upload"></i> {{ 'mbhcashbundle.view.cash.index.1c_export'|trans }} <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu">
-        <li><a href="{{ path('cash_1c_export') }}" target="_blank">{{ 'mbhcashbundle.view.cash.index.upload_clearing'|trans }}</a></li> <li><a href="{{ path('cash_1c_export', {method: 'cashless'}) }}" target="_blank">{{ 'views.cash.index.upload_all'|trans({}, 'MBHCashBundle') }}</a></li>
-    </ul>
-</div>
-</li>
+    {% if is_russian_client() %}
+        <li>
+            <div class="dropup">
+                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true">
+                    <i class="fa fa-upload"></i> {{ 'mbhcashbundle.view.cash.index.1c_export'|trans }} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="{{ path('cash_1c_export') }}" target="_blank">{{ 'mbhcashbundle.view.cash.index.upload_clearing'|trans }}</a></li> <li><a href="{{ path('cash_1c_export', {method: 'cashless'}) }}" target="_blank">{{ 'views.cash.index.upload_all'|trans({}, 'MBHCashBundle') }}</a></li>
+                </ul>
+            </div>
+        </li>
+    {% endif %}
 {% endblock %}
 {% block right %}
 <li>

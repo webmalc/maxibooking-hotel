@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Class ExportController
@@ -29,11 +30,13 @@ class ExportController extends BaseController
     const EXPORTABLE_CLASSES_DATA = [
         'tourist' => [
             'className' => Tourist::class,
-            'serviceName' => 'mbh.tourist_manager'
+            'serviceName' => 'mbh.tourist_manager',
+            'rights' => 'ROLE_TOURIST_REPORT'
         ],
         'package' => [
             'className' => Package::class,
-            'serviceName' => 'mbh.order_manager'
+            'serviceName' => 'mbh.order_manager',
+            'rights' => 'ROLE_PACKAGE_VIEW_ALL'
         ]
     ];
 
@@ -96,7 +99,9 @@ class ExportController extends BaseController
     public function exportAction(Request $request, $entityName, $format)
     {
         $entityData = self::EXPORTABLE_CLASSES_DATA[$entityName];
-
+        if (!$this->isGranted($entityData['rights'])) {
+            throw new AccessDeniedException();
+        }
         /** @var Exportable $className */
         $className = $entityData['className'];
         $columnNames = array_keys($className::getExportableFieldsData());
@@ -119,7 +124,7 @@ class ExportController extends BaseController
             }
             if ($format === 'csv') {
                 return $this->get('mbh.entities_exporter')
-                    ->exportToCSV($qb, $entityData['className'], $form->get('fields')->getData());
+                    ->exportToCSVResponse($qb, $entityData['className'], $form->get('fields')->getData());
             }
         }
 

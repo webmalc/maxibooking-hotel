@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Criteria\TouristQueryCriteria;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 
 class TouristRepository extends DocumentRepository
 {
@@ -37,26 +38,16 @@ class TouristRepository extends DocumentRepository
 
         $foreignTourists = [];
         /** @var Tourist $tourist */
-        $nativeCitizenship = $this->getNativeCitizenship();
         foreach($tourists as $tourist) {
             if($tourist) {
-                $citizenship = $tourist->getCitizenship();
-                if(!$citizenship || !$nativeCitizenship || ($citizenship && $citizenship !== $nativeCitizenship)) {
+                $citizenship = $tourist->getCitizenshipTld();
+                if(!$citizenship || ($citizenship && $citizenship !== Country::RUSSIA_TLD)) {
                     $foreignTourists[] = $tourist;
                 }
             }
         }
 
         return $foreignTourists;
-    }
-
-
-    /**
-     * @return null|\MBH\Bundle\VegaBundle\Document\VegaState
-     */
-    public function getNativeCitizenship()
-    {
-        return $this->dm->getRepository('MBHVegaBundle:VegaState')->findOneBy(['name' => "Россия"]);
     }
 
     /**
@@ -76,12 +67,12 @@ class TouristRepository extends DocumentRepository
             }
         }
 
-        if ($criteria->citizenship && $nativeCitizenship = $this->getNativeCitizenship()) {
+        if ($criteria->citizenship) {
             if ($criteria->citizenship == TouristQueryCriteria::CITIZENSHIP_NATIVE) {
-                $queryBuilder->addOr($queryBuilder->expr()->field('citizenship.id')->equals(null));
-                $queryBuilder->addOr($queryBuilder->expr()->field('citizenship.id')->equals($nativeCitizenship->getId()));
+                $queryBuilder->addOr($queryBuilder->expr()->field('citizenshipTld')->equals(null));
+                $queryBuilder->addOr($queryBuilder->expr()->field('citizenshipTld')->equals(Country::RUSSIA_TLD));
             } elseif ($criteria->citizenship == TouristQueryCriteria::CITIZENSHIP_FOREIGN) {
-                $queryBuilder->field('citizenship.id')->notEqual($nativeCitizenship->getId())->exists(true);
+                $queryBuilder->field('citizenshipTld')->notEqual(Country::RUSSIA_TLD)->exists(true);
             }
         }
 

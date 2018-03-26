@@ -42,7 +42,7 @@ class RoomCache extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()
@@ -85,7 +85,7 @@ class RoomCache extends Base
 
     /**
      * @var boolean
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      * @Assert\NotNull()
      */
@@ -138,7 +138,7 @@ class RoomCache extends Base
     /**
      * Set date
      *
-     * @param date $date
+     * @param \DateTime $date
      * @return self
      */
     public function setDate($date)

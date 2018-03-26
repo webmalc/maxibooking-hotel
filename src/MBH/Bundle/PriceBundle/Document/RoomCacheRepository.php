@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -130,7 +131,7 @@ class RoomCacheRepository extends DocumentRepository
      */
     public function findOneByDate(\DateTime $date, RoomType $roomType, Tariff $tariff = null)
     {
-        $qb = $this->createQueryBuilder('q');
+        $qb = $this->createQueryBuilder();
         $qb
             ->field('date')->equals($date)
             ->field('roomType.id')->equals($roomType->getId())
@@ -151,7 +152,7 @@ class RoomCacheRepository extends DocumentRepository
      * @param mixed $tariffs
      * @param boolean $grouped
      * @param Cache $memcached
-     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     * @return array|\Doctrine\ODM\MongoDB\Query\Builder|Cursor
      */
     public function fetch(
         \DateTime $begin = null,
@@ -178,6 +179,7 @@ class RoomCacheRepository extends DocumentRepository
             return $caches;
         }
         $result = [];
+        /** @var RoomCache $cache */
         foreach ($caches as $cache) {
             $result[$cache->getRoomType()->getId()][!empty($cache->getTariff()) ? $cache->getTariff()->getId() : 0][$cache->getDate()->format('d.m.Y')] = $cache;
         }
@@ -186,5 +188,25 @@ class RoomCacheRepository extends DocumentRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array $selectedFields
+     * @return array
+     */
+    public function getRawExistedRoomCaches(\DateTime $begin, \DateTime $end, array $selectedFields = [])
+    {
+        $qb = $this->fetchQueryBuilder($begin, $end, null, [], null);
+        if (count($selectedFields) > 0) {
+            $qb->select($selectedFields);
+        }
+
+        return $qb
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 }

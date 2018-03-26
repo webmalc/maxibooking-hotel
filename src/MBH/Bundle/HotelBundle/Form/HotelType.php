@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -50,7 +51,8 @@ class HotelType extends AbstractType
                 'label' => 'form.hotel_logo.image_file.help',
                 'group' => 'form.hotelType.settings',
                 'required' => false,
-                'logo_image_delete_url' => $options['logo_image_delete_url']
+                'logo_image_delete_url' => $options['logo_image_delete_url'],
+                'logo_image_download_url' => $options['logo_image_download_url']
 
             ])
             ->add('isHostel', CheckboxType::class, [
@@ -66,6 +68,18 @@ class HotelType extends AbstractType
                 'value' => true,
                 'required' => false,
                 'help' => 'form.hotelType.is_default_maxibooking'
+            ])
+            ->add('packageArrivalTime', ChoiceType::class, [
+                'label' => 'form.hotelType.package_arrival_time.label',
+                'group' => 'form.hotelType.settings',
+                'required' => false,
+                'choices' => range(0, 23)
+            ])
+            ->add('packageDepartureTime', ChoiceType::class, [
+                'label' => 'form.hotelType.package_departure_time.label',
+                'group' => 'form.hotelType.settings',
+                'required' => false,
+                'choices' => range(0, 23)
             ]);
     }
 
@@ -75,7 +89,8 @@ class HotelType extends AbstractType
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
             'types' => [],
             'imageUrl' => null,
-            'logo_image_delete_url' => null
+            'logo_image_delete_url' => null,
+            'logo_image_download_url' => null,
         ]);
     }
 

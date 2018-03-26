@@ -4,15 +4,13 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
-use MBH\Bundle\PackageBundle\Document\Criteria\TouristQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\Tourist;
-use MBH\Bundle\PackageBundle\Document\TouristRepository;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
@@ -23,17 +21,16 @@ use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
 use MBH\Bundle\PackageBundle\Form\UnwelcomeType;
-use MBH\Bundle\VegaBundle\Document\VegaFMS;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/tourist")
@@ -51,11 +48,9 @@ class TouristController extends Controller
     public function indexAction()
     {
         $form = $this->createForm(TouristFilterForm::class);
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
 
         return [
             'form' => $form->createView(),
-            'vegaDocumentTypes' => $vegaDocumentTypes
         ];
     }
 
@@ -71,8 +66,7 @@ class TouristController extends Controller
      */
     public function jsonAction(Request $request)
     {
-        $qbData = $this->get('mbh.tourist_manager')
-            ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected());
+        $qbData = $this->get('mbh.tourist_manager')->getQueryBuilderByRequestData($request, $this->getUser(), $this->hotel);
 
         if (!$qbData instanceof Builder) {
             return new JsonResponse(['error' => $qbData]);
@@ -92,7 +86,6 @@ class TouristController extends Controller
             $touristPackages[$tourist->getId()] = $packageRepository->findOneByTourist($tourist, $packageCriteria);
         }
 
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
         $arrivals = $this->container->getParameter('mbh.package.arrivals');
 
         return [
@@ -100,7 +93,7 @@ class TouristController extends Controller
             'total' => count($tourists),
             'draw' => $request->get('draw'),
             'touristPackages' => $touristPackages,
-            'vegaDocumentTypes' => $vegaDocumentTypes,
+            'documentTypes' => $this->get('mbh.fms_dictionaries')->getDocumentTypes(),
             'arrivals' => $arrivals,
         ];
     }
@@ -132,14 +125,15 @@ class TouristController extends Controller
      * @Route("/create/ajax", name="tourist_create_ajax")
      * @Method("POST")
      * @Security("is_granted('ROLE_TOURIST_NEW')")
+     * @param Request $request
+     * @return JsonResponse
      */
     public function createAjaxAction(Request $request)
     {
         $entity = new Tourist();
         $entity->setDocumentRelation(new DocumentRelation());
         $entity->setBirthplace(new BirthPlace());
-        $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
-        $entity->getDocumentRelation()->setType('vega_russian_passport');
+        $entity->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
 
         $form = $this->createForm(
             TouristType::class,
@@ -192,6 +186,8 @@ class TouristController extends Controller
      * @Method("POST")
      * @Security("is_granted('ROLE_TOURIST_NEW')")
      * @Template("MBHPackageBundle:Tourist:new.html.twig")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createAction(Request $request)
     {
@@ -234,6 +230,9 @@ class TouristController extends Controller
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template("MBHPackageBundle:Tourist:edit.html.twig")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Request $request
+     * @param Tourist $tourist
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateAction(Request $request, Tourist $tourist)
     {
@@ -249,15 +248,15 @@ class TouristController extends Controller
             $this->dm->persist($tourist);
             $this->dm->flush();
 
-            $flashBag = $request->getSession()->getFlashBag();
-            $flashBag->set('success', $this->get('translator')
-                ->trans('controller.touristController.record_edited_success'));
+            $this->addFlash('success', 'controller.touristController.record_edited_success');
             if ($notUnwelcome && $tourist->getIsUnwelcome()) {
-                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> ' . $this->get('translator')
+                $this->addFlash('warning', '<i class="fa fa-user-secret"></i> ' . $this->get('translator')
                         ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
             }
 
-            return $this->afterSaveRedirect('tourist', $tourist->getId());
+            $redirectPath = $request->request->get('redirectTo');
+
+            return $this->afterSaveRedirectExtended('tourist', $tourist->getId(), [], '_edit', $redirectPath);
         }
 
         return [
@@ -275,8 +274,11 @@ class TouristController extends Controller
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Tourist $entity
+     * @param Request $request
+     * @return array
      */
-    public function editAction(Tourist $entity)
+    public function editAction(Tourist $entity, Request $request)
     {
         $form = $this->createForm(TouristType::class, $entity, [
             'genders' => $this->container->getParameter('mbh.gender.types')
@@ -285,7 +287,8 @@ class TouristController extends Controller
         return [
             'entity' => $entity,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($entity),
+            'redirectTo' => $request->query->get('redirectTo')
         ];
     }
 
@@ -295,6 +298,9 @@ class TouristController extends Controller
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Tourist $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editDocumentAction(Tourist $entity, Request $request)
     {
@@ -302,12 +308,11 @@ class TouristController extends Controller
         $entity->getDocumentRelation() ?: $entity->setDocumentRelation(new DocumentRelation());
 
         //Default Value
-        $entity->getCitizenship() ?: $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
-        $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
+        $entity->getCitizenshipTld() ?: $entity->setCitizenshipTld($this->get('mbh.client_manager')->getClient()->getCountry());
+        $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
 
         $form = $this->createForm(DocumentRelationType::class, $entity, [
             'method' => Request::METHOD_POST,
-            'isFormInTouristController' => true
         ]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
@@ -317,10 +322,7 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set(
-                    'success',
-                    $this->get('translator')->trans('controller.touristController.record_edited_success')
-                );
+                $this->addFlash('success', 'controller.touristController.record_edited_success');
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('tourist_edit_document', ['id' => $entity->getId()]) :
@@ -374,12 +376,14 @@ class TouristController extends Controller
     }
 
     /**
-     *
      * @Route("/{id}/edit/visa", name="tourist_edit_visa")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Tourist $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editVisaAction(Tourist $entity, Request $request)
     {
@@ -399,10 +403,7 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set(
-                    'success',
-                    $this->get('translator')->trans('controller.touristController.record_edited_success')
-                );
+                $this->addFlash('success', 'controller.touristController.record_edited_success');
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('tourist_edit_visa', ['id' => $entity->getId()]) :
@@ -423,6 +424,9 @@ class TouristController extends Controller
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Tourist $tourist
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editUnwelcomeAction(Tourist $tourist, Request $request)
     {
@@ -472,7 +476,7 @@ class TouristController extends Controller
                         $unwelcome->setArrivalTime($package->getArrivalTime());
                         $unwelcome->setDepartureTime($package->getDepartureTime());
                     }
-                    $unwelcomeRepository->add($unwelcome, $tourist, $package);
+//                    $unwelcomeRepository->add($unwelcome, $tourist, $package);
                 }
                 $tourist->setIsUnwelcome(true);
                 $this->dm->persist($tourist);
@@ -498,6 +502,8 @@ class TouristController extends Controller
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Tourist $tourist
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteUnwelcomeAction(Tourist $tourist)
     {
@@ -516,6 +522,8 @@ class TouristController extends Controller
     /**
      * @Route("/regions", name="get_json_regions", options={"expose"=true})
      * @Method("GET")
+     * @param Request $request
+     * @return JsonResponse
      */
     public function ajaxRegionAction(Request $request)
     {
@@ -534,50 +542,14 @@ class TouristController extends Controller
     }
 
     /**
-     * @Route("/authority_organ_json_list", name="authority_organ_json_list", options={"expose"=true})
-     * @Method("GET")
-     * @Security("is_granted('ROLE_BASE_USER')")
-     */
-    public function authorityOrganListAction(Request $request)
-    {
-        $list = [];
-        if ($query = $request->get('query')['term']) {
-            $repository = $this->dm->getRepository('MBHVegaBundle:VegaFMS');
-            $entities = $repository->findBy(['name' => new \MongoRegex('/.*' . $query . '.*/ui')], ['name' => 1], 50);
-            foreach ($entities as $entity) {
-                $list[] = [
-                    'id' => $entity->getId(),
-                    'text' => $entity->getName()
-                ];
-
-                //$list[$entity->getId()] = $entity->getName();
-            }
-        }
-
-        return new JsonResponse(['results' => $list]);
-    }
-
-    /**
-     * @Route("/authority_organ/{id}", name="ajax_authority_organ", options={"expose"=true})
-     * @Method("GET")
-     * @Security("is_granted('ROLE_TOURIST_EDIT')")
-     * @ParamConverter("vegaFMS", class="MBHVegaBundle:VegaFMS")
-     */
-    public function authorityOrganAction(VegaFMS $vegaFMS)
-    {
-        return new JsonResponse([
-            'id' => $vegaFMS->getId(),
-            'text' => $vegaFMS->getName(),
-            'code' => $vegaFMS->getCode()
-        ]);
-    }
-
-    /**
      * @Route("/{id}/edit/address", name="tourist_edit_address")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     * @param Tourist $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAddressAction(Tourist $entity, Request $request)
     {
@@ -591,10 +563,7 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set(
-                    'success',
-                    $this->get('translator')->trans('controller.touristController.record_edited_success')
-                );
+                $this->addFlash('success', 'controller.touristController.record_edited_success');
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('tourist_edit_address', ['id' => $entity->getId()]) :
@@ -615,6 +584,8 @@ class TouristController extends Controller
      * @Route("/{id}/delete", name="tourist_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_TOURIST_DELETE')")
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction($id)
     {
@@ -628,6 +599,7 @@ class TouristController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_TOURIST_VIEW')")
      * @ParamConverter("tourist", class="MBHPackageBundle:Tourist")
+     * @param Tourist $tourist
      * @return JsonResponse
      */
     public function jsonEntryAction(Tourist $tourist)
@@ -641,6 +613,8 @@ class TouristController extends Controller
      * @Route("/get/{id}", name="ajax_tourists", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_TOURIST_VIEW')")
+     * @param Request $request
+     * @param null $id
      * @return JsonResponse
      */
     public function ajaxListAction(Request $request, $id = null)
@@ -670,7 +644,7 @@ class TouristController extends Controller
         }
 
         $regex = new \MongoRegex('/.*' . $request->get('query') . '.*/i');
-        $qb = $this->dm->getRepository('MBHPackageBundle:Tourist')->createQueryBuilder('q')
+        $qb = $this->dm->getRepository('MBHPackageBundle:Tourist')->createQueryBuilder()
             ->sort(['fullName' => 'asc', 'birthday' => 'desc'])->limit(100);
         $qb->addOr($qb->expr()->field('fullName')->equals($regex));
         $qb->addOr($qb->expr()->field('email')->equals($regex));
@@ -697,5 +671,49 @@ class TouristController extends Controller
         }
 
         return new JsonResponse(['results' => $data]);
+    }
+
+    /**
+     * @Route("/export_to_kontur", name="export_to_kontur", options={"expose"=true})
+     * @param Request $request
+     * @Security("is_granted('ROLE_TOURIST_REPORT')")
+     * @return Response
+     */
+    public function compileKonturFMSArchive(Request $request)
+    {
+        $touristQB = $this->get('mbh.tourist_manager')
+            ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected())
+            ->limit(0);
+
+        $packageCriteria = new PackageQueryCriteria();
+        $formData = $request->query->get('form');
+        $beginDate = $this->helper->getDateFromString($formData['begin']);
+        $endDate = $this->helper->getDateFromString($formData['end']);
+
+        $packageCriteria->begin = $beginDate;
+        $packageCriteria->end = $endDate;
+
+        $stringsToWriteByNames = [];
+        /** @var Tourist $tourist */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        foreach ($touristQB->getQuery()->execute() as $tourist) {
+            $touristPackage = $packageRepository->findOneByTourist($tourist, $packageCriteria);
+            if (!is_null($touristPackage) && $tourist->getLastName() != 'Н/д') {
+                $viewFile = $tourist->getCitizenshipTld() === Country::RUSSIA_TLD
+                    ? '@MBHClient/Fms/fms_export_russian.xml.twig'
+                    : '@MBHClient/Fms/fms_export_foreign.xml.twig';
+                $xml = $this->renderView($viewFile, [
+                    'package' => $touristPackage,
+                    'tourist' => $tourist
+                ]);
+
+                $stringsToWriteByNames[$tourist->getName() . '.xml'] =  $xml;
+            }
+        }
+
+        $zipManager = $this->get('mbh.zip_manager');
+        $zipFileName = 'kontur-export ' . $this->helper->getDatePeriodString($beginDate, $endDate, 'Y.m.d') . '.zip';
+
+        return $zipManager->writeToStreamedResponse($stringsToWriteByNames, $zipFileName);
     }
 }

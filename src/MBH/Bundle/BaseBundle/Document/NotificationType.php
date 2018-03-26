@@ -28,6 +28,9 @@ class NotificationType extends Base
     public const UNPAID_TYPE = 'unpaid';
     public const CONFIRM_ORDER_TYPE = 'confirm_order';
     public const TASK_TYPE = 'task';
+    public const EMAIL_RESETTING_TYPE = 'email_resetting';
+
+    public const AUTH_TYPE = 'auth';
 
     public const OWNER_STUFF = 'stuff';
     public const OWNER_CLIENT = 'client';
@@ -120,6 +123,7 @@ class NotificationType extends Base
             self::UNPAID_TYPE,
             self::CONFIRM_ORDER_TYPE,
             self::TASK_TYPE,
+            self::EMAIL_RESETTING_TYPE
         ];
     }
 
@@ -129,6 +133,14 @@ class NotificationType extends Base
             self::OWNER_ALL,
             self::OWNER_CLIENT,
             self::OWNER_STUFF
+        ];
+    }
+
+    public static function getSystemNotificationTypes()
+    {
+        return [
+            self::EMAIL_RESETTING_TYPE,
+            self::AUTH_TYPE
         ];
     }
 }

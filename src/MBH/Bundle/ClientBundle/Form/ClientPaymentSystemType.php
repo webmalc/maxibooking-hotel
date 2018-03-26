@@ -2,11 +2,12 @@
 
 namespace MBH\Bundle\ClientBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,7 +19,8 @@ class ClientPaymentSystemType extends AbstractType
     private $paymentSystemsDefault;
     private $taxationRateCodes;
 
-    public function __construct($paymentSystems, $paymentSystemsChange, $paymentSystemsDefault, $taxationRateCodes) {
+    public function __construct($paymentSystems, $paymentSystemsChange, $paymentSystemsDefault, $taxationRateCodes)
+    {
         $this->paymentSystems = $paymentSystems;
         $this->paymentSystemsChange = $paymentSystemsChange;
         $this->paymentSystemsDefault = $paymentSystemsDefault;
@@ -27,69 +29,72 @@ class ClientPaymentSystemType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var ClientConfig $entity */
-        $entity = $options['entity'];
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $options['entity'];
         $robokassaMerchantLogin = $robokassaMerchantPass1 = $robokassaMerchantPass2 = null;
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
         $unitellerIsWithFiscalization = $unitellerShopIDP = $unitellerPassword = $taxationSystemCode = $taxationRateCode = null;
+        $rnkbKey = $rnkbShopIDP = null;
         $rbkEshopId = $rbkSecretKey = null;
         $paypalLogin = null;
-        $default = $this->paymentSystemsDefault;
+        $invoiceDocument = null;
+        $stripePubToken = null;
 
-        if ($entity) {
-            $robokassaMerchantLogin = $entity->getRobokassa() ? $entity->getRobokassa()->getRobokassaMerchantLogin() : '';
-            $robokassaMerchantPass1 = $entity->getRobokassa() ? $entity->getRobokassa()->getRobokassaMerchantPass1() : '';
-            $robokassaMerchantPass2 = $entity->getRobokassa() ? $entity->getRobokassa()->getRobokassaMerchantPass2() : '';
-            $payanywayMntId = $entity->getPayanyway() ? $entity->getPayanyway()->getPayanywayMntId() : '';
-            $payanywayKey = $entity->getPayanyway() ? $entity->getPayanyway()->getPayanywayKey() : '';
-            $moneymailShopIDP = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailShopIDP() : '';
-            $moneymailKey = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailKey() : '';
-            $unitellerShopIDP = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerShopIDP() : '';
-            $unitellerPassword = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerPassword() : '';
-            $unitellerIsWithFiscalization = $entity->getUniteller() ? $entity->getUniteller()->isWithFiscalization(): true;
-            $taxationRateCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationRateCode() : '';
-            $taxationSystemCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationSystemCode() : '';
-            $rbkEshopId = $entity->getRbk() ? $entity->getRbk()->getRbkEshopId() : '';
-            $rbkSecretKey = $entity->getRbk() ? $entity->getRbk()->getRbkSecretKey() : '';
-            $paypalLogin = $entity->getPaypal() ? $entity->getPaypal()->getPaypalLogin() : '';
+        $paymentSystemName = $options['paymentSystemName'] ?? $this->paymentSystemsDefault;
+        $paymentSystemsChoices = array_filter($this->paymentSystems, function ($paymentSystemName) use ($clientConfig, $options) {
+            return !in_array($paymentSystemName, $clientConfig->getPaymentSystems()) || $paymentSystemName == $options['paymentSystemName'];
+        }, ARRAY_FILTER_USE_KEY);
 
-            if ($entity->getPaymentSystem()) {
-                $default = $entity->getPaymentSystem();
-            }
+        if ($clientConfig) {
+            $robokassaMerchantLogin = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantLogin() : '';
+            $robokassaMerchantPass1 = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantPass1() : '';
+            $robokassaMerchantPass2 = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantPass2() : '';
+            $payanywayMntId = $clientConfig->getPayanyway() ? $clientConfig->getPayanyway()->getPayanywayMntId() : '';
+            $payanywayKey = $clientConfig->getPayanyway() ? $clientConfig->getPayanyway()->getPayanywayKey() : '';
+            $moneymailShopIDP = $clientConfig->getMoneymail() ? $clientConfig->getMoneymail()->getMoneymailShopIDP() : '';
+            $moneymailKey = $clientConfig->getMoneymail() ? $clientConfig->getMoneymail()->getMoneymailKey() : '';
+            $unitellerShopIDP = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerShopIDP() : '';
+            $unitellerPassword = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerPassword() : '';
+            $unitellerIsWithFiscalization = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->isWithFiscalization() : true;
+            $taxationRateCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationRateCode() : '';
+            $taxationSystemCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationSystemCode() : '';
+            $rbkEshopId = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkEshopId() : '';
+            $rbkSecretKey = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkSecretKey() : '';
+            $paypalLogin = $clientConfig->getPaypal() ? $clientConfig->getPaypal()->getPaypalLogin() : '';
+            $rnkbShopIDP = $clientConfig->getRnkb() ? $clientConfig->getRnkb()->getRnkbShopIDP() : '';
+            $rnkbKey = $clientConfig->getRnkb() ? $clientConfig->getRnkb()->getKey() : '';
+            $invoiceDocument = $clientConfig->getInvoice() ? $clientConfig->getInvoice()->getInvoiceDocument() : null;
+            $stripePubToken = $clientConfig->getStripe() ? $clientConfig->getStripe()->getPublishableToken() : null;
+            $stripeSecretKey = $clientConfig->getStripe() ? $clientConfig->getStripe()->getSecretKey() : null;
+            $stripeCommission = $clientConfig->getStripe() ? $clientConfig->getStripe()->getCommissionInPercents() : null;
         }
 
-        if (!$this->paymentSystemsChange) {
-            $builder
-                ->add(
-                    'paymentSystem',
-                    HiddenType::class,
-                    [
-                        'data' => $default,
-                    ]
-                );
-        } else {
-            $builder
-                ->add(
-                    'paymentSystem',
-                    \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
-                    [
-                        'label' => 'form.clientPaymentSystemType.payment_system',
-                        'choices' => $this->paymentSystems,
-                        'group' => 'form.clientPaymentSystemType.payment_system_group',
-                        'placeholder' => '',
-                        'data' => $default,
-                        'required' => true
-                    ]
-                );
-        }
+        $isPaymentSystemChanged = isset($options['paymentSystemName']);
+        $builder
+            ->add(
+                'paymentSystem',
+                InvertChoiceType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.payment_system',
+                    'choices' => $paymentSystemsChoices,
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'placeholder' => '',
+                    'data' => $paymentSystemName,
+                    'required' => true,
+                    'mapped' => false,
+                    'attr' => ['disabled' => $isPaymentSystemChanged]
+                ]
+            );
+
         $builder
             ->add('isUnitellerWithFiscalization', CheckboxType::class, [
                 'mapped' => false,
                 'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
                 'group' => 'form.clientPaymentSystemType.payment_system_group',
                 'data' => $unitellerIsWithFiscalization,
-                'required' => false
+                'required' => false,
+                'attr' => ['class' => 'payment-system-params uniteller'],
             ])
             ->add(
                 'robokassaMerchantLogin',
@@ -200,6 +205,30 @@ class ClientPaymentSystemType extends AbstractType
                 ]
             )
             ->add(
+                'rnkbShopIDP',
+                TextType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.uniteller_shop_id',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params rnkb'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'mapped' => false,
+                    'data' => $rnkbShopIDP
+                ]
+            )
+            ->add(
+                'rnkbKey',
+                TextType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.key.label',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params rnkb', 'type' => 'password'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'mapped' => false,
+                    'data' => $rnkbKey
+                ]
+            )
+            ->add(
                 'taxationRateCode',
                 InvertChoiceType::class,
                 [
@@ -249,6 +278,44 @@ class ClientPaymentSystemType extends AbstractType
                     'data' => $rbkSecretKey
                 ]
             )
+            ->add('invoiceDocument', DocumentType::class, [
+                'label' => 'form.clientPaymentSystemType.invoice_document.label',
+                'class' => DocumentTemplate::class,
+                'mapped' => false,
+                'data' => $invoiceDocument,
+                'required' => false,
+                'attr' => ['class' => 'payment-system-params invoice'],
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+            ])
+            ->add('stripePubToken', TextType::class, [
+                'label' => 'form.clientPaymentSystemType.stripe_pub_token.label',
+                'mapped' => false,
+                'data' => $stripePubToken,
+                'required' => false,
+                'attr' => ['class' => 'payment-system-params stripe'],
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+            ])
+            ->add('stripeSecretKey', TextType::class, [
+                'label' => 'form.clientPaymentSystemType.stripe_secret_key.label',
+                'mapped' => false,
+                'data' => $stripeSecretKey,
+                'required' => false,
+                'attr' => ['class' => 'payment-system-params stripe'],
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+            ])
+            ->add('commission', TextType::class, [
+                'label' => 'form.clientPaymentSystemType.stripe_commission.label',
+                'mapped' => false,
+                'data' => $stripeCommission,
+                'required' => false,
+                'attr' => [
+                    'class' => 'payment-system-params stripe mbh-spinner',
+                    'spinner-max' => 100,
+                    'step' => 0.05,
+                    'decimals' => 2
+                ],
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+            ])
             ->add(
                 'paypalLogin',
                 TextType::class,
@@ -260,26 +327,6 @@ class ClientPaymentSystemType extends AbstractType
                     'mapped' => false,
                     'data' => $paypalLogin
                 ]
-            )
-            ->add(
-                'successUrl',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.successUrl',
-                    'help' => 'form.clientPaymentSystemType.successUrlDesc',
-                    'group' => 'form.clientPaymentSystemType.payment_system_group_links',
-                    'required' => false,
-                ]
-            )
-            ->add(
-                'failUrl',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.failUrl',
-                    'help' => 'form.clientPaymentSystemType.failUrlDesc',
-                    'group' => 'form.clientPaymentSystemType.payment_system_group_links',
-                    'required' => false,
-                ]
             );
     }
 
@@ -289,7 +336,8 @@ class ClientPaymentSystemType extends AbstractType
             'data_class' => 'MBH\Bundle\ClientBundle\Document\ClientConfig',
             'entity' => null,
             'taxationRateCodes' => null,
-            'taxationSystemCode' => null
+            'taxationSystemCode' => null,
+            'paymentSystemName' => null
         ]);
     }
 

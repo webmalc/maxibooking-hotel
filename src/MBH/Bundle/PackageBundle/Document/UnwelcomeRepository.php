@@ -62,7 +62,7 @@ class UnwelcomeRepository
 
     private function fillUnwelcome(Unwelcome $unwelcome, Tourist $tourist)
     {
-        $unwelcome->setTouristCitizenship($tourist->getCitizenship() ? $tourist->getCitizenship()->getName() : null);
+        $unwelcome->setTouristCitizenship($tourist->getCitizenshipTld());
         $unwelcome->setTouristEmail($tourist->getEmail());
         $unwelcome->setTouristPhone($tourist->getPhone());
     }
@@ -193,7 +193,7 @@ class UnwelcomeRepository
             $hotel->setTitle($unwelcomeData['hotel']['title']);
             $city = new City();
             $city->setTitle($unwelcomeData['hotel']['city']);
-            $hotel->setCity($city);
+            $hotel->setCityId($city);
             $unwelcome->setHotel($hotel);
         }
 

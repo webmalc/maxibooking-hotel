@@ -37,9 +37,10 @@ class Messenger implements \SplObserver
         /** @var NotifierMessage $message */
         /** @var Notifier $notifier */
         $message = $notifier->getMessage();
+        $messageText = $this->container->get('translator')->trans($message->getText(), $message->getTranslateParams());
 
         $this->send(
-            $message->getText(),
+            $messageText,
             $message->getFrom(),
             $message->getType(),
             $message->getAutohide(),
@@ -48,7 +49,6 @@ class Messenger implements \SplObserver
             $message->getHotel(),
             $message->getMessageType()
         );
-
     }
 
     /**
@@ -90,7 +90,7 @@ class Messenger implements \SplObserver
             /** @var Message $message */
             $messageType = $message->getMessageType();
             /** @var User $user */
-            if ($user->isNotificationTypeExists($messageType)) {
+            if ($user instanceof User && $user->isNotificationTypeExists($messageType)) {
                 if ($message->getHotel() && !$permissions->checkPermissions($message->getHotel())) {
                     continue;
                 }
@@ -100,10 +100,10 @@ class Messenger implements \SplObserver
                 $session->getFlashBag()->add(implode('|', $key), $message->getText());
                 $message->setIsSend(true);
                 $this->dm->persist($message);
-
+                $this->dm->flush($message);
             }
         }
-        $this->dm->flush();
+
         $this->clear();
     }
 

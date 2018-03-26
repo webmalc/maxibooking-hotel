@@ -53,6 +53,7 @@ class ServiceCategory extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
+     * @Gedmo\Translatable
      * @Assert\Length(
      *      min=2,
      *      minMessage="document.service_category.full_title.too_short",
@@ -91,15 +92,39 @@ class ServiceCategory extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     protected $system = false;
 
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
+
     public function __construct()
     {
         $this->services = new ArrayCollection();
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     * @return ServiceCategory
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+
+        return $this;
     }
     
     /**

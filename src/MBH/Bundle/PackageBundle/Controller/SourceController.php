@@ -2,12 +2,10 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Form\PackageSourceType;
-use MBH\Bundle\PackageBundle\Form\SearchType;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -18,44 +16,40 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @Route("management/source")
  */
-class SourceController extends Controller implements CheckHotelControllerInterface
+class SourceController extends BaseController implements CheckHotelControllerInterface
 {
-
     /**
      * Source action
      *
      * @Route("/", name="package_source")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_SOURCE_VIEW')")
      * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function indexAction(Request $request)
     {
         $entity = new PackageSource();
         $form = $this->createForm(PackageSourceType::class, $entity, []);
 
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entities = $dm->getRepository('MBHPackageBundle:PackageSource')->createQueryBuilder('s')
+        $entities = $this->dm
+            ->getRepository('MBHPackageBundle:PackageSource')
+            ->createQueryBuilder()
             ->sort('fullTitle', 'asc')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
-        if($request->isMethod('POST')) {
+        if($request->isMethod('POST') && $this->isGranted('ROLE_SOURCE_NEW')) {
             $form->handleRequest($request);
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.sourceController.record_created_success'))
-            ;
+            $this->addFlash('success', 'controller.sourceController.record_created_success');
 
             return $this->redirect($this->generateUrl('package_source'));
-
-
         }
+
         return [
             'form' => $form->createView(),
             'entities' => $entities,
@@ -68,26 +62,19 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}/edit", name="package_source_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_SOURCE_EDIT')")
      * @Template()
+     * @param PackageSource $packageSource
+     * @return array
      */
-    public function editAction($id)
+    public function editAction(PackageSource $packageSource)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:PackageSource')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(PackageSourceType::class, $entity, []);
+        $form = $this->createForm(PackageSourceType::class, $packageSource, []);
 
         return [
-            'entity' => $entity,
+            'entity' => $packageSource,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($packageSource)
         ];
     }
 
@@ -96,44 +83,31 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}", name="package_source_update")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_SOURCE_EDIT')")
      * @Template("MBHPackageBundle:Source:edit.html.twig")
-     *
+     * @param Request $request
+     * @param PackageSource $source
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, PackageSource $source)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:PackageSource')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-        $form = $this->createForm(PackageSourceType::class, $entity);
-
+        $form = $this->createForm(PackageSourceType::class, $source);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $this->dm->persist($source);
+            $this->dm->flush();
 
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+            $this->addFlash('success', 'controller.sourceController.record_edited_success');
 
-
-
-            $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.sourceController.record_edited_success'))
-            ;
-            return $this->afterSaveRedirect('package_source', $entity->getId());
+            return $this->afterSaveRedirect('package_source', $source->getId());
         }
 
-        return array(
-            'entity' => $entity,
+        return [
+            'entity' => $source,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        );
+            'logs' => $this->logs($source)
+        ];
     }
 
     /**
@@ -143,7 +117,8 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
      * @Method("GET")
      * @ParamConverter(class="MBHPackageBundle:PackageSource")
      * @param PackageSource $entity
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_SOURCE_DELETE')")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(PackageSource $entity)
     {
@@ -151,6 +126,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
             return $this->deleteEntity($entity->getId(), 'MBHPackageBundle:PackageSource', 'package_source');
         }
 
+        throw new \InvalidArgumentException('System package source can not be deleted!');
     }
 
 }

@@ -2,10 +2,10 @@
 
 namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls\Type;
 
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -21,10 +21,13 @@ class NoticeStayPlaceXlsType extends AbstractType
     private $dm;
     /** @var  TranslatorInterface */
     private $translator;
+    /** @var  BillingApi */
+    private $billingApi;
 
-    public function __construct(DocumentManager $dm, TranslatorInterface $translator) {
+    public function __construct(DocumentManager $dm, TranslatorInterface $translator, BillingApi $billingApi) {
         $this->dm = $dm;
         $this->translator = $translator;
+        $this->billingApi = $billingApi;
     }
 
     /**
@@ -36,9 +39,11 @@ class NoticeStayPlaceXlsType extends AbstractType
 
         /** @var Tourist $tourist */
         foreach($options['tourists'] as $tourist) {
-            if($tourist) {
-                $citizenship = $tourist->getCitizenship();
-                $citizenshipName = $citizenship ? $citizenship->getName() : $this->translator->trans('form.notice_stay_place_xls_type.not_specified');
+            if($tourist && $tourist->getCitizenshipTld()) {
+                $citizenship = $this->billingApi->getCountryByTld($tourist->getCitizenshipTld());
+                $citizenshipName = $citizenship
+                    ? $citizenship->getName()
+                    : $this->translator->trans('form.notice_stay_place_xls_type.not_specified');
                 $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . $citizenshipName . ')';
             }
         }

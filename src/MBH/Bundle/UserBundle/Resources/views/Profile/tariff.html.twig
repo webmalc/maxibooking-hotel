@@ -1,0 +1,93 @@
+{% extends 'MBHUserBundle:Profile:layout.html.twig' %}
+
+{% set active = 3 %}
+
+{% block content %}
+    {{ parent() }}
+    {% set tariffsTableData = [
+    {title: 'view.personal_account.tariff.current', rows: [
+    {title: 'view.personal_account.tariff.number_of_rooms', value: tariffsData.main.rooms },
+    {title: 'view.personal_account.tariff.price', value: tariffsData.main.price ~ ' ' ~ tariffsData.main.currency },
+    {title: 'view.personal_account.tariff.period', value: tariffsData.main.period ~ ' ' ~ 'view.personal_account.tariff.month_abbr'|trans },
+    ]}] %}
+    {% if tariffsData.next %}
+        {% set tariffsTableData = tariffsTableData|merge([
+        {title: 'view.personal_account.tariff.next', rows: [
+        {title: 'view.personal_account.tariff.number_of_rooms', value: tariffsData.next.rooms },
+        {title: 'view.personal_account.tariff.price', value: tariffsData.next.price ~ ' ' ~ tariffsData.next.currency },
+        {title: 'view.personal_account.tariff.period', value: tariffsData.next.period ~ ' ' ~ 'view.personal_account.tariff.month_abbr'|trans },
+        {title: 'view.personal_account.tariff.begin', value: tariffsData.next.begin|date('d.m.Y') },
+
+        ]}]) %}
+    {% endif %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="payment-order-form">
+            {% for tariffTableData in tariffsTableData %}
+                {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {header: tariffTableData.title} %}
+                    {% block content %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <table class="table not-auto-datatable table-striped">
+                                    <tbody>
+                                    {% for rowData in tariffTableData.rows %}
+                                        <tr>
+                                            <td class="col-md-3 col-xs-6">
+                                                <strong>{{ rowData.title|trans }}</strong>
+                                            </td>
+                                            <td>
+                                                {{ rowData.value }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endblock %}
+                {% endembed %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                <li>
+                    <button type="button" class="btn btn-success navbar-btn" id="change-tariff-modal-show">
+                        <i class="fa fa-exchange"> </i> {{ 'view.personal_account.tariff.change_tariff_button.title'|trans }}
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="modal fade" id="change-tariff-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title text-center">{{ 'view.personal_account.tariff.change_tariff_modal_title'|trans }}</h4>
+                </div>
+                <div class="modal-body" id="change-tariff-modal-body">
+                    <div id="change-tariff-form-wrapper">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="change-tariff-button"><i class="fa fa-exchange"
+                                                                                               aria-hidden="true"></i>
+                        &nbsp;{{ 'view.personal_account.tariff.change_tariff_button.title'|trans }}
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"
+                                                                                          aria-hidden="true"></i>
+                        &nbsp;{{ 'modal.chessBoard.close'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

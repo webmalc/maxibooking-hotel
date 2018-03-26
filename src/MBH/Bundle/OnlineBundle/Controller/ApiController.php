@@ -5,19 +5,26 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\Stripe;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Stripe\Charge;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\Translator;
 
@@ -49,6 +56,7 @@ class ApiController extends Controller
      */
     public function getFormResultsIframeAction($formId = null)
     {
+        $this->setLocaleByRequest();
         $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
             ->findOneById($formId);
 
@@ -67,6 +75,7 @@ class ApiController extends Controller
      */
     public function getFormIframeAction($formId = null)
     {
+        $this->setLocaleByRequest();
         $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
             ->findOneById($formId);
 
@@ -219,11 +228,14 @@ class ApiController extends Controller
 
     /**
      * Results js
-     * @Route("/order/check", name="online_form_check_order")
+     * @Route("/order/check/{paymentSystemName}", name="online_form_check_order")
      * @Method({"POST", "GET"})
      * @Template()
+     * @param Request $request
+     * @param $paymentSystemName
+     * @return Response
      */
-    public function checkOrderAction(Request $request)
+    public function checkOrderAction(Request $request, $paymentSystemName)
     {
         /** @var DocumentManager $dm */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -239,11 +251,25 @@ class ApiController extends Controller
             $logger->info('FAIL. '.$logText.' .Not found config');
             throw $this->createNotFoundException();
         }
-        $response = $clientConfig->checkRequest($request);
+        $response = $clientConfig->checkRequest($request, $paymentSystemName);
 
         if (!$response) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
             throw $this->createNotFoundException();
+        }
+
+        if ($paymentSystemName === 'stripe') {
+            \Stripe\Stripe::setApiKey($clientConfig->getStripe()->getSecretKey());
+
+            $charge = Charge::create([
+                "amount" => $request->request->get('amount') * 100,
+                "currency" => $request->request->get('currency'),
+                "description" => "Charge for order #" . $response['doc'] ,
+                "source" => $request->get('stripeToken'),
+            ]);
+            if ($charge->status !== 'succeeded') {
+                throw new BadRequestHttpException('Stripe charge is not successful');
+            }
         }
 
         //save cashDocument
@@ -291,7 +317,7 @@ class ApiController extends Controller
             ->setAutohide(false)
             ->setEnd(new \DateTime('+10 minute'))
             ->setLink(
-                $this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()])
+                $this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
             )
             ->setLinkText('mailer.to_order')
             ->setMessageType(NotificationType::ONLINE_PAYMENT_CONFIRM_TYPE);
@@ -322,7 +348,7 @@ class ApiController extends Controller
 
         $logger->info('OK. '.$logText);
 
-        return new Response($response['text']);
+        return $paymentSystemName === Stripe::NAME ? $this->redirectToRoute('successful_payment') : new Response($response['text']);
     }
 
     /**
@@ -352,11 +378,12 @@ class ApiController extends Controller
         $query->adults = (int)$request->get('adults');
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
+        $query->setSave(true);
         $isViewTariff = false;
 
-        $query->setChildrenAges(
-            !empty($request->get('children-ages')) && $query->children > 0 ? $request->get('children-ages') : []
-        );
+        if (!empty($request->get('children-ages')) && $query->children > 0 && $formConfig->isIsDisplayChildrenAges()) {
+            $query->setChildrenAges($request->get('children-ages'));
+        }
 
         $hotels = $formConfig->getHotels();
         if (!count($hotels)) {
@@ -432,10 +459,10 @@ class ApiController extends Controller
         }
 
         $facilityArray = [];
-
+        $translator = $this->get('translator');
         foreach ($this->getParameter('mbh.hotel')['facilities'] as $facilityVal) {
             foreach ($facilityVal as $key => $val) {
-                $facilityArray[$key] = $val;
+                $facilityArray[$key] = $translator->trans($val);
             }
         }
 
@@ -458,6 +485,7 @@ class ApiController extends Controller
      */
     public function getUserFormAction(Request $request)
     {
+        $this->setLocaleByRequest();
         $requestJson = json_decode($request->getContent());
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
@@ -467,16 +495,23 @@ class ApiController extends Controller
         foreach ($requestJson->packages as $data) {
             $hotels[$data->hotel->id] = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneById($data->hotel->id);
         }
+
+        /** @var Hotel $hotel */
         foreach ($hotels as $hotel) {
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
+        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($requestJson->configId);
+
+        if (!$formConfig || !$formConfig->getEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         return [
-            'arrival' => $this->container->getParameter('mbh.package.arrival.time'),
-            'departure' => $this->container->getParameter('mbh.package.departure.time'),
             'request' => $requestJson,
             'services' => $services,
             'hotels' => $hotels,
+            'config' => $formConfig
         ];
     }
 
@@ -507,6 +542,7 @@ class ApiController extends Controller
             'formConfig' => $formConfig,
             'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig(),
             'request' => $requestJson,
+            'paymentSystems' => $this->getParameter('mbh.payment_systems')
         ];
     }
 
@@ -517,12 +553,15 @@ class ApiController extends Controller
      */
     public function createPackagesAction(Request $request)
     {
+//        $this->addAccessControlAllowOriginHeaders();
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $requestJson = json_decode($request->getContent());
 
         //Create packages
-        $order = $this->createPackages($requestJson, $requestJson->paymentType != 'in_hotel');
+        $isWithCashCashDocument = $requestJson->paymentType != 'in_hotel'
+            || (substr($requestJson->paymentType, 0, strlen('by_receipt')) === 'by_receipt');
+        $order = $this->createPackages($requestJson, $isWithCashCashDocument);
 
         if (empty($order)) {
             return new JsonResponse(
@@ -535,7 +574,7 @@ class ApiController extends Controller
             );
         }
         $packages = iterator_to_array($order->getPackages());
-        $this->sendNotifications($order, $requestJson->arrival.':00', $requestJson->departure.':00');
+        $this->sendNotifications($order);
 
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
@@ -558,30 +597,84 @@ class ApiController extends Controller
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
+        if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystems()) {
             $form = false;
+        } elseif (in_array($requestJson->paymentType, ['by_receipt_full', 'by_receipt_half', 'by_receipt_first_day'])) {
+            $form = $this->container->get('twig')->render('@MBHClient/PaymentSystem/invoice.html.twig', [
+                'packageId' => current($packages)->getId(),
+            ]);
         } else {
+            $paymentSystem = $requestJson->paymentSystem;
             $form = $this->container->get('twig')->render(
-                'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig',
+                'MBHClientBundle:PaymentSystem:'.$paymentSystem.'.html.twig',
                 [
                     'data' => array_merge(
                         [
                             'test' => false,
-                            'currency' => strtoupper($this->getParameter('locale.currency')),
-
+                            'currency' => strtoupper($this->clientConfig->getCurrency()),
                             'buttonText' => $this->get('translator')->trans(
                                 'views.api.make_payment_for_order_id',
                                 ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
                                 'MBHOnlineBundle'
                             ),
                         ],
-                        $clientConfig->getFormData($order->getCashDocuments()[0])
+                        $clientConfig->getFormData($order->getCashDocuments()[0], $paymentSystem)
                     ),
                 ]
             );
         }
+        $this->dm->refresh($order->getFirstPackage());
 
-        return new JsonResponse(['success' => true, 'message' => $message, 'form' => $form]);
+        return new JsonResponse(['success' => true,
+            'message' => $message,
+            'form' => $form,
+            'order' => $order->getJsonSerialized(),
+            'invoiceUrl' => $this->generateUrl('generate_invoice',
+                ['id' => $order->getFirstPackage()->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL)]);
+    }
+
+    /**
+     * @Route("/payment/generate_invoice/{id}", name="generate_invoice")
+     * @param Package $package
+     * @return Response
+     * @throws Exception
+     */
+    public function generateInvoiceAction(Package $package)
+    {
+        $content =  $this->get('mbh.template_formatter')
+            ->generateDocumentTemplate($this->clientConfig->getInvoice()->getInvoiceDocument(), $package, $this->getUser());
+
+        return new Response($content, 200, [
+            'Content-Type' => 'application/pdf'
+        ]);
+    }
+
+    /**
+     * @Template()
+     * @Route("/payment/stripe/{id}", name="stripe_payment_page")
+     * @param CashDocument $cashDocument
+     * @return array
+     */
+    public function showStripePaymentPageAction(CashDocument $cashDocument)
+    {
+        $checkUrl = $this->generateUrl('successful_payment', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $formData = $this->clientConfig->getFormData($cashDocument, Stripe::NAME, $checkUrl);
+
+        return [
+            'data' => $formData,
+            'isOrderPaid' => $cashDocument->getIsPaid(),
+            'currency' => $this->getParameter('locale.currency')
+        ];
+    }
+
+    /**
+     * @Template("@MBHUser/Profile/paymentSuccessfulPage.html.twig")
+     * @Route("/payment/success", name="successful_payment")
+     */
+    public function showSuccessfulPaymentPageAction()
+    {
+        return [];
     }
 
     /**
@@ -609,12 +702,11 @@ class ApiController extends Controller
 
     /**
      * @param Order $order
-     * @param string $arrival
-     * @param string $departure
      * @return bool
      */
-    private function sendNotifications(Order $order, $arrival = null, $departure = null)
+    private function sendNotifications(Order $order)
     {
+        $this->dm->refresh($order);
         try {
             //backend
             $notifier = $this->container->get('mbh.notifier');
@@ -629,12 +721,6 @@ class ApiController extends Controller
                 ->setType('info')
                 ->setCategory('notification')
                 ->setOrder($order)
-                ->setAdditionalData(
-                    [
-                        'arrivalTime' => $arrival,
-                        'departureTime' => $departure,
-                    ]
-                )
                 ->setHotel($hotel)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
@@ -660,8 +746,6 @@ class ApiController extends Controller
                             'prependText' => 'mailer.online.user.prepend',
                             'appendText' => 'mailer.online.user.append',
                             'fromText' => $hotel->getName(),
-                            'arrivalTime' => $arrival,
-                            'departureTime' => $departure,
                         ]
                     )
                     ->setHotel($hotel)
@@ -673,10 +757,8 @@ class ApiController extends Controller
                     ->setSignature('mailer.online.user.signature')
                     ->setMessageType(NotificationType::ONLINE_ORDER_TYPE);
 
-                $params = $this->container->getParameter('mailer_user_arrival_links');
-
-                if (!empty($params['map'])) {
-                    $message->setLink($params['map'])
+                if (!empty($hotel->getMapLink())) {
+                    $message->setLink($hotel->getMapLink())
                         ->setLinkText($tr->trans('mailer.online.user.map'));
                 }
 
@@ -708,7 +790,6 @@ class ApiController extends Controller
                 'accommodation' => false,
                 'tariff' => $info->tariff->id,
                 'isOnline' => true,
-                'accommodation' => false,
             ];
         }
         foreach ($request->services as $info) {
@@ -728,10 +809,14 @@ class ApiController extends Controller
                         'birthday' => $request->user->birthday,
                         'email' => $request->user->email,
                         'phone' => $request->user->phone,
+                        'inn' => $request->user->inn,
+                        'patronymic' => $request->user->patronymic,
+                        'documentNumber' => $request->user->documentNumber
                     ],
                     'status' => 'online',
                     'order_note' => $request->note,
                     'confirmed' => false,
+                    'onlineFormId' => $request->configId
                 ],
                 null,
                 null,
@@ -767,6 +852,7 @@ class ApiController extends Controller
 
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
+            'configId' => $id,
             'urls' => [
                 'table' => $this->generateUrl(
                     'online_form_results_table',

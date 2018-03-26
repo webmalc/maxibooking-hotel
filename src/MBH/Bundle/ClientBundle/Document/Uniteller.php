@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class Uniteller implements PaymentSystemInterface
 {
-
     const COMMISSION = 0.035;
 
     const DO_CHECK_URL = 'https://wpay.uniteller.ru/api/1/iacheck';
@@ -190,8 +189,8 @@ class Uniteller implements PaymentSystemInterface
         $createdAt->modify('+30 minutes');
 
         return [
-            'action' => 'https://fpay.uniteller.ru/v1/pay',
-            'testAction' => 'https://fpaytest.uniteller.ru/v1/pay',
+            'action' => $this->isWithFiscalization() ?  'https://fpay.uniteller.ru/v1/pay' : 'https://wpay.uniteller.ru/pay/',
+            'testAction' => $this->isWithFiscalization() ? 'https://fpaytest.uniteller.ru/v1/pay' : 'https://test.wpay.uniteller.ru/pay/',
             'shopId' => $this->getUnitellerShopIDP(),
             'total' => $cashDocument->getTotal(),
             'orderId' => $cashDocument->getId(),
@@ -277,7 +276,7 @@ class Uniteller implements PaymentSystemInterface
     {
         $lineItems = [];
 
-        $priceFraction = $cashDocument->getTotal() / $order->getPrice();
+        $priceFraction = $order->getPrice() != 0 ? ($cashDocument->getTotal() / $order->getPrice()) : 0;
         $beginText = $priceFraction === 1
             ? 'Услуга '
             : (round($priceFraction, 2) * 100) . '% от стоимости услуги ';
@@ -286,12 +285,12 @@ class Uniteller implements PaymentSystemInterface
             $packageLineName = $beginText . 'проживания в номере категории "'
                 . $package->getRoomType()->getName()
                 . ' объекта размещения "' . $package->getHotel()->getName() . '"';
-            $packageLinePrice = ($package->getPackagePrice() * $cashDocument->getTotal()) / $order->getPrice();
+            $packageLinePrice =  $order->getPrice() != 0 ? (($package->getPackagePrice() * $cashDocument->getTotal()) / $order->getPrice()) : 0;
             $this->addLineItem($packageLineName, $packageLinePrice, 1, $lineItems);
 
             foreach ($package->getServices() as $service) {
                 $serviceLineName = $beginText . ' "' . $service->getService()->getName() . '"';
-                $serviceLinePrice = ($service->getPrice() * $cashDocument->getTotal()) / $order->getPrice();
+                $serviceLinePrice =  $order->getPrice() != 0 ? (($service->getPrice() * $cashDocument->getTotal()) / $order->getPrice()) : 0;
                 $this->addLineItem($serviceLineName, $serviceLinePrice, $service->getTotalAmount(), $lineItems);
             }
         }

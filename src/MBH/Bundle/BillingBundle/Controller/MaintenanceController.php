@@ -1,19 +1,18 @@
 <?php
 
-
 namespace MBH\Bundle\BillingBundle\Controller;
 
-
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
+use MBH\Bundle\BillingBundle\Lib\Model\Result;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
+use Monolog\Logger;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 
 /**
  * Class MaintenanceController
@@ -23,84 +22,124 @@ class MaintenanceController extends BaseController
 {
 
     /**
+     * @Method("POST")
      * @Route(
      *     "/install",
      *     requirements={"_format":"json"}
      * )
-     * @param string $client
-     * @ParamConverter()
-     * @return Response
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \HttpInvalidParamException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
-    public function installAction(Client $client = null)
+    public function installAction(Request $request)
     {
-        $application = new Application($this->container->get('kernel'));
-        $application->setAutoExit(true);
-        $input = new ArrayInput(
-            [
-                'command' => 'mbh:client:install',
-                '--clients' => $client->getName(),
-                '--billing'
-            ]
+        $requestData = $this->preHandleRequestData($request);
+        $clientLogin = $requestData['client_login'];
+        if (!$clientLogin) {
+            throw new \HttpInvalidParamException('No login in request');
+        }
+        if ($this->get('mbh.service.client_list_getter')->isClientInstalled($clientLogin)) {
+            $result = Result::createErrorResult(['Client is already installed!']);
+        } else {
+            $result = $this->get('mbh.client_instance_manager')->runBillingInstallCommand($clientLogin);
+        }
+
+        return new JsonResponse($result->getApiResponse());
+    }
+
+    /**
+     * @Method("POST")
+     * @Route("/install_properties")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     */
+    public function installPropertiesAction(Request $request)
+    {
+        $requestData = $this->preHandleRequestData($request);
+
+        $clientLogin = $requestData['client_login'] ?? null;
+        if (!$clientLogin) {
+            throw new UnauthorizedHttpException('No Login!');
+        }
+        $result = $this->get('mbh.client_instance_manager')->installFixtures($clientLogin);
+        if ($result->isSuccessful()) {
+            $admin = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
+            $result->setData(
+                [
+                    'token' => $admin->getApiToken()->getToken(),
+                    'url' => Client::compileClientUrl($clientLogin, $this->getParameter('domain')),
+                ]
+            );
+        }
+
+        return new JsonResponse($result->getApiResponse(true));
+    }
+
+
+    /**
+     * @Method("POST")
+     * @Route("/remove")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     */
+    public function removeClientAction(Request $request)
+    {
+        $requestData = $this->preHandleRequestData($request);
+        $clientLogin = $requestData['client_login'] ?? null;
+        if (!$this->get('mbh.service.client_list_getter')->isClientInstalled($clientLogin)) {
+            $result = Result::createErrorResult(['Can not remove client. Client is not installed !']);
+        } else {
+            $result = $this->get('mbh.client_instance_manager')->runRemoveCommand($clientLogin);
+        }
+
+        return new JsonResponse($result->getApiResponse());
+    }
+
+    /**
+     * @Method("POST")
+     * @Route("/restore")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     */
+    public function restoreClientAction(Request $request)
+    {
+        $requestData = $this->preHandleRequestData($request);
+        $clientLogin = $requestData['client_login'] ?? null;
+        $result = $this->get('mbh.client_instance_manager')->runRestoreCommand($clientLogin);
+
+        return new JsonResponse($result->getApiResponse());
+
+    }
+
+    private function preHandleRequestData(Request $request): ?array
+    {
+        $requestData = json_decode($request->getContent(), true);
+        $this->logRequest($requestData, $request);
+        $this->checkToken($requestData['token']);
+
+        return $requestData;
+    }
+
+
+    private function logRequest($requestData, Request $request)
+    {
+        $this->get('mbh.billing.logger')->addRecord(
+            Logger::INFO,
+            'Received request inside '.__METHOD__.' from '.$request->getClientIp(),
+            $requestData ?? []
         );
-        $output = new NullOutput();
-        $application->run($input, $output);
-
-        return new JsonResponse(['status' => 'command started']);
     }
 
-    /**
-     * @Route(
-     *     "/delete",
-     *     requirements={"_format":"json"}
-     * )
-     * @ParamConverter()
-     * @return Response
-     */
-    public function deleteAction(Client $client = null)
+    private function checkToken(string $token = null)
     {
-//        $installer = $this->container->get('mbh.billing.http_client_installer');
-//        if ($client) {
-//            $answer = $installer->remove($client, true);
-//        } else {
-//            $answer = new Answer();
-//            $answer->setError('No client '.$client.' found');
-//        }
-//
-//        return new JsonResponse($installer->toJson($answer), 200, [], true);
+        if ($token !== BillingApi::INSTALLATION_AUTH_TOKEN) {
+            throw new UnauthorizedHttpException('Incorrect token!');
+        }
     }
 
-    /**
-     * @return Response
-     * @Route("/test")
-     */
-    public function testAction()
-    {
-        $notifier = $this->get('mbh.notifier');
-        $message = $notifier::createMessage();
-        $message
-            ->setText('Alalala')
-            ->setFrom('online_form')
-            ->setSubject('mailer.order.confirm.user.subject')
-            ->setType('success')
-            ->setCategory('notification')
-            ->setAdditionalData([
-                'prependText' => 'mailer.order.confirm.user.prepend',
-                'appendText' => 'mailer.order.confirm.user.append',
-                'fromText' => 'alala'
-            ])
-            ->setHotel($this->hotel)
-            ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
-            ->setAutohide(false)
-            ->setEnd(new \DateTime('+1 minute'))
-            ->setLink('hide')
-            ->setSignature('mailer.online.user.signature')
-            ->setMessageType(NotificationType::TASK_TYPE)
-        ;
-        $notifier
-            ->setMessage($message)
-            ->notify()
-        ;
 
-        return new Response('Alla');
-    }
 }

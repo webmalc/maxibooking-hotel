@@ -2,6 +2,7 @@ analytics.index.sales_date: 'Даты продажи'
 analytics.index.report_type: 'Тип отчета'
 analytics.index.room_type: 'Тип номера'
 analytics.index.all_rooms: 'Все номера'
+analytics.index.rooms_total: Итого
 analytics.index.cumulative: 'Накопительный?'
 analytics.index.monthly: 'По месяцам?'
 analytics.layout.analytics: Аналитика
@@ -29,6 +30,7 @@ order.cash.confirm: Подтвердить
 order.cash.pay: Подтвердить
 order.cash.short_pay: оплатить
 order.cash.cash_documents_not_found: 'Кассовые документы не найдены.'
+package.edit.query: 'Подробности запроса'
 order.edit.order_editing: 'редактирование заказа #'
 order.edit.deleted: удален
 order.edit.room: Номер
@@ -42,6 +44,8 @@ order.edit.not_specified: 'не указан'
 order.edit.is_confirmed: 'Подтвержден?'
 order.edit.is_confirmed_yes: да
 order.edit.is_confirmed_no: нет
+order.edit.payment_card_info.show_button.title: Показать
+order.edit.payment_card_info.hide_button.title: Скрыть
 order.layout.reservation: Бронирование
 order.navbar.delete_order: 'Удалить заказ'
 order.navbar.lock: Блокировать
@@ -213,7 +217,7 @@ package.json.not_placed: 'Не размещено'
 package.json.go_to_payer: 'Перейти к плательщику'
 package.json.no_payer: 'Нет плательщика'
 package.json.go_to_calculations: 'Перейти к расчетам'
-package.json.today: 'Сегодня,'
+package.json.today: Сегодня
 package.jsonButtons.confirm_order: 'Подтверждение заказа'
 package.jsonButtons.edit_record: 'Редактирование записи'
 package.jsonButtons.delete_record: 'Удаление записи'
@@ -295,7 +299,7 @@ report.accommodation.room_type: 'Тип номера'
 report.accommodationTable.no_room_found: 'Номера не найдены.'
 report.accommodationTable.room: Номер
 report.accommodationTable.no_main_guest: 'Нет основного гостя'
-report.accommodationTable.price: '. Цена:'
+report.accommodationTable.price: 'Цена:'
 report.accommodationTable.type: '. Тип:'
 report.accommodationTable.early_check_in: '. Ранний заезд'
 report.accommodationTable.late_check_out: '. Поздний выезд'
@@ -329,7 +333,7 @@ search.results.guests: Гости
 search.results.price: Цена
 search.results.total_beds: 'Свободно койко-мест'
 search.results.total_rooms: 'Свободно номеров'
-search.results.reservate: 'Бронировать'
+search.results.reservate: Бронировать
 search.results.accommodation: Разместить
 search.results.nothing_found_for_your_request: 'По вашему запросу ничего не найдено.'
 search.results.enter_search_data: 'Введите данные для подбора проживания.'
@@ -396,6 +400,7 @@ report.poll.small_title: Оценки
 report.poll.invite: 'Визовые приглашения'
 report.poll.small_title_order: 'Оценки заказа '
 views.report.polls.th.order: Заказ
+views.report.polls.select_button.title: Выбрать
 views.report.polls.th.hotel: Отель
 mbhpackagebundle.view.report.polls.daty: Даты
 views.report.polls.not_found: 'Ничего не найдено.'
@@ -427,3 +432,37 @@ modal.form.delete.reasons.order: 'Причина удаления заказа'
 modal.form.delete.reasons.reason_default: 'Не указана'
 modal.form.delete.reasons.close: Отмена
 modal.form.delete.reasons.delete: Удалить
+package.dynamic.sale: 'Динамика продаж'
+package.dynamic.sale.search: Показать
+dynamic.sales.layout.title: Отчеты
+dynamic.sales.range_is_over_error: 'Период не должен превышать %numberOfDays% дней'
+dynamic.sales.day.periods: Периоды
+dynamic.sales.day.summary: Итого
+dynamic.sales.day.total-sales-price-for-period: 'Объем броней за период/руб'
+dynamic.sales.day.total-sales-price: 'Объем броней за сутки/руб'
+dynamic.sales.day.number-of-created-packages: 'Создано броней за сутки'
+dynamic.sales.day.number-of-created-packages-for-period: 'Создано броней за период'
+dynamic.sales.day.number-of-paid: 'Оплачено броней за сутки'
+dynamic.sales.day.number-of-paid-for-period: 'Оплачено броней на дату итого'
+dynamic.sales.day.number-of-cancelled: 'Аннулировано броней за сутки'
+dynamic.sales.day.price-of-cancelled: 'Аннулировано броней за сутки в рублях'
+dynamic.sales.day.price-of-cancelled-for-period: 'Аннулировано броней за период в рублях'
+dynamic.sales.day.price-of-paid-cancelled: 'Аннулировано оплаченных броней за сутки в рублях'
+dynamic.sales.day.sum-of-paid-minus-cancelled: 'Оплачено броней на дату итого минус аннулированные'
+dynamic.sales.day.sales.comparison: Сравнение
+dynamic.sales.day.sales.summ: Сумма
+dynamic.sales.day.sales.amounts: Кол-во
+dynamic.sales.day.sales.volume: 'Объем броней за сутки/руб'
+dynamic.sales.day.number-of-man-days-for-period: 'Брони в чел/днях за период'
+dynamic.sales.day.number-of-man-days: 'Брони в чел/днях за сутки'
+dynamic.sales.day.number-of-package-days-for-period: 'Брони в номерах/днях за период'
+dynamic.sales.day.number-of-package-days: 'Брони в номерах/днях за сутки'
+dynamic.sales.day.sum-of-paid-for-cancelled-for-period: 'А/Р броней за период'
+dynamic.sales.day.sum-paid-to-clients-for-period-for-removed: 'Оплата А/Р броней за период'
+dynamic.sales.dates: Даты
+dynamic.sales.show.title: 'Отображаемые категории'
+dynamic.sales.type.room: 'Тип номера'
+dynamic_sales.room_type_options.total: Итого
+dynamic.sales.result: Итого
+dynamic_sales.modal.close_button.text: Закрыть
+order.index.summary.total: Сумма

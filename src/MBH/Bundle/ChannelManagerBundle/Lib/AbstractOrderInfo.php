@@ -58,21 +58,21 @@ abstract class AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    abstract public function isHandleAsNew(?Order $order) : bool ;
+    abstract public function isHandledAsNew(?Order $order) : bool ;
 
     /**
      * Обрабатывать ли данный заказ как измененный?
      * @param Order $order
      * @return bool
      */
-    abstract public function isHandleAsModified(?Order $order) : bool ;
+    abstract public function isHandledAsModified(?Order $order) : bool ;
 
     /**
      * Обрабатывать ли данный заказ как законченный
      * @param Order $order
      * @return bool
      */
-    abstract public function isHandleAsCancelled(?Order $order) : bool;
+    abstract public function isHandledAsCancelled(?Order $order) : bool;
 
     abstract public function getNote() : string;
 

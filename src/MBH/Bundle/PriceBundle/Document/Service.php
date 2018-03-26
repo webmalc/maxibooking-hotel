@@ -32,7 +32,7 @@ class Service extends Base
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -51,6 +51,7 @@ class Service extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
+     * @Gedmo\Translatable
      * @Assert\Length(
      *      min=2,
      *      minMessage="mbhpricebundle.document.so_short_name",
@@ -96,7 +97,7 @@ class Service extends Base
      * )
      */
     protected $price = 0;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -105,7 +106,7 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isOnline = true;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -114,36 +115,36 @@ class Service extends Base
      * @Assert\Choice(choices = {"per_stay", "per_night", "not_applicable", "day_percent"})
      */
     protected $calcType;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="code")
      */
     protected $code;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     protected $system = false;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     protected $recalcWithPackage = false;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -152,27 +153,51 @@ class Service extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     protected $time = false;
-    
+
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     private $includeArrival;
-    
+
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      */
     private $includeDeparture;
+
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     * @return Service
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
 
     /**
      * Set category
@@ -346,7 +371,7 @@ class Service extends Base
     {
         return $this->code;
     }
-    
+
     /**
      * Set system
      *
@@ -491,7 +516,7 @@ class Service extends Base
             $this->internationalTitle = Helper::translateToLat($this->fullTitle);
         }
     }
-    
+
     /**
      * Set recalcWithPackage
      *
@@ -566,5 +591,19 @@ class Service extends Base
         }
 
         return true;
+    }
+
+    /**
+     * @param bool $isFull
+     * @return array
+     */
+    public function getJsonSerialized($isFull = false)
+    {
+        $data = [
+            'id' => $this->getId(),
+            'title' => $this->getName(),
+        ];
+
+        return $data;
     }
 }

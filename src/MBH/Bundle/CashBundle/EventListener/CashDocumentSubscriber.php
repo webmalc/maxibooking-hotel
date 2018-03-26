@@ -40,14 +40,16 @@ class CashDocumentSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            'postPersist',
+            'postPersist',  //do not Enable! while ProtectedUpload
             Events::prePersist => 'prePersist',
             Events::preUpdate => 'preUpdate'
         ];
     }
 
+
     /**
      * @param LifecycleEventArgs $args
+     * @throws \Exception
      */
     public function postPersist(LifecycleEventArgs $args)
     {
@@ -57,7 +59,7 @@ class CashDocumentSubscriber implements EventSubscriber
         if ($document instanceof CashDocument && $document->getMethod() == 'cashless' && $document->getOperation() == 'in' && $document->getPayer()) {
 
             try {
-                $this->createPdfOrderDocument($document, $args->getDocumentManager());
+//                $this->createPdfOrderDocument($document, $args->getDocumentManager());
             } catch (Exception $e) {
                 $session = $this->container->get('session');
                 $session->getFlashBag()->add('danger', $this->container->get('translator')->trans('cashDocumentSubscriber.document.dlia.pechati.ne.sozdan') . ' ' . $e->getMessage());
@@ -102,23 +104,26 @@ class CashDocumentSubscriber implements EventSubscriber
     }
 
     /**
+     * @deprecated Этот функционал никогда не исползовался судя по всему, а т.к. Protected Upload по сути переделан, тут тоже надо переделывать.
+
+    /**
      * @param CashDocument $document
      * @param DocumentManager $dm
      * @return OrderDocument
-     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     * @throws Exception
+     * @throws \Exception
      */
     private function createPdfOrderDocument(CashDocument $document, DocumentManager $dm)
     {
         $currency = $this->container->get('mbh.currency')->info();
+        $translator = $this->container->get('translator');
         $orderDocument = new OrderDocument();
         $orderDocument->setName($this->container->get('translator')->trans('cashDocumentSubscriber.schet.na.oplatu'));
         $orderDocument->setOriginalName('bill_'.$document->getNumber().'_'.$document->getDocumentDate()->format('d.m.Y').'.pdf');
         $id = uniqid();
         $orderDocument->setName($id.'.pdf');
         $orderDocument->setType('invoice_for_payment');
-        $orderDocument->setMimeType('application/pdf');
-        $orderDocument->setExtension('pdf');
-        $orderDocument->setComment($this->container->get('translator')->trans('cashDocumentSubscriber.schet') . ' №'.$document->getNumber(). ' ' . $this->container->get('translator')->trans('cashDocumentSubscriber.ot') . ' '.$document->getDocumentDate()->format('d.m.Y').' ('.$document->getTotal().' ' . $currency['text'] . ')');
+        $orderDocument->setComment($this->container->get('translator')->trans('cashDocumentSubscriber.schet') . ' №'.$document->getNumber(). ' ' . $this->container->get('translator')->trans('cashDocumentSubscriber.ot') . ' '.$document->getDocumentDate()->format('d.m.Y').' ('.$document->getTotal().' ' . $translator->trans($currency['text']) . ')');
         $orderDocument->setTourist($document->getTouristPayer());
         $orderDocument->setOrganization($document->getOrganizationPayer());
 

@@ -2,22 +2,27 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Class UnwelcomeItem
-
  */
 class UnwelcomeType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
+
     public static function getCharacteristics()
     {
         return [
@@ -41,21 +46,25 @@ class UnwelcomeType extends AbstractType
             4 => 'form.unwelcomeType.levels.high',
             5 => 'form.unwelcomeType.levels.very_high'
         ];
+        $translatedLevels = [];
+        foreach ($levels as $level) {
+            $translatedLevels[] = $this->translator->trans($level);
+        }
 
         foreach($this->getCharacteristics() as $characteristic) {
-            $builder->add($characteristic, ChoiceType::class, [
+            $builder->add($characteristic, InvertChoiceType::class, [
                 'label' => 'form.unwelcomeType.'.$characteristic,
                 'group' => 'form.unwelcomeType.group.common',
                 'expanded' => true,
                 'placeholder' => null,
-                'choices' => $levels,
-                'choice_label' => function($key, $value){
+                'choices' => $translatedLevels,
+                'choice_label' => function($key){
                     return $key == 0 ? 'form.unwelcomeType.levels.no' : $key;
                 },
                 'choice_attr' => function($key, $value) {
                     return $key > 0 ? [
                         'data-toggle' => 'tooltip',
-                        'data-original-title' => $value
+                        'data-original-title' => $this->translator->trans($value)
                     ] : [];
                 }
             ]);

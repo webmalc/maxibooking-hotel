@@ -5,9 +5,13 @@ namespace MBH\Bundle\ClientBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,9 +21,37 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ClientConfigType extends AbstractType
 {
+    private $helper;
+    private $currencyData;
+
+    public function __construct(Helper $helper, array $currencyData)
+    {
+        $this->helper = $helper;
+        $this->currencyData = $currencyData;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('timeZone', ChoiceType::class, [
+                'choices' => ClientConfig::getTimeZonesList(),
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false,
+                'choice_label' => function ($value) {
+                    return $value;
+                },
+                'label' => 'form.clientConfigType.time_zone.label',
+                'data' => $this->helper->getTimeZone($builder->getData())
+            ])
+            ->add('currency', ChoiceType::class, [
+                'required' => false,
+                'group' => 'form.clientConfigType.main_group',
+                'choices' => array_keys($this->currencyData),
+                'choice_label' => function ($value) {
+                    return 'form.clientConfigType.currency.options.' . $value;
+                },
+                'label' => 'form.clientConfigType.currency.label'
+            ])
             ->add(
                 'isSendSms',
                 CheckboxType::class,
@@ -51,6 +83,12 @@ class ClientConfigType extends AbstractType
                     'required' => false,
                 ]
             )
+            ->add('showLabelTips', CheckboxType::class, [
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false,
+                'label' => 'form.clientConfigType.show_label_tips.label',
+                'help' => 'form.clientConfigType.show_label_tips.help'
+            ])
             ->add(
                 'useRoomTypeCategory',
                 CheckboxType::class,
@@ -60,6 +98,16 @@ class ClientConfigType extends AbstractType
                     'required' => false,
                 ]
             )
+            ->add('priceRoundSign', IntegerType::class, [
+                'required' => false,
+                'label' => 'form.clientConfigType.round.label',
+                'help' => 'form.clientConfigType.round.help',
+                'group' => 'form.clientConfigType.main_group',
+                'attr' => [
+                    'max' => 2,
+                    'min' => 0
+                ]
+            ])
             ->add(
                 'isSendMailAtPaymentConfirmation',
                 CheckboxType::class,
@@ -115,6 +163,30 @@ class ClientConfigType extends AbstractType
                     ],
                 ]
             )
+            ->add('queryStat', CheckboxType::class, [
+                'label' => 'form.clientConfigType.queryStat.label',
+                'help' => 'form.clientConfigType.queryStat.help',
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false
+            ])
+            ->add('beginDateOffset', TextType::class, [
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false,
+                'label' => 'form.clientConfigType.begin_date_offset.label',
+                'help' => 'form.clientConfigType.begin_date_offset.help'
+            ])
+            ->add('numberOfDaysForPayment', TextType::class, [
+                'group' => 'form.clientConfigType.main_group',
+                'label' => 'form.clientConfigType.number_of_days_for_payment.label',
+                'help' => 'form.clientConfigType.number_of_days_for_payment.help',
+                'required' => false
+            ])
+            ->add('currencyRatioFix', TextType::class, [
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false,
+                'label' => 'form.clientConfigType.currency_ratio_fix.label',
+                'help' => 'form.clientConfigType.currency_ratio_fix.help'
+            ])
             ->add(
                 'can_book_without_payer',
                 CheckboxType::class,

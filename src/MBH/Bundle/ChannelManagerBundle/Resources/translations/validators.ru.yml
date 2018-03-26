@@ -18,12 +18,11 @@ roomtype.validation: 'Выбрано более одного типа номер
 tarifftype.validation: 'Выбрано более одного типа тарифа'
 validator.default_currency: 'Курс по умолчанию обязателен к заполнению'
 document.myallocatorConfig.no_hotel_selected: 'Не выбран отель'
-validator.default_currency: Курс по умолчанию обязателен к заполнению
-document.myallocatorConfig.no_hotel_selected: Не выбран отель
-validator.document.expediaConfig.no_hotel_id_specified: Не указан id отеля
-validator.document.expediaConfig.no_hotel_selected: Не выбран отель
-validator.document.expediaConfig.username_not_specified: Не указано имя пользователя
-validator.document.expediaConfig.password_not_specified: Не указан пароль
+validator.document.expediaConfig.no_hotel_id_specified: 'Не указан id отеля'
+validator.document.expediaConfig.no_hotel_selected: 'Не выбран отель'
+validator.document.expediaConfig.username_not_specified: 'Не указано имя пользователя'
+validator.document.expediaConfig.password_not_specified: 'Не указан пароль'
+
 validator.document.trip_advisor_config.no_hotel_selected: Не выбран отель
 validator.document.trip_advisor_config.no_hotel_id_specified: Не указан id отеля
 validator.document.trip_advisor_config.main_tariff_not_specified: Не указан основной тариф для TripAdvisor

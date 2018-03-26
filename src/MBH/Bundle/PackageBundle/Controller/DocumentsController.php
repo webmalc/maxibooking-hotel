@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
+use MBH\Bundle\BaseBundle\Document\ProtectedFile;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
@@ -22,8 +23,6 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/")
  * @Method("GET")
- *
-
  */
 class DocumentsController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {
@@ -55,10 +54,10 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
         }
 
         $orderDocumentTypes = $this->container->getParameter('mbh.order.document.types');
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
-        $docTypes = $orderDocumentTypes + $vegaDocumentTypes;
+        $documentTypes = $this->container->get('mbh.fms_dictionaries')->getDocumentTypes();
+        $docTypes = $orderDocumentTypes + $documentTypes;
 
-        $groupDocTypes = ['' => $orderDocumentTypes, 'Vega' => $vegaDocumentTypes];
+        $groupDocTypes = ['' => $orderDocumentTypes, 'Vega' => $documentTypes];
         $scanTypes = $this->container->get('mbh.vega.dictionary_provider')->getScanTypes();
 
         $form = $this->createForm(OrderDocumentType::class, $orderDocument, [
@@ -67,15 +66,10 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
             'touristIds' => $touristIds
         ]);
 
-        /** @var string|null $client */
-        $client = $this->container->get('kernel')->getClient();
-
-
         if ($request->isMethod("POST")) {
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $orderDocument->upload($client);
                 $package->getOrder()->addDocument($orderDocument);
                 $this->dm->persist($package);
                 $this->dm->flush();
@@ -125,60 +119,27 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
 
     /**
      *
-     * @Route("/document/{name}/view/{download}", name="order_document_view", options={"expose"=true}, defaults={"download" = 0})
+     * @Route("/document/{order}/{protected}/view/{download}", name="order_document_view", options={"expose"=true}, defaults={"download" = 0})
      * @Method("GET")
-     * @param $name
-     * @param $download
-     * @return Response
+     * @param Order $order
+     * @param ProtectedFile $protected
+     * @param int $download
+     * @return Response|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function viewAction($name, $download = 0)
+    public function viewAction(Order $order, ProtectedFile $protected, $download = 0)
     {
-        /** @var OrderRepository $packageRepository */
-        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
-        /** @var Order $order */
-        $order = $orderRepository->findOneBy(['documents.name' => $name]);
-
-        if (!$order) {
-            throw $this->createNotFoundException();
-        }
 
         if (!$this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW_ALL')
             && !($this->get('security.authorization_checker')->isGranted('VIEW', $order)
                 && $this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW'))) {
             throw $this->createAccessDeniedException();
         }
-
-        $document = null;
-
-        foreach ($order->getDocuments()->getIterator() as $d) {
-            /** @var OrderDocument $d */
-            if ($d->getName() == $name) {
-                $document = $d;
-            }
-        }
-
-        if (!$document) {
-            throw $this->createNotFoundException();
-        }
-
-        /** @var string|null $client */
-        $client = $this->container->get('kernel')->getClient();
-
-        $fp = fopen($document->getPath($client), "rb");
-        $str = stream_get_contents($fp);
-        fclose($fp);
-
-        $headers = [];
-        $headers['Content-Type'] = $document->getMimeType();
-
+        $downloader = $this->get('mbh.protected.file.downloader');
         if ($download) {
-            $headers['Content-Disposition'] = 'attachment; filename="'.$document->getOriginalName().'"';
-            $headers['Content-Length'] = filesize($document->getPath($client));
+            return $downloader->downloadProtectedFile($protected);
         }
 
-        $response = new Response($str, 200, $headers);
-
-        return $response;
+        return $downloader->streamOutputFile($protected);
     }
 
     /**
@@ -209,12 +170,14 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
             $touristIds[] = $mainTourist->getId();
         }
         $docTypes = $this->container->getParameter('mbh.order.document.types');
+        $scanTypes = $this->container->get('mbh.vega.dictionary_provider')->getScanTypes();
 
         $form = $this->createForm(OrderDocumentType::class, $orderDocument, [
             'documentTypes' => $docTypes,
             'touristIds' => $touristIds,
             'scenario' => OrderDocumentType::SCENARIO_EDIT,
-            'document' => $orderDocument
+            'document' => $orderDocument,
+            'scanTypes' => $scanTypes
         ]);
 
         if ($request->isMethod("POST")) {
@@ -225,10 +188,10 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
                 /** @var string|null $client */
                 $client = $this->container->get('kernel')->getClient();
 
-                if (!$orderDocument->isUploaded($client)) {
-                    $orderDocument->upload($client);
-                    $oldOrderDocument->deleteFile($client);
-                }
+//                if (!$orderDocument->isUploaded($client)) {
+//                    $orderDocument->upload($client);
+//                    $oldOrderDocument->deleteFile($client);
+//                }
                 $this->dm->persist($orderDocument);
                 $this->dm->flush();
 

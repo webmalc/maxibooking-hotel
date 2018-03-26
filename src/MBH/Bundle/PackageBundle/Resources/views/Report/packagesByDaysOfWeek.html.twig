@@ -1,0 +1,84 @@
+{% extends 'MBHPackageBundle::layout.html.twig' %}
+
+{% set small_title = 'distribution_by_days_report.title'|trans %}
+{% set layout = 'box' %}
+
+{% block content %}
+    <input id="default-begin-date" type="hidden" value="{{ filter_begin_date()|date('d.m.Y') }}">
+    <input id="default-end-date" type="hidden" value="{{ filter_begin_date()|date_modify('+45 days')|date('d.m.Y') }}">
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'cash-filter-form-widget'} %}
+        {% block content %}
+            <form class="form-inline filter-form remember" id="distribution-report-filter-form" role="form">
+                <div class="input">
+                    <select style="width: 180px !important;" id="distribution-report-filter-group-type"
+                            class="distribution-report-filter form-control input-sm">
+                        <option value="arrival"
+                                selected>{{ 'views.report.distribution_report.group_by.by_arrival_date'|trans }}</option>
+                        <option value="departure">{{ 'views.report.distribution_report.group_by.by_departure_date'|trans }}</option>
+                    </select>
+                </div>
+                <div class="input">
+                    <select style="width: 150px !important;" id="distribution-report-filter-type"
+                            class="form-control input-sm">
+                        <option value="actual">{{ 'views.report.distribution_report.packages_types.actual'|trans }}</option>
+                        <option value="all">{{ 'views.report.distribution_report.packages_types.all'|trans }}</option>
+                        <option value="deleted">{{ 'views.report.distribution_report.packages_types.deleted'|trans }}</option>
+                    </select>
+                </div>
+                <div class="input">
+                    <i class="fa fa-calendar" title='{{ 'views.report.packages_daily_report.dates_input.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp
+                    <input type="text" id="distribution-report-filter-begin"
+                           class="datepicker begin-datepicker mbh-daterangepicker  form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
+                </div>
+                <div class="input hidden">
+                    - &nbsp
+                    <input type="text" id="distribution-report-filter-end"
+                           class="datepicker end-datepicker mbh-daterangepicker form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
+                </div>
+
+                <div class="input">
+                    <i class="fa fa-calendar" title='{{ 'views.report.distribution_report.creation_date.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp
+                    <input type="text" id="distribution-report-filter-creation-begin"
+                           class="datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
+                </div>
+                <div class="input">
+                    - &nbsp
+                    <input type="text" id="distribution-report-filter-creation-end"
+                           class="datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
+                </div>
+
+                <div class="input">
+                    <i class="fa fa-bed" title='{{ 'views.report.packages_daily_report.hotels.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp
+                    <select multiple
+                            data-placeholder="{{ 'views.report.packages_daily_report.hotels.placeholder'|trans }}"
+                            id="distribution-report-filter-hotels" class="form-control input-sm">
+                        <option></option>
+                        {% for hotel in hotels %}
+                            <option value="{{ hotel.id }}"
+                                    {% if hotel.id in app.request.get('hotels') and hotels|length != app.request.get('hotels')|length %}selected{% endif %}>{{ hotel.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input">
+                    <button type="button" id="distribution-report-update-table-button" class="btn btn-primary">{{ 'views.report.polls.select_button.title'|trans({}, 'MBHPackageBundle')}}</button>
+                </div>
+            </form>
+        {% endblock content %}
+    {% endembed %}
+
+    <div id="distribution-report-table" class="scrolling" style="position:relative;"></div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/report/distribution-report.js' %}
+
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}

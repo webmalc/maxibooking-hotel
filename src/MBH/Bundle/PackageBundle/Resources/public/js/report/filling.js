@@ -4,10 +4,12 @@ $(document).ready(function ($) {
     var $fillingForm = $('#filling-table-filter'),
         $fillingTableWrapper = $('#filling-table-wrapper');
 
-    $fillingForm.find('input, select').on('change', function () {
+    $('#filling-filter-button').click(function () {
         if(!inProcess) {
             $fillingTableWrapper.html(mbh.loader.html);
-            updateRoomTypesForm($fillingForm.serializeObject());
+            var filterData = $fillingForm.serializeObject();
+            filterData['isEnabled'] = $fillingForm.find('#filling-report-filter-isEnabled').bootstrapSwitch('state');
+            updateRoomTypesForm(filterData);
         }
     });
 

@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use FOS\UserBundle\Mailer\MailerInterface;
 use FOS\UserBundle\Model\UserInterface;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\MailerNotificationException;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
@@ -91,12 +92,17 @@ class Mailer implements \SplObserver, MailerInterface
 
     /**
      * @param \SplSubject $notifier
+     * @throws \Exception
      */
     public function update(\SplSubject $notifier)
     {
         /** @var NotifierMessage $message */
         /** @var Notifier $notifier */
         $message = $notifier->getMessage();
+
+        if ($this->isMessageDuplicated($message)) {
+            return;
+        }
 
         if ($message->getEmail()) {
             $this->send(
@@ -176,7 +182,8 @@ class Mailer implements \SplObserver, MailerInterface
                 $translator->setLocale($recipient->getCommunicationLanguage());
                 $data['isSomeLanguage'] = false;
                 /** @var Hotel $hotel */
-                if ($hotel = $data['hotel'] && $hotel->getInternationalTitle()) {
+                $hotel = $data['hotel'];
+                if ($hotel && $hotel instanceOf Hotel && $hotel->getInternationalTitle()) {
                     $data['hotelName'] = $hotel->getInternationalTitle();
                     $transParams['%hotel%'] = $hotel->getInternationalTitle();
                 }
@@ -343,6 +350,7 @@ class Mailer implements \SplObserver, MailerInterface
                 'transParams' => [],
                 'linkText' => $linkText,
                 'link' => $confirmationUrl,
+                'messageType' => NotificationType::EMAIL_RESETTING_TYPE
             ],
             '@MBHBase/Mailer/resettingPassword.html.twig'
         );
@@ -355,6 +363,9 @@ class Mailer implements \SplObserver, MailerInterface
     private function canISentToClient(string $notificationType): bool
     {
         $result = true;
+        if (in_array($notificationType, NotificationType::getSystemNotificationTypes())) {
+            return true;
+        }
         /** @var ClientConfig $clientConfig */
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         if ($notificationType) {
@@ -364,4 +375,31 @@ class Mailer implements \SplObserver, MailerInterface
         return $result;
     }
 
+    /**
+     * @param $message
+     * @return bool
+     */
+    private function isMessageDuplicated(NotifierMessage $message): bool
+    {
+        if ($message->getMessageIdentifier() && in_array($message->getType(), ['warning', 'danger'])) {
+            /** @var NotifierErrorCounter $notifierErrorCounter */
+            $notifierErrorCounter = $this->dm
+                ->getRepository('MBHBaseBundle:NotifierErrorCounter')
+                ->findOneBy(['notificationId' => $message->getMessageIdentifier()]);
+            if (is_null($notifierErrorCounter)) {
+                $notifierErrorCounter = (new NotifierErrorCounter())->setNotificationId($message->getMessageIdentifier());
+                $this->dm->persist($notifierErrorCounter);
+            }
+
+            $notifierErrorCounter->increaseErrorCounter();
+            if ($notifierErrorCounter->getErrorCounter() >= NotifierErrorCounter::NUMBER_OF_IGNORED_NOTIFICATIONS) {
+                $notifierErrorCounter->setErrorCounter(0);
+            }
+            $this->dm->flush();
+
+            return $notifierErrorCounter->getErrorCounter() > 1;
+        }
+        
+        return false;
+    }
 }

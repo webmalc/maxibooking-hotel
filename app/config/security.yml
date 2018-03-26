@@ -8,6 +8,8 @@ security:
     providers:
         fos_userbundle:
             id: fos_user.user_provider.username_email
+        api_key_user_provider:
+            id: mbh.api_key_user_provider
 
     firewalls:
         dev:
@@ -34,7 +36,10 @@ security:
                 check_path:  /user/login_check
                 require_previous_session: true
                 remember_me: true
-            logout:       
+            simple_preauth:
+                authenticator: mbh.api_key_authenticator
+                provider: api_key_user_provider
+            logout:
                 path:   /user/logout
                 target: /
             anonymous:    true
@@ -44,10 +49,10 @@ security:
                 path:     /
                 domain:   ~
 
-
     access_control:
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/management/channelmanager/expedia/push_notification, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/channelmanager/tripadvisor/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY'}
         - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }

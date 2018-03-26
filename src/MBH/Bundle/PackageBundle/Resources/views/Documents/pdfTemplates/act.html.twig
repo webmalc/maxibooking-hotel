@@ -95,9 +95,9 @@
                 № {{ package.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ 'now'|date('d.m.Y') }}
                 .</h2>
         </div>
-        {% if hotel and hotel.logImage %}
+        {% if hotel and hotel.logoImage %}
             <div class="logo">
-                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile'))) }}">
+                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80'))) }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>
@@ -140,7 +140,7 @@
                     <tr>
                         <td align="center">{{ counter }}</td>
                         <td>
-                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace('_', '.') }}
+                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace({'_': '.'}) }}
                             {% if package.roomType and package.roomType.fullTitle %}
                                 ({{ package.roomType.fullTitle }})
                             {% endif %}
@@ -182,7 +182,7 @@
         </table>
 
         <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ counter }}
-            , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}
+            , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text|trans }}
             <br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
@@ -208,10 +208,11 @@
             </tr>
         </table>
 
-        {% if hotel.organization and hotel.organization.stamp %}
-            <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px"
-                 src="{{ hotel.organization.stamp }}">
-        {% endif %}
+        {#{% if hotel.organization and hotel.organization.stamp %}#}
+            {#<img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px"#}
+                 {#src="{{ absolute_url(path('organization_stamp_view', {protected: hotel.organization.stamp.id, organization: hotel.organization.id})) }}">#}
+                 {#src="{{ absolute_url(asset(vich_uploader_asset(hotel.organization.stamp, 'imageFile')|imagine_filter('thumb_400x200'))) }}">#}
+        {#{% endif %}#}
 
         <style>
             .signatures {

@@ -1,0 +1,102 @@
+<input type="hidden" name="begin" id="total-rooms-overview-begin" class="hidden" value="{{ begin|date('d.m.Y') }}">
+<input type="hidden" name="end" id="total-rooms-overview-end" class="hidden" value="{{ end|date('d.m.Y') }}">
+
+{% set reportData = report.reportData %}
+{% set firstRoomTypeData = reportData|first|first %}
+{% set numberOfColumns = firstRoomTypeData['totalRooms']|length + 2 %}
+
+<table id="total-rooms-overview-table" class="table table-bordered" style="width: 300px">
+    <tbody>
+        <tr>
+            <td class="info">{{ 'total_rooms_overview_table.available_number_of_rooms'|trans}}</td>
+            <td style="padding: 10px;">{{ availableNumberOfRooms }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<table id="total-rooms-overview-table"
+       class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+    <tbody>
+    <tr class="mbh-grid-header1 warning">
+        <td colspan="{{ numberOfColumns }}"><strong>{{ 'total_rooms_overview_table.by_all_hotels'|trans}}</strong></td>
+    </tr>
+    <tr class="header">
+        <td class="first-th" rowspan="2"></td>
+        <td class="header-td" rowspan="2">{{ 'total_rooms_overview_table.number_of_rooms'|trans}}</td>
+        <td colspan="{{ numberOfColumns - 2 }}" style="text-align: left; position:relative; height: 26px;"><span class="floating-header">{{ 'total_rooms_overview_table.rooms_at_sale'|trans}}</span></td>
+    </tr>
+    <tr class="header second-row">
+        {% for dateString, totalRoomsCount in firstRoomTypeData['totalRooms'] %}
+            <td class="header-td">{{ dateString|str_to_date('d.m.Y')|mbh_format }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <td class="first-td">
+            <strong>{{ 'total_rooms_overview_table.rooms_count'|trans}}:</strong>
+        </td>
+        <td class="content">
+            {{ report.totalNumberOfRooms }}
+        </td>
+        {% for dateString, totalRoomsCount in firstRoomTypeData['totalRooms'] %}
+            <td class="content">{{ report.getNumberOfRoomsAtSale(dateString) }}</td>
+        {% endfor %}
+    </tr>
+
+    <tr>
+        <td class="first-td">
+            <strong>{{ 'total_rooms_overview_table.number_of_unused_rooms'|trans}}</strong>
+        </td>
+        {% set resultValue = availableNumberOfRooms - report.totalNumberOfRooms %}
+        <td class="content {% if resultValue < 0 %} alert {% endif %}">
+            {{ resultValue }}
+        </td>
+        {% for dateString, totalRoomsCount in firstRoomTypeData['totalRooms'] %}
+            {% set dateResultValue = availableNumberOfRooms - report.getNumberOfRoomsAtSale(dateString) %}
+            <td class="content {% if dateResultValue < 0 %}alert{% endif %}">{{ dateResultValue }}</td>
+        {% endfor %}
+    </tr>
+    {% for hotelId, hotelData in reportData %}
+
+        <tr class="mbh-grid-header1 warning">
+            <td colspan="{{ numberOfColumns }}"><strong>{{ report.hotelById(hotelId).name }}</strong></td>
+        </tr>
+        <tr class="header">
+            <td class="first-th" rowspan="2"></td>
+            <td class="header-td" rowspan="2">{{ 'total_rooms_overview_table.number_of_rooms'|trans}}</td>
+            <td colspan="{{ numberOfColumns - 2 }}" style="text-align: left; position:relative; height: 26px;"><span class="floating-header">{{ 'total_rooms_overview_table.rooms_at_sale'|trans}}</span></td>
+        </tr>
+        <tr class="header second-row">
+            {% for dateString, totalRoomsCount in firstRoomTypeData['totalRooms'] %}
+                <td class="header-td">{{ dateString|str_to_date('d.m.Y')|mbh_format }}</td>
+            {% endfor %}
+        </tr>
+
+        {% for roomTypeId, roomTypeData in hotelData %}
+            <tr>
+                <td class="first-td">
+                    <strong>{{ report.roomTypeById(roomTypeId).name }}</strong>
+                </td>
+                <td class="content">
+                    {{ roomTypeData['numberOfRooms'] }}
+                </td>
+                {% for dayTotalRooms in roomTypeData['totalRooms'] %}
+                    <td class="content {{ roomTypeData['totalRooms'] < dayTotalRooms ? 'alert' }}">{{ dayTotalRooms }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+
+        <tr>
+            <td class="first-td">
+                <strong>{{ 'total_rooms_overview_table.total'|trans}}</strong>
+            </td>
+            <td class="content">
+                {{ report.getHotelRoomsCount(hotelId) }}
+            </td>
+            {% for dateString, totalRoomsCount in firstRoomTypeData['totalRooms'] %}
+                <td class="content">{{ report.getHotelNumberOfRoomsAtSale(hotelId, dateString) }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>

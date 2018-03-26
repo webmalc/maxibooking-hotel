@@ -33,10 +33,12 @@ class FillingReportGenerator
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param $roomTypes
+     * @param array $roomTypes
+     * @param $statusOptions
+     * @param $isOnlyEnabledRooms
      * @return array
      */
-    public function generate(\DateTime $begin, \DateTime $end, array $roomTypes)
+    public function generate(\DateTime $begin, \DateTime $end, array $roomTypes, $statusOptions, $isOnlyEnabledRooms)
     {
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $manager = $this->container->get('mbh.hotel.room_type_manager');
@@ -78,10 +80,9 @@ class FillingReportGenerator
         $priceCaches = $this->container->get('mbh.helper')
             ->getFilteredResult($this->container->get('doctrine.odm.mongodb.document_manager'), $priceCachesCallback);
 
-
         $allPackages = $dm->getRepository('MBHPackageBundle:Package')->findBy([
             'end' => ['$gte' => reset($rangeDateList)],
-            //'begin' => ['$lte' => end($rangeDateList)],
+            'begin' => ['$lte' => end($rangeDateList)],
             'roomType.id' => ['$in' => $roomTypeIDs]
         ]);
 
@@ -98,6 +99,7 @@ class FillingReportGenerator
         $emptyPackageRowData = [
             'packagePrice' => 0,
             'servicePrice' => 0,
+            'averagePriceForRoom' => 0,
             'price' => 0,
             'paid' => 0,
             'paidPercent' => 0,
@@ -113,6 +115,7 @@ class FillingReportGenerator
             'totalRooms' => 0,
             'packagesCount' => 0,
             'packagesCountPercent' => 0,
+            'numberOfPackagesToRoomFundRelation' => 0
         ];
 
         $roomCacheRepository = $dm->getRepository('MBHPriceBundle:RoomCache');
@@ -141,6 +144,18 @@ class FillingReportGenerator
 
         $columnCount = count($rangeDateList);
 
+        if (in_array('withoutStatus', $statusOptions)) {
+            $includeWithoutStatuses = true;
+            $statuses = array_diff($statusOptions, ['withoutStatus']);
+        } else {
+            $includeWithoutStatuses = false;
+            $statuses = empty($statusOptions) ? null : $statusOptions;
+        }
+
+        $numberOfRoomsByRoomTypeIds = $dm
+            ->getRepository('MBHHotelBundle:Room')
+            ->getNumberOfRoomsByRoomTypeIds($statuses, $includeWithoutStatuses, $isOnlyEnabledRooms);
+
         foreach($roomTypes as $roomType) {
             $roomTypeID = $roomType->getId();
             $tableDataByRoomType[$roomTypeID] = [
@@ -148,7 +163,9 @@ class FillingReportGenerator
                 'totals' => [],
             ];
 
-            $roomTypeRooms = count($roomType->getRooms());
+            $roomTypeRooms = isset($numberOfRoomsByRoomTypeIds[$roomTypeID])
+                ? $numberOfRoomsByRoomTypeIds[$roomTypeID]
+                : 0;
 
             /** @var array $rows packages info by day, keys is dates (format d.m.Y) */
             $rows = [];
@@ -212,11 +229,12 @@ class FillingReportGenerator
                         ++$packageDaysTotal;
                     }
 
+                    /** @var Package $package */
                     foreach($filteredPackages as $package) {
-                        $priceByDate = $package->getPricesByDateWithDiscount();
                         $packagePrice = 0;
-                        if(isset($priceByDate[$date->format('d_m_Y')])) {
-                            $packagePrice = $priceByDate[$date->format('d_m_Y')];
+                        $packagePriceWithDiscount = $package->getPackagePriceByDate($date, true);
+                        if(!is_null($packagePriceWithDiscount)) {
+                            $packagePrice = $packagePriceWithDiscount->getPrice();
                         }
                         $packageRowData['packagePrice'] += $packagePrice;
 
@@ -240,6 +258,10 @@ class FillingReportGenerator
                         }
                     }
 
+                    $packageRowData['numberOfPackagesToRoomFundRelation'] = $roomTypeRooms > 0
+                        ? count($filteredPackages) * 100 / $roomTypeRooms
+                        : 0;
+
                     $packageRowData['price'] = $packageRowData['packagePrice'] + $packageRowData['servicePrice'];
                     $packageRowData['debt'] = $packageRowData['price'] - $packageRowData['paid'];
                     $packageRowData['paidPercent'] = $packageRowData['price'] ? $packageRowData['paid'] / $packageRowData['price'] * 100 : 0;
@@ -253,25 +275,22 @@ class FillingReportGenerator
 
                 $rows[$date->format('d.m.Y')] = $rowDate;
 
-                foreach($rowDate as $kay => $value) {
-                    $totals[$kay] = $totals[$kay] + $value;
+                foreach($rowDate as $key => $rowData) {
+                    $totals[$key] = $totals[$key] + $rowData;
                 }
             }
 
-            $totals['totalRooms'] = $totals['totalRooms'] / $columnCount;
-            $totals['packagesCount'] = $totals['packagesCount'] / $columnCount;
-            $totals['notPaidRooms']  = $packageDaysTotal ? $totals['notPaidRooms'] / $packageDaysTotal : 0;
             $totals['uniqueNotPaidRooms'] = count(array_filter($packages, function($package) use($roomTypeID) {
                 return $package->getPaidStatus() == 'danger' && $package->getRoomType()->getId() == $roomTypeID;
             }));
 
-            $totals['guests'] = $packageDaysTotal ? $totals['guests'] / $packageDaysTotal : 0;
             $totals['uniqueGuests'] = array_sum($uniqueAdults);
-            $totals['roomGuests'] = $packageDaysTotal ? $totals['roomGuests'] / $packageDaysTotal : 0;
             $totals['packagesCountPercent'] = $totals['packagesCountPercent'] / $columnCount;
+            $totals['numberOfPackagesToRoomFundRelation'] = $totals['numberOfPackagesToRoomFundRelation'] / $columnCount;
             $totals['paidPercent'] = $totals['paidPercent'] / $columnCount;
             $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $columnCount;
-            $totals['hotelRooms'] = $roomTypeRooms;
+            $totals['hotelRooms'] = $roomTypeRooms * $columnCount;
+            $totals['roomGuests'] = $totals['packagesCount'] != 0 ? $totals['guests'] / $totals['packagesCount'] : 0;
 
             $tableDataByRoomType[$roomTypeID] = [
                 'rows' => $rows,
@@ -322,6 +341,9 @@ class FillingReportGenerator
                 $totalRows[$date]['packagesCount'] += $row['packagesCount'];
 
                 $totalRows[$date]['packagesCountPercent'] = $totalRows[$date]['totalRooms'] ? $totalRows[$date]['packagesCount'] / $totalRows[$date]['totalRooms'] * 100 : 0;//+= $row['packagesCountPercent'] / $roomTypeCount;
+                $totalRows[$date]['numberOfPackagesToRoomFundRelation'] = $totalRows[$date]['hotelRooms']
+                    ? $totalRows[$date]['packagesCount'] / $totalRows[$date]['hotelRooms'] * 100
+                    : 0;
 
                 //$totalRows[$date]['paidPercent'] = $totalRows[$date]['paidPercent'] / $roomTypeCount;
                 $totalRows[$date]['paidPercent'] = $totalRows[$date]['price'] ? $totalRows[$date]['paid'] / $totalRows[$date]['price'] * 100 : 0;
@@ -334,11 +356,11 @@ class FillingReportGenerator
                     0;
             }
 
-            foreach($total as $key => $value) {
+            foreach($total as $key => $rowData) {
                 if(!isset($totals[$key])) {
                     $totals[$key] = 0;
                 }
-                $totals[$key] += $value;
+                $totals[$key] += $rowData;
             }
             $totals['uniqueNotPaidRooms'] = count(array_filter($packages, function($package) {
                 return $package->getPaidStatus() == 'danger';
@@ -360,6 +382,10 @@ class FillingReportGenerator
             $totals['packagesCountPercent'] = isset($totals['packagesCountPercent']) ? $totals['packagesCountPercent'] / $roomTypeCount : 0;
             $totals['paidPercent'] =  isset($totals['paidPercent']) ? $totals['paidPercent'] / $roomTypeCount : 0;
             $totals['maxIncomePercent'] = isset($totals['maxIncomePercent']) ? $totals['maxIncomePercent'] / $roomTypeCount : 0;
+            $totals['numberOfPackagesToRoomFundRelation'] = $totals['hotelRooms'] != 0  ?
+                $totals['packagesCount'] / $totals['hotelRooms'] * 100
+                : 0;
+            $totals['roomGuests'] = $totals['packagesCount'] != 0 ? $totals['guests'] / $totals['packagesCount'] : 0;
         }
 
         $totalTableData = [

@@ -34,12 +34,13 @@ class CommandRunner implements ConsumerInterface
             $message['Recieved command'] = $command->getCommand();
             $this->logStart($message, $command->getClient());
 
-            $consolePath = $this->kernel->getRootDir().'/../bin/console';
-            $commandLine = $consolePath.' '.$this->createCommandLine($command);
+            $consoleFolder = $this->kernel->getRootDir().'/../bin';
+            $commandLine = $this->createCommandLine($command);
 
+            $this->logger->addRecord(Logger::INFO, 'Start command from command runner '.$commandLine);
             $process = new Process(
                 $commandLine,
-                null,
+                $consoleFolder,
                 [\AppKernel::CLIENT_VARIABLE => $command->getClient()],
                 null,
                 300
@@ -64,6 +65,6 @@ class CommandRunner implements ConsumerInterface
             $params .= " "."$key $value";
         }
 
-        return $command->getCommand().$params.' --env='.$command->getEnvironment();
+        return 'php console '.$command->getCommand().$params.' --env='.$command->getEnvironment();
     }
 }

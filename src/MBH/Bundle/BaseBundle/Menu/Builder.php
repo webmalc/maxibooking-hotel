@@ -115,16 +115,16 @@ class Builder implements ContainerAwareInterface
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
 
-        if ($openTaskCount > 0) {
-            $taskAttributes += [
-                'badge' => true,
-                'badge_class' => 'bg-red',
-                'badge_id' => 'task-counter',
-                'badge_value' => $openTaskCount
-            ];
-        }
+//        if ($openTaskCount > 0) {
+//            $taskAttributes += [
+//                'badge' => true,
+//                'badge_class' => 'bg-red',
+//                'badge_id' => 'task-counter',
+//                'badge_value' => $openTaskCount
+//            ];
+//        }
 
-        $menu->addChild('task', ['route' => 'task', 'label' => 'menu.label.task'])->setAttributes($taskAttributes);
+//        $menu->addChild('task', ['route' => 'task', 'label' => 'menu.label.task'])->setAttributes($taskAttributes);
 
         $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'menu.label.nomandprice.tariff'])
             ->setAttributes(['icon' => 'fa fa-sliders']);
@@ -167,12 +167,18 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-hourglass-half']);
         $menu['reports']->addChild('report_user', ['route' => 'report_users', 'label' => 'menu.label.reports.managers'])
             ->setAttributes(['icon' => 'fa fa-user']);
-        $menu['reports']->addChild('report_invite', ['route' => 'report_invite', 'label' => 'menu.label.reports.invite'])
-            ->setAttributes(['icon' => 'fa fa-map']);
+//        $menu['reports']->addChild('report_invite', ['route' => 'report_invite', 'label' => 'menu.label.reports.invite'])
+//            ->setAttributes(['icon' => 'fa fa-map']);
         $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'menu.label.reports.analystics'])
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'menu.label.reports.polls'])
             ->setAttributes(['icon' => 'fa fa-star']);
+        $menu['reports']->addChild('dynamic_sale', ['route' => 'dynamic_sales', 'label' => 'menu.label.reports.dynamic_sales'])
+            ->setAttributes(['icon' => 'fa fa-bar-chart']);
+        $menu['reports']->addChild('packages_daily_report', ['route' => 'packages_daily_report', 'label' => 'menu.label.reports.daily_report'])
+            ->setAttributes(['icon' => 'fa fa-money']);
+        $menu['reports']->addChild('distribution_report', ['route' => 'distribution_by_days_of_the_week', 'label' => 'distribution_by_days_report.title'])
+            ->setAttributes(['icon' => 'fa fa-check-square-o']);
 
         if ($this->config && $this->config->getSearchWindows()) {
             $menu['reports']->addChild('report_windows', ['route' => 'report_windows', 'label' => 'menu.label.reports.windows'])
@@ -180,11 +186,11 @@ class Builder implements ContainerAwareInterface
         }
         //$token = $this->container->get('security.token_storage')->getToken();
         //if ($token && $token->getUser() instanceof User && $token->getUser()->getIsEnabledWorkShift()) {
-        $menu['reports']->addChild(
-            'report_work_shift',
-            ['route' => 'report_work_shift', 'label' => 'menu.label.reports.work_shift']
-        )
-            ->setAttributes(['icon' => 'fa fa-clock-o']);
+//        $menu['reports']->addChild(
+//            'report_work_shift',
+//            ['route' => 'report_work_shift', 'label' => 'menu.label.reports.work_shift']
+//        )
+//            ->setAttributes(['icon' => 'fa fa-clock-o']);
         //}
 
         return $this->filter($menu, $factory, $options);
@@ -296,7 +302,7 @@ class Builder implements ContainerAwareInterface
         }
 
         //Restaurant links
-        $menu->addChild('restaurant', ['route' => '_welcome', 'label' => 'menu.label.reports'])
+        $menu->addChild('restaurant', ['route' => '_welcome', 'label' => 'menu.label.restaurant'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cutlery']);
         $menu['restaurant']->addChild('ingredients', ['route'=>'restaurant_ingredient_category', 'label' => 'menu.settings.label.restaurant.ingredients'])
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
@@ -354,8 +360,6 @@ class Builder implements ContainerAwareInterface
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
             $menu['services']->addChild('expedia', ['route' => 'expedia', 'label' => 'Expedia'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
-            $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru'])
-                ->setAttributes(['icon' => 'fa fa-cloud-download']);
         }
         $menu['services']->addChild('tripadvisor', ['route' => 'tripadvisor', 'label' => 'TripAdvisor.com'])
             ->setAttributes(['icon' => 'fa fa-tripadvisor']);
@@ -365,8 +369,8 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-globe']);
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'menu.communication.label.polls'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
-            ->setAttributes(['icon' => 'fa fa-star']);
+//        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
+//            ->setAttributes(['icon' => 'fa fa-star']);
 
         return $this->filter($menu, $factory, $options);
     }

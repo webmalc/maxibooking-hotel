@@ -2,21 +2,20 @@
 
 namespace MBH\Bundle\HotelBundle\EventListener;
 
-use Doctrine\Common\EventSubscriber;
-use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorHelper;
+use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
+use Doctrine\ODM\MongoDB\Events;
+use Doctrine\Common\EventSubscriber;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HotelSubscriber implements EventSubscriber
 {
-    /** @var  Container */
-    private $container;
+    /** @var  BillingApi */
+    private $billing;
 
-    public function __construct(ContainerInterface $container) {
-        $this->container = $container;
+    public function __construct(BillingApi $billingApi, Tripadv) {
+        $this->billing = $billingApi;
     }
 
     /**
@@ -28,21 +27,48 @@ class HotelSubscriber implements EventSubscriber
     {
         return [
             Events::preUpdate => 'preUpdate',
+            Events::prePersist => 'prePersist',
             Events::preRemove => 'preRemove'
         ];
     }
 
-    public function preUpdate(LifecycleEventArgs $args)
+    /**
+     * @param PreUpdateEventArgs $args
+     */
+    public function preUpdate(PreUpdateEventArgs $args)
     {
-        $document = $args->getDocument();
-        if ($document instanceof Hotel) {
+        $hotel = $args->getDocument();
+        if ($hotel instanceof Hotel) {
+            if ($args->hasChangedField('cityId')) {
+                $this->updateHotelAddressData($hotel);
+            }
             $config = $args->getDocumentManager()
                 ->getRepository('MBHChannelManagerBundle:TripAdvisorConfig')
-                ->findOneBy(['hotel' => $document]);
+                ->findOneBy(['hotel' => $hotel]);
             if (!is_null($config)) {
                 $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($config);
             }
         }
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function prePersist(LifecycleEventArgs $args)
+    {
+        $hotel = $args->getDocument();
+        if ($hotel instanceof Hotel) {
+            if (!empty($hotel->getCityId())) {
+                $this->updateHotelAddressData($hotel);
+            }
+        }
+    }
+
+    private function updateHotelAddressData(Hotel $hotel)
+    {
+        $city = $this->billing->getCityById($hotel->getCityId());
+        $hotel->setRegionId($city->getRegion());
+        $hotel->setCountryTld($city->getCountry());
     }
 
     public function preRemove(LifecycleEventArgs $args)

@@ -3,16 +3,15 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\PersistentCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ClientBundle\Traits\CheckIsNotificationTypeExistsTrait;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -23,6 +22,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ClientConfig extends Base
 {
+    const DEFAULT_NUMBER_OF_DAYS_FOR_PAYMENT = 5;
+    const DEFAULT_BEGIN_DATE_OFFSET = -21;
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -47,9 +49,17 @@ class ClientConfig extends Base
     use AllowNotificationTypesTrait;
 
     /**
+     * @var string
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="string")
+     * @Assert\Choice(callback="getTimeZonesList")
+     */
+    protected $timeZone;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -58,7 +68,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -87,19 +97,18 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     protected $searchWindows = false;
 
     /**
-     * @var string
+     * @var array
      * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "paypal", "rbk"})
+     * @ODM\Field(type="collection")
      */
-    protected $paymentSystem;
+    protected $paymentSystems = [];
 
     /**
      * @var Robokassa
@@ -126,6 +135,12 @@ class ClientConfig extends Base
     protected $uniteller;
 
     /**
+     * @var RNKB
+     * @ODM\EmbedOne(targetDocument="RNKB")
+     */
+    protected $rnkb;
+
+    /**
      * @var Rbk
      * @ODM\EmbedOne(targetDocument="Rbk")
      */
@@ -136,6 +151,18 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="Paypal")
      */
     protected $paypal;
+
+    /**
+     * @var Invoice
+     * @ODM\EmbedOne(targetDocument="Invoice")
+     */
+    protected $invoice;
+
+    /**
+     * @var Stripe
+     * @ODM\EmbedOne(targetDocument="Stripe")
+     */
+    protected $stripe;
 
     /**
      * @var string
@@ -156,7 +183,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -164,11 +191,18 @@ class ClientConfig extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Gedmo\Versioned
      * @Assert\Type(type="DateTime")
      */
     protected $beginDate;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     */
+    protected $beginDateOffset;
 
     /**
      * @var integer
@@ -179,6 +213,25 @@ class ClientConfig extends Base
      * @Assert\Range(min=0, max=365)
      */
     protected $noticeUnpaid = 0;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Field(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Type(type="integer", message="validate.type.integer")
+     * @Assert\Range(min=0, max=2, invalidMessage="")
+     */
+    protected $priceRoundSign = 2;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Field(type="boolean")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $queryStat = true;
 
     /**
      * @var bool
@@ -212,6 +265,108 @@ class ClientConfig extends Base
      * @Assert\NotNull()
      */
     protected $isSendMailAtPaymentConfirmation = false;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     */
+    protected $numberOfDaysForPayment = self::DEFAULT_NUMBER_OF_DAYS_FOR_PAYMENT;
+
+    /**
+     * @var float
+     * @ODM\Field(type="float")
+     * @Assert\Type(type="float")
+     */
+    protected $currencyRatioFix = 1.015;
+
+    /**
+     * @return Stripe
+     */
+    public function getStripe(): ?Stripe
+    {
+        return $this->stripe;
+    }
+
+    /**
+     * @param Stripe $stripe
+     * @return ClientConfig
+     */
+    public function setStripe(Stripe $stripe): ClientConfig
+    {
+        $this->stripe = $stripe;
+
+        return $this;
+    }
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $currency;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $showLabelTips = true;
+
+    /**
+     * @return bool
+     */
+    public function isShowLabelTips(): ?bool
+    {
+        return $this->showLabelTips;
+    }
+
+    /**
+     * @param bool $showLabelTips
+     * @return ClientConfig
+     */
+    public function setShowLabelTips(bool $showLabelTips): ClientConfig
+    {
+        $this->showLabelTips = $showLabelTips;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency(): ?string
+    {
+        return $this->currency ? $this->currency : ($this->timeZone === 'Europe/Moscow' ? 'rub' : 'usd');
+    }
+
+    /**
+     * @param string $currency
+     * @return ClientConfig
+     */
+    public function setCurrency(string $currency): ClientConfig
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * @return Invoice
+     */
+    public function getInvoice(): ?Invoice
+    {
+        return $this->invoice;
+    }
+
+    /**
+     * @param Invoice $invoice
+     * @return ClientConfig
+     */
+    public function setInvoice(Invoice $invoice): ClientConfig
+    {
+        $this->invoice = $invoice;
+
+        return $this;
+    }
 
     /**
      * @return bool
@@ -298,10 +453,10 @@ class ClientConfig extends Base
     }
 
     /**
-     * @param PayPal $PayPal
-     * @return self
+     * @param Paypal $paypal
+     * @return ClientConfig
      */
-    public function setPaypal(\MBH\Bundle\ClientBundle\Document\Paypal $paypal)
+    public function setPaypal(Paypal $paypal)
     {
         $this->paypal = $paypal;
         return $this;
@@ -335,11 +490,13 @@ class ClientConfig extends Base
     }
 
     /**
+     * @param int $noticeUnpaid
      * @return ClientConfig
      */
     public function setNoticeUnpaid(int $noticeUnpaid)
     {
         $this->noticeUnpaid = $noticeUnpaid;
+
         return $this;
     }
 
@@ -375,20 +532,22 @@ class ClientConfig extends Base
 
     /**
      * @param boolean $useRoomTypeCategory
+     * @return ClientConfig
      */
     public function setUseRoomTypeCategory($useRoomTypeCategory)
     {
         $this->useRoomTypeCategory = $useRoomTypeCategory;
+
         return $this;
     }
 
     /**
      * Set robokassa
      *
-     * @param \MBH\Bundle\ClientBundle\Document\Robokassa $robokassa
+     * @param Robokassa $robokassa
      * @return self
      */
-    public function setRobokassa(\MBH\Bundle\ClientBundle\Document\Robokassa $robokassa)
+    public function setRobokassa(Robokassa $robokassa)
     {
         $this->robokassa = $robokassa;
         return $this;
@@ -397,7 +556,7 @@ class ClientConfig extends Base
     /**
      * Get robokassa
      *
-     * @return \MBH\Bundle\ClientBundle\Document\Robokassa $robokassa
+     * @return Robokassa $robokassa
      */
     public function getRobokassa()
     {
@@ -407,10 +566,10 @@ class ClientConfig extends Base
     /**
      * Set payanyway
      *
-     * @param \MBH\Bundle\ClientBundle\Document\Payanyway $payanyway
+     * @param Payanyway $payanyway
      * @return self
      */
-    public function setPayanyway(\MBH\Bundle\ClientBundle\Document\Payanyway $payanyway)
+    public function setPayanyway(Payanyway $payanyway)
     {
         $this->payanyway = $payanyway;
         return $this;
@@ -419,7 +578,7 @@ class ClientConfig extends Base
     /**
      * Get payanyway
      *
-     * @return \MBH\Bundle\ClientBundle\Document\Payanyway $payanyway
+     * @return Payanyway $payanyway
      */
     public function getPayanyway()
     {
@@ -429,10 +588,10 @@ class ClientConfig extends Base
     /**
      * Set moneymail
      *
-     * @param \MBH\Bundle\ClientBundle\Document\Moneymail $moneymail
+     * @param Moneymail $moneymail
      * @return self
      */
-    public function setMoneymail(\MBH\Bundle\ClientBundle\Document\Moneymail $moneymail)
+    public function setMoneymail(Moneymail $moneymail)
     {
         $this->moneymail = $moneymail;
         return $this;
@@ -441,7 +600,7 @@ class ClientConfig extends Base
     /**
      * Get moneymail
      *
-     * @return \MBH\Bundle\ClientBundle\Document\Moneymail $moneymail
+     * @return Moneymail $moneymail
      */
     public function getMoneymail()
     {
@@ -451,10 +610,10 @@ class ClientConfig extends Base
     /**
      * Set uniteller
      *
-     * @param \MBH\Bundle\ClientBundle\Document\Uniteller $uniteller
+     * @param Uniteller $uniteller
      * @return self
      */
-    public function setUniteller(\MBH\Bundle\ClientBundle\Document\Uniteller $uniteller)
+    public function setUniteller(Uniteller $uniteller)
     {
         $this->uniteller = $uniteller;
         return $this;
@@ -463,11 +622,30 @@ class ClientConfig extends Base
     /**
      * Get uniteller
      *
-     * @return \MBH\Bundle\ClientBundle\Document\Uniteller $uniteller
+     * @return Uniteller $uniteller
      */
     public function getUniteller()
     {
         return $this->uniteller;
+    }
+
+    /**
+     * @return RNKB
+     */
+    public function getRnkb()
+    {
+        return $this->rnkb;
+    }
+
+    /**
+     * @param RNKB $rnkb
+     * @return ClientConfig
+     */
+    public function setRnkb(RNKB $rnkb): ClientConfig
+    {
+        $this->rnkb = $rnkb;
+
+        return $this;
     }
 
     /**
@@ -491,43 +669,65 @@ class ClientConfig extends Base
      * @param boolean $paymentSystem
      * @return self
      */
-    public function setPaymentSystem($paymentSystem)
+    public function addPaymentSystem($paymentSystem)
     {
-        $this->paymentSystem = $paymentSystem;
+        if (!in_array($paymentSystem, $this->paymentSystems)) {
+            $this->paymentSystems[] = $paymentSystem;
+        }
+
         return $this;
     }
 
     /**
-     * @return string $paymentSystem
+     * @param string $paymentSystem
+     * @return ClientConfig
      */
-    public function getPaymentSystem()
+    public function removePaymentSystem($paymentSystem)
     {
-        return $this->paymentSystem;
+        $this->paymentSystems = array_diff($this->paymentSystems, [$paymentSystem]);
+        $this->$paymentSystem = null;
+
+        return $this;
     }
 
     /**
-     * @return null|object
+     * @return array $paymentSystem
      */
-    public function getPaymentSystemDoc()
+    public function getPaymentSystems()
     {
-        $paymentSystem = $this->getPaymentSystem();
+        return $this->paymentSystems;
+    }
 
-        if (!empty($paymentSystem) && !empty($this->$paymentSystem)) {
-            return $this->$paymentSystem;
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function getPaymentSystemDocs()
+    {
+        $paymentSystemDocuments = [];
+        $paymentSystems = $this->getPaymentSystems();
+        foreach ($paymentSystems as $paymentSystem) {
+            if (empty($this->$paymentSystem)) {
+                throw new Exception('Saved payment system "' . $paymentSystem . '" not filled');
+            }
+            $paymentSystemDocuments[] = $this->$paymentSystem;
         }
 
-        return null;
+        return $paymentSystemDocuments;
     }
 
     /**
      * @param CashDocument $cashDocument
+     * @param $paymentSystemName
      * @param null $url
      * @return array
+     * @throws Exception
      */
-    public function getFormData(CashDocument $cashDocument, $url = null)
+    public function getFormData(CashDocument $cashDocument, $paymentSystemName, $url = null)
     {
-        $doc = $this->getPaymentSystemDoc();
 
+        $doc = $this->getPaymentSystemDocByName($paymentSystemName);
+        $url = $url ?? $this->getSuccessUrl();
         if (!$doc || $cashDocument->getOperation() != 'in' || $cashDocument->getMethod() != 'electronic' || $cashDocument->getIsPaid()) {
             return [];
         }
@@ -538,14 +738,28 @@ class ClientConfig extends Base
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request)
+    public function checkRequest(Request $request, $paymentSystemName)
     {
-        $doc = $this->getPaymentSystemDoc();
+        $doc = $this->getPaymentSystemDocByName($paymentSystemName);
         if (!$doc) {
             return false;
         }
 
         return $doc->checkRequest($request);
+    }
+
+    /**
+     * @param $paymentSystemName
+     * @return PaymentSystemInterface
+     * @throws Exception
+     */
+    public function getPaymentSystemDocByName($paymentSystemName)
+    {
+        if (empty($this->$paymentSystemName) || !($this->$paymentSystemName instanceof PaymentSystemInterface)) {
+            throw new Exception('Specified payment system "' . $paymentSystemName . '" is not valid!');
+        }
+
+        return $this->$paymentSystemName;
     }
 
     /**
@@ -671,4 +885,164 @@ class ClientConfig extends Base
         $this->beginDate = $beginDate;
     }
 
+    /**
+     * @return integer
+     */
+    public function getPriceRoundSign()
+    {
+        return $this->priceRoundSign;
+    }
+
+    /**
+     * @param integer $priceRoundSign
+     */
+    public function setPriceRoundSign($priceRoundSign)
+    {
+        $this->priceRoundSign = $priceRoundSign;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getBeginDateOffset(): ?int
+    {
+        return $this->beginDateOffset;
+    }
+
+    /**
+     * @param int $beginDateOffset
+     * @return ClientConfig
+     */
+    public function setBeginDateOffset(?int $beginDateOffset): ClientConfig
+    {
+        $this->beginDateOffset = $beginDateOffset;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getActualBeginDate()
+    {
+        if (!empty($this->getBeginDate())) {
+            return $this->getBeginDate();
+        }
+
+        if (!empty($this->getBeginDateOffset())) {
+            return (new \DateTime('midnight'))->modify($this->getBeginDateOffset() . ' days');
+        }
+
+        return new \DateTime('midnight');
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getSearchInputBeginDate()
+    {
+        if (!empty($this->getBeginDateOffset()) && $this->getBeginDateOffset() < 0) {
+            return new \DateTime('midnight');
+        }
+
+        return $this->getActualBeginDate();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isQueryStat()
+    {
+        return $this->queryStat;
+    }
+
+    /**
+     * @param bool $queryStat
+     * @return ClientConfig
+     */
+    public function setQueryStat($queryStat): ClientConfig
+    {
+        $this->queryStat = $queryStat;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTimeZone(): ?string
+    {
+        return $this->timeZone;
+    }
+
+    /**
+     * @param string $timeZone
+     * @return ClientConfig
+     */
+    public function setTimeZone(string $timeZone): ClientConfig
+    {
+        $this->timeZone = $timeZone;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfDaysForPayment(): ?int
+    {
+        return $this->numberOfDaysForPayment;
+    }
+
+    /**
+     * @param int $numberOfDaysForPayment
+     * @return ClientConfig
+     */
+    public function setNumberOfDaysForPayment(int $numberOfDaysForPayment): ClientConfig
+    {
+        $this->numberOfDaysForPayment = $numberOfDaysForPayment;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCurrencyRatioFix(): ?float
+    {
+        return $this->currencyRatioFix;
+    }
+
+    /**
+     * @param float $currencyRatioFix
+     * @return ClientConfig
+     */
+    public function setCurrencyRatioFix(float $currencyRatioFix): ClientConfig
+    {
+        $this->currencyRatioFix = $currencyRatioFix;
+
+        return $this;
+    }
+
+    public static function getTimeZonesList()
+    {
+        return \DateTimeZone::listIdentifiers();
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAvailablePaymentSystems()
+    {
+        return [
+            "robokassa",
+            "payanyway",
+            "moneymail",
+            "uniteller",
+            "paypal",
+            "rbk",
+            "rnkb"
+        ];
+    }
 }

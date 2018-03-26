@@ -1,0 +1,82 @@
+{% extends "MBHUserBundle::layout.html.twig" %}
+
+{% set title = 'view.personal_account.title'|trans %}
+{% set small_title = 'view.personal_account.orders.order_small_title'|trans({'orderId': order.id}) %}
+
+{% block content %}
+    {{ parent() }}
+    <div class="tab-content">
+        <div class="tab-pane active" id="payment-order-form">
+            {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'user-payment-filter-widget', header: 'info'} %}
+                {% block content %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table not-auto-datatable table-striped">
+                                <tbody>
+                                <tr>
+                                    <td class="col-md-3">
+                                        <strong>{{ 'view.personal_account.orders.creation_date'|trans }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ order.createdAsDateTime|date('d.m.Y') }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-3">
+                                        <strong>{{ 'view.personal_account.orders.payment_date'|trans }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ order.expiredDateAsDateTime|date('d.m.Y') }}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table not-auto-datatable table-striped">
+                                <tbody>
+                                <tr>
+                                    <td class="col-md-3">
+                                        <strong>{{ 'view.personal_account.orders.sum'|trans }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ order.price ~ ' ' ~ order.price_currency }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-3">
+                                        <strong>{{ 'view.personal_account.orders.payment_status'|trans }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ order.translatedStatus|trans }}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endblock %}
+            {% endembed %}
+        </div>
+
+        {% include 'MBHUserBundle:Profile:payment_systems_modal.html.twig' %}
+        {% include 'MBHUserBundle:Profile:services_table.html.twig' with {services: services} %}
+        {% embed "MBHBaseBundle:Actions:base_list.html.twig" %}
+            {% block left %}
+                {% if order.status != 'paid' %}
+                    <li>
+                        <button class="btn btn-warning navbar-btn show-payments-list" data-order-id="{{ order.id }}">
+                            <i class="{{ currency().icon }}"> </i> {{ 'view.personal_account.pay_button.title'|trans }}
+                        </button>
+                    </li>
+                {% endif %}
+
+                <li>
+                    <button onclick="location.href = '{{ path('user_payment') }}'" class="btn btn-default navbar-btn"><i
+                                class="fa fa-ban"> </i> {{ 'view.personal_account.cancel_button.title'|trans }}
+                    </button>
+                </li>
+            {% endblock %}
+        {% endembed %}
+    </div>
+{% endblock %}

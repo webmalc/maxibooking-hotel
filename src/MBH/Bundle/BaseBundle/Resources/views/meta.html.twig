@@ -30,6 +30,7 @@
                     'assets/vendor/bootstrap-daterangepicker/daterangepicker.css'
                     '@MBHBaseBundle/Resources/public/css/app/*'
                     '@MBHBaseBundle/Resources/public/css/mbsuperfont/styles.less'
+                    '@MBHBaseBundle/Resources/public/css/app/enjoyhint.css'
                 %}
                 <link rel="stylesheet" href="{{ asset_url }}"/>
                 {% endstylesheets %}
@@ -56,22 +57,23 @@
 
         {% block scripts %}
             {#Client config set Date#}
-            {% set dateDatepickers = 'midnight'|date('d.m.Y') %}
-
-            {% if client_config().beginDate is not empty and client_config().beginDate is defined and  date(dateDatepickers) < date(client_config().beginDate)  %}
-                {% set dateDatepickers = client_config().beginDate|date('d.m.Y')  %}
-            {% endif %}
+            {% set datePickerBeginDate = client_config().getActualBeginDate()  %}
+            {% set searchBeginDate = client_config().getSearchInputBeginDate() %}
             <script>
                 var mbh = {
                     currency: {
                         icon: "{{ currency().icon }}",
-                        text: "{{ currency().text }}"
+                        text: "{{ currency().text|trans }}"
 
                     },
                     justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }}, 
-                    startDatePick: '{{ dateDatepickers|date('d.m.Y') }}',
+                    startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
+                    searchBeginDate: '{{ searchBeginDate|date('d.m.Y') }}',
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
-                    utils: {}
+                    utils: {},
+                    canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
+                    showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }},
+                    currentHotel: "{{ get_current_hotel().id }}"
                 }
             </script>
             {{ app.session.remove('mbh.justLogin') }}
@@ -108,6 +110,7 @@
                 'assets/vendor/bootstrap-daterangepicker/daterangepicker.js'
                 'assets/vendor/readmore-js/readmore.min.js'
                 'bundles/bazingajstranslation/js/translator.min.js'
+                'assets/vendor/enjoyhint/enjoyhint.min.js'
             %}
 
             <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -147,14 +150,12 @@
             {% if app.environment == 'dev' %}
                 <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
             {% else %}
-
             <script src="{{ asset('js/fos_js_routes.js') }}"></script>
             {% endif %}
             <script>
                 moment.locale(document.documentElement.lang);
             </script>
         {% endblock %}
-
     </body>
 </html>
 {% endspaceless %}

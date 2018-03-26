@@ -3,7 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
@@ -13,6 +13,7 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
 use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
+use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -47,7 +48,7 @@ class ChessBoardController extends BaseController
             'tileTopPadding' => 7,
             'dayTopPadding' => 0,
             'titleSubPadding' => 0,
-            'titleSubFontSize' => 11,
+            'titleSubFontSize' => 13,
             'leftRoomsAndNoAccFontSize' => 16,
         ],
         [
@@ -58,7 +59,7 @@ class ChessBoardController extends BaseController
             'tileTopPadding' => 12,
             'dayTopPadding' => 5,
             'titleSubPadding' => 5,
-            'titleSubFontSize' => 11,
+            'titleSubFontSize' => 13,
             'leftRoomsAndNoAccFontSize' => 16,
         ],
         [
@@ -69,7 +70,7 @@ class ChessBoardController extends BaseController
             'tileTopPadding' => 12,
             'dayTopPadding' => 9,
             'titleSubPadding' => 0,
-            'titleSubFontSize' => 11,
+            'titleSubFontSize' => 15,
             'leftRoomsAndNoAccFontSize' => 20,
         ]
     ];
@@ -108,8 +109,9 @@ class ChessBoardController extends BaseController
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
         $tourist->setBirthplace(new BirthPlace());
-        $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
-        $tourist->getDocumentRelation()->setType('vega_russian_passport');
+        $tourist->setCitizenshipTld(Country::RUSSIA_TLD);
+        $tourist->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
+        $colorSettings = $this->dm->getRepository('MBHClientBundle:ColorsConfig')->fetchConfig();
 
         return [
             'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),
@@ -140,7 +142,8 @@ class ChessBoardController extends BaseController
                 $tourist->getAddressObjectDecomposed())
                 ->createView(),
             'sizes' => self::SIZE_CONFIGS,
-            'stylesFileNumber' => $stylesFileNumber
+            'stylesFileNumber' => $stylesFileNumber,
+            'colors' => $colorSettings->__toArray()
         ];
     }
 
@@ -157,32 +160,6 @@ class ChessBoardController extends BaseController
         return [
             'package' => $package
         ];
-    }
-
-    /**
-     * @Method({"DELETE"})
-     * @Route("/packages/{id}", name="chessboard_remove_package", options={"expose"=true})
-     * @param Package $package
-     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', package) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
-     * @return JsonResponse
-     */
-    public function removePackageAction(Package $package)
-    {
-        $messageFormatter = $this->get('mbh.chess_board.message_formatter');
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
-            throw $this->createNotFoundException();
-        }
-        try {
-            $this->dm->remove($package);
-            $this->dm->flush();
-        } catch (\Exception $e) {
-            $message = $this->get('translator')->trans($e->getMessage());
-            $messageFormatter->addErrorMessage($e->getMessage());
-            $this->get('logger')->alert($message);
-        }
-        $messageFormatter->addSuccessfulMessage('controller.chessboard.package_remove.success');
-
-        return new JsonResponse(json_encode($messageFormatter->getMessages()));
     }
 
     /**
@@ -477,14 +454,14 @@ class ChessBoardController extends BaseController
         }
 
         if (isset($data['filter_begin'])) {
-            $beginDate = Helper::getDateFromString($data['filter_begin']);
+            $beginDate = $this->helper->getDateFromString($data['filter_begin']);
         } else {
             $beginDate = (new \DateTime('midnight'))->modify('-5 days');
         }
         if (isset($data['filter_end'])) {
-            $endDate = Helper::getDateFromString($data['filter_end']);
+            $endDate = $this->helper->getDateFromString($data['filter_end']);
         } else {
-            $endDate = (new \DateTime('midnight'))->modify('+25 days');
+            $endDate = (new \DateTime('midnight'))->modify('+30 days');
         }
 
         return [

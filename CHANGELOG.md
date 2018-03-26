@@ -1,3 +1,39 @@
+2.5.0
+============
+* Change config for clients. Now use .env files and the same cache.
+* Change install (not fully)
+
+2.4.0
+============
+* Bug fixes
+* dynamic sales report
+
+2.3.1
+============
+* a7abb5c Merged in add_by_receipt_payment (pull request #115) add "by_receipt" payment type
+* 2421f94 Merged in #1081_adding_field_of_pers_data_to_online_form (pull request #114) add field with url of consent with processing of personal data
+* 6eea5eb Merged in hide_children_ages_input_if_children_ages_not_display (pull request #112) hide children input
+* 31f5b87 Merge branches '#25_dynamic_sales_report' and 'master' of bitbucket.org:MaxiBookingTeam/maxibooking-hotel into #25_dynamic_sales_report
+
+
+2.3.0
+============
+* merged #1053#1051#864#1037#1027#1021#988#837
+* fixes some recently bugs
+* move from parameters.yml to hotel_config
+* and so on, and so on
+
+2.2.4
+============
+* add query statistic
+
+2.2.3
+============
+* add rounded price
+* add mb user to recipients
+* fix config bug in dev mode
+* fix #1020
+
 2.2.2
 ============
 * move channelmanager update in background to RabbitMQ Queue

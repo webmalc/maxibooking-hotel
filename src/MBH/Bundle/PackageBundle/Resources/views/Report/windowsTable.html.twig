@@ -20,13 +20,13 @@
         <div class="mbh-graph-wrapper">
             <table class="table-hover">
                 <thead>
-                <tr>
+                <tr class="vertical-scrollable">
                     <th class="mbh-graph-date-th">#</th>
                     {% for date in data.dates %}
                         <th class="mbh-graph-date-th">
                             <span class="{{ date|date('N') in [6,7] ? 'text-red' }} {{ date|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-yellow' }} ">{{ date|date('d.m') }}</span>
                             <div class="text-muted">
-                                {{ date|date('Y') == 'now'|date('Y') ? weekdays[date|date('N')]|lower : date|date('Y') }}
+                                {{ date|date('Y') == 'now'|date('Y') ? weekdays[date|date('N')]|trans({}, 'front_messages')|lower : date|date('Y') }}
                             </div>
                         </th>
                     {% endfor %}

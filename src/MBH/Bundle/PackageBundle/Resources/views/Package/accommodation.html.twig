@@ -73,7 +73,7 @@
                                 <td>
                                     {% for facility in accommodation.room.allFacilities %}
                                         <i style="margin-left: 3px" data-toggle="tooltip"
-                                           data-title="{{ facilities[facility] }}"
+                                           data-title="{{ facilities[facility]|trans }}"
                                            class="fa mbf-{{ facility }}"></i>
                                     {% endfor %}
                                 </td>
@@ -175,7 +175,7 @@
                                         <td>
                                             {% for facility in room.allFacilities %}
                                                 <i style="margin-left: 3px" data-toggle="tooltip"
-                                                   data-title="{{ facilities[facility] }}"
+                                                   data-title="{{ facilities[facility]|trans }}"
                                                    class="fa mbf-{{ facility }}"></i>
                                             {% endfor %}
                                         </td>

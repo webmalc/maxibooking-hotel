@@ -39,15 +39,15 @@ class UserController extends Controller
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHUserBundle:User')->createQueryBuilder('q')
+        $entities = $this->dm->getRepository('MBHUserBundle:User')->createQueryBuilder()
             ->sort('username', 'asc')
             ->getQuery()
             ->execute()
         ;
 
-        return array(
+        return [
             'entities' => $entities,
-        );
+        ];
     }
 
     /**
@@ -69,9 +69,9 @@ class UserController extends Controller
             $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles')]
         );
 
-        return array(
+        return [
             'form' => $form->createView(),
-        );
+        ];
     }
 
     /**
@@ -81,6 +81,8 @@ class UserController extends Controller
      * @Method("POST")
      * @Security("is_granted('ROLE_USER_NEW')")
      * @Template("MBHUserBundle:User:new.html.twig")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createAction(Request $request)
     {
@@ -96,16 +98,15 @@ class UserController extends Controller
 
             $this->updateAcl($entity, $form);
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.profileController.record_saved_success'));
+            $this->addFlash('success', 'controller.profileController.record_saved_success');
 
             return $this->afterSaveRedirect('user', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
-        );
+        ];
     }
 
     /**
@@ -116,6 +117,8 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param User $entity
+     * @return array
      */
     public function editAction(User $entity)
     {
@@ -140,17 +143,17 @@ class UserController extends Controller
 
             }
         }
+
         $form = $this->createForm(UserType::class,
             $entity, ['hotels' => $hasHotels, 'roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
         );
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
-
 
 
     /**
@@ -159,6 +162,9 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param User $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editDocumentAction(User $entity, Request $request)
     {
@@ -174,16 +180,17 @@ class UserController extends Controller
             $form->handleRequest($request);
             if($form->isValid()) {
                 $this->get('fos_user.user_manager')->updateUser($entity);
+                $this->addFlash('success', 'controller.profileController.record_edited_success');
 
-                return $this->redirectToRoute('user_document_edit', ['id' => $entity->getId()]);
+                return $this->afterSaveRedirect('user', $entity->getId(), [], '_document_edit');
             }
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -192,6 +199,9 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param User $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editSecurityAction(User $entity, Request $request)
     {
@@ -201,15 +211,16 @@ class UserController extends Controller
 
         if ($form->isValid()) {
             $this->get('fos_user.user_manager')->updateUser($entity);
+            $this->addFlash('success', 'controller.profileController.record_edited_success');
 
-            return $this->redirectToRoute('user_security_edit', ['id' => $entity->getId()]);
+            return $this->afterSaveRedirect('user', $entity->getId(), [], '_security_edit');
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -218,6 +229,9 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param User $entity
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAddressAction(User $entity, Request $request)
     {
@@ -229,16 +243,17 @@ class UserController extends Controller
             $form->handleRequest($request);
             if($form->isValid()) {
                 $this->get('fos_user.user_manager')->updateUser($entity);
+                $this->addFlash('success', 'controller.profileController.record_edited_success');
 
-                return $this->redirectToRoute('user_address_edit', ['id' => $entity->getId()]);
+                return $this->afterSaveRedirect('user', $entity->getId(), [], '_address_edit');
             }
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -249,6 +264,9 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template("MBHUserBundle:User:edit.html.twig")
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     * @param Request $request
+     * @param User $entity
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateAction(Request $request, User $entity)
     {
@@ -266,22 +284,24 @@ class UserController extends Controller
                 $entity->setPlainPassword($newPassword);
             }
 
+            if ($entity->getLocale()) {
+                $this->get('session')->set('_locale', $entity->getLocale());
+            }
             $this->container->get('fos_user.user_manager')->updateUser($entity);
 
             //update ACL
             $this->updateAcl($entity, $form);
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.profileController.record_edited_success'));
+            $this->addFlash('success', 'controller.profileController.record_edited_success');
 
             return $this->afterSaveRedirect('user', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     private function updateAcl(User $user, $form)
@@ -314,7 +334,6 @@ class UserController extends Controller
 
             $aclProvider->updateAcl($acl);
         }
-
     }
 
     /**

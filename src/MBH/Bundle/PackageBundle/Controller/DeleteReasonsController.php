@@ -21,7 +21,7 @@ class DeleteReasonsController extends Controller implements CheckHotelController
      *
      * @Route("/", name="package_delete_reasons")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PACKAGE_DELETE_REASON')")
      * @Template()
      */
     public function indexAction(Request $request)
@@ -56,7 +56,7 @@ class DeleteReasonsController extends Controller implements CheckHotelController
     /**
      * @Route("/{id}/edit", name="package_delete_reasons_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PACKAGE_DELETE_REASON')")
      * @Template()
      */
     public function editDeleteReasonsAction($id)
@@ -84,7 +84,7 @@ class DeleteReasonsController extends Controller implements CheckHotelController
      *
      * @Route("/delete_reasons/{id}", name="reason_update")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PACKAGE_DELETE_REASON')")
      * @Template("MBHPackageBundle:DeleteReasons:index.html.twig")
      *
      */
@@ -128,7 +128,7 @@ class DeleteReasonsController extends Controller implements CheckHotelController
      * @Method("GET")
      * @ParamConverter(class="MBHPackageBundle:DeleteReason")
      * @param DeleteReason $reasons
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PACKAGE_DELETE_REASON')")
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */

@@ -135,50 +135,71 @@ var initAccommodationTab = function () {
                 })
             }
         }
-    }
+    };
 
     $form.on('submit', function (e) {
         formHandler(e);
     });
-}
+};
 
-var deleteUndaid = function () {
-    $('.booking-delete-link').on('click', function (e) {
+var initRemovePackageButton = function () {
+    var $formContainer = $('#delete-modal-form-container');
+    var $deleteModalButton = $('#package-delete-modal-button');
+
+    $('.booking-delete-link, .order-booking-delete-link').unbind('click');
+    $('.booking-delete-link, .order-booking-delete-link').on('click', function (e) {
+        var orderId = this.getAttribute('data-order-id');
+        var isRemoveFromOrderInterface = orderId !== null;
+        console.log(orderId);
         e.preventDefault();
-        $('#modal_delete_package').attr('data-order', $(this).data('order'));
-        $('.modal-body').html(mbh.loader.html);
 
-        return $.ajax({
-            url: Routing.generate('package_delete', {'id': $(this).data('id')}),
+        var isRemovePackage = this.classList.contains('booking-delete-link');
+        var urlName = isRemovePackage ? 'package_delete' : 'order_delete';
+        var entityId = $(this).data('id');
+
+        $formContainer.html(mbh.loader.html);
+
+        $.ajax({
+            url: Routing.generate(urlName, {'id': entityId}),
             type: "GET",
-            data: {},
-            success: function (urlFromController) {
-                $('#modal_delete_package').html(urlFromController);
-                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
+            success: function (response) {
+                $formContainer.html(response);
                 $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+            }, error: function () {
+                $formContainer.html(mbh.error.html);
             }
         });
-    });
-    $('.order-booking-delete-link').on('click', function (e) {
-        e.preventDefault();
-        $('.modal-body').html(mbh.loader.html);
 
-        return $.ajax({
-            url: Routing.generate('order_delete', {'id': $(this).data('id')}),
-            type: "GET",
-            data: {},
-            success: function (urlFromController) {
-                $('#modal_delete_package').html(urlFromController);
-                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
-                $('select#mbh_bundle_packagebundle_order_delete_reason_type_deleteReason').select2();
-            }
-        });
+        $deleteModalButton.unbind('click');
+        $deleteModalButton.click(function () {
+            var data = $formContainer.find('form').serialize();
+            $formContainer.html(mbh.loader.html);
+            var urlAfterRedirect = isRemovePackage && isRemoveFromOrderInterface
+                ? Routing.generate('package_order_edit', {'id' : orderId, 'packageId' : entityId})
+                : Routing.generate('package');
+
+            $.ajax({
+                url: Routing.generate(urlName, {'id': entityId}),
+                type: "POST",
+                data: data,
+                success: function (response) {
+                    $formContainer.html(response)
+                },
+                error: function (response) {
+                    if (response.status === 302) {
+                        window.location.href = urlAfterRedirect;
+                    } else {
+                        $formContainer.html(mbh.error.html)
+                    }
+                }
+            });
+        })
     });
-}
+};
 
 var docReadyPackages = function () {
     'use strict';
-    deleteUndaid();
+    initRemovePackageButton();
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
@@ -225,7 +246,7 @@ var docReadyPackages = function () {
             return '<span><i class="' + $(originalOption).data('icon') + '"></i> ' + icon.text + '</span>';
         };
 
-        $('#package-filter-status').each(function () {
+        $('#package-filter-status, #package-source-filter').each(function () {
             $(this).select2({
                 placeholder: $(this).prop('data-placeholder'),
                 allowClear: true,
@@ -303,13 +324,13 @@ var docReadyPackages = function () {
                                 $('#mbh_bundle_packagebundle_package_csv_type_paid').val($('#package-filter-paid').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_confirmed').val($('#package-filter-confirmed').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_deleted').val(($('#package-filter-deleted').is(':checked')) ? 1 : 0)
-                                $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'))
+                                $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'));
+                                $('#mbh_bundle_packagebundle_package_csv_type_query').val($('#package-table_filter').find('input[type="search"]').val());
+                                $('#mbh_bundle_packagebundle_package_csv_type_source').val($('#package-source-filter').val());
                                 $('.modal.in').modal('hide')
                             });
-
                         }
                     });
-
                 }
             }
         ],
@@ -322,6 +343,7 @@ var docReadyPackages = function () {
                 d.begin = $('#package-filter-begin').val();
                 d.end = $('#package-filter-end').val();
                 d.roomType = $('#package-filter-roomType').val();
+                d.source = $('#package-source-filter').val();
                 d.status = $('#package-filter-status').val();
                 d.deleted = ($('#package-filter-deleted').is(':checked')) ? 1 : 0;
                 d.dates = $('#package-filter-dates').val();
@@ -349,7 +371,7 @@ var docReadyPackages = function () {
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
             $('.booking-delete-link').attr('data-toggle', 'modal');
 
-            deleteUndaid();
+            initRemovePackageButton();
 
             //summary
             $('#package-summary-total').html(settings.json.package_summary_total || '-');
@@ -380,9 +402,13 @@ var docReadyPackages = function () {
                 .removeClass('btn-default').addClass('btn-primary');
         }
 
-        $('.package-filter').on('change switchChange.bootstrapSwitch', function () {
+        $('.package-filter:not(#package-filter-begin):not(#package-filter-end)').on('change switchChange.bootstrapSwitch', function () {
             $('#package-table').dataTable().fnDraw();
         });
+        $('#package-filter-begin, #package-filter-end').on('changeDate', function () {
+            $('#package-table').dataTable().fnDraw();
+        });
+
         $('#package-table-quick-links a').click(function () {
             var input = $('#package-filter-quick-link');
             $('#package-table-quick-links a').removeClass('btn-primary').addClass('btn-default');
@@ -499,12 +525,33 @@ var docReadyPackages = function () {
 
 
     discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'), $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'))
+};
+
+function setPaymentCardVisibility() {
+    var $paymentCardInfo = $('#payment-card-info');
+    if ($paymentCardInfo.length === 1) {
+        var $showInfoBtn = $('#show-payment-info-button');
+        var $hideInfoBtn = $('#hide-payment-info-button');
+
+        $showInfoBtn.click(function () {
+            $paymentCardInfo.show();
+            $showInfoBtn.hide();
+            $hideInfoBtn.show();
+        });
+
+        $hideInfoBtn.click(function () {
+            $paymentCardInfo.hide();
+            $showInfoBtn.show();
+            $hideInfoBtn.hide();
+        });
+    }
 }
 
 
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
+    setPaymentCardVisibility();
     //package ajax tabs
     (function () {
         var tabs = $('#package-tabs');
@@ -512,6 +559,7 @@ $(document).ready(function () {
             return null;
         }
         tabs.find('li > a').click(function (e) {
+            setPaymentCardVisibility();
             e.preventDefault();
             $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>' + Translator.trans("package.processing") + '...</div>');
             tabs.find('li').removeClass('active');

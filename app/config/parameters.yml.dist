@@ -9,9 +9,15 @@ parameters:
   mailer_encryption: ssl
 
   #MongoBD
-  mongodb_host: mbh-mongo
-  mongodb_port: 27017
-  mongodb_database: mbh
+  mongodb_host: '%env(MONGODB_HOST)%'
+  mongodb_primary_host: '%env(MONGODB_PRIMARY_HOST)%'
+  mongodb_port: '%env(MONGODB_PORT)%'
+  mongodb_options: '%env(MONGODB_OPTIONS)%'
+  mongodb_database: '%env(MONGODB_DATABASE)%'
+  mongodb_login: '%env(MONGODB_LOGIN)%'
+  mongodb_password: '%env(MONGODB_PASSWORD)%'
+  mongodb_admin_login: '%env(MONGODB_ADMIN_LOGIN)%'
+  mongodb_admin_password: '%env(MONGODB_ADMIN_PASSWORD)%'
 
   #Rabbitmq
   rabbitmq_user: 'rabbitmq'
@@ -27,32 +33,15 @@ parameters:
 
   #System
   locale: ru
-  locale.currency: rub
   debug_toolbar: true
   debug_redirects: false
   use_assetic_controller: false
-  router.request_context.host: 'example.com'
+  router.request_context.host: '%client%.maxi-booking.ru'
   router.request_context.scheme: http
   router.request_context.base_url: null
-  mbh_timezone: 'default'
-
-  #Packages
-  mbh_package_arrival_time: 12
-  mbh_package_departure_time: 14
-  mbh_package_notpaid_time: '-5 days'
-  mbh_online_form_max_packages: 5
-
-  #Mailer
-  mailer_user_arrival_links:
-    about: 'http://example.com/'
-    rooms: 'http://example.com/'
-    map: 'http://example.com/'
-    contacts: 'http://example.com/'
-    #poll: 'http://example.com'
 
   #Cash
   mbh_payment_systems_change: true
-  currency_ratio_fix: 1.015
 
   #Redis
   mbh_redis: 'redis://mbh-redis'
@@ -80,8 +69,21 @@ parameters:
   online_form_result_url: 'http://example.com'
 
   #client name for env
-  client: ''
-
+  client: '%env(MB_CLIENT)%'
 
   #mongodb_ssl
   mongodb_ssl: false
+  mbh_dynamic_sale_period: 90
+
+  s3_id: superId
+  s3_secret: superSecretKey
+  s3_region: eu-west-1
+  kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
+
+  s3_bucket: 'mb-client-upload-files'
+  s3_protected_bucket: 'mb-client-protected-upload-files'
+  kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
+
+  memcache_host: 'mbh-memcached'
+
+  domain: 'maxi-booking.ru'

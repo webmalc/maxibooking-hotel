@@ -1,4 +1,4 @@
-/*global window, $, document, Routing*/
+/*global window, $, document, Routing, mbh*/
 /*jslint regexp: true */
 $(document).ready(function () {
     'use strict';
@@ -42,4 +42,43 @@ $(document).ready(function () {
     $('.room-overview-filter').change(function () {
         showTable();
     });
+    if (document.getElementById('total-overview-table-wrapper')) {
+        handleTotalRoomsOverview();
+    }
 });
+
+function handleTotalRoomsOverview() {
+    var $filterBegin = $('#total-overview-filter-begin');
+    var $filterEnd = $('#total-overview-filter-end');
+    var $wrapper = $('#total-overview-table-wrapper');
+    $filterBegin.add($filterEnd).on('changeDate', function () {
+        $wrapper.html(mbh.loader.html);
+        $.ajax({
+            url: Routing.generate('total_rooms_overview_table', {
+                begin: $filterBegin.val(),
+                end: $filterEnd.val()
+            }),
+            success: function (response) {
+                $wrapper.html(response);
+                handleFloatingHeaders($wrapper);
+            }
+        });
+    });
+    handleFloatingHeaders($wrapper);
+}
+
+function handleFloatingHeaders($wrapper) {
+    var $floatingHeaders = $('.floating-header');
+    var $firstFloatingHeader = $floatingHeaders.first();
+    var headerSpanLeftOffset = ($(window).width() - $firstFloatingHeader.offset().left - parseInt($firstFloatingHeader.css('width'), 10)) / 2;
+
+    var setLeftScroll = function () {
+        var leftScroll = $wrapper.scrollLeft();
+        $floatingHeaders.css('left', headerSpanLeftOffset + leftScroll);
+    };
+    setLeftScroll();
+    $floatingHeaders.css('visibility', 'visible');
+    $wrapper.scroll(function() {
+        setLeftScroll();
+    });
+}

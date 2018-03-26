@@ -76,7 +76,7 @@
                 <div style="margin-left: 62px;">
                     <div class="area">&nbsp
                         {% if tourist %}
-                            {{ tourist.fullName }}{% if tourist.birthday %}, {{ tourist.birthday|date('d.m.Y') }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ 'mbhpackagebundle.view.documents.pdftemplates.r'|trans }}.{% endif %}{% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}, {{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}{% endif %}
+                            {{ tourist.fullName }}{% if tourist.birthday %}, {{ tourist.birthday|date('d.m.Y') }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ 'mbhpackagebundle.view.documents.pdftemplates.r'|trans }}.{% endif %}{% if tourist.birthplace and tourist.birthplace.countryTld and tourist.birthplace.city %}, {{ get_country(tourist.birthplace.countryTld).name ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}{% endif %}
                         {% endif %}
                     </div>
                     <div style="display: block; font-size: 12px; font-weight: normal;">
@@ -92,12 +92,12 @@
 
             {% set location = '' %}
 
-            {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.street %}
-                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ package.accommodation.housing.city  ~ ', ' ~ package.accommodation.housing.settlement ~ ' ' ~ package.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '.' ~ package.accommodation.housing.house %}
+            {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.cityId and package.accommodation.housing.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ get_city(package.accommodation.housing.cityId).name  ~ ', ' ~ package.accommodation.housing.settlement ~ ' ' ~ package.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '.' ~ package.accommodation.housing.house %}
             {% endif %}
 
-            {% if not location and package.roomType.hotel.city and package.roomType.hotel.street %}
-                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ package.roomType.hotel.city  ~ ', ' ~ package.roomType.hotel.settlement ~ ', ' ~ package.roomType.hotel.street %}
+            {% if not location and package.roomType.hotel.cityId and package.roomType.hotel.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ get_city(package.roomType.hotel.cityId).name ~ ', ' ~ package.roomType.hotel.settlement ~ ', ' ~ package.roomType.hotel.street %}
                 {% if package.roomType.hotel.house %}
                     {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '. ' ~ package.roomType.hotel.house %}
                     {% if package.roomType.hotel.corpus %}
@@ -128,7 +128,7 @@
                 :
                 <br>{{ 'mbhpackagebundle.view.documents.pdftemplates.vid'|trans }}
                 <div class="area ib" style="width: 475px">
-                    &nbsp{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</div>
+                    &nbsp{% if tourist and tourist.documentRelation %}{{ documentTypes[tourist.documentRelation.type] }}{% endif %}</div>
                 ,
                 {{ 'mbhpackagebundle.view.documents.pdftemplates.seria'|trans }}
                 <div class="area ib" style="width: 150px">
@@ -148,7 +148,7 @@
                 </div>
                 <div style="margin-left: 202px;">
                     <div class="area">
-                        &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}
+                        &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrganId %}{{ get_authority_organ(tourist.documentRelation.authorityOrganId).name }}{% endif %}
                     </div>
                     <div style="display: block; font-size: 12px; font-weight: normal;">
                         ({{ 'mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document'|trans }}
