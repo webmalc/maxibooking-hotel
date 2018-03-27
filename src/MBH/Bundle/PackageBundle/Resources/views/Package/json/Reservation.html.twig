@@ -1,0 +1,26 @@
+{% wrapinline %}
+    <div class='text-center'>
+        <a class='btn btn-sm {{ checkIn or checkOut ? 'check-button' }} {{ checkIn ? 'check-in-button' }} {{ checkOut ? 'check-out-button' }} {% if entity.deletedAt %}btn-danger{% else %}btn-success{% endif %}' href='{{ path('package_edit', {'id': entity.id}) }}' rel='main' title='{{ 'package.json.edit_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+            {% if checkIn or checkOut %}
+                <span>
+            {% endif %}
+                {{ entity.numberWithPrefix }}
+            {% if checkIn or checkOut %}
+                </span>
+            {% endif %}
+        </a>
+        {% if entity.deletedAt %}<br>
+            <small>
+                <i class='fa fa-trash-o'> </i>
+                {{ 'package.json.deleted'|trans({}, 'MBHPackageBundle') }}
+            </small>
+        {% endif %}
+        {% if entity.corrupted %}
+            <br>
+            <small>
+                <i class='fa fa-exclamation-circle'> </i>
+                {{ 'package.json.corrupted'|trans({}, 'MBHPackageBundle') }}
+            </small>
+        {% endif %}
+    </div>
+{% endwrapinline %}
