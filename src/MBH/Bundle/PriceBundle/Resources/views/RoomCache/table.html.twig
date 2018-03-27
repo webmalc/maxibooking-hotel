@@ -1,3 +1,4 @@
+{% spaceless %}
 <input type="hidden" name="begin" id="room-cache-overview-begin" class="hidden" value="{{ begin|date('d.m.Y') }}">
 <input type="hidden" name="end" id="room-cache-overview-end" class="hidden" value="{{ end|date('d.m.Y') }}">
 {% if error is defined and error is not empty %}
@@ -109,3 +110,4 @@
         </tbody>
     </table>
 {% endif %}
+{% endspaceless %}
