@@ -26,7 +26,9 @@
                                 class="fa fa-check-square-o"> </i><span class="hidden-xs">&nbsp;{{ save_text|default('views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle')) }}</span>
                     </button></li>
                 <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i><span class="hidden-xs">&nbsp;{{ 'views.actions.saveButtons.cancel'|trans({}, 'MBHBaseBundle') }}</span></button></li>
+                {% if entity.remain %}
                 <li><button type="button" onclick="location.href = '{{ path('special_booking', {id: entity.id})}}'" class="btn btn-warning navbar-btn"><i class="fa fa-book"></i><span class="hidden-xs">&nbsp;Бронировать</span></button></li>
+                {% endif %}
                 <li><button type="button" onclick="location.href = '{{ path('special_recalculate', {id: entity.id})}}'" class="btn btn-warning navbar-btn"><i class="fa fa-calculator"></i><span class="hidden-xs">&nbsp;Пересчитать</span></button></li>
             </ul>
         {% endblock %}

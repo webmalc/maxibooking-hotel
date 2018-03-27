@@ -191,9 +191,10 @@ class PackageMainType extends AbstractType
                         $filter->setHotel($package->getHotel())
                             ->setTariff($package->getTariff())
                             ->setRoomType($package->getRoomType())
-//                            ->setIsStrict(true)
-//                            ->setBegin($package->getBegin())
-//                            ->setEnd($package->getEnd())
+                            ->setIsStrict(true)
+                            ->setIsEnabled(false)
+                            ->setBegin($package->getBegin())
+                            ->setEnd($package->getEnd())
                             ->setRemain(1)
                             ->setExcludeSpecial($package->getSpecial())
                         ;
