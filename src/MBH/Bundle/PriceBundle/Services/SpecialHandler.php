@@ -104,7 +104,7 @@ class SpecialHandler
     {
         $special = $this->getSpecial($specialId);
 
-        if (!$special) {
+        if (!$special ||  !$special->getRemain()) {
             return;
         }
 

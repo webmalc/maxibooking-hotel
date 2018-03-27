@@ -71,6 +71,7 @@ class SpecialRepository extends DocumentRepository
             );
         }
 
+        /** TODO: Тут бы ввести getIsDisabled, чтоб не путаться */
         if (!$filter->getIsEnabled()) {
             $qb->field('isEnabled')->equals(true);
         }

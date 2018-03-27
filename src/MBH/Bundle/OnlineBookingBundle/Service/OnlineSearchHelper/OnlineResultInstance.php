@@ -250,7 +250,7 @@ class OnlineResultInstance
     public function isSameVirtualRoomInSpec()
     {
         $result = false;
-        if (!empty($this->results) && !empty($this->special)) {
+        if (null !== $this->results && null !== $this->special) {
             $specialVirtualRoom = $this->special->getVirtualRoom();
             /** @var SearchResult $result */
             $searchResult = $this->results->first();
@@ -294,6 +294,7 @@ class OnlineResultInstance
             'new' => $newPrice,
         ];
     }
+
 
     public function getLeftSale(): ?int
     {
