@@ -30,6 +30,10 @@ jQuery(document).ready(function() {
         }
     };
 
+    $("#mbh-form").on('submit', function() {
+        window.sessionStorage.setItem('MBHSearchData',$(this).serialize());
+    })
+
     var resizeHandler = function () {
         var formHeight = document.getElementById('mbh-form-wrapper').clientHeight;
         window.parent.postMessage({
