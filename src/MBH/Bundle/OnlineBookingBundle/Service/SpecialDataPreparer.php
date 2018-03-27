@@ -24,7 +24,7 @@ class SpecialDataPreparer
 
     const NO_IMAGE_PATH = 'noimage.png';
 
-    const ONLY_DEFAULT_TARIFF = true;
+    const ONLY_DEFAULT_TARIFF = false;
 
     /** @var  DocumentManager */
     private $dm;
