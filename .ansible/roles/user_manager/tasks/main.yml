@@ -1,0 +1,6 @@
+---
+
+- name: User www-data add group maxibooking
+  user:
+    name: www-data
+    groups: vagrant

@@ -77,9 +77,11 @@ class ExpediaOrderInfo extends AbstractOrderInfo
             $firstNameString = trim((string)$primaryGuestDataElement->Name->attributes()['givenName']);
             $lastName = empty($lastNameString) ? $this->getChannelManagerOrderId() : $lastNameString;
             $phoneNumber = null;
-            if ((string)$primaryGuestDataElement->Phone) {
+            if (isset($primaryGuestDataElement->Phone)) {
                 $phoneAttributes = $primaryGuestDataElement->Phone->attributes();
-                $phoneNumber = $phoneAttributes['countryCode'] . $phoneAttributes['cityAreaCode'] . $phoneAttributes['number'];
+                $phoneNumber = ((string)$phoneAttributes['countryCode'] !== '0' ? $phoneAttributes['countryCode'] : '')
+                    . ((string)$phoneAttributes['cityAreaCode'] !== '0' ? $phoneAttributes['cityAreaCode'] : '')
+                    . $phoneAttributes['number'];
             }
             $email = (string)$primaryGuestDataElement->Email ? (string)$primaryGuestDataElement->Email : null;
 

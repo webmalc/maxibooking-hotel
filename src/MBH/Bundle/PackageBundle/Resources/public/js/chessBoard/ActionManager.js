@@ -8,18 +8,19 @@ var ActionManager = (function () {
         var self = this;
         var $packageDeleteModal = $('#modal_delete_package');
         $packageDeleteModal.modal('show');
-        $packageDeleteModal.find('.modal-body').html(mbh.loader.html);
-        return $.ajax({
+        var $modalContainer = $('#delete-modal-form-container');
+        $modalContainer.html(mbh.loader.html);
+        $.ajax({
             url: Routing.generate('package_delete', { 'id': packageId }),
             type: "GET",
             success: function (modalBodyHTML) {
-                $('#modal_delete_package').html(modalBodyHTML);
+                $modalContainer.html(modalBodyHTML);
                 $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
-                var $removeButton = $packageDeleteModal.find('button[type="submit"]');
+                var $removeButton = $packageDeleteModal.find('#package-delete-modal-button');
                 $removeButton.attr('type', 'button');
+                $removeButton.unbind('click');
                 $removeButton.click(function () {
-                    self.dataManager.deletePackageRequest(packageId);
-                    $packageDeleteModal.modal('hide');
+                    self.dataManager.deletePackageRequest(packageId, $modalContainer, $packageDeleteModal);
                 });
             }
         });

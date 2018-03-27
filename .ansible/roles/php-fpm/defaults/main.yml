@@ -1,0 +1,41 @@
+---
+apt_cache_valid_time: 86400
+
+php_fpm_version: 7.1
+
+php_fpm_default_pool:
+  delete: yes
+  name: www.conf
+
+php_fpm_pools:
+ - name: www-pool
+   user: vagrant
+   group: vagrant
+   listen: /run/php/php{{php_fpm_version}}-fpm.sock
+   chdir: /
+
+php_fpm_pool_defaults:
+  pm: dynamic
+  pm.max_children: 5
+  pm.start_servers: 2
+  pm.min_spare_servers: 1
+  pm.max_spare_servers: 3
+  listen.owner: www-data
+  listen.group: vagrant
+  listen.mode: "0660"
+
+php_fpm_apt_packages:
+  - php{{php_fpm_version}}-fpm
+
+php_fpm_ini:
+ - option: "engine"
+   section: "PHP"
+   value: "On"
+ - option: "error_reporting"
+   section: "PHP"
+   value: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
+ - option: "ldap.max_links"
+   section: "ldap"
+   value: "-1"
+
+php_fpm_config: []

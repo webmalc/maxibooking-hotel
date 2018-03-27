@@ -20,10 +20,10 @@ parameters:
   mongodb_admin_password: '%env(MONGODB_ADMIN_PASSWORD)%'
 
   #Rabbitmq
-  rabbitmq_user: 'rabbitmq'
-  rabbitmq_password: 'rabbitmq'
-  rabbitmq_host: 'mbh-rabbitmq'
-  rabbitmq_vhost: '/'
+  rabbitmq_user: 'maxibooking'
+  rabbitmq_password: 'maxibooking'
+  rabbitmq_host: 127.0.0.1
+  rabbitmq_vhost: '/maxibooking'
   rabbitmq_port: '5672'
 
   #Security
@@ -44,7 +44,7 @@ parameters:
   mbh_payment_systems_change: true
 
   #Redis
-  mbh_redis: 'redis://mbh-redis' 
+  mbh_redis: 'redis://localhost'
 
   #Cache
   mbh_cache:
@@ -72,12 +72,11 @@ parameters:
   s3_id: superId
   s3_secret: superSecretKey
   s3_region: eu-west-1
-  kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
-
   s3_bucket: 'mb-client-upload-files'
   s3_protected_bucket: 'mb-client-protected-upload-files'
+
   kernel.logs_dir: '%kernel.root_dir%/../var/clients/%client%/logs'
 
-  memcache_host: 'mbh-memcached'
+  memcache_host: 'localhost'
 
   domain: 'maxi-booking.ru'

@@ -1,0 +1,20 @@
+---
+
+- name: Add the OS specific varibles
+  include_vars: "{{role_path}}/vars/{{ ansible_os_family }}.yml"
+
+- include: 1-install.yml
+- include: 2-configure.yml
+- include: 3-pools.yml
+
+- name: Check php-fpm syntax of configuration files
+  shell: "{{ php_fpm_binary_name }} -t"
+  register: result
+  when: php_fpm_pools|length > 0
+  changed_when: "result.rc != 0"
+  tags: [configuration,php,fpm]
+
+- name: Start the {{ php_fpm_service_name }} service
+  service: name={{ php_fpm_service_name }} state=started enabled=yes
+  when: php_fpm_pools|length > 0
+  tags: [service,php,fpm]

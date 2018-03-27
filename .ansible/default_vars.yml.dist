@@ -1,0 +1,3 @@
+project_folder: /var/www/mbh
+repo: 'git@bitbucket.org:MaxiBookingTeam/maxibooking-hotel.git'
+load_fixtures: false

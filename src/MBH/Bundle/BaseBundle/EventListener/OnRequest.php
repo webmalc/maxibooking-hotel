@@ -31,6 +31,7 @@ class OnRequest
                 $client = $this->container->get('mbh.billing.api')->getClient();
                 if (!$client->getTrial_activated()) {
                     $url = $clientManager->isRussianClient() ? ClientManager::INSTALLATION_PAGE_RU : ClientManager::INSTALLATION_PAGE_COM;
+                    $url .= '?redirectedForTrial=true&client=' . $client->getLogin();
                     $response = new RedirectResponse($url);
                     $event->setResponse($response);
                 } else {

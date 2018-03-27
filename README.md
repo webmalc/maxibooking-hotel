@@ -1,25 +1,34 @@
 MaxiBooking Hotel project
 ========================
 
-Client maintenance cli commands
---------
-**Install clients**
-```bash
-bin/console mbh:client:install --clients=client1,client2 --env=prod
-```
-**Cache clear for clients**
-```bash
-bin/console mbh:cache:clear --clients=client1,client2 --env=prod
-``` 
+vagrant
+-------
+**Запуск виртуальной машины**
 
+Копируем из vagrant_files нужный файл в Vagrantfile корня.
+Делаем нужные настройки.
 
+* **vagrant up** создание виртуальной машины плюс настройка окружения
+
+**Деплой**
+
+ `default_vars.yml.dist -> deploy.vars.yml`
+ 
+* **ssh-agent bash** создаем агент
+* **ssh-add** добавляем ключ который в битбакете прописан
+При первом разворачивании 
+* **ansible-playbook -i inventory deploy.yml** inventory здесь либо `develop_inventory.yml` 
+  для разработки либо `stage_inventory.yml` если залить изменения на stage server.
+Внимание! Фикстуры будут грузится только если переменная `load_fixtures` - true.
+Т.е. ставим true только один раз при разворачивании проекта.
+
+* **ansible-playbook -i develop_inventory.yml deploy.yml** исключительно для разработки. (cache:clear вот это все...) 
+
+ 
 dotenv style
 -------
 1. database.env
 2. create default env - maxibooking.env
-
-
-
 
 scripts
 -------
