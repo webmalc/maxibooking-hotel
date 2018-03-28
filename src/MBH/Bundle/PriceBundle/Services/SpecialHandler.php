@@ -261,7 +261,7 @@ class SpecialHandler
     private function getFormData(Special $special): OnlineSearchFormData
     {
         $roomType = $special->getVirtualRoom() ? $special->getVirtualRoom()->getRoomType() : null;
-        $data = clone($this->onlineSearchFormData);
+        $data = clone $this->onlineSearchFormData;
         $data->setSpecial($special);
         if ($roomType) {
             $data->setRoomType($roomType);
@@ -275,6 +275,7 @@ class SpecialHandler
     /**
      * @param array $specialIds
      * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getSpecials(array $specialIds)
     {

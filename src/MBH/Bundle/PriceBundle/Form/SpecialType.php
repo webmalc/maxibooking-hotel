@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -87,6 +88,14 @@ class SpecialType extends AbstractType
                     ],
                 ]
             )
+            ->add('promotion', DocumentType::class, [
+                'class' => Promotion::class,
+                'group' => 'form.group.discount',
+                'required' => false,
+                'empty_data' => '',
+                'label' => 'Акция',
+                'help' => 'При наличии акции значение скидки берется из нее, иначе из поля ниже.'
+            ])
             ->add('discount', NumberType::class, [
                 'label' => 'special.discount',
                 'group' => 'form.group.discount',

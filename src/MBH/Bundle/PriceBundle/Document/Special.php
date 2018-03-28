@@ -112,6 +112,12 @@ class Special extends Base
     protected $discount;
 
     /**
+     * @var Promotion
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Promotion")
+     */
+    protected $promotion;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean(name="isPercent")
@@ -486,6 +492,10 @@ class Special extends Base
      */
     public function getDiscount(): float
     {
+        if ($this->promotion) {
+            return $this->promotion->getDiscount();
+        }
+
         return (float)$this->discount;
     }
 
@@ -504,6 +514,10 @@ class Special extends Base
      */
     public function isIsPercent(): bool
     {
+        if ($this->promotion) {
+            return $this->promotion->getIsPercentDiscount();
+        }
+
         return $this->isPercent;
     }
 
@@ -783,6 +797,25 @@ class Special extends Base
     public function setDefaultPrice($default_price = null)
     {
         $this->default_price = $default_price;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPromotion()
+    {
+        return $this->promotion;
+    }
+
+    /**
+     * @param Promotion|null $promotion
+     * @return Special
+     */
+    public function setPromotion(Promotion $promotion = null)
+    {
+        $this->promotion = $promotion;
 
         return $this;
     }
