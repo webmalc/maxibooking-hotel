@@ -33,7 +33,10 @@
             if (billButton) {
                 document.getElementById('bill-button').onclick = function () {
                     var billContent = document.getElementById('bill-content').value;
-                    window.open('about:blank').document.body.innerHTML += billContent;
+                    var billWindow = window.open('about:blank');
+                    setTimeout(function () {
+                        billWindow.document.body.innerHTML += billContent;
+                    }, 100);
                 };
             }
         </script>
