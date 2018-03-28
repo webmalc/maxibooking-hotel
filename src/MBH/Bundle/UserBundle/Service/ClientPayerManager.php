@@ -21,6 +21,9 @@ class ClientPayerManager
     private $billingApi;
     private $responseHandler;
 
+    private $clientPayerCompany;
+    private $isClientPayerCompanyInit = false;
+
     public function __construct(BillingPayerFormHandler $payerFormHandler, ClientManager $clientManager, Serializer $serializer, BillingApi $billingApi, BillingResponseHandler $responseHandler)
     {
         $this->payerFormHandler = $payerFormHandler;
@@ -48,6 +51,8 @@ class ClientPayerManager
         if ($this->payerFormHandler->isNaturalEntityPayer()) {
             if ($this->payerFormHandler->isRussianPayer()) {
                 $client->setRu($payerDataByBillingKeys);
+                $client->setAddress($payerDataByBillingKeys['address']);
+                unset($payerDataByBillingKeys['address']);
             } else {
                 $this->serializer->denormalize($payerDataByBillingKeys, Client::class, null, [AbstractNormalizer::OBJECT_TO_POPULATE => $client]);
             }
@@ -103,11 +108,41 @@ class ClientPayerManager
     /**
      * @return Company|null
      */
-    public function getClientPayerCompany()
-    {
-        $client = $this->clientManager->getClient();
-        $clientCompanies = $this->billingApi->getClientCompanies($client);
+    public function getClientPayerCompany() {
+        if (!$this->isClientPayerCompanyInit) {
+            $client = $this->clientManager->getClient();
+            $clientCompanies = $this->billingApi->getClientCompanies($client);
 
-        return empty($clientCompanies) ? null : current($clientCompanies);
+            $this->clientPayerCompany =  empty($clientCompanies) ? null : current($clientCompanies);
+
+            $this->isClientPayerCompanyInit = true;
+        }
+
+        return $this->clientPayerCompany;
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrorsCausedByUnfilledDataForPayment()
+    {
+        $errors = [];
+        $client = $this->clientManager->getClient();
+
+        if (empty($client->getPhone())) {
+            $errors[] = 'form.client_contacts_type.phone.label';
+        }
+
+        $clientCompany = $this->getClientPayerCompany();
+        $isRussianClient = $client->getCountry() === 'ru';
+
+        if (is_null($clientCompany)) {
+            if (($isRussianClient && empty($client->getRu()))
+                || (!$isRussianClient && (empty($client->getPostal_code()) || empty($client->getAddress())))) {
+                $errors[] = 'client_payer_manager.payer_data';
+            }
+        }
+
+        return $errors;
     }
 }

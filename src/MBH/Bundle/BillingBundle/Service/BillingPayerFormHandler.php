@@ -19,6 +19,7 @@ class BillingPayerFormHandler extends FormDataHandler
             'issueDate' => 'passport_date',
             'issuedBy' => 'passport_issued_by',
             'financeInn' => 'inn',
+            'registration_address' => 'address'
         ],
         'foreign_natural' => [
             'address' => 'address',
@@ -69,7 +70,6 @@ class BillingPayerFormHandler extends FormDataHandler
     private $isRussianPayer;
     private $payerDataWithoutExtraFields;
     private $payerType;
-    private $hasErrors = false;
     private $errors = [];
 
     /**
@@ -91,7 +91,7 @@ class BillingPayerFormHandler extends FormDataHandler
      */
     public function hasErrors()
     {
-        return $this->hasErrors;
+        return !empty($this->errors);
     }
 
     /**
@@ -136,7 +136,7 @@ class BillingPayerFormHandler extends FormDataHandler
     {
         $formErrors = [];
         foreach ($unsetFields as $unsetField) {
-            $formErrors[$unsetField] = [self::FIELD_NOT_FILLED_MESSAGE_ID];
+            $formErrors[$unsetField] = [$this->translator->trans(self::FIELD_NOT_FILLED_MESSAGE_ID)];
         }
 
         return $formErrors;
