@@ -164,6 +164,8 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($entity);
             $this->dm->flush();
+            /** Висел слушатель но какие то глюки. Указываю тут явно пересчет. */
+            $this->container->get('mbh.special_handler')->calculatePrices([$entity->getId()]);
 
             $this->addFlash('success', 'document.saved');
 
@@ -208,7 +210,8 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         $searchData = $this->get('mbh.online.search_form_data');
         $searchData
             ->setSpecial($special)
-            ->setRoomType($special->getVirtualRoom()->getRoomType());
+            ->setRoomType($special->getVirtualRoom()->getRoomType())
+            ->setForceCapacityRestriction(true);
         $specialResult = $search->getResults($searchData);
         $searchResult = null;
         $errors = [];

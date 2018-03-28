@@ -104,12 +104,23 @@ class SpecialHandler
     {
         $special = $this->getSpecial($specialId);
 
-        if (!$special ||  !$special->getRemain()) {
+        if (!$special) {
             return;
         }
 
+        if (!(bool)$special->getRemain()) {
+            if (!$special->getIsEnabled()) {
+                $special->setIsEnabled(true);
+                $this->dm->flush($special);
+            }
+
+            return;
+        }
+
+
+
         $special->setRecalculation();
-        $this->dm->flush();
+        $this->dm->flush($special);
 
         $special->removeAllPrices();
 

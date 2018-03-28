@@ -1,5 +1,6 @@
 security:
     acl:
+        connection: default
         provider: mongodb_acl_provider
 
     encoders:
