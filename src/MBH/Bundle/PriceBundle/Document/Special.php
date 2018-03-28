@@ -820,6 +820,11 @@ class Special extends Base
         return $this;
     }
 
+    public function isDiscountIsPromotion(): bool
+    {
+        return null !== $this->promotion && $this->promotion->getDiscount();
+    }
+
 
 
 

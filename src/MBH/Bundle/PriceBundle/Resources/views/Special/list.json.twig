@@ -1,7 +1,7 @@
 {
     "draw" : "{{ draw }}",
     "recordsTotal": "{{ total }}",
-    "recordsFiltered": "{{ total }}",
+    "recordsFiltered": "{{ filtered }}",
     "data": [
         {% for entity in entities %}
         [
@@ -11,9 +11,9 @@
             "<div {{ entity.isDiffDates?'data-toggle=\'tooltip\' title=\'Уточните даты показа спецпредложения\'' }} style='display:inline-block; {{ entity.isDiffDates?'background-color:#aaa;':'' }}'>{{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}</div>",
             "<small>{{ entity.roomTypes|join(';<br>')|raw }}</small>",
             "<small>{{ entity.tariffs|join(';<br>')|raw }}</small>",
-            "{{ entity.discount|number_format(2) }} {% if not entity.isPercent  %}{{ currency()['text'] }}{% else %}%{% endif %}",
+            "<div class='text-left'>{% if entity.isDiscountIsPromotion %}<a href='{{ path('promotion_edit', {id: entity.promotion.id }) }}' target='_blank' ><i class='fa fa-bookmark'></i></a>&nbsp;{% endif %}<span>{{ entity.discount|number_format(2) }} {% if not entity.isPercent  %}{{ currency()['text'] }}{% else %}%{% endif %}</span></div>",
             "<div class='text-center'>{{ entity.sold }}/{{ entity.limit }}</div>",
-            "<div class='btn-list text-right'>{% if entity.isEnabled and entity.remain and is_granted("ROLE_PACKAGE_NEW") %}<a href='{{ path('special_booking', { 'id': entity.id }) }}' class='btn btn-{{ error?'warning':'success' }} btn-xs' title='Бронировать' data-toggle='tooltip'><i class='fa fa-book'></i></a>{% endif %}{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'special'} %}{% endembed %}</div>"
+            "<div class='btn-list text-right'><input class='promotion-apply' type='checkbox' value='true' data-special='{{ entity.id }}'>&nbsp;&nbsp;{% if entity.isEnabled and entity.remain and is_granted("ROLE_PACKAGE_NEW") %}<a href='{{ path('special_booking', { 'id': entity.id }) }}' class='btn btn-{{ error?'warning':'success' }} btn-xs' title='Бронировать' data-toggle='tooltip'><i class='fa fa-book'></i></a>{% endif %}{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'special'} %}{% endembed %}</div>"
         ]{% if loop.index != entities|length %},{% endif %}
         {% endfor %}
     ]

@@ -22,6 +22,8 @@ $(document).ready(function () {
             process = false;
             deleteLink();
             $('.disabled-entry').closest('tr').addClass('danger');
+            specialSelectorsRedraw();
+
         },
         "ajax": {
             "method": "POST",
@@ -53,5 +55,25 @@ $(document).ready(function () {
         isStrictCheck();
     });
     isStrictCheck();
+
+    var specialSelectors = function () {
+        var $checkAll = $('#check-all-special');
+        $checkAll.iCheck({
+            checkboxClass: 'icheckbox_minimal-blue'
+        });
+        $checkAll.on('ifChecked', function () {
+            $('input[type="checkbox"].promotion-apply').iCheck('check');
+        });
+        $checkAll.on('ifUnchecked', function () {
+            $('input[type="checkbox"].promotion-apply').iCheck('uncheck');
+        });
+
+    };
+    var specialSelectorsRedraw = function () {
+        $('input[type="checkbox"].promotion-apply').iCheck({checkboxClass: 'icheckbox_minimal-green'});
+        $('#check-all-special').iCheck('uncheck');
+    };
+
+    specialSelectors();
 
 });

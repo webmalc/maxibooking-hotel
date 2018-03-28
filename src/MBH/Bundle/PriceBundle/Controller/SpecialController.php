@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -34,7 +35,10 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
      *
      * @param Request $request
      * @return array| \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
+
     public function indexAction(Request $request)
     {
         $filter = new SpecialFilter();
@@ -45,14 +49,16 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
 
         if ($request->isXmlHttpRequest()) {
             $form->submit($request->get('form'));
-            $entities = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($filter);
+            $tableFilter = ClientDataTableParams::createFromRequest($request);
+            $entities = $this->dm->getRepository('MBHPriceBundle:Special')->getTableFiltered($filter, $tableFilter);
 
             return $this->render(
                 'MBHPriceBundle:Special:list.json.twig',
                 [
-                    'entities' => $entities,
-                    'draw' => $request->get('draw'),
+                    'entities' => $entities->toArray(),
+                    'draw' => $tableFilter->getDraw(),
                     'total' => $entities->count(),
+                    'filtered' => $entities->count()
                 ]
             );
         }

@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
+use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
@@ -103,6 +104,9 @@ class SpecialRepository extends DocumentRepository
             $qb->field('hotel')->references($filter->getHotel());
         }
 
+        if ($filter->getPromotion()) {
+            $qb->field('promotion')->references($filter->getPromotion());
+        }
 
         if ($filter->getAdults() && !$filter->getRoomType()) {
 
@@ -143,9 +147,27 @@ class SpecialRepository extends DocumentRepository
         return $qb;
     }
 
+
+    /**
+     * @param SpecialFilter $filter
+     * @param ClientDataTableParams $tableFilter
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getTableFiltered(SpecialFilter $filter, ClientDataTableParams $tableFilter)
+    {
+        $qb = $this->getFilteredQueryBuilder($filter);
+        $qb->skip($tableFilter->getStart())
+            ->limit($tableFilter->getLength());
+
+
+        return $qb->getQuery()->execute();
+    }
+
     /**
      * @param SpecialFilter $filter
      * @return CursorInterface
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getFiltered(SpecialFilter $filter): CursorInterface
     {
@@ -181,15 +203,18 @@ class SpecialRepository extends DocumentRepository
         return $result;
     }
 
-    public function fetchSpecialsByRoomTypeByDate(\DateTime $begin = null, \DateTime $end = null, array $roomTypes = [], Hotel $hotel)
-    {
+    public function fetchSpecialsByRoomTypeByDate(
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        array $roomTypes = [],
+        Hotel $hotel
+    ) {
         $qb = $this->createQueryBuilder();
 
         $qb
             ->field('isEnabled')->equals(true)
             ->field('virtualRoom')->exists(true)
-            ->field('hotel')->references($hotel)
-        ;
+            ->field('hotel')->references($hotel);
         if (count($roomTypes)) {
             $qb->field('roomTypes.id')->in($roomTypes);
         }

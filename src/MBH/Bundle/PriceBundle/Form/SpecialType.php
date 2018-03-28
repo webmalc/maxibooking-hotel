@@ -94,7 +94,7 @@ class SpecialType extends AbstractType
                 'required' => false,
                 'empty_data' => '',
                 'label' => 'Акция',
-                'help' => 'При наличии акции значение скидки берется из нее, иначе из поля ниже.'
+                'help' => 'При наличии акции значение скидки берется из нее, иначе из поля ниже.',
             ])
             ->add('discount', NumberType::class, [
                 'label' => 'special.discount',

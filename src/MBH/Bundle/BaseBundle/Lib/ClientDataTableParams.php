@@ -16,6 +16,7 @@ class ClientDataTableParams
     const DEFAULT_LENGTH = 50;
 
     protected $columns = [];
+
     protected $order = [];
     /**
      * @var int
@@ -34,6 +35,8 @@ class ClientDataTableParams
      * @var bool
      */
     protected $isSearchRegex;
+
+    protected $draw;
 
     /**
      * array(
@@ -79,6 +82,8 @@ class ClientDataTableParams
         if($sortColumnFields) {
             $params->setSortColumnFields($sortColumnFields);
         }
+
+        $params->draw = $request->get('draw');
 
         return $params;
     }
@@ -147,5 +152,10 @@ class ClientDataTableParams
     public function isSearchRegex()
     {
         return $this->isSearchRegex;
+    }
+
+    public function getDraw()
+    {
+        return $this->draw;
     }
 }

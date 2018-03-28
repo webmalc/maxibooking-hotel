@@ -26,6 +26,10 @@
                 {{ form_widget(form.roomType) }}
             </div>
             <div class="form-group">
+                <label><i class="fa fa-bookmark" title="Aкции" data-toggle="tooltip"></i></label>
+                {{ form_widget(form.promotion) }}
+            </div>
+            <div class="form-group">
                 <label><i class="fa fa-check" title="Показывать выключенные?" data-toggle="tooltip"></i></label>
                 {{ form_widget(form.isEnabled) }}
             </div>
@@ -46,7 +50,7 @@
             <th class="td-md">{{ "specials.tariff"|trans }}</th>
             <th class="td-sm">{{ "specials.discount"|trans }}</th>
             <th class="td-sm text-center">{{ "specials.sold"|trans }}</th>
-            <th class="td-sm"></th>
+            <th class="td-sm"><input type="checkbox" class="plain-html" id="check-all-special"></th>
         </tr>
         </thead>
         <tbody>

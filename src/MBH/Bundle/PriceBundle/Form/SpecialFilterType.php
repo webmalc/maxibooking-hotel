@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -79,6 +80,13 @@ class SpecialFilterType extends AbstractType
                         ->sort('fullTitle', 'asc');
                 },
                 'help' => 'special.roomTypes.help',
+            ])
+            ->add('promotion', DocumentType::class, [
+                'label' => 'акция',
+                'group' => 'special.group.conditions',
+                'class' => Promotion::class,
+                'required' => false
+
             ])
             ->add('isEnabled', CheckboxType::class, [
                 'label' => 'isEnabled',
