@@ -22,35 +22,68 @@
                 </th>
             </tr>
             <tr>
-                <th class="td-xxs"></th>
-                <th>{{ "specials.title"|trans }}</th>
-                <th class="td-md">{{ "special.group.dates"|trans }}</th>
-                <th class="td-md">{{ "mbhpricebundle.view.roomcache.index.tipnomera"|trans }}</th>
-                <th class="td-md">{{ "specials.tariff"|trans }}</th>
-                <th class="td-sm">{{ "specials.discount"|trans }}</th>
-                <th class="td-sm text-center">{{ "specials.sold"|trans }}</th>
+                <th class="hidden-xs td-xxs"></th>
+                <th class="hidden-xs">{{ "specials.title"|trans }}</th>
+                <th class="hidden-xs td-md">{{ "special.group.dates"|trans }}</th>
+                <th class="hidden-xs td-md">{{ "mbhpricebundle.view.roomcache.index.tipnomera"|trans }}</th>
+                <th class="hidden-xs td-md">{{ "specials.tariff"|trans }}</th>
+                <th class="hidden-xs td-sm">{{ "specials.discount"|trans }}</th>
+                <th class="hidden-xs td-sm text-center">{{ "specials.sold"|trans }}</th>
                 <th class="td-sm"></th>
             </tr>
             </thead>
             <tbody>
             {% for special in specials %}
                 {% if query.special == special %}{% set selectedSpecial = true %}{% else %}{% set selectedSpecial = false %}{% endif %}
+                {% set discount %}
+                    {{ special.discount|number_format(2) }} {% if not special.isPercent %}{{ currency()['text'] }}{% else %}%{% endif %}
+                {% endset %}
+                {% set btn_special %}
+                    <a href="" data-id="{{ special.id }}" class="search-special-apply btn btn-{{ selectedSpecial ? 'default' : 'primary' }} {{ selectedSpecial ? 'cancel' }} btn-xs">
+                        <i class="fa fa-search"></i> {{ selectedSpecial ? 'cancel'|trans : 'special.apply'|trans }}
+                    </a>
+                {% endset %}
                 <tr class="{{ selectedSpecial ? 'success' }}">
                     <td class="text-center"><i class='fa fa-star'></i></td>
-                    <td><a target="_blank" href="{{ path('special_edit', {'id': special.id}) }}">{{ special }}</a></td>
-                    <td>{{ special.begin|mbh_format }} - {{ special.end|mbh_format }}</td>
-                    <td>
+                    <td class="hidden-xs"><a target="_blank" href="{{ path('special_edit', {'id': special.id}) }}">{{ special }}</a></td>
+                    <td class="hidden-xs">{{ special.begin|mbh_format }} - {{ special.end|mbh_format }}</td>
+                    <td class="hidden-xs">
                         <small>{{ special.roomTypes|join(';<br>')|raw }}</small>
                     </td>
-                    <td>
+                    <td class="hidden-xs">
                         <small>{{ special.tariffs|join(';<br>')|raw }}</small>
                     </td>
-                    <td>{{ special.discount|number_format(2) }} {% if not special.isPercent %}{{ currency()['text'] }}{% else %}%{% endif %}</td>
-                    <td class="text-center">{{ special.sold }}/{{ special.limit }}</td>
+                    <td class="hidden-xs">{{ discount }}</td>
+                    <td class="hidden-xs text-center">{{ special.sold }}/{{ special.limit }}</td>
                     <td>
-                        <a href="" data-id="{{ special.id }}" class="search-special-apply btn btn-{{ selectedSpecial ? 'default' : 'primary' }} {{ selectedSpecial ? 'cancel' }} btn-xs">
-                            <i class="fa fa-search"></i> {{ selectedSpecial ? 'cancel'|trans : 'special.apply'|trans }}
-                        </a>
+                        <div class="hidden-xs">
+                            {{ btn_special }}
+                        </div>
+                        <div class="visible-xs result-tbl-special-for-xs">
+                            <div>
+                                <a target="_blank" href="{{ path('special_edit', {'id': special.id}) }}">{{ special }}</a>
+                                <small>
+                                    {{ discount }}
+                                </small>
+                            </div>
+                            <div>
+                                <small>{{ "specials.sold"|trans }} {{ special.sold }}/{{ special.limit }}</small>
+                            </div>
+                            <div>
+                                <small>
+                                    {{ special.begin|mbh_format }} - {{ special.end|mbh_format }}
+                                </small>
+                            </div>
+                            <div>
+                                <small>{{ special.roomTypes|join(';<br>')|raw }}</small>
+                            </div>
+                            <div>
+                                <small>{{ special.tariffs|join(';<br>')|raw }}</small>
+                            </div>
+                            <div>
+                                {{ btn_special }}
+                            </div>
+                        </div>
                     </td>
                 </tr>
             {% endfor %}
@@ -66,24 +99,27 @@
         <thead>
         <tr>
             <th class="td-xxs"></th>
-            <th class="td-md">{{ "search.results.dates"|trans({}, "MBHPackageBundle") }}</th>
-            <th>{{ "search.results.tariff"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-sm">{{ "search.results.quantity"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="hidden-xs td-md">{{ "search.results.dates"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="hidden-xs">{{ "search.results.tariff"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="hidden-xs td-sm">{{ "search.results.quantity"|trans({}, "MBHPackageBundle") }}</th>
             {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
-                <th class="td-sm">{{ "search.results.room"|trans({}, "MBHPackageBundle") }}</th>
+                <th class="hidden-xs td-sm">{{ "search.results.room"|trans({}, "MBHPackageBundle") }}</th>
             {% endif %}
-            <th class="td-sm">{{ "search.results.guests"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md">{{ "search.results.price"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="hidden-xs td-sm">{{ "search.results.guests"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="hidden-xs td-md">{{ "search.results.price"|trans({}, "MBHPackageBundle") }}</th>
             {% if is_granted('ROLE_PACKAGE_NEW') %}
-                <th class="td-md"></th>
+                <th class="hidden-xs td-md"></th>
             {% endif %}
+            <th class="visible-xs">
+
+            </th>
         </tr>
         </thead>
         <tbody>
     {% for row in results %}
 
         <tr class="mbh-grid-header1 info">
-            <td colspan="10">
+            <td colspan="11">
                 <strong>{{ row.roomType }}</strong> -
                 <small>
                     {% if clientConfig and clientConfig.useRoomTypeCategory() and row.roomType.category %}
@@ -110,92 +146,154 @@
         </tr>
 
         {% for result in row.results %}
-            <tr {% if query.begin == result.begin and query.end == result.end and query.range %}class="success"{% endif %}>
-                <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
-                <td>
-                    {{ result.begin|mbh_format }} - {{ result.end|mbh_format }}
-                    <br>
-                    <small>{{ result.nights }} {{ 'nights'|transchoice(result.nights) }}</small>
-                </td>
-                <td>
-
-                    {% if result.priceTariffs|length > 1 %}
-                        {{ result.priceTariffs|join(' / ') }}
-                    {% else %}
-                        {{ result.tariff }}
-                    {% endif %}<br>
-                    <small>
-                        {{ result.roomType.isHostel ? "search.results.total_beds"|trans({}, "MBHPackageBundle") : "search.results.total_rooms"|trans({}, "MBHPackageBundle") }}
-                        :
-                        <span class="package-search-book-count">{{ result.roomsCount }}</span>
-                    </small>
-                </td>
-                <td>
-                    <select class="form-control quantity-select input-xxs">
-                        {% for index in 1..(result.roomsCount <= 20 ? result.roomsCount : 20) %}
-                            <option value="{{ index }}">{{ index }}</option>
+            {% set resultDate %}
+                {{ result.begin|mbh_format }} - {{ result.end|mbh_format }}
+            {% endset %}
+            {% set resultDate_night %}
+                <small>{{ result.nights }} {{ 'nights'|transchoice(result.nights) }}</small>
+            {% endset %}
+            {% set resultTarrifs_name %}
+                {% if result.priceTariffs|length > 1 %}
+                    {{ result.priceTariffs|join(' / ') }}
+                {% else %}
+                    {{ result.tariff }}
+                {% endif %}
+            {% endset %}
+            {% set resultTarrifs_small %}
+                <small>
+                    {{ result.roomType.isHostel ? "search.results.total_beds"|trans({}, "MBHPackageBundle") : "search.results.total_rooms"|trans({}, "MBHPackageBundle") }}
+                    :
+                    <span class="package-search-book-count">{{ result.roomsCount }}</span>
+                </small>
+            {% endset %}
+            {% set resultRoomsCount %}
+                <select class="form-control quantity-select input-xxs">
+                    {% for index in 1..(result.roomsCount <= 20 ? result.roomsCount : 20) %}
+                        <option value="{{ index }}">{{ index }}</option>
+                    {% endfor %}
+                </select>
+            {% endset %}
+            {% set resultRooms %}
+                {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
+                    <select class="form-control input-sm search-room-select">
+                        <option></option>
+                        {% for room in  result.rooms %}
+                            <option  {% if room.status is iterable and room.status is not empty %}data-icon="{% for status in room.status %}{% if status.code in roomStatusIcons|keys  %}mbf-{{ roomStatusIcons[status.code] }};{% endif %}{% endfor %} "{% else %}data-icon=""{% endif %}
+                                    {% if query.room == room.id %}selected{% endif %}
+                                     value="{{ room.id }}">
+                                {{ room }}
+                            </option>
                         {% endfor %}
                     </select>
-                </td>
-                {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
-                    <td>
-                        <select class="form-control input-sm search-room-select">
-                            <option></option>
-                            {% for room in  result.rooms %}
-                                <option  {% if room.status is iterable and room.status is not empty %}data-icon="{% for status in room.status %}{% if status.code in roomStatusIcons|keys  %}mbf-{{ roomStatusIcons[status.code] }};{% endif %}{% endfor %} "{% else %}data-icon=""{% endif %}
-                                        {% if query.room == room.id %}selected{% endif %}
-                                        value="{{ room.id }}">
-                                    {{ room }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </td>
                 {% endif %}
-                <td class="text-center">
-                    <select class="form-control plain-html input-sm search-tourists-select">
-                        {% for priceTourists, price  in result.prices %}
+            {% endset %}
+            {% set price %}
+                {% for priceTourists, price  in result.prices %}
+                    <ul class="package-search-prices">
+                        <li class="{{ priceTourists }}_price">
+                            {{ price|number_format(2) }}
+                            {% set arr = priceTourists|split('_') %}
+                            <small>
+                                <i class="fa fa-question-circle" data-container="body" data-toggle="popover"
+                                   data-placement="left"  data-html="true"
+                                   data-content="<small>{% for packagePrice in result.packagePrices(arr[0], arr[1]) %}{{ packagePrice.date|date('d.m.Y') }} - {{ packagePrice.price|number_format(2) }} - <i class='fa fa-sliders'></i> {{ packagePrice.tariff }}{% if packagePrice.promotion %} - <i class='fa fa-bookmark'></i> {{ packagePrice.promotion }}{% endif %}{% if packagePrice.special %} - <i class='fa fa-star'></i> {{ packagePrice.special }}{% endif %}<br>{% endfor %}</small>"></i>
+                            </small>
+                        </li>
+                    </ul>
+                {% endfor %}
+            {% endset %}
+            {% set touristSelect %}
+                <select class="form-control plain-html input-sm search-tourists-select">
+                    {% for priceTourists, price  in result.prices %}
+                        {% set arr = priceTourists|split('_') %}
+                        <option value="{{ priceTourists }}">
+                            {% if arr[0] > 0 %}{{ arr[0] }} {{ 'search.results.number_of_adults'|trans}}{% endif %}{% if arr[0] > 0 and arr[1] > 0 %}+{% endif %}{% if arr[1] > 0 %}{{ arr[1] }} {{ 'search.results.number_of_children'|trans}}{% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            {% endset %}
+            {% set finalLink %}
+                <a href="{{ path('package_new', app.request.get('s')|merge({
+                    roomType: result.roomType.id,
+                    tariff: result.tariff.id,
+                    begin: result.begin|date('d.m.Y'),
+                    end: result.end|date('d.m.Y'),
+                    forceBooking: result.forceBooking,
+                    infants: result.infants,
+                    query_id: result.queryId
 
-                                    {% set arr = priceTourists|split('_') %}
-                                    <option value="{{ priceTourists }}">
-                                        {% if arr[0] > 0 %}{{ arr[0] }} {{ 'search.results.number_of_adults'|trans}}{% endif %}{% if arr[0] > 0 and arr[1] > 0 %}+{% endif %}{% if arr[1] > 0 %}{{ arr[1] }} {{ 'search.results.number_of_children'|trans}}{% endif %}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td class="text-right">
-                            {% for priceTourists, price  in result.prices %}
-                                <ul class="package-search-prices">
-                                    <li class="{{ priceTourists }}_price">
-                                        {{ price|number_format(2) }}
-                                        {% set arr = priceTourists|split('_') %}
-                                        <small>
-                                            <i class="fa fa-question-circle" data-container="body" data-toggle="popover"
-                                               data-placement="left"  data-html="true"
-                                               data-content="<small>{% for packagePrice in result.packagePrices(arr[0], arr[1]) %}{{ packagePrice.date|date('d.m.Y') }} - {{ packagePrice.price|number_format(2) }} - <i class='fa fa-sliders'></i> {{ packagePrice.tariff }}{% if packagePrice.promotion %} - <i class='fa fa-bookmark'></i> {{ packagePrice.promotion }}{% endif %}{% if packagePrice.special %} - <i class='fa fa-star'></i> {{ packagePrice.special }}{% endif %}<br>{% endfor %}</small>"></i>
-                                        </small>
-                                    </li>
-                                </ul>
-                            {% endfor %}
-                            <small><i class='fa fa-sliders'> </i> {{ result.tariff.name }}</small>
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ path('package_new', app.request.get('s')|merge({
-                                roomType: result.roomType.id,
-                                tariff: result.tariff.id,
-                                begin: result.begin|date('d.m.Y'),
-                                end: result.end|date('d.m.Y'),
-                                forceBooking: result.forceBooking,
-                                infants: result.infants,
-                                query_id: result.queryId
+                })) }}"
+                   target="_blank"
+                   class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden' }}"
+                   title="{{ 'search.results.book_button.title'|trans }}: {{ result.roomsCount }}" data-toggle="tooltip">
+                    <span class="package-search-book-reservation-text">{{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}</span>
+                    <span class="package-search-book-accommodation-text"
+                          style="display: none;">{{ "search.results.accommodation"|trans({}, "MBHPackageBundle") }}</span>
+                </a>
+            {% endset %}
 
-                            })) }}"
-                               target="_blank"
-                               class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden' }}"
-                               title="{{ 'search.results.book_button.title'|trans }}: {{ result.roomsCount }}" data-toggle="tooltip">
-                                <span class="package-search-book-reservation-text">{{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}</span>
-                                <span class="package-search-book-accommodation-text"
-                                      style="display: none;">{{ "search.results.accommodation"|trans({}, "MBHPackageBundle") }}</span>
-                    </a>
+            <tr {% if query.begin == result.begin and query.end == result.end and query.range %}class="success"{% endif %}>
+                <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
+                <td class="hidden-xs">
+                    {{ resultDate }}
+                    <br>
+                    {{ resultDate_night }}
+                </td>
+                <td class="hidden-xs">
+                    {{ resultTarrifs_name }}
+                    <br>
+                    {{ resultTarrifs_small }}
+                </td>
+                <td class="hidden-xs">
+                    {{ resultRoomsCount }}
+                </td>
+                <td class="hidden-xs">
+                    {{ resultRooms }}
+                </td>
+                <td class="hidden-xs text-center">
+                    {{ touristSelect }}
+                </td>
+                <td class="hidden-xs text-right">
+                    {{ price }}
+                    <small><i class='fa fa-sliders'> </i> {{ result.tariff.name }}</small>
+                </td>
+                <td class="hidden-xs text-center">
+                    {{ finalLink }}
+                </td>
+                <td class="visible-xs result-tbl-for-xs">
+                    <div>
+                        <div>
+                            {{ resultDate }}
+                        </div>
+                        {{ resultDate_night }}
+                    </div>
+                    <div>
+                        <div>
+                            {{ resultTarrifs_name }}
+                        </div>
+                        {{ price }}
+                        {{ resultTarrifs_small }}
+                    </div>
+                    <div>
+                        <div class="order-data">
+                            {{ "search.results.quantity"|trans({}, "MBHPackageBundle") }}
+                            &nbsp;:&nbsp;
+                            {{ resultRoomsCount }}
+                        </div>
+                        <div class="order-data">
+                            {{ "search.results.room"|trans({}, "MBHPackageBundle") }}
+                            &nbsp;:&nbsp;
+                            {{ resultRooms }}
+                        </div>
+                        {#<div class="order_data">#}
+                            {#{{ "search.results.guests"|trans({}, "MBHPackageBundle") }}#}
+                            {#&nbsp;:&nbsp;#}
+                            {#{{ touristSelect }}#}
+                        {#</div>#}
+                    </div>
+                    <div>
+                        {{ finalLink }}
+                    </div>
                 </td>
             </tr>
         {% endfor %}

@@ -1,0 +1,14 @@
+{% wrapinline %}
+    <div class='text-right'>
+        {% if 'now'|date('d.m.Y') == entity.createdAt|date('d.m.Y') %}
+            {{ "package.json.today"|trans({}, "MBHPackageBundle") }}
+            {{ entity.createdAt|date('H:i') }}
+        {% else %}
+            {{ entity.createdAt|date('d.m.Y H:i') }}
+        {% endif %}
+        <br>
+        <small>
+            {{ entity.createdBy|default(entity.channelManagerType)|default('online') }}
+        </small>
+    </div>
+{% endwrapinline %}
