@@ -1239,7 +1239,6 @@ function handleAddingNewBillingEntity() {
                 $modalBody.html(mbh.error.html);
             },
             success: function (response) {
-                console.log(entityRoute);
                 initFormFunc(response);
                 saveButton.removeAttribute('disabled');
                 $('#modal-with-form-save-button').click(function () {
