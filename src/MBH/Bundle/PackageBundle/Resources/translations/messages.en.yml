@@ -1263,7 +1263,7 @@ mbhpackagebundle.views.anketa: 'Form #3'
 mbhpackagebundle.views.rossiiskoi_federacii: 'Russian Federation'
 mbhpackagebundle.views.ot_data_g: 'from December 13 1993 #121'
 mbhpackagebundle.views.obratnaya_storona: 'Tax payer form back side'
-mbhpackagebundle.view.documents.pdftemplates.PP: Signature
+mbhpackagebundle.view.documents.pdftemplates.PP: Here
 report.filling_table_rows.reserved_rooms_from_room_fund: 'Room occupancy'
 report.filling.filling.room_status: 'Room status'
 report.filling.filling.only_enabled: 'Enabled only?'
@@ -1274,3 +1274,5 @@ csv.type.order.source: 'Sales source'
 report.filling_table_rows.average_price_for_room_night_realtion: 'Average price per room/night'
 package.index.filter.package_source.placeholder: 'Sales source'
 package.index.filter.package_source.title: 'Sales source'
+mbhpackagebundle.view.documents.pdftemplates.MM: Stamp
+controller.chessboard.package_remove.success: 'Reservation successfully deleted'
