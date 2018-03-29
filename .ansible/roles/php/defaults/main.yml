@@ -1,0 +1,49 @@
+---
+php_ppa: "ppa:ondrej/php"
+php_packages:
+  - php7.1-common
+  - php7.1-cli
+  - php7.1-intl
+  - php7.1-curl
+  - php7.1-cgi
+  - php7.1-mysql
+  - php7.1-gd
+  - php7.1-mcrypt
+  - php7.1-mbstring
+  - php7.1-redis
+  - php7.1-gmp
+  - php7.1-igbinary
+  - php7.1-imagick
+  - php7.1-imap
+  - php7.1-xmlrpc
+  - php7.1-xsl
+  - php7.1-redis
+  - php7.1-apcu
+  - php7.1-bcmath
+  - php7.1-memcached
+  - php7.1-memcache
+  - php7.1-mongodb
+  - php7.1-sqlite3
+  - php7.1-odbc
+  - php7.1-ssh2
+  - php7.1-zip
+  - php7.1-xdebug
+
+php_ini_overrides_template: "php-ini-overrides.ini.j2"
+php_ini_overrides_file: "php-ini-overrides.ini"
+php_ini_overrides_vars:
+  - emergency_restart_threshold: "10"
+    emergency_restart_interval: "1m"
+    process_control_timeout: "10s"
+    #az-tune
+    upload_max_filesize: "256M"
+    post_max_size: "256M"
+    date_timezone: "Europe/Moscow"
+    memory_limit: "2G"
+    apc_enable_cli: "1"
+    max_execution_time: "180"
+    #http://stackoverflow.com/questions/12905404/symfony2-slow-initialization-time
+    #http://symfony.com/doc/master/performance.html
+    realpath_cache_size: "4096k"
+    realpath_cache_ttl: "600"
+    opcache_max_accelerated_files: "20000"

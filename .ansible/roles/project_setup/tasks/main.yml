@@ -1,0 +1,34 @@
+- name: Copy Parameters
+  copy:
+    src: '{{item.src}}'
+    dest: '{{item.dest}}'
+    remote_src: yes
+  with_items:
+    - { src: '{{ project_folder }}/app/config/parameters.yml.dist', dest: '{{ project_folder }}/app/config/parameters.yml'}
+    - { src: '{{ project_folder }}/app/config/clients/maxibooking.env.dist' , dest: '{{ project_folder }}/app/config/clients/maxibooking.env'}
+    - { src: '{{ project_folder }}/app/config/database.env.dist' , dest: '{{ project_folder }}/app/config/database.env'}
+    - { src:  '{{ project_folder }}/app/config/secrets.yml.dist', dest: '{{ project_folder }}/app/config/secrets.yml' }
+
+- name: Composer install
+  composer:
+    command: install
+    working_dir: '{{ project_folder }}'
+    optimize_autoloader: true
+    global_command: false
+    no_dev: false
+
+- name: Bower Install
+  bower:
+    path: '{{ project_folder }}'
+
+- name: Load Fixtures
+  shell: 'php console {{item}}'
+  args:
+    chdir: '{{project_folder}}/bin'
+  with_items:
+    - 'assets:install --symlink'
+    - 'fos:js-routing:dump'
+    - 'bazinga:js-translation:dump'
+    - 'assetic:dump'
+    - 'doctrine:mongodb:fixtures:load --no-interaction'
+  when: load_fixtures

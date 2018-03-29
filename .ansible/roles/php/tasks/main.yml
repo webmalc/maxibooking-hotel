@@ -1,0 +1,33 @@
+---
+- name: include php-fpm
+  include_role:
+    name: php-fpm
+- name: Add repository for Ubuntu
+  become: true
+  apt_repository: repo={{ php_ppa }}
+  when: ansible_distribution|lower == "ubuntu"
+
+- name: Add repository for Debian
+  become: true
+  apt_repository: repo="deb http://packages.dotdeb.org {{ ansible_distribution_release }} all" state=present
+  when: ansible_distribution|lower == "debian"
+
+- name: Add apt key for Debian
+  become: true
+  apt_key: url=https://www.dotdeb.org/dotdeb.gpg state=present
+  when: ansible_distribution|lower == "debian"
+
+- name: Update apt
+  become: yes
+  apt: update_cache=yes
+  cache_valid_time: 3600
+
+- name: Install PHP Packages
+  become: yes
+  apt: pkg={{ item }} state=present
+  with_items: "{{ php_packages }}"
+  when: php_packages is defined
+  notify:
+    - restart php7-fpm
+
+- include: configure.yml

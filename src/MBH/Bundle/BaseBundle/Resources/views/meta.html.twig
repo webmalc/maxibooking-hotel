@@ -74,7 +74,7 @@
                     utils: {},
                     canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
                     showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }},
-                    currentHotel: "{{ get_current_hotel().id }}"
+                    currentHotel: "{{ get_current_hotel() ? get_current_hotel().id : '' }}"
                 };
 
                 var additionalSettings = JSON.parse('{{ get_front_settings()|raw }}');

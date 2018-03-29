@@ -1,0 +1,10 @@
+---
+- name: Setup virtual machine
+  hosts: all
+  remote_user: vagrant
+  become: false
+  roles:
+    - project_setup
+  vars_files:
+    - default_vars.yml
+
