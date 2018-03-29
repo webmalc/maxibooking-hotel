@@ -1275,3 +1275,4 @@ report.filling_table_rows.average_price_for_room_night_realtion: 'Average price 
 package.index.filter.package_source.placeholder: 'Sales source'
 package.index.filter.package_source.title: 'Sales source'
 mbhpackagebundle.view.documents.pdftemplates.MM: Stamp
+controller.chessboard.package_remove.success: 'Reservation successfully deleted'
