@@ -68,7 +68,8 @@ class BillingApi
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
         $this->kernel = $kernel;
-        $this->billingLogin = $this->kernel->getClient();
+//        $this->billingLogin = $this->kernel->getClient();
+        $this->billingLogin = 'danya-test';
         $this->serializer = $serializer;
 
         /** @var User $user */

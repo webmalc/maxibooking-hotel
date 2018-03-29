@@ -271,6 +271,7 @@ class Extension extends \Twig_Extension
     {
         $data = [
             'allowed_guides' => $this->container->get('mbh.guides_data_service')->getAllowedGuides(),
+            'client_country' => $this->getClient()->getCountry()
         ];
 
         return json_encode($data);
