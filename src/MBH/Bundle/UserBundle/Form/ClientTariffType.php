@@ -31,6 +31,12 @@ class ClientTariffType extends AbstractType
                     'client_tariff_type.period.twelve_month' => 12,
                 ]
             ])
+            ->add('price', TextType::class, [
+                'attr' => [
+                    'disabled' => true
+                ],
+                'required' => false
+            ])
         ;
     }
 

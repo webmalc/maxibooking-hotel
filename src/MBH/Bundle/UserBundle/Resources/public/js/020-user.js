@@ -285,31 +285,58 @@ function switchAuthOrganFieldsVisibility() {
 function initTariffPage() {
     var $changeTariffShowModalButton = $('#change-tariff-modal-show');
     var $changeTariffFormWrapper = $('#change-tariff-form-wrapper');
-    var $priceBlock = $('#new-tariff-price-block');
+
+    var setPrice = function (priceString, isCorrect) {
+        isCorrect = isCorrect === undefined ? true : isCorrect;
+        $('#mbhuser_bundle_client_tariff_type_price').val(priceString);
+        var $errorBlock = $('#tariff-error-block');
+        isCorrect ? $errorBlock.hide() : $errorBlock.show();
+    };
+    var setNewTariffPrice = function () {
+        var quantity = document.getElementById('mbhuser_bundle_client_tariff_type_rooms').value;
+        var period = document.getElementById('mbhuser_bundle_client_tariff_type_period').value;
+        if (quantity && period) {
+            var url = 'http://billing-dev.maxi-booking.com/' + document.documentElement.lang
+                + '/services/calc/?quantity=' + quantity
+                + '&country=' + mbh['client_country']
+                + '&period=' + period;
+            $.ajax({
+                url: url,
+                headers: {
+                    Authorization: "Token 43d11f496e3d9ea0b98f70a946822c9013f15a93"
+                },
+                success: function (response) {
+                    if (response.status === true) {
+                        setPrice(response.price + ' ' + response['price_currency']);
+                    } else {
+                        setPrice('', false)
+                    }
+                },
+                error: function () {
+                    setPrice('', false)
+                }
+            });
+        } else {
+            setPrice('');
+        }
+    };
 
     if ($changeTariffShowModalButton.length = 1) {
-        $priceBlock.hide();
         $changeTariffShowModalButton.click(function () {
             $('#change-tariff-modal').modal('show');
             $changeTariffFormWrapper.html(mbh.loader.html);
             $.get(Routing.generate("update_tariff_modal")).done(function (modalBody) {
                 $changeTariffFormWrapper.html(modalBody);
-                $('#mbhuser_bundle_client_tariff_type_rooms, #mbhuser_bundle_client_tariff_type_period').change(function () {
-                    var quantity = document.getElementById('mbhuser_bundle_client_tariff_type_rooms').value;
-                    var period = document.getElementById('mbhuser_bundle_client_tariff_type_period').value;
-                    var url = BILLING_URL + document.documentElement.lang
-                        + '/services/calc?quantity=' + quantity
-                        + '&country=' + mbh['client_country']
-                        + '&period=' + period;
-                    $priceBlock.hide();
-
-                    $.get(url, function (response) {
-                        if (response.status === true) {
-                            $('#new-tariff-price').html(response.price + ' ' + response['price_currency']);
-                            $priceBlock.show();
-                        }
-                    })
+                var $roomsInput = $('#mbhuser_bundle_client_tariff_type_rooms');
+                var $priceInput = $('#mbhuser_bundle_client_tariff_type_price');
+                var $periodSelect = $('#mbhuser_bundle_client_tariff_type_period');
+                $periodSelect.select2();
+                $periodSelect.on("select2:select", function(e) {
+                    setNewTariffPrice($priceInput);
                 });
+                $roomsInput.on('keyup', function (e) {
+                    setNewTariffPrice($priceInput);
+                })
             });
         });
 
