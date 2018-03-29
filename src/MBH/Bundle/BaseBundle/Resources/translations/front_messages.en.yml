@@ -189,3 +189,6 @@ chessboard_manager.package_tooltip.package_begin: 'Check in date'
 chessboard_manager.package_tooltip.package_end: 'Check out date'
 chessboard_manager.package_tooltip.is_checkin: 'Checked in'
 chessboard_manager.package_tooltip.is_checkout: 'Checked out'
+020-forms.on_moderation: 'being moderated'
+guides.next_button.title: Next
+guides.skip_button.title: Skip

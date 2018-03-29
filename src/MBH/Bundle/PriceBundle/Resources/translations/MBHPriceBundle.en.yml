@@ -68,3 +68,5 @@ price.views.restriction.index.rate: Rate
 price.views.restriction.index.save: Save
 price.views.restriction.index.random: 'Conditions and restrictions wizard'
 price.views.restriction.index.cancel: Cancel
+price.views.overview.index.tab_name: Overview
+price.views.overview.limits.tab_name: Limits

@@ -259,3 +259,6 @@ ROLE_SPECIAL_EDIT: 'Edit special offer'
 ROLE_SPECIAL_DELETE: 'Delete special offer'
 ROLE_NO_OWN_ONLINE_VIEW: 'View reservations created by other users'
 ROLE_PACKAGE_DOCS: 'Reservation documents'
+ROLE_PERSONAL_ACCOUNT: Profile
+ROLE_PASSWORD: 'Profile - Password'
+ROLE_PAYMENTS: 'Profile - Payments'
