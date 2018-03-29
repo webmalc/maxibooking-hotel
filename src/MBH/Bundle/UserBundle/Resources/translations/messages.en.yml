@@ -129,6 +129,70 @@ view.personal_account.services.service_name: Name
 view.personal_account.orders.small_title: Payment
 view.personal_account.payer.change_country_modal.cancel_button.text: Close
 view.personal_account.order_status.corrupted: Corrupted
+controller.profileController.phone_successful_updated: 'Phone number has been successfully changed'
+form.payer_type.organization.group: Organization
+form.payer_type.series.label: Series
+form.payer_type.issue_by.label: 'Issuing authority'
+form.payer_type.number.label: Number
+form.payer_type.issue_date.label: 'Issue date'
+form.payer_type.head.patronymic.label: 'Middle or Patronymic name'
+form.payer_type.head.name.label: Name
+form.payer_type.head.surname.label: Surname
+form.payer_type.head.position.label: Position
+form.payer_type.head.group: Director
+form.payer_type.organization.name.label: Name
+form.payer_type.country_group: Country
+form.client_contacts_type.phone.label: Phone
+form.client_contacts_type.email.label: Email
+form.payer_type.country.label: Country
+form.payer_type.label: 'Payer type'
+form.client_contacts_type.name.label: Name
+form.payer_type.address_group: Address
+form.payer_type.address.label: Address
+form.payer_type.city.label: City
+form.payer_type.state.label: Region
+form.payer_type.postal_code.label: Postcode
+controller.profileController.client_successful_updated: 'The data has been successfully saved'
+controller.profileController.request_error: 'An error occured while saving the data. Please contact support team:%supportEmail%'
+controller.profileController.payer_successfull_saved: 'The payer info has been successfully saved'
+controller.profileController.payer_failed_saved: 'Invalid payer data'
+form.payer_type.payer_type_group: 'Payer type'
+form.payer_type.legal_entity: 'Legal Entity'
+form.payer_type.natural_entity: 'Individual person'
+form.payer_type.identification_group: 'Identity Card'
+form.payer_type.document_type.label: 'Document type'
+form.payer_type.financial_information.label: 'Financial information'
+form.payer_type.organization.form_of_legal_entity.label: 'Form of legal entity'
+form.payer_type.organization.legal_address.label: 'Legal address'
+form.payer_type.foreign_bank.group: Bank
+form.payer_type.foreign_bank.iban.label: 'Beneficiary Account Number IBAN'
+form.client_service_type.cost.label: Cost
+form.client_service_type.units.label: 'Unit of measure'
+form.client_service_type.quantity.label: Quantity
+form.client_service_type.price.label: Price
+form.client_service_type.period.label: Period
+form.client_service_type.service.label: Service
+form.payer_type.bank.name.label: Name
+form.payer_type.bank.group: Bank
+form.payer_type.head.operates_on_basis_of.label: 'Acting on behalf'
+form.payer_type.head.number_of_power_of_attorney.label: 'Registered number of the power of attorney'
+form.payer_type.head.date_of_power_of_attorney.label: 'Date of the power of attorney'
+form.payer_type.bank.checking_account.label: 'Checking account'
+form.payer_type.bank.correspondent_account.label: 'Correspondent account'
+form.payer_type.foreign_bank.name.label: 'Name of the bank'
+form.payer_type.foreign_bank.swift.label: 'SWIFT-code of the beneficiary bank'
+form.payer_type.field_not_filled: 'The field must be filled in!'
+client_tariff_type.period.one_month: '1 month'
+client_tariff_type.period.six_month: '6 months'
+client_tariff_type.period.twelve_month: '12 months'
+client_tariff_type.number_of_rooms.label: 'Number of rooms'
+client_tariff_type.period.label: 'Period length'
+view.payment_systems_modal.header_title: 'Choose the payment method'
+interactive_login_listener.error_by_client_confirmation: 'An unexpected error occured. Please contact support team:"%supportEmail%"'
+view.pay_order_modal.payment_sum: 'Payment of №%orderNumber% order with a value <span class="payment-order-price">%price%</span>'
+on_request_listener.mb_not_paid_error: 'Payment due date is expired. Please pay for the order in "Payment" tab to continue using the progam MaxiBooking.'
+view.pay_order_modal.open_bill: 'Open to read the bill info'
+
 form.client_contacts_type.name.label: Name
 form.client_contacts_type.email.label: Email
 form.client_contacts_type.phone.label: Phone
