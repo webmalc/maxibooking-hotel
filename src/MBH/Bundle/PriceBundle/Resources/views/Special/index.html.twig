@@ -56,8 +56,32 @@
         <tbody>
         </tbody>
     </table>
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'special_new', 'role': 'SPECIAL', 'batch': batch } %}
 
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'special_new', 'role': 'SPECIAL'} %}
 
-{% endblock %} 
+{% include '@MBHPrice/Special/Modal/modal.html.twig' %}
+
+{% endblock %}
+
+{% set batch %}
+    {% block batch %}
+        <ul class="nav navbar-nav">
+            <li>
+                <div class="btn-group dropup">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-magic"></i>
+                        Действия над выбранными
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        {#Меню сделать если понадобится. #}
+                        <li><a href="{{ path('special_batch_promotion_apply') }}" class="batch-link"><i class="fa fa-bookmark"></i><span>Применить акцию к выбранным.</span></a></li>
+                    </ul>
+
+                </div>
+            </li>
+        </ul>
+    {% endblock %}
+{% endset %}
 

@@ -6,6 +6,11 @@
         </li>
         {% endif %}    
     {% endblock %}
+    {%  if batch is defined %}
+        {% block batch %}
+            {{ batch }}
+        {% endblock %}
+    {% endif %}
     {% block right %}
         <li id='list-export'></li>
     {% endblock %}

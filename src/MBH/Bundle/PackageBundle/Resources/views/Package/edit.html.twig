@@ -10,7 +10,6 @@
 {% endblock %}
 
 {% block content %}
-
     {% if app.request.isxmlhttprequest is empty %}
         {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 2 , 'entity': package} %}
     {% endif %}

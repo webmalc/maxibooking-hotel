@@ -10,14 +10,17 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Form\BatchSpecialPromotionApplyType;
 use MBH\Bundle\PriceBundle\Form\SpecialFilterType;
 use MBH\Bundle\PriceBundle\Form\SpecialType;
+use MBH\Bundle\PriceBundle\Lib\SpecialBatcherException;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -58,7 +61,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
                     'entities' => $entities->toArray(),
                     'draw' => $tableFilter->getDraw(),
                     'total' => $entities->count(),
-                    'filtered' => $entities->count()
+                    'filtered' => $entities->count(),
                 ]
             );
         }
@@ -134,16 +137,21 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
-    private function createSpecialName(RoomType $roomType = null, \DateTime $begin = null, \DateTime $end = null, Room $virtualRoom = null)
-    {
-        $roomTypeName = str_replace(' ','_',($roomType ? $roomType->getName() : ''));
+    private function createSpecialName(
+        RoomType $roomType = null,
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        Room $virtualRoom = null
+    ) {
+        $roomTypeName = str_replace(' ', '_', ($roomType ? $roomType->getName() : ''));
         $beginAsString = $begin ? $begin->format('d_m-Y') : '';
         $endAsString = $end ? $end->format('d_m_Y') : '';
-        $virtualName = $virtualRoom ? '_'.$virtualRoom->getName():'';
+        $virtualName = $virtualRoom ? '_'.$virtualRoom->getName() : '';
         $specialName = "Спец_{$roomTypeName}_{$beginAsString}_{$endAsString}_{$virtualName}";
 
         return $specialName;
     }
+
     /**
      * Displays a form to edit an existing entity.
      *
@@ -222,7 +230,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         $searchResult = null;
         $errors = [];
         if (count($specialResult)) {
-            $searchResult = reset($specialResult)->getResults()->first()??null;
+            $searchResult = reset($specialResult)->getResults()->first() ?? null;
             /** @var SearchResult $searchResult */
             if (!$searchResult || $searchResult->getVirtualRoom() === null) {
                 $errors[] = 'Возможно спецпредложение уже не активно.';
@@ -240,7 +248,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
             'adults' => $adults,
             'children' => $children,
             'infants' => $infants,
-            'errors' => $errors
+            'errors' => $errors,
         ];
     }
 
@@ -273,6 +281,36 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
 
         return $this->redirectToRoute('special_edit', ['id' => $special->getId()]);
 
+    }
+
+    /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @Route("/batch/promotion/apply", name="special_batch_promotion_apply", options={"expose"=true} )
+     * @Security("is_granted('ROLE_SPECIAL_EDIT')")
+     */
+    public function batchSpecialPromotionApplyAction(Request $request)
+    {
+        $form = $this->createForm(BatchSpecialPromotionApplyType::class);
+        $isAjax = $request->isXmlHttpRequest();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $holder = $form->getData();
+            try {
+//                $this->get('mbh.batcher')->batchPromotionToSpecialApply($holder);
+                return new JsonResponse(['result' => 'ok']);
+            } catch (SpecialBatcherException $e) {
+                return new JsonResponse(['error' => $e->getMessage()], 500);
+            }
+
+        }
+        return $this->render(
+            '@MBHPrice/Special/batch_promotion_apply.html.twig',
+            [
+                'form' => $form->createView(),
+            ]
+        );
     }
 
 }

@@ -76,3 +76,13 @@ services:
   mbh.special_display_dates_mass_changer:
     class: MBH\Bundle\PriceBundle\Services\SpecialDisplayDatesMassChanger
     arguments: ['@doctrine_mongodb.odm.document_manager']
+
+  mbh.special_batch_type:
+    class: MBH\Bundle\PriceBundle\Form\BatchSpecialPromotionApplyType
+    arguments: ['@doctrine_mongodb.odm.default_document_manager']
+    tags:
+      - {name: form.type}
+
+  mbh.batcher:
+    class: MBH\Bundle\PriceBundle\Services\Batch
+    arguments: ['@doctrine_mongodb.odm.default_document_manager']

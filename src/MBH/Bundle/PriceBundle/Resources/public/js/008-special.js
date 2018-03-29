@@ -76,4 +76,32 @@ $(document).ready(function () {
 
     specialSelectors();
 
+    var batchModal = function () {
+        var $batchModal = $("#batch_modal");
+        $batchModal.on("show.bs.modal", function (e){
+            var link = e.relatedTarget.attr('href');
+            var specialsIds = [];
+            $(this).find('.modal-body').load(link, {}, function (data) {
+                var $selected = getSelected();
+                $.each($selected, function () {
+                    specialsIds.push($(this).data('special'));
+                });
+                $('.modal-body').find('input.special-input').val(specialsIds.join(","));
+            })
+        });
+        $batchModal.on("hidden.bs.modal", function (e) {
+            $(this).removeData();
+        });
+        var $link = $("a.batch-link");
+        $link.on('click', function (e) {
+            e.preventDefault();
+            $batchModal.modal('show', $(this));
+        });
+        var getSelected = function () {
+            return $('input[type="checkbox"]:checked.promotion-apply');
+        }
+    };
+
+    batchModal();
+
 });

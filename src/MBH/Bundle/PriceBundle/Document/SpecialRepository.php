@@ -227,4 +227,17 @@ class SpecialRepository extends DocumentRepository
 
         return $qb->getQuery()->execute();
     }
+
+    /**
+     * @param array $ids
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function findByIds(array $ids)
+    {
+        $qb = $this->createQueryBuilder();
+        $qb->field('id')->in($ids);
+
+        return $qb->getQuery()->execute()->toArray();
+    }
 }
