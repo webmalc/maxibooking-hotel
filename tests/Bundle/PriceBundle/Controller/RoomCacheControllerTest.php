@@ -16,10 +16,24 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class RoomCacheControllerTest extends WebTestCase
 {
+    private $currentDateForSearchRooms;
+
     private const BASE_URL = '/price/room_cache/';
     private const NAME_TEST_HOTEL = 'Мой отель #1';
 
     private const FORM_NAME_GENERATION = 'mbh_bundle_pricebundle_room_cache_generator_type';
+
+    private const SUNDAY = 0;
+    private const TUESDAY = 2;
+    private const THURSDAY = 4;
+
+    private const TRIPLE_ROOM = 3;
+    private const TWIN_ROOM = 2;
+
+    private const NAME_FOR_UPDATE_ROOM_CACHES = 'updateRoomCaches';
+    private const NAME_FOR_NEW_ROOM_CACHES = 'newRoomCaches';
+
+    private const AMOUNT_ROOM_CACHE_DEFAULT = 60;
 
     /**
      * Количество записей в таблице после теста testGeneration, расчет:
@@ -27,7 +41,7 @@ class RoomCacheControllerTest extends WebTestCase
      * в testGeneration создаётся 48 записей (поровну для двух- и трехместных номеров)
      * (60/2)+48
      */
-    private const AMOUNT_ROOM_CACHE = 78;
+    private const AMOUNT_ROOM_CACHE = self::AMOUNT_ROOM_CACHE_DEFAULT / 2 + 48;
 
     public static function setUpBeforeClass()
     {
@@ -73,16 +87,13 @@ class RoomCacheControllerTest extends WebTestCase
      */
     public function testChangeTable()
     {
-        $dm = $this->getDocumentManager();
-
-        $roomCache = $dm->getRepository('MBHPriceBundle:RoomCache');
+        $roomCache = $this->getRoomCache();
 
         /** @var RoomCache $room */
         $room = $roomCache
             ->findOneByDate(
-            /* this is current date  */
-                new \DateTime('21:0:0 -1 day', new \DateTimeZone('UTC')),
-                $this->getRoomType(2, true)
+                $this->getCurrentDateForSearchRooms(),
+                $this->getRoomType(self::TWIN_ROOM, true)
             );
 
         $amountRooms = count($roomCache->findAll());
@@ -91,12 +102,13 @@ class RoomCacheControllerTest extends WebTestCase
             'POST',
             self::BASE_URL . 'save',
             [
-                'updateRoomCaches' => [
+                self::NAME_FOR_UPDATE_ROOM_CACHES => [
                     $room->getId() => [
                         'rooms' => 50,
-                    ]
-                ]
-            ]);
+                    ],
+                ],
+            ]
+        );
 
         $this->assertEquals(['7', '14%', '43', '0%', '5'], $this->getResultFromTable());
 
@@ -105,13 +117,11 @@ class RoomCacheControllerTest extends WebTestCase
 
     public function testAddRoomCache()
     {
-        $roomType = $this->getRoomType(2);
+        $roomType = $this->getRoomType(self::TWIN_ROOM);
 
         $date = new \DateTime('noon +20 days');
 
-        $dm = $this->getDocumentManager();
-
-        $roomCache = $dm->getRepository('MBHPriceBundle:RoomCache');
+        $roomCache = $this->getRoomCache();
 
         $amountRooms = count($roomCache->findAll());
 
@@ -119,33 +129,26 @@ class RoomCacheControllerTest extends WebTestCase
             'POST',
             self::BASE_URL . 'save',
             [
-                'newRoomCaches' => [
+                self::NAME_FOR_NEW_ROOM_CACHES => [
                     $roomType => [
                         0 => [
                             $date->format('d.m.Y') => [
                                 'rooms' => 60,
-                            ]
-                        ]
-                    ]
-                ]
-            ]);
+                            ],
+                        ],
+                    ],
+                ],
+            ]
+        );
 
         $this->assertEquals(['0%', '60'], $this->getResultFromTable($date));
 
-        $this->assertCount($amountRooms+1, $roomCache->findAll());
+        $this->assertCount($amountRooms + 1, $roomCache->findAll());
     }
 
     public function testInvalidDateInGeneration()
     {
-        $form = $this->getGenerationForm();
-
-        $form->setValues(
-            [
-                self::FORM_NAME_GENERATION . '[begin]' => (new \DateTime())->format('d.m.Y'),
-                self::FORM_NAME_GENERATION . '[end]'   => (new \DateTime('-10 day'))->format('d.m.Y'),
-                self::FORM_NAME_GENERATION . '[rooms]' => 1,
-            ]
-        );
+        $form = $this->getGenerationFormWithValues(1, null, [], new \DateTime(), new \DateTime('-10 day'));
 
         $this->client->submit($form);
 
@@ -154,17 +157,7 @@ class RoomCacheControllerTest extends WebTestCase
 
     public function testInvalidRoomsGeneration()
     {
-        $form = $this->getGenerationForm();
-
-        $form->setValues(
-            [
-                self::FORM_NAME_GENERATION . '[begin]'     => (new \DateTime('noon'))->modify('-2 day')->format('d.m.Y'),
-                self::FORM_NAME_GENERATION . '[end]'       => (new \DateTime('noon'))->modify('+2 day')->format('d.m.Y'),
-                self::FORM_NAME_GENERATION . '[rooms]'     => 201,
-                self::FORM_NAME_GENERATION . '[weekdays]'  => range(0, 6),
-                self::FORM_NAME_GENERATION . '[roomTypes]' => $this->getRoomType(),
-            ]
-        );
+        $form = $this->getGenerationFormWithValues(500);
 
         $result = $this->client->submit($form);
 
@@ -173,20 +166,7 @@ class RoomCacheControllerTest extends WebTestCase
 
     public function testGeneration()
     {
-        $form = $this->getGenerationForm();
-
-        $dateBegin = (new \DateTime('noon -2 day'))->format('d.m.Y');
-        $dateEnd = (new \DateTime('noon +21 day'))->format('d.m.Y');
-
-        $form->setValues(
-            [
-                self::FORM_NAME_GENERATION . '[begin]'     => $dateBegin,
-                self::FORM_NAME_GENERATION . '[end]'       => $dateEnd,
-                self::FORM_NAME_GENERATION . '[rooms]'     => 35,
-                self::FORM_NAME_GENERATION . '[weekdays]'  => range(0, 6),
-                self::FORM_NAME_GENERATION . '[roomTypes]' => $this->getRoomType(),
-            ]
-        );
+        $form = $this->getGenerationFormWithValues(35);
 
         $result = $this->client->submit($form);
 
@@ -199,23 +179,149 @@ class RoomCacheControllerTest extends WebTestCase
      */
     public function testTableAfterGeneration()
     {
-        $dm = $this->getDocumentManager();
-
-        $roomCache = $dm->getRepository('MBHPriceBundle:RoomCache');
+        $roomCache = $this->getRoomCache();
 
         $this->assertCount(self::AMOUNT_ROOM_CACHE, $roomCache->findAll());
-        $this->assertEquals(['0%', '35','0%','35'], $this->getResultFromTable(new \DateTime('noon +20 days')));
+        $this->assertEquals(['0%', '35', '0%', '35'], $this->getResultFromTable(new \DateTime('noon +20 days')));
         $this->assertEquals([], $this->getResultFromTable(new \DateTime('noon -3 days')));
         $this->assertEquals([], $this->getResultFromTable(new \DateTime('noon +22 days')));
     }
 
     /**
-     * @param null $places
-     * @param bool $object
-     * @return array|integer|RoomType
+     * @depends testTableAfterGeneration
      */
-    private function getRoomType($places = null, $retunObject = false)
+    public function testRemoveSingle()
     {
+        $roomCache = $this->getRoomCache();
+
+        /** @var $twigRoomToday $room */
+        $twigRoomToday = $roomCache
+            ->findOneBy(
+                [
+                    'roomType.id' => $this->getRoomType(self::TWIN_ROOM),
+                    'date'        => $this->getCurrentDateForSearchRooms(),
+                ]
+            );
+
+        /** @var $tripleRoomToday $room */
+        $tripleRoomToday = $roomCache
+            ->findOneBy(
+                [
+                    'roomType.id' => $this->getRoomType(self::TRIPLE_ROOM),
+                    'date'        => $this->getCurrentDateForSearchRooms(),
+                ]
+            );
+        $dateTomorrow = (clone $this->getCurrentDateForSearchRooms())->modify('+1 day');
+
+        /** @var $twigRoomTomorrow $room */
+        $twigRoomTomorrow = $roomCache
+            ->findOneBy(
+                [
+                    'roomType.id' => $this->getRoomType(self::TWIN_ROOM),
+                    'date'        => $dateTomorrow,
+                ]
+            );
+
+        $this->client->request(
+            'POST',
+            self::BASE_URL . 'save',
+            [
+                self::NAME_FOR_UPDATE_ROOM_CACHES => [
+                    $twigRoomToday->getId()    => [
+                        'rooms' => '0',
+                    ],
+                    $twigRoomTomorrow->getId() => [
+                        'rooms' => '',
+                    ],
+                    $tripleRoomToday->getId()  => [
+                        'rooms' => '',
+                    ],
+                ],
+            ]
+        );
+
+        $this->assertEquals(['7', '0%', '-7'], $this->getResultFromTable());
+        $this->assertEquals(['8', '22.86%', '27', '0%', '35'], $this->getResultFromTable(new \DateTime('noon +1 day')));
+        $this->assertCount(self::AMOUNT_ROOM_CACHE - 1, $roomCache->findAll());
+    }
+
+    /**
+     * @depends testRemoveSingle
+     */
+    public function testRemoveViaGenerationTripleRooms()
+    {
+        $this->removeViaGenerationForRoomType(self::TRIPLE_ROOM);
+    }
+
+    /**
+     * @depends testRemoveViaGenerationTripleRooms
+     */
+    public function testRemoveViaGenerationTwigRooms()
+    {
+        $this->removeViaGenerationForRoomType(self::TWIN_ROOM);
+    }
+
+    public function testGenerationWeekdays()
+    {
+        $begin = new \DateTime('noon -3 days');
+        $end = new \DateTime('noon +3 days');
+
+        $dateRange = new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+1 day'));
+
+        $form = $this->getGenerationFormWithValues(
+            15,
+            self::TRIPLE_ROOM,
+            [self::SUNDAY, self::TUESDAY, self::THURSDAY],
+            $begin,
+            $end
+        );
+
+        $result = $this->client->submit($form);
+
+        $count = 0;
+        /** @var \DateTime $date */
+        foreach ($dateRange as $date) {
+            if (in_array((int)$date->format('w'), [self::SUNDAY, self::TUESDAY, self::THURSDAY], true)) {
+                $this->assertEquals(['0%', '15'], $this->getResultFromTable($date, self::TRIPLE_ROOM));
+                $count++;
+            }
+        }
+
+        $this->assertEquals(3, $count);
+    }
+
+    private function removeViaGenerationForRoomType(int $places)
+    {
+        $roomCache = $this->getRoomCache();
+
+        $form = $this->getGenerationFormWithValues('-1', $places);
+
+        $result = $this->client->submit($form);
+
+        switch ($places) {
+            case self::TWIN_ROOM:
+                $amountRoom = self::AMOUNT_ROOM_CACHE_DEFAULT - 15;
+                break;
+            case self::TRIPLE_ROOM:
+                $amountRoom = self::AMOUNT_ROOM_CACHE - 24;
+                break;
+        }
+
+        $this->assertEquals(['8', '22.86%', '27'], $this->getResultFromTable(new \DateTime('noon +1 day')));
+        $this->assertCount($amountRoom, $roomCache->findAll());
+    }
+
+    /**
+     * @param int|null $places
+     * @param bool $returnObject
+     * @return array|RoomType|string
+     */
+    private function getRoomType(int $places = null, $returnObject = false)
+    {
+        if ($places !== null && !in_array($places, [self::TWIN_ROOM, self::TRIPLE_ROOM], true)) {
+            throw new \LogicException('Needed true roomType');
+        }
+
         $dm = $this->getDocumentManager();
 
         $hotelId = $dm->getRepository('MBHHotelBundle:Hotel')
@@ -227,14 +333,14 @@ class RoomCacheControllerTest extends WebTestCase
         /** @var RoomType $typeRoom */
         foreach ($dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotelId]) as $typeRoom) {
             if ($places === null) {
-                if ($retunObject) {
+                if ($returnObject) {
                     $typeRooms[] = $typeRoom;
                 } else {
                     $typeRooms[] = $typeRoom->getId();
                 }
             } else {
                 if ($typeRoom->getPlaces() == $places) {
-                    if ($retunObject) {
+                    if ($returnObject) {
                         $typeRooms = $typeRoom;
                     } else {
                         $typeRooms = $typeRoom->getId();
@@ -249,34 +355,44 @@ class RoomCacheControllerTest extends WebTestCase
     /**
      * @return \Symfony\Component\DomCrawler\Form
      */
-    private function getGenerationForm()
+    private function getGenerationForm(): \Symfony\Component\DomCrawler\Form
     {
         $crawler = $this->getListCrawler(self::BASE_URL . 'generator');
 
         return $crawler->filter('button[name="save_close"]')->form();
     }
 
-    private function getDocumentManager()
+    /**
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
+     */
+    private function getDocumentManager(): \Doctrine\ODM\MongoDB\DocumentManager
     {
         return $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
     }
 
-
     /**
      * @param \DateTime|null $date
+     * @param null|int $place
      * @return array
      */
-    private function getResultFromTable(\DateTime $date = null)
+    private function getResultFromTable(\DateTime $date = null, int $places = null): array
     {
         $date = $date !== null ? $date : new \DateTime();
+
+        $selector = 'td[data-id';
+        if ($places === null) {
+            $selector .= '$="';
+        } else {
+            $selector .= '="' . $this->getRoomType($places);
+        }
+        $selector .= '_' . $date->format('d.m.Y') . '"]';
 
         $table = $this->getTable();
 
         /* для отладки */
 //        self::putInFile($table, __METHOD__);
-//        file_put_contents('/var/www/mbh/table_from_test_' . time() . '.html', $table->html());
 
-        $td = $table->filter('td[data-id$="_' . $date->format('d.m.Y') . '"]');
+        $td = $table->filter($selector);
 
         $result = [];
         foreach ($td->getIterator() as $element) {
@@ -293,7 +409,7 @@ class RoomCacheControllerTest extends WebTestCase
      * @param \DateTime|null $end
      * @return Crawler
      */
-    private function getTable(\DateTime $begin = null, \DateTime $end = null)
+    private function getTable(\DateTime $begin = null, \DateTime $end = null): Crawler
     {
         if ($begin === null) {
             $begin = new \DateTime('noon -25 day');
@@ -310,7 +426,7 @@ class RoomCacheControllerTest extends WebTestCase
         return $this->getListCrawler($url);
     }
 
-    private static function putInFile($node, $method)
+    private static function putInFile(Crawler $node, $method)
     {
         $rawName = explode('::', $method);
 
@@ -320,5 +436,71 @@ class RoomCacheControllerTest extends WebTestCase
         $fileName .= time() . '_' . $name;
         $fileName .= '.html';
         file_put_contents($fileName, $node->html());
+    }
+
+    /**
+     * Текущее время для поиска номеров в БД
+     *
+     * @return \DateTime
+     */
+    private function getCurrentDateForSearchRooms(): \DateTime
+    {
+        if (empty($this->currentDateForSearchRooms)) {
+            $this->currentDateForSearchRooms = new \DateTime('21:0:0 -1 day', new \DateTimeZone('UTC'));
+        }
+        return $this->currentDateForSearchRooms;
+    }
+
+    /**
+     * @param $rooms
+     * @param null|int $places
+     * @param array $weekdays
+     * @param \DateTime|null $dateBegin
+     * @param \DateTime|null $dateEnd
+     * @return \Symfony\Component\DomCrawler\Form
+     */
+    private function getGenerationFormWithValues(
+        $rooms,
+        int $places = null,
+        array $weekdays = [],
+        \DateTime $dateBegin = null,
+        \DateTime $dateEnd = null
+    ): \Symfony\Component\DomCrawler\Form
+    {
+        if ($weekdays === []) {
+            $weekdays = range(self::SUNDAY, 6);
+        }
+
+        if ($dateBegin === null) {
+            $dateBegin = new \DateTime('noon -2 day');
+        }
+
+        if ($dateEnd === null) {
+            $dateEnd = new \DateTime('noon +21 day');
+        }
+
+
+        $form = $this->getGenerationForm();
+
+        $form->setValues(
+            [
+                self::FORM_NAME_GENERATION . '[begin]'     => $dateBegin->format('d.m.Y'),
+                self::FORM_NAME_GENERATION . '[end]'       => $dateEnd->format('d.m.Y'),
+                self::FORM_NAME_GENERATION . '[rooms]'     => $rooms,
+                self::FORM_NAME_GENERATION . '[weekdays]'  => $weekdays,
+                self::FORM_NAME_GENERATION . '[roomTypes]' => $this->getRoomType($places),
+            ]
+        );
+        return $form;
+    }
+
+    /**
+     * @return \Doctrine\Common\Persistence\ObjectRepository|\MBH\Bundle\PriceBundle\Document\RoomCacheRepository
+     */
+    private function getRoomCache()
+    {
+        $dm = $this->getDocumentManager();
+
+        return $dm->getRepository('MBHPriceBundle:RoomCache');
     }
 }
