@@ -18,19 +18,20 @@ class ActionManager {
         let self = this;
         let $packageDeleteModal = $('#modal_delete_package');
         $packageDeleteModal.modal('show');
-        $packageDeleteModal.find('.modal-body').html(mbh.loader.html);
+        const $modalContainer = $('#delete-modal-form-container');
+        $modalContainer.html(mbh.loader.html);
 
-        return $.ajax({
+        $.ajax({
             url: Routing.generate('package_delete', {'id': packageId}),
             type: "GET",
             success: function (modalBodyHTML) {
-                $('#modal_delete_package').html(modalBodyHTML);
+                $modalContainer.html(modalBodyHTML);
                 $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
-                let $removeButton = $packageDeleteModal.find('button[type="submit"]');
+                let $removeButton = $packageDeleteModal.find('#package-delete-modal-button');
                 $removeButton.attr('type', 'button');
+                $removeButton.unbind('click');
                 $removeButton.click(function () {
-                    self.dataManager.deletePackageRequest(packageId);
-                    $packageDeleteModal.modal('hide');
+                    self.dataManager.deletePackageRequest(packageId, $modalContainer, $packageDeleteModal);
                 })
             }
         });
@@ -269,7 +270,7 @@ class ActionManager {
         ActionManager.hideLoadingIndicator();
     }
 
-    private static showMessage(isSuccess, message, messageBlockId = 'chessboard-messages') {
+    public static showMessage(isSuccess, message, messageBlockId = 'chessboard-messages') {
         let messageDiv = document.createElement('div');
         messageDiv.className = 'alert alert-dismissable autohide';
         messageDiv.classList.add(isSuccess ? 'alert-success' : 'alert-danger');

@@ -634,7 +634,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
         $totalOptions = $totalByHotelsOptions;
         if (!$withoutTotal) {
-            $totalOptions['byAll'] = $this->get('translator')->trans('controller.analyticsController.total');
+            $totalOptions['byAll'] = $this->get('translator')->trans('controller.analyticsController.series_total_name');
         }
 
         foreach ($totalOptions as $totalOption => $totalOptionTitle) {

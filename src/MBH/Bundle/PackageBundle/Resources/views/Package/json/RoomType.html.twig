@@ -1,0 +1,35 @@
+{% wrapinline %}
+    <div class='visible-xs text-center'>
+        <div>{{ entity.roomType }}</div>
+        <div>
+            {% if entity.order.payer %}
+                {{ entity.order.payer.shortName }}
+            {% else %}
+                &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
+            {% endif %}
+        </div>
+        <div>
+            <span class='text {% if entity.order.isPaid %}text-success{% elseif entity.order.paid > 0 %}text-warning{% else %}text-danger{% endif %}'>{{ entity.price|number_format(2) }}</span>
+            <small> {{ entity.tariff.name }}</small>
+        </div>
+        <div>
+            {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}
+            <br>
+            <small>{{ entity.nights }} {{ 'nights'|transchoice(entity.nights) }}</small>
+        </div>
+    </div>
+    <div class='hidden-xs'>
+        {{ entity.roomType }}
+        <br>
+        <small>
+            <a data-toggle='tooltip' title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_accommodation', {'id': entity.id}) }}' class='{{ entity.accommodation ? '' : 'text text-danger' }}'>
+                {% if entity.accommodation and entity.accommodation.room and entity.accommodation.room.roomType %}
+                    {{ entity.firstAccommodation.room.name(entity.roomType.id == entity.accommodation.room.roomType.id ? false : true) }}
+                    {{ entity.accommodations|length > 1 ? ' -' ~ 'package.json_json.relocation'|trans : ''}}
+                {% else %}
+                    &lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;
+                {% endif %}
+            </a>
+        </small>
+    </div>
+{% endwrapinline %}

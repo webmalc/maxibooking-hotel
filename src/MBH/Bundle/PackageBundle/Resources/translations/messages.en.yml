@@ -388,7 +388,6 @@ modal.chessBoard.end: 'Check out date'
 modal.chessBoard.payer: Payer
 controller.chessboard.package_create.success: 'Reservation created successfully'
 controller.chessboard.package_update.success: 'Reservation updated successfully'
-controller.chessboard.package_remove.success: 'Reservation successfully deleted'
 controller.chessboard.accommodation_update.success: 'Accommodation updated successfully'
 controller.chessboard.accommodation_divide.success: 'Reservation "%packageId%" %payerInfo% from %begin% to %end% will be accommodated in room %roomName%'
 controller.chessboard.accommodation_remove.success: 'Reservation "%packageId%" %payerInfo% from %begin% to %end% can''t be accommodated'

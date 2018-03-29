@@ -10,7 +10,6 @@
 {% set headerHeight = tableCellHeight * 2 + 1 %}
 {% set dayTableWidth = days|length * tableCellWidth %}
 {% set tileFontSize = currentSizes['tileFontSize'] %}
-{% set tileTopPadding = currentSizes['tileTopPadding'] %}
 {% set dayTopPadding = currentSizes['dayTopPadding'] %}
 {% set titleSubPadding = currentSizes['titleSubPadding'] %}
 {% set titleSubFontSize = currentSizes['titleSubFontSize'] %}
@@ -31,27 +30,6 @@
     '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
 
     <script type="text/javascript" src="{{ asset_url }}"></script>
-    {# pass package data for processing on client-side #}
-    <script>
-        var packages = JSON.parse('{{ packages|raw }}');
-        var leftRoomsData = JSON.parse('{{ leftRoomsJsonData|raw }}');
-        var noAccommodationIntervals = JSON.parse('{{ noAccommodationIntervals|raw }}');
-        var noAccommodationCounts = JSON.parse('{{ noAccommodationCounts|raw }}');
-        var roomTypes = [];
-        var rooms = [];
-        {% for roomTypeID, roomTypeData in roomTypesData %}
-        {% for roomId, roomData in roomTypeData['rooms'] %}
-        rooms['{{ roomId }}'] = '{{ roomData.name }}';
-        {% endfor %}
-        roomTypes['{{ roomTypeID }}'] = '{{ roomTypeData.name }}';
-        {% endfor %}
-        var styleConfigs = JSON.parse('{{ sizes|json_encode|raw }}');
-        var currentStyleConfigNumber = {{ stylesFileNumber }};
-        var canCreatePackage = {{ canCreatePackage }};
-        var canBookWithoutPayer = {{ client_config().canBookWithoutPayer ? 'true' : 'false' }};
-        var colors = JSON.parse('{{ colors|json_encode|raw }}');
-        var subtrahend = {{ subtrahend }};
-    </script>
     {% endjavascripts %}
 {% endblock %}
 
@@ -218,12 +196,34 @@
             background-size: 1em 1em;
         }
         .ui-resizable-w.early-checkin-block {
-            border-right-color: #000 !;
+            border-right-color: #000 !important;
         }
     </style>
 {% endblock %}
 
 {% block content %}
+    {# pass package data for processing on client-side #}
+    <script>
+        var packages = JSON.parse('{{ packages|raw }}');
+        var leftRoomsData = JSON.parse('{{ leftRoomsJsonData|raw }}');
+        var noAccommodationIntervals = JSON.parse('{{ noAccommodationIntervals|raw }}');
+        var noAccommodationCounts = JSON.parse('{{ noAccommodationCounts|raw }}');
+        var roomTypes = [];
+        var rooms = [];
+        {% for roomTypeID, roomTypeData in roomTypesData %}
+        {% for roomId, roomData in roomTypeData['rooms'] %}
+        rooms['{{ roomId }}'] = '{{ roomData.name }}';
+        {% endfor %}
+        roomTypes['{{ roomTypeID }}'] = '{{ roomTypeData.name }}';
+        {% endfor %}
+        var styleConfigs = JSON.parse('{{ sizes|json_encode|raw }}');
+        var currentStyleConfigNumber = {{ stylesFileNumber }};
+        var canCreatePackage = {{ canCreatePackage }};
+        var canBookWithoutPayer = {{ client_config().canBookWithoutPayer ? 'true' : 'false' }};
+        var colors = JSON.parse('{{ colors|json_encode|raw }}');
+        var subtrahend = {{ subtrahend }};
+    </script>
+
     <link rel="stylesheet" href="{{ asset(stylesFile) }}"/>
     <div id="chessboard-messages"></div>
     <div id="dimmer"></div>

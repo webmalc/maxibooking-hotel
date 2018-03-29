@@ -43,4 +43,8 @@ addLoadEvent(function() {
     } else {
 	      window.attachEvent("onmessage", processMessage);
     }
+    window.onscroll = function () {
+        var frameTopOffset = resultsIframe.getBoundingClientRect().top;
+        resultsIframe.contentWindow.postMessage({type: 'onScroll', frameTopOffset: frameTopOffset}, '*')
+    }
 });

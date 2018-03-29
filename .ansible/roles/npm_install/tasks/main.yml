@@ -1,0 +1,8 @@
+---
+- name: Npm install
+  become: true
+  npm:
+    global: yes
+    name: "{{ item }}"
+  with_items: "{{ npm_packages }}"
+  when: npm_packages is defined

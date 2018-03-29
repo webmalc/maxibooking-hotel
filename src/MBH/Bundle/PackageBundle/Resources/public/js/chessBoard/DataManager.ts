@@ -196,22 +196,28 @@ class DataManager {
         });
     }
 
-    public deletePackageRequest(packageId) {
-        ActionManager.showLoadingIndicator();
+    public deletePackageRequest(packageId, $formContainer, $packageDeleteModal) {
         let self = this;
-
         this.deleteAccommodationsByPackageId(packageId);
+        const data = $formContainer.find('form').serialize();
+        $formContainer.html(mbh.loader.html);
 
         $.ajax({
-            url: Routing.generate('chessboard_remove_package', {id: packageId}),
-            type: "DELETE",
-            success: function (data) {
-                ActionManager.hideLoadingIndicator();
-                self.handleResponse(data);
+            url: Routing.generate('package_delete', {id: packageId, from_chessboard: true}),
+            type: "POST",
+            data: data,
+            success: function (response) {
+                $formContainer.html(response)
             },
-            error: function () {
-                self.handleError();
-            }
+            error: function (response) {
+                $packageDeleteModal.modal('hide');
+                if (response.status === 302) {
+                    self.updatePackagesData();
+                    ActionManager.showMessage(true, Translator.trans('chessboard.package_remove.success'));
+                } else {
+                    self.handleError();
+                }
+            },
         });
     }
 

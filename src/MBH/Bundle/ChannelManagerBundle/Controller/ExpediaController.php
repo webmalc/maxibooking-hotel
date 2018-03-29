@@ -102,6 +102,10 @@ class ExpediaController extends Controller
             $serviceTariffs = $this->get('mbh.channelmanager.expedia')->pullTariffs($config);
         } catch (ChannelManagerException $exception) {
             $this->addFlash('error', $exception->getMessage());
+            $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
+                'hotel' => $this->hotel,
+                'booking' => [],
+            ]);
         }
         if (isset($serviceTariffs)) {
             $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
