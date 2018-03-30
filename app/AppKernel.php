@@ -58,6 +58,7 @@ class AppKernel extends Kernel
             new DoctrineCacheBundle(),
             new KnpGaufretteBundle(),
             new OneupFlysystemBundle(),
+            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
 
 
             //Project bundles,
