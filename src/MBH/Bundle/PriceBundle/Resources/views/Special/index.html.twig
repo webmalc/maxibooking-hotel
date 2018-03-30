@@ -38,6 +38,20 @@
         {% endblock %}
     {% endembed %}
 
+    <div id="alert-warning" class="alert alert-warning alert-dismissible" hidden="hidden">
+        <a href="#" class="close alert-close" aria-label="close">&times;</a>
+        <strong>Внимание!</strong> Требуется выбрать хотя бы одно спец предложение.
+    </div>
+
+    <div id="alert-success" class="alert alert-success alert-dismissible" hidden="hidden">
+        <a href="#" class="close alert-close" aria-label="close">&times;</a>
+        <strong>Отлично!</strong> Теперь спец предложения работают еще лучше!.
+    </div>
+
+    <div id="alert-danger" class="alert alert-danger alert-dismissible" hidden="hidden">
+        <a href="#" class="close alert-close" aria-label="close">&times;</a>
+        <strong>Внимание!</strong> Произошла ошибка.
+    </div>
 
     <table id="special-table"
            class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
@@ -76,7 +90,7 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         {#Меню сделать если понадобится. #}
-                        <li><a href="{{ path('special_batch_promotion_apply') }}" class="batch-link"><i class="fa fa-bookmark"></i><span>Применить акцию к выбранным.</span></a></li>
+                        <li><a title="Применить акцию" href="{{ path('special_batch_promotion_apply') }}" class="batch-link"><i class="fa fa-bookmark"></i><span>Применить акцию к выбранным.</span></a></li>
                     </ul>
 
                 </div>

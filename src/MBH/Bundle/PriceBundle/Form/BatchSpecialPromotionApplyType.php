@@ -10,6 +10,7 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Form\DataTransformer\SpecialsToStringTransformer;
 use MBH\Bundle\PriceBundle\Lib\SpecialBatcherHolder;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,15 +37,20 @@ class BatchSpecialPromotionApplyType extends AbstractType
                     'class' => Promotion::class,
                     'required' => true,
                     'label' => 'Акция',
+                    'attr' => [
+                        'class' => 'form-control',
+
+                    ]
                 ]
             )
             ->add(
                 'specials',
-                TextType::class,
+                HiddenType::class,
                 [
                     'attr' => [
-                        'class' => 'special-input'
-                    ]
+                        'class' => 'special-input form-control'
+                    ],
+
                 ]
             );
 

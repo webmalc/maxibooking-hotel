@@ -46,6 +46,18 @@ class SpecialBatcherHolder
         $this->promotion = $promotion;
     }
 
+    public function getSpecialIds(): array
+    {
+        $result = [];
+        if (null !== $this->specials) {
+            foreach ($this->specials as $special) {
+                $result[] = $special->getId();
+            }
+        }
+
+        return $result;
+    }
+
 
 
 
