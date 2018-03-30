@@ -166,7 +166,7 @@ $(document).ready(function () {
             })
         });
         $batchModal.on("hidden.bs.modal", function (e) {
-            $(this).removeData();
+            $(this).find('.modal-body').empty();
             $submitButton.off('click');
             refreshDataTable();
         });

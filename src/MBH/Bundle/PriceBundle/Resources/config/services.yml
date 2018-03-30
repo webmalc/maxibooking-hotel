@@ -78,11 +78,15 @@ services:
     arguments: ['@doctrine_mongodb.odm.document_manager']
 
   mbh.special_batch_type:
-    class: MBH\Bundle\PriceBundle\Form\BatchSpecialPromotionApplyType
+    class: MBH\Bundle\PriceBundle\Form\SpecialsTransformedType
     arguments: ['@doctrine_mongodb.odm.default_document_manager']
     tags:
       - {name: form.type}
 
-  mbh.batcher:
-    class: MBH\Bundle\PriceBundle\Services\Batch
-    arguments: ['@doctrine_mongodb.odm.default_document_manager']
+  mbh.batch.promotion:
+    class: MBH\Bundle\PriceBundle\Services\SpecialBatch\BatchHelper
+    arguments: ['@doctrine_mongodb.odm.default_document_manager', 'getPromotion','setPromotion']
+
+  mbh.batch.tariff:
+    class: MBH\Bundle\PriceBundle\Services\SpecialBatch\BatchHelper
+    arguments: ['@doctrine_mongodb.odm.default_document_manager', 'getTariff','setTariff']
