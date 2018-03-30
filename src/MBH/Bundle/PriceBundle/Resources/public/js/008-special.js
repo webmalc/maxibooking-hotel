@@ -140,6 +140,7 @@ $(document).ready(function () {
                 $form.on('submit', function (e) {
                     e.preventDefault();
                     hideAllWarnings();
+                    mbh.loader.acceptTo($('.modal-span'));
                     var $sendForm = $(this);
                     $.ajax({
                         type: $sendForm.attr('method'),
@@ -147,12 +148,14 @@ $(document).ready(function () {
                         data: $sendForm.serialize()
                     })
                         .done(function () {
-                            $modal.modal('hide');
                             $alertSuccess.show();
                         })
                         .fail(function () {
-                            $modal.modal('hide');
                             $alertDanger.show();
+                        })
+                        .always(function () {
+                            $modal.modal('hide');
+                            $('.modal-span').empty();
                         })
                     ;
                 });
