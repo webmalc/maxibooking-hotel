@@ -6,9 +6,9 @@
         </li>
         {% endif %}    
     {% endblock %}
-    {% if batch is defined  %}
+    {%  if batch is defined %}
         {% block batch %}
-            {{ batch }}
+            {{ batch|default('') }}
         {% endblock %}
     {% endif %}
     {% block right %}
