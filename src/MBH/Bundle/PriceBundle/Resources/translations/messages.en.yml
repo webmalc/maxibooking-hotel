@@ -434,6 +434,10 @@ price.resources.views.closet: Closed
 price.resources.views.roomcache.generator: Wizard
 price.resources.views.roomcache.view: Overview
 price.resources.views.roomcache.graph: Graph
+price.resources.views.roomcache.graph.vacancy: Vacancy
+price.resources.views.roomcache.graph.arrivals: Arrivals
+price.resources.views.roomcache.graph.calculation_rooms: 'Is necessary'
+price.resources.views.roomcache.graph.diff: Diff
 price.resources.views.roomcache.save: Save
 price.resources.views.roomcache.left: left
 price.resources.views.roomcache.number_in_sell: 'Available rooms'
