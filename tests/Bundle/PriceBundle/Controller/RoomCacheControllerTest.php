@@ -17,9 +17,12 @@ use Symfony\Component\DomCrawler\Crawler;
 class RoomCacheControllerTest extends WebTestCase
 {
     private $currentDateForSearchRooms;
+    private $hotelId;
+    private $roomTypeCache;
 
     private const BASE_URL = '/price/room_cache/';
     private const NAME_TEST_HOTEL = 'Мой отель #1';
+    private const SPECIAL_TARIFFS = 'Special tariff';
 
     private const FORM_NAME_GENERATION = 'mbh_bundle_pricebundle_room_cache_generator_type';
 
@@ -168,7 +171,7 @@ class RoomCacheControllerTest extends WebTestCase
     {
         $form = $this->getGenerationFormWithValues(35);
 
-        $result = $this->client->submit($form);
+        $this->client->submit($form);
 
         $this->assertEquals(['7', '20%', '28', '0%', '35'], $this->getResultFromTable());
     }
@@ -276,7 +279,7 @@ class RoomCacheControllerTest extends WebTestCase
             $end
         );
 
-        $result = $this->client->submit($form);
+        $this->client->submit($form);
 
         $count = 0;
         /** @var \DateTime $date */
@@ -290,13 +293,49 @@ class RoomCacheControllerTest extends WebTestCase
         $this->assertEquals(3, $count);
     }
 
+    /**
+     * @depends testRemoveViaGenerationTripleRooms
+     */
+    public function testGenerationQuotas()
+    {
+        $form = $this->getGenerationFormWithValues(
+            33,
+            self::TRIPLE_ROOM,
+            [],
+            null,
+            null,
+            [$this->getIdSpecialTariff()]
+        );
+
+        $this->client->submit($form);
+
+        $this->assertEquals([], $this->getResultFromTable(null, self::TRIPLE_ROOM));
+        $this->assertEquals(['33', '0%', '33'], $this->getResultFromTable(null, self::TRIPLE_ROOM, [$this->getIdSpecialTariff()]));
+    }
+
+    /**
+     * @return string
+     */
+    private function getIdSpecialTariff(): string
+    {
+        $dm = $this->getDocumentManager();
+
+        return $dm->getRepository('MBHPriceBundle:Tariff')
+            ->findOneBy(
+                [
+                    'hotel.id'  => $this->getHotelId(),
+                    'fullTitle' => self::SPECIAL_TARIFFS,
+                ]
+            )->getId();
+    }
+
     private function removeViaGenerationForRoomType(int $places)
     {
         $roomCache = $this->getRoomCache();
 
         $form = $this->getGenerationFormWithValues('-1', $places);
 
-        $result = $this->client->submit($form);
+        $this->client->submit($form);
 
         switch ($places) {
             case self::TWIN_ROOM:
@@ -322,16 +361,10 @@ class RoomCacheControllerTest extends WebTestCase
             throw new \LogicException('Needed true roomType');
         }
 
-        $dm = $this->getDocumentManager();
-
-        $hotelId = $dm->getRepository('MBHHotelBundle:Hotel')
-            ->findOneBy(['fullTitle' => self::NAME_TEST_HOTEL])
-            ->getId();
-
         $typeRooms = [];
 
         /** @var RoomType $typeRoom */
-        foreach ($dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotelId]) as $typeRoom) {
+        foreach ($this->getRoomTypeCache() as $typeRoom) {
             if ($places === null) {
                 if ($returnObject) {
                     $typeRooms[] = $typeRoom;
@@ -373,9 +406,10 @@ class RoomCacheControllerTest extends WebTestCase
     /**
      * @param \DateTime|null $date
      * @param null|int $place
+     * @param array $tariffs
      * @return array
      */
-    private function getResultFromTable(\DateTime $date = null, int $places = null): array
+    private function getResultFromTable(\DateTime $date = null, int $places = null, array $tariffs = []): array
     {
         $date = $date !== null ? $date : new \DateTime();
 
@@ -387,7 +421,7 @@ class RoomCacheControllerTest extends WebTestCase
         }
         $selector .= '_' . $date->format('d.m.Y') . '"]';
 
-        $table = $this->getTable();
+        $table = $this->getTable(null, null, $tariffs);
 
         /* для отладки */
 //        self::putInFile($table, __METHOD__);
@@ -407,9 +441,10 @@ class RoomCacheControllerTest extends WebTestCase
     /**
      * @param \DateTime|null $begin
      * @param \DateTime|null $end
+     * @param array $tariffs
      * @return Crawler
      */
-    private function getTable(\DateTime $begin = null, \DateTime $end = null): Crawler
+    private function getTable(\DateTime $begin = null, \DateTime $end = null, array $tariffs = []): Crawler
     {
         if ($begin === null) {
             $begin = new \DateTime('noon -25 day');
@@ -421,7 +456,13 @@ class RoomCacheControllerTest extends WebTestCase
         $url = self::BASE_URL . 'table?';
         $url .= 'begin=' . $begin->format('d.m.Y');
         $url .= '&end=' . $end->format('d.m.Y');
-        $url .= '&roomTypes=&tariffs=';
+        $url .= '&roomTypes=';
+
+        if ($tariffs !== []) {
+            foreach ($tariffs as $tariff) {
+                $url .= '&tariffs[]=' . $tariff;
+            }
+        }
 
         return $this->getListCrawler($url);
     }
@@ -457,6 +498,7 @@ class RoomCacheControllerTest extends WebTestCase
      * @param array $weekdays
      * @param \DateTime|null $dateBegin
      * @param \DateTime|null $dateEnd
+     * @param array $tariffs
      * @return \Symfony\Component\DomCrawler\Form
      */
     private function getGenerationFormWithValues(
@@ -464,7 +506,8 @@ class RoomCacheControllerTest extends WebTestCase
         int $places = null,
         array $weekdays = [],
         \DateTime $dateBegin = null,
-        \DateTime $dateEnd = null
+        \DateTime $dateEnd = null,
+        array $tariffs = []
     ): \Symfony\Component\DomCrawler\Form
     {
         if ($weekdays === []) {
@@ -489,6 +532,7 @@ class RoomCacheControllerTest extends WebTestCase
                 self::FORM_NAME_GENERATION . '[rooms]'     => $rooms,
                 self::FORM_NAME_GENERATION . '[weekdays]'  => $weekdays,
                 self::FORM_NAME_GENERATION . '[roomTypes]' => $this->getRoomType($places),
+                self::FORM_NAME_GENERATION . '[tariffs]'   => $tariffs,
             ]
         );
         return $form;
@@ -502,5 +546,33 @@ class RoomCacheControllerTest extends WebTestCase
         $dm = $this->getDocumentManager();
 
         return $dm->getRepository('MBHPriceBundle:RoomCache');
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getHotelId(): string
+    {
+        if (empty($this->hotelId)) {
+            $dm = $this->getDocumentManager();
+            $this->hotelId = $dm->getRepository('MBHHotelBundle:Hotel')
+                ->findOneBy(['fullTitle' => self::NAME_TEST_HOTEL])
+                ->getId();
+        }
+        return $this->hotelId;
+    }
+
+    /**
+     * @return array
+     */
+    private function getRoomTypeCache(): array
+    {
+        if (empty($this->roomTypeCache)) {
+            $dm = $this->getDocumentManager();
+            $this->roomTypeCache = $dm
+                ->getRepository('MBHHotelBundle:RoomType')
+                ->findBy(['hotel.id' => $this->getHotelId()]);
+        }
+        return $this->roomTypeCache;
     }
 }
