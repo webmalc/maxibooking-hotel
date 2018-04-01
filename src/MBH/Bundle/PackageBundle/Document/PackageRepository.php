@@ -642,11 +642,11 @@ class PackageRepository extends DocumentRepository
         }
 
         if ($dateType == 'accommodation') {
-            if ($data['begin'] && $data['end']) {
-                $qb
-                    ->field('begin')->lt($data['end'])
-                    ->field('end')->gte($data['begin'])
-                ;
+            if ($data['end']) {
+                $qb->field('begin')->lte($data['end']);
+            }
+            if ($data['begin']) {
+                $qb->field('end')->gt($data['begin']);
             }
         } else {
             if (($dateType === 'createdAt' || $dateType === 'deletedAt') && isset($data['end']) && $data['end'] instanceof \DateTime) {
