@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\EventListener;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
@@ -39,7 +40,7 @@ class HotelSubscriber implements EventSubscriber
         $hotel = $args->getDocument();
         if ($hotel instanceof Hotel) {
             if ($args->hasChangedField('cityId')) {
-                $this->updateHotelAddressData($hotel);
+                $this->updateHotelAddressData($hotel, $args->getDocumentManager());
             }
         }
     }
@@ -52,15 +53,23 @@ class HotelSubscriber implements EventSubscriber
         $hotel = $args->getDocument();
         if ($hotel instanceof Hotel) {
             if (!empty($hotel->getCityId())) {
-                $this->updateHotelAddressData($hotel);
+                $this->updateHotelAddressData($hotel, $args->getDocumentManager());
             }
         }
     }
 
-    private function updateHotelAddressData(Hotel $hotel)
+    private function updateHotelAddressData(Hotel $hotel, DocumentManager $dm)
     {
-        $city = $this->billing->getCityById($hotel->getCityId());
-        $hotel->setRegionId($city->getRegion());
-        $hotel->setCountryTld($city->getCountry());
+        if ($hotel->getCityId()) {
+            $city = $this->billing->getCityById($hotel->getCityId());
+            $hotel->setRegionId($city->getRegion());
+            $hotel->setCountryTld($city->getCountry());
+        } else {
+            $hotel->setRegionId(null);
+            $hotel->setCountryTld(null);
+        }
+
+        $meta = $dm->getClassMetadata(Hotel::class);
+        $dm->getUnitOfWork()->computeChangeSet($meta, $hotel);
     }
 }

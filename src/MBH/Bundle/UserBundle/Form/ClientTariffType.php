@@ -28,8 +28,14 @@ class ClientTariffType extends AbstractType
                 'choices' => [
                     'client_tariff_type.period.one_month' => 1,
                     'client_tariff_type.period.six_month' => 6,
-                    'client_tariff_type.period.twelve_month' => 6,
+                    'client_tariff_type.period.twelve_month' => 12,
                 ]
+            ])
+            ->add('price', TextType::class, [
+                'attr' => [
+                    'disabled' => true
+                ],
+                'required' => false
             ])
         ;
     }

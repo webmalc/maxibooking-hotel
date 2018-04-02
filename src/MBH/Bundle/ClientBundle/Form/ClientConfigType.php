@@ -138,16 +138,16 @@ class ClientConfigType extends AbstractType
                     'required' => true,
                 ]
             )
-            ->add(
-                'searchWindows',
-                CheckboxType::class,
-                [
-                    'label' => 'form.clientConfigType.search_windows',
-                    'help' => 'form.clientConfigType.search_windows_desc',
-                    'group' => 'form.clientConfigType.search_group',
-                    'required' => false,
-                ]
-            )
+//            ->add(
+//                'searchWindows',
+//                CheckboxType::class,
+//                [
+//                    'label' => 'form.clientConfigType.search_windows',
+//                    'help' => 'form.clientConfigType.search_windows_desc',
+//                    'group' => 'form.clientConfigType.search_group',
+//                    'required' => false,
+//                ]
+//            )
             ->add(
                 'beginDate',
                 DateType::class,

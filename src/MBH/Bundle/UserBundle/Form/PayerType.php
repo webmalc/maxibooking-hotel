@@ -126,6 +126,12 @@ class PayerType extends AbstractType
                     ? BillingApi::getDateByBillingFormat($clientRuPayerData['passport_date'])
                     : new \DateTime('midnight')
             ])
+            ->add('registration_address', TextType::class, [
+                'required' => false,
+                'group' => 'form.payer_type.identification_group',
+                'label' => 'form.payer_type.reg_address.label',
+                'data' => $client->getAddress()
+            ])
             ->add('issuedBy', TextType::class, [
                 'required' => false,
                 'attr' => [
