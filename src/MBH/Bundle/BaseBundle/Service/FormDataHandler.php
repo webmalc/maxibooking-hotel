@@ -6,9 +6,17 @@ use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class FormDataHandler
 {
+    protected $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * @param $data
      * @param $fields
