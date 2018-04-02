@@ -72,6 +72,12 @@ class DocumentTemplate extends Base
     protected $organization;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isDefault = false;
+
+    /**
      * @return string
      */
     public function getTitle()
@@ -170,4 +176,21 @@ class DocumentTemplate extends Base
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isDefault(): ?bool
+    {
+        return $this->isDefault;
+    }
+
+    /**
+     * @param bool $isDefault
+     * @return DocumentTemplate
+     */
+    public function setIsDefault(bool $isDefault): DocumentTemplate
+    {
+        $this->isDefault = $isDefault;
+        return $this;
+    }
 }

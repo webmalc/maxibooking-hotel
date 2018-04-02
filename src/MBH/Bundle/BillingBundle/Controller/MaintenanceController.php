@@ -136,7 +136,7 @@ class MaintenanceController extends BaseController
 
     private function checkToken(string $token = null)
     {
-        if ($token !== BillingApi::INSTALLATION_AUTH_TOKEN) {
+        if ($token !== $this->getParameter('billing_front_token')) {
             throw new UnauthorizedHttpException('Incorrect token!');
         }
     }
