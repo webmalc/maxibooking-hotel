@@ -120,4 +120,12 @@ class AppKernel extends Kernel
     {
         return $this->client === self::DEFAULT_CLIENT;
     }
+
+    /**
+     * @return bool
+     */
+    public function isDevEnv()
+    {
+        return $this->getEnvironment() === 'dev';
+    }
 }

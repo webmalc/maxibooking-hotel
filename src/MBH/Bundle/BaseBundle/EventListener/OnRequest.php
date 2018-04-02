@@ -7,6 +7,7 @@ use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class OnRequest
 {
@@ -27,7 +28,7 @@ class OnRequest
 
         if (!$this->container->get('kernel')->isDefaultClient()) {
             $client = $clientManager->getClient();
-            if (!$client->getTrial_activated() && $this->isRequestedByMBUser()) {
+            if (!$client->getTrial_activated() && $this->isRequestedByAuthUser()) {
                 $client = $this->container->get('mbh.billing.api')->getClient();
                 if (!$client->getTrial_activated()) {
                     $url = $clientManager->isRussianClient() ? ClientManager::INSTALLATION_PAGE_RU : ClientManager::INSTALLATION_PAGE_COM;
@@ -40,15 +41,19 @@ class OnRequest
             } elseif (!$clientManager->isClientActive()
                 && $session->get(ClientManager::NOT_CONFIRMED_BECAUSE_OF_ERROR) !== true
                 && !$clientManager->isRouteAccessibleForInactiveClient($event->getRequest()->get('_route'))
-                && $this->isRequestedByMBUser()
-                && $this->container->get('security.authorization_checker')->isGranted('ROLE_PAYMENTS')
+                && $this->isRequestedByAuthUser()
+                && !$this->isRequestByMbUser()
             ) {
-                if (!$session->getFlashBag()->has('error')) {
-                    $session->getFlashBag()->add('error', 'on_request_listener.mb_not_paid_error');
+                if ($this->container->get('security.authorization_checker')->isGranted('ROLE_PAYMENTS')) {
+                    if (!$session->getFlashBag()->has('error')) {
+                        $session->getFlashBag()->add('error', 'on_request_listener.mb_not_paid_error');
+                    }
+                    $url = $this->container->get('router')->generate(ClientManager::DEFAULT_ROUTE_FOR_INACTIVE_CLIENT);
+                    $response = new RedirectResponse($url);
+                    $event->setResponse($response);
+                } else {
+                    throw new AccessDeniedException('The payment is in arrears and user hasn\'t rights to pay.');
                 }
-                $url = $this->container->get('router')->generate(ClientManager::DEFAULT_ROUTE_FOR_INACTIVE_CLIENT);
-                $response = new RedirectResponse($url);
-                $event->setResponse($response);
             }
         }
     }
@@ -56,9 +61,23 @@ class OnRequest
     /**
      * @return bool
      */
-    private function isRequestedByMBUser()
+    private function isRequestedByAuthUser()
     {
-        return $this->container->get('security.token_storage')->getToken()
-            && $this->container->get('security.token_storage')->getToken()->getUser() instanceOf User;
+        $token = $this->getSecurityToken();
+
+        return $token && $token->getUser() instanceOf User;
+    }
+
+    private function isRequestByMbUser()
+    {
+        return $this->getSecurityToken()->getUser()->getUsername() === 'mb';
+    }
+
+    /**
+     * @return null|\Symfony\Component\Security\Core\Authentication\Token\TokenInterface
+     */
+    private function getSecurityToken()
+    {
+        return $this->container->get('security.token_storage')->getToken();
     }
 }

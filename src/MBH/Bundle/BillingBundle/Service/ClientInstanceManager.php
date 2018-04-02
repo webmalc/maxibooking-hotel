@@ -14,7 +14,6 @@ use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingRoom;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Service\HotelManager;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Lib\AclOwnerMaker;
@@ -353,7 +352,6 @@ class ClientInstanceManager
             $this->logger->info('Hotel "'.$property->getName().'" created. Start creation of rooms');
 
             $this->logger->info('Add manager rights to hotel');
-            $this->addManagerRightsToTheHotel($hotel);
 
             foreach ($property->getRooms() as $roomUrl) {
                 try {
@@ -466,16 +464,4 @@ class ClientInstanceManager
 
         return $statusStorage;
     }
-
-    /**
-     * @param Hotel $hotel
-     */
-    private function addManagerRightsToTheHotel(Hotel $hotel): void
-    {
-        $manager = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'manager']);
-        if (!is_null($manager)) {
-            $this->aclOwnerMaker->insertAcl($manager, $hotel);
-        }
-    }
-
 }

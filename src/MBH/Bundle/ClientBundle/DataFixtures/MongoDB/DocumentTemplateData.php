@@ -40,7 +40,9 @@ class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInte
             $content = file_get_contents($filePath);
             $template = (new DocumentTemplate())
                 ->setTitle($name)
-                ->setContent($content);
+                ->setContent($content)
+                ->setIsDefault(true)
+            ;
             $manager->persist($template);
             $this->setReference($templateFile . 'Template', $template);
         }
