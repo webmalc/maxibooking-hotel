@@ -296,14 +296,14 @@ function initTariffPage() {
         var quantity = document.getElementById('mbhuser_bundle_client_tariff_type_rooms').value;
         var period = document.getElementById('mbhuser_bundle_client_tariff_type_period').value;
         if (quantity && period) {
-            var url = BILLING_URL + document.documentElement.lang
+            var url = mbh['billing_host'] + document.documentElement.lang
                 + '/services/calc/?quantity=' + quantity
                 + '&country=' + mbh['client_country']
                 + '&period=' + period;
             $.ajax({
                 url: url,
                 headers: {
-                    Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+                    Authorization: "Token " + mbh['front_token']
                 },
                 success: function (response) {
                     if (response.status === true) {

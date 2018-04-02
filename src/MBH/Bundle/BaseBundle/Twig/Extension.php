@@ -1,6 +1,7 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -269,9 +270,12 @@ class Extension extends \Twig_Extension
      */
     public function getSettingsDataForFrontend()
     {
+        $isProdEnv = $this->container->get('kernel')->getEnvironment() === 'prod';
         $data = [
             'allowed_guides' => $this->container->get('mbh.guides_data_service')->getAllowedGuides(),
-            'client_country' => $this->getClient()->getCountry()
+            'client_country' => $this->getClient()->getCountry(),
+            'front_token' => $this->container->getParameter($isProdEnv ? 'billing_front_token' : 'billing_dev_token'),
+            'billing_host' => ($isProdEnv ? BillingApi::BILLING_HOST : BillingApi::BILLING_DEV_HOST) . '/',
         ];
 
         return json_encode($data);

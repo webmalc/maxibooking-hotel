@@ -29,6 +29,7 @@ class BillingApi
 {
     const BILLING_QUERY_PARAM_NAME = 'search';
     const BILLING_HOST = 'https://billing.maxi-booking.com';
+    const BILLING_DEV_HOST = 'http://billing-dev.maxi-booking.com';
     const RESULT_API_URL = '/result';
     const CLIENT_PROPERTY_URL = '/property';
     const CLIENT_INSTALL_RESULT_URL_END = '/install_result';
