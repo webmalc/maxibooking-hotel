@@ -15,12 +15,12 @@
             {{ roomType }}
         </div>
         <div class="mbh-graph-wrapper">
-            <table class="table-hover">
+            <table class="table-hover" data-room-type-id="{{ roomType.id }}">
                 <thead>
                 <tr>
                     <th class="mbh-graph-date-th">#</th>
                     {% for date in data.dates %}
-                        <th class="mbh-graph-date-th">
+                        <th class="mbh-graph-date-th ">
                             <span class="{{ date|date('N') in [6,7] ? 'text-red' }} {{ date|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-yellow' }} ">{{ date|date('d.m') }}</span>
                             <div class="text-muted">
                             {{ date|date('Y') == 'now'|date('Y') ? weekdays[date|date('N')]|trans({}, 'front_messages')|lower : date|date('Y') }}
@@ -66,7 +66,7 @@
                                         {% set cellText = '<span class="mbh-graph-hidden-info">' ~ info.leftRooms ~ '</span>' %}
                                     {% endif %}
                                 {% endif %}
-                                <td class="text-center mbh-graph-cell {{ cellClass }}">
+                                <td class="text-center mbh-graph-cell {{ cellClass }}" data-date="{{ date|date('d.m.Y') }}">
                                     {% if cellIcon %}
                                         <small><i class="{{ cellIcon }}"></i></small>
                                     {% elseif cellText %}
@@ -76,60 +76,70 @@
                             {% endfor %}
                         </tr>
                     {% endfor %}
-                    {% set extra = attribute(extraData, roomType.id) %}
-                    <tr style="height: 5px;">
-                        <td colspan="{{ data.dates|length + 1 }}">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center mbh-graph-cell">
-                            <small>{{ 'price.resources.views.roomcache.graph.vacancy'|trans }}</small>
-                        </td>
-                        {% for date in data.dates %}
-                            <td class="text-center mbh-graph-cell">
-                                <small>{{ extra[date|date('d.m.Y')].leftRooms }}</small>
+                    {% if extraData is not empty %}
+                        {% set extra = attribute(extraData, roomType.id) %}
+                        <tr style="height: 5px;">
+                            <td colspan="{{ data.dates|length + 1 }}">
                             </td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td class="text-center mbh-graph-cell">
-                            <small>{{ 'price.resources.views.roomcache.graph.arrivals'|trans }}</small>
-                        </td>
-                        {% for date in data.dates %}
+                        </tr>
+                        <tr>
                             <td class="text-center mbh-graph-cell">
-                                <small>{{ extra[date|date('d.m.Y')].needArrivals }}</small>
+                                <small>{{ 'price.resources.views.roomcache.graph.vacancy'|trans }}</small>
                             </td>
-                        {% endfor %}
-                    </tr>
-                    {% if extra.tariffs is defined %}
-                        {% for tariff in extra.tariffs %}
-                            <tr class="bg-info">
-                                <td colspan="{{ data.dates|length + 1 }}">
-                                    <small>{{ tariff.info.getFullTitle }}</small>
+                            {% for date in data.dates %}
+                                <td class="text-center mbh-graph-cell"
+                                    data-date="{{ date|date('d.m.Y') }}"
+                                    data-tariff-id="common">
+                                    <small>{{ extra[date|date('d.m.Y')].leftRooms }}</small>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center mbh-graph-cell">
-                                    <small>{{ 'price.resources.views.roomcache.graph.calculation_rooms'|trans }}</small>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td class="text-center mbh-graph-cell">
+                                <small>{{ 'price.resources.views.roomcache.graph.arrivals'|trans }}</small>
+                            </td>
+                            {% for date in data.dates %}
+                                <td class="text-center mbh-graph-cell"
+                                    data-date="{{ date|date('d.m.Y') }}"
+                                    data-tariff-id="common">
+                                    <small>{{ extra[date|date('d.m.Y')].needArrivals }}</small>
                                 </td>
-                                {% for date in data.dates %}
+                            {% endfor %}
+                        </tr>
+                        {% if extra.tariffs is defined %}
+                            {% for tariff in extra.tariffs %}
+                                <tr class="bg-info">
+                                    <td colspan="{{ data.dates|length + 1 }}">
+                                        <small>{{ tariff.info.getFullTitle }}</small>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td class="text-center mbh-graph-cell">
-                                        <small>{{ tariff[date|date('d.m.Y')] is defined ? tariff[date|date('d.m.Y')].isNecessary : '0' }}</small>
+                                        <small>{{ 'price.resources.views.roomcache.graph.calculation_rooms'|trans }}</small>
                                     </td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <td class="text-center mbh-graph-cell">
-                                    <small>{{ 'price.resources.views.roomcache.graph.diff'|trans }}</small>
-                                </td>
-                                {% for date in data.dates %}
-                                    {% set diff = tariff[date|date('d.m.Y')] is defined ? tariff[date|date('d.m.Y')].diff : 0 %}
-                                    <td class="text-center mbh-graph-cell{{ diff < 0 ? ' mbh-graph-cell-danger':'' }}">
-                                        <small>{{ diff }}</small>
+                                    {% for date in data.dates %}
+                                        <td class="text-center mbh-graph-cell"
+                                            data-date="{{ date|date('d.m.Y') }}"
+                                            data-tariff-id="{{ tariff.info.id }}">
+                                            <small>{{ tariff[date|date('d.m.Y')] is defined ? tariff[date|date('d.m.Y')].isNecessary : '0' }}</small>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td class="text-center mbh-graph-cell">
+                                        <small>{{ 'price.resources.views.roomcache.graph.diff'|trans }}</small>
                                     </td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
+                                    {% for date in data.dates %}
+                                        {% set diff = tariff[date|date('d.m.Y')] is defined ? tariff[date|date('d.m.Y')].diff : 0 %}
+                                        <td class="text-center mbh-graph-cell{{ diff < 0 ? ' mbh-graph-cell-danger':'' }}"
+                                            data-date="{{ date|date('d.m.Y') }}"
+                                            data-tariff-id="{{ tariff.info.id }}">
+                                            <small>{{ diff }}</small>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
                     {% endif %}
                 </tbody>
             </table>

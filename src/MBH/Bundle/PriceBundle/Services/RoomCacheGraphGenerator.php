@@ -258,7 +258,7 @@ class RoomCacheGraphGenerator
     public function extraData(Request $request)
     {
         if (empty($this->getDates()) || empty($this->data)) {
-            throw new \LogicException('Missing data');
+            return [];
         }
 
         $tariffs = $request->get('tariffs');
@@ -319,7 +319,7 @@ class RoomCacheGraphGenerator
 
                     $minStay = $restriction->getMinStay();
 
-                    if (!is_null($restriction->getMinStayArrival())) {
+                    if ($restriction->getMinStayArrival() !== null) {
                         $minStay = $restriction->getMinStayArrival();
                     }
 
