@@ -27,7 +27,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
         ],
         'user-mb' => [
             'username' => 'mb',
-            'email' => 'mb@example.com',
+            'email' => 'mb-error@maxi-booking.com',
             'role' => 'ROLE_SUPER_ADMIN'
         ]
     ];
