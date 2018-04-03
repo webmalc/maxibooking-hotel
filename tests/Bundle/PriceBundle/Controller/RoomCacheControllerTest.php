@@ -83,7 +83,7 @@ class RoomCacheControllerTest extends WebTestCase
      */
     public function testDefaultTable()
     {
-        $this->assertEquals(['', '7', '35%', '13', '', '0', '0%', '5'], $this->getResultFromTable());
+        $this->assertEquals(['7', '35%', '13', '0', '0%', '5'], $this->getResultFromTable());
     }
 
     /**
@@ -114,7 +114,7 @@ class RoomCacheControllerTest extends WebTestCase
             ]
         );
 
-        $this->assertEquals(['', '7', '14%', '43', '', '0', '0%', '5'], $this->getResultFromTable());
+        $this->assertEquals(['7', '14%', '43', '0', '0%', '5'], $this->getResultFromTable());
 
         $this->assertCount($amountRooms, $roomCache->findAll());
     }
@@ -145,7 +145,7 @@ class RoomCacheControllerTest extends WebTestCase
             ]
         );
 
-        $this->assertEquals(['', '0', '0%', '60', '', '', '', '',], $this->getResultFromTable($date));
+        $this->assertEquals(['0', '0%', '60',], $this->getResultFromTable($date));
 
         $this->assertCount($amountRooms + 1, $roomCache->findAll());
     }
@@ -174,7 +174,7 @@ class RoomCacheControllerTest extends WebTestCase
 
         $this->client->submit($form);
 
-        $this->assertEquals(['', '7', '20%', '28', '', '0', '0%', '35'], $this->getResultFromTable());
+        $this->assertEquals(['7', '20%', '28', '0', '0%', '35'], $this->getResultFromTable());
     }
 
     /**
@@ -187,11 +187,11 @@ class RoomCacheControllerTest extends WebTestCase
 
         $this->assertCount(self::AMOUNT_ROOM_CACHE, $roomCache->findAll());
         $this->assertEquals(
-            ['', '0', '0%', '35', '', '0', '0%', '35'],
+            ['0', '0%', '35', '0', '0%', '35'],
             $this->getResultFromTable(new \DateTime('noon +20 days'))
         );
-        $this->assertEquals(['', '', '', '', '', '', '', '',], $this->getResultFromTable(new \DateTime('noon -3 days')));
-        $this->assertEquals(['', '', '', '', '', '', '', '',], $this->getResultFromTable(new \DateTime('noon +22 days')));
+        $this->assertEquals([], $this->getResultFromTable(new \DateTime('noon -3 days')));
+        $this->assertEquals([], $this->getResultFromTable(new \DateTime('noon +22 days')));
     }
 
     /**
@@ -247,8 +247,8 @@ class RoomCacheControllerTest extends WebTestCase
             ]
         );
 
-        $this->assertEquals(['', '7', '0%', '-7', '', '', '', '',], $this->getResultFromTable());
-        $this->assertEquals(['', '8', '22.86%', '27', '', '0', '0%', '35'], $this->getResultFromTable(new \DateTime('noon +1 day')));
+        $this->assertEquals(['7', '0%', '-7',], $this->getResultFromTable());
+        $this->assertEquals(['8', '22.86%', '27', '0', '0%', '35'], $this->getResultFromTable(new \DateTime('noon +1 day')));
         $this->assertCount(self::AMOUNT_ROOM_CACHE - 1, $roomCache->findAll());
     }
 
@@ -289,7 +289,7 @@ class RoomCacheControllerTest extends WebTestCase
         /** @var \DateTime $date */
         foreach ($dateRange as $date) {
             if (in_array((int)$date->format('w'), [self::SUNDAY, self::TUESDAY, self::THURSDAY], true)) {
-                $this->assertEquals(['', '0', '0%', '15'], $this->getResultFromTable($date, self::TRIPLE_ROOM));
+                $this->assertEquals(['0', '0%', '15'], $this->getResultFromTable($date, self::TRIPLE_ROOM));
                 $count++;
             }
         }
@@ -313,13 +313,12 @@ class RoomCacheControllerTest extends WebTestCase
 
         $this->client->submit($form);
 
-        $this->assertEquals(['', '', '', '',], $this->getResultFromTable(null, self::TRIPLE_ROOM));
+        $this->assertEquals(['0', '0%', '15',], $this->getResultFromTable(null, self::TRIPLE_ROOM));
         $this->assertEquals(
-            ['33', '0', '0%', '33'],
+            ['0', '0%', '33'],
             $this->getResultFromTable(null, self::TRIPLE_ROOM, [$this->getIdSpecialTariff()])
         );
     }
-
 
     public function testGraphActionStatusCode()
     {
@@ -333,12 +332,18 @@ class RoomCacheControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @depends testGraphActionStatusCode
+     */
     public function testGraphActionEmptyData()
     {
-        $this->assertEmpty($this->getResultGraphAction(new \DateTime('noon -1 days'), $this->getResultGraphAction()));
-        $this->assertEmpty($this->getResultGraphAction(new \DateTime('noon +14 days'), $this->getResultGraphAction()));
+        $this->assertEquals(['0', '0', '0', '0',], $this->getResultGraphAction(new \DateTime('noon -1 days')));
+        $this->assertEquals(['0', '0', '0', '0',],$this->getResultGraphAction(new \DateTime('noon +15 days')));
     }
 
+    /**
+     * @depends testGraphActionStatusCode
+     */
     public function testGraphActionCurrentDate()
     {
         $this->assertEquals(
@@ -352,6 +357,9 @@ class RoomCacheControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @depends testGraphActionStatusCode
+     */
     public function testGraphActionPlusFourDays()
     {
         $this->assertEquals(
@@ -375,6 +383,31 @@ class RoomCacheControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @depends testGraphActionStatusCode
+     */
+    public function testGraphActionPlusSevenDays()
+    {
+        $this->assertEquals(
+            ['18', '0', '3', '15', '8', '10',],
+            $this->getResultGraphAction(
+                new \DateTime('noon +7 days'),
+                $this->getTariffs(),
+                self::TWIN_ROOM,
+                true
+            )
+        );
+
+        $this->assertEquals(
+            ['5', '0', '0', '5',],
+            $this->getResultGraphAction(
+                new \DateTime('noon +7 days'),
+                [$this->getIdSpecialTariff()],
+                self::TRIPLE_ROOM,
+                true
+            )
+        );
+    }
 
     /**
      * @param \DateTime|null $date
@@ -501,7 +534,7 @@ class RoomCacheControllerTest extends WebTestCase
                 break;
         }
 
-        $this->assertEquals(['', '8', '22.86%', '27', '', '', '', '',], $this->getResultFromTable(new \DateTime('noon +1 day')));
+        $this->assertEquals(['8', '22.86%', '27',], $this->getResultFromTable(new \DateTime('noon +1 day')));
         $this->assertCount($amountRoom, $roomCache->findAll());
     }
 
@@ -591,7 +624,10 @@ class RoomCacheControllerTest extends WebTestCase
     {
         $result = [];
         foreach ($td->getIterator() as $element) {
-            $result[] = trim($element->nodeValue);
+            $value = trim($element->nodeValue);
+            if ($value != '') {
+                $result[] = $value;
+            }
         }
 
         return $result;
@@ -624,18 +660,6 @@ class RoomCacheControllerTest extends WebTestCase
         }
 
         return $this->getListCrawler($url);
-    }
-
-    private static function putInFile(Crawler $node, $method)
-    {
-        $rawName = explode('::', $method);
-
-        $name = isset($rawName[1]) ? $rawName[1] : $method;
-
-        $fileName = '/var/www/mbh/';
-        $fileName .= time() . '_' . $name;
-        $fileName .= '.html';
-        file_put_contents($fileName, $node->html());
     }
 
     /**
