@@ -21,6 +21,19 @@ function priceSeparator(amount) {
 }
 
 jQuery(document).ready(function() {
+    var searchData = {
+        url: '',
+        init: function () {
+            var urlData = window.location.search.replace('?', '');
+            if (urlData == ''){
+                urlData = window.sessionStorage.getItem('MBHSearchData');
+            }
+            this.url = urlData == null ? '': urlData;
+        }
+    }
+
+    searchData.init();
+
     var resize = function() {
         window.parent.postMessage({
             type: 'mbh',
@@ -46,13 +59,8 @@ jQuery(document).ready(function() {
             getUrlVars = function() {
                 var vars = [],
                     hash;
-                var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-                if (hashes.length <= 1 ){
-                    let searchData = window.sessionStorage.getItem('MBHSearchData');
-                    if ( searchData != null){
-                        hashes = searchData.split('&');
-                    }
-                }
+                var hashes = searchData.url.split('&');
+
                 if (hashes.length <= 1){
                     console.log('Empty search data');
                 }
@@ -82,7 +90,7 @@ jQuery(document).ready(function() {
         // load table
         jQuery.ajax({
             url: '{{ urls.table }}',
-            data: window.location.search.replace('?', ''),
+            data: searchData.url,
             dataType: 'html',
             crossDomain: true,
             success: function(data) {
