@@ -77,7 +77,6 @@
                         </tr>
                     {% endfor %}
                     {% if extraData is not empty %}
-                        {% set extra = attribute(extraData, roomType.id) %}
                         <tr style="height: 5px;">
                             <td colspan="{{ data.dates|length + 1 }}">
                             </td>
@@ -90,7 +89,7 @@
                                 <td class="text-center mbh-graph-cell"
                                     data-date="{{ date|date('d.m.Y') }}"
                                     data-tariff-id="common">
-                                    <small>{{ extra[date|date('d.m.Y')].leftRooms }}</small>
+                                    <small>{{ extraData.getData(roomType, date).leftRooms }}</small>
                                 </td>
                             {% endfor %}
                         </tr>
@@ -102,15 +101,15 @@
                                 <td class="text-center mbh-graph-cell"
                                     data-date="{{ date|date('d.m.Y') }}"
                                     data-tariff-id="common">
-                                    <small>{{ extra[date|date('d.m.Y')].needArrivals }}</small>
+                                    <small>{{ extraData.getData(roomType, date).needArrivals }}</small>
                                 </td>
                             {% endfor %}
                         </tr>
-                        {% if extra.tariffs is defined %}
-                            {% for tariff in extra.tariffs %}
+                        {% if extraData.withTariff() %}
+                            {% for tariff in extraData.getTariffs(roomType) %}
                                 <tr class="bg-info">
                                     <td colspan="{{ data.dates|length + 1 }}">
-                                        <small>{{ tariff.info.getFullTitle }}</small>
+                                        <small>{{ tariff.getFullTitle() }}</small>
                                     </td>
                                 </tr>
                                 <tr>
@@ -120,8 +119,8 @@
                                     {% for date in data.dates %}
                                         <td class="text-center mbh-graph-cell"
                                             data-date="{{ date|date('d.m.Y') }}"
-                                            data-tariff-id="{{ tariff.info.id }}">
-                                            <small>{{ tariff[date|date('d.m.Y')] is defined ? tariff[date|date('d.m.Y')].isNecessary : '0' }}</small>
+                                            data-tariff-id="{{ tariff.getId() }}">
+                                            <small>{{ tariff.getData(date).isNecessary }}</small>
                                         </td>
                                     {% endfor %}
                                 </tr>
@@ -130,10 +129,10 @@
                                         <small>{{ 'price.resources.views.roomcache.graph.diff'|trans }}</small>
                                     </td>
                                     {% for date in data.dates %}
-                                        {% set diff = tariff[date|date('d.m.Y')] is defined ? tariff[date|date('d.m.Y')].diff : 0 %}
+                                        {% set diff = tariff.getData(date).diff %}
                                         <td class="text-center mbh-graph-cell{{ diff < 0 ? ' mbh-graph-cell-danger':'' }}"
                                             data-date="{{ date|date('d.m.Y') }}"
-                                            data-tariff-id="{{ tariff.info.id }}">
+                                            data-tariff-id="{{ tariff.getId() }}">
                                             <small>{{ diff }}</small>
                                         </td>
                                     {% endfor %}
