@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
+use MBH\Bundle\PriceBundle\Services\GraphExtraData;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -52,12 +53,14 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $generator = $this->get('mbh.room.cache.graph.generator');
 
+        $extraData = $this->get('mbh.room.cache.graph.extra_data');
+
         return [
             'data'      => $generator->generate($request, $this->hotel),
             'begin'     => $generator->getBegin(),
             'end'       => $generator->getEnd(),
             'error'     => $generator->getError(),
-            'extraData' => $generator->extraData($request)
+            'extraData' => $extraData->get($request, $generator, $this->hotel)
         ];
     }
 
