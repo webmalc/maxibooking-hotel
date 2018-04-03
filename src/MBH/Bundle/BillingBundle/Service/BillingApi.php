@@ -29,6 +29,7 @@ class BillingApi
 {
     const BILLING_QUERY_PARAM_NAME = 'search';
     const BILLING_HOST = 'https://billing.maxi-booking.com';
+    const BILLING_DEV_HOST = 'http://billing-dev.maxi-booking.com';
     const RESULT_API_URL = '/result';
     const CLIENT_PROPERTY_URL = '/property';
     const CLIENT_INSTALL_RESULT_URL_END = '/install_result';
@@ -43,8 +44,6 @@ class BillingApi
     const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
     const PAYER_COMPANY_ENDPOINT_SETTINGS = ['endpoint' => 'companies', 'model' => Company::class, 'returnArray' => false];
 
-    const INSTALLATION_AUTH_TOKEN = 'e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd';
-    const AUTH_TOKEN = '3e5d268bcd1d36dfd5a13b4128aedb231e90f200';
     const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s\Z';
     const BILLING_DATETIME_FORMAT_WITH_MICROSECONDS = 'Y-m-d\TH:i:s.u\Z';
 
@@ -56,6 +55,7 @@ class BillingApi
     private $serializer;
     /** @var  \AppKernel */
     private $kernel;
+    private $billingToken;
 
     private $loadedEntities = [];
     private $clientServices;
@@ -63,13 +63,14 @@ class BillingApi
     private $clientCompanies;
     private $isClientCompaniesInit = false;
 
-    public function __construct(Logger $logger, KernelInterface $kernel, Serializer $serializer, $locale, TokenStorage $tokenStorage)
+    public function __construct(Logger $logger, KernelInterface $kernel, Serializer $serializer, $locale, TokenStorage $tokenStorage, string $billingToken)
     {
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
         $this->kernel = $kernel;
         $this->billingLogin = $this->kernel->getClient();
         $this->serializer = $serializer;
+        $this->billingToken = $billingToken;
 
         /** @var User $user */
         $user = $tokenStorage->getToken();
@@ -636,10 +637,9 @@ class BillingApi
     private function sendPatch(string $uri, array $data)
     {
         return $this->guzzle->patch($uri . '/', [
-            RequestOptions::HEADERS => [
-                'Authorization' => 'Token ' . self::AUTH_TOKEN,
+            RequestOptions::HEADERS => array_merge($this->getAuthorizationHeaderAsArray(), [
                 'Content-type' => 'application/json',
-            ],
+            ]),
             RequestOptions::JSON => $data,
         ]);
     }
@@ -649,7 +649,7 @@ class BillingApi
      */
     private function getAuthorizationHeaderAsArray()
     {
-        return ['Authorization' => 'Token ' . self::AUTH_TOKEN];
+        return ['Authorization' => 'Token ' . $this->billingToken];
     }
 
     /**

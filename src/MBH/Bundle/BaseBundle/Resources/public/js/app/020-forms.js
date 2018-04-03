@@ -1,19 +1,18 @@
 /*global window, document, Routing, fole, str, $, select2, localStorage, mbh */
 
-var BILLING_URL = 'https://billing.maxi-booking.com/';
 var BILLING_API_SETTINGS = {
     fms: {
-        url: BILLING_URL + document.documentElement.lang + '/fms-fms',
+        url: mbh['billing_host'] + document.documentElement.lang + '/fms-fms',
         id: 'internal_id',
         text: 'name'
     },
     countries: {
-        url: BILLING_URL + document.documentElement.lang + '/countries',
+        url: mbh['billing_host'] + document.documentElement.lang + '/countries',
         id: 'tld',
         text: 'name'
     },
     regions: {
-        url: BILLING_URL + document.documentElement.lang + '/regions',
+        url: mbh['billing_host'] + document.documentElement.lang + '/regions',
         id: 'id',
         text: 'name',
         creationRouteName: 'create_region',
@@ -26,7 +25,7 @@ var BILLING_API_SETTINGS = {
         checkable: true
     },
     cities: {
-        url: BILLING_URL + document.documentElement.lang + '/cities',
+        url: mbh['billing_host'] + document.documentElement.lang + '/cities',
         id: 'id',
         text: 'full_name',
         creationRouteName: 'create_city',
@@ -39,12 +38,12 @@ var BILLING_API_SETTINGS = {
         checkable: true
     },
     fmsKpp: {
-        url: BILLING_URL + document.documentElement.lang + '/fms-kpp',
+        url: mbh['billing_host'] + document.documentElement.lang + '/fms-kpp',
         id: 'internal_id',
         text: 'name'
     },
     services: {
-        url: BILLING_URL + document.documentElement.lang + '/services/',
+        url: mbh['billing_host'] + document.documentElement.lang + '/services/',
         id: 'id',
         text: 'title'
     }
@@ -1049,7 +1048,7 @@ function initSelect2TextForBilling(inputId, apiSettings) {
         allowClear: true,
         ajax: {
             headers: {
-                Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+                Authorization: "Token " + mbh['front_token']
             },
             url: apiSettings['url'] + '/',
             dataType: 'json',
@@ -1089,7 +1088,7 @@ function initSelect2TextForBilling(inputId, apiSettings) {
                 $.ajax(apiSettings['url'] + '/' + id + '/', {
                     dataType: "json",
                     headers: {
-                        Authorization: "Token e3cbe9278e7c5821c5e75d2a0d0caf9e851bf1fd"
+                        Authorization: "Token " + mbh['front_token']
                     }
                 }).done(function (data) {
                     var optionId = data[apiSettings['id']];
@@ -1239,7 +1238,6 @@ function handleAddingNewBillingEntity() {
                 $modalBody.html(mbh.error.html);
             },
             success: function (response) {
-                console.log(entityRoute);
                 initFormFunc(response);
                 saveButton.removeAttribute('disabled');
                 $('#modal-with-form-save-button').click(function () {

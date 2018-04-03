@@ -103,6 +103,7 @@ form.payer_type.document_type.label: 'Тип документа'
 form.payer_type.series.label: Серия
 form.payer_type.number.label: Номер
 form.payer_type.issue_date.label: 'Дата выдачи'
+form.payer_type.reg_address.label: 'Адрес регистрации'
 form.payer_type.issue_by.label: 'Кем выдан'
 form.payer_type.financial_information.label: 'Финансовая информация'
 form.payer_type.inn.label: ИНН
@@ -190,5 +191,7 @@ view.personal_account.pay_button.title: Оплатить
 view.payment_systems_modal.header_title: 'Выбор способа оплаты'
 view.pay_order_modal.payment_sum: 'Оплата заказа №%orderNumber% на сумму <span class="payment-order-price">%price%</span>'
 view.pay_order_modal.open_bill: 'Открыть счет'
+view.pay_order_modal.unfilled_data_message: 'Перед проведением оплаты заполните, пожалуйста, следующие данные:'
 interactive_login_listener.error_by_client_confirmation: 'Произошла непредвиденная ошибка. Пожалуйста, обратитесь в службу поддержки по адресу: "%supportEmail%"'
 on_request_listener.mb_not_paid_error: 'У вас истек срок оплаты очередного заказа на использование программы Maxibooking. Для возобновления использования программы оплатите заказ из списка на вкладке "Оплата".'
+client_payer_manager.payer_data: 'данные о плательщике'

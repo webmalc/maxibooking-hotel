@@ -285,12 +285,58 @@ function switchAuthOrganFieldsVisibility() {
 function initTariffPage() {
     var $changeTariffShowModalButton = $('#change-tariff-modal-show');
     var $changeTariffFormWrapper = $('#change-tariff-form-wrapper');
+
+    var setPrice = function (priceString, isCorrect) {
+        isCorrect = isCorrect === undefined ? true : isCorrect;
+        $('#mbhuser_bundle_client_tariff_type_price').val(priceString);
+        var $errorBlock = $('#tariff-error-block');
+        isCorrect ? $errorBlock.hide() : $errorBlock.show();
+    };
+    var setNewTariffPrice = function () {
+        var quantity = document.getElementById('mbhuser_bundle_client_tariff_type_rooms').value;
+        var period = document.getElementById('mbhuser_bundle_client_tariff_type_period').value;
+        if (quantity && period) {
+            var url = mbh['billing_host'] + document.documentElement.lang
+                + '/services/calc/?quantity=' + quantity
+                + '&country=' + mbh['client_country']
+                + '&period=' + period;
+            $.ajax({
+                url: url,
+                headers: {
+                    Authorization: "Token " + mbh['front_token']
+                },
+                success: function (response) {
+                    if (response.status === true) {
+                        setPrice(response.price + ' ' + response['price_currency']);
+                    } else {
+                        setPrice('', false)
+                    }
+                },
+                error: function () {
+                    setPrice('', false)
+                }
+            });
+        } else {
+            setPrice('');
+        }
+    };
+
     if ($changeTariffShowModalButton.length = 1) {
         $changeTariffShowModalButton.click(function () {
             $('#change-tariff-modal').modal('show');
             $changeTariffFormWrapper.html(mbh.loader.html);
             $.get(Routing.generate("update_tariff_modal")).done(function (modalBody) {
                 $changeTariffFormWrapper.html(modalBody);
+                var $roomsInput = $('#mbhuser_bundle_client_tariff_type_rooms');
+                var $priceInput = $('#mbhuser_bundle_client_tariff_type_price');
+                var $periodSelect = $('#mbhuser_bundle_client_tariff_type_period');
+                $periodSelect.select2();
+                $periodSelect.on("select2:select", function(e) {
+                    setNewTariffPrice($priceInput);
+                });
+                $roomsInput.on('keyup', function (e) {
+                    setNewTariffPrice($priceInput);
+                })
             });
         });
 
