@@ -38,6 +38,6 @@ abstract class AbstractFixture extends Base implements ContainerAwareInterface
      */
     protected function getEnvs(): array
     {
-        return ['test', 'dev', 'prod'];
+        return ['test', 'dev', 'prod', 'sandbox'];
     }
 }

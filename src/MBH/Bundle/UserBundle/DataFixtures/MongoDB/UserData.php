@@ -60,7 +60,9 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
         $notificationTypes = $manager->getRepository('MBHBaseBundle:NotificationType')->getStuffType()->toArray();
         if (!count($repo->findAll())) {
             foreach (self::USERS as $key => $userData) {
-                if ($key === 'user-manager' && !$this->container->get('kernel')->isDevEnv()) {
+                if (in_array($key, ['user-manager', 'user-demo'])
+                    && !in_array($this->container->get('kernel')->getEnvironment(), ['dev', 'test', 'sandbox'])
+                ) {
                     continue;
                 }
 

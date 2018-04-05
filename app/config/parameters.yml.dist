@@ -81,3 +81,4 @@ parameters:
 
   domain: 'maxi-booking.ru'
   sandbox_client: 'example'
+  billing_url: 'https://billing.maxi-booking.com'

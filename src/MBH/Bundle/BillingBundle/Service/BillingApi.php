@@ -29,7 +29,6 @@ class BillingApi
 {
     const BILLING_QUERY_PARAM_NAME = 'search';
     const BILLING_HOST = 'https://billing.maxi-booking.com';
-    const BILLING_DEV_HOST = 'http://billing-dev.maxi-booking.com';
     const RESULT_API_URL = '/result';
     const CLIENT_PROPERTY_URL = '/property';
     const CLIENT_INSTALL_RESULT_URL_END = '/install_result';
@@ -56,6 +55,7 @@ class BillingApi
     /** @var  \AppKernel */
     private $kernel;
     private $billingToken;
+    private $billingHost;
 
     private $loadedEntities = [];
     private $clientServices;
@@ -63,7 +63,7 @@ class BillingApi
     private $clientCompanies;
     private $isClientCompaniesInit = false;
 
-    public function __construct(Logger $logger, KernelInterface $kernel, Serializer $serializer, $locale, TokenStorage $tokenStorage, string $billingToken)
+    public function __construct(Logger $logger, KernelInterface $kernel, Serializer $serializer, $locale, TokenStorage $tokenStorage, string $billingToken, $billingHost)
     {
         $this->guzzle = new GuzzleClient();
         $this->logger = $logger;
@@ -71,6 +71,7 @@ class BillingApi
         $this->billingLogin = $this->kernel->getClient();
         $this->serializer = $serializer;
         $this->billingToken = $billingToken;
+        $this->billingHost = $billingHost;
 
         /** @var User $user */
         $user = $tokenStorage->getToken();
@@ -79,7 +80,7 @@ class BillingApi
 
     public function sendFalse(): void
     {
-        $this->guzzle->post(self::BILLING_HOST . self::RESULT_API_URL, []);
+        $this->guzzle->post($this->billingHost . self::RESULT_API_URL, []);
     }
 
     /**
@@ -295,7 +296,7 @@ class BillingApi
     public function changeTariff(array $newTariffData)
     {
         $newTariffData['rooms'] = (int)$newTariffData['rooms'];
-        $url = self::BILLING_HOST . '/' . $this->locale . '/clients/' . $this->billingLogin . '/tariff_update/';
+        $url = $this->billingHost . '/' . $this->locale . '/clients/' . $this->billingLogin . '/tariff_update/';
 
         return $this->sendPostAndHandleResult($url, $newTariffData);
     }
@@ -305,7 +306,7 @@ class BillingApi
      */
     public function getTariffsData()
     {
-        $response = $this->sendGet(self::BILLING_HOST . '/' . $this->locale . '/clients/' . $this->billingLogin . '/tariff_detail/');
+        $response = $this->sendGet($this->billingHost . '/' . $this->locale . '/clients/' . $this->billingLogin . '/tariff_detail/');
         $decodedResponse = json_decode((string)$response->getBody(), true);
 
         return $decodedResponse;
@@ -372,7 +373,7 @@ class BillingApi
      */
     public function confirmClient(Client $client)
     {
-        $url = self::BILLING_HOST . '/' . $this->locale . '/clients/' . $client->getLogin() . '/confirm';
+        $url = $this->billingHost . '/' . $this->locale . '/clients/' . $client->getLogin() . '/confirm';
 
         return $this->sendPostAndHandleResult($url, []);
     }
@@ -381,7 +382,7 @@ class BillingApi
      * @param $clientIp
      * @param $userAgent
      */
-    public function senClientAuthMessage($clientIp, $userAgent)
+    public function sendClientAuthMessage($clientIp, $userAgent)
     {
         $clientAuth = (new ClientAuth())
             ->setIp($clientIp)
@@ -596,7 +597,7 @@ class BillingApi
     {
         $locale = $locale ?? $this->locale;
 
-        return self::BILLING_HOST
+        return $this->billingHost
             . '/' . $locale
             . '/' . $endpoint
             . ($identifier ? '/' . $identifier : '')

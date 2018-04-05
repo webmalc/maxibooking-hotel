@@ -94,7 +94,7 @@ class InteractiveLoginListener
                     } else {
                         $ip = $_SERVER['REMOTE_ADDR'];
                     }
-                    $this->billingApi->senClientAuthMessage($ip, $event->getRequest()->server->get("HTTP_USER_AGENT"));
+                    $this->billingApi->sendClientAuthMessage($ip, $event->getRequest()->server->get("HTTP_USER_AGENT"));
                 }
             }
         }

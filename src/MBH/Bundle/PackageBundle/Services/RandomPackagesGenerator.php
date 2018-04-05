@@ -25,12 +25,16 @@ class RandomPackagesGenerator
     {
         $numberOfCreated = 0;
         $numberOfErrorAttempts = 0;
+        $numberOfSearches = 0;
         $errors = [];
         $tourists = $this->dm->getRepository('MBHPackageBundle:Tourist')->findAll();
         $users = $this->dm->getRepository('MBHUserBundle:User')->findAll();
         $creationBegin = new \DateTime('midnight - ' . self::CREATION_START_IN_MONTHS_AGO . 'months');
 
-        while ($numberOfCreated < $packagesNumber && $numberOfErrorAttempts < $packagesNumber) {
+        while ($numberOfCreated < $packagesNumber
+            && $numberOfErrorAttempts < $packagesNumber
+            && $numberOfSearches < ($packagesNumber * 3)
+        ) {
             $lengthOfPackage = random_int(3, 15);
             $fromBeginOffset = random_int(0, $begin->diff($end)->days - $lengthOfPackage);
 
@@ -46,6 +50,7 @@ class RandomPackagesGenerator
             $query->accommodations = true;
             /** @var SearchResult[] $searchResults */
             $searchResults = $this->search->search($query);
+            $numberOfSearches++;
 
             foreach ($searchResults as $searchResult) {
                 $packages = [];
@@ -110,6 +115,6 @@ class RandomPackagesGenerator
             }
         }
 
-        return ['errors' => $numberOfErrorAttempts, 'created' => $numberOfCreated, 'errorsMessages' => $errors];
+        return ['errors' => $numberOfErrorAttempts, 'numberOfSearches' => $numberOfSearches, 'created' => $numberOfCreated, 'errorsMessages' => $errors];
     }
 }

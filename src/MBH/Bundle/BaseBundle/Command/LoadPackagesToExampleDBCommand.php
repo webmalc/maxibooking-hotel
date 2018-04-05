@@ -15,7 +15,7 @@ class LoadPackagesToExampleDBCommand extends ContainerAwareCommand
     {
         $this
             ->setName('mbhbase:load_packages_to_example_dbcommand')
-            ->setDescription('Remove created by fixtures packages and create new randomly');
+            ->setDescription('Create example packages');
     }
 
     /**
@@ -24,12 +24,6 @@ class LoadPackagesToExampleDBCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $logger = $this->getContainer()->get('logger');
-        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
-        $packages = $dm->getRepository('MBHPackageBundle:Package')->findAll();
-        foreach ($packages as $package) {
-            $dm->remove($package);
-        }
-        $dm->flush();
 
         $res = $this
             ->getContainer()
