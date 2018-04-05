@@ -3,13 +3,15 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressCity;
+use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressStreet;
 
 /**
  * @ODM\EmbeddedDocument
 
  * @ODM\HasLifecycleCallbacks
  */
-class AddressObjectDecomposed
+class AddressObjectDecomposed implements InterfaceAddressCity, InterfaceAddressStreet
 {
     /**
      * @var string

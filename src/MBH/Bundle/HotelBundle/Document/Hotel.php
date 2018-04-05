@@ -10,6 +10,8 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Image;
+use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressCity;
+use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressStreet;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\CashBundle\Document\CardType;
@@ -1849,5 +1851,72 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         }
 
         return $data;
+    }
+
+    /**
+     * @return InterfaceAddressStreet
+     */
+    public function getAddressStreet()
+    {
+        return new class($this) implements InterfaceAddressStreet
+        {
+            private $street;
+            private $house;
+
+            public function __construct(Hotel $hotel)
+            {
+                $this->house = $hotel->getHouse();
+
+                if ($hotel->getInternationalStreetName() !== null) {
+                    $this->street = $hotel->getInternationalStreetName();
+                } else {
+                    $this->street = $hotel->getStreet();
+                }
+            }
+
+            public function getStreet()
+            {
+                return $this->street;
+            }
+
+            public function getHouse()
+            {
+                return $this->house;
+            }
+        };
+    }
+
+    /**
+     * @return InterfaceAddressCity
+     */
+    public function getCityStateZip()
+    {
+        return new class($this->getCityId(), $this->getRegionId(), $this->getZipCode()) implements InterfaceAddressCity
+        {
+            private $cityId;
+            private $regionId;
+            private $zipCode;
+            public function __construct($cityId, $regionId, $zipCode)
+            {
+                $this->cityId = $cityId;
+                $this->regionId = $regionId;
+                $this->zipCode = $zipCode;
+            }
+
+            public function getCity()
+            {
+                return $this->cityId;
+            }
+
+            public function getRegionId()
+            {
+                return $this->regionId;
+            }
+
+            public function getZipCode()
+            {
+                return $this->zipCode;
+            }
+        };
     }
 }
