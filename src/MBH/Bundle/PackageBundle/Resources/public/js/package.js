@@ -550,7 +550,7 @@ function setPaymentCardVisibility() {
     }
 }
 
-let actionWhenXS = {
+var actionWhenXS = {
     afterLoadPage: function () {
         if (document.documentElement.clientWidth < 768){
             this.hideBox();
