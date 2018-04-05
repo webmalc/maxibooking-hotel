@@ -24,8 +24,12 @@ class FillExampleDBCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln('Start loading of fixtures');
         $this->runCommand('doctrine:mongodb:fixtures:load');
+        $output->writeln('Cancel loading of fixtures');
+        $output->writeln('Start creation of packages');
         $this->runCommand('mbhbase:load_packages_to_example_dbcommand');
+        $output->writeln('End creation of packages');
     }
 
     private function runCommand(string $command, $paramsString = null)

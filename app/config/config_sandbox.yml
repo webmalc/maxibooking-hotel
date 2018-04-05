@@ -14,7 +14,8 @@ swiftmailer:
 parameters:
     mongodb_database: sandbox_template_db
     mongodb_login: admin
-    mongodb_password: password
+    mongodb_password: sandbox_template_db_password
+
 
 security:
     firewalls:
@@ -22,8 +23,3 @@ security:
             http_basic: ~
             form_login: false
             remember_me: false
-
-doctrine_mongodb:
-    connections:
-        default:
-            server: "mongodb://%mongodb_host%/%mongodb_database%%mongodb_options%"
