@@ -18,7 +18,6 @@ use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as MBHValidator;
 /**
  * @ODM\Document(collection="ExpediaConfig")
  * @Gedmo\Loggable
- * @MBHValidator\Currency
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class ExpediaConfig extends Base implements BaseInterface

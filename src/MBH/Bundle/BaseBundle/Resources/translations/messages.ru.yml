@@ -679,11 +679,12 @@ mbh.hotel.themes.city: Городской
 modal_with_form.add_region.title: 'Добавление региона'
 modal_with_form.add_city.title: 'Добавление города'
 
-welcome_modal.header_text: 'Добро пожаловать в систему MaxiBooking!'
-welcome_modal.welcome2: 'На указанный при регистрации электронный адрес выслано письмо с логином и паролем для дальнейшего входа в программу.'
-welcome_modal.welcome3: 'Для Вашего объекта создан полноценный профиль.'
+welcome_modal.header_text: 'Добро пожаловать в систему'
+welcome_modal.welcome2: 'Для дальнейшего входа в программу используйте логин и пароль, указанный в письме.'
+welcome_modal.welcome3: 'Активируйте, пожалуйста, Ваш аккаунт, перейдя по ссылке, отправленной на Ваш электронный адрес.'
 welcome_modal.welcome4: 'Вы можете продолжить работать в системе прямо сейчас.'
 welcome_modal.welcome5: 'Сейчас мы предложим Вам интерактивный урок по работе в программе. Чтобы запустить его снова, нажмите на кнопку %button% в верхнем меню.'
+welcome_modal.welcome6: 'Клиентская поддержка: %support_mail%'
 welcome_modal.ok_button: 'ОК'
 welcome_modal.welcome5_continuation: 'базой знаний'
 
