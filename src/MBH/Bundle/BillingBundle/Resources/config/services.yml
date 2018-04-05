@@ -47,6 +47,7 @@ services:
             - '@serializer'
             - '%locale%'
             - '@security.token_storage'
+            - '%billing_token%'
 
     mbh.billing.logger:
         class:     Symfony\Bridge\Monolog\Logger
@@ -120,6 +121,7 @@ services:
     mbh.billing_payer_form_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler
         shared: false
+        arguments: ['@translator']
 
     mbh.billing_data_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingDataHandler

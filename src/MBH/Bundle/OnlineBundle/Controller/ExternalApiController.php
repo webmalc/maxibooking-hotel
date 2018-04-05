@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 07.07.17
- * Time: 15:17
- */
 
 namespace MBH\Bundle\OnlineBundle\Controller;
 
@@ -18,9 +12,11 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Swagger\Annotations as SWG;
 
 /**
  * Class ExternalApiController
@@ -30,6 +26,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExternalApiController extends BaseController
 {
     /**
+     * @Method("GET")
+     * @SWG\Get(
+     *     path="/management/online/api/roomTypes",
+     *     produces={"application/json"},
+     *     @SWG\Response(response="200", description="Return array of room types"),
+     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
+     *     @SWG\Parameter(name="roomTypeIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of room type ids"),
+     *     @SWG\Parameter(name="hotelIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of hotel ids"),
+     *     @SWG\Parameter(name="isEnabled", in="query", type="boolean", required=false, description="Show only enabled room types?"),
+     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
+     * )
      * @Route("/roomTypes")
      * @param Request $request
      * @return JsonResponse
@@ -94,6 +101,17 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * @Method("GET")
+     * @SWG\Get(
+     *     path="/management/online/api/tariffs",
+     *     produces={"application/json"},
+     *     @SWG\Response(response="200", description="Return array of tariffs"),
+     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
+     *     @SWG\Parameter(name="isOnline", in="query", type="boolean", required=false, description="Show only online tariffs?"),
+     *     @SWG\Parameter(name="hotelIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of hotel ids"),
+     *     @SWG\Parameter(name="isEnabled", in="query", type="boolean", required=false, description="Show only enabled tariffs?"),
+     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
+     * )
      * @Route("/tariffs")
      * @param Request $request
      * @return JsonResponse
@@ -142,6 +160,16 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * @Method("GET")
+     * @SWG\Get(
+     *     path="/management/online/api/hotels",
+     *     produces={"application/json"},
+     *     @SWG\Response(response="200", description="Return array of hotels"),
+     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
+     *     @SWG\Parameter(name="isOnline", in="query", type="boolean", required=false, description="Show only online hotels?"),
+     *     @SWG\Parameter(name="isEnabled", in="query", type="boolean", required=false, description="Show only enabled hotels?"),
+     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
+     * )
      * @Route("/hotels")
      * @param Request $request
      * @return JsonResponse
@@ -185,6 +213,14 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * @Method("GET")
+     * @SWG\Get(
+     *     path="/management/online/api/services",
+     *     produces={"application/json"},
+     *     @SWG\Response(response="200", description="Return array of services for tariff"),
+     *     @SWG\Parameter(name="tariffId", in="query", type="string", required=true, description="The ID of the rate for which receive the services"),
+     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response")
+     * )
      * @Route("/services")
      * @param Request $request
      * @return JsonResponse
@@ -258,6 +294,20 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * @Method("GET")
+     * @SWG\Get(
+     *     path="/management/online/api/booking_options",
+     *     produces={"application/json"},
+     *     @SWG\Response(response="200", description="Return array of booking options"),
+     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
+     *     @SWG\Parameter(name="begin", in="query", type="string", required=true, description="Begin date"),
+     *     @SWG\Parameter(name="end", in="query", type="string", required=true, description="End date"),
+     *     @SWG\Parameter(name="adults", in="query", type="string", required=false, description="Number of adults"),
+     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
+     *     @SWG\Parameter(name="hotelIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of hotel ids"),
+     *     @SWG\Parameter(name="roomTypeIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of room type ids"),
+     *     @SWG\Parameter(name="childrenAges", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of children ages")
+     * )
      * @Route("/booking_options")
      * @param Request $request
      * @return JsonResponse
@@ -269,7 +319,7 @@ class ExternalApiController extends BaseController
         $queryData = $request->query;
 
         $responseCompiler = $requestHandler->checkIsArrayFields($queryData, ['hotelIds', 'roomTypeIds', 'childrenAges'], $responseCompiler);
-        $responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['begin', 'end'], $responseCompiler);
+        $responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['begin', 'end', 'adults'], $responseCompiler);
 
         $onlineFormId = $queryData->get('onlineFormId');
         $hotelIds = $queryData->get('hotelIds');

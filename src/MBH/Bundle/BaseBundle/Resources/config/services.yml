@@ -423,16 +423,15 @@ services:
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
+        arguments: ['@translator']
 
     mbh.protected.file.downloader:
         class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
         arguments: ["@vich_uploader.download_handler", "@vich_uploader.templating.helper.uploader_helper","@liip_imagine.data.manager", "@liip_imagine.filter.manager"]
 
-
     mbh.mongodb.client:
         class: MongoClient
         arguments: ["mongodb://%mongodb_login%:%mongodb_password%@%mongodb_host%/%mongodb_database%%mongodb_options%"]
-
 
     mbh.session.handler.mongodb:
         class: Symfony\Component\HttpFoundation\Session\Storage\Handler\MongoDbSessionHandler
@@ -462,3 +461,7 @@ services:
         class: Raven_Client
         arguments: ['%sentry_dsn%']
         public: false
+
+    mbh.guides_data_service:
+        class: MBH\Bundle\BaseBundle\Service\GuidesDataService
+        arguments: ['@security.authorization_checker']

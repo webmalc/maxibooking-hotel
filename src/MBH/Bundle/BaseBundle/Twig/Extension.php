@@ -1,6 +1,9 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressCity;
+use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressStreet;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -265,25 +268,82 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @return string
+     */
+    public function getSettingsDataForFrontend()
+    {
+        $isProdEnv = $this->container->get('kernel')->getEnvironment() === 'prod';
+        $data = [
+            'allowed_guides' => $this->container->get('mbh.guides_data_service')->getAllowedGuides(),
+            'client_country' => $this->getClient()->getCountry(),
+            'front_token' => $this->container->getParameter($isProdEnv ? 'billing_front_token' : 'billing_dev_token'),
+            'billing_host' => ($isProdEnv ? BillingApi::BILLING_HOST : BillingApi::BILLING_DEV_HOST) . '/',
+        ];
+
+        return json_encode($data);
+    }
+
+    /**
+     * @param InterfaceAddressCity $obj
+     * @return string
+     */
+    public function getImperialAddressCity(InterfaceAddressCity $obj): string
+    {
+        $address = '';
+
+        if ($obj->getCity() !== null) {
+            $address .= $this->getCityById($obj->getCity(), 'en')->getName() . ', ';
+        }
+        if ($obj->getRegionId() !== null) {
+            $address .= $this->getRegionById($obj->getRegionId(), 'en')->getName() . ', ';
+        }
+        if ($obj->getZipCode() !== null) {
+            $address .= $obj->getZipCode() . ', ';
+        }
+        return rtrim($address,', ');
+    }
+
+    /**
+     * @param InterfaceAddressStreet $obj
+     * @return string
+     */
+    public function getImperialAddressStreet(InterfaceAddressStreet $obj): string
+    {
+        $street = '';
+
+        if ($obj->getHouse() !== null) {
+            $street .= $obj->getHouse() . ', ';
+        }
+        if ($obj->getStreet() !== null) {
+            $street .= $obj->getStreet();
+        }
+
+        return rtrim($street, ', ');
+    }
+
+    /**
      * @return array
      */
     public function getFunctions()
     {
         return [
-            'currency' => new \Twig_SimpleFunction('currency', [$this, 'currency'], ['is_safe' => ['html']]),
-            'user_cash' => new \Twig_SimpleFunction('user_cash', [$this, 'cashDocuments'], ['is_safe' => ['html']]),
-            'client_config' => new \Twig_SimpleFunction('client_config', [$this, 'getClientConfig']),
-            'filter_begin_date' => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
-            'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
+            'currency'                => new \Twig_SimpleFunction('currency', [$this, 'currency'], ['is_safe' => ['html']]),
+            'user_cash'               => new \Twig_SimpleFunction('user_cash', [$this, 'cashDocuments'], ['is_safe' => ['html']]),
+            'client_config'           => new \Twig_SimpleFunction('client_config', [$this, 'getClientConfig']),
+            'filter_begin_date'       => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
+            'currentWorkShift'        => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
-            'get_authority_organ' => new \Twig_SimpleFunction('get_authority_organ', [$this, 'getAuthorityOrganById'], ['is_safe' => ['html']]),
-            'get_country' => new \Twig_SimpleFunction('get_country', [$this, 'getCountryByTld'], ['is_safe' => ['html']]),
-            'get_region' => new \Twig_SimpleFunction('get_region', [$this, 'getRegionById'], ['is_safe' => ['html']]),
-            'get_city' => new \Twig_SimpleFunction('get_city', [$this, 'getCityById'], ['is_safe' => ['html']]),
-            'get_client' => new \Twig_SimpleFunction('get_client', [$this, 'getClient'], ['is_safe' => ['html']]),
-            'is_russian_client' => new \Twig_SimpleFunction('is_russian_client', [$this, 'isRussianClient'], ['is_safe' => ['html']]),
-            'get_service' => new \Twig_SimpleFunction('get_service', [$this, 'getBillingService'], ['is_safe' => ['html']]),
-            'get_current_hotel' => new \Twig_SimpleFunction('get_current_hotel', [$this, 'getCurrentHotel'], ['is_safe' => ['html']]),
+            'get_authority_organ'     => new \Twig_SimpleFunction('get_authority_organ', [$this, 'getAuthorityOrganById'], ['is_safe' => ['html']]),
+            'get_country'             => new \Twig_SimpleFunction('get_country', [$this, 'getCountryByTld'], ['is_safe' => ['html']]),
+            'get_region'              => new \Twig_SimpleFunction('get_region', [$this, 'getRegionById'], ['is_safe' => ['html']]),
+            'get_city'                => new \Twig_SimpleFunction('get_city', [$this, 'getCityById'], ['is_safe' => ['html']]),
+            'get_client'              => new \Twig_SimpleFunction('get_client', [$this, 'getClient'], ['is_safe' => ['html']]),
+            'is_russian_client'       => new \Twig_SimpleFunction('is_russian_client', [$this, 'isRussianClient'], ['is_safe' => ['html']]),
+            'get_service'             => new \Twig_SimpleFunction('get_service', [$this, 'getBillingService'], ['is_safe' => ['html']]),
+            'get_current_hotel'       => new \Twig_SimpleFunction('get_current_hotel', [$this, 'getCurrentHotel'], ['is_safe' => ['html']]),
+            'get_front_settings'      => new \Twig_SimpleFunction('get_front_settings', [$this, 'getSettingsDataForFrontend'], ['is_safe' => ['html']]),
+            'get_imperial_city'       => new \Twig_SimpleFunction('get_imperial_city', [$this, 'getImperialAddressCity'], ['is_safe' => ['html']]),
+            'get_imperial_street'     => new \Twig_SimpleFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], ['is_safe' => ['html']]),
         ];
     }
 

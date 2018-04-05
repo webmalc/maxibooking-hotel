@@ -399,10 +399,11 @@ setInterval(function() {
 }, delay);
 
 function initSupportModal() {
+    var allowedGuides = mbh['allowed_guides'];
     $('#support-link').click(function () {
         $('#support-info-modal').modal('show');
         var $modalGuidesList = $('#modal-guides-list');
-        if (isMobileDevice()) {
+        if (isMobileDevice() && allowedGuides.length > 0) {
             $modalGuidesList.closest('li').remove();
         } else if ($modalGuidesList.find('li').length === 0) {
             for (var guideId in GUIDES_BY_NAMES) {
@@ -413,6 +414,7 @@ function initSupportModal() {
                 linkElement.setAttribute('data-guide-id', guideId);
                 guideListItem.appendChild(linkElement);
                 $modalGuidesList.append(guideListItem);
+
                 linkElement.onclick = function () {
                     $('#support-info-modal').modal('hide');
                     var guideId = this.getAttribute('data-guide-id');
