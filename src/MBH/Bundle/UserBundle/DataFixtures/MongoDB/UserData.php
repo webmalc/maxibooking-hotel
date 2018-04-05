@@ -18,6 +18,13 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
             'role' => 'ROLE_SUPER_ADMIN',
             'password' => 'admin'
         ],
+        'user-manager' => [
+            'username' => 'manager',
+            'email' => 'manager@example.com',
+            'role' => 'ROLE_USER',
+            'group' => 'group-medium_manager',
+            'password' => 'manager',
+        ],
         'user-demo' => [
             'username' => 'demo',
             'email' => 'mb@example.com',
@@ -26,9 +33,8 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
         ],
         'user-mb' => [
             'username' => 'mb',
-            'email' => 'mb@example.com',
-            'role' => 'ROLE_SUPER_ADMIN',
-            'password' => 'ug1dW39ekRL0pK2NrvWjuNo17E1C1ydi'
+            'email' => 'mb-error@maxi-booking.com',
+            'role' => 'ROLE_SUPER_ADMIN'
         ]
     ];
 
@@ -54,14 +60,16 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
         $notificationTypes = $manager->getRepository('MBHBaseBundle:NotificationType')->getStuffType()->toArray();
         if (!count($repo->findAll())) {
             foreach (self::USERS as $key => $userData) {
-                if (!in_array($this->container->get('kernel')->getEnvironment(), ['dev', 'test'])) {
+                if ($key === 'user-manager' && !$this->container->get('kernel')->isDevEnv()) {
                     continue;
                 }
+
+                $password = $key === 'user-mb' ? $this->container->getParameter('mb_user_pwd') : $userData['password'];
                 $user = new User();
                 $user->setUsername($userData['username'])
                     ->setEmail($userData['email'])
                     ->addRole($userData['role'])
-                    ->setPlainPassword($userData['password'])
+                    ->setPlainPassword($password)
                     ->setEnabled(true)
                     ->setLocked(false);
 

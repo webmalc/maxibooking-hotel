@@ -58,6 +58,7 @@ class AppKernel extends Kernel
             new DoctrineCacheBundle(),
             new KnpGaufretteBundle(),
             new OneupFlysystemBundle(),
+            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
 
 
             //Project bundles,
@@ -118,5 +119,13 @@ class AppKernel extends Kernel
     public function isDefaultClient()
     {
         return $this->client === self::DEFAULT_CLIENT;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDevEnv()
+    {
+        return $this->getEnvironment() === 'dev';
     }
 }

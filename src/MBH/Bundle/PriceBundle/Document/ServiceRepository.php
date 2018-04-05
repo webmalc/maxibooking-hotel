@@ -47,6 +47,7 @@ class ServiceRepository extends DocumentRepository
      */
     public function getAvailableServicesForTariff(Tariff $tariff, $all = false)
     {
+        /** @var Service[] $services */
         $services = iterator_to_array($tariff->getServices());
         if (count($services) == 0 || $all) {
             $serviceCategories = $tariff->getHotel()->getServicesCategories();
@@ -55,8 +56,8 @@ class ServiceRepository extends DocumentRepository
             }
         }
 
-        $services = array_filter($services, function($service) {
-            return $service->getIsEnabled();
+        $services = array_filter($services, function(Service $service) {
+            return $service->getIsEnabled() && empty($service->getDeletedAt());
         });
 
         $results = [];
