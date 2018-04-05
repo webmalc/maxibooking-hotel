@@ -18,12 +18,11 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
             'role' => 'ROLE_SUPER_ADMIN',
             'password' => 'admin'
         ],
-        'user-manager' => [
-            'username' => 'manager',
-            'email' => 'manager@example.com',
-            'role' => 'ROLE_USER',
-            'group' => 'group-medium_manager',
-            'password' => 'manager',
+        'user-demo' => [
+            'username' => 'demo',
+            'email' => 'mb@example.com',
+            'role' => 'ROLE_SUPER_ADMIN',
+            'password' => 'demo'
         ],
         'user-mb' => [
             'username' => 'mb',
@@ -55,6 +54,9 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
         $notificationTypes = $manager->getRepository('MBHBaseBundle:NotificationType')->getStuffType()->toArray();
         if (!count($repo->findAll())) {
             foreach (self::USERS as $key => $userData) {
+                if (!in_array($this->container->get('kernel')->getEnvironment(), ['dev', 'test'])) {
+                    continue;
+                }
                 $user = new User();
                 $user->setUsername($userData['username'])
                     ->setEmail($userData['email'])

@@ -1,17 +1,19 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="welcome-modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header" style="background-color: #d9edf7">
+            <div class="modal-header" style="background-color: #3c8dbc; color: white">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title mbh-modal-header"
-                    style="font-weight: 600;">{{ 'welcome_modal.header_text'|trans }}</h4>
+                    style="font-weight: 600;">{{ 'welcome_modal.header_text'|trans }}
+                    &nbsp;<img style="height: 17px;" src="{{ asset('bundles/mbhbase/images/logo-full.png') }}" alt="">!
+                </h4>
             </div>
             <div class="modal-body" id="welcome-modal-body" style="padding: 15px 30px;">
                 <p>
                 <div class="row">
-                    <div class="col-md-1"><i style="color: #00a65a" class='fa fa-thumbs-up'></i></div>
-                    <div class="col-md-11">{{ 'welcome_modal.welcome3'|trans }}<br>{{ 'welcome_modal.welcome4'|trans }}
+                    <div class="col-md-1" style="font-size: 35px; text-align: right;"><i style="color: red" class='fa fa-exclamation'></i></div>
+                    <div class="col-md-11">{{ 'welcome_modal.welcome3'|trans }}
                     </div>
                 </div>
                 </p>
@@ -22,13 +24,24 @@
                 </div>
                 </p>
                 <p>
-                <div class="row">
-                    <div class="col-md-1"><i style="color: #3c8dbc" class='fa fa-info-circle'></i></div>
-                    <div class="col-md-11">
-                        {% set buttonHtml = '<div id="welcome-modal-help-button"><i class="fa fa-question-circle fa-lg"></i>&nbsp; <strong>' ~ 'mbhbasebundle.views.help'|trans ~'</strong></div>' %}
-                        {{ 'welcome_modal.welcome5'|trans({'%button%': buttonHtml})|raw }}
+                    <div class="row">
+                        <div class="col-md-1"><i style="color: #3c8dbc" class='fa fa-info-circle'></i></div>
+                        <div class="col-md-11">
+                            {% set buttonHtml = '<div id="welcome-modal-help-button"><i class="fa fa-question-circle fa-lg"></i>&nbsp; <strong>' ~ 'mbhbasebundle.views.help'|trans ~'</strong></div>' %}
+                            {{ 'welcome_modal.welcome5'|trans({'%button%': buttonHtml})|raw }}
+                        </div>
                     </div>
-                </div>
+                </p>
+                <p>
+                    <div class="row" style="font-weight: 600;">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-11">
+                            {% if is_russian_client() %}
+                                Мы всегда на связи: <span class="mb-links-font">8(800) 200-78-30</span> (бесплатно по России)<br>
+                            {% endif %}
+                            {{ 'welcome_modal.welcome6'|trans({'%support_mail%': '<span class="mb-links-font">welcome@maxi-booking.ru</span>'})|raw}}
+                        </div>
+                    </div>
                 </p>
             </div>
             <div class="modal-footer" style="text-align: center;">

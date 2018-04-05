@@ -15,7 +15,7 @@ class ClientManager
 {
     const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_payment';
-    const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems', 'user_tariff'];
+    const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems', 'user_tariff', 'update_tariff_modal'];
     const SESSION_CLIENT_FIELD = 'client';
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
     const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
@@ -28,7 +28,7 @@ class ClientManager
     private $logger;
     private $client;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, string $client)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client)
     {
         $this->dm = $dm;
         $this->session = $session;

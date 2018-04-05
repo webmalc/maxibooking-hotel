@@ -141,7 +141,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
 
     public function removeXmlnsString($xmlString)
     {
-        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns:ns');
+        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns');
         $firstQuotesPosition = $xmlnsStringStartPosition + 10;
         $xmlnsStringEndPosition = strpos($xmlString, '"', $firstQuotesPosition) + 1;
         $xmlnsString = substr($xmlString, $xmlnsStringStartPosition, $xmlnsStringEndPosition - $xmlnsStringStartPosition);

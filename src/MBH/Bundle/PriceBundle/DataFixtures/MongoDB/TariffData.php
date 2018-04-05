@@ -10,12 +10,11 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
- * Class PriceData
-
+ * Class TariffData
+ * @package MBH\Bundle\PriceBundle\DataFixtures\MongoDB
  */
 class TariffData extends AbstractFixture implements OrderedFixtureInterface
 {
-
     /**
      * {@inheritDoc}
      */

@@ -12,11 +12,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class TaskData
-
  */
 class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
-
     /**
      * Get roomType data
      *
@@ -25,6 +23,12 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
     public function data()
     {
         return [
+            'single' => [
+                'title' => 'mbhhotelbundle.roomTypeData.single.place',
+                'places' => 1,
+                'additionalPlaces' => 1,
+                'color' => '#008000'
+            ],
             'roomtype-double' => [
                 'title' => 'mbhhotelbundle.roomTypeData.two.place',
                 'places' => 2,
