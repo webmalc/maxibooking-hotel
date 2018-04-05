@@ -12,8 +12,9 @@ swiftmailer:
     disable_delivery: true
 
 parameters:
-    mongodb_url: 'mongodb://mbh-mongo:27017/sandbox_template_db'
     mongodb_database: sandbox_template_db
+    mongodb_login: admin
+    mongodb_password: password
 
 security:
     firewalls:
