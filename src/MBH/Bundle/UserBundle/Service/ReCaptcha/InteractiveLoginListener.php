@@ -87,9 +87,14 @@ class InteractiveLoginListener
                         $this->handleIncorrectConfirmationRequest();
                     }
                 } else {
-                    $serverData = $event->getRequest()->server;
-
-                    $this->billingApi->senClientAuthMessage($serverData->get("REMOTE_ADDR"), $serverData->get("HTTP_USER_AGENT"));
+                    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                        $ip = $_SERVER['HTTP_CLIENT_IP'];
+                    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                    } else {
+                        $ip = $_SERVER['REMOTE_ADDR'];
+                    }
+                    $this->billingApi->senClientAuthMessage($ip, $event->getRequest()->server->get("HTTP_USER_AGENT"));
                 }
             }
         }
