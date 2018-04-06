@@ -378,6 +378,18 @@ class BillingApi
     }
 
     /**
+     * @return Result
+     */
+    public function getActiveClients()
+    {
+        return $this->getEntities(self::CLIENTS_ENDPOINT_SETTINGS, [
+            'status' => 'active',
+            'installation' => 'installed'
+        ]);
+    }
+
+
+    /**
      * @param $clientIp
      * @param $userAgent
      */
@@ -494,8 +506,9 @@ class BillingApi
      * @param array $queryData
      * @return Result
      */
-    private function getEntities($endpointSettings, array $queryData = [])
+    public function getEntities($endpointSettings, array $queryData = [])
     {
+        $entities = [];
         $endpoint = $endpointSettings['endpoint'];
         $url = $this->getBillingUrl($endpoint, null, null, $queryData);
 
@@ -506,14 +519,43 @@ class BillingApi
         }
 
         $decodedResponse = json_decode($response->getBody(), true);
-        $entitiesData = $endpointSettings['returnArray'] ? $decodedResponse : $decodedResponse['results'];
+        if ($decodedResponse['next'] && !$endpointSettings['returnArray']) {
+            $entities = array_merge($this->getEntitiesByUrl($decodedResponse['next'], $endpointSettings['model']));
+        }
 
-        $entities = [];
+        $entitiesData = $endpointSettings['returnArray'] ? $decodedResponse : $decodedResponse['results'];
         foreach ($entitiesData as $serviceData) {
             $entities[] = $this->serializer->denormalize($serviceData, $endpointSettings['model']);
         }
 
         return Result::createSuccessResult($entities);
+    }
+
+    /**
+     * @param string $url
+     * @param string $modelType
+     * @param bool $isRecursive
+     * @return array
+     */
+    public function getEntitiesByUrl(string $url, string $modelType, $isRecursive = true)
+    {
+        $entities = [];
+        try {
+            $response = $this->sendGet($url);
+        } catch (RequestException $exception) {
+            $this->logErrorAndThrowException($exception, $url);
+        }
+
+        $decodedResponse = json_decode($response->getBody(), true);
+        if ($decodedResponse['next'] && $isRecursive) {
+            $entities = array_merge($this->getEntitiesByUrl($decodedResponse['next'], $modelType));
+        }
+
+        foreach ($decodedResponse['results'] as $serviceData) {
+            $entities[] = $this->serializer->denormalize($serviceData, $modelType);
+        }
+        
+        return $entities;
     }
 
     /**
