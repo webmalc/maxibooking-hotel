@@ -5,6 +5,7 @@ namespace MBH\Bundle\BillingBundle\Command;
 
 
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
+use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -36,6 +37,15 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
         if ($certainClient) {
             $clients = array_intersect($clients, [$certainClient]);
         }
+
+        $inActiveClientsResult = $this->getContainer()->get('mbh.billing.api')->getInActiveClients();
+        if ($inActiveClientsResult->isSuccessful()) {
+            $inActiveClientsNames = array_map(function (Client $client) {
+                return $client->getLogin();
+            }, $inActiveClientsResult->getData());
+            $clients = array_intersect($clients, $inActiveClientsNames);
+        }
+
         $kernel = $this->getContainer()->get('kernel');
         $producer = $this->getContainer()->get('old_sound_rabbit_mq.task_command_runner_producer');
 
