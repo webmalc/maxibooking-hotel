@@ -38,12 +38,12 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
             $clients = array_intersect($clients, [$certainClient]);
         }
 
-        $activeClientsResult = $this->getContainer()->get('mbh.billing.api')->getActiveClients();
-        if ($activeClientsResult->isSuccessful()) {
-            $activeClientsNames = array_map(function (Client $client) {
+        $inActiveClientsResult = $this->getContainer()->get('mbh.billing.api')->getInActiveClients();
+        if ($inActiveClientsResult->isSuccessful()) {
+            $inActiveClientsNames = array_map(function (Client $client) {
                 return $client->getLogin();
-            }, $activeClientsResult->getData());
-            $clients = array_intersect($clients, $activeClientsNames);
+            }, $inActiveClientsResult->getData());
+            $clients = array_intersect($clients, $inActiveClientsNames);
         }
 
         $kernel = $this->getContainer()->get('kernel');

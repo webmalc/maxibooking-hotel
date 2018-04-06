@@ -380,10 +380,10 @@ class BillingApi
     /**
      * @return Result
      */
-    public function getActiveClients()
+    public function getInActiveClients()
     {
         return $this->getEntities(self::CLIENTS_ENDPOINT_SETTINGS, [
-            'status' => 'active',
+            'status' => 'not_confirmed',
             'installation' => 'installed'
         ]);
     }
