@@ -72,7 +72,7 @@ views.hotel.index.chosen_by_default: Default
 views.hotel.index.edit_record: Edit
 views.hotel.index.delete_record: Delete
 views.hotel.layout.hotels: Hotels
-views.hotel.notFound.no_hotel_created: 'No hotest created'
+views.hotel.notFound.no_hotel_created: 'No hotels created'
 views.hotel.notFound.create_new_hotel_to_continue: 'Create a new hotel please'
 views.hotel.notFound.create_hotel: 'Create a hotel'
 views.hotel.notFound.you_have_no_permissions: 'You lack permission to wirk with this hotel'
