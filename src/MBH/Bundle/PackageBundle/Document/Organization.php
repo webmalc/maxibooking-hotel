@@ -726,4 +726,12 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     {
         return null;
     }
+
+    /**
+     * @return null|string
+     */
+    public function getZipCode()
+    {
+        return null;
+    }
 }
