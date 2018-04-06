@@ -33,13 +33,32 @@
                     </div>
                 </p>
                 <p>
+                <div class="row">
+                    <div class="col-md-1"><i style="color: #00a65a" class='fa fa-edit'></i></div>
+                    <div class="col-md-11">
+                        {{ 'welcome_modal.welcome9'|trans({'%base_url%': 'https://support.maxi-booking.com', '%request_url%': 'https://support.maxi-booking.com/hc/ru/requests/new'})|raw }}
+                    </div>
+                </div>
+                </p>
+                <p>
+                <div class="row">
+                    <div class="col-md-1"><i style="color: #7d7d7d" class='fa fa-desktop'></i></div>
+                    <div class="col-md-11">
+                        {{ 'welcome_modal.welcome7'|trans}}
+                        <a target="_blank" href="https://example.maxi-booking.ru?apiKey={{ get_twig_data()['demo_user_token'] }}" class="btn btn-primary btn-sm">
+                            {{ 'welcome_modal.welcome7_continuation'|trans}}
+                        </a>
+                    </div>
+                </div>
+                </p>
+                <p>
                     <div class="row" style="font-weight: 600;">
                         <div class="col-md-1"></div>
                         <div class="col-md-11">
                             {% if is_russian_client() %}
-                                Мы всегда на связи: <span class="mb-links-font">8(800) 200-78-30</span> (бесплатно по России)<br>
+                                Мы всегда на связи: <span class="mb-links-font">{{ get_twig_data()['support_phone'] }}</span> (бесплатно по России)<br>
                             {% endif %}
-                            {{ 'welcome_modal.welcome6'|trans({'%support_mail%': '<span class="mb-links-font">welcome@maxi-booking.ru</span>'})|raw}}
+                            {{ 'welcome_modal.welcome6'|trans({'%support_mail%': '<span class="mb-links-font">' ~ get_twig_data()['clients_support_email'] ~ '</span>'})|raw}}
                         </div>
                     </div>
                 </p>

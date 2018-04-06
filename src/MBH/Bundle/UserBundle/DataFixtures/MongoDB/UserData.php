@@ -4,6 +4,7 @@ namespace MBH\Bundle\UserBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\UserBundle\Document\AuthorizationToken;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -11,6 +12,9 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 
 class UserData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
+    const SANDBOX_USERNAME = 'demo';
+    const SANDBOX_USER_TOKEN = 'some_token_for_sandbox_user';
+
     const USERS = [
         'user-admin' => [
             'username' => 'admin',
@@ -26,7 +30,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
             'password' => 'manager',
         ],
         'user-demo' => [
-            'username' => 'demo',
+            'username' => self::SANDBOX_USERNAME,
             'email' => 'mb@example.com',
             'role' => 'ROLE_SUPER_ADMIN',
             'password' => 'demo'
@@ -79,6 +83,13 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                     $user->addGroup($this->getReference($userData['group']));
                 }
                 $user->setAllowNotificationTypes($notificationTypes);
+
+                if ($userData['username'] === self::SANDBOX_USERNAME) {
+                    $apiToken = (new AuthorizationToken())
+                        ->setExpiredAt(new \DateTime('+ 1 day'))
+                        ->setToken(self::SANDBOX_USER_TOKEN);
+                    $user->setApiToken($apiToken);
+                }
 
                 $manager->persist($user);
                 $manager->flush();
