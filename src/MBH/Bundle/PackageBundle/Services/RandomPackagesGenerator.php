@@ -101,7 +101,7 @@ class RandomPackagesGenerator
                         $package->setDepartureTime($searchResult->getEnd());
                     }
 
-                    $timestamp = mt_rand($creationBegin->getTimestamp(), $searchResult->getBegin()->getTimestamp());
+                    $timestamp = mt_rand($creationBegin->getTimestamp(), time());
                     $creationDate = new \DateTime('@' . $timestamp);
                     $package->setCreatedAt($creationDate);
                     $package->setCreatedBy($user->getUsername());

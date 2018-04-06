@@ -13,9 +13,8 @@ swiftmailer:
 
 parameters:
     mongodb_database: sandbox_template_db
-    mongodb_login: admin
-    mongodb_password: sandbox_template_db_password
-
+    mongodb_login: '%env(SANDBOX_LOGIN)%'
+    mongodb_password: '%env(SANDBOX_PASSWORD)%'
 
 security:
     firewalls:
