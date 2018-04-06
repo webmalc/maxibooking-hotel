@@ -1,6 +1,7 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use MBH\Bundle\BaseBundle\Service\Address;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
@@ -288,18 +289,8 @@ class Extension extends \Twig_Extension
      */
     public function getImperialAddressCity(AddressInterface $obj): string
     {
-        $address = '';
-
-        if ($obj->getCityId() !== null) {
-            $address .= $this->getCityById($obj->getCityId(), 'en')->getName() . ', ';
-        }
-        if ($obj->getRegionId() !== null) {
-            $address .= $this->getRegionById($obj->getRegionId(), 'en')->getName() . ', ';
-        }
-        if ($obj->getZipCode() !== null) {
-            $address .= $obj->getZipCode() . ', ';
-        }
-        return rtrim($address,', ');
+        $address = $this->container->get('mbh.address');
+        return $address->getImperialCityStr($obj);
     }
 
     /**
@@ -308,16 +299,8 @@ class Extension extends \Twig_Extension
      */
     public function getImperialAddressStreet(AddressInterface $obj): string
     {
-        $street = '';
-
-        if ($obj->getHouse() !== null) {
-            $street .= $obj->getHouse() . ', ';
-        }
-        if ($obj->getStreet() !== null) {
-            $street .= $obj->getStreet();
-        }
-
-        return rtrim($street, ', ');
+        $address = $this->container->get('mbh.address');
+        return $address->getImperialStreetStr($obj);
     }
 
     /**
