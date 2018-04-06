@@ -62,17 +62,6 @@
                         </div>
                     </div>
                 </p>
-                <p>
-                <div class="row" style="font-weight: 600;">
-                    <div class="col-md-1"></div>
-                    <div class="col-md-11">
-                        {% if is_russian_client() %}
-                            Мы всегда на связи: <span class="mb-links-font">8(800) 200-78-30</span> (бесплатно по России)<br>
-                        {% endif %}
-                        {{ 'welcome_modal.welcome6'|trans({'%support_mail%': '<span class="mb-links-font">welcome@maxi-booking.ru</span>'})|raw}}
-                    </div>
-                </div>
-                </p>
             </div>
             <div class="modal-footer" style="text-align: center;">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">{{ 'welcome_modal.ok_button'|trans}}</button>
