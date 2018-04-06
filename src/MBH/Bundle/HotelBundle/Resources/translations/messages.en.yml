@@ -198,9 +198,9 @@ controller.roomController.success_room_creation: 'Room successfully added'
 controller.roomTypeController.success_set_photo: 'Image successfully added'
 controller.roomTypeController.success_delete_photo: 'Image successfully deleted'
 controller.roomTypeController.success_room_type_creation: 'New room type succesfully added'
-mbhhotelbundle.hotelData.hotelOne: 'Milestone Hotel'
-mbhhotelbundle.hotelData.hotelTwo: 'Plaza'
-mbhhotelbundle.roomTypeData.two.place: 'Standard Double Room'
+mbhhotelbundle.hotelData.hotelOne: 'My hotel #1'
+mbhhotelbundle.hotelData.hotelTwo: 'My hotel #2'
+mbhhotelbundle.roomTypeData.two.place: Double
 mbhhotelbundle.taskData.repair: Maintenance
 mbhhotelbundle.taskData.cleaning: Cleaning
 mbhhotelbundle.taskData.reserve: Reserve
@@ -261,7 +261,7 @@ food: Food
 amenity: Amenities
 technical: Equipment
 mbhhotelbundle.roomTypeData.single.place: 'Standard Single Room'
-mbhhotelbundle.roomTypeData.three.place: Luxe
+mbhhotelbundle.roomTypeData.three.place: Triple
 views.hotel.notFound.error: error
 views.hotel.new.creating: Create
 views.hotel.roomType.editImages.do_default: Tasks
