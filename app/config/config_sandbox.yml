@@ -1,0 +1,24 @@
+imports:
+    - { resource: config_dev.yml }
+
+framework:
+    test: ~
+    session:
+        storage_id: session.storage.php_bridge
+    profiler:
+        enabled: true
+
+swiftmailer:
+    disable_delivery: true
+
+parameters:
+    mongodb_database: sandbox_template_db
+    mongodb_login: '%env(SANDBOX_LOGIN)%'
+    mongodb_password: '%env(SANDBOX_PASSWORD)%'
+
+security:
+    firewalls:
+        main:
+            http_basic: ~
+            form_login: false
+            remember_me: false

@@ -71,7 +71,7 @@ class CashDocument extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @Assert\Choice(
-     *      choices = {"cash", "cashless", "electronic"},
+     *      callback="getAvailableMethods",
      *      message = "validator.document.cashDocument.wrong_tariff_type"
      * )
      * @ODM\Index()
@@ -549,5 +549,13 @@ class CashDocument extends Base
     public function setArticle(CashDocumentArticle $article = null)
     {
         $this->article = $article;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAvailableMethods()
+    {
+        return ["cash", "cashless", "electronic"];
     }
 }

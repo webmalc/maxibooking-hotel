@@ -193,3 +193,6 @@ view.pay_order_modal.payment_sum: 'Payment of №%orderNumber% order with a valu
 on_request_listener.mb_not_paid_error: 'Payment due date is expired. Please pay for the order in "Payment" tab to continue using the progam MaxiBooking.'
 view.pay_order_modal.open_bill: 'Open to read the bill info'
 view.personal_account.tariff.month_abbr: months
+form.payer_type.reg_address.label: 'Registered address'
+view.pay_order_modal.unfilled_data_message: 'To make payments, please сomplete the form with the following data:'
+client_payer_manager.payer_data: 'payer data'

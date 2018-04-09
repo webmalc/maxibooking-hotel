@@ -420,6 +420,10 @@ price.resources.views.closet: Закрыто
 price.resources.views.roomcache.generator: Генератор
 price.resources.views.roomcache.view: Обзор
 price.resources.views.roomcache.graph: График
+price.resources.views.roomcache.graph.vacancy: Свободно
+price.resources.views.roomcache.graph.arrivals: Заезды
+price.resources.views.roomcache.graph.calculation_rooms: Необходимо
+price.resources.views.roomcache.graph.diff: Разница
 price.resources.views.roomcache.save: Сохранить
 price.resources.views.roomcache.left: осталось
 price.resources.views.roomcache.number_in_sell: 'Номера в продаже'

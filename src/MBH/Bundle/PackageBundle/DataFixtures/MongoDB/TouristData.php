@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 11.05.17
- * Time: 13:46
- */
 
 namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 
@@ -16,11 +10,19 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 class TouristData extends AbstractFixture implements OrderedFixtureInterface
 {
     const TOURIST_DATA = [
-        'sergei' => ['name' => 'Сергей', 'lastName' => 'Виноградов', 'patronymic' => 'Иванович'],
-        'ivan' => ['name' => 'Иван', 'lastName' => 'Алексеев', 'patronymic' => 'Сергеевич'],
-        'alexander' => ['name' => 'Александр', 'lastName' => 'Тищенко', 'patronymic' => 'Евгеньевич'],
-        'petr' => ['name' => 'Петр', 'lastName' => 'Петренко', 'patronymic' => 'Петрович'],
-        'arseniy' => ['name' => 'Арсений', 'lastName' => 'Всеволодов', 'patronymic' => 'Александрович'],
+        'ru' => [
+            'sergei' => ['name' => 'Сергей', 'lastName' => 'Виноградов', 'patronymic' => 'Иванович'],
+            'ivan' => ['name' => 'Иван', 'lastName' => 'Алексеев', 'patronymic' => 'Сергеевич'],
+            'alexander' => ['name' => 'Александр', 'lastName' => 'Тищенко', 'patronymic' => 'Евгеньевич'],
+            'petr' => ['name' => 'Петр', 'lastName' => 'Петренко', 'patronymic' => 'Петрович'],
+            'arseniy' => ['name' => 'Арсений', 'lastName' => 'Всеволодов', 'patronymic' => 'Александрович']
+        ],
+        'en' => [
+            'sigmund' => ['name' => 'Sigmund', 'lastName' => 'Parker'],
+            'corrie' => ['name' => 'Corrie', 'lastName' => 'Rye'],
+            'lynne' => ['name' => 'Lynne', 'lastName' => 'Payton'],
+            'mort' => ['name' => 'Mort', 'lastName' => 'Mitchell'],
+        ]
     ];
 
     /**
@@ -36,15 +38,18 @@ class TouristData extends AbstractFixture implements OrderedFixtureInterface
      */
     private function persistTourists(ObjectManager $manager)
     {
-        foreach (self::TOURIST_DATA as $reference => $touristData) {
+        $locale = $this->container->getParameter('locale') === 'ru' ? 'ru' : 'en';
+        foreach (self::TOURIST_DATA[$locale] as $reference => $touristData) {
             $tourist = new Tourist();
             $tourist
                 ->setFirstName($touristData['name'])
                 ->setLastName($touristData['lastName'])
-                ->setPatronymic($touristData['patronymic'])
                 ->setSex('male')
-                ->setCommunicationLanguage('ru');
+                ->setCommunicationLanguage($locale);
 
+            if ($locale === 'ru') {
+                $tourist->setPatronymic($touristData['patronymic']);
+            }
             $manager->persist($tourist);
 
             $this->setReference($reference, $tourist);
@@ -67,6 +72,6 @@ class TouristData extends AbstractFixture implements OrderedFixtureInterface
      */
     protected function getEnvs(): array
     {
-        return ['test', 'dev'];
+        return ['test', 'dev', 'sandbox'];
     }
 }

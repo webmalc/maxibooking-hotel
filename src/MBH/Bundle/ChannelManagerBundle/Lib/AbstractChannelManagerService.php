@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Lib;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia;
 use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
@@ -34,6 +35,17 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     const UNAVAIBLE_PRICES = [];
 
     const UNAVAIBLE_RESTRICTIONS = [];
+
+    const CHANNEL_MANAGER_NAMES = [
+        "vashotel",
+        "booking",
+        "myallocator",
+        "ostrovok",
+        "oktogo",
+        "101Hotels",
+        "homeaway",
+        "tripadvisor"
+    ];
 
     /**
      * Default period for room/prices upload
@@ -854,5 +866,18 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             '%orderId%' => $order->getChannelManagerId(),
             '%service_name%' => $order->getChannelManagerType()
         ], 'MBHChannelManagerBundle');
+    }
+
+    /**
+     * @return array
+     */
+    public static function getChannelManagerNames()
+    {
+        $expediaSources = [];
+        foreach (Expedia::BOOKING_SOURCES as $expediaSource) {
+            $expediaSources[] = mb_strtolower($expediaSource);
+        }
+
+        return array_merge($expediaSources, self::CHANNEL_MANAGER_NAMES);
     }
 }

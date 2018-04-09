@@ -9,6 +9,23 @@
             <div class="modal-body" id="support-info-modal-body">
                 <ul class="nav nav-pills nav-stacked">
                     <li>
+                        <a style="background-color: #e7f3e2; font-size: 16px"><i class='fa fa-desktop'></i>
+                            <button onclick="window.open('https://example.maxi-booking.ru?apiKey={{ get_twig_data()['demo_user_token'] }}','_blank');" class="btn btn-primary btn-sm">
+                                {{ 'support_modal.sandbox_button.text'|trans}}
+                            </button>
+                            <span style="font-size: 15px">({{ 'welcome_modal.login'|trans}}: demo, {{ 'welcome_modal.password'|trans}}: demo)</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a style="background-color: #e7f3e2; font-size: 16px"><i class='fa fa-phone'></i>{{ 'support_modal.phones'|trans}}</a>
+                        <ol id="modal-guides-phones" style="cursor: pointer;">
+                            {% if is_russian_client() %}
+                                <li><strong>Бесплатно по России</strong>: {{ get_twig_data()['support_phone'] }}<br></li>
+                            {% endif %}
+                            <li><strong>email</strong>: {{ get_twig_data()['clients_support_email'] }}</li>
+                        </ol>
+                    </li>
+                    <li>
                         <a style="background-color: #e7f3e2; font-size: 16px"><i class='fa fa-user'></i>{{ 'support_modal.interactive_halper'|trans}}</a>
                         <ol id="modal-guides-list" style="cursor: pointer;">
                         </ol>

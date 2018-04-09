@@ -226,10 +226,11 @@ amenity: Удобства
 technical: Техника
 mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
-mbhhotelbundle.hotelData.hotelOne: 'Мой отель #1'
-mbhhotelbundle.hotelData.hotelTwo: 'Мой отель #2'
-mbhhotelbundle.roomTypeData.two.place: Двухместный
-mbhhotelbundle.roomTypeData.three.place: Трехместный
+mbhhotelbundle.hotelData.hotelOne: 'Отель Волга'
+mbhhotelbundle.hotelData.hotelTwo: 'Гостиница Амур'
+mbhhotelbundle.roomTypeData.two.place: 'Стандартный двухместный'
+mbhhotelbundle.roomTypeData.three.place: Люкс
+mbhhotelbundle.roomTypeData.single.place: 'Стандартный одноместный'
 mbhhotelbundle.taskData.repair: Ремонт
 mbhhotelbundle.taskData.cleaning: Уборка
 mbhhotelbundle.taskData.reserve: Резерв

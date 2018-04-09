@@ -62,6 +62,6 @@ class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInte
 
     public function getEnvs(): array
     {
-        return ['test', 'dev'];
+        return ['test', 'dev', 'sandbox'];
     }
 }

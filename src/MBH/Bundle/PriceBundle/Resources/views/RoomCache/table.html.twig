@@ -1,3 +1,4 @@
+{% spaceless %}
 <input type="hidden" name="begin" id="room-cache-overview-begin" class="hidden" value="{{ begin|date('d.m.Y') }}">
 <input type="hidden" name="end" id="room-cache-overview-end" class="hidden" value="{{ end|date('d.m.Y') }}">
 {% if error is defined and error is not empty %}
@@ -52,7 +53,7 @@
 
                         {% for date in period %}
 
-                            <!-- BEGIN: set roomCache & dayRoomCache -->
+                            {#<!-- BEGIN: set roomCache & dayRoomCache -->#}
 
                             {% if roomCaches[roomType.id][tariff is null ? 0 : tariff.id][date|date('d.m.Y')] is defined %}
                                 {% set roomCache = roomCaches[roomType.id][ tariff is null ? 0 : tariff.id ][date|date('d.m.Y')] %}
@@ -66,7 +67,7 @@
                                 {% set dayRoomCache = null %}
                             {% endif %}
 
-                            <!-- END: set roomCache & dayRoomCache -->
+                            {#<!-- END: set roomCache & dayRoomCache -->#}
 
                             <td data-id="{{ roomType.id }}_{{ date|date('d.m.Y') }}" class="content {% if date|date('N') >= 6 %} weekend{% endif %}{% if (roomCache and roomCache.leftRooms < 0) or (tariff is not null and roomCache and dayRoomCache is null)  or (tariff is not null and roomCache and dayRoomCache and roomCache.totalRooms > dayRoomCache.totalRooms) or (roomCache and roomCache.isClosed)%} alert{% endif %}">
                                 {% if (categoryId == 'totalRooms' and tariff is null) or (tariff is not null and dayRoomCache is not null and categoryId == 'totalRooms') %}
@@ -109,3 +110,4 @@
         </tbody>
     </table>
 {% endif %}
+{% endspaceless %}

@@ -28,8 +28,6 @@ class ApiKeyUserProvider implements UserProviderInterface
         }
 
         $expiredDate = $user->getApiToken()->getExpiredAt();
-        $user->removeApiToken();
-        $this->dm->flush($user);
 
         if ($expiredDate < new \DateTime()) {
             throw new UsernameNotFoundException('Api token for user ' . $user->getUsername() . ' expired!');
