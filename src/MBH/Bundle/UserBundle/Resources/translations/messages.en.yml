@@ -22,7 +22,7 @@ form.userType.patronymic: 'Middle name'
 form.userType.birth_date: 'Birth date'
 form.userType.placeholder_name: John
 form.userType.placeholder_patronymic: Michael
-controller.profileController.new_password_saved_success: 'New password successfully saved'
+controller.profileController.profile_saved_success: 'Profile has been updated succesfully'
 controller.profileController.record_saved_success: 'User successfully added'
 controller.profileController.record_edited_success: 'Entry successfully edited'
 controller.group.create_success: 'Group successfully added'
@@ -70,7 +70,6 @@ restaurantbundle.controller.senior_manager: 'Senior manager'
 restaurantbundle.controller.restoran_senior_manager: 'Restaurant senior manager'
 restaurantbundle.controller.restoran_manager: 'Restaurant manager'
 view.wait.your_shift_is_blocked: 'Your shift is blocked and awaits for handing over'
-view.profile.change_pass: 'Change password'
 view.wait.resume: Resume
 view.wait.cash: Checkdesk
 view.wait.duration: Duration
