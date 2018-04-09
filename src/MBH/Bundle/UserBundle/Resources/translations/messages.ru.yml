@@ -28,7 +28,7 @@ form.userType.locale: Язык
 form.userType.placeholder_name: Иван
 form.userType.placeholder_patronymic: Иванович
 form.userType.need_at_least_one_hotel: 'Для включения рабочих смен должен быть выбран один отель'
-controller.profileController.new_password_saved_success: 'Новый пароль успешно сохранен'
+controller.profileController.profile_saved_success: 'Профиль успешно обновлен'
 controller.profileController.record_saved_success: 'Пользователь успешно добавлен'
 controller.profileController.record_edited_success: 'Запись успешно отредактирована.'
 controller.profileController.client_successful_updated: 'Данные успешно сохранены'
@@ -74,7 +74,6 @@ view.wait.duration: Длительность
 view.wait.cash: Касса
 view.wait.resume: Возобновить
 view.wait.time: '%hourst% ч. %minutes% мин.'
-view.profile.change_pass: 'Сменить пароль'
 views.add_guest_modal.add_guest: 'Добавление гостя'
 view.google.enter_code: 'Введите код из приложения телефона Google Authenticator'
 view.google.check_mail: 'Если Google Authenticator не настроен, проверьте почтовый ящик для получения дальнейших инструкций'
@@ -84,6 +83,8 @@ workShift.statuses.closed: Закрыта
 workShift.notification.work_shift_expired: 'Смена идет больше 12 часов. Закройте её'
 form.clientConfigType.notification.staff.label: 'Список уведомлений для пользователя'
 form.clientConfigType.notification.staff.help: 'Типы каких уведомлений будут доступны пользователю'
+views.profile.layout.user: Пользователь
+views.profile.profile: 'Профиль'
 form.client_contacts_type.name.label: Имя
 form.client_contacts_type.email.label: Email
 form.client_contacts_type.phone.label: Телефон
