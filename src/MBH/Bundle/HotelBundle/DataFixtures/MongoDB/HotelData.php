@@ -58,6 +58,6 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface
 
     public function getEnvs(): array
     {
-        return ['test', 'dev'];
+        return ['test', 'dev', 'sandbox'];
     }
 }

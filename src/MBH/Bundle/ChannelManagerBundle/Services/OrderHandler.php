@@ -9,6 +9,10 @@ use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 
+/**
+ * Class OrderHandler
+ * @package MBH\Bundle\ChannelManagerBundle\Services
+ */
 class OrderHandler
 {
     private $dm;
@@ -18,11 +22,18 @@ class OrderHandler
         $this->dm = $dm;
     }
 
+    /**
+     * @param AbstractOrderInfo $orderInfo
+     * @param Order|null $order
+     * @return Order
+     */
     public function createOrder(AbstractOrderInfo $orderInfo, ?Order $order = null) : Order
     {
         if (!$order) {
             $order = new Order();
-            $order->setChannelManagerStatus('new');
+            if ($orderInfo->getChannelManagerName()) {
+                $order->setChannelManagerStatus('new');
+            }
         } else {
             foreach ($order->getPackages() as $package) {
                 $this->dm->remove($package);
@@ -32,19 +43,28 @@ class OrderHandler
                 $this->dm->remove($cashDoc);
                 $this->dm->flush();
             }
-            $order->setChannelManagerStatus('modified');
+            if ($orderInfo->getChannelManagerName()) {
+                $order->setChannelManagerStatus('modified');
+            }
             $order->setDeletedAt(null);
         }
 
-        $order->setChannelManagerType($orderInfo->getChannelManagerName())
-            ->setChannelManagerId($orderInfo->getChannelManagerOrderId())
+        $order
             ->setMainTourist($orderInfo->getPayer())
-            ->setConfirmed(false)
-            ->setStatus('channel_manager')
             ->setNote($orderInfo->getNote())
             ->setPrice($orderInfo->getPrice())
-            ->setOriginalPrice($orderInfo->getOriginalPrice())
-            ->setTotalOverwrite($orderInfo->getPrice());
+            ->setOriginalPrice($orderInfo->getOriginalPrice());
+
+        if ($orderInfo->getChannelManagerName()) {
+            $order
+                ->setChannelManagerId($orderInfo->getChannelManagerOrderId())
+                ->setChannelManagerType($orderInfo->getChannelManagerName())
+                ->setStatus('channel_manager')
+                ->setChannelManagerId($orderInfo->getChannelManagerOrderId())
+                ->setTotalOverwrite($orderInfo->getPrice());
+        } else {
+            $order->setConfirmed(true);
+        }
 
         if ($orderInfo->getSource()) {
             $order->setSource($orderInfo->getSource());
@@ -73,6 +93,9 @@ class OrderHandler
         return $order;
     }
 
+    /**
+     * @param Order $order
+     */
     public function deleteOrder(Order $order)
     {
         $this->dm->remove($order);

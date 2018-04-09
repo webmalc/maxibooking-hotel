@@ -6,6 +6,8 @@ use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressStreet;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -28,6 +30,8 @@ class Extension extends \Twig_Extension
 
     private $clientConfig;
     private $isClientConfigInit = false;
+    private $twigData;
+    private $isTwigDataInit = false;
 
     public function __construct(ContainerInterface $container)
     {
@@ -272,16 +276,34 @@ class Extension extends \Twig_Extension
      */
     public function getSettingsDataForFrontend()
     {
-        $isProdEnv = $this->container->get('kernel')->getEnvironment() === 'prod';
         $data = [
             'allowed_guides' => $this->container->get('mbh.guides_data_service')->getAllowedGuides(),
             'client_country' => $this->getClient()->getCountry(),
-            'front_token' => $this->container->getParameter($isProdEnv ? 'billing_front_token' : 'billing_dev_token'),
-            'billing_host' => ($isProdEnv ? BillingApi::BILLING_HOST : BillingApi::BILLING_DEV_HOST) . '/',
+            'front_token' => $this->container->getParameter('billing_front_token'),
+            'billing_host' => $this->container->getParameter('billing_url') . '/',
         ];
 
         return json_encode($data);
     }
+
+    public function getTwigData()
+    {
+        if (!$this->isTwigDataInit) {
+            $supportData = $this->container->getParameter('support');
+            $supportEmail = $this->isRussianClient()
+                ? $supportData['clients_support_email_ru']
+                : $supportData['clients_support_email_com'];
+            $this->twigData = [
+                'demo_user_token' => UserData::SANDBOX_USER_TOKEN,
+                'clients_support_email' => $supportEmail,
+                'support_phone' => $supportData['russian_support_phone']
+            ];
+
+            $this->isTwigDataInit = true;
+        }
+        return $this->twigData;
+    }
+
 
     /**
      * @param InterfaceAddressCity $obj
@@ -344,6 +366,7 @@ class Extension extends \Twig_Extension
             'get_front_settings'      => new \Twig_SimpleFunction('get_front_settings', [$this, 'getSettingsDataForFrontend'], ['is_safe' => ['html']]),
             'get_imperial_city'       => new \Twig_SimpleFunction('get_imperial_city', [$this, 'getImperialAddressCity'], ['is_safe' => ['html']]),
             'get_imperial_street'     => new \Twig_SimpleFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], ['is_safe' => ['html']]),
+            'get_twig_data'           => new \Twig_SimpleFunction('get_twig_data', [$this, 'getTwigData'], ['is_safe' => ['html']]),
         ];
     }
 

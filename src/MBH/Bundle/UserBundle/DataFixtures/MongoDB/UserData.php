@@ -4,6 +4,7 @@ namespace MBH\Bundle\UserBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\UserBundle\Document\AuthorizationToken;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -11,6 +12,9 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 
 class UserData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
+    const SANDBOX_USERNAME = 'demo';
+    const SANDBOX_USER_TOKEN = 'some_token_for_sandbox_user';
+
     const USERS = [
         'user-admin' => [
             'username' => 'admin',
@@ -24,6 +28,12 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
             'role' => 'ROLE_USER',
             'group' => 'group-medium_manager',
             'password' => 'manager',
+        ],
+        'user-demo' => [
+            'username' => self::SANDBOX_USERNAME,
+            'email' => 'mb@example.com',
+            'role' => 'ROLE_SUPER_ADMIN',
+            'password' => 'demo'
         ],
         'user-mb' => [
             'username' => 'mb',
@@ -54,7 +64,9 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
         $notificationTypes = $manager->getRepository('MBHBaseBundle:NotificationType')->getStuffType()->toArray();
         if (!count($repo->findAll())) {
             foreach (self::USERS as $key => $userData) {
-                if ($key === 'user-manager' && !$this->container->get('kernel')->isDevEnv()) {
+                if (in_array($key, ['user-manager', 'user-demo'])
+                    && !in_array($this->container->get('kernel')->getEnvironment(), ['dev', 'test', 'sandbox'])
+                ) {
                     continue;
                 }
 
@@ -71,6 +83,13 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                     $user->addGroup($this->getReference($userData['group']));
                 }
                 $user->setAllowNotificationTypes($notificationTypes);
+
+                if ($userData['username'] === self::SANDBOX_USERNAME) {
+                    $apiToken = (new AuthorizationToken())
+                        ->setExpiredAt(new \DateTime('+ 1 day'))
+                        ->setToken(self::SANDBOX_USER_TOKEN);
+                    $user->setApiToken($apiToken);
+                }
 
                 $manager->persist($user);
                 $manager->flush();

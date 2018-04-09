@@ -206,7 +206,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
      */
     public function persistOrder(ObjectManager $manager, $data)
     {
-        $touristKeys = array_keys(TouristData::TOURIST_DATA);
+        $locale = $this->container->getParameter('locale') === 'ru' ? 'ru' : 'en';
+        $touristKeys = array_keys(TouristData::TOURIST_DATA[$locale]);
         $tourist = $this->getReference($touristKeys[array_rand($touristKeys, 1)]);
         $order = (new Order())
             ->setPrice($data['price'])
