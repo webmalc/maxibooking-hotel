@@ -2,13 +2,13 @@
 
 namespace MBH\Bundle\UserBundle\Form;
 
+use MBH\Bundle\BaseBundle\Form\LanguageType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 
 class ProfileType extends AbstractType
@@ -16,15 +16,15 @@ class ProfileType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-            $builder->add('plainPassword', RepeatedType::class, array(
+            $builder->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'group' => 'form.profileType.enter_new_password',
-                'options' => array('translation_domain' => 'FOSUserBundle'),
-                'first_options' => array('label' => 'form.password', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),
-                'second_options' => array('label' => 'form.password_confirmation'),
+                'options' => ['translation_domain' => 'FOSUserBundle'],
+                'first_options' => ['label' => 'form.password', 'attr' => ['autocomplete' => 'off', 'class' => 'password']],
+                'second_options' => ['label' => 'form.password_confirmation'],
                 'invalid_message' => 'fos_user.password.mismatch',
+                'required' => false,
                 'constraints' => [
-                    new NotBlank(),
                     new Length([
                         'min' => 8,
                         'minMessage' => 'form.profileType.min_password'
@@ -38,14 +38,19 @@ class ProfileType extends AbstractType
                         'message' => 'form.profileType.min_capital_letter_password'
                     ])
                 ]
-            ));
+            ])
+                ->add('locale', LanguageType::class, [
+                    'label' => 'form.userType.locale',
+                    'group' => 'form.userType.general_info',
+                ])
+            ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\UserBundle\Document\User'
-        ));
+        ]);
     }
 
     public function getBlockPrefix()

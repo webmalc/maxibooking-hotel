@@ -20,7 +20,6 @@ record.index.remove: Delete
 layout.users: Users
 new.create: 'Add new'
 views.profile.layout.user: User
-views.profile.profile.change_password: 'Password change'
 views.profile.profile.password_error: 'Password should contain at least 8 characters including one digit and one upper case letter!'
 views.security.login.enter_in: 'Log in'
 security.login.forgot_password: 'Forgot password?'
