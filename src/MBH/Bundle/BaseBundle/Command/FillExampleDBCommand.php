@@ -35,7 +35,10 @@ class FillExampleDBCommand extends ContainerAwareCommand
     private function runCommand(string $command, $paramsString = null)
     {
         $process = new Process(
-            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console ' . $command . ' --no-debug --env=sandbox' . ($paramsString ? ' ' . $paramsString : ''));
+            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console ' . $command . ' --no-debug --env=sandbox' . ($paramsString ? ' ' . $paramsString : ''),
+            null,
+            ['SANDBOX_LOGIN' => getenv('SANDBOX_LOGIN'), 'SANDBOX_PASSWORD' => getenv('SANDBOX_PASSWORD')]
+        );
         $process->setTimeout(0);
         $process->mustRun();
     }

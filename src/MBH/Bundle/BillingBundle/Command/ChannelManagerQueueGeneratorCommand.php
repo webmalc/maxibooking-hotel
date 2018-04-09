@@ -1,8 +1,6 @@
 <?php
 
-
 namespace MBH\Bundle\BillingBundle\Command;
-
 
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
@@ -43,7 +41,7 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
             $inActiveClientsNames = array_map(function (Client $client) {
                 return $client->getLogin();
             }, $inActiveClientsResult->getData());
-            $clients = array_intersect($clients, $inActiveClientsNames);
+            $clients = array_diff($clients, $inActiveClientsNames);
         }
 
         $kernel = $this->getContainer()->get('kernel');
