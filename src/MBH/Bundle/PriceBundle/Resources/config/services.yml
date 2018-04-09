@@ -4,6 +4,10 @@ services:
     class: MBH\Bundle\PriceBundle\Services\RoomCacheGraphGenerator
     arguments: ['@mbh.helper', '@doctrine_mongodb', '@service_container']
 
+  mbh.room.cache.graph.extra_data:
+    class: MBH\Bundle\PriceBundle\Services\GraphExtraData
+    arguments: ['@doctrine_mongodb']
+
   mbh.tariff.subscriber:
     class: MBH\Bundle\PriceBundle\EventListener\TariffSubscriber
     arguments: ['@service_container']
