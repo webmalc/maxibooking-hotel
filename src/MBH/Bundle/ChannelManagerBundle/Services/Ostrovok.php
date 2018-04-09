@@ -441,7 +441,7 @@ class Ostrovok extends Base
     public function pullOrders()
     {
         $result = true;
-        $date = (new \DateTime('now midnight'))->format('Y-m-d');
+        $date = (new \DateTime('yesterday midnight'))->format('Y-m-d');
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
             $bookings = $this->apiBrowser->getBookings([
@@ -454,11 +454,11 @@ class Ostrovok extends Base
             }
 
             foreach ($bookings as $reservation) {
-                $reservationCreatedAt = new \DateTime($reservation['created_at']);
+                /*$reservationCreatedAt = new \DateTime($reservation['created_at']);
                 $now = new \DateTime('midnight');
                 if ($reservationCreatedAt < $now) {
                     continue;
-                }
+                }*/
 
                 $isModified = $reservation['created_at'] !== $reservation['modified_at'];
                 /** @var Order $order */
@@ -484,7 +484,7 @@ class Ostrovok extends Base
                 if ((string)$reservation['status'] === 'normal' && !$order) {
                     $result = $this->createPackage($reservation, $config);
                     $this->notify($result, 'ostrovok', 'new');
-                    $this->log('Order '.$order->getId().'was created.');
+                    $this->log('Order '.$result->getId().'was created.');
                 }
 
                 //If modified
