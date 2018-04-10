@@ -465,3 +465,6 @@ services:
     mbh.guides_data_service:
         class: MBH\Bundle\BaseBundle\Service\GuidesDataService
         arguments: ['@security.authorization_checker']
+
+    mbh.yaml_manager:
+        class: MBH\Bundle\BaseBundle\Service\YmlManager
