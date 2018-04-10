@@ -99,6 +99,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
 
     /**
      * @var bool
+     * @ODM\Field(type="float")
      */
     protected $isAllPackagesPulled = false;
 
