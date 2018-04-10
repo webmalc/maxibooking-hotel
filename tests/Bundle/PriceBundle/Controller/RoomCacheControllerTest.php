@@ -313,11 +313,21 @@ class RoomCacheControllerTest extends WebTestCase
 
         $this->client->submit($form);
 
-        $this->assertEquals([], $this->getResultFromTable(null, self::TRIPLE_ROOM));
-        $this->assertEquals(
-            ['33', '0', '0%', '33'],
-            $this->getResultFromTable(null, self::TRIPLE_ROOM, [$this->getIdSpecialTariff()])
-        );
+        $today = new \DateTime();
+        /** эта проверка нужна т.к. в тесте testGenerationWeekdays генерятся данные на вт, чт, вс */
+        if (in_array((int)$today->format('w'), [self::SUNDAY, self::TUESDAY, self::THURSDAY], true)) {
+            $this->assertEquals(['0', '0%', '15'], $this->getResultFromTable(null, self::TRIPLE_ROOM));
+            $this->assertEquals(
+                ['0', '0%', '33'],
+                $this->getResultFromTable(null, self::TRIPLE_ROOM, [$this->getIdSpecialTariff()])
+            );
+        } else {
+            $this->assertEquals([], $this->getResultFromTable(null, self::TRIPLE_ROOM));
+            $this->assertEquals(
+                ['33', '0', '0%', '33'],
+                $this->getResultFromTable(null, self::TRIPLE_ROOM, [$this->getIdSpecialTariff()])
+            );
+        }
     }
 
     public function testGraphActionStatusCode()
