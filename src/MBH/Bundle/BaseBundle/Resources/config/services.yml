@@ -86,6 +86,10 @@ services:
         tags:
           - { name: request.param_converter, converter: doctrine.odm }
 
+    mbh.address:
+        class: MBH\Bundle\BaseBundle\Service\Address
+        arguments:
+            - '@mbh.billing.api'
 
     #Notifiers
     mbh.notifier:

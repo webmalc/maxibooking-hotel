@@ -25,7 +25,6 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
  *
  * расчет (isNecessary) указан в issue #1432
  */
-
 class GraphExtraData
 {
     private const DAYS_FOR_RESTRICTION = 7;
@@ -74,6 +73,14 @@ class GraphExtraData
      * @var bool
      */
     private $withTariff = false;
+
+    /**
+     * @var \MBH\Bundle\PriceBundle\Document\Restriction[][][]
+     */
+    private $restriction;
+
+
+    private $period;
 
     public function __construct(ManagerRegistry $dm)
     {
@@ -131,7 +138,7 @@ class GraphExtraData
      * @param RoomType $roomType
      * @return array
      */
-    public function getTariffs(RoomType $roomType):array
+    public function getTariffs(RoomType $roomType): array
     {
         return $this->tariffs[$roomType->getId()];
     }
@@ -145,6 +152,28 @@ class GraphExtraData
         $this->begin = clone $this->generation->getBegin();
         $this->begin->modify('-' . self::DAYS_FOR_RESTRICTION . ' day');
 
+        $this->initPeriod();
+
+        $this->initRoomCache();
+
+        $this->initTariffsData($tariffs);
+
+        $this->initRestriction();
+    }
+
+    private function initPeriod()
+    {
+        $periodRaw = new \DatePeriod($this->begin, new \DateInterval('P1D'), $this->generation->getEnd());
+        $period = [];
+        foreach ($periodRaw as $key => $date) {
+            $period[$date->format('d.m.Y')] = $date;
+        }
+
+        $this->period = $period;
+    }
+
+    private function initRoomCache()
+    {
         $this->roomsCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
                 $this->begin,
@@ -154,13 +183,31 @@ class GraphExtraData
                 false,
                 true
             );
+    }
 
+    private function initTariffsData($tariffs)
+    {
         $this->tariffsData = $this->dm->getRepository('MBHPriceBundle:Tariff')
-            ->createQueryBuilder('t')
+            ->createQueryBuilder()
             ->hydrate(false)
             ->field('id')->in($tariffs)
             ->getQuery()
             ->toArray();
+    }
+
+    private function initRestriction()
+    {
+        $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')
+            ->fetchQueryBuilder($this->begin, $this->generation->getEnd(), $this->hotel)
+            ->getQuery()
+            ->toArray();
+
+        $dataR = [];
+        foreach ($restrictions as $restriction) {
+            $dataR[$restriction->getDate()->format('d.m.Y')][$restriction->getRoomType()->getId()][$restriction->getTariff()->getId()] = $restriction;
+        }
+
+        $this->restriction = $dataR;
     }
 
     /**
@@ -177,25 +224,30 @@ class GraphExtraData
             $rawTariffs = [];
 
             foreach ($this->tariffsData as $tariffKey => $tariffData) {
+                foreach ($this->period as $key => $date) {
+                    if (isset($this->restriction[$key][$roomTypeKey][$tariffKey])) {
+                        /** @var \MBH\Bundle\PriceBundle\Document\Restriction $restriction */
+                        $restriction = $this->restriction[$key][$roomTypeKey][$tariffKey];
 
-                $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')
-                    ->fetchQueryBuilder($this->begin, $this->generation->getEnd(), $this->hotel, [$roomTypeKey], [$tariffKey])
-                    ->getQuery()
-                    ->toArray();
+                        $dateAsStr = $restriction->getDate()->format('d.m.Y');
 
-                /** @var \MBH\Bundle\PriceBundle\Document\Restriction $restriction */
-                foreach ($restrictions as $restriction) {
-                    $restDate = $restriction->getDate();
-                    $restDateAsStr = $restDate->format('d.m.Y');
+                        $minStay = $restriction->getMinStay();
 
-                    $minStay = $restriction->getMinStay();
+                        if ($restriction->getMinStayArrival() !== null) {
+                            $minStay = $restriction->getMinStayArrival();
+                        }
 
-                    if ($restriction->getMinStayArrival() !== null) {
-                        $minStay = $restriction->getMinStayArrival();
+                        $currentDate = clone $restriction->getDate();
+
+                    } else {
+                        $minStay = 1;
+
+                        $dateAsStr = $date->format('d.m.Y');
+
+                        $currentDate = clone $date;
                     }
 
-                    $currentDate = clone $restriction->getDate();
-                    $oneDayAgo = $currentDate->modify('-1 day');
+                    $oneDayAgo = (clone $currentDate)->modify('-1 day');
 
                     if (isset($roomCache[$oneDayAgo->format('d.m.Y')])) {
                         $yesterdayLeftRoom = $roomCache[$oneDayAgo->format('d.m.Y')]->getLeftRooms();
@@ -203,35 +255,34 @@ class GraphExtraData
                         $yesterdayLeftRoom = 0;
                     }
 
-                    if (isset($roomCache[$restDateAsStr])) {
-                        $leftRooms = $roomCache[$restDateAsStr]->getLeftRooms();
+                    if (isset($roomCache[$dateAsStr])) {
+                        $leftRooms = $roomCache[$dateAsStr]->getLeftRooms();
                         $needArrivals = $leftRooms - $yesterdayLeftRoom;
                     } else {
                         $leftRooms = 0;
                         $needArrivals = 0;
                     }
 
-                    $rawData[$restDateAsStr] = [
+                    $rawData[$dateAsStr] = [
                         'leftRooms'    => $leftRooms,
                         'needArrivals' => $needArrivals,
                     ];
 
-
-                    $beginPeriod = clone $restDate;
+                    $beginPeriod = clone $currentDate;
                     $beginPeriod->modify('+1 day');
 
-                    $period = new \DatePeriod($beginPeriod, new \DateInterval('P1D'), $minStay - 2);
-                    foreach ($period as $date) {
-                        $isNecessary[$date->format('d.m.Y')][$tariffKey][] = $needArrivals < 0 ? 0 : $needArrivals;
+                    $periodN = new \DatePeriod($beginPeriod, new \DateInterval('P1D'), $minStay - 2);
+                    foreach ($periodN as $dateN) {
+                        $isNecessary[$dateN->format('d.m.Y')][$tariffKey][] = $needArrivals < 0 ? 0 : $needArrivals;
                     }
 
-                    if (isset($isNecessary[$restDateAsStr][$tariffKey])) {
-                        $isNecessarySum = array_sum($isNecessary[$restDateAsStr][$tariffKey]);
+                    if (isset($isNecessary[$dateAsStr][$tariffKey])) {
+                        $isNecessarySum = array_sum($isNecessary[$dateAsStr][$tariffKey]);
                     } else {
                         $isNecessarySum = 0;
                     }
 
-                    $rawTariffs[$tariffKey][$restDateAsStr] = [
+                    $rawTariffs[$tariffKey][$dateAsStr] = [
                         'isNecessary' => $isNecessarySum,
                         'diff'        => $leftRooms - $isNecessarySum,
                     ];

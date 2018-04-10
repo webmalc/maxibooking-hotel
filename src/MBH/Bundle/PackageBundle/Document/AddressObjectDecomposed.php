@@ -3,15 +3,14 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressCity;
-use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressStreet;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 
 /**
  * @ODM\EmbeddedDocument
 
  * @ODM\HasLifecycleCallbacks
  */
-class AddressObjectDecomposed implements InterfaceAddressCity, InterfaceAddressStreet
+class AddressObjectDecomposed implements AddressInterface
 {
     /**
      * @var string
@@ -304,5 +303,21 @@ class AddressObjectDecomposed implements InterfaceAddressCity, InterfaceAddressS
     public function __toString()
     {
         return strval($this->getCountryTld() . ' ' . $this->getCity());
+    }
+
+    /**
+     * @return null
+     */
+    public function getName()
+    {
+        return null;
+    }
+
+    /**
+     * @return String
+     */
+    public function getCityId(): string
+    {
+        return $this->getCity();
     }
 }
