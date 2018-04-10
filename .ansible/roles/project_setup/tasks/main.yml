@@ -8,6 +8,7 @@
     - { src: '{{ project_folder }}/app/config/clients/maxibooking.env.dist' , dest: '{{ project_folder }}/app/config/clients/maxibooking.env'}
     - { src: '{{ project_folder }}/app/config/database.env.dist' , dest: '{{ project_folder }}/app/config/database.env'}
     - { src:  '{{ project_folder }}/app/config/secrets.yml.dist', dest: '{{ project_folder }}/app/config/secrets.yml' }
+    - { src:  '{{ project_folder }}/app/config/version.yml.dist', dest: '{{ project_folder }}/app/config/version.yml' }
 
 - name: Composer install
   composer:

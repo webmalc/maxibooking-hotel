@@ -10,6 +10,7 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class ClientManager
 {
@@ -27,14 +28,16 @@ class ClientManager
     private $billingApi;
     private $logger;
     private $client;
+    private $kernel;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel)
     {
         $this->dm = $dm;
         $this->session = $session;
         $this->billingApi = $billingApi;
         $this->logger = $logger;
         $this->client = $client;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -171,7 +174,8 @@ class ClientManager
      */
     public function isDefaultClient()
     {
-        return $this->client === \AppKernel::DEFAULT_CLIENT;
+        return $this->client === \AppKernel::DEFAULT_CLIENT || $this->kernel->getEnvironment() === 'test';
+
     }
 
     /**

@@ -36,6 +36,17 @@ class BillingMongoClient
     private $options;
 
 
+    /**
+     * BillingMongoClient constructor.
+     * @param string $adminLogin
+     * @param string $adminPassword
+     * @param string $host
+     * @param string $adminDatabase
+     * @param string $options
+     * @throws \MongoDB\Exception\InvalidArgumentException
+     * @throws \MongoDB\Driver\Exception\RuntimeException
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
     public function __construct(
         string $adminLogin,
         string $adminPassword,
@@ -85,12 +96,20 @@ class BillingMongoClient
     }
 
 
+    /**
+     * @param string $templateDBName
+     * @param string $newDbName
+     * @return bool
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
     public function copyDatabase(string $templateDBName, string $newDbName): bool
     {
+
         $command = new Command(['copydb' => 1, 'fromdb' => $templateDBName, 'todb' => $newDbName]);
         $result = $this->executeMongoCommand($command);
 
-        return boolval($result->toArray()[0]->ok);
+        return (bool)$result->toArray()[0]->ok;
     }
 
     public function checkIfDbExists(string $dbName): bool
@@ -104,24 +123,35 @@ class BillingMongoClient
             }
         );
 
-        return boolval($result);
+        return (bool) $result;
     }
 
+    /**
+     * @param string $dbName
+     * @return bool
+     */
     public function dropDatabase(string $dbName): bool
     {
         $result = $this->client->dropDatabase($dbName);
 
-        return boolval($result->getIterator()->ok);
+        return (bool)$result->getIterator()->ok;
     }
 
-    public function createDbUser(string $dbName, string $userName, string $password)
+    /**
+     * @param string $dbName
+     * @param string $userName
+     * @param string $password
+     * @throws \MongoDB\Driver\Exception\Exception
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
+    public function createDbUser(string $dbName, string $userName, string $password): void
     {
         $this->dropDbUser($dbName, $userName);
         $command = new Command(
             [
-                "createUser" => $userName,
-                "pwd" => $password,
-                "roles" => ["dbAdmin", "readWrite"],
+                'createUser' => $userName,
+                'pwd' => $password,
+                'roles' => ['dbAdmin', 'readWrite'],
             ]
 
         );
@@ -129,12 +159,18 @@ class BillingMongoClient
         $this->executeMongoCommand($command, $dbName);
     }
 
-    public function dropDbUser(string $dbName, string $userName)
+    /**
+     * @param string $dbName
+     * @param string $userName
+     * @throws \MongoDB\Driver\Exception\Exception
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
+    public function dropDbUser(string $dbName, string $userName): void
     {
         if ($this->checkUserExists($dbName, $userName)) {
             $command = new Command(
                 [
-                    "dropUser" => $userName,
+                    'dropUser' => $userName,
                 ]
             );
             $this->executeMongoCommand($command, $dbName);
@@ -142,37 +178,66 @@ class BillingMongoClient
 
     }
 
-    public function purgeAllDbUsers($dbName)
+    /**
+     * @param $dbName
+     * @throws \MongoDB\Driver\Exception\Exception
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
+    public function purgeAllDbUsers($dbName): void
     {
         $command = new Command(
             [
-                "dropAllUsersFromDatabase" => 1,
+                'dropAllUsersFromDatabase' => 1,
             ]
         );
         $this->executeMongoCommand($command, $dbName);
     }
 
+    /**
+     * @param string $dbName
+     * @param string $userName
+     * @return bool
+     * @throws \MongoDB\Driver\Exception\Exception
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
     private function checkUserExists(string $dbName, string $userName): bool
     {
         $command = new Command(
             [
-                "usersInfo" => [
-                    "user" => $userName,
-                    "db" => $dbName,
+                'usersInfo' => [
+                    'user' => $userName,
+                    'db' => $dbName,
                 ],
             ]
         );
         $result = $this->executeMongoCommand($command, $dbName);
 
-        return boolval($result->toArray()[0]->users);
+        return (bool) $result->toArray()[0]->users;
     }
 
 
+    /**
+     * @param Command $command
+     * @param string|null $dbName
+     * @return Cursor
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
     private function executeMongoCommand(Command $command, string $dbName = null): Cursor
     {
         return $this->manager->executeCommand($dbName ?? $this->adminDatabase, $command);
     }
 
+    /**
+     * @param string $adminLogin
+     * @param string $adminPassword
+     * @param string $host
+     * @param string $adminDatabase
+     * @param string $options
+     * @return static
+     * @throws \MongoDB\Exception\InvalidArgumentException
+     * @throws \MongoDB\Driver\Exception\RuntimeException
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
     public static function createMongoClient(
         string $adminLogin,
         string $adminPassword,

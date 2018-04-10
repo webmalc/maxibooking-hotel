@@ -179,6 +179,7 @@ final class MongoMaintenance extends AbstractMaintenance
      * @param string $sampleDb
      * @param string $dbName
      * @throws ClientMaintenanceException
+     * @throws \MongoDB\Driver\Exception\Exception
      */
     private function cloneDb(string $sampleDb, string $dbName): void
     {

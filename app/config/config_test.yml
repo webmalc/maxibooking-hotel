@@ -36,7 +36,3 @@ liip_functional_test:
     username: "admin"
     password: "admin"
 
-doctrine_mongodb:
-    connections:
-        default:
-            server: "mongodb://%mongodb_host%/%mongodb_database%%mongodb_options%"
