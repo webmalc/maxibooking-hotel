@@ -90,8 +90,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ];
 
         //get roomTypes
-        $roomTypesCallback = function () use ($hotel, $request) {
-            return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
+        $requestedRoomTypes = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
+        $roomTypesCallback = function () use ($hotel, $requestedRoomTypes) {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $requestedRoomTypes);
         };
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
         $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
@@ -113,7 +114,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
                 $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                $requestedRoomTypes,
                 false, true)
         ;
 

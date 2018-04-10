@@ -6,6 +6,8 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -137,10 +139,10 @@ class Restriction extends Base
     /**
      * Set hotel
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @param Hotel $hotel
      * @return self
      */
-    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
         return $this;
@@ -159,10 +161,10 @@ class Restriction extends Base
     /**
      * Set roomType
      *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param RoomType $roomType
      * @return self
      */
-    public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
+    public function setRoomType(RoomType $roomType)
     {
         $this->roomType = $roomType;
         return $this;
@@ -184,7 +186,7 @@ class Restriction extends Base
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      * @return self
      */
-    public function setTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
+    public function setTariff(Tariff $tariff)
     {
         $this->tariff = $tariff;
         return $this;
@@ -203,7 +205,7 @@ class Restriction extends Base
     /**
      * Set date
      *
-     * @param date $date
+     * @param \DateTime $date
      * @return self
      */
     public function setDate($date)
@@ -215,7 +217,7 @@ class Restriction extends Base
     /**
      * Get date
      *
-     * @return date $date
+     * @return \DateTime $date
      */
     public function getDate()
     {

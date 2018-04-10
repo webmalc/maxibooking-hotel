@@ -104,17 +104,17 @@ class Builder implements ContainerAwareInterface
 
 
         //Tasks links
-        $queryCriteria = new TaskQueryCriteria();
-        $queryCriteria->userGroups = $user->getGroups();
-        $queryCriteria->performer = $user;
-        $queryCriteria->onlyOwned = true;
-        $queryCriteria->status = 'open';
-        $queryCriteria->hotel = $hotel;
-
-        $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
-
-        $taskAttributes = ['icon' => 'fa fa-tasks'];
-
+//        $queryCriteria = new TaskQueryCriteria();
+//        $queryCriteria->userGroups = $user->getGroups();
+//        $queryCriteria->performer = $user;
+//        $queryCriteria->onlyOwned = true;
+//        $queryCriteria->status = 'open';
+//        $queryCriteria->hotel = $hotel;
+//
+//        $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
+//
+//        $taskAttributes = ['icon' => 'fa fa-tasks'];
+//
 //        if ($openTaskCount > 0) {
 //            $taskAttributes += [
 //                'badge' => true,

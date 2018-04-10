@@ -63,8 +63,13 @@ $(document).ready(function () {
         };
 
     showTable();
-    $('.restriction-overview-filter').change(function () {
+    $('.restriction-overview-filter').not('.select2').change(function () {
         showTable();
+    });
+    $('select.restriction-overview-filter').on('select2:unselect select2:select', function () {
+        setTimeout(function () {
+            showTable();
+        }, 100);
     });
 
     //generator

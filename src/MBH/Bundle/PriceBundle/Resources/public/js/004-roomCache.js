@@ -66,8 +66,13 @@ $(document).ready(function () {
         };
 
     showTable();
-    $('.room-cache-overview-filter').on('change switchChange.bootstrapSwitch', function () {
+    $('.room-cache-overview-filter').not('.select2').on('change switchChange.bootstrapSwitch', function () {
         showTable();
+    });
+    $('select.room-cache-overview-filter').on('select2:unselect  select2:select', function () {
+        setTimeout(function () {
+            showTable();
+        }, 100);
     });
 
     //generator
