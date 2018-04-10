@@ -742,7 +742,7 @@ class OrderManager implements Searchable
     {
         $data = [
             'hotel' => $hotel,
-            'roomType' => $request->get('roomType'),
+            'roomType' => $this->helper->getDataFromMultipleSelectField($request->get('roomType')),
             'status' => $request->get('status'),
             'deleted' => $request->get('deleted'),
             'begin' => $request->get('begin'),

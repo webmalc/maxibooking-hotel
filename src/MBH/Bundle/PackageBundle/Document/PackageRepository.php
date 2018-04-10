@@ -621,10 +621,7 @@ class PackageRepository extends DocumentRepository
 
         //roomType
         if (isset($data['roomType']) && !empty($data['roomType'])) {
-            if ($data['roomType'] instanceof RoomType) {
-                $data['roomType'] = $data['roomType']->getId();
-            }
-            $qb->field('roomType.id')->equals($data['roomType']);
+            $qb->field('roomType.id')->in($data['roomType']);
         }
 
         //get dates

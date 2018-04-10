@@ -121,7 +121,7 @@
                     </li>
                     <!-- Menu Footer-->
                     <li class="user-footer">
-                        {% if is_granted('ROLE_PAYMENTS') or is_granted('ROLE_PASSWORD') %}
+                        {% if is_granted('ROLE_PAYMENTS') or is_granted('ROLE_PROFILE') %}
                         <div class="pull-left">
                             <a href="{{ path('user_profile') }}" class="btn btn-default btn-flat">
                                 {{ 'mbhbasebundle.view.navbar.profile'|trans }}

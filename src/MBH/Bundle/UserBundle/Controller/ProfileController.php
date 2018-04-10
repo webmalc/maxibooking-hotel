@@ -34,7 +34,7 @@ class ProfileController extends Controller
      */
     public function profileAction()
     {
-        if (!$this->isGranted('ROLE_PASSWORD')) {
+        if (!$this->isGranted('ROLE_PROFILE')) {
             return $this->redirectToRoute('user_payment');
         }
 
@@ -50,7 +50,7 @@ class ProfileController extends Controller
      *
      * @Route("/profile", name="user_profile_update")
      * @Method("POST")
-     * @Security("is_granted('ROLE_PASSWORD')")
+     * @Security("is_granted('ROLE_PROFILE')")
      * @Template("MBHUserBundle:Profile:profile.html.twig")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -58,14 +58,15 @@ class ProfileController extends Controller
     public function profileUpdateAction(Request $request)
     {
         $entity = $this->getUser();
-
         $form = $this->createForm(ProfileType::class, $entity);
-
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->container->get('fos_user.user_manager')->updateUser($entity);
-            $this->addFlash('success', 'controller.profileController.new_password_saved_success');
+            if ($entity->getLocale()) {
+                $this->get('session')->set('_locale', $entity->getLocale());
+            }
+            $this->addFlash('success', 'controller.profileController.profile_saved_success');
 
             return $this->redirectToRoute('user_profile');
         }
