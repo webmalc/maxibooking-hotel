@@ -1,11 +1,11 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
-use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressCity;
-use MBH\Bundle\BaseBundle\Document\Interfaces\InterfaceAddressStreet;
+use MBH\Bundle\BaseBundle\Service\Address;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -306,41 +306,23 @@ class Extension extends \Twig_Extension
 
 
     /**
-     * @param InterfaceAddressCity $obj
+     * @param AddressInterface $obj
      * @return string
      */
-    public function getImperialAddressCity(InterfaceAddressCity $obj): string
+    public function getImperialAddressCity(AddressInterface $obj): string
     {
-        $address = '';
-
-        if ($obj->getCity() !== null) {
-            $address .= $this->getCityById($obj->getCity(), 'en')->getName() . ', ';
-        }
-        if ($obj->getRegionId() !== null) {
-            $address .= $this->getRegionById($obj->getRegionId(), 'en')->getName() . ', ';
-        }
-        if ($obj->getZipCode() !== null) {
-            $address .= $obj->getZipCode() . ', ';
-        }
-        return rtrim($address,', ');
+        $address = $this->container->get('mbh.address');
+        return $address->getImperialCityStr($obj);
     }
 
     /**
-     * @param InterfaceAddressStreet $obj
+     * @param AddressInterface $obj
      * @return string
      */
-    public function getImperialAddressStreet(InterfaceAddressStreet $obj): string
+    public function getImperialAddressStreet(AddressInterface $obj): string
     {
-        $street = '';
-
-        if ($obj->getHouse() !== null) {
-            $street .= $obj->getHouse() . ', ';
-        }
-        if ($obj->getStreet() !== null) {
-            $street .= $obj->getStreet();
-        }
-
-        return rtrim($street, ', ');
+        $address = $this->container->get('mbh.address');
+        return $address->getImperialStreetStr($obj);
     }
 
     /**

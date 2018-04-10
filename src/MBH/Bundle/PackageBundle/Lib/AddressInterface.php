@@ -45,4 +45,9 @@ interface AddressInterface
      * @return string
      */
     public function getFlat();
+
+    /**
+     * @return string
+     */
+    public function getZipCode();
 }
