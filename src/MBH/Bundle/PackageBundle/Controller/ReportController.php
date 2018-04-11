@@ -921,6 +921,39 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * @Template()
+     * @Route("/reservation_report", name="reservation_report")
+     */
+    public function reservationReportAction()
+    {
+        return [
+            'roomTypes' => $this->hotel->getRoomTypes()
+        ];
+    }
+
+    /**
+     * @Route("/reservation_report_table", name="reservation_report_table", options={"expose"=true})
+     * @param Request $request
+     * @return Response
+     */
+    public function reservationReportTableAction(Request $request)
+    {
+        $date = $this->helper->getDateFromString($request->get('date')) ?? new \DateTime('midnight');
+        $periodBegin = $this->helper->getDateFromString($request->get('periodBegin'));
+        $periodEnd = $this->helper->getDateFromString($request->get('periodEnd'));
+
+        $roomTypeIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
+        $roomTypes = empty($roomTypeIds)
+            ? $this->hotel->getRoomTypes()
+            : $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch(null, $roomTypeIds);
+
+        $report = $this->get('mbh.reservation_report')
+            ->generate($periodBegin, $periodEnd, $date, $roomTypes->toArray());
+
+        return $report->generateReportTableResponse();
+    }
+
+    /**
      * @Security("is_granted('ROLE_SALES_CHANNELS_REPORT')")
      * @Route("/sales_channels_report", name="sales_channels_report")
      * @Template()

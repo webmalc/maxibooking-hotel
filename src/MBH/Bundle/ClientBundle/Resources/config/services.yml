@@ -32,6 +32,7 @@ services:
             - '@mbh.helper'
             - '@mbh.client_manager'
             - '@router'
+            - '@kernel'
 
     mbh_bundle_client.twig.dashboard_extension:
         class: MBH\Bundle\ClientBundle\Twig\DashboardExtension
