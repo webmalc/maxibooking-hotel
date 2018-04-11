@@ -919,4 +919,20 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         return $report->generateReportTableResponse();
     }
+
+    /**
+     * @Security("is_granted('ROLE_SALES_CHANNELS_REPORT')")
+     * @Route("/sales_channels_report", name="sales_channels_report")
+     * @Template()
+     */
+    public function salesChannelsReportAction()
+    {
+        return [
+            'sources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
+            'hotels' => $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll(),
+            'packageSources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
+            'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
+            'statuses' => $this->container->getParameter('mbh.package.statuses'),
+        ];
+    }
 }
