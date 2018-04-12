@@ -84,7 +84,8 @@ class SalesChannelsReportCompiler
         array $hotelsIds,
         bool $isRelativeValues,
         string $dataType
-    ) {
+    )
+    {
         $this->isInitialDataInit = true;
         $this->begin = $begin;
         $this->end = $end;
@@ -280,7 +281,20 @@ class SalesChannelsReportCompiler
                 ->setInitData($day, $packagesForCurrentDay, $this->isRelativeValues, $this->dataType, $this->filterType);
         }
 
-//        $dataHandlers[self::TOTAL_COLUMN_OPTION] = (new TotalDataHandler())->setInitData($dataHandlers, )
+        $rowOptions = $this->getRowTitlesAndOptions()[1];
+        $columnOptionsByCalcType = [];
+        foreach ($rowOptions as $rowOption) {
+            if ($rowOption === self::DATES_ROW_OPTION) {
+                $columnOptionsByCalcType[TotalDataHandler::TITLE_OPTION][] = $rowOption;
+            } else {
+                $columnOptionsByCalcType[TotalDataHandler::SUM_OPTION][] = $rowOption;
+            }
+        }
+
+        $totalColumnTitle = $this->translator->trans('sales_channels_report_compiler.total');
+        $dataHandlers[self::TOTAL_COLUMN_OPTION] =
+            (new TotalDataHandler())
+                ->setInitData($dataHandlers, $columnOptionsByCalcType, $totalColumnTitle);
 
 
         return array_merge($titleColumnDataHandler, $dataHandlers);
@@ -294,12 +308,12 @@ class SalesChannelsReportCompiler
     {
         $table = $this->report->addReportTable();
         $table->addClass('sales-channels-report-table');
-        $table->addClass('text-center');
 
         $roomTypeTitleRow = $table->addRow();
         $roomTypeTitleRow->addClass('warning');
         $roomTypeTitleRow->addClass('total-row');
-        $roomTypeTitleRow->createAndAddCell($tableName, $this->numberOfDays + 1);
+        $roomTypeTitleCell = $roomTypeTitleRow->createAndAddCell($tableName, $this->numberOfDays + 2);
+        $roomTypeTitleCell->addClass('horizontal-text-scrollable');
 
         return $table;
     }
@@ -313,7 +327,11 @@ class SalesChannelsReportCompiler
             'classes' => function (ReportCell $cell) {
                 $classes = [];
                 if (!in_array($cell->getRowOption(), [self::DATES_ROW_OPTION, self::TOTAL_ROW_OPTION])) {
-                    $classes[] = 'graph-drawable';
+                    if ($cell->getColumnOption() === self::TOTAL_COLUMN_OPTION) {
+                        $classes[] = 'total-graph-drawable';
+                    } else {
+                        $classes[] = 'graph-drawable';
+                    }
                 }
                 if ($cell->getColumnOption() !== self::TITLE_COLUMN_OPTION) {
                     $classes[] = 'text-center';

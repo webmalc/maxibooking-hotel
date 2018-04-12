@@ -1,5 +1,5 @@
 /*jslint todo: true */
-/*global window, $, document, Routing */
+/*global window, $, document, Routing, Highcharts */
 
 var REPORT_SETTINGS = {
     reservation: {
@@ -278,6 +278,51 @@ function initGraphDrawing(reportSettings) {
     }
 }
 
+function initTotalChart(seriesData, graphName) {
+    var reportSettings = getReportSettings();
+    if (reportSettings.canDrawGraphs) {
+        $('td.total-graph-drawable').dblclick(function () {
+            var $cell = $(this);
+            var numberOfTable = $cell.closest('table').attr('data-table-number');
+            var graphData = [];
+            var graphName = jsonData.commonRowTitles['channel_manager'];
+            if (reportSettings.byRows) {
+                var tableData = jsonData['tableData'][numberOfTable];
+
+            }
+        });
+    }
+
+    Highcharts.chart('graph-wrapper', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: graphName
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: seriesData
+    });
+}
+
 function showGraph(data, graphName) {
     $('#graph-modal').modal('show');
     var seriesList = [];
@@ -292,7 +337,6 @@ function showGraph(data, graphName) {
         series.tickPosition = 'inside';
         seriesList.push(series);
     });
-
 
     Highcharts.chart('graph-wrapper', {
         global: {
