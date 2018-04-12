@@ -181,6 +181,8 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-check-square-o']);
         $menu['reports']->addChild('reservation_report', ['route' => 'reservation_report', 'label' => 'reservation_report.title'])
             ->setAttributes(['icon' => 'fa fa-paper-plane-o']);
+        $menu['reports']->addChild('sales_channels_report', ['route' => 'sales_channels_report', 'label' => 'sales_channels_report.title'])
+            ->setAttributes(['icon' => 'fa fa-compass']);
 
         if ($this->config && $this->config->getSearchWindows()) {
             $menu['reports']->addChild('report_windows', ['route' => 'report_windows', 'label' => 'menu.label.reports.windows'])

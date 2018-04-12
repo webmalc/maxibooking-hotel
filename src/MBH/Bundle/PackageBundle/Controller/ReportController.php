@@ -5,8 +5,6 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\OnlineBundle\Document\Invite;
@@ -15,7 +13,7 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
-use MBH\Bundle\UserBundle\Document\User;
+use MBH\Bundle\PackageBundle\Services\SalesChannelsReportCompiler;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -921,6 +919,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * @Security("is_granted('ROLE_RESERVATION_REPORT')")
      * @Template()
      * @Route("/reservation_report", name="reservation_report")
      */
@@ -932,6 +931,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * @Security("is_granted('ROLE_RESERVATION_REPORT')")
      * @Route("/reservation_report_table", name="reservation_report_table", options={"expose"=true})
      * @param Request $request
      * @return Response
@@ -964,8 +964,32 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'sources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
             'hotels' => $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll(),
             'packageSources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
-            'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
-            'statuses' => $this->container->getParameter('mbh.package.statuses'),
+            'roomTypes' => $this->dm->getRepository('MBHHotelBundle:RoomType')->findAll(),
+            'dataTypes' => SalesChannelsReportCompiler::DATA_TYPES
         ];
+    }
+
+    /**
+     * @Security("is_granted('ROLE_SALES_CHANNELS_REPORT')")
+     * @Route("/sales_channels_report_table", name="sales_channels_report_table", options={"expose"=true})
+     * @param Request $request
+     * @return Response
+     */
+    public function salesChannelsReportTableAction(Request $request)
+    {
+        $begin = $this->helper->getDateFromString($request->get('begin'));
+        $end = $this->helper->getDateFromString($request->get('end'));
+        $filterType = $request->query->get('filterType');
+        $sourcesIds = $this->helper->getDataFromMultipleSelectField($request->query->get('sources'));
+        $roomTypesIds = $this->helper->getDataFromMultipleSelectField($request->query->get('roomTypes'));
+        $hotelsIds = $this->helper->getDataFromMultipleSelectField($request->query->get('hotels'));
+        $isRelative = $isRelative = $request->query->get('isRelative') === 'true';
+        $dataType = $request->query->get('dataType');
+
+        $report = $this->get('mbh.sales_channels_report_compiler')
+            ->setInitData($begin, $end, $filterType, $sourcesIds, $roomTypesIds, $hotelsIds, $isRelative, $dataType)
+            ->generate();
+
+        return $report->generateReportTableResponse();
     }
 }

@@ -4,11 +4,9 @@
 {% set layout = 'box' %}
 
 {% block content %}
-    <input id="default-begin-date" type="hidden" value="{{ filter_begin_date()|date('d.m.Y') }}">
-    <input id="default-end-date" type="hidden" value="{{ filter_begin_date()|date_modify('+45 days')|date('d.m.Y') }}">
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'sales-channels-form-widget'} %}
         {% block content %}
-            <form class="form-inline filter-form remember" id="sales-channels-report-filter-form" role="form">
+            <form class="form-inline filter-form remember mbh-start-date" id="sales-channels-report-filter-form" role="form">
                 <div class="input">
                     <i class="fa fa-calendar" title='{{ 'sales_channels_report.dates.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
@@ -23,20 +21,18 @@
                            data-date-format="dd.mm.yyyy">
                 </div>
                 <div class="input">
-                    <i class="fa fa-paper-plane" title='{{ 'sales_channels_report.package_type.title'|trans }}'
+                    <i class="fa fa-sort" title='{{ 'sales_channels_report.sort_by.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
-                    <select multiple id="sales-channels-report-filter-package-type" class="form-control input-sm">
-                        <option></option>
-                        {% for key, status in statuses %}
-                            <option value="{{ key }}" data-class="{{ status.class }}"
-                                    data-icon="{{ status.icon }}">{{ status.title|trans }}</option>
-                        {% endfor %}
+                    <select id="sales-channels-report-filter-type" class="form-control input-sm" style="width: 150px !important;">
+                        <option value="source">{{ 'sales_channels_report.sort_by.source'|trans}}</option>
+                        <option value="status">{{ 'sales_channels_report.sort_by.status'|trans}}</option>
                     </select>
                 </div>
                 <div class="input">
                     <i class="fa fa-compass" title='{{ 'sales_channels_report.package_source.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
-                    <select multiple id="sales-channels-report-filter-hotels" class="form-control input-sm">
+                    <select multiple id="sales-channels-report-filter-sources" style="width: 350px"
+                            class="form-control input-sm">
                         <option></option>
                         {% for source in sources %}
                             <option value="{{ source.id }}">{{ source.name }}</option>
@@ -47,7 +43,7 @@
                     <i class="fa fa-bed" title='{{ 'sales_channels_report.room_type.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
                     <select multiple
-                            id="sales-channels-report-filter-hotels" class="form-control input-sm">
+                            id="sales-channels-report-filter-room-types" class="form-control input-sm">
                         <option></option>
                         {% for roomType in roomTypes %}
                             <option value="{{ roomType.id }}">{{ roomType.name }}</option>
@@ -64,16 +60,36 @@
                         <option></option>
                         {% for hotel in hotels %}
                             <option value="{{ hotel.id }}"
-                                    {% if hotel.id in app.request.get('hotels') and hotels|length != app.request.get('hotels')|length %}selected{% endif %}>{{ hotel.name }}</option>
+                                    {% if hotel.id in app.request.get('hotels') and hotels|length != app.request.get('hotels')|length %}selected{% endif %}>
+                                {{ hotel.name }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="input">
-                    <button type="button" id="sales-channels-report-update-table-button" class="btn btn-primary">{{ 'views.report.polls.select_button.title'|trans({}, 'MBHPackageBundle')}}</button>
+                    <i class="fa fa-calculator" title='{{ 'sales_channels_report.data_types'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp
+                    <select id="sales-channels-report-filter-data-type" class="form-control input-sm">
+                        <option></option>
+                        {% for dataType in dataTypes %}
+                            <option value="{{ dataType }}">{{ ('sales_channels_report.data_types.' ~ dataType)|trans }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input">
+                    <strong title='{{ 'sales_channels_report.in_percents.title'|trans }}'
+                            data-toggle='tooltip'>%</strong>&nbsp
+                    <input type="checkbox" id="sales-channels-report-filter-is-relative">
+                </div>
+                <div class="input">
+                    <button type="button" id="sales-channels-report-update-table-button"
+                            class="btn btn-primary report-update-button">
+                        {{ 'views.report.polls.select_button.title'|trans({}, 'MBHPackageBundle') }}
+                    </button>
                 </div>
             </form>
         {% endblock content %}
     {% endembed %}
 
-    <div id="sales-channels-report-table" class="scrolling" style="position:relative;"></div>
+    <div id="sales-channels-report-table" class="scrolling report-wrapper" data-report-id="salesChannels" style="position:relative;"></div>
 {% endblock %}

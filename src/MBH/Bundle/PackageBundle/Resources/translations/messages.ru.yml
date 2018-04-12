@@ -1283,6 +1283,7 @@ views.report.reservation_report.period.title: 'Период'
 views.report.reservation_report.report_date.title: 'Дата'
 views.report.reservation_report.room_types.title: 'Типы комнат'
 reservation_report.number_of_packages_common: 'Забронировано номеров'
+reservation_report.total_row: Итого
 reservation_report.number_of_packages: 'Забронировано номеров по состоянию на %date%'
 reservation_report.previous_number_of_packages: 'Забронировано номеров по состоянию на %previousDate%'
 reservation_report.date: 'Дата'
@@ -1293,6 +1294,15 @@ reservation_report.previous_packages_price: 'Цена по состоянию н
 
 sales_channels_report.title: 'Каналы продаж'
 sales_channels_report.dates.title: 'Даты'
-sales_channels_report.package_type.title: 'Тип брони'
+sales_channels_report.sort_by.title: 'Тип сортировки'
+sales_channels_report.sort_by.source: 'По источнику'
+sales_channels_report.sort_by.status: 'По типу брони'
 sales_channels_report.package_source.title: 'Источник продаж'
 sales_channels_report.room_type.title: 'Тип комнаты'
+sales_channels_report.data_types: 'Тип данных'
+sales_channels_report.data_types.count: 'Количество броней'
+sales_channels_report.data_types.sum: 'Стоимость броней'
+sales_channels_report.data_types.man-day: 'Человеко-дней'
+sales_channels_report.in_percents.title: 'В процентах?'
+sales_channels_report_compiler.date: Дата
+sales_channels_report_compiler.total: Итого

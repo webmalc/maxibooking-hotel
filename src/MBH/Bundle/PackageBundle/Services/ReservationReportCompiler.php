@@ -133,7 +133,8 @@ class ReservationReportCompiler
                 }
             }
         }
-        $this->generateTableRows('Итого', $numberOfDays, $reportPeriod, $totalData, $dataHandlers, $cellsCallbacks, $rowsCallbacks);
+        $totalRowTitle = $this->translator->trans('reservation_report.total_row');
+        $this->generateTableRows($totalRowTitle, $numberOfDays, $reportPeriod, $totalData, $dataHandlers, $cellsCallbacks, $rowsCallbacks);
 
         return $this->report;
     }

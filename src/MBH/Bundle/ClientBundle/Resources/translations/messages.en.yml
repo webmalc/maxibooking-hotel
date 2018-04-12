@@ -114,7 +114,7 @@ form.clientConfigType.currency.options.eur: Euro
 form.clientConfigType.currency.options.rub: Rubles
 form.clientConfigType.currency.label: Currency
 controller.clientConfig.change_time_zone_contact_support: 'To change the time zone, please contact support:"%supportEmail%"'
-room_controller.limit_of_room_fund_exceeded: 'Number of rooms exceeds available maximum set in rates. Available number of rooms: %availableNumberOfRooms%. Check details here <a target="_blank" href="%overviewUrl%">информация по номерам</a>'
+room_controller.limit_of_room_fund_exceeded: 'Number of rooms exceeds available maximum set in rates. Available number of rooms: %availableNumberOfRooms%. Check details here <a target="_blank" href="%overviewUrl%">rooms info</a>'
 controller.color_settings_action.config_successful_reset: 'Default settings are set'
 controller.color_settings_action.config_successful_saved: 'Settings saved successfully'
 form.clientPaymentSystemType.stripe_commission.label: 'Commission (in percent)'

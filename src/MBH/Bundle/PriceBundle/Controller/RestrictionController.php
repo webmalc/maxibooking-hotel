@@ -105,7 +105,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             return array_merge($response, ['error' => $this->container->get('translator')->trans('price.controller.restrictioncontroller.room_types_not_found')]);
         }
         //get tariffs
-        $requestTariffs = $request->get('tariffs');
+        $requestTariffs = $this->helper->getDataFromMultipleSelectField($request->get('tariffs'));
         $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
             ->fetchChildTariffs($hotel, 'restrictions', $requestTariffs)
         ;

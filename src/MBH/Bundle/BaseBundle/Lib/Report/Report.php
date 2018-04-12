@@ -21,7 +21,7 @@ class Report
     private $twigEngine;
     protected $title;
     protected $rowTitles;
-    protected $commonRowTitles;
+    protected $commonRowTitles = [];
 
     public function __construct(TwigEngine $twigEngine)
     {

@@ -248,3 +248,13 @@ services:
             - '@translator'
             - '@mbh.helper'
             - '@mbh.calculation'
+
+    mbh.sales_channels_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\SalesChannelsReportCompiler
+        shared: false
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+            - '%mbh.package.statuses%'
+            - '@mbh.helper'

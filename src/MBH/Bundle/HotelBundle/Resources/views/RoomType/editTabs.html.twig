@@ -9,9 +9,9 @@
             {{ 'views.hotel.roomType.editTabs.photo'|trans }}
         </a>
     </li>
-    <li {{ active == 3 ? 'class="active"' : '' }}>
-        <a href="{{ path('room_type_task_edit', {'id': entity.id}) }}">
-            {{ 'views.hotel.roomType.editTabs.tasks'|trans }}
-        </a>
-    </li>
+    {#<li {{ active == 3 ? 'class="active"' : '' }}>#}
+        {#<a href="{{ path('room_type_task_edit', {'id': entity.id}) }}">#}
+            {#{{ 'views.hotel.roomType.editTabs.tasks'|trans }}#}
+        {#</a>#}
+    {#</li>#}
 </ul>
