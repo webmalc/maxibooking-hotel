@@ -1,6 +1,10 @@
 MaxiBooking Hotel project
 ========================
 
+jenkins
+--------
+Jenkins TEST
+
 vagrant
 -------
 **Запуск виртуальной машины**
