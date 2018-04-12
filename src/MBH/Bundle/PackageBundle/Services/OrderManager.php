@@ -151,7 +151,11 @@ class OrderManager implements Searchable
                 $searchQuery = $this->dm->find(SearchQuery::class, $searchQueryId);
                 $new->addSearchQuery($searchQuery);
             }
-            $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
+
+            $begin = $new->getBegin() > $old->getBegin() ? $old->getBegin() : $new->getBegin();
+            $end = $new->getEnd() > $old->getEnd() ? $new->getEnd() : $old->getEnd();
+
+            $this->container->get('mbh.channelmanager')->updateRoomsInBackground($begin, $end);
 
             return $new;
         }

@@ -558,7 +558,7 @@ class PackageRepository extends DocumentRepository
         $qb = $this->createQueryBuilder();
         $now = new \DateTime('midnight');
         $orderData = [];
-        $isShowDeleted = isset($data['deleted']) && $data['deleted'];
+        $showDeleted = (isset($data['deleted']) && $data['deleted']) || (isset($data['dates']) && $data['dates'] === 'deletedAt');
 
         //confirmed
         if (isset($data['confirmed']) && $data['confirmed'] != null) {
@@ -579,7 +579,7 @@ class PackageRepository extends DocumentRepository
             $orderData = array_merge($orderData, ['asIdsArray' => true, 'source' => $data['source']]);
         }
         if (!empty($orderData)) {
-            if ($isShowDeleted && $dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            if ($showDeleted && $dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
 
@@ -780,7 +780,7 @@ class PackageRepository extends DocumentRepository
         }
 
         //deleted if
-        if ($isShowDeleted || $dateType == 'deletedAt') {
+        if ($showDeleted) {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
