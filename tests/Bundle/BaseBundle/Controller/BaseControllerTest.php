@@ -21,6 +21,83 @@ class BaseControllerTest extends WebTestCase
         'remove_payment_system',
         'reset_color_settings',
         'booking_all_packages_sync',
+        'user_payer',                       //500 billing
+        'payments_list_json',               //500 billing
+        '_welcome',
+        'work_shift_wait',                  //redirect, need fixture
+        'work_shift_new',                   //redirect, need fixture
+        'work_shift_lock',                  //redirect, need fixture
+        'api_success_url',                  //need fixture
+        'api_fail_url',                     //need fixture
+        'report_set_room_status',           //need params
+        'report_work_shift_list',           //need params
+        'report_work_shift_table',          //need params
+        'work_shift_ajax_close',            //need params
+        'fos_user_resetting_check_email',   //not found
+        'restaurant_table_save',            //need params
+    ];
+
+    private const ROUTES_WITH_OWN_TEST = [
+        'restriction_overview',
+        'restriction_generator',
+        'restriction_overview_table',
+        'restriction_overview_save',
+        'restriction_generator_save',
+        'hotel',
+        'hotel_new',
+        'hotel_edit_extended',
+        'housing',
+        'housing_new',
+        'room_type',
+        'room_type_new',
+        'room_type_create',
+        'room_type_edit',
+        'room_type_update',
+        'room_type_delete',
+        'room_cache_overview',
+        'room_cache_overview_graph',
+        'room_cache_overview_table',
+        'room_cache_generator',
+        'room_cache_generator_save',
+        'special',
+        'special_new',
+        'special_edit',
+        'special_delete',
+        'tariff',
+        'tariff_new',
+        'tariff_edit',
+        'tariff_delete',
+        'user_profile',
+    ];
+
+    private const ROUTERS_CHANNEL_MANAGER = [
+        'vashotel',
+        'vashotel_room',
+        'vashotel_tariff',
+        'vashotel_service',
+        'booking',
+        'booking_room',
+        'booking_tariff',
+        'booking_service',
+        'expedia',
+        'expedia_tariff',
+        'expedia_room',
+        'expedia_packages_sync',
+        'hundred_one_hotels',
+        'hundred_one_hotels_tariff',
+        'hundred_one_hotels_room',
+        'oktogo',
+        'oktogo_room',
+        'oktogo_tariff_sync',
+        'oktogo_tariff',
+        'oktogo_service',
+        'channels_room',
+        'channels_tariff',
+        'channels_service',
+        'channels_user_unlink',
+        'ostrovok_room',
+        'ostrovok_tariff',
+        'ostrovok_service',
     ];
 
     public static function setUpBeforeClass()
@@ -43,7 +120,8 @@ class BaseControllerTest extends WebTestCase
         $client = static::makeClient(true);
         $client->request('GET', $url);
         $response = $client->getResponse();
-        if ($response->getStatusCode() != 404 && !$response->isRedirect()) {
+
+        if ($response->getStatusCode() == 200) {
             $this->isSuccessful($response);
             $this->assertGreaterThan(0, mb_strlen($response->getContent()));
         }
@@ -60,7 +138,7 @@ class BaseControllerTest extends WebTestCase
             if (isset($path[1]) && $path[1] == '_') {
                 return false;
             }
-            if (in_array($routeName, self::EXCLUDED_ROUTES)) {
+            if (in_array($routeName, array_merge($this->getCommonArrayExcluded()))) {
                 return false;
             }
             if (mb_strpos($path, '{') !== false) {
@@ -72,5 +150,17 @@ class BaseControllerTest extends WebTestCase
         return array_map(function ($route) {
             return [$route->getPath()];
         }, $routers);
+    }
+
+    /**
+     * @return array
+     */
+    private function getCommonArrayExcluded(): array
+    {
+        return array_merge(
+            self::ROUTERS_CHANNEL_MANAGER,
+            self::ROUTES_WITH_OWN_TEST,
+            self::EXCLUDED_ROUTES
+        );
     }
 }

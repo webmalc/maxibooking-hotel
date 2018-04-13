@@ -48,24 +48,12 @@ class RestrictionControllerTest extends WebTestCase
      */
     private $tariffs;
 
-//    /**
-//     * @var array
-//     */
-//    private $allRestrictions;
-
     public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
 
         self::baseFixtures();
     }
-
-//    public function setUp()
-//    {
-//        parent::setUp();
-//
-//        $this->initRestriction();
-//    }
 
     public static function tearDownAfterClass()
     {

@@ -44,6 +44,11 @@ class ProfileControllerTest extends WebTestCase
         $this->dm = $this->getDocumentManager();
     }
 
+    public static function tearDownAfterClass()
+    {
+        self::clearDB();
+    }
+
     /**
      * проверяем статус ответа
      */
