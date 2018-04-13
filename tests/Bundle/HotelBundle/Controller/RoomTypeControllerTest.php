@@ -77,6 +77,11 @@ class RoomTypeControllerTest extends WebTestCase
         $this->setFacilities();
     }
 
+    public static function tearDownAfterClass()
+    {
+        self::clearDB();
+    }
+
     /**
      * проверяем статус ответа
      */

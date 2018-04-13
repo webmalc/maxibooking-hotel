@@ -9,7 +9,7 @@ use Symfony\Component\Process\Process;
 
 class CreateTemplateTestDBCommand extends ContainerAwareCommand
 {
-    public const MB_CLIENT_TEST_USER = 'test';
+    public const CLIENT_NAME_FOR_CREATION_OF_TEMPLATE_TEST_DB = 'client_for_create_tm_db';
 
     /**
      * {@inheritdoc}
@@ -52,7 +52,7 @@ class CreateTemplateTestDBCommand extends ContainerAwareCommand
         $process = new Process(
             'nohup php '.$rootDir.'/../bin/console '.$command.' --env=dev '.($paramsString ?? ''),
             null,
-            [\AppKernel::CLIENT_VARIABLE => self::MB_CLIENT_TEST_USER]
+            [\AppKernel::CLIENT_VARIABLE => self::CLIENT_NAME_FOR_CREATION_OF_TEMPLATE_TEST_DB]
         );
         $process->mustRun();
     }
