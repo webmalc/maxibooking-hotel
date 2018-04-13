@@ -5,7 +5,8 @@
     {% set save = true %}
 {% endif %}
 {% if redirectTo is not defined or not redirectTo %}
-    {% set redirectTo = title_url|default(path('_welcome')) %}
+    {% set queryParams = app.request.query.all %}
+    {% set redirectTo = queryParams['url'] is defined ? queryParams['url'] : title_url|default(path('_welcome')) %}
 {% endif %}
 
 <ul class="nav navbar-nav">
