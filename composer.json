@@ -109,6 +109,12 @@
       },
       {
         "file": "app/config/version.yml"
+      },
+      {
+        "file": "app/config/database.env"
+      },
+      {
+        "file": "app/config/clients/test.env"
       }
     ],
     "branch-alias": {
