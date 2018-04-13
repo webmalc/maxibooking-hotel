@@ -20,11 +20,14 @@ class SalesChannelsReportCompiler
 {
     const DATES_ROW_OPTION = 'dates';
     const TOTAL_ROW_OPTION = 'total';
+    const WITHOUT_SOURCE_ROW_OPTION = 'without_source';
     const TOTAL_COLUMN_OPTION = 'total_column';
     const TITLE_COLUMN_OPTION = 'title';
+
     const PACKAGES_COUNT_DATA_TYPE = 'count';
     const SUM_DATA_TYPE = 'sum';
     const MAN_DAYS_COUNT_DATA_TYPE = 'man-day';
+
     const DATA_TYPES = [
         self::PACKAGES_COUNT_DATA_TYPE,
         self::SUM_DATA_TYPE,
@@ -75,7 +78,7 @@ class SalesChannelsReportCompiler
      * @param string $dataType
      * @return SalesChannelsReportCompiler
      */
-    public function setInitData(
+    private function setInitData(
         \DateTime $begin,
         \DateTime $end,
         string $filterType,
@@ -103,11 +106,18 @@ class SalesChannelsReportCompiler
         return $this;
     }
 
-    public function generate()
+    public function generate(
+        \DateTime $begin,
+        \DateTime $end,
+        string $filterType,
+        array $sourcesIds,
+        array $requestRoomTypesIds,
+        array $hotelsIds,
+        bool $isRelativeValues,
+        string $dataType
+    )
     {
-        if (!$this->isInitialDataInit) {
-            throw new \LogicException('Initial data was not initialized!');
-        }
+        $this->setInitData($begin, $end, $filterType, $sourcesIds, $requestRoomTypesIds, $hotelsIds, $isRelativeValues, $dataType);
 
         /** @var RoomType[] $roomTypes */
         $roomTypes = array_values($this->dm
@@ -135,12 +145,12 @@ class SalesChannelsReportCompiler
             ];
 
             $roomTypePackages = isset($sortedPackages[$roomType->getId()]) ? $sortedPackages[$roomType->getId()] : [];
-            $this->generateTable($roomType->getName(), $roomTypePackages, $cellsCallbacks, $rowsCallbacks);
+            $this->generateTable($roomType->getName(), 'warning', $roomTypePackages, $cellsCallbacks, $rowsCallbacks);
         }
 
         if (count($roomTypes) > 1) {
             $totalTableTitle = $this->translator->trans('sales_channels_report_compiler.total');
-            $this->generateTable($totalTableTitle, $this->sortPackagesByDays($packages), $cellsCallbacks);
+            $this->generateTable($totalTableTitle, 'success', $this->sortPackagesByDays($packages), $cellsCallbacks);
         }
 
         [$rowTitles, $rowOptions] = $this->getRowTitlesAndOptions();
@@ -176,14 +186,15 @@ class SalesChannelsReportCompiler
 
     /**
      * @param string $tableTitle
+     * @param string $tableTitleClass
      * @param array $roomTypePackages
      * @param $cellsCallbacks
-     * @param $rowsCallbacks
+     * @param array $rowsCallbacks
      */
-    private function generateTable(string $tableTitle, array $roomTypePackages, $cellsCallbacks, $rowsCallbacks = []): void
+    private function generateTable(string $tableTitle, string $tableTitleClass, array $roomTypePackages, $cellsCallbacks, $rowsCallbacks = []): void
     {
         [$rowTitles, $rowOptions] = $this->getRowTitlesAndOptions();
-        $table = $this->createTable($tableTitle);
+        $table = $this->createTable($tableTitle, $tableTitleClass);
         $dataHandlers = $this->getDatesDataHandlers($rowTitles, $roomTypePackages);
         $columnOptions = array_keys($dataHandlers);
         $table->generateRowsByColumnHandlers($rowOptions, $columnOptions, $dataHandlers, $cellsCallbacks, $rowsCallbacks);
@@ -212,6 +223,8 @@ class SalesChannelsReportCompiler
                 foreach ($sources as $source) {
                     $rowTitles[$source->getCode()] = $source->getName();
                 }
+                $rowTitles[self::WITHOUT_SOURCE_ROW_OPTION]
+                    = $this->translator->trans('sales_channels_report_compiler.without_source');
             } else {
                 $rowTitles = [];
                 foreach ($this->statuses as $statusId => $statusData) {
@@ -304,13 +317,13 @@ class SalesChannelsReportCompiler
      * @param string $tableName
      * @return ReportTable
      */
-    private function createTable(string $tableName): ReportTable
+    private function createTable(string $tableName, string $tableTitleClass): ReportTable
     {
         $table = $this->report->addReportTable();
         $table->addClass('sales-channels-report-table');
 
         $roomTypeTitleRow = $table->addRow();
-        $roomTypeTitleRow->addClass('warning');
+        $roomTypeTitleRow->addClass($tableTitleClass);
         $roomTypeTitleRow->addClass('total-row');
         $roomTypeTitleCell = $roomTypeTitleRow->createAndAddCell($tableName, $this->numberOfDays + 2);
         $roomTypeTitleCell->addClass('horizontal-text-scrollable');
@@ -326,13 +339,30 @@ class SalesChannelsReportCompiler
         $cellsCallbacks = [
             'classes' => function (ReportCell $cell) {
                 $classes = [];
-                if (!in_array($cell->getRowOption(), [self::DATES_ROW_OPTION, self::TOTAL_ROW_OPTION])) {
+                if (!in_array($cell->getRowOption(), [self::DATES_ROW_OPTION])) {
                     if ($cell->getColumnOption() === self::TOTAL_COLUMN_OPTION) {
                         $classes[] = 'total-graph-drawable';
                     } else {
                         $classes[] = 'graph-drawable';
                     }
                 }
+
+                if (!in_array($cell->getColumnOption(), [self::TOTAL_COLUMN_OPTION, self::TITLE_COLUMN_OPTION])
+                    && $cell->getRowOption() === self::DATES_ROW_OPTION
+                ) {
+                    $date = $this->helper->getDateFromString($cell->getValue(), 'd.m');
+                    if ($date === false) {
+                        $date = $this->helper->getDateFromString($cell->getValue());
+                    }
+                    if (in_array($date->format('N'), ['6', '7'])) {
+                        $classes[] = 'text-danger';
+                    }
+                }
+
+                if ($cell->getColumnOption() === self::TOTAL_COLUMN_OPTION) {
+                    $classes[] = 'total-column';
+                }
+
                 if ($cell->getColumnOption() !== self::TITLE_COLUMN_OPTION) {
                     $classes[] = 'text-center';
                 } else {
@@ -342,6 +372,7 @@ class SalesChannelsReportCompiler
                 return $classes;
             }
         ];
+
         return $cellsCallbacks;
     }
 }

@@ -1306,3 +1306,4 @@ sales_channels_report.data_types.man-day: 'Человеко-дней'
 sales_channels_report.in_percents.title: 'В процентах?'
 sales_channels_report_compiler.date: Дата
 sales_channels_report_compiler.total: Итого
+sales_channels_report_compiler.without_source: 'Без источника'

@@ -238,7 +238,7 @@ services:
 
     mbh.random_packages_generator:
         class: MBH\Bundle\PackageBundle\Services\RandomPackagesGenerator
-        arguments: ['@mbh.package.search', '@mbh.order_manager', '@doctrine.odm.mongodb.document_manager']
+        arguments: ['@mbh.package.search', '@mbh.order_manager', '@doctrine.odm.mongodb.document_manager', '@mbh.helper']
 
     mbh.reservation_report:
         class: MBH\Bundle\PackageBundle\Services\ReservationReportCompiler

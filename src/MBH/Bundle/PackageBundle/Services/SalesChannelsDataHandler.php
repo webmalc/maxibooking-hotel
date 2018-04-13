@@ -64,7 +64,10 @@ class SalesChannelsDataHandler extends ReportDataHandler
     {
         $this->columnData[SalesChannelsReportCompiler::TOTAL_ROW_OPTION] = 0;
         foreach ($this->packages as $package) {
-            $rowOption = $this->categoriesType === 'status' ? $package->getStatus() : $package->getSource()->getCode();
+            $rowOption = $this->categoriesType === 'status'
+                ? $package->getStatus()
+                : ($package->getSource() ? $package->getSource()->getCode() : SalesChannelsReportCompiler::WITHOUT_SOURCE_ROW_OPTION);
+
             $packageValue = $this->getPackageValue($package);
             !isset($this->columnData[$rowOption])
                 ? $this->columnData[$rowOption] = $packageValue

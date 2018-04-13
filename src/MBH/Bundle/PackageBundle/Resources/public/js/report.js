@@ -81,10 +81,13 @@ var REPORT_SETTINGS = {
 
             return xAxisData;
         },
-        getInterrelatedOptions: function () {
+        getInterrelatedOptions: function (rowOption) {
             var excludedOptions = ['dates', 'total'];
+            if (excludedOptions.indexOf(rowOption) > -1) {
+                return [rowOption];
+            }
+
             var interrelatedOptions = [];
-            console.log(12312);
             for (var iteratedOption in jsonData['rowTitles']) {
                 if (jsonData['rowTitles'].hasOwnProperty(iteratedOption) && excludedOptions.indexOf(iteratedOption) === -1) {
                     interrelatedOptions.push(iteratedOption);
@@ -92,7 +95,9 @@ var REPORT_SETTINGS = {
             }
 
             return interrelatedOptions;
-        }
+        },
+        canDrawTotalGraphs: true,
+        excludedRowOptionsInTotal: ['total', 'dates']
     }
 };
 
@@ -224,6 +229,7 @@ function updateReportTable(reportSettings) {
             if (reportSettings.isScrollable) {
                 setScrollable($reportWrapper.get(0));
                 initGraphDrawing(reportSettings);
+                initTotalChart(reportSettings);
             }
         },
         error: function () {
@@ -278,21 +284,14 @@ function initGraphDrawing(reportSettings) {
     }
 }
 
-function initTotalChart(seriesData, graphName) {
-    var reportSettings = getReportSettings();
-    if (reportSettings.canDrawGraphs) {
-        $('td.total-graph-drawable').dblclick(function () {
-            var $cell = $(this);
-            var numberOfTable = $cell.closest('table').attr('data-table-number');
-            var graphData = [];
-            var graphName = jsonData.commonRowTitles['channel_manager'];
-            if (reportSettings.byRows) {
-                var tableData = jsonData['tableData'][numberOfTable];
+function showGraphModal(modalTitle) {
+    var $graphModal = $('#graph-modal');
+    $graphModal.modal('show');
+    $graphModal.find('h4.modal-title').html(modalTitle);
+}
 
-            }
-        });
-    }
-
+var showTotalGraph = function (graphName, series) {
+    showGraphModal(graphName);
     Highcharts.chart('graph-wrapper', {
         chart: {
             plotBackgroundColor: null,
@@ -301,10 +300,10 @@ function initTotalChart(seriesData, graphName) {
             type: 'pie'
         },
         title: {
-            text: graphName
+            text: ''
         },
         tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}% / {point.y:.1f}</b>'
         },
         plotOptions: {
             pie: {
@@ -312,19 +311,51 @@ function initTotalChart(seriesData, graphName) {
                 cursor: 'pointer',
                 dataLabels: {
                     enabled: true,
-                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} % / {point.y:.1f}',
                     style: {
                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
                     }
                 }
             }
         },
-        series: seriesData
+        series: series
     });
+    $('text:contains("Highcharts.com")').hide();
+};
+
+function initTotalChart(reportSettings) {
+    if (reportSettings.canDrawTotalGraphs) {
+        $('td.total-graph-drawable').dblclick(function () {
+            var $cell = $(this);
+            var $table = $cell.closest('table');
+            var numberOfTable = $table.attr('data-table-number');
+            var graphData = [];
+            var tableName = $table.find('.scrollable-text-span').html();
+            var graphName = jsonData.commonRowTitles[Object.getOwnPropertyNames(jsonData.commonRowTitles)[0]]
+                + ' ' + $('#sales-channels-report-filter-begin').val() + ' - ' + $('#sales-channels-report-filter-end').val()
+                + ' (' + tableName + ') '
+            ;
+            if (reportSettings.byRows) {
+                var tableData = jsonData['tableData'][numberOfTable];
+                for (var rowOption in tableData) {
+                    if (tableData.hasOwnProperty(rowOption) && reportSettings.excludedRowOptionsInTotal.indexOf(rowOption) === -1) {
+                        var rowOptionTitle = jsonData['rowTitles'][rowOption];
+                        var rowTotalValue = tableData[rowOption]['total_column'];
+                        if (rowTotalValue > 0) {
+                            graphData.push({name: rowOptionTitle, y: rowTotalValue});
+                        }
+                    }
+                }
+            }
+
+            var series = [{name: graphName, colorByPoint: true, data: graphData}];
+            showTotalGraph(graphName, series);
+        });
+    }
 }
 
 function showGraph(data, graphName) {
-    $('#graph-modal').modal('show');
+    showGraphModal('');
     var seriesList = [];
 
     data.forEach(function (rowData, index) {

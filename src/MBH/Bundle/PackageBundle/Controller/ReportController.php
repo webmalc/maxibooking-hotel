@@ -987,8 +987,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $dataType = $request->query->get('dataType');
 
         $report = $this->get('mbh.sales_channels_report_compiler')
-            ->setInitData($begin, $end, $filterType, $sourcesIds, $roomTypesIds, $hotelsIds, $isRelative, $dataType)
-            ->generate();
+            ->generate($begin, $end, $filterType, $sourcesIds, $roomTypesIds, $hotelsIds, $isRelative, $dataType);
 
         return $report->generateReportTableResponse();
     }
