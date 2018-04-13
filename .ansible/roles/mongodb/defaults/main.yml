@@ -42,10 +42,10 @@ mongodb_users:
     database: maxibooking
   }
   - {
-    name: test,
+    name: user_test_db,
     password: testpwd,
     roles: ['readWrite', 'dbAdmin'],
-    database: template_test
+    database: template_db_for_test
   }
   - {
     name: test,

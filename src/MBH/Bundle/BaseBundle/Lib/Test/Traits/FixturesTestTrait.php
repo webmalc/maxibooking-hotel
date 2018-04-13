@@ -34,7 +34,7 @@ trait FixturesTestTrait
     {
         self::clearDB();
         $container = self::getContainerStat();
-        $container->get('mbh.billing_mongo_client')->copyDatabase('template_test', $container->getParameter('mongodb_database'));
+        $container->get('mbh.billing_mongo_client')->copyDatabase('template_db_for_test', $container->getParameter('mongodb_database'));
     }
 
     protected static function getContainerStat()
