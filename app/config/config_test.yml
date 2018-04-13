@@ -12,9 +12,6 @@ swiftmailer:
     disable_delivery: true
 
 parameters:
-    mbh.mongodb:
-          url: "mongodb://%mongodb_host%/%mongodb_database%%mongodb_options%"
-          db : "%mongodb_database%"
     mbh_cache:
         is_enabled: true
         prefix: mbh

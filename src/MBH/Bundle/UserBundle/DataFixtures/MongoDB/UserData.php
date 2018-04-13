@@ -31,7 +31,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
         ],
         'user-demo' => [
             'username' => self::SANDBOX_USERNAME,
-            'email' => 'mb@example.com',
+            'email' => 'mb-error@maxi-booking.com',
             'role' => 'ROLE_SUPER_ADMIN',
             'password' => 'demo'
         ],

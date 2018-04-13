@@ -559,6 +559,8 @@ class HundredOneHotels extends Base
         foreach ($orderInfo->getPackages() as $packageInfo) {
             $package = $this->createPackage($packageInfo, $order);
             $order->addPackage($package);
+            //Double persist because of doctrine bug
+            $this->dm->persist($package);
             $this->dm->persist($package);
             $this->dm->flush();
         }
