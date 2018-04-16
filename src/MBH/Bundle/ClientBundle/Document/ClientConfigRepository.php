@@ -48,4 +48,13 @@ class ClientConfigRepository extends DocumentRepository
         $this->dm->flush();
     }
 
+    /**
+     * @param $isCacheValid
+     */
+    public function changeCacheValidity($isCacheValid)
+    {
+        $config = $this->fetchConfig();
+        $config->setIsCacheValid($isCacheValid);
+        $this->dm->flush();
+    }
 }
