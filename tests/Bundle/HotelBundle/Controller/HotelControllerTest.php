@@ -75,6 +75,9 @@ class HotelControllerTest extends WebTestCase
 
     }
 
+    /**
+     * @depends testDelete
+     */
     public function testExtendedInformationForm()
     {
         $fixtures = $this->loadFixtures([
