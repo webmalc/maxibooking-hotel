@@ -317,7 +317,9 @@ class OrderManager implements Searchable
                 throw new Exception('Create order error: validation errors.');
             }
 
-            if (($data['status'] == 'offline' && $this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_AUTO_CONFIRMATION')) ||
+            if (($data['status'] == 'offline'
+                    && $this->container->get('security.token_storage')->getToken()
+                    && $this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_AUTO_CONFIRMATION')) ||
                 ($user instanceof User && in_array('ROLE_ORDER_AUTO_CONFIRMATION', $user->getRoles()))
             ) {
                 $order->setConfirmed(true);
@@ -449,7 +451,9 @@ class OrderManager implements Searchable
             );
         }
 
-        if ($user && !$this->container->get('mbh.hotel.selector')->checkPermissions($results[0]->getRoomType()->getHotel())) {
+        if ($user
+            && $this->container->get('security.token_storage')->getToken()
+            && !$this->container->get('mbh.hotel.selector')->checkPermissions($results[0]->getRoomType()->getHotel())) {
             throw new PackageCreationException($order, 'Acl error: permissions denied');
         }
 
@@ -738,7 +742,7 @@ class OrderManager implements Searchable
     {
         $data = [
             'hotel' => $hotel,
-            'roomType' => $request->get('roomType'),
+            'roomType' => $this->helper->getDataFromMultipleSelectField($request->get('roomType')),
             'status' => $request->get('status'),
             'deleted' => $request->get('deleted'),
             'begin' => $request->get('begin'),

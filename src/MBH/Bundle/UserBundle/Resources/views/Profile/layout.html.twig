@@ -4,8 +4,8 @@
 {% set layout = 'tabs' %}
 
 {% set menu = [] %}
-{% if is_granted('ROLE_PASSWORD') %}
-    {% set menu = menu|merge([{'route': 'user_profile', 'title': '<i class="fa fa-cog"></i> '~ 'views.profile.profile.change_password'|trans({}, 'FOSUserBundle')}])%}
+{% if is_granted('ROLE_PROFILE') %}
+    {% set menu = menu|merge([{'route': 'user_profile', 'title': '<i class="fa fa-cog"></i> '~ 'views.profile.profile'|trans}])%}
 {% else %}
     {% set permissionToPasswordDenied = true %}
 {% endif %}

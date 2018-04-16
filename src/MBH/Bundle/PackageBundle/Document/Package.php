@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -290,7 +291,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "expedia", "hotels", "venere", "ostrovok", "oktogo", "myallocator", "101Hotels"},
+     *      callback="getChannelManagerNames",
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()
@@ -1600,7 +1601,7 @@ class Package extends Base implements \JsonSerializable
                 $clonedPrice = clone $price;
                 $priceWithDiscount = $this->isPercentDiscount
                     ? $price->getPrice() * (1 - $this->getDiscount(false))
-                    : $this->discount * $priceFraction;
+                    : $price->getPrice() - $this->discount * $priceFraction;
                 $clonedPrice->setPrice($priceWithDiscount);
                 $this->packagePricesWithDiscount[] = $clonedPrice;
             }
@@ -1827,6 +1828,14 @@ class Package extends Base implements \JsonSerializable
         });
 
         return $accommodation->first();
+    }
+
+    /**
+     * @return array
+     */
+    public static function getChannelManagerNames()
+    {
+        return AbstractChannelManagerService::getChannelManagerNames();
     }
 
     /**

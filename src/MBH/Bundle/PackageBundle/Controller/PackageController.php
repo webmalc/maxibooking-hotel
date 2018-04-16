@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -801,13 +802,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @param $id
      * @param Room $room
      * @return array|Response
+     * @throws Exception
      */
     public function accommodationNewAction(Request $request, $id, Room $room)
     {
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
         }
-
+        if (!empty($room->getDeletedAt())) {
+            throw new Exception('Room ' . $room->getId() . ' is deleted!');
+        }
         $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
         $accommodation = new PackageAccommodation();
         $accommodation
@@ -848,6 +852,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @param Request $request
      * @param PackageAccommodation $accommodation
      * @return array|Response
+     * @throws Exception
      */
     public function accommodationEditAction(Request $request, PackageAccommodation $accommodation)
     {
@@ -856,7 +861,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
-
+        if (!empty($accommodation->getRoom()->getDeletedAt())) {
+            throw new Exception('Room ' . $accommodation->getRoom()->getId() . ' is deleted!');
+        }
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

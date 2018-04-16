@@ -198,7 +198,7 @@ class RoomCacheGraphGenerator
                 'packageCount' => $c->getPackagesCount(),
                 'leftRooms' => $c->getLeftRooms(),
                 'totalRooms' => $c->getTotalRooms(),
-                'broken' => false
+                'broken' => false,
             ];
 
             if (!isset($this->maxTotalRooms[$r]) || $c->getTotalRooms() > $this->maxTotalRooms[$r]) {

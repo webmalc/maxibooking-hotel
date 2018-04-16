@@ -4,25 +4,26 @@ namespace MBH\Bundle\PriceBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 
 /**
  * Class PriceCacheData
-
  */
 class PriceCacheData extends AbstractFixture implements OrderedFixtureInterface
 {
 
     const DATA = [
-        'Основной тариф' => [
-            'Двухместный' => [1500, 1000, 800],
-            'Трехместный' => [2200, 1500, 1000],
+        'main-tariff' => [
+            'single' => ['ru' => [1200, 900, 700], 'com' => [30, 20, 18]],
+            'roomtype-double' => ['ru' => [1500, 1000, 800], 'com' => [35, 27, 20]],
+            'hotel-triple' => ['ru' => [2200, 1500, 1000], 'com' => [50, 40, 25]],
         ],
-        'Special tariff' => [
-            'Двухместный' => [1000, 800, 500],
-            'Трехместный' => [1200, 1000, 700],
+        'special-tariff' => [
+            'single' => ['ru' => [1200, 900, 700], 'com' => [30, 20, 18]],
+            'roomtype-double' => ['ru' => [1000, 800, 500], 'com' => [35, 27, 20]],
+            'hotel-triple' => ['ru' => [1200, 1000, 700], 'com' => [50, 40, 25]],
         ],
     ];
 
@@ -31,31 +32,35 @@ class PriceCacheData extends AbstractFixture implements OrderedFixtureInterface
      */
     public function doLoad(ObjectManager $manager)
     {
-        
-        $roomTypes = $manager->getRepository('MBHHotelBundle:RoomType')->findAll();
+        $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
         $begin = new \DateTime('midnight');
-        $end = new \DateTime('midnight +15 days');
+        $end = new \DateTime('midnight +6 month');
         $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end);
-        foreach ($roomTypes as $roomType) {
-            $hotel = $roomType->getHotel();
-            $tariffs  = $manager->getRepository('MBHPriceBundle:Tariff')->fetch($hotel);
-            
-            foreach ($tariffs as $tariff) {
-                $data = self::DATA[$tariff->getFullTitle()][$roomType->getFullTitle()] ?? [1000, 500, 300];
-                foreach ($period as $day) {
-                    $cache = new PriceCache();
-                    $cache->setRoomType($roomType)
-                        ->setHotel($hotel)
-                        ->setTariff($tariff)
-                        ->setDate($day)
-                        ->setPrice($data[0])
-                        ->setAdditionalPrice($data[1])
-                        ->setAdditionalChildrenPrice($data[2]);
-                    $manager->persist($cache);
-                    $manager->flush();
+        $localeType = $this->container->getParameter('locale') === 'ru' ? 'ru' : 'com';
+        foreach ($hotels as $hotelNumber => $hotel) {
+            foreach (self::DATA as $tariffKey => $tariffPricesData) {
+                /** @var Tariff $tariff */
+                $tariff = $this->getReference($tariffKey . '/' . $hotelNumber);
+                foreach ($tariffPricesData as $roomKey => $roomPricesData) {
+                    /** @var RoomType $roomType */
+                    $roomType = $this->getReference($roomKey . '/' . $hotelNumber);
+                    $priceData = $roomPricesData[$localeType];
+                    foreach ($period as $day) {
+                        $cache = new PriceCache();
+                        $cache->setRoomType($roomType)
+                            ->setHotel($hotel)
+                            ->setTariff($tariff)
+                            ->setDate($day)
+                            ->setPrice($priceData[0])
+                            ->setAdditionalPrice($priceData[1])
+                            ->setAdditionalChildrenPrice($priceData[2]);
+                        $manager->persist($cache);
+                    }
                 }
             }
         }
+
+        $manager->flush();
     }
 
     public function getOrder()
@@ -68,6 +73,6 @@ class PriceCacheData extends AbstractFixture implements OrderedFixtureInterface
      */
     protected function getEnvs(): array
     {
-        return ['test', 'dev'];
+        return ['test', 'dev', 'sandbox'];
     }
 }

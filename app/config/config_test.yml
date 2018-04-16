@@ -12,9 +12,18 @@ swiftmailer:
     disable_delivery: true
 
 parameters:
-    mongodb_url: 'mongodb://mbh-mongo:27017/db_test'
-    mongodb_database: db_test
-
+    mbh.mongodb:
+          url: "mongodb://%mongodb_host%/%mongodb_database%%mongodb_options%"
+          db : "%mongodb_database%"
+    mbh_cache:
+        is_enabled: true
+        prefix: mbh
+        lifetime: 7
+        logs: false
+        search:
+            months: 6
+            max_duration: 21
+            min_duration: 3
 security:
     firewalls:
         main:

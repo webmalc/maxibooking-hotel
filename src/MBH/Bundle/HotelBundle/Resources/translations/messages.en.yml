@@ -260,6 +260,7 @@ furniture: Furniture
 food: Food
 amenity: Amenities
 technical: Equipment
+mbhhotelbundle.roomTypeData.single.place: 'Standard Single Room'
 mbhhotelbundle.roomTypeData.three.place: Triple
 views.hotel.notFound.error: error
 views.hotel.new.creating: Create

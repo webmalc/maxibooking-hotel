@@ -89,15 +89,15 @@ class ClientConfigType extends AbstractType
                 'label' => 'form.clientConfigType.show_label_tips.label',
                 'help' => 'form.clientConfigType.show_label_tips.help'
             ])
-            ->add(
-                'useRoomTypeCategory',
-                CheckboxType::class,
-                [
-                    'label' => 'form.clientConfigType.is_disabled_room_type_category',
-                    'group' => 'form.clientConfigType.main_group',
-                    'required' => false,
-                ]
-            )
+//            ->add(
+//                'useRoomTypeCategory',
+//                CheckboxType::class,
+//                [
+//                    'label' => 'form.clientConfigType.is_disabled_room_type_category',
+//                    'group' => 'form.clientConfigType.main_group',
+//                    'required' => false,
+//                ]
+//            )
             ->add('priceRoundSign', IntegerType::class, [
                 'required' => false,
                 'label' => 'form.clientConfigType.round.label',

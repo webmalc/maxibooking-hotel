@@ -4,18 +4,14 @@ namespace MBH\Bundle\PriceBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
- * Class PriceData
-
+ * Class TariffData
+ * @package MBH\Bundle\PriceBundle\DataFixtures\MongoDB
  */
 class TariffData extends AbstractFixture implements OrderedFixtureInterface
 {
-
     /**
      * {@inheritDoc}
      */
@@ -41,7 +37,7 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface
             $manager->flush();
             $this->setReference('main-tariff/' . $hotelNumber, $tariff);
 
-            if ($this->getEnv() == 'test' || $this->getEnv() == 'dev') {
+            if ($this->getEnv() !== 'prod') {
                 $special = new Tariff();
                 $special->setFullTitle('Special tariff')
                 ->setIsDefault(false)

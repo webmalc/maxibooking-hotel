@@ -19,13 +19,13 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class RoomTypeControllerTest extends WebTestCase
 {
-    private const NAME_TEST_HOTEL = 'Мой отель #1';
+    private const NAME_TEST_HOTEL = 'Отель Волга';
 
     private const URL_INDEX = '/management/hotel/roomtype/';
     private const TABS_ITEM = 'ul[role="tablist"] > li';
 
-    private const ROOM_TYPE_TAB_NAME_NUM2 = 'Двухместный';
-    private const ROOM_TYPE_TAB_NAME_NUM3 = 'Трехместный';
+    private const ROOM_TYPE_TAB_NAME_NUM2 = 'Стандартный двухместный';
+    private const ROOM_TYPE_TAB_NAME_NUM3 = 'Люкс';
     private const ROOM_TYPE_TAB_NAME_ADD_NEW = 'Новый тип номера';
 
     private const ROOM_TYPE_NEW_FULL_TITLE = 'RoomType_Name';
@@ -102,16 +102,16 @@ class RoomTypeControllerTest extends WebTestCase
         $tabs = $crawler->filter(self::TABS_ITEM);
 
         $this->assertCount(
-            3,
+            4, // кол-во вкладок с типами номеров
             $tabs
         );
 
         $roomTypeIdNum2 = $this->getRoomType();
         $roomTypeIdNum3 = $this->getRoomType(self::ROOM_TYPE_TAB_NAME_NUM3);
 
-        $linkNum2 = $tabs->eq(0)->filter('a');
-        $linkNum3 = $tabs->eq(1)->filter('a');
-        $linkAdd = $tabs->eq(2)->filter('a');
+        $linkNum2 = $tabs->eq(1)->filter('a');
+        $linkNum3 = $tabs->eq(0)->filter('a');
+        $linkAdd = $tabs->eq(3)->filter('a');
 
 
         $this->linkTest($linkNum2, self::ROOM_TYPE_TAB_NAME_NUM2, '#' . $roomTypeIdNum2);

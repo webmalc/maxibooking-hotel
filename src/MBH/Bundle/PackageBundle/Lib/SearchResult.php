@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Lib;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
@@ -336,7 +337,7 @@ class SearchResult
     }
 
     /**
-     * @return array
+     * @return array|Cursor
      */
     public function getRooms()
     {

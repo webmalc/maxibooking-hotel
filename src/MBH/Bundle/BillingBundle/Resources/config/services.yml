@@ -48,6 +48,7 @@ services:
             - '%locale%'
             - '@security.token_storage'
             - '%billing_token%'
+            - '%billing_url%'
 
     mbh.billing.logger:
         class:     Symfony\Bridge\Monolog\Logger
