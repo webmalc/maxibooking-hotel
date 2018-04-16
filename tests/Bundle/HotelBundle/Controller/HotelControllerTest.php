@@ -35,6 +35,46 @@ class HotelControllerTest extends WebTestCase
         ;
     }
 
+    public function testNew()
+    {
+        $this->newFormBaseTest();
+    }
+
+    /**
+     * @depends testNew
+     */
+    public function testIndex()
+    {
+        $this->listBaseTest();
+    }
+
+    /**
+     * @depends testIndex
+     */
+    public function testEdit()
+    {
+        $this->editFormBaseTest();
+    }
+
+    /**
+     * @depends testEdit
+     */
+    public function testDelete()
+    {
+        $url = $this->getListUrl();
+        $title = $this->getEditTitle();
+        $count = $this->getListItemsCount() + 1;
+
+        $result = $this->clickLinkInList($url, ' a[data-text="Вы действительно хотите удалить запись «' . $title . '»?"]', true);
+
+        $this->assertContains(
+            'Невозможно удалить данные об отеле, так как для него существуют записи о тарифах',
+            $result->filter('#messages')->text()
+        );
+        $this->assertSame($count, $result->filter($this->getListContainer() . 'a[rel="main"]')->count());
+
+    }
+
     public function testExtendedInformationForm()
     {
         $fixtures = $this->loadFixtures([
