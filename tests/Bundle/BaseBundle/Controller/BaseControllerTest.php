@@ -68,6 +68,11 @@ class BaseControllerTest extends WebTestCase
         'tariff_edit',
         'tariff_delete',
         'user_profile',
+        'price_cache_overview',
+        'price_cache_overview_table',
+        'price_cache_overview_save',
+        'price_cache_generator',
+        'price_cache_generator_save',
     ];
 
     private const ROUTERS_CHANNEL_MANAGER = [

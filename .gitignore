@@ -11,6 +11,7 @@ scripts/deploy_to_test.sh
 /app/config/clients/*
 !app/config/clients/.gitkeep
 !app/config/clients/maxibooking.env.dist
+!app/config/clients/test.env.dist
 !app/config/clients/client_for_create_tm_db.env.dist
 app/config/database.env
 /var/bootstrap.php.cache
