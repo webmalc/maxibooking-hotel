@@ -456,6 +456,10 @@ class PackageRepository extends DocumentRepository
         if (!is_null($creationEnd)) {
             $qb->field('createdAt')->lte($creationEnd);
         }
+        if ($qb->count()->getQuery()->execute() === 0) {
+            return [];
+        }
+
 
         $distributionData = $qb
             ->map(
