@@ -2,7 +2,8 @@
 - name: Npm install
   become: true
   npm:
-    global: yes
+    global: no
     name: "{{ item }}"
+    path: /usr/local/lib
   with_items: "{{ npm_packages }}"
   when: npm_packages is defined
