@@ -65,7 +65,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => '8000',
             'regDayAgo' => 5,
             'beginAfter' => 8,
-            'length' => 3
+            'length' => 3,
+            'status' => 'online'
         ],
         [
             'number' => '6',
@@ -212,7 +213,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         $order = (new Order())
             ->setPrice($data['price'])
             ->setPaid($data['paid'])
-            ->setStatus('offline')
+            ->setStatus(isset($data['status']) ? $data['status'] : 'offline')
             ->setTotalOverwrite($data['price'])
 //            ->setSource($this->getReference('Booking.com'))
             ->setMainTourist($tourist)
