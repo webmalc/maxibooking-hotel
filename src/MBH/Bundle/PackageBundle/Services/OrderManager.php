@@ -883,13 +883,13 @@ class OrderManager implements Searchable
             if(isset($rawPackageData['totalOverwrite'])) {
                 $price = $rawPackageData['totalOverwrite'];
             } else {
-                $price = $rawPackageData['price'];
+                $price = $packagePrice = isset($rawPackageData['price']) ? $rawPackageData['price'] : 0;
                 if (isset($rawPackageData['servicesPrice'])) {
                     $price += $rawPackageData['servicesPrice'];
                 }
                 if (isset($rawPackageData['discount'])) {
                     $discount = isset($rawPackageData['isPercentDiscount']) && $rawPackageData['isPercentDiscount']
-                        ? $rawPackageData['price'] * $rawPackageData['discount']/100
+                        ? $packagePrice * $rawPackageData['discount']/100
                         : $rawPackageData['discount'];
                     $price -= $discount;
                 }
