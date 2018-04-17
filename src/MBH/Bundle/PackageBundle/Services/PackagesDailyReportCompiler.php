@@ -154,11 +154,12 @@ class PackagesDailyReportCompiler
 
         $cellsCallbacks = [
             'classes' => function (ReportCell $cell) {
+                $classes = [];
                 if ($cell->getColumnOption() == self::ROW_TITLE_OPTION) {
-                    return [Report::HORIZONTAL_SCROLLABLE_CLASS];
+                    $classes[] = Report::HORIZONTAL_SCROLLABLE_CLASS;
                 }
 
-                return [];
+                return $classes;
             },
             'styles' => function (ReportCell $cell) {
                 if ($cell->getColumnOption() == PackagesDailyReportCompiler::ROW_TITLE_OPTION && $cell->isForMail()) {

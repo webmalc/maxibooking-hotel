@@ -20,10 +20,50 @@ class Report
     /** @var TwigEngine */
     private $twigEngine;
     protected $title;
+    protected $rowTitles;
+    protected $commonRowTitles = [];
 
     public function __construct(TwigEngine $twigEngine)
     {
         $this->twigEngine = $twigEngine;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCommonRowTitlesAsJson()
+    {
+        return addslashes(json_encode($this->commonRowTitles));
+    }
+
+    /**
+     * @param array $commonRowTitles
+     * @return Report
+     */
+    public function setCommonRowTitles(array $commonRowTitles)
+    {
+        $this->commonRowTitles = $commonRowTitles;
+
+        return $this;
+    }
+
+    /**
+     * @param array $rowTitles
+     * @return Report
+     */
+    public function setRowTitles(array $rowTitles)
+    {
+        $this->rowTitles = $rowTitles;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRowTitlesAsJson()
+    {
+        return addslashes(json_encode($this->rowTitles));
     }
 
     /**
@@ -72,17 +112,18 @@ class Report
         return $reportTable;
     }
 
-    public function generate()
+    public function generate($withJson)
     {
-        return $this->twigEngine->render('@MBHBase/Report/report_table.html.twig', ['report' => $this]);
+        return $this->twigEngine->render('@MBHBase/Report/report_table.html.twig', ['report' => $this, 'withJson' => $withJson]);
     }
 
     /**
+     * @param bool $withJson
      * @return Response
      */
-    public function generateReportTableResponse()
+    public function generateReportTableResponse($withJson = true)
     {
-        return (new Response())->setContent($this->generate());
+        return (new Response())->setContent($this->generate($withJson));
     }
 
     /**

@@ -3,7 +3,11 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
+use MBH\Bundle\PackageBundle\DataFixtures\MongoDB\PackageSourceData;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
@@ -14,11 +18,13 @@ class RandomPackagesGenerator
     private $search;
     private $orderManager;
     private $dm;
+    private $helper;
 
-    public function __construct(SearchFactory $search, OrderManager $orderManager, DocumentManager $dm) {
+    public function __construct(SearchFactory $search, OrderManager $orderManager, DocumentManager $dm, Helper $helper) {
         $this->search = $search;
         $this->orderManager = $orderManager;
         $this->dm = $dm;
+        $this->helper = $helper;
     }
 
     public function generate(\DateTime $begin, \DateTime $end, $packagesNumber)
@@ -55,7 +61,10 @@ class RandomPackagesGenerator
             foreach ($searchResults as $searchResult) {
                 $packages = [];
                 $rooms = $searchResult->getRooms()->toArray();
-                $accommodationId = array_keys($rooms)[0];
+                if (!empty($rooms)) {
+                    $accommodationId = array_keys($rooms)[0];
+                }
+
                 $packages[] = [
                     'begin' => $searchResult->getBegin()->format('d.m.Y'),
                     'end' => $searchResult->getEnd()->format('d.m.Y'),
@@ -64,14 +73,23 @@ class RandomPackagesGenerator
                     'roomType' => $searchResult->getRoomType()->getId(),
                     'tariff' => $searchResult->getTariff()->getId(),
                     'special' => null,
-                    'accommodation' => $accommodationId,
+                    'accommodation' => isset($accommodationId) ? $accommodationId : null,
                     'forceBooking' => false,
                     'infants' => 0,
                     'childrenAges' => null,
                 ];
+
+                if ($numberOfCreated % 4 === 0) {
+                    $status = Order::ONLINE_STATUS;
+                } elseif ($numberOfCreated % 3 === 0) {
+                    $status = Order::CHANNEL_MANAGER_STATUS;
+                } else {
+                    $status = Order::OFFLINE_STATUS;
+                }
+
                 $data = [
                     'packages' => $packages,
-                    'status' => 'offline',
+                    'status' => $status,
                     'confirmed' => true,
                     'tourist' => $tourists[array_rand($tourists)]->getId(),
                 ];
@@ -93,6 +111,33 @@ class RandomPackagesGenerator
                     $order = $this->orderManager->createPackages($data, null, $user, $cashData);
                     $package = $order->getFirstPackage();
                     ($order->getCashDocuments()[0])->setIsPaid(true);
+
+                    $packageSourceRepo = $this->dm->getRepository('MBHPackageBundle:PackageSource');
+                    if ($package->getStatus() === Order::CHANNEL_MANAGER_STATUS) {
+                        $order->setChannelManagerStatus('new');
+                        $channelManagerSourcesIds = AbstractChannelManagerService::getChannelManagerNames();
+                        $sourceId = $channelManagerSourcesIds[array_rand($channelManagerSourcesIds)];
+                        $source = $this->dm
+                            ->getRepository('MBHPackageBundle:PackageSource')
+                            ->findOneBy(['code' => $sourceId]);
+                        $channelManagerId = $this->helper->getRandomString();
+                        $order
+                            ->setSource($source)
+                            ->setChannelManagerHumanId($source->getName())
+                            ->setChannelManagerType($sourceId)
+                            ->setChannelManagerId($channelManagerId);
+                        $package
+                            ->setChannelManagerType($sourceId)
+                            ->setChannelManagerId($channelManagerId);
+
+                    } elseif ($package->getStatus() === Order::ONLINE_STATUS) {
+                        $order->setSource($packageSourceRepo->findOneBy(['code' => 'online']));
+                    } else {
+                        $offlineSources = PackageSourceData::REGULAR_SOURCES;
+                        unset($offlineSources[array_search('online', $offlineSources)]);
+                        $sourceId = $offlineSources[array_rand($offlineSources)];
+                        $order->setSource($packageSourceRepo->findOneBy(['code' => $sourceId]));
+                    }
 
                     if ($searchResult->getBegin() < new \DateTime('midnight')) {
                         $package->setArrivalTime($searchResult->getBegin());

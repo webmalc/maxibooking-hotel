@@ -281,6 +281,31 @@ class ClientConfig extends Base
     protected $currencyRatioFix = 1.015;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isCacheValid = false;
+
+    /**
+     * @return bool
+     */
+    public function isCacheValid(): ?bool
+    {
+        return $this->isCacheValid;
+    }
+
+    /**
+     * @param bool $isCacheValid
+     * @return ClientConfig
+     */
+    public function setIsCacheValid(bool $isCacheValid): ClientConfig
+    {
+        $this->isCacheValid = $isCacheValid;
+
+        return $this;
+    }
+
+    /**
      * @return Stripe
      */
     public function getStripe(): ?Stripe

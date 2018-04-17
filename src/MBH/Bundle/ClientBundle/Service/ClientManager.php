@@ -174,8 +174,7 @@ class ClientManager
      */
     public function isDefaultClient()
     {
-        return $this->client === \AppKernel::DEFAULT_CLIENT || $this->kernel->getEnvironment() === 'test';
-
+        return false && $this->client === \AppKernel::DEFAULT_CLIENT || $this->kernel->getEnvironment() === 'test';
     }
 
     /**
@@ -194,13 +193,17 @@ class ClientManager
     {
         $dataReceiptTime = $this->session->get(Client::CLIENT_DATA_RECEIPT_DATETIME);
         $currentDateTime = new \DateTime();
+        $configRepository = $this->dm->getRepository('MBHClientBundle:ClientConfig');
+        $config = $configRepository->fetchConfig();
 
         if (is_null($dataReceiptTime)
+            || !$config->isCacheValid()
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
             try {
                 /** @var Client $client */
                 $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
+                $configRepository->changeCacheValidity(true);
             } catch (\Exception $exception) {
                 $client = $this->session->get(self::SESSION_CLIENT_FIELD);
                 $this->logger->err($exception->getMessage());

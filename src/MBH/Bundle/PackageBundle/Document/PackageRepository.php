@@ -112,7 +112,7 @@ class PackageRepository extends DocumentRepository
 
     /**
      * @param PackageQueryCriteria $criteria
-     * @return Package[]
+     * @return Package[]|Cursor
      */
     public function findByQueryCriteria(PackageQueryCriteria $criteria)
     {
@@ -145,6 +145,11 @@ class PackageRepository extends DocumentRepository
             $orderData['asIdsArray'] = true;
             $orderData['status'] = $criteria->status;
         }
+        if (!is_null($criteria->getSources())) {
+            $orderData['asIdsArray'] = true;
+            $orderData['source'] = $criteria->getSources();
+        }
+
         if (!empty($orderData)) {
             $orders = $this->dm->getRepository('MBHPackageBundle:Order')->fetch($orderData);
             $queryBuilder->field('order.id')->in($orders);
@@ -535,7 +540,7 @@ class PackageRepository extends DocumentRepository
                 $roomTypeMongoId = $packageData['roomType']['$id'];
                 $distributionData[$dayOfWeekNumber]['value'] = [$roomTypeMongoId->serialize() => [
                     'count' => 1,
-                    'price' => $packagePrice
+                    'price' => $packagePrice,
                 ]];
             }
         }

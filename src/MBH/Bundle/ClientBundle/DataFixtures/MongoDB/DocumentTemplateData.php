@@ -16,14 +16,19 @@ use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInterface
 {
     const DOCUMENT_TEMPLATE_DATA = [
-        'Акт' => 'act',
-        'Счет' => 'bill',
-        'Подтверждение' => 'confirmation',
-        'Свидетельство о регистрации по месту пребывания' => 'evidence',
-        'Анкета ФМС (Форма 5)' => 'fms_form_5',
-        'Анкета (Форма 1-Г)' => 'form_1_g',
-        'Расписка' => 'receipt',
-        'Регистрационная карта' => 'registration_card'
+        'ru' => [
+            'Акт' => 'act',
+            'Счет' => 'bill',
+            'Подтверждение' => 'confirmation',
+            'Свидетельство о регистрации по месту пребывания' => 'evidence',
+            'Анкета ФМС (Форма 5)' => 'fms_form_5',
+            'Анкета (Форма 1-Г)' => 'form_1_g',
+            'Расписка' => 'receipt',
+            'Регистрационная карта' => 'registration_card'
+        ],
+        'com' => [
+            'Invoice' => 'en_invoice'
+        ]
     ];
 
     /**
@@ -31,23 +36,23 @@ class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInte
      */
     public function doLoad(ObjectManager $manager)
     {
-        foreach (self::DOCUMENT_TEMPLATE_DATA as $name => $templateFile) {
+        $locale = $this->container->getParameter('locale') === 'ru' ? 'ru' : 'com';
+        foreach (self::DOCUMENT_TEMPLATE_DATA[$locale] as $name => $templateFile) {
             $filePath = $this->container->get('kernel')->getRootDir()
                 . '/../src/MBH/Bundle/PackageBundle/Resources/views/Documents/pdfTemplates/'
                 . $templateFile
-                .'.html.twig';
+                . '.html.twig';
 
             $content = file_get_contents($filePath);
             $template = (new DocumentTemplate())
                 ->setTitle($name)
                 ->setContent($content)
-                ->setIsDefault(true)
-            ;
+                ->setIsDefault(true);
             $manager->persist($template);
             $this->setReference($templateFile . 'Template', $template);
         }
 
-        $manager-> flush();
+        $manager->flush();
     }
 
     /**
