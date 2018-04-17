@@ -683,18 +683,18 @@ mbhbasebundle.views.help: Help
 support_modal.all_articles: 'All articles'
 support_modal.info_base: Guide
 welcome_modal.ok_button: OK
-welcome_modal.welcome5: 'You will be offered an interactive introductory lesson to familiarize yourself with the program. Click the %button% button in the top menu to start.'
+welcome_modal.welcome5: 'You will be offered an interactive introductory lesson to familiarize yourself with the program. Click the% button% button in the top menu to start.'
 support_modal.articles.chessboard: 'Reservation calendar information'
 support_modal.articles.booking_sync: 'Set up synchronisation with Booking.com'
 support_modal.articles.hotel_creation: 'Hotel creation'
 support_modal.articles.tariffs: 'Rate creation'
-support_modal.articles.package_info: 'Filling in the information about the reservation'
+support_modal.articles.package_info: 'Filling in the infomation about the reservation'
 support_modal.interactive_halper: 'Interactive help'
 support_modal.header_text: 'Help materials'
 welcome_modal.welcome5_continuation: 'Knowledge base'
-welcome_modal.header_text: 'Welcome to'
-welcome_modal.welcome2: 'To log in, please use the username and password sent in the email. You should save this email, so you can refer to it later.'
-welcome_modal.welcome3: 'We sent you a confirmation email with a link to activate your account. Please check your email and click the link.'
+welcome_modal.header_text: 'Welcome to MaxiBooking!'
+welcome_modal.welcome2: 'You received an email on the address you specified during registration which contains your username and password.'
+welcome_modal.welcome3: 'A profile for your property has been created'
 welcome_modal.welcome4: 'You can start working right now!'
 welcome_modal.welcome7_continuation: Demo-version
 welcome_modal.welcome9: 'To add other data to the system you can use the <a target="_blank" href="%base_url%"> knowledge base </a> or <a target="_blank" href="%request_url%"> request a consultation</a>'
