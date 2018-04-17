@@ -9,6 +9,8 @@ class BaseControllerTest extends WebTestCase
 {
     const EXCLUDED_ROUTES = [
         'fos_user_security_logout',
+        'reservation_report_table',
+        'sales_channels_report_table',
         'export_to_kontur',
         'dynamic_sales_table',
         'add_tip',

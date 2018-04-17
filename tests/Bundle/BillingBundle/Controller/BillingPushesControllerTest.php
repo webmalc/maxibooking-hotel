@@ -27,10 +27,8 @@ class BillingPushesControllerTest extends WebTestCase
         /** @var ClientConfigRepository $clientConfigRepo */
         $clientConfigRepo = $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig');
 
-        $this->client->request('GET', '/package/');
-        $this->assertStatusCode(200, $this->client);
         $clientConfig = $clientConfigRepo->fetchConfig();
-        $this->assertTrue($clientConfig->isCacheValid());
+        $clientConfig->setIsCacheValid(true);
 
         $this->client->request('POST', $url, ['token' => $this->getContainer()->getParameter('billing_front_token')]);
         $this->assertStatusCode(200, $this->client);
