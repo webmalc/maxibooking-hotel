@@ -52,7 +52,7 @@ class SalesChannelsDataHandler extends ReportDataHandler
         $rowAbsoluteData = isset($this->columnData[$option]) ? $this->columnData[$option] : 0;
 
         if ($this->isRelative) {
-            return number_format($this->columnData[SalesChannelsReportCompiler::TOTAL_ROW_OPTION] !== 0
+            return round($this->columnData[SalesChannelsReportCompiler::TOTAL_ROW_OPTION] !== 0
                 ? $rowAbsoluteData / $this->columnData[SalesChannelsReportCompiler::TOTAL_ROW_OPTION] * 100
                 : 0, 2);
         }

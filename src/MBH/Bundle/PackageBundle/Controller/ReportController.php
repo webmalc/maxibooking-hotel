@@ -909,8 +909,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')), false)
             ->toArray();
 
-        $groupType = $request->query->get('group_type');
-        $type = $request->query->get('type');
+        $groupType = $request->query->get('group_type') ? $request->query->get('group_type') : 'arrival';
+        $type = $request->query->get('type') ? $request->query->get('type') : 'actual';
 
         $report = $this->get('mbh.distribution_report_compiler')
             ->generate($begin, $end, $hotels, $groupType, $type, $creationBegin, $creationEnd);
@@ -974,17 +974,22 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Route("/sales_channels_report_table", name="sales_channels_report_table", options={"expose"=true})
      * @param Request $request
      * @return Response
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function salesChannelsReportTableAction(Request $request)
     {
         $begin = $this->helper->getDateFromString($request->get('begin'));
         $end = $this->helper->getDateFromString($request->get('end'));
-        $filterType = $request->query->get('filterType');
+        $filterType = $request->query->get('filterType')
+            ? $request->query->get('filterType')
+            : SalesChannelsReportCompiler::STATUS_FILTER_TYPE;
         $sourcesIds = $this->helper->getDataFromMultipleSelectField($request->query->get('sources'));
         $roomTypesIds = $this->helper->getDataFromMultipleSelectField($request->query->get('roomTypes'));
         $hotelsIds = $this->helper->getDataFromMultipleSelectField($request->query->get('hotels'));
         $isRelative = $isRelative = $request->query->get('isRelative') === 'true';
-        $dataType = $request->query->get('dataType');
+        $dataType = $request->query->get('dataType')
+            ? $request->query->get('dataType')
+            : SalesChannelsReportCompiler::SUM_DATA_TYPE;
 
         $report = $this->get('mbh.sales_channels_report_compiler')
             ->generate($begin, $end, $filterType, $sourcesIds, $roomTypesIds, $hotelsIds, $isRelative, $dataType);

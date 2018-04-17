@@ -24,6 +24,9 @@ class SalesChannelsReportCompiler
     const TOTAL_COLUMN_OPTION = 'total_column';
     const TITLE_COLUMN_OPTION = 'title';
 
+    const STATUS_FILTER_TYPE = 'status';
+    const SOURCE_FILTER_TYPE = 'source';
+
     const PACKAGES_COUNT_DATA_TYPE = 'count';
     const SUM_DATA_TYPE = 'sum';
     const MAN_DAYS_COUNT_DATA_TYPE = 'man-day';
@@ -77,6 +80,7 @@ class SalesChannelsReportCompiler
      * @param bool $isRelativeValues
      * @param string $dataType
      * @return SalesChannelsReportCompiler
+     * @throws \Exception
      */
     private function setInitData(
         \DateTime $begin,
@@ -106,6 +110,19 @@ class SalesChannelsReportCompiler
         return $this;
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param string $filterType
+     * @param array $sourcesIds
+     * @param array $requestRoomTypesIds
+     * @param array $hotelsIds
+     * @param bool $isRelativeValues
+     * @param string $dataType
+     * @return Report
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \Exception
+     */
     public function generate(
         \DateTime $begin,
         \DateTime $end,
@@ -190,6 +207,7 @@ class SalesChannelsReportCompiler
      * @param array $roomTypePackages
      * @param $cellsCallbacks
      * @param array $rowsCallbacks
+     * @throws \Exception
      */
     private function generateTable(string $tableTitle, string $tableTitleClass, array $roomTypePackages, $cellsCallbacks, $rowsCallbacks = []): void
     {
@@ -201,12 +219,22 @@ class SalesChannelsReportCompiler
     }
 
     /**
-     * @return array
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function getRowTitlesAndOptions()
+    private function getRowOptions()
+    {
+        return $this->getRowTitlesAndOptions()[1];
+    }
+
+    /**
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function getRowTitlesAndOptions()
     {
         if (!$this->isRowTitlesAndOptionsInit) {
-            if ($this->filterType === 'source') {
+            if ($this->filterType === self::SOURCE_FILTER_TYPE) {
                 $packageSourceRepo = $this->dm->getRepository('MBHPackageBundle:PackageSource');
                 if (empty($this->sourcesIds)) {
                     $sources = $packageSourceRepo->findAll();
@@ -280,6 +308,7 @@ class SalesChannelsReportCompiler
      * @param array $rowTitles
      * @param array $packages
      * @return ReportDataHandler[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getDatesDataHandlers(array $rowTitles, array $packages): array
     {
@@ -294,13 +323,14 @@ class SalesChannelsReportCompiler
                 ->setInitData($day, $packagesForCurrentDay, $this->isRelativeValues, $this->dataType, $this->filterType);
         }
 
-        $rowOptions = $this->getRowTitlesAndOptions()[1];
+        $rowOptions = $this->getRowOptions();
         $columnOptionsByCalcType = [];
         foreach ($rowOptions as $rowOption) {
             if ($rowOption === self::DATES_ROW_OPTION) {
                 $columnOptionsByCalcType[TotalDataHandler::TITLE_OPTION][] = $rowOption;
             } else {
-                $columnOptionsByCalcType[TotalDataHandler::SUM_OPTION][] = $rowOption;
+                $totalRowType = $this->isRelativeValues ? TotalDataHandler::AVERAGE_OPTION : TotalDataHandler::SUM_OPTION;
+                $columnOptionsByCalcType[$totalRowType][] = $rowOption;
             }
         }
 
@@ -315,6 +345,7 @@ class SalesChannelsReportCompiler
 
     /**
      * @param string $tableName
+     * @param string $tableTitleClass
      * @return ReportTable
      */
     private function createTable(string $tableName, string $tableTitleClass): ReportTable
