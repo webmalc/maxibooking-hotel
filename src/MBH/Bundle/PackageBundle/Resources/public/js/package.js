@@ -386,7 +386,7 @@ var docReadyPackages = function () {
         $('.package-filter:not(#package-filter-begin):not(#package-filter-end)').on('change switchChange.bootstrapSwitch', function () {
             $('#package-table').dataTable().fnDraw();
         });
-        $('#package-filter-begin, #package-filter-end').on('changeDate', function () {
+        $('#package-filter-begin, #package-filter-end').on('changeDate clearDate', function () {
             $('#package-table').dataTable().fnDraw();
         });
         $('#package-table-quick-links a').click(function () {

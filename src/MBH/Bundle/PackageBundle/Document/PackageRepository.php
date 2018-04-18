@@ -796,16 +796,9 @@ class PackageRepository extends DocumentRepository
         //query
         if (isset($data['query']) && !empty($data['query'])) {
             $query = trim($data['query']);
-            $tourists = $dm->getRepository('MBHPackageBundle:Tourist')
-                ->createQueryBuilder()
-                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
-                ->getQuery()
-                ->execute();
-
-            $touristsIds = [];
-            foreach ($tourists as $tourist) {
-                $touristsIds[] = $tourist->getId();
-            }
+            $touristsIds = $dm
+                ->getRepository('MBHPackageBundle:Tourist')
+                ->getIdsWithNameByQueryString($query);
 
             if (count($touristsIds)) {
                 $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
