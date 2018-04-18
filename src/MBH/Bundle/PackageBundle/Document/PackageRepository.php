@@ -694,20 +694,31 @@ class PackageRepository extends DocumentRepository
                 ->getRepository('MBHPackageBundle:Tourist')
                 ->getIdsWithNameByQueryString($query);
 
-            if (count($touristsIds)) {
-                $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
-            }
-
             $organizationsIds = $dm
                 ->getRepository('MBHPackageBundle:Organization')
                 ->getContragentsIdsByQueryString($query);
 
-            $ordersIds = $dm
-                ->getRepository('MBHPackageBundle:Order')
-                ->getIdsByOrganizationsIds($organizationsIds);
+            if (!empty($touristsIds) || !empty($organizationsIds)) {
+                $ordersQb = $this->dm
+                    ->getRepository('MBHPackageBundle:Order')
+                    ->createQueryBuilder();
+                if (!empty($organizationsIds)) {
+                    $ordersQb->addOr($ordersQb->expr()->field('organization.id')->in($organizationsIds));
+                }
+                if (!empty($touristsIds)) {
+                    $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
+                    $ordersQb->addOr($ordersQb->expr()->field('mainTourist.id')->in($organizationsIds));
+                }
 
-            if (count($ordersIds) > 0) {
-                $qb->addOr($qb->expr()->field('order.id')->in($ordersIds));
+                $ordersIds = $ordersQb
+                    ->distinct('id')
+                    ->getQuery()
+                    ->execute()
+                    ->toArray();
+
+                if (count($ordersIds) > 0) {
+                    $qb->addOr($qb->expr()->field('order.id')->in($ordersIds));
+                }
             }
 
             $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$query.'.*/ui')));

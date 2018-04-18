@@ -185,20 +185,4 @@ class OrderRepository extends DocumentRepository
             ->getQuery()
             ->execute();
     }
-
-    /**
-     * @param array $organizationsIds
-     * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function getIdsByOrganizationsIds(array $organizationsIds)
-    {
-        return $this
-            ->createQueryBuilder()
-            ->field('organization.id')->in($organizationsIds)
-            ->distinct('id')
-            ->getQuery()
-            ->execute()
-            ->toArray();
-    }
 }
