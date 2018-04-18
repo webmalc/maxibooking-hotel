@@ -2,12 +2,14 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "generic/ubuntu1604"
+  config.vm.box = 'geerlingguy/ubuntu1604'
   # config.vm.network "forwarded_port", guest: 80, host: 8080
-  # config.vm.synced_folder ".", "/var/www/mbh"
 
-  config.vm.hostname = "maxibooking-develop-vmware"
-  config.vm.define "mbh-virtual-vmware"
+  #
+  #config.vm.synced_folder ".", "/var/www/mbh", type: "nfs", create: true, nfs_udp: false, nfs_version: 4
+  config.vm.synced_folder ".", "/var/www/mbh", type: "rsync", rsync__exlude: ".git/"
+  config.vm.hostname = "maxibooking-devel-esxi"
+  config.vm.define "mbh-virt-esxi"
   config.ssh.forward_agent = true
   # config.vm.network "forwarded_port", guest: 80, host: 9090
 
@@ -57,10 +59,10 @@ Vagrant.configure("2") do |config|
     #esxi.guest_username = 'vagrant'
 
     #  OPTIONAL.  Memory size override
-    #esxi.guest_memsize = '2048'
+    esxi.guest_memsize = '4096'
 
     #  OPTIONAL.  Virtual CPUs override
-    #esxi.guest_numvcpus = '2'
+    esxi.guest_numvcpus = '8'
 
     #  OPTIONAL & RISKY.  Specify up to 4 MAC addresses
     #    The default is ovftool to automatically generate a MAC address.
