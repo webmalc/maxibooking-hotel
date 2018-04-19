@@ -196,8 +196,7 @@ class ClientManager
         $configRepository = $this->dm->getRepository('MBHClientBundle:ClientConfig');
         $config = $configRepository->fetchConfig();
 
-        if (is_null($dataReceiptTime)
-            || !$config->isCacheValid()
+        if (is_null($dataReceiptTime)|| !$config->isCacheValid()
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
             try {
