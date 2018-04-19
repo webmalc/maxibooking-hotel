@@ -1819,7 +1819,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
-
     /**
      * @param bool $isFull
      * @return array
@@ -1837,6 +1836,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                 'isDefault' => $this->getIsDefault(),
                 'isHostel' => $this->getIsHostel(),
                 'facilities' => $this->getFacilities(),
+                'description' => $this->getDescription()
             ];
             if (!is_null($this->latitude)) {
                 $comprehensiveData['latitude'] = $this->latitude;

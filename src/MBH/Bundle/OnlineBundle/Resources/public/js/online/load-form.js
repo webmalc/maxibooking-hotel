@@ -19,9 +19,7 @@ function addLoadEvent(func) {
     }
 }
 
-
-
-addLoadEvent(function () {
+function onLoad() {
     var getCoords = function (elem) {
         var box = elem.getBoundingClientRect();
 
@@ -102,21 +100,21 @@ addLoadEvent(function () {
     });
 
     var resizeIframeWidth = function () {
-        var width = window.outerWidth;
-        if (formIframe && width) {
-            formIframe.width = width < iframeWidth ? width : iframeWidth;
-        }
-    },
+            var width = window.outerWidth;
+            if (formIframe && width) {
+                formIframe.width = width < iframeWidth ? width : iframeWidth;
+            }
+        },
         resizeIframeHeight = function (event) {
             if (event.data.type !== 'mbh') {
                 return;
             }
             if (event.data.action === 'formResize') {
                 var formIframe = document.getElementById("mbh-form-iframe");
-                formIframe.height =  event.data.formHeight+5;
+                formIframe.height = event.data.formHeight + 5;
             }
         };
-    setInterval(function() {
+    setInterval(function () {
         resizeIframeWidth();
     }, 300);
 
@@ -127,6 +125,7 @@ addLoadEvent(function () {
         window.attachEvent("onmessage", processMessage);
         window.attachEvent("onmessage", resizeIframeHeight);
     }
+}
 
-});
+addLoadEvent(onLoad);
 

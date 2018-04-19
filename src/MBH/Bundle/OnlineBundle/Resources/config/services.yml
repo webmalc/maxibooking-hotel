@@ -24,3 +24,15 @@ services:
         arguments: ['@mbh.client_manager', '%mbh.online.form%']
         tags:
             {name: form.type}
+
+    mbh.payment_types_type:
+        class: MBH\Bundle\OnlineBundle\Form\PaymentTypesType
+        arguments: ['%mbh.online.form%']
+        tags:
+            {name: form.type}
+
+    mbh.site_form:
+        class: MBH\Bundle\OnlineBundle\Form\SiteForm
+        arguments: ['@doctrine.odm.mongodb.document_manager']
+        tags:
+            {name: form.type}
