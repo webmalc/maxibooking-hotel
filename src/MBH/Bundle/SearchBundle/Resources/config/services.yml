@@ -1,4 +1,3 @@
 services:
-#    mbh_bundle_search.example:
-#        class: MBH\Bundle\SearchBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    mbh_search.search_query_generator:
+        class: MBH\Bundle\SearchBundle\Services\SearchQueryGenerator

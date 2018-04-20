@@ -114,7 +114,7 @@ class Search implements SearchInterface
             }
             if (!empty($query->availableRoomTypes)) {
                 $query->roomTypes = array_intersect($query->roomTypes, $query->availableRoomTypes);
-            };
+            }
         } elseif ($this->manager->useCategories && !$query->forceRoomTypes) {
             $roomTypes = [];
             foreach ($query->roomTypes as $catId) {
