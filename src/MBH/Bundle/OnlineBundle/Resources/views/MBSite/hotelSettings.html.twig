@@ -2,6 +2,14 @@
 
 {% block content %}
     {{ parent() }}
-
+    <div class="tab-content">
+        {% for route, warningInfo in warnings %}
+            <div class="alert alert-warning">
+                <i class="fa fa-exclamation-circle"></i>&nbsp;
+                {{ 'views.mb_site.hotel_settings.empty_fields_error'|trans({'%fields%': warningInfo['empty']|join(', ')})  }}
+                <a target="_blank" href="{{ path(route, {'id': hotel.id}) }}">Для заполнения нажмите</a>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
 

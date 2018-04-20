@@ -36,3 +36,7 @@ services:
         arguments: ['@doctrine.odm.mongodb.document_manager']
         tags:
             {name: form.type}
+
+    mbh.site_manager:
+        class: MBH\Bundle\OnlineBundle\Services\SiteManager
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@translator']

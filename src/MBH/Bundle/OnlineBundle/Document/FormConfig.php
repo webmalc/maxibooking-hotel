@@ -634,7 +634,7 @@ class FormConfig extends Base
     }
 
     /**
-     * @param array $hotels
+     * @param array|ArrayCollection $hotels
      * @return FormConfig
      */
     public function setHotels($hotels)
