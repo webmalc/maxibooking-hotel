@@ -2,14 +2,50 @@
 
 {% block content %}
     {{ parent() }}
+
+    {% set displayedDataList = [] %}
+    {% set displayedDataList = displayedDataList|merge([
+        {'categoryName': 'site_form.hotels.hotel_data'|trans, 'categoryIcon' : 'home'}|merge(hotelWarnings)
+    ]) %}
+    {% for roomData in roomTypesWarnings %}
+        {% set displayedDataList = displayedDataList|merge([
+            {'categoryName': roomData['document'].name, 'categoryIcon' : 'bed'}|merge(roomData)
+        ]) %}
+    {% endfor %}
+
     <div class="tab-content">
-        {% for route, warningInfo in warnings %}
-            <div class="alert alert-warning">
-                <i class="fa fa-exclamation-circle"></i>&nbsp;
-                {{ 'views.mb_site.hotel_settings.empty_fields_error'|trans({'%fields%': warningInfo['empty']|join(', ')})  }}
-                <a target="_blank" href="{{ path(route, {'id': hotel.id}) }}">Для заполнения нажмите</a>
-            </div>
-        {% endfor %}
+        <ul class="nav nav-pills nav-stacked">
+            {% for displayedData in displayedDataList %}
+                {% set document = displayedData['document'] %}
+                {% set documentId = document.id %}
+                <li>
+                    <a style="background-color: #e7f3e2; font-size: 16px"><i
+                                class='fa fa-{{ displayedData['categoryIcon'] }}'></i>{{ displayedData['categoryName'] }}</a>
+                    <ol id="modal-guides-phones" style="list-style-type: none;">
+                        {% for routeName, warningInfo in displayedData['fieldsData'] %}
+                            {% for correctnessType, fieldNames in warningInfo %}
+                                {% for fieldName in fieldNames %}
+                                    <li class="row" style=" margin-bottom: 5px">
+                                        <div class="col-md-3 text-right" >
+                                            <a target="_blank" href="{{ path(routeName, {'id': documentId}) }}">
+                                                {{ get_field_name(document, fieldName) }}
+                                            </a>&nbsp;
+                                        </div>
+                                        <div class="col-md-2">
+                                            {% set class = correctnessType == 'correct' ? 'success' : 'danger' %}
+                                            {% set faSign = correctnessType == 'correct' ? 'check' : 'exclamation' %}
+                                            <a target="_blank" href="{{ path(routeName, {'id': documentId }) }}">
+                                            <small class="label label-{{ class }} label-as-badge"><i
+                                                        class="fa fa-{{ faSign }}"></i></small>
+                                            </a>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endfor %}
+                    </ol>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 {% endblock %}
-

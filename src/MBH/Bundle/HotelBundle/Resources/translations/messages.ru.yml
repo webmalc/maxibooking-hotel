@@ -62,6 +62,7 @@ form.contact_info_type.full_name.help: 'Полное имя контакта'
 form.contact_info_type.email.label: E-mail
 form.contact_info_type.email.help: 'Электронная почта контактного лица'
 form.hotel_contact_information.contact_info.group: 'Контакты службы поддержки клиентов'
+
 form.hotel_images.image_file.label: Изображение
 form.hotel_images.image_file.help: 'Изображение отеля для онлайн бронирования.<br>Максимальный размер файла 2 Мб, 80x90 px, типы файлов: png, jpg, gif.'
 form.hotel_images.image_is_default.label: 'Основное?'

@@ -39,6 +39,10 @@ trait FixturesTestTrait
 
     protected static function getContainerStat()
     {
+        if (empty(static::$kernel)) {
+            self::bootKernel();
+        }
+
         return static::$kernel->getContainer();
     }
 

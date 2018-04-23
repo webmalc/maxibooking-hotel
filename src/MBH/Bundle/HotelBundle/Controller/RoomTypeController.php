@@ -164,6 +164,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             'hotel' => $entity->getHotel()
         ]);
 
+        $this->get('mbh.site_manager')->addFormErrorsForFieldsMandatoryForSite($entity, $form, 'room_type_edit');
+
         return [
             'entity' => $entity,
             'form' => $form->createView(),
@@ -310,6 +312,9 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         $form = $this->createForm(OnlineImageFileType::class);
+
+        $this->get('mbh.site_manager')->addFormErrorsForFieldsMandatoryForSite($roomType, $form, 'room_type_image_edit');
+
         $form->handleRequest($request);
         /** @var Image $onlineImage */
         if ($form->isSubmitted() && $form->isValid()) {

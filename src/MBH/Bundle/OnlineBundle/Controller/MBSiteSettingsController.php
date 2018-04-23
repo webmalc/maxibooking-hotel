@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MBSiteSettingsController extends BaseController
 {
     /**
-     * @Route("/main")
+     * @Route("/main", name="mb_site_main_settings")
      * @return JsonResponse
      */
     public function getMainSettingsAction()

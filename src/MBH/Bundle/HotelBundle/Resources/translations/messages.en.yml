@@ -14,6 +14,7 @@ form.hotelExtendedType.latitude: Latitude
 form.hotelExtendedType.gps_coordinates_latitude: 'Hotel GPS latitude coordinate.'
 form.hotelExtendedType.know_hotel_coordinates: 'View hotel coordinates.'
 form.hotelExtendedType.longitude: Longitude
+
 form.hotelExtendedType.how_many_stars_hotel: 'Star rating (1-5)'
 form.hotelExtendedType.parameters: Parameters
 form.hotelExtendedType.integration: Integration

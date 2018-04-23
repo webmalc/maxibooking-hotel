@@ -1608,10 +1608,13 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Add image
      * @param Image $image
+     * @return Hotel
      */
     public function addImage(Image $image)
     {
         $this->images->add($image);
+
+        return $this;
     }
 
     /**

@@ -39,4 +39,4 @@ services:
 
     mbh.site_manager:
         class: MBH\Bundle\OnlineBundle\Services\SiteManager
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@translator']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.document_fields_manager', '@translator']

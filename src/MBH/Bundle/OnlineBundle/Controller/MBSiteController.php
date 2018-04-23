@@ -5,6 +5,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -63,12 +64,17 @@ class MBSiteController extends BaseController
      */
     public function hotelSettingsAction(Hotel $hotel)
     {
+        $siteManager = $this->get('mbh.site_manager');
         $config = $this->dm->getRepository('MBHOnlineBundle:SiteConfig')->findOneBy([]);
+        $roomTypesWarnings = array_map(function (RoomType $roomType) use ($siteManager) {
+            return $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($roomType);
+        }, $hotel->getRoomTypes()->toArray());
 
         return [
-            'hotelsSettings' => $this->get('mbh.site_manager')->getHotelsSettingsInfo($config),
+            'hotelsSettings' => $siteManager->getHotelsSettingsInfo($config),
             'hotel' => $hotel,
-            'warnings' => $this->get('mbh.site_manager')->getHotelWarningsByRoutesNames($hotel),
+            'hotelWarnings' => $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($hotel),
+            'roomTypesWarnings' => $roomTypesWarnings
         ];
     }
 }
