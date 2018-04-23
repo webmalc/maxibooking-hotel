@@ -17,8 +17,7 @@ class OrderRepository extends DocumentRepository
     {
         $qb = $this->createQueryBuilder('s')
             ->field('pollQuestions')->exists(true)
-            ->field('pollQuestions')->notEqual(null)
-        ;
+            ->field('pollQuestions')->notEqual(null);
         if ($begin) {
             $qb->field('createdAt')->gte($begin);
         }
@@ -26,7 +25,7 @@ class OrderRepository extends DocumentRepository
             $qb->field('createdAt')->lte($end);
         }
 
-        if($isGrouped) {
+        if ($isGrouped) {
             $result = [
                 'orders' => [], 'categories' => []
             ];
@@ -56,7 +55,7 @@ class OrderRepository extends DocumentRepository
                     if (!isset($orderInfo[$cat])) {
                         continue;
                     }
-                    $result['orders'][$key][$cat] = number_format(round(array_sum($orderInfo[$cat])/count($orderInfo[$cat]), 2), 2);
+                    $result['orders'][$key][$cat] = number_format(round(array_sum($orderInfo[$cat]) / count($orderInfo[$cat]), 2), 2);
                 }
             }
 
@@ -94,13 +93,11 @@ class OrderRepository extends DocumentRepository
                     break;
                 case 'part':
                     $qb->field('isPaid')->equals(false)
-                        ->field('paid')->gt(0)
-                    ;
+                        ->field('paid')->gt(0);
                     break;
                 case 'not_paid':
                     $qb->field('isPaid')->equals(false)
-                        ->field('paid')->equals(0)
-                    ;
+                        ->field('paid')->equals(0);
                     break;
                 default:
                     break;
@@ -108,17 +105,17 @@ class OrderRepository extends DocumentRepository
         }
 
         //status
-        if(isset($data['status']) && !empty($data['status'])) {
+        if (isset($data['status']) && !empty($data['status'])) {
             $qb->field('status')->equals($data['status']);
         }
-        if(isset($data['source']) && !empty($data['source'])) {
+        if (isset($data['source']) && !empty($data['source'])) {
             $qb->field('source.id')->equals($data['source']);
         }
 
         if (isset($data['count']) && $data['count']) {
             return $qb->getQuery()->count();
         }
-        if(isset($data['asIdsArray']) && !empty($data['asIdsArray'])) {
+        if (isset($data['asIdsArray']) && !empty($data['asIdsArray'])) {
             return $qb->distinct('id')->getQuery()->execute()->toArray();
         }
 
@@ -146,12 +143,13 @@ class OrderRepository extends DocumentRepository
             ->getQuery()
             ->execute();
     }
+
     /**
      * @param Package[] $packages
      */
     public function loadRelatedOrders(array $packages)
     {
-        $orderIds = array_map(function(Package $package) {
+        $orderIds = array_map(function (Package $package) {
             return $package->getOrder()->getId();
         }, $packages);
 
