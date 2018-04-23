@@ -1,3 +1,7 @@
 services:
     mbh_search.search_query_generator:
         class: MBH\Bundle\SearchBundle\Services\SearchQueryGenerator
+
+    mbh_search.search_request_receiver:
+        class: MBH\Bundle\SearchBundle\Services\SearchRequestReceiver
+        arguments: ["@form.factory"]

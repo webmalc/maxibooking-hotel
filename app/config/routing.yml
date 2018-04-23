@@ -1,7 +1,7 @@
 mbh_bundle_search:
     resource: "@MBHSearchBundle/Controller/"
     type:     annotation
-    prefix:   /search
+    prefix:   /
 
 mbh_billing:
     resource: "@MBHBillingBundle/Controller/"

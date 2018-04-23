@@ -23,7 +23,8 @@ class SearchQueryGenerator
      */
     public function generate(SearchConditions $conditions): void
     {
-
+        $this->searchQueryHash = 'this is must be hash';
+        $this->queuesNum = 3;
     }
 
     /**

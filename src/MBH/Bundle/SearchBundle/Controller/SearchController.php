@@ -11,6 +11,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class SearchController
+ * @package MBH\Bundle\SearchBundle\Controller
+ * @Route("/search")
+ */
 class SearchController extends Controller
 {
     /**
@@ -21,6 +26,7 @@ class SearchController extends Controller
      *     )
      * @param Request $request
      * @return JsonResponse
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException
      * @throws \Exception
      * @throws \LogicException
      */
@@ -29,21 +35,16 @@ class SearchController extends Controller
         $result = new ExpectedResult();
         try {
             $data = json_decode($request->getContent(), true);
-            $conditionForm = $this->createForm(SearchConditionsType::class);
-            $conditionForm->submit($data);
-            if ($conditionForm->isValid()) {
-                $conditions = $conditionForm->getData();
-                $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
-                $searchQueryGenerator->generate($conditions);
-                $result
-                    ->setOkStatus()
-                    ->setExpectedResults($searchQueryGenerator->getQueuesNum())
-                    ->setQueryHash($searchQueryGenerator->getSearchQueryHash()
-                    );
-            } else {
-                throw new SearchConditionException('No valid request data for handle form');
-            }
-
+            $searchRequestReceiver = $this->get('mbh_search.search_request_receiver');
+            $conditions = $searchRequestReceiver->handleData($data);
+            $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
+            $searchQueryGenerator->generate($conditions);
+            $result
+                ->setOkStatus()
+                ->setExpectedResults($searchQueryGenerator->getQueuesNum())
+                ->setQueryHash(
+                    $searchQueryGenerator->getSearchQueryHash()
+                );
         } catch (SearchException $e) {
             $result->setErrorStatus()->setErrorMessage($e->getMessage());
         }
@@ -55,8 +56,10 @@ class SearchController extends Controller
     /**
      * @Route("/results/{hash}", name="search_get_results")
      */
-    public function searchResponseAction(Request $request)
-    {
+    public
+    function searchResponseAction(
+        Request $request
+    ) {
         $result = ['search_result' => 5];
 
         return new JsonResponse($result);
