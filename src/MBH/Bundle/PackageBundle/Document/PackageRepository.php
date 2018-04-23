@@ -690,46 +690,46 @@ class PackageRepository extends DocumentRepository
         //query
         if (isset($data['query']) && !empty($data['query'])) {
             $query = trim($data['query']);
-            $tourists = $dm->getRepository('MBHPackageBundle:Tourist')
-                ->createQueryBuilder()
-                ->field('fullName')->equals(new \MongoRegex('/^.*'.$query.'.*/ui'))
-                ->getQuery()
-                ->execute();
+            $touristsIds = $dm
+                ->getRepository('MBHPackageBundle:Tourist')
+                ->getIdsWithNameByQueryString($query);
 
-            $touristsIds = array_map(
-                function ($tourist) {
-                    return $tourist->getId();
-                },
-                $tourists->toArray()
-            );
+            $organizationsIds = $dm
+                ->getRepository('MBHPackageBundle:Organization')
+                ->getContragentsIdsByQueryString($query);
 
-            if (count($touristsIds)) {
-                $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
-            }
+            if (!empty($touristsIds) || !empty($organizationsIds)) {
+                $ordersQb = $this->dm
+                    ->getRepository('MBHPackageBundle:Order')
+                    ->createQueryBuilder();
+                if (!empty($organizationsIds)) {
+                    $ordersQb->addOr($ordersQb->expr()->field('organization.id')->in($organizationsIds));
+                }
+                if (!empty($touristsIds)) {
+                    $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
+                    $ordersQb->addOr($ordersQb->expr()->field('mainTourist.id')->in($organizationsIds));
+                }
 
-            $organizations = $dm->getRepository('MBHPackageBundle:Organization')
-                ->createQueryBuilder()
-                ->field('type')->equals('contragents')
-                ->field('name')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
-                ->getQuery()
-                ->execute();
+                $ordersIds = $ordersQb
+                    ->distinct('id')
+                    ->getQuery()
+                    ->execute()
+                    ->toArray();
 
-            $organizationsIds = array_map(function ($organization) {
-                return $organization->getId();
-            }, $organizations->toArray());
-            $orders = $dm->getRepository('MBHPackageBundle:Order')
-                ->createQueryBuilder()
-                ->field('organization.id')->in($organizationsIds)
-                ->getQuery()
-                ->execute();
-            $ordersIds = array_map(function (Order $order) {
-                return $order->getId();
-            }, $orders->toArray());
-            if (count($ordersIds) > 0) {
-                $qb->addOr($qb->expr()->field('order.id')->in($ordersIds));
+                if (count($ordersIds) > 0) {
+                    $qb->addOr($qb->expr()->field('order.id')->in($ordersIds));
+                }
             }
 
             $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$query.'.*/ui')));
+
+            $queryRoomTypesIds = $this->dm
+                ->getRepository('MBHHotelBundle:RoomType')
+                ->getByQueryName($query);
+
+            if (!empty($queryRoomTypesIds)) {
+                $qb->addOr($qb->expr()->field('roomType.id')->in($queryRoomTypesIds));
+            }
         }
 
         //isCheckIn
