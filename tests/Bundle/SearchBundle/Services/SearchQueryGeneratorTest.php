@@ -5,6 +5,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
 
@@ -22,7 +23,50 @@ class SearchQueryGeneratorTest extends WebTestCase
     public function testGenerate()
     {
         $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
-        $generator = new SearchQueryGenerator();
+        $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
+        $generator = new SearchQueryGenerator($this->dm);
+        $conditions = new SearchConditions();
+        $conditions
+            ->setBegin(new \DateTime('2018-04-21 midnight'))
+            ->setEnd(new \DateTime('2018-04-22 midnight'))
+            ->setAdults(3)
+            ->setChildren(4)
+//            ->setRoomTypes(new ArrayCollection(array_values($roomTypes)))
+//            ->setTariffs(new ArrayCollection(array_values($tariffs)))
+            ->setAdditionalBegin(1)
+        ;
+        $generator->generate($conditions);
+
+        $this->assertEquals(3, $generator->getQueuesNum());
+        $this->assertEquals('this is must be hash', $generator->getSearchQueryHash());
+    }
+
+    /**
+     * @dataProvider datesProvider
+     * @param string $rawDate
+     * @param int $range
+     * @param int $countExpected
+     * @param int $dataExpected
+     */
+    public function testGetAllDates(string $rawDate, int $range, int $countExpected, array $dataExpected): void
+    {
+        $date = new \DateTime($rawDate);
+        $dm = $this->createMock(DocumentManager::class);
+        $generator = new SearchQueryGenerator($dm);
+
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'generateDaysWithRange');
+        $result = $method->invokeArgs($generator, [$date, $range]);
+
+        $this->assertCount($countExpected, $result);
+        $this->assertEquals($dataExpected, $result, 'The array of dates is wrong');
+
+    }
+
+    public function testCombine(): void
+    {
+        $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
+        $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
+        $generator = new SearchQueryGenerator($this->dm);
         $conditions = new SearchConditions();
         $conditions
             ->setBegin(new \DateTime('2018-04-21 midnight'))
@@ -30,11 +74,75 @@ class SearchQueryGeneratorTest extends WebTestCase
             ->setAdults(3)
             ->setChildren(4)
             ->setRoomTypes(new ArrayCollection(array_values($roomTypes)))
+            ->setTariffs(new ArrayCollection(array_values($tariffs)))
+            ->setAdditionalBegin(1)
         ;
-        $generator->generate($conditions);
 
-        $this->assertEquals(3, $generator->getQueuesNum());
-        $this->assertEquals('this is must be hash', $generator->getSearchQueryHash());
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'combineQueries');
+        $result = $method->invokeArgs($generator, [$conditions]);
 
+        $this->assertCount(1, $result);
+//        $this->assertEquals($dataExpected, $result, 'The array of dates is wrong');
+
+    }
+
+
+    private function getPrivateMethod($className, $methodName)
+    {
+        $reflector = new ReflectionClass($className);
+        $method = $reflector->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method;
+    }
+
+    public function datesProvider()
+    {
+        return [
+            [
+                '21.04.2018 midnight',
+                1,
+                3,
+                [
+                    new \DateTime('20.04.2018 midnight'),
+                    new \DateTime('21.04.2018 midnight'),
+                    new \DateTime('22.04.2018 midnight'),
+                ],
+            ],
+            [
+                '05.06.2018 midnight',
+                0,
+                1,
+                [
+                    new \DateTime('05.06.2018 midnight')
+                ],
+            ],
+            [
+                '22.04.2018 midnight',
+                2,
+                5,
+                [
+                    new \DateTime('20.04.2018 midnight'),
+                    new \DateTime('21.04.2018 midnight'),
+                    new \DateTime('22.04.2018 midnight'),
+                    new \DateTime('23.04.2018 midnight'),
+                    new \DateTime('24.04.2018 midnight'),
+                ],
+            ],
+            [
+                '30.04.2018 midnight',
+                3,
+                7,
+                [
+                    new \DateTime('27.04.2018 midnight'),
+                    new \DateTime('28.04.2018 midnight'),
+                    new \DateTime('29.04.2018 midnight'),
+                    new \DateTime('30.04.2018 midnight'),
+                    new \DateTime('01.05.2018 midnight'),
+                    new \DateTime('02.05.2018 midnight'),
+                    new \DateTime('03.05.2018 midnight'),
+                ],
+            ],
+        ];
     }
 }

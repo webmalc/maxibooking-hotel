@@ -235,17 +235,8 @@ class SearchRequestReceiverTest extends WebTestCase
                         'children' => 3,
                         'childrenAges' => [3, 4, 5, 6],
                     ],
-            ],
-            [
-                'wrong isonline data' =>
-                    [
-                        'begin' => '21.04.2018',
-                        'end' => '22.04.2018',
-                        'adults' => 3,
-                        'children' => 3,
-                        'childrenAges' => [3, 4, 5]
-                    ],
-            ],
+            ]
+
         ];
     }
 
