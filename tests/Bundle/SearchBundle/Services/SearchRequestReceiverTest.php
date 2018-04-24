@@ -25,8 +25,9 @@ class SearchRequestReceiverTest extends WebTestCase
     }
 
 
-    public function testHandleSuccess(): void
+    public function testHandleSuccessData1(): void
     {
+
         $roomTypes = $this->getRoomTypes();
         $roomIds = array_keys($roomTypes);
         $tariffs = $this->getTariffs();
@@ -35,27 +36,22 @@ class SearchRequestReceiverTest extends WebTestCase
             'begin' => '21.04.2018',
             'end' => '22.04.2018',
             'adults' => 3,
-            'children' => 4,
+            'children' => 3,
             'roomTypes' => $roomIds,
             'tariffs' => $tariffIds,
-            'additionalBefore' => 2,
-            'additionalAfter' => 3,
-            'childrenAges' => ['3',7,15]
+            'childrenAges' => ['3', 7, '12'],
+            'isOnline' => true
         ];
-
         $result = $this->receiver->handleData($data);
-
-        $object = new SearchConditions();
-        $object
+        $object = (new SearchConditions())
             ->setBegin(new \DateTime('2018-04-21 midnight'))
             ->setEnd(new \DateTime('2018-04-22 midnight'))
             ->setAdults(3)
-            ->setChildren(4)
+            ->setChildren(3)
+            ->setChildrenAges([3, 7, 12])
             ->setRoomTypes(new ArrayCollection(array_values($roomTypes)))
             ->setTariffs(new ArrayCollection(array_values($tariffs)))
-            ->setAdditionalBefore(2)
-            ->setAdditionalAfter(3)
-            ->setChildrenAges([3,7,15])
+            ->setIsOnline(true)
         ;
 
         $this->assertEquals($object, $result, 'Data from form is not equal expected');
@@ -63,8 +59,41 @@ class SearchRequestReceiverTest extends WebTestCase
     }
 
     /**
+     * @dataProvider successDataProvider
+     */
+    public function testHandleSuccessData($data): void
+    {
+        $result = $this->receiver->handleData($data['raw']);
+
+        $this->assertEquals($data['object'], $result, 'Data from form is not equal expected');
+
+    }
+
+    public function testHandleAdditionalEndMethod(): void
+    {
+        $data = [
+            'begin' => '21.04.2018',
+            'end' => '22.04.2018',
+            'adults' => 3,
+            'additionalBegin' => 2
+        ];
+
+        $object = (new SearchConditions())
+            ->setBegin(new \DateTime('2018-04-21 midnight'))
+            ->setEnd(new \DateTime('2018-04-22 midnight'))
+            ->setAdults(3)
+            ->setAdditionalBegin(2)
+            ->setAdditionalEnd(2);
+
+        $result = $this->receiver->handleData($data);
+        $this->assertSame($object->getAdditionalEnd(), $result->getAdditionalEnd(), 'Data from form is not equal expected');
+
+    }
+
+
+    /**
      * @throws SearchConditionException
-     * @dataProvider failData
+     * @dataProvider failDataProvider
      */
     public function testHandleFail($data): void
     {
@@ -73,7 +102,11 @@ class SearchRequestReceiverTest extends WebTestCase
         }
 
         if (isset($data['roomTypes'])) {
-            $data['roomTypes'] = array_merge($data['roomTypes'], array_keys($this->getRoomTypes()), ['wrong roomType name']);
+            $data['roomTypes'] = array_merge(
+                $data['roomTypes'],
+                array_keys($this->getRoomTypes()),
+                ['wrong roomType name']
+            );
         }
 
         $this->expectException(SearchConditionException::class);
@@ -99,8 +132,45 @@ class SearchRequestReceiverTest extends WebTestCase
         return $qb->find()->getQuery()->execute()->toArray();
     }
 
+    public function successDataProvider(): array
+    {
+        return [
+            [
+                [
+                    'raw' => [
+                        'begin' => '21.04.2018',
+                        'end' => '22.04.2018',
+                        'adults' => 3,
+                    ],
+                    'object' => (new SearchConditions())
+                        ->setBegin(new \DateTime('2018-04-21 midnight'))
+                        ->setEnd(new \DateTime('2018-04-22 midnight'))
+                        ->setAdults(3),
+                ],
+            ],
+            [
+                [
+                    'raw' => [
+                        'begin' => '21.04.2018',
+                        'end' => '22.04.2018',
+                        'adults' => 3,
+                        'additionalBegin' => 2,
+                        'additionalEnd' => 3,
+                    ],
+                    'object' => (new SearchConditions())
+                        ->setBegin(new \DateTime('2018-04-21 midnight'))
+                        ->setEnd(new \DateTime('2018-04-22 midnight'))
+                        ->setAdults(3)
+                        ->setAdditionalBegin(2)
+                        ->setAdditionalEnd(3),
 
-    public function failData(): array
+                ],
+            ],
+        ];
+    }
+
+
+    public function failDataProvider(): array
     {
         return [
             [
@@ -108,7 +178,8 @@ class SearchRequestReceiverTest extends WebTestCase
                     'begin' => '23.04.2018',
                     'end' => '22.04.2018',
                     'adults' => 3,
-                    'children' => 4,
+                    'children' => 3,
+                    'childrenAges' => [3, 4, 5],
                 ],
 
             ],
@@ -118,7 +189,8 @@ class SearchRequestReceiverTest extends WebTestCase
                         'begin' => 'wrong ',
                         'end' => 'data',
                         'adults' => 3,
-                        'children' => 4,
+                        'children' => 3,
+                        'childrenAges' => [3, 4, 5],
                     ],
             ],
             [
@@ -127,8 +199,9 @@ class SearchRequestReceiverTest extends WebTestCase
                         'begin' => '21.04.2018',
                         'end' => '22.04.2018',
                         'adults' => 3,
-                        'children' => 4,
-                        'tariffs' => []
+                        'children' => 3,
+                        'childrenAges' => [3, 4, 5],
+                        'tariffs' => [],
                     ],
             ],
             [
@@ -137,8 +210,9 @@ class SearchRequestReceiverTest extends WebTestCase
                         'begin' => '21.04.2018',
                         'end' => '22.04.2018',
                         'adults' => 3,
-                        'children' => 4,
-                        'roomTypes' => []
+                        'children' => 3,
+                        'childrenAges' => [3, 4, 5],
+                        'roomTypes' => [],
                     ],
             ],
             [
@@ -147,8 +221,9 @@ class SearchRequestReceiverTest extends WebTestCase
                         'begin' => '21.04.2018',
                         'end' => '22.04.2018',
                         'adults' => 3,
-                        'children' => 4,
-                        'additionalBefore' => -1
+                        'children' => 3,
+                        'childrenAges' => [3, 4, 5],
+                        'additionalBefore' => -1,
                     ],
             ],
             [
@@ -157,10 +232,20 @@ class SearchRequestReceiverTest extends WebTestCase
                         'begin' => '21.04.2018',
                         'end' => '22.04.2018',
                         'adults' => 3,
-                        'children' => 4,
-                        'additionalAfter' => 'bbb'
+                        'children' => 3,
+                        'childrenAges' => [3, 4, 5, 6],
                     ],
-            ]
+            ],
+            [
+                'wrong isonline data' =>
+                    [
+                        'begin' => '21.04.2018',
+                        'end' => '22.04.2018',
+                        'adults' => 3,
+                        'children' => 3,
+                        'childrenAges' => [3, 4, 5]
+                    ],
+            ],
         ];
     }
 

@@ -9,13 +9,14 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Callback;
 
 class SearchConditionsType extends AbstractType
 {
@@ -64,37 +65,49 @@ class SearchConditionsType extends AbstractType
                 [
                     'class' => Tariff::class,
                     'required' => false,
-                    'multiple' => true
+                    'multiple' => true,
                 ]
             )
             ->add(
-                'additionalBefore',
-                IntegerType::class
+                'additionalBegin',
+                IntegerType::class,
+                [
+                    'required' => false,
+                ]
             )
             ->add(
-                'additionalAfter',
-                IntegerType::class
+                'additionalEnd',
+                IntegerType::class,
+                [
+                    'required' => false,
+                ]
             )
             ->add(
                 'childrenAges',
-                HiddenType::class,
+                CollectionType::class,
                 [
                     'required' => false,
-                    'constraints' => [
-                        new Callback([
-                            'callback' => [$this, 'chackArrayOfInteger'],
-
-                        ])
-                    ]
+                    'entry_type' => ChoiceType::class,
+                    'entry_options' => [
+                        'label' => false,
+                        'placeholder' => false,
+                        'choices' => range(0, 13),
+                        'empty_data' => 12,
+                        'compound' => false,
+                    ],
+                    'prototype' => false,
+                    'allow_add' => true,
+                    'allow_delete' => true,
+                    'by_reference' => false,
                 ]
             )
-
-        ;
-    }
-
-    public function chackArrayOfInteger($data)
-    {
-        /** TODO: Create a validator */
+            ->add(
+                'isOnline',
+                CheckboxType::class,
+                [
+                    'required' => false,
+                ]
+            );
     }
 
     /**

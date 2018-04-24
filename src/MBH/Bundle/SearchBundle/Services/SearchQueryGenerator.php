@@ -17,14 +17,18 @@ class SearchQueryGenerator
     /** @var int */
     private $queuesNum;
 
+    public function __construct()
+    {
+    }
+
+
     /**
      * @param SearchConditions $conditions
      * @throws SearchException
      */
     public function generate(SearchConditions $conditions): void
     {
-        $this->searchQueryHash = 'this is must be hash';
-        $this->queuesNum = 3;
+
     }
 
     /**

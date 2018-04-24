@@ -8,12 +8,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Validator\Constraints\Range;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class SearchConditions
  * @package MBH\Bundle\SearchBundle\Document
  * @Range()
+ * @ChildrenAgesSameAsChildren()
  */
 class SearchConditions
 {
@@ -35,7 +37,7 @@ class SearchConditions
      * @var int
      * @Assert\NotNull(message="form.searchType.adults_amount_not_filled")
      * @Assert\Range(
-     *     min = 0,
+     *     min = 1,
      *     max = 12,
      *     minMessage = "form.searchType.adults_amount_less_zero"
      * )
@@ -44,7 +46,6 @@ class SearchConditions
 
     /**
      * @var int
-     * @Assert\NotNull(message="orm.searchType.children_amount_not_filled")
      * @Assert\Range(
      *     min = 0,
      *     max = 6,
@@ -60,7 +61,7 @@ class SearchConditions
      *     max=14
      * )
      */
-    private $additionalBefore = 0;
+    private $additionalBegin;
 
     /**
      * @var int
@@ -69,11 +70,10 @@ class SearchConditions
      *     max=14
      * )
      */
-    private $additionalAfter = 0;
+    private $additionalEnd;
 
     /**
      * @var array|int[]
-     * @Assert\Collection()
      *
      */
     private $childrenAges = [];
@@ -81,12 +81,15 @@ class SearchConditions
     /**
      * @var  ArrayCollection|RoomType[]
      */
-    private $roomTypes = [];
+    private $roomTypes;
 
     /**
      * @var ArrayCollection|Tariff[]
      */
     private $tariffs;
+
+    /** @var bool */
+    private $isOnline = false;
 
     /**
      * SearchConditions constructor.
@@ -220,18 +223,18 @@ class SearchConditions
     /**
      * @return int
      */
-    public function getAdditionalBefore(): int
+    public function getAdditionalBegin(): ?int
     {
-        return $this->additionalBefore;
+        return $this->additionalBegin;
     }
 
     /**
-     * @param int $additionalBefore
+     * @param int $additionalBegin
      * @return SearchConditions
      */
-    public function setAdditionalBefore(?int $additionalBefore): SearchConditions
+    public function setAdditionalBegin(?int $additionalBegin): SearchConditions
     {
-        $this->additionalBefore = $additionalBefore;
+        $this->additionalBegin = $additionalBegin;
 
         return $this;
     }
@@ -239,18 +242,22 @@ class SearchConditions
     /**
      * @return int
      */
-    public function getAdditionalAfter(): int
+    public function getAdditionalEnd(): ?int
     {
-        return $this->additionalAfter;
+        if (!$this->additionalEnd && $this->additionalBegin) {
+            return $this->additionalBegin;
+        }
+
+        return $this->additionalEnd;
     }
 
     /**
-     * @param int $additionalAfter
+     * @param int $additionalEnd
      * @return SearchConditions
      */
-    public function setAdditionalAfter(?int $additionalAfter): SearchConditions
+    public function setAdditionalEnd(?int $additionalEnd): SearchConditions
     {
-        $this->additionalAfter = $additionalAfter;
+        $this->additionalEnd = $additionalEnd;
 
         return $this;
     }
@@ -274,11 +281,29 @@ class SearchConditions
         return $this;
     }
 
+    public function addChildrenAge($age)
+    {
+        $this->childrenAges[] = $age;
+    }
 
+    /**
+     * @return bool
+     */
+    public function isOnline(): bool
+    {
+        return $this->isOnline;
+    }
 
+    /**
+     * @param bool $isOnline
+     * @return SearchConditions
+     */
+    public function setIsOnline($isOnline): SearchConditions
+    {
+        $this->isOnline = $isOnline;
 
-
-
+        return $this;
+    }
 
 
 }
