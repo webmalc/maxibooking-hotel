@@ -89,7 +89,12 @@ class TemplateFormatter
         $twig = $this->container->get('twig');
         $renderedTemplate = $twig->createTemplate($doc->getContent())->render($params);
 
-        return  $this->container->get('knp_snappy.pdf')->getOutputFromHtml($renderedTemplate);
+        return  $this->container->get('knp_snappy.pdf')
+            ->getOutputFromHtml(
+                $renderedTemplate, [
+                    'orientation' => $doc->getOrientation(),
+                ]
+            );
     }
 
 

@@ -93,8 +93,8 @@ twig.extension.september: сент
 twig.extension.october: окт
 twig.extension.november: нояб
 twig.extension.december: дек
-landscape: книжная
-portrait: альбомная
+landscape: альбомная
+portrait: книжная
 controller.baseController.delete_record_success: 'Запись успешно удалена'
 controller.baseController.document_is_deleted: 'Документ уже удален!'
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Нельзя удалить запись с существующими бронями'
