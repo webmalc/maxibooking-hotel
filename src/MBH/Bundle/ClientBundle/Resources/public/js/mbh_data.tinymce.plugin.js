@@ -33,8 +33,18 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
 
     var self = this;
 
+    var hotelProperty = [
+        'fullTitle','internationalTitle','zipCode', 'street' , 'mapLink', 'aboutLink', 'internationalStreetName',
+        'city', 'region', 'country', 'house', 'flat'
+    ];
+
+    var payerProperty = [
+        'birthday', 'fullName'
+    ];
+
+
     var borderShow = 'border: 1px dotted black;';
-    var borderHide = 'border: 1px none;';
+    var borderHide = 'border: 1px dotted white;';
 
     editor.addButton('mbh_toggle_border', {
             text: 'Border',
@@ -58,7 +68,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
             name: 'portrait'
         };
         var landscape = {
-            value: 'width: 1769px;height: 1240px;',
+            value: 'width: 1769px;height: 1223px;',
             name: 'landscape'
         };
 
@@ -99,41 +109,28 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         }
     });
 
+    function getMenu(property){
+        var menuItems = [];
+        for (var i = 0; i < property.length ; i++){
+            menuItems.push({
+                temp_count: i,
+                text: 'Hotel ' + property[i].replace(/([a-z].*?)([A-Z][\w])/, '$1 $2'),
+                onselect: function (e) {
+                    editor.insertContent('{{ if_exist(hotel, "' + property[this.settings.temp_count] + '") }}');
+                }
+            });
+        }
+        return menuItems;
+    }
+
     editor.addMenuItem('mbh_hotel', {
         text: 'Hotel',
-        menu: [
-            {
-                text: 'Hotel address',
-                onselect: function (e) {
-                    // editor.insertContent(this.value());
-                    editor.insertContent('{{ hotel }}');
-                }
-            },
-            {
-                text: 'Hotel phone',
-                onselect: function (e) {
-                    editor.insertContent('{{ hotel_phone }}');
-                }
-            }
-        ]
+        menu: getMenu(hotelProperty)
     });
 
     editor.addMenuItem('mbh_payer', {
         text: 'Payer',
-        menu: [
-            {
-                text: 'Payer Name',
-                onselect: function (e) {
-                    editor.insertContent('{{ payer_name }}');
-                }
-            },
-            {
-                text: 'Payer Birthday',
-                onselect: function (e) {
-                    editor.insertContent('{{ payer_birthday }}');
-                }
-            }
-        ]
+        menu: getMenu(payerProperty)
     });
 
     var menuItems = [];
@@ -145,25 +142,10 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         }
     });
 
-    // console.log(editor.contextToolbars);
-
-    // editor.addMenuItem('mbh_data', {
-    //     text: 'Insert MBH',
-    //     context: 'tools',
-    //     menu: menuItems
-    //     // onclick: function() {
-    //     //     editor.insertContent("Here's some content!");
-    //     // }
-    // });
-
     editor.addMenuItem('data', {
         context: 'mbh_menu',
-        // context: 'tools',
-        // type: 'menuButton',
         text: 'Maxibooking',
-        // title: 'All data',
         icon: false,
         menu: menuItems
-        // prependToContext: true
     });
 });

@@ -5,6 +5,8 @@ use MBH\Bundle\BaseBundle\Service\Address;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
@@ -325,6 +327,47 @@ class Extension extends \Twig_Extension
         return $address->getImperialStreetStr($obj);
     }
 
+    public function returnIfExist($entity, $property)
+    {
+        if ($entity instanceof Hotel){
+            return $this->propertyHotel($entity, $property);
+        } elseif ($entity instanceof Tourist) {
+            return $this->propertyTourist($entity, $property);
+        }
+
+        return 'no object';
+    }
+
+    private function propertyTourist(Tourist $tourist, $property)
+    {
+        return $this->getSimpleProperty($tourist, $property);
+    }
+
+    private function propertyHotel(Hotel $hotel, $property)
+    {
+        switch ($property){
+            case 'phoneNumber':
+                return $hotel->getContactInformation() !== null ? $hotel->getContactInformation()->getPhoneNumber()  : '';
+            case 'city':
+                return $hotel->getCityId() !== null ? $this->getCityById($hotel->getCityId()) : 'no city';
+            case 'region':
+                return $hotel->getRegionId() !== null ? $this->getRegionById($hotel->getRegionId()) : 'no region';
+            case 'country':
+                return $hotel->getCountryTld() !== null ? $this->getCountryByTld($hotel->getCountryTld()) : 'no country';
+        }
+        return $this->getSimpleProperty($hotel, $property);
+    }
+
+    private function getSimpleProperty($entity, $property)
+    {
+        $method = 'get'.ucfirst($property);
+        if (method_exists($entity, $method)){
+            return (string) $entity->$method();
+        }
+        $arr = explode('\\',get_class($entity));
+        return 'property '. $property .' no in ' . end($arr);
+    }
+
     /**
      * @return array
      */
@@ -349,6 +392,7 @@ class Extension extends \Twig_Extension
             'get_imperial_city'       => new \Twig_SimpleFunction('get_imperial_city', [$this, 'getImperialAddressCity'], ['is_safe' => ['html']]),
             'get_imperial_street'     => new \Twig_SimpleFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], ['is_safe' => ['html']]),
             'get_twig_data'           => new \Twig_SimpleFunction('get_twig_data', [$this, 'getTwigData'], ['is_safe' => ['html']]),
+            'if_exist'                => new \Twig_SimpleFunction('if_exist', [$this, 'returnIfExist'], ['is_safe' => ['html']]),
         ];
     }
 
