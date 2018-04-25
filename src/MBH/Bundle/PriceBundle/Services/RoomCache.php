@@ -228,7 +228,7 @@ class RoomCache
             . ', available room type: ' . join(', ', $weekdays)
         ;
 
-        $this->container->get('logger')->addInfo($loggerMessage);
+        $this->container->get('logger')->addAlert($loggerMessage);
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];
