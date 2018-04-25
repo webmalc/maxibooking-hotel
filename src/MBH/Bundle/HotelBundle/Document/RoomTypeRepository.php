@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 
 class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositoryInterface
@@ -44,9 +45,32 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         if (!empty($roomTypes) && is_array($roomTypes)) {
             $qb->field('id')->in($roomTypes);
         }
-        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');;
+        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
 
         return $qb;
+    }
+
+    public function fetchInHotels(array $roomTypeIds, array $hotelIds)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $qb = $this->createQueryBuilder();
+
+        // hotel
+        if (\is_array($hotelIds) && !empty($hotelIds)) {
+            $qb->field('hotel.id')->in($hotelIds);
+        }
+        // roomTypes
+        if (!empty($roomTypeIds) && \is_array($roomTypeIds)) {
+            $qb->field('id')->in($roomTypeIds);
+        }
+        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
+
+        $ids = array_map(
+            [Helper::class, 'returnNonHydrateIds'],
+            $qb->hydrate(false)->getQuery()->toArray()
+        );
+
+        return array_keys($ids);
     }
 
     /**

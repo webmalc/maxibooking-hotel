@@ -4,6 +4,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
@@ -32,6 +33,8 @@ class SearchRequestReceiverTest extends WebTestCase
         $roomIds = array_keys($roomTypes);
         $tariffs = $this->getTariffs();
         $tariffIds = array_keys($tariffs);
+        $hotels = $this->getAllHotels();
+        $hotelIds = array_keys($hotels);
         $data = [
             'begin' => '21.04.2018',
             'end' => '22.04.2018',
@@ -39,6 +42,7 @@ class SearchRequestReceiverTest extends WebTestCase
             'children' => 3,
             'roomTypes' => $roomIds,
             'tariffs' => $tariffIds,
+            'hotels' => $hotelIds,
             'childrenAges' => ['3', 7, '12'],
             'isOnline' => true
         ];
@@ -51,6 +55,7 @@ class SearchRequestReceiverTest extends WebTestCase
             ->setChildrenAges([3, 7, 12])
             ->setRoomTypes(new ArrayCollection(array_values($roomTypes)))
             ->setTariffs(new ArrayCollection(array_values($tariffs)))
+            ->setHotels(new ArrayCollection(array_values($hotels)))
             ->setIsOnline(true)
         ;
 
@@ -98,7 +103,11 @@ class SearchRequestReceiverTest extends WebTestCase
     public function testHandleFail($data): void
     {
         if (isset($data['tariffs'])) {
-            $data['tariffs'] = array_merge($data['tariffs'], array_keys($this->getTariffs()), ['wrong tariff name']);
+            $data['tariffs'] = array_merge(
+                $data['tariffs'],
+                array_keys($this->getTariffs()),
+                ['wrong tariff name']
+            );
         }
 
         if (isset($data['roomTypes'])) {
@@ -106,6 +115,14 @@ class SearchRequestReceiverTest extends WebTestCase
                 $data['roomTypes'],
                 array_keys($this->getRoomTypes()),
                 ['wrong roomType name']
+            );
+        }
+
+        if (isset($data['hotels'])) {
+            $data['hotels'] = array_merge(
+                $data['hotels'],
+                array_keys($this->getAllHotels()),
+                ['wrong hotel name']
             );
         }
 
@@ -122,6 +139,11 @@ class SearchRequestReceiverTest extends WebTestCase
     private function getRoomTypes(): ?array
     {
         return $this->getAllFromRepo(RoomType::class);
+    }
+
+    private function getAllHotels(): ?array
+    {
+        return $this->getAllFromRepo(Hotel::class);
     }
 
     private function getAllFromRepo(string $reponame)
@@ -234,6 +256,17 @@ class SearchRequestReceiverTest extends WebTestCase
                         'adults' => 3,
                         'children' => 3,
                         'childrenAges' => [3, 4, 5, 6],
+                    ],
+            ],
+            [
+                'wrong hotel data' =>
+                    [
+                        'begin' => '21.04.2018',
+                        'end' => '22.04.2018',
+                        'adults' => 3,
+                        'children' => 3,
+                        'childrenAges' => [3, 4, 5, 6],
+                        'hotels' => []
                     ],
             ]
 

@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Validator\Constraints\Range;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
@@ -79,6 +80,11 @@ class SearchConditions
     private $childrenAges = [];
 
     /**
+     * @var ArrayCollection|Hotel[]
+     */
+    private $hotels;
+
+    /**
      * @var  ArrayCollection|RoomType[]
      */
     private $roomTypes;
@@ -96,6 +102,7 @@ class SearchConditions
      */
     public function __construct()
     {
+        $this->hotels = new ArrayCollection();
         $this->roomTypes = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
     }
@@ -175,6 +182,18 @@ class SearchConditions
         $this->children = $children;
 
         return $this;
+    }
+
+    public function setHotels($hotels): SearchConditions
+    {
+        $this->hotels = $hotels;
+
+        return $this;
+    }
+
+    public function getHotels(): ArrayCollection
+    {
+        return $this->hotels;
     }
 
     public function addRoomTypes(RoomType $roomType): SearchConditions

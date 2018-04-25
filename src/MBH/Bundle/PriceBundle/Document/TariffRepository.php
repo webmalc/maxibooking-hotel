@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\PriceBundle\Lib\TariffFilter;
@@ -26,6 +27,48 @@ class TariffRepository extends DocumentRepository
             ->hydrate(false)
             ->getQuery()->toArray());
     }
+
+    /**
+     * @param array $hotelIds
+     * @param array|null $tariffsIds
+     * @param bool $isEnabled
+     * @param bool $isOnline
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchRaw(array $hotelIds = [], ?array $tariffsIds = [], bool $isEnabled = true, bool $isOnline = false): array
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $qb = $this->createQueryBuilder();
+        // hotel
+        if (!empty($hotelIds)) {
+            $qb->field('hotel.id')->in($hotelIds);
+        }
+        // tariffs
+        if (!empty($tariffsIds) && \is_array($tariffsIds)) {
+            $qb->field('id')->in($tariffsIds);
+        }
+        //enabled
+        if ($isEnabled) {
+            $qb->field('isEnabled')->equals(true);
+        }
+        //enabled
+        if ($isOnline) {
+            $qb->field('isOnline')->equals(true);
+        }
+
+        return $qb->hydrate(false)->getQuery()->toArray();
+//        $ids = array_map(
+//            [Helper::class, 'returnNonHydrateIds'],
+//            $qb->hydrate(false)->getQuery()->toArray()
+//        );
+//
+//        return array_keys($ids);
+    }
+
+
+
+
 
     public function getMergingTariffs()
     {
@@ -114,7 +157,7 @@ class TariffRepository extends DocumentRepository
             }
         }
 
-        $queryBuilder = $this->createQueryBuilder('q');
+        $queryBuilder = $this->createQueryBuilder();
 
         $queryBuilder
         ->field('id')->equals($tariffId)
@@ -144,7 +187,7 @@ class TariffRepository extends DocumentRepository
             }
         }
 
-        $queryBuilder = $this->createQueryBuilder('q');
+        $queryBuilder = $this->createQueryBuilder();
 
         $queryBuilder->field('isDefault')->equals(true)
         ->field('hotel.id')->equals($hotel->getId())
@@ -173,7 +216,7 @@ class TariffRepository extends DocumentRepository
     public function fetchQueryBuilder(Hotel $hotel = null, $tariffs = null, $enabled = false, $online = false)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
 
         // hotel
         if ($hotel) {
@@ -192,7 +235,7 @@ class TariffRepository extends DocumentRepository
             $qb->field('isOnline')->equals(true);
         }
         $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
-        ;
+
 
         return $qb;
     }

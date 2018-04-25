@@ -28,7 +28,6 @@ class SearchRequestReceiver
     /**
      * @param array $data
      * @return SearchConditions
-     * @throws \Exception
      * @throws SearchConditionException
      */
     public function handleData(array $data): SearchConditions

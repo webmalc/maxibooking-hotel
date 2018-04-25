@@ -4,6 +4,8 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
@@ -55,37 +57,185 @@ class SearchQueryGeneratorTest extends WebTestCase
         $generator = new SearchQueryGenerator($dm);
 
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'generateDaysWithRange');
-        $result = $method->invokeArgs($generator, [$date, $range]);
+        $actual = $method->invokeArgs($generator, [$date, $range]);
 
-        $this->assertCount($countExpected, $result);
-        $this->assertEquals($dataExpected, $result, 'The array of dates is wrong');
+        $this->assertCount($countExpected, $actual);
+        $this->assertEquals($dataExpected, $actual, 'The array of dates is wrong');
 
     }
 
-    public function testCombine(): void
+    public function testPrepareConditionsForSearchQueries(): void
     {
         $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
         $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
+        $hotels = $this->dm->getRepository(Hotel::class)->findAll();
+
         $generator = new SearchQueryGenerator($this->dm);
         $conditions = new SearchConditions();
         $conditions
             ->setBegin(new \DateTime('2018-04-21 midnight'))
-            ->setEnd(new \DateTime('2018-04-22 midnight'))
+            ->setEnd(new \DateTime('2018-04-24 midnight'))
             ->setAdults(3)
             ->setChildren(4)
             ->setRoomTypes(new ArrayCollection(array_values($roomTypes)))
             ->setTariffs(new ArrayCollection(array_values($tariffs)))
+            ->setHotels(new ArrayCollection(array_values($hotels)))
             ->setAdditionalBegin(1)
         ;
 
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'combineQueries');
-        $result = $method->invokeArgs($generator, [$conditions]);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'prepareConditionsForSearchQueries');
+        $actual = $method->invokeArgs($generator, [$conditions]);
 
-        $this->assertCount(1, $result);
-//        $this->assertEquals($dataExpected, $result, 'The array of dates is wrong');
+
+//        $this->assertCount(1, $actual);
+//        $this->assertEquals($dataExpected, $actual, 'The array of dates is wrong');
 
     }
 
+    public function testGetTariffIdsOneTariffNoHotel(): void
+    {
+        $tariff = $this->dm->getRepository(Tariff::class)->findOneBy([]);
+
+        $generator = new SearchQueryGenerator($this->dm);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
+        $actual = $method->invokeArgs($generator, [new ArrayCollection([$tariff]), [], true]);
+
+        $expected = [
+            $tariff->getHotel()->getId() => [
+                $tariff->getId()
+            ]
+        ];
+
+        $this->assertNotEmpty($actual, 'Result is empty!');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGetTariffIdsNoTariffNoHotel(): void
+    {
+        $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
+        $generator = new SearchQueryGenerator($this->dm);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
+        $actual = $method->invokeArgs($generator, [new ArrayCollection(), [], false]);
+
+        $expected = [];
+        foreach ($tariffs as $tariff) {
+            $expected[$tariff->getHotel()->getId()][] = $tariff->getId();
+        }
+
+        $this->assertNotEmpty($actual, 'Result is empty!');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGetTariffIdsOneTariffOneHotel(): void
+    {
+        $tariff = $this->dm->getRepository(Tariff::class)->findOneBy([]);
+        $hotelId = $tariff->getHotel()->getId();
+        $strangerHotel = $this->dm->createQueryBuilder(Hotel::class)->field('id')->notEqual($hotelId)->limit(1)->getQuery()->execute()->toArray();
+        $generator = new SearchQueryGenerator($this->dm);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
+        $actual = $method->invokeArgs($generator, [new ArrayCollection([$tariff]), [array_values($strangerHotel)], false]);
+        $expected = [
+            $tariff->getHotel()->getId() => [
+                $tariff->getId(),
+            ],
+        ];
+        $this->assertNotEmpty($actual, 'Result is empty!');
+        $this->assertEquals($expected, $actual);
+
+    }
+
+    public function testGetTariffIdsNoTariffOneHotel(): void
+    {
+        $hotel = $this->dm->getRepository(Hotel::class)->findOneBy([]);
+        $tariffs = $this->dm->createQueryBuilder(Tariff::class)->field('hotel.id')->equals($hotel->getId())->getQuery()->execute()->toArray();
+        $generator = new SearchQueryGenerator($this->dm);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
+        $actual = $method->invokeArgs($generator, [new ArrayCollection([]), [$hotel->getId()], false]);
+
+        foreach ($tariffs as $tariff) {
+            $expected[$hotel->getId()][] = $tariff->getId();
+        }
+
+        $this->assertNotEmpty($actual, 'Result is empty!');
+        $this->assertEquals($expected, $actual);
+    }
+
+
+    public function testGetRoomTypeIdsOneRoomTypeNoHotel(): void
+    {
+        $roomType = $this->dm->getRepository(RoomType::class)->findOneBy([]);
+        $generator = new SearchQueryGenerator($this->dm);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $actual = $method->invokeArgs($generator, [new ArrayCollection([$roomType]), []]);
+        $expected = [
+            $roomType->getHotel()->getId() => [
+                $roomType->getId()
+            ]
+        ];
+
+        $this->assertNotEmpty($actual, 'Result is empty!');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGetRoomTypeIdsOneRoomTypeOneHotel(): void
+    {
+        $roomType = $this->dm->getRepository(RoomType::class)->findOneBy([]);
+        $hotel = $this->dm->createQueryBuilder(Hotel::class)->field('id')->notEqual($roomType->getHotel()->getId())->getQuery()->execute()->toArray();
+        $hotelIds = Helper::toIds($hotel);
+        $roomTypeIds = Helper::toIds([$roomType]);
+        $generator = new SearchQueryGenerator($this->dm);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $actual = $method->invokeArgs($generator, [new ArrayCollection([$roomType]), [$hotelIds]]);
+        $expected = [
+            $roomType->getHotel()->getId() => [
+                $roomType->getId(),
+            ],
+        ];
+        $this->assertNotEmpty($actual, 'Result is empty!');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGetRoomTypeIdsNoRoomTypeNoHotel(): void
+    {
+        $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
+        $roomTypeIds = Helper::toIds($roomTypes);
+        $generator = new SearchQueryGenerator($this->dm);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $actual = $method->invokeArgs($generator, [new ArrayCollection(), []]);
+
+
+        $this->assertNotEmpty($actual, 'Result is empty!');
+        $this->assertEquals($roomTypeIds, $actual);
+    }
+
+    public function testGetRoomTypeIdsNoRoomTypeOneHotel(): void
+    {
+        $hotel = $this->dm->getRepository(Hotel::class)->findOneBy([]);
+        $roomTypes = $this->dm->createQueryBuilder(RoomType::class)->field('hotel.id')->equals($hotel->getId())->getQuery()->execute()->toArray();
+        $roomTypeIds = Helper::toIds($roomTypes);
+        $generator = new SearchQueryGenerator($this->dm);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $actual = $method->invokeArgs($generator, [new ArrayCollection(), [$hotel->getId()]]);
+
+        sort($roomTypeIds); sort($actual);
+        $this->assertNotEmpty($actual, 'Result is empty!');
+        $this->assertEquals($roomTypeIds, $actual);
+    }
+
+    public function testGetRoomTypeIdsNoRoomTypeTwoHotel(): void
+    {
+        $hotels = $this->dm->getRepository(Hotel::class)->findAll();
+        $hotelsIds = Helper::toIds($hotels);
+        $roomTypes = $this->dm->createQueryBuilder(RoomType::class)->field('hotel.id')->in($hotelsIds)->getQuery()->execute()->toArray();
+        $roomTypeIds = Helper::toIds($roomTypes);
+        $generator = new SearchQueryGenerator($this->dm);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $actual = $method->invokeArgs($generator, [new ArrayCollection(), $hotelsIds]);
+
+        sort($roomTypeIds); sort($actual);
+        $this->assertNotEmpty($actual, 'Result is empty!');
+        $this->assertEquals($roomTypeIds, $actual);
+    }
 
     private function getPrivateMethod($className, $methodName)
     {

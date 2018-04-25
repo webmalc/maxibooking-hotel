@@ -26,9 +26,6 @@ class SearchController extends Controller
      *     )
      * @param Request $request
      * @return JsonResponse
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException
-     * @throws \Exception
-     * @throws \LogicException
      */
     public function searchRequestAction(Request $request): JsonResponse
     {
@@ -48,7 +45,6 @@ class SearchController extends Controller
         } catch (SearchException $e) {
             $result->setErrorStatus()->setErrorMessage($e->getMessage());
         }
-
 
         return new JsonResponse($result);
     }
