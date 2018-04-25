@@ -349,11 +349,17 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Security("is_granted('ROLE_PACKAGE_EDIT') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template("MBHPackageBundle:Package:edit.html.twig")
      * @ParamConverter("package", class="MBHPackageBundle:Package")
+     * @param Request $request
+     * @param Package $package
+     * @return array|RedirectResponse
      */
     public function updateAction(Request $request, Package $package)
     {
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
+        }
+        if (!empty($package->getDeletedAt())) {
+            throw new \InvalidArgumentException('Package with id "' . $package->getId() . '" is already deleted!');
         }
 
         /** @var AuthorizationChecker $authorizationChecker */
@@ -702,10 +708,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $this->dm->persist($service);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set(
-                    'success',
-                    $this->get('translator')->trans('controller.packageController.service_edit_success')
-                );
+                $this->addFlash('success', 'controller.packageController.service_edit_success');
 
                 return $request->get('save') !== null ?
                     $this->redirectToRoute(
@@ -1082,6 +1085,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function deleteModalAction(Request $request, Package $entity)
     {
+        if (!empty($entity->getDeletedAt())) {
+            throw new \InvalidArgumentException('Package with id "' . $entity->getId() . '" is already deleted!');
+        }
+
         $form = $this->createForm(PackageDeleteReasonType::class, $entity);
         $form->handleRequest($request);
 

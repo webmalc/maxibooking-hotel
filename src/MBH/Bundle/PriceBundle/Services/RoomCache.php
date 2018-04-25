@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Services;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Document\PackageInfo;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -54,6 +55,7 @@ class RoomCache
             [$roomType->getId()]
         );
 
+        /** @var \MBH\Bundle\PriceBundle\Document\RoomCache $roomCache */
         foreach ($roomCaches as $roomCache) {
             if (empty($roomCache->getTariff()) || $roomCache->getTariff()->getId() == $tariff->getId()) {
                 if ($decrease) {
@@ -65,6 +67,30 @@ class RoomCache
             }
         }
         $this->dm->flush();
+    }
+
+    /**
+     * @param Package $package
+     */
+    public function recalculateByPackage(Package $package)
+    {
+        $kernel = $this->container->get('kernel');
+
+        $this->container->get('old_sound_rabbit_mq.task_cache_recalculate_producer')->publish(
+            serialize(
+                new Command(
+                    'mbh:cache:recalculate',
+                    [
+                        '--roomTypes' => $package->getRoomType()->getId(),
+                        '--begin' => $package->getBegin()->format('d.m.Y'),
+                        '--end' => $package->getEnd()->format('d.m.Y'),
+                    ],
+                    $kernel->getClient(),
+                    $kernel->getEnvironment(),
+                    $kernel->isDebug()
+                )
+            )
+        );
     }
 
     /**
@@ -190,8 +216,19 @@ class RoomCache
         array $availableRoomTypes = [],
         array $tariffs = [],
         array $weekdays = []
-    )
-    {
+    ) {
+        $loggerMessage = 'Begin update of room caches with parameters:'
+            . ' begin: ' . $begin->format('d.m.Y')
+            . ', end: ' . $end->format('d.m.Y')
+            . ', hotel ID: ' . $hotel->getId()
+            . ', number of rooms: ' . $rooms
+            . ', is closed: ' . ($isClosed ? 'true' : 'false')
+            . ', available room type: ' . join(', ', $this->helper->toIds($availableRoomTypes))
+            . ', tariffs: ' . join(', ', $this->helper->toIds($tariffs))
+            . ', available room type: ' . join(', ', $weekdays)
+        ;
+
+        $this->container->get('logger')->addInfo($loggerMessage);
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];
