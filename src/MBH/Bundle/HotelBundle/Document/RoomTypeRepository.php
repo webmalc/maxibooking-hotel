@@ -3,7 +3,6 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 
 class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositoryInterface
@@ -11,6 +10,7 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
     /**
      * Get roomTypes with > 1 package
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getWithPackages()
     {
@@ -50,7 +50,7 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         return $qb;
     }
 
-    public function fetchInHotels(array $roomTypeIds, array $hotelIds)
+    public function fetchRaw(array $roomTypeIds, array $hotelIds): array
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder();
@@ -65,12 +65,7 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         }
         $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
 
-        $ids = array_map(
-            [Helper::class, 'returnNonHydrateIds'],
-            $qb->hydrate(false)->getQuery()->toArray()
-        );
-
-        return array_keys($ids);
+        return $qb->hydrate(false)->getQuery()->toArray();
     }
 
     /**

@@ -157,8 +157,9 @@ class SearchQueryGenerator
      * @param ArrayCollection|RoomType[] $roomTypes
      * @param array $hotelIds
      * @return array
+     * @throws SearchQueryGeneratorException
      */
-    private function getRoomTypeIds(ArrayCollection $roomTypes, array $hotelIds)
+    private function getRoomTypeIds(ArrayCollection $roomTypes, array $hotelIds): array
     {
         $roomTypeIds = [];
         if ($roomTypes->count()) {
@@ -168,18 +169,26 @@ class SearchQueryGenerator
 
             return $roomTypeIds;
         }
-        $roomTypeIds = $this->getEntryIds($roomTypes);
-        if (!empty($roomTypeIds)) {
-            return $roomTypeIds;
+
+        $roomTypesRaw = $this->dm->getRepository(RoomType::class)->fetchRaw($roomTypeIds, $hotelIds);
+        if (empty($roomTypesRaw)) {
+            throw new SearchQueryGeneratorException(
+                'Empty Result in RoomType query, cannot create SearchQuery without any RoomType'
+            );
         }
 
-        if (empty($roomTypeIds)) {
-            $roomTypeIds = $this->dm->getRepository(RoomType::class)->fetchInHotels($roomTypeIds, $hotelIds);
+        foreach ($roomTypesRaw as $roomTypeId => $roomType) {
+            $roomTypeIds[(string)$roomType['hotel']['$id']][] = $roomTypeId;
         }
 
         return $roomTypeIds;
     }
 
+    /**
+     * @param array $begins
+     * @param array $ends
+     * @return array
+     */
     private function combineDates(array $begins, array $ends): array
     {
         $dates = [];
