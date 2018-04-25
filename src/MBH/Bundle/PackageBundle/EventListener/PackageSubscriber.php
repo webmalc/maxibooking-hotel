@@ -79,6 +79,7 @@ class PackageSubscriber implements EventSubscriber
             $dm->persist($entity);
             $dm->flush();
 
+            $this->container->get('mbh.room.cache')->recalculateByPackage($entity);
             $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
         }
 
@@ -101,6 +102,7 @@ class PackageSubscriber implements EventSubscriber
             }
 
             $end = clone $package->getEnd();
+            $this->container->get('mbh.room.cache')->recalculateByPackage($package);
             $this->container->get('mbh.room.cache')->recalculate(
                 $package->getBegin(),
                 $end->modify('-1 day'),
@@ -266,6 +268,7 @@ class PackageSubscriber implements EventSubscriber
                     }
                 }
             }
+            $this->container->get('mbh.room.cache')->recalculateByPackage($document);
 
 //            $creator = $this->container->get('mbh.hotel.console_auto_task_creator');
 //            if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {

@@ -5,7 +5,9 @@ namespace MBH\Bundle\PriceBundle\Document;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -17,6 +19,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class RoomCache extends Base
 {
+    use TimestampableDocument;
+    use BlameableDocument;
+
     /**
      * @var \MBH\Bundle\HotelBundle\Document\Hotel
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
@@ -56,6 +61,7 @@ class RoomCache extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      * @ODM\Index()
+     * @Gedmo\Versioned
      */
     protected $totalRooms;
 
@@ -66,6 +72,7 @@ class RoomCache extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      * @ODM\Index()
+     * @Gedmo\Versioned
      */
     protected $packagesCount = 0;
 
