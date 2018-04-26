@@ -367,7 +367,7 @@ class Mailer implements \SplObserver, MailerInterface
             return true;
         }
         /** @var ClientConfig $clientConfig */
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         if ($notificationType) {
             $result = $clientConfig->isNotificationTypeExists($notificationType);
         }

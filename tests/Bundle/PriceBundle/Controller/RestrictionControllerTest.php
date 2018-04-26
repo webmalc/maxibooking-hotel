@@ -89,7 +89,7 @@ class RestrictionControllerTest extends WebTestCase
     {
         $dm = $this->getDocumentManager();
 
-        $dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode(true);
+        $this->getContainer()->get('mbh.client_config_manager')->changeDisableableMode(true);
 
         /** @var RoomType $roomType */
         $roomType = $dm->getRepository('MBHHotelBundle:RoomType')
@@ -100,7 +100,7 @@ class RestrictionControllerTest extends WebTestCase
 
         $this->assertEquals(['3', '5', '3'], $this->getResultFromTable());
 
-        $dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode(false);
+        $this->getContainer()->get('mbh.client_config_manager')->changeDisableableMode(true);
         $roomType->setIsEnabled(true);
 
         $this->assertEquals(['2', '3', '6', '5', '3'], $this->getResultFromTable());

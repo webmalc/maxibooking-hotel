@@ -140,7 +140,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
             'package' => $package,
-            'clientConfig' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()
+            'clientConfig' => $this->clientConfig
         ];
     }
 

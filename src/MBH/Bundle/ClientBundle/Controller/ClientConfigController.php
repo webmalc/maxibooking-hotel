@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Form\NotificationConfigType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ColorsConfig;
@@ -20,7 +19,6 @@ use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
-use MBH\Bundle\ClientBundle\Service\Notice;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -43,7 +41,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function indexAction()
     {
-        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $entity = $this->get('mbh.client_config_manager')->fetchConfig();
         $form = $this->createForm(ClientConfigType::class, $entity);
 
         return [
@@ -64,7 +62,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function saveAction(Request $request)
     {
-        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $entity = $this->get('mbh.client_config_manager')->fetchConfig();
 
         if (!$entity) {
             $entity = new ClientConfig();
@@ -188,7 +186,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function paymentSystemSaveAction(Request $request)
     {
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $config = $this->get('mbh.client_config_manager')->fetchConfig();
         $paymentSystemName = $request->query->get('paymentSystemName');
 
         $form = $this->createForm(ClientPaymentSystemType::class, $config, [
@@ -301,7 +299,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     public function changeRoomTypeEnableableModeAction($disableMode, $route)
     {
         $disableModeBool = $disableMode == 'true';
-        $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableModeBool);
+        $this->get('mbh.client_config_manager')->changeDisableableMode($disableModeBool);
 
         return $this->redirectToRoute($route);
     }

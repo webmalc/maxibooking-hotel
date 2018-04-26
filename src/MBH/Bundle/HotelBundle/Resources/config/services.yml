@@ -102,3 +102,9 @@ services:
         arguments: ['@translator']
         tags:
             - {name: form.type}
+
+    mbh.hotel_type:
+        class: MBH\Bundle\HotelBundle\Form\HotelType
+        arguments: ['@mbh.client_config_manager']
+        tags:
+            - {name: form.type}

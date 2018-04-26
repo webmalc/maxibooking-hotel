@@ -202,9 +202,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     break;
 
                 case 'not-paid-time':
-                    /** @var ClientConfig $clientConfig */
-                    $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-                    $notPaidTime = new \DateTime('-' . $clientConfig->getNumberOfDaysForPayment().'days');
+                    $notPaidTime = new \DateTime('-' . $this->clientConfig->getNumberOfDaysForPayment().'days');
 
                     $data['paid'] = 'not_paid';
                     $data['dates'] = 'createdAt';

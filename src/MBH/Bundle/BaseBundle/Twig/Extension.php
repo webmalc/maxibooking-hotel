@@ -276,11 +276,17 @@ class Extension extends \Twig_Extension
      */
     public function getSettingsDataForFrontend()
     {
+        $session = $this->container->get('session');
+        $language = $session->get('_locale')
+            ? $session->get('_locale')
+            : $this->container->getParameter('locale');
+
         $data = [
             'allowed_guides' => $this->container->get('mbh.guides_data_service')->getAllowedGuides(),
             'client_country' => $this->getClient()->getCountry(),
             'front_token' => $this->container->getParameter('billing_front_token'),
             'billing_host' => $this->container->getParameter('billing_url') . '/',
+            'language' => $language
         ];
 
         return json_encode($data);
@@ -296,7 +302,7 @@ class Extension extends \Twig_Extension
             $this->twigData = [
                 'demo_user_token' => UserData::SANDBOX_USER_TOKEN,
                 'clients_support_email' => $supportEmail,
-                'support_phone' => $supportData['russian_support_phone']
+                'support_phone' => $supportData['russian_support_phone'],
             ];
 
             $this->isTwigDataInit = true;

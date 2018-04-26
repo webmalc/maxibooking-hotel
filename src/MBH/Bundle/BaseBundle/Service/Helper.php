@@ -576,10 +576,7 @@ class Helper
     public function getTimeZone(?ClientConfig $clientConfig = null)
     {
         if (is_null($clientConfig)) {
-            $clientConfig = $this->container
-                ->get('doctrine.odm.mongodb.document_manager')
-                ->getRepository('MBHClientBundle:ClientConfig')
-                ->fetchConfig();
+            $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         }
 
         if (is_null($clientConfig) || empty($clientConfig->getTimeZone())) {
@@ -640,11 +637,7 @@ class Helper
     public function getDefaultDatesOfSettlement()
     {
         /** @var ClientConfig $clientConfig */
-        $clientConfig = $this->container
-            ->get('doctrine_mongodb.odm.default_document_manager')
-            ->getRepository('MBHClientBundle:ClientConfig')
-            ->fetchConfig();
-
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         $calculationBegin = $clientConfig->getBeginDate() ?? new \DateTime('first day of January ' . date('Y'));
         $calculationEnd = (clone $calculationBegin)->add(new \DateInterval('P6M'));
 

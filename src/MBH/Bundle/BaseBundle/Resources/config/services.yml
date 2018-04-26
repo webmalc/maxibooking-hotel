@@ -472,3 +472,13 @@ services:
 
     mbh.yaml_manager:
         class: MBH\Bundle\BaseBundle\Service\YmlManager
+
+    mbh.multi_languages_type:
+        class: MBH\Bundle\BaseBundle\Form\MultiLanguagesType
+        arguments: ['@mbh.client_config_manager', '@mbh.multi_lang_translator']
+        tags:
+            - {name: form.type}
+
+    mbh.multi_lang_translator:
+        class: MBH\Bundle\BaseBundle\Service\MultiLangTranslator
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper']

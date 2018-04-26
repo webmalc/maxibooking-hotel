@@ -13,13 +13,14 @@ class ClientConfigData extends AbstractFixture implements OrderedFixtureInterfac
     public function load(ObjectManager $manager)
     {
         $isRussianLocale = $this->container->getParameter('locale') === 'ru';
-        $clientConfig = $manager->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         $clientConfig->setCurrency($isRussianLocale ? 'rub' : 'usd');
         $clientConfig->setTimeZone($isRussianLocale ? 'Europe/Moscow' : 'Europe/Paris');
-        $manager->persist($clientConfig);
         $notificationTypes = $manager->getRepository('MBHBaseBundle:NotificationType')->getClientType()->toArray();
         $clientConfig->setAllowNotificationTypes($notificationTypes);
+        $clientConfig->setLanguages([$this->container->getParameter('locale')]);
 
+        $manager->persist($clientConfig);
         $manager->flush();
     }
 

@@ -22,7 +22,7 @@ class Builder implements ContainerAwareInterface
     protected function setConfig()
     {
         if (!$this->config) {
-            $this->config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+            $this->config = $this->container->get('mbh.client_config_manager')->fetchConfig();
         }
     }
 

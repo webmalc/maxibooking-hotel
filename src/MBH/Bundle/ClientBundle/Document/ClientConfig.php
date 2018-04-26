@@ -287,6 +287,31 @@ class ClientConfig extends Base
     protected $isCacheValid = false;
 
     /**
+     * @var array
+     * @ODM\Field(type="collection")
+     */
+    protected $languages = [];
+
+    /**
+     * @return array
+     */
+    public function getLanguages(): ?array
+    {
+        return $this->languages;
+    }
+
+    /**
+     * @param array $languages
+     * @return ClientConfig
+     */
+    public function setLanguages(array $languages): ClientConfig
+    {
+        $this->languages = $languages;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isCacheValid(): ?bool
@@ -490,7 +515,7 @@ class ClientConfig extends Base
     /**
      * @return bool
      */
-    public function isIsDisableableOn(): bool
+    public function isDisableableOn(): bool
     {
         return $this->isDisableableOn;
     }

@@ -12,6 +12,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
@@ -55,6 +56,8 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      */
     use BlameableDocument;
     use InternableDocument;
+    use LocalizableTrait;
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -341,6 +344,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @ODM\Field(type="string")
      * @var string
+     * @Gedmo\Translatable
      */
     protected $description;
 
@@ -426,6 +430,11 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @ODM\Field(type="string")
      */
     protected $pollLink;
+
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
 
     public function __construct()
     {

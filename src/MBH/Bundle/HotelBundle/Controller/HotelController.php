@@ -61,10 +61,13 @@ class HotelController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_HOTEL_VIEW')")
      * @Template()
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder()
+        $entities = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->createQueryBuilder()
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
@@ -139,6 +142,8 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
+            $translationsByFields = array_intersect_key($request->request->get($form->getName()), array_flip(['description']));
+            $this->get('mbh.multi_lang_translator')->saveByMultiLanguagesFields($entity, $translationsByFields);
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.hotelController.record_edited_success');

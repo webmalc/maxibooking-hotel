@@ -29,8 +29,9 @@ class ClientManager
     private $logger;
     private $client;
     private $kernel;
+    private $clientConfigManager;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel, ClientConfigManager $clientConfigManager)
     {
         $this->dm = $dm;
         $this->session = $session;
@@ -38,6 +39,7 @@ class ClientManager
         $this->logger = $logger;
         $this->client = $client;
         $this->kernel = $kernel;
+        $this->clientConfigManager = $clientConfigManager;
     }
 
     /**
@@ -193,8 +195,7 @@ class ClientManager
     {
         $dataReceiptTime = $this->session->get(Client::CLIENT_DATA_RECEIPT_DATETIME);
         $currentDateTime = new \DateTime();
-        $configRepository = $this->dm->getRepository('MBHClientBundle:ClientConfig');
-        $config = $configRepository->fetchConfig();
+        $config = $this->clientConfigManager->fetchConfig();
 
         if (is_null($dataReceiptTime)
             || !$config->isCacheValid()
@@ -203,7 +204,7 @@ class ClientManager
             try {
                 /** @var Client $client */
                 $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
-                $configRepository->changeCacheValidity(true);
+                $this->clientConfigManager->changeCacheValidity(false);
             } catch (\Exception $exception) {
                 $client = $this->session->get(self::SESSION_CLIENT_FIELD);
                 $this->logger->err($exception->getMessage());

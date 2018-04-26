@@ -520,7 +520,7 @@ class RoomTypeControllerTest extends WebTestCase
 
         $roomType->setIsEnabled(false);
 
-        $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode(true);
+        $this->getContainer()->get('mbh.client_config_manager')->changeDisableableMode(true);
         $this->dm->flush($roomType);
 
         $crawler = $this->getListCrawler(self::URL_INDEX);

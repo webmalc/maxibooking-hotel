@@ -12,6 +12,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -48,6 +49,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     use RoomTypeTrait;
     use InternableDocument;
+    use LocalizableTrait;
 
     /**
      * @var Hotel
@@ -101,6 +103,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      maxMessage="validator.document.roomType.max_description"
      * )
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $description;
 

@@ -22,7 +22,7 @@ class BillingPushesController extends BaseController
     public function invalidateCacheAction(Request $request)
     {
         $this->checkToken($request->get('token'));
-        $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeCacheValidity(false);
+        $this->get('mbh.client_config_manager')->changeCacheValidity(false);
 
         return new JsonResponse((new Result())->getApiResponse());
     }
