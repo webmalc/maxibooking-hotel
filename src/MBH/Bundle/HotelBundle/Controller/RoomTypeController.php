@@ -199,13 +199,13 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
+
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set(
-                'success',
-                $this->get('translator')->trans('controller.roomTypeController.record_edited_success')
-            );
+            $this->addFlash('success', 'controller.roomTypeController.record_edited_success');
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }

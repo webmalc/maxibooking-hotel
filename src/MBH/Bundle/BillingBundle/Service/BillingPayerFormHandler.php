@@ -75,6 +75,7 @@ class BillingPayerFormHandler extends FormDataHandler
     /**
      * @param $payerData
      * @return BillingPayerFormHandler
+     * @throws \Exception
      */
     public function setInitData($payerData)
     {

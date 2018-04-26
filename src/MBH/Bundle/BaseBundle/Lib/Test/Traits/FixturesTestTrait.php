@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait FixturesTestTrait
 {
@@ -37,6 +38,9 @@ trait FixturesTestTrait
         $container->get('mbh.billing_mongo_client')->copyDatabase('template_db_for_test', $container->getParameter('mongodb_database'));
     }
 
+    /**
+     * @return ContainerInterface
+     */
     protected static function getContainerStat()
     {
         if (empty(static::$kernel)) {

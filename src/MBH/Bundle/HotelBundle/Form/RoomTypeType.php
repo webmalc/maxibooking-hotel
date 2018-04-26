@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
+use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
 use MBH\Bundle\HotelBundle\Document\RoomViewType;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Form\AbstractType;
@@ -49,11 +50,16 @@ class RoomTypeType extends AbstractType
             ;
         }
         $builder
-            ->add('fullTitle', TextType::class, [
-                'label' => 'form.roomTypeType.name',
-                'required' => true,
+            ->add('fullTitle', MultiLanguagesType::class, [
+                'fields_options' => [
+                    'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus'],
+                    'label' => 'form.roomTypeType.name',
+                    'required' => true
+                ],
+                'field_type' => TextType::class,
                 'group' => 'form.roomTypeType.general_info',
-                'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus']
+                'data' => $builder->getData(),
+                'mapped' => false
             ])
             ->add('title', TextType::class, [
                 'label' => 'form.roomTypeType.inner_name',
@@ -67,12 +73,16 @@ class RoomTypeType extends AbstractType
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
             ])
-            ->add('description', TextareaType::class, [
-                'label' => 'form.roomTypeType.description',
-                'help' => 'form.roomTypeType.online_reservation_room_description',
-                'required' => false,
+            ->add('description', MultiLanguagesType::class, [
                 'group' => 'form.roomTypeType.general_info',
-                'attr' => ['class' => 'big roomTypeTypeEditor tinymce']
+                'fields_options' => [
+                    'attr' => ['class' => 'big roomTypeTypeEditor tinymce'],
+                    'label' => 'form.roomTypeType.description',
+                    'required' => false,
+                    'help' => 'form.roomTypeType.online_reservation_room_description',
+                ],
+                'data' => $builder->getData(),
+                'mapped' => false
             ])
             ->add('color', TextType::class, [
                 'label' => 'form.roomTypeType.color',

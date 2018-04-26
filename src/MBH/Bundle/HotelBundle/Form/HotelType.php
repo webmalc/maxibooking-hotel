@@ -7,11 +7,8 @@ use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HotelType extends AbstractType
@@ -25,11 +22,16 @@ class HotelType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fullTitle', TextType::class, [
-                'label' => 'form.hotelType.name',
+            ->add('fullTitle', MultiLanguagesType::class, [
+                'mapped' => false,
                 'group' => 'form.hotelType.general_info',
-                'required' => true,
-                'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel']
+                'data' => $builder->getData(),
+                'fields_options' => [
+                    'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel'],
+                    'label' => 'form.hotelType.name',
+                    'required' => true
+                ],
+                'field_type' => TextType::class,
             ])
             ->add('title', TextType::class, [
                 'label' => 'form.hotelType.inner_name',
@@ -51,12 +53,16 @@ class HotelType extends AbstractType
                 'help' => 'form.hotelType.document_use_name'
         ]);
 
-
         $builder
             ->add('description', MultiLanguagesType::class, [
                 'mapped' => false,
                 'group' => 'form.hotelType.general_info',
-                'data' => $builder->getData()
+                'data' => $builder->getData(),
+                'fields_options' => [
+                    'attr' => ['class' => 'tinymce'],
+                    'label' => 'form.hotelType.description',
+                    'required' => false
+                ],
             ])
             ->add('logoImage', HotelLogoImageType::class, [
                 'label' => 'form.hotel_logo.image_file.help',
@@ -102,18 +108,6 @@ class HotelType extends AbstractType
             'logo_image_delete_url' => null,
             'logo_image_download_url' => null,
         ]);
-    }
-
-    public function finishView(FormView $view, FormInterface $form, array $options)
-    {
-//        $view->children['description']->vars['embedded'] = true;
-//        foreach ($view->children as $fieldName => $child) {
-//            $descriptionStringLength = strlen('description');
-//            if ((substr($fieldName, 0, $descriptionStringLength) === 'description')) {
-//                $child->vars['languages'] = $this->languages;
-//                $child->vars['language'] = substr($fieldName, $descriptionStringLength + 1);
-//            }
-//        }
     }
 
     public function getBlockPrefix()

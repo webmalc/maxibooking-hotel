@@ -657,4 +657,14 @@ class Helper
             . (!is_null($begin) && !is_null($end) ? ' - ' : '')
             . (!is_null($end) ? $end->format($format) : '');
     }
+
+    /**
+     * @param array $array
+     * @param array $keys
+     * @return array
+     */
+    public function getFromArrayByKeys(array $array, array $keys)
+    {
+        return array_intersect_key($array, array_flip($keys));
+    }
 }

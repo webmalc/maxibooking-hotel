@@ -6,7 +6,6 @@
 
 {% block content %}
     {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 2, 'entity': entity} %}
-    {% form_theme form '@MBHHotel/Hotel/embeddedFormTheme.html.twig' %}
     <div class="tab-content">
         {{ form_start(form, {'action': path('hotel_contact_information', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}

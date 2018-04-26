@@ -74,6 +74,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      maxMessage="validator.document.roomType.max_name"
      * )
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $fullTitle;
 

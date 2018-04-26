@@ -70,6 +70,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      *      maxMessage="validator.document.hotel.max_name"
      * )
      * @ODM\Index()
+     * @Gedmo\Translatable
      */
     protected $fullTitle;
 
@@ -248,6 +249,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $settlement;
 
@@ -256,6 +258,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $street;
 

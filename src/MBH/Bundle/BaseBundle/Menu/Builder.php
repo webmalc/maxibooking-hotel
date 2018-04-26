@@ -369,8 +369,11 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-cloud-download']);
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'menu.communication.label.onlineform'])
             ->setAttributes(['icon' => 'fa fa-globe']);
+        $menu['services']->addChild('site_settings', ['route' => 'site_settings', 'label' => 'menu.communication.label.mb_site'])
+            ->setAttributes(['icon' => 'fa fa-mouse-pointer']);
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'menu.communication.label.polls'])
             ->setAttributes(['icon' => 'fa fa-star']);
+
 //        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
 //            ->setAttributes(['icon' => 'fa fa-star']);
 

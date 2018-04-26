@@ -143,11 +143,12 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $translationsByFields = array_intersect_key($request->request->get($form->getName()), array_flip(['description']));
-            $this->get('mbh.multi_lang_translator')->saveByMultiLanguagesFields($entity, $translationsByFields);
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.hotelController.record_edited_success');
+
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
 
@@ -301,7 +302,6 @@ class HotelController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->dm->persist($entity);
             $this->dm->flush();
 
             $this->addFlash('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'));
@@ -334,16 +334,17 @@ class HotelController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['settlement', 'street']);
+
             if ($hotel->getStreet() && !$hotel->getInternationalStreetName()) {
                 $hotel->setInternationalStreetName(Helper::translateToLat($hotel->getStreet()));
             }
+
             $this->dm->persist($hotel);
             $this->dm->flush();
 
-            $this->addFlash(
-                'success',
-                $this->get('translator')->trans('controller.hotelController.record_edited_success')
-            );
+            $this->addFlash('success', 'controller.hotelController.record_edited_success');
 
             return $this->afterSaveRedirect('hotel', $hotel->getId(), [], '_contact_information');
         }

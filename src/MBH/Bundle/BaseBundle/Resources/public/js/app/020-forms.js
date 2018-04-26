@@ -1276,14 +1276,15 @@ function handleAddingNewBillingEntity() {
 }
 
 function handleMultiLanguageFields() {
-    var changeMultiLanguagesFieldsVisibility = function(language) {
-        var $multiLanguagesFields = $('.multi-languages-field');
+    var changeMultiLanguagesFieldsVisibility = function(language, $fieldsGroup) {
+        var $multiLanguagesFields = $fieldsGroup ? $fieldsGroup.find('.multi-languages-field') : $('.multi-languages-field');
         var $displayField = $multiLanguagesFields.filter('[data-language="' + language +'"]');
         $displayField.show();
         $multiLanguagesFields.not($displayField).hide();
     };
     $('.multi-language-select-option').click(function () {
-        changeMultiLanguagesFieldsVisibility(this.getAttribute('data-language'));
+        var $fieldsGroup = $(this).closest('.form-group').parent();
+        changeMultiLanguagesFieldsVisibility(this.getAttribute('data-language'), $fieldsGroup);
     });
     changeMultiLanguagesFieldsVisibility(mbh.language);
 }

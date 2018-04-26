@@ -116,7 +116,7 @@
                 <ul class="nav nav-pills">
                     {% for language in form.vars['languages'] %}
                         <li role="presentation" {% if language == form.vars['language'] %}class="active"{% endif %}>
-                            <a href="#" data-language="{{ language }}" class="multi-language-select-option">{{ language }}</a>
+                            <a style="cursor: pointer;" data-language="{{ language }}" class="multi-language-select-option">{{ language }}</a>
                         </li>
                     {% endfor %}
                 </ul>

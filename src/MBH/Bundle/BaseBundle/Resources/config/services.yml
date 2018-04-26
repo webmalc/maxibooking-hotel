@@ -427,7 +427,7 @@ services:
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
-        arguments: ['@translator']
+        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator']
 
     mbh.protected.file.downloader:
         class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
@@ -475,7 +475,7 @@ services:
 
     mbh.multi_languages_type:
         class: MBH\Bundle\BaseBundle\Form\MultiLanguagesType
-        arguments: ['@mbh.client_config_manager', '@mbh.multi_lang_translator']
+        arguments: ['@mbh.client_config_manager', '@mbh.multi_lang_translator', '%locale%', '@property_accessor']
         tags:
             - {name: form.type}
 

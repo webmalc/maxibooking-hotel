@@ -108,7 +108,8 @@ class SiteManager
      */
     public function addFormErrorsForFieldsMandatoryForSite($document, FormInterface $form, string $routeName)
     {
-        if ($this->fetchFormConfig()->getIsEnabled()) {
+        $siteConfig = $this->getSiteConfig();
+        if ($siteConfig->getIsEnabled()) {
             $documentClass = get_class($document);
             $siteDataCorrectness = $this->getDocumentFieldsCorrectnessTypesByRoutesNames($document);
             if (isset($siteDataCorrectness['fieldsData'][$routeName]['empty'])) {
@@ -123,6 +124,14 @@ class SiteManager
                 }
             }
         }
+    }
+
+    /**
+     * @return SiteConfig|null|object
+     */
+    public function getSiteConfig()
+    {
+        return $this->dm->getRepository('MBHOnlineBundle:SiteConfig')->findOneBy([]);
     }
 
     /**

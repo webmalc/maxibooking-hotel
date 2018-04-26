@@ -5,7 +5,7 @@
 
 {% block content %}
 
-    {% if doc and (doc.rooms.count != 0 and doc.tariffs.count != 0 and doc.hotelId is not empty) and not doc.isAllPackagesPulled %}
+    {% if doc and (doc.rooms.count != 0 and doc.tariffs.count != 0 and doc.hotelId is not empty) and doc.isAllPackagesPulled != true %}
         <div class="alert alert-danger">
             <i class="fa fa-exclamation-circle"></i>&nbsp;
             {{ 'channelmanager.orders_not_fetched.error'|trans({}, 'MBHChannelManagerBundle') }}

@@ -27,10 +27,10 @@ class MBSiteController extends BaseController
      */
     public function siteSettingsAction(Request $request)
     {
-        $config = $this->dm->getRepository('MBHOnlineBundle:SiteConfig')->findOneBy([]);
+        $siteManager = $this->get('mbh.site_manager');
+        $config = $siteManager->getSiteConfig();
         $form = $this->createForm(SiteForm::class, $config);
         $form->handleRequest($request);
-        $siteManager = $this->get('mbh.site_manager');
         $formConfig = $siteManager->fetchFormConfig();
 
         if ($form->isSubmitted()) {
@@ -65,7 +65,8 @@ class MBSiteController extends BaseController
     public function hotelSettingsAction(Hotel $hotel)
     {
         $siteManager = $this->get('mbh.site_manager');
-        $config = $this->dm->getRepository('MBHOnlineBundle:SiteConfig')->findOneBy([]);
+        $config = $siteManager->getSiteConfig();
+
         $roomTypesWarnings = array_map(function (RoomType $roomType) use ($siteManager) {
             return $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($roomType);
         }, $hotel->getRoomTypes()->toArray());

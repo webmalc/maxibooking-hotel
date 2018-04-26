@@ -9,15 +9,21 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class MultiLanguagesType extends AbstractType
 {
     private $languages;
     private $multiLangTranslator;
+    private $defaultLang;
+    private $propertyAccessor;
 
-    public function __construct(ClientConfigManager $clientConfigManager, MultiLangTranslator $multiLangTranslator) {
+    public function __construct(ClientConfigManager $clientConfigManager, MultiLangTranslator $multiLangTranslator, string $defaultLang, PropertyAccessor $propertyAccessor) {
         $this->languages = $clientConfigManager->fetchConfig()->getLanguages();
         $this->multiLangTranslator = $multiLangTranslator;
+        $this->defaultLang = $defaultLang;
+        $this->propertyAccessor = $propertyAccessor;
     }
 
     /**
@@ -28,19 +34,20 @@ class MultiLanguagesType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $fieldName = $builder->getName();
-        $translationsByFieldsWithLang = $this->multiLangTranslator->getTranslationsByLanguages($builder->getData(), $fieldName, $this->languages);
+        $translationsByLanguages = $this->multiLangTranslator->getTranslationsByLanguages($builder->getData(), $fieldName, $this->languages);
 
         foreach ($this->languages as $language) {
-            $data = isset($translationsByFieldsWithLang[$language]) ? $translationsByFieldsWithLang[$language] : null;
+            $data = isset($translationsByLanguages[$language])
+                ? $translationsByLanguages[$language]
+                : null;
+
+            $fieldType = $options['field_type'];
             $builder
-                ->add($language, TextareaType::class, [
-                    'label' => 'form.hotelType.description',
+                ->add($language, $fieldType, array_merge([
                     'group' => 'no-group',
-                    'attr' => ['class' => 'tinymce'],
-                    'required' => false,
                     'mapped' => false,
-                    'data' => $data
-                ]);
+                    'data' => $data,
+                ], $options['fields_options']));
         }
     }
 
@@ -52,6 +59,15 @@ class MultiLanguagesType extends AbstractType
             $field->vars['languages'] = $this->languages;
             $field->vars['language'] = $language;
         }
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'fields_options' => [],
+            'field_type' => TextareaType::class,
+            'defaultValue' => null
+        ]);
     }
 
     public function getBlockPrefix()
