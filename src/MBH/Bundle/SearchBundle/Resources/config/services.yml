@@ -1,8 +1,12 @@
 services:
     mbh_search.search_query_generator:
         class: MBH\Bundle\SearchBundle\Services\SearchQueryGenerator
-        arguments: ['@doctrine.odm.mongodb.document_manager']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh_search.additional_days_generator']
 
     mbh_search.search_request_receiver:
         class: MBH\Bundle\SearchBundle\Services\SearchRequestReceiver
         arguments: ["@form.factory"]
+
+    mbh_search.additional_days_generator:
+        class: MBH\Bundle\SearchBundle\Services\AdditionalDatesGenerator
+        arguments: ['@doctrine.odm.mongodb.document_manager']

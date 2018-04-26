@@ -27,9 +27,13 @@ class SearchQueryGenerator
     /** @var DocumentManager */
     private $dm;
 
-    public function __construct(DocumentManager $dm)
+    /** @var AdditionalDatesGenerator */
+    private $addDatesGenerator;
+
+    public function __construct(DocumentManager $dm, AdditionalDatesGenerator $generator)
     {
         $this->dm = $dm;
+        $this->addDatesGenerator = $generator;
     }
 
     /**
@@ -38,11 +42,7 @@ class SearchQueryGenerator
      */
     public function generate(SearchConditions $conditions): void
     {
-        try {
-            $searchQueries = $this->prepareConditionsForSearchQueries($conditions);
-        } catch (MongoDBException $e) {
-            throw new SearchQueryGeneratorException('Error in Search Query Generator'.$e->getMessage());
-        }
+        $combinations = $this->prepareConditionsForSearchQueries($conditions);
 
     }
 
@@ -50,60 +50,44 @@ class SearchQueryGenerator
     /**
      * @param SearchConditions $conditions
      * @return SearchQuery[]
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws SearchQueryGeneratorException
      */
     private function prepareConditionsForSearchQueries(SearchConditions $conditions): array
     {
-        $variants = [];
-        $begins = $this->generateDaysWithRange($conditions->getBegin(), $conditions->getAdditionalBegin());
-        $ends = $this->generateDaysWithRange($conditions->getEnd(), $conditions->getAdditionalEnd());
         $hotelIds = $this->getEntryIds($conditions->getHotels());
         $tariffIds = $this->getTariffIds($conditions->getTariffs(), $hotelIds, $conditions->isOnline());
         $roomTypeIds = $this->getRoomTypeIds($conditions->getRoomTypes(), $hotelIds);
 
-        $dates = $this->combineDates($begins, $ends);
+        $dates =
+            $this->addDatesGenerator->generate(
+                $conditions->getBegin(),
+                $conditions->getEnd(),
+                $conditions->getAdditionalBegin(),
+                $conditions->getAdditionalEnd(),
+                $tariffIds,
+                $roomTypeIds
+            );
+
+
         $tariffRoomTypeCombined = $this->combineTariffWithRoomType($roomTypeIds, $tariffIds);
+        $combinations = $this->combineDataForSearchQuery($dates, $tariffRoomTypeCombined);
+        if (empty($combinations)) {
+            throw new SearchQueryGeneratorException('No combinations for search');
+        }
 
-
-        //
-//        foreach ($begins as $arrival) {
-//            foreach ($ends as $departure) {
-//                if ($arrival < $departure) {
-//                    $dates[$arrival->format('d-m-Y').'_'.$departure->format('d-m-Y')] = [$arrival, $departure];
-//                }
-//            }
-//        }
-
-        return $variants;
+        return $combinations;
     }
 
-
-    private function generateDaysWithRange(\DateTime $date, int $range = null, string $direction = null): array
+    private function combineDataForSearchQuery(array $dates, array $tariffRoomTypeCombined): array
     {
-        $dates = [];
-        if (null === $range) {
-            $range = 0;
-        }
-        if (!$direction) {
-            $dates = array_merge($dates, $this->generateDaysWithRange($date, $range, 'up'));
-            $dates = array_merge($dates, $this->generateDaysWithRange($date, $range, 'down'));
-            $dates = array_merge($dates, [$date]);
-
-            sort($dates);
-
-            return $dates;
+        $result = [];
+        foreach ($dates as $date) {
+            foreach ($tariffRoomTypeCombined as $tariffRoomType) {
+                $result[] = array_merge($date, $tariffRoomType);
+            }
         }
 
-        $directions = ['up' => '+', 'down' => '-'];
-
-        $clonedDate = clone $date;
-        while (0 !== $range) {
-            $clonedDate->modify($directions[$direction].' 1 day');
-            $dates[] = clone $clonedDate;
-            $range--;
-        }
-
-        return $dates;
+        return $result;
     }
 
     private function getEntryIds(ArrayCollection $entry): array
@@ -184,32 +168,56 @@ class SearchQueryGenerator
         return $roomTypeIds;
     }
 
+
     /**
-     * @param array $begins
-     * @param array $ends
+     * @param array $roomTypeIds
+     * @param array $tariffIds
      * @return array
+     * @throws SearchQueryGeneratorException
      */
-    private function combineDates(array $begins, array $ends): array
+    private function combineTariffWithRoomType(array $roomTypeIds, array $tariffIds): array
     {
-        $dates = [];
-        foreach ($begins as $begin) {
-            foreach ($ends as $end) {
-                if ($begin < $end) {
-                    $dates[$begin->format('d-m-Y').'_'.$end->format('d-m-Y')] = [
-                        'begin' => $begin,
-                        'end' => $end,
-                    ];
+        $roomTypeHotelKeys = array_keys($roomTypeIds);
+        $tariffHotelKeys = array_keys($tariffIds);
+        $sharedHotelKeys = array_intersect($roomTypeHotelKeys, $tariffHotelKeys);
+        if (empty($sharedHotelKeys)) {
+            throw new SearchQueryGeneratorException('There is an error in combine Tariff with RoomType');
+        }
+        $combined = [];
+        foreach ($sharedHotelKeys as $hotelKey) {
+            $roomTypes = $roomTypeIds[$hotelKey];
+            $tariffs = $tariffIds[$hotelKey];
+            /** https://stackoverflow.com/questions/23348339/optimizing-array-merge-operation
+             * Potential performance problem if use array_merge in loop.
+             */
+            $combined[] = $this->mixRoomTypeTariff($roomTypes, $tariffs);
+        }
+
+        $result = [];
+        foreach ($combined as $values) {
+            /** @var array $values */
+            if (is_iterable($values)) {
+                foreach ($values as $value) {
+                    $result[] = $value;
                 }
             }
         }
 
-        return $dates;
+        return $result;
     }
 
-    private function combineTariffWithRoomType(array $roomTypeIds, array $tariffIds)
+    private function mixRoomTypeTariff(array $roomTypes, array $tariffs)
     {
+        $values = [];
+        foreach ($roomTypes as $roomType) {
+            foreach ($tariffs as $tariff) {
+                $values[] = ['roomType' => $roomType, 'tariff' => $tariff];
+            }
+        }
 
+        return $values;
     }
+
     /**
      * @return string
      */

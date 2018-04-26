@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
 
 class SearchQueryGeneratorTest extends WebTestCase
@@ -26,7 +27,7 @@ class SearchQueryGeneratorTest extends WebTestCase
     {
         $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
         $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $conditions = new SearchConditions();
         $conditions
             ->setBegin(new \DateTime('2018-04-21 midnight'))
@@ -42,51 +43,61 @@ class SearchQueryGeneratorTest extends WebTestCase
         $this->assertEquals('this is must be hash', $generator->getSearchQueryHash());
     }
 
+
     /**
-     * @dataProvider datesProvider
-     * @param string $rawDate
-     * @param int $range
-     * @param int $countExpected
-     * @param int $dataExpected
+     * @param DateTime $dateBegin
+     * @param DateTime $dateEnd
+     * @param int $additionalDays
+     * @dataProvider addingDatesProvider
      */
-    public function testGetAllDates(string $rawDate, int $range, int $countExpected, array $dataExpected): void
-    {
-        $date = new \DateTime($rawDate);
-        $dm = $this->createMock(DocumentManager::class);
-        $generator = new SearchQueryGenerator($dm);
-
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'generateDaysWithRange');
-        $actual = $method->invokeArgs($generator, [$date, $range]);
-
-        $this->assertCount($countExpected, $actual);
-        $this->assertEquals($dataExpected, $actual, 'The array of dates is wrong');
-
-    }
-
-    public function testPrepareConditionsForSearchQueries(): void
-    {
-        $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
-        $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
-        $hotels = $this->dm->getRepository(Hotel::class)->findAll();
-
-        $generator = new SearchQueryGenerator($this->dm);
+    public function testPrepareConditionsForSearchQueries(
+        \DateTime $dateBegin,
+        \DateTime $dateEnd,
+        int $additionalDays
+    ): void {
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $conditions = new SearchConditions();
         $conditions
-            ->setBegin(new \DateTime('2018-04-21 midnight'))
-            ->setEnd(new \DateTime('2018-04-24 midnight'))
+            ->setBegin($dateBegin)
+            ->setEnd($dateEnd)
             ->setAdults(3)
             ->setChildren(4)
-            ->setRoomTypes(new ArrayCollection(array_values($roomTypes)))
-            ->setTariffs(new ArrayCollection(array_values($tariffs)))
-            ->setHotels(new ArrayCollection(array_values($hotels)))
-            ->setAdditionalBegin(1);
+            ->setAdditionalBegin($additionalDays);
 
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'prepareConditionsForSearchQueries');
         $actual = $method->invokeArgs($generator, [$conditions]);
+        $roomTypeQb = $this->dm->getRepository(RoomType::class)->createQueryBuilder();
+        $tariffQb = $this->dm->getRepository(Tariff::class)->createQueryBuilder();
 
+        $hotels = $this->dm->getRepository(Hotel::class)->findAll();
+        $expectedCount = 0;
+        /** @var Hotel $hotel */
+        foreach ($hotels as $hotel) {
+            $roomTypesCount = $roomTypeQb->field('hotel.id')->equals($hotel->getId())->getQuery()->count();
+            $tariffCount = $tariffQb->field('hotel.id')->equals($hotel->getId())->getQuery()->count();
+            $expectedCount += $roomTypesCount * $tariffCount;
+        }
+        $expectedCount *= $this->calculateAdditionalDays($dateBegin, $dateEnd, $additionalDays);
 
-//        $this->assertCount(1, $actual);
-//        $this->assertEquals($dataExpected, $actual, 'The array of dates is wrong');
+        $this->assertCount($expectedCount, $actual);
+
+    }
+
+    public function testFailPrepareConditionsForSearchQueries2(): void
+    {
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
+
+        $conditions = new SearchConditions();
+        $conditions
+            ->setBegin(new \DateTime('2018-04-21 midnight'))
+            ->setEnd(new \DateTime('2018-03-21 midnight'))
+            ->setAdults(3)
+            ->setChildren(4)
+            ->setAdditionalBegin(1);
+
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'prepareConditionsForSearchQueries');
+        $this->expectException(SearchQueryGeneratorException::class);
+        $method->invokeArgs($generator, [$conditions]);
 
     }
 
@@ -94,7 +105,7 @@ class SearchQueryGeneratorTest extends WebTestCase
     {
         $tariff = $this->dm->getRepository(Tariff::class)->findOneBy([]);
 
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
         $actual = $method->invokeArgs($generator, [new ArrayCollection([$tariff]), [], true]);
 
@@ -111,7 +122,7 @@ class SearchQueryGeneratorTest extends WebTestCase
     public function testGetTariffIdsNoTariffNoHotel(): void
     {
         $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
         $actual = $method->invokeArgs($generator, [new ArrayCollection(), [], false]);
 
@@ -131,7 +142,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         $strangerHotel = $this->dm->createQueryBuilder(Hotel::class)->field('id')->notEqual($hotelId)->limit(
             1
         )->getQuery()->execute()->toArray();
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
         $actual = $method->invokeArgs(
             $generator,
@@ -152,7 +163,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         $hotel = $this->dm->getRepository(Hotel::class)->findOneBy([]);
         $tariffs = $this->dm->createQueryBuilder(Tariff::class)->field('hotel.id')->equals($hotel->getId())->getQuery(
         )->execute()->toArray();
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
         $actual = $method->invokeArgs($generator, [new ArrayCollection([]), [$hotel->getId()], false]);
 
@@ -168,7 +179,7 @@ class SearchQueryGeneratorTest extends WebTestCase
     public function testGetRoomTypeIdsOneRoomTypeNoHotel(): void
     {
         $roomType = $this->dm->getRepository(RoomType::class)->findOneBy([]);
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
         $actual = $method->invokeArgs($generator, [new ArrayCollection([$roomType]), []]);
         $expected = [
@@ -188,7 +199,7 @@ class SearchQueryGeneratorTest extends WebTestCase
             $roomType->getHotel()->getId()
         )->getQuery()->execute()->toArray();
         $hotelIds = Helper::toIds($hotel);
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
         $actual = $method->invokeArgs($generator, [new ArrayCollection([$roomType]), [$hotelIds]]);
         $expected = [
@@ -203,7 +214,7 @@ class SearchQueryGeneratorTest extends WebTestCase
     public function testGetRoomTypeIdsNoRoomTypeNoHotel(): void
     {
         $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
         $actual = $method->invokeArgs($generator, [new ArrayCollection(), []]);
         $expected = [];
@@ -212,7 +223,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         }
 
         $this->assertNotEmpty($actual, 'Result is empty!');
-        $this->assertEquals($expected, $actual);
+        $this->assertArraySimilar($expected, $actual);
     }
 
     public function testGetRoomTypeIdsNoRoomTypeOneHotel(): void
@@ -221,7 +232,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         $roomTypes = $this->dm->createQueryBuilder(RoomType::class)->field('hotel.id')->equals(
             $hotel->getId()
         )->getQuery()->execute()->toArray();
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
         $actual = $method->invokeArgs($generator, [new ArrayCollection(), [$hotel->getId()]]);
         $expected = [];
@@ -230,7 +241,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         }
 
         $this->assertNotEmpty($actual, 'Result is empty!');
-        $this->assertEquals($expected, $actual);
+        $this->assertArraySimilar($expected, $actual);
     }
 
     public function testGetRoomTypeIdsNoRoomTypeTwoHotel(): void
@@ -239,16 +250,41 @@ class SearchQueryGeneratorTest extends WebTestCase
         $hotelsIds = Helper::toIds($hotels);
         $roomTypes = $this->dm->createQueryBuilder(RoomType::class)->field('hotel.id')->in($hotelsIds)->getQuery(
         )->execute()->toArray();
-        $generator = new SearchQueryGenerator($this->dm);
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
         $actual = $method->invokeArgs($generator, [new ArrayCollection(), $hotelsIds]);
         $expected = [];
         foreach ($roomTypes as $roomType) {
-            $expected[$roomType->getHotel->getId()][] = $roomType->getId();
+            $expected[$roomType->getHotel()->getId()][] = $roomType->getId();
         }
 
         $this->assertNotEmpty($actual, 'Result is empty!');
-        $this->assertEquals($expected, $actual);
+        $this->assertArraySimilar($expected, $actual);
+    }
+
+    /**
+     * @dataProvider combineIdsProvider
+     */
+    public function testCombineTariffWithRoomType($roomTypeIds, $tariffIds, $expected): void
+    {
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'combineTariffWithRoomType');
+        $actual = $method->invokeArgs($generator, [$roomTypeIds, $tariffIds]);
+
+
+        $this->assertArraySimilar($expected, $actual);
+    }
+
+    /**
+     * @dataProvider combineFailIdsProvider
+     */
+    public function testFailCombineTariffWithRoomType($roomTypeIds, $tariffIds): void
+    {
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'combineTariffWithRoomType');
+        $this->expectException(SearchQueryGeneratorException::class);
+        $method->invokeArgs($generator, [$roomTypeIds, $tariffIds]);
+
     }
 
     private function getPrivateMethod($className, $methodName)
@@ -260,53 +296,131 @@ class SearchQueryGeneratorTest extends WebTestCase
         return $method;
     }
 
-    public function datesProvider()
+
+
+    public function combineIdsProvider(): array
     {
         return [
             [
-                '21.04.2018 midnight',
-                1,
-                3,
-                [
-                    new \DateTime('20.04.2018 midnight'),
-                    new \DateTime('21.04.2018 midnight'),
-                    new \DateTime('22.04.2018 midnight'),
+                'roomTypeIds' => [
+                    'hotelOne' =>
+                        [
+                            'roomTypeHotel1Id1',
+                            'roomTypeHotel1Id2',
+                        ],
+                    'hotelTwo' =>
+                        [
+                            'roomTypeHotel2Id1',
+                            'roomTypeHotel2Id2',
+                        ],
                 ],
-            ],
-            [
-                '05.06.2018 midnight',
-                0,
-                1,
-                [
-                    new \DateTime('05.06.2018 midnight'),
+                'tariffids' => [
+                    'hotelOne' =>
+                        [
+                            'tariffHotel1Id1',
+                            'tariffHotel1Id2',
+                        ],
+                    'hotelTwo' =>
+                        [
+                            'tariffHotel2Id1',
+                            'tariffHotel2Id2',
+                        ],
                 ],
-            ],
-            [
-                '22.04.2018 midnight',
-                2,
-                5,
-                [
-                    new \DateTime('20.04.2018 midnight'),
-                    new \DateTime('21.04.2018 midnight'),
-                    new \DateTime('22.04.2018 midnight'),
-                    new \DateTime('23.04.2018 midnight'),
-                    new \DateTime('24.04.2018 midnight'),
-                ],
-            ],
-            [
-                '30.04.2018 midnight',
-                3,
-                7,
-                [
-                    new \DateTime('27.04.2018 midnight'),
-                    new \DateTime('28.04.2018 midnight'),
-                    new \DateTime('29.04.2018 midnight'),
-                    new \DateTime('30.04.2018 midnight'),
-                    new \DateTime('01.05.2018 midnight'),
-                    new \DateTime('02.05.2018 midnight'),
-                    new \DateTime('03.05.2018 midnight'),
+                'expected' => [
+                    ['roomType' => 'roomTypeHotel1Id1', 'tariff' => 'tariffHotel1Id1'],
+                    ['roomType' => 'roomTypeHotel1Id1', 'tariff' => 'tariffHotel1Id2'],
+                    ['roomType' => 'roomTypeHotel1Id2', 'tariff' => 'tariffHotel1Id1'],
+                    ['roomType' => 'roomTypeHotel1Id2', 'tariff' => 'tariffHotel1Id2'],
+                    ['roomType' => 'roomTypeHotel2Id1', 'tariff' => 'tariffHotel2Id1'],
+                    ['roomType' => 'roomTypeHotel2Id1', 'tariff' => 'tariffHotel2Id2'],
+                    ['roomType' => 'roomTypeHotel2Id2', 'tariff' => 'tariffHotel2Id1'],
+                    ['roomType' => 'roomTypeHotel2Id2', 'tariff' => 'tariffHotel2Id2'],
                 ],
             ],
         ];
+    }
+
+    public function combineFailIdsProvider(): array
+    {
+        return [
+            [
+                'roomTypeIds' => [
+                    'hotelOne' =>
+                        [
+                            'roomTypeHotel1Id1',
+                            'roomTypeHotel1Id2',
+                        ],
+                    'hotelTwo' =>
+                        [
+                            'roomTypeHotel2Id1',
+                            'roomTypeHotel2Id2',
+                        ],
+                ],
+                'tariffids' => [
+                    'hotelOneThree' =>
+                        [
+                            'tariffHotel1Id1',
+                            'tariffHotel1Id2',
+                        ],
+                    'hotelTwoFour' =>
+                        [
+                            'tariffHotel2Id1',
+                            'tariffHotel2Id2',
+                        ],
+                ],
+            ],
+            [
+                'roomTypeIds' => [
+                    'hotelOne' =>
+                        [
+                            'roomTypeHotel1Id1',
+                            'roomTypeHotel1Id2',
+                        ],
+                    'hotelTwo' =>
+                        [
+                            'roomTypeHotel2Id1',
+                            'roomTypeHotel2Id2',
+                        ],
+                ],
+                'tariffids' => [],
+            ],
+        ];
+    }
+
+    public function addingDatesProvider()
+    {
+        return [
+            [
+
+                new \DateTime('01-05-2018 midnight'),
+                new \DateTime('02-05-2018 midnight'),
+                3,
+
+            ],
+            [
+
+                new \DateTime('01-05-2018 midnight'),
+                new \DateTime('02-05-2018 midnight'),
+                0,
+
+            ],
+        ];
+    }
+
+    private function calculateAdditionalDays(\DateTime $begin, \DateTime $end, $range): int
+    {
+        $begins = $this->getContainer()->get('mbh_search.additional_days_generator')->generate($begin, $range);
+        $ends = $this->getContainer()->get('mbh_search.additional_days_generator')->generate($end, $range);
+
+        $dates = 0;
+        foreach ($begins as $dateBegin) {
+            foreach ($ends as $dateEnd) {
+                if ($dateBegin < $dateEnd) {
+                    $dates++;
+                }
+            }
+        }
+
+        return $dates;
     }
 }

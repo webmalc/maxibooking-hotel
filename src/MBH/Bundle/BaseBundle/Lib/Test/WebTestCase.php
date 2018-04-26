@@ -2,6 +2,7 @@
 namespace MBH\Bundle\BaseBundle\Lib\Test;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase as Base;
+use MBH\Bundle\BaseBundle\Lib\Test\Traits\AssocArrayTestCaseTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\Traits\FixturesTestTrait;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\DomCrawler\Crawler;
@@ -10,6 +11,8 @@ use Symfony\Component\DomCrawler\Form;
 abstract class WebTestCase extends Base
 {
     use FixturesTestTrait;
+
+    use AssocArrayTestCaseTrait;
 
     /**
      * @var Client
