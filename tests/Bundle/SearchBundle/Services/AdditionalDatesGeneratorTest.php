@@ -25,7 +25,7 @@ class AdditionalDatesGeneratorTest extends WebTestCase
         array $dataExpected
     ): void {
         $generator = $this->getContainer()->get('mbh_search.additional_days_generator');
-        $actual = $generator->generate($begin, $end, $rangeBegin, $rangeEnd, [], []);
+        $actual = $generator->generate($begin, $end, $rangeBegin, $rangeEnd);
 
         $this->assertCount($countExpected, $actual);
         $this->assertEquals($dataExpected, $actual, 'The array of dates is wrong');

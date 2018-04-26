@@ -36,7 +36,7 @@ class SearchQueryGeneratorTest extends WebTestCase
             ->setChildren(4)
 //            ->setRoomTypes(new ArrayCollection(array_values($roomTypes)))
 //            ->setTariffs(new ArrayCollection(array_values($tariffs)))
-            ->setAdditionalBegin(1);
+            ->setAdditionalBegin(0);
         $generator->generate($conditions);
 
         $this->assertEquals(3, $generator->getQueuesNum());
@@ -409,17 +409,7 @@ class SearchQueryGeneratorTest extends WebTestCase
 
     private function calculateAdditionalDays(\DateTime $begin, \DateTime $end, $range): int
     {
-        $begins = $this->getContainer()->get('mbh_search.additional_days_generator')->generate($begin, $range);
-        $ends = $this->getContainer()->get('mbh_search.additional_days_generator')->generate($end, $range);
-
-        $dates = 0;
-        foreach ($begins as $dateBegin) {
-            foreach ($ends as $dateEnd) {
-                if ($dateBegin < $dateEnd) {
-                    $dates++;
-                }
-            }
-        }
+        $dates = count($this->getContainer()->get('mbh_search.additional_days_generator')->generate($begin, $end, $range, $range));
 
         return $dates;
     }

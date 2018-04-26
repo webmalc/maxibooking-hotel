@@ -9,4 +9,3 @@ services:
 
     mbh_search.additional_days_generator:
         class: MBH\Bundle\SearchBundle\Services\AdditionalDatesGenerator
-        arguments: ['@doctrine.odm.mongodb.document_manager']
