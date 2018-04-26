@@ -1,6 +1,7 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Service\Address;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
@@ -307,9 +308,19 @@ class Extension extends \Twig_Extension
 
             $this->isTwigDataInit = true;
         }
+
         return $this->twigData;
     }
 
+    /**
+     * @param Base $document
+     * @param string $fieldName
+     * @return string
+     */
+    public function getFieldTitleByName(Base $document, string $fieldName)
+    {
+        return $this->container->get('mbh.document_fields_manager')->getFieldName(get_class($document), $fieldName);
+    }
 
     /**
      * @param AddressInterface $obj
@@ -355,6 +366,7 @@ class Extension extends \Twig_Extension
             'get_imperial_city'       => new \Twig_SimpleFunction('get_imperial_city', [$this, 'getImperialAddressCity'], ['is_safe' => ['html']]),
             'get_imperial_street'     => new \Twig_SimpleFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], ['is_safe' => ['html']]),
             'get_twig_data'           => new \Twig_SimpleFunction('get_twig_data', [$this, 'getTwigData'], ['is_safe' => ['html']]),
+            'get_field_name'          => new \Twig_SimpleFunction('get_field_name', [$this, 'getFieldTitleByName'], ['is_safe' => ['html']])
         ];
     }
 

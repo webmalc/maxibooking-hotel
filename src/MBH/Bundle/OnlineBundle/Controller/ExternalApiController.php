@@ -40,6 +40,7 @@ class ExternalApiController extends BaseController
      * @Route("/roomTypes")
      * @param Request $request
      * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getRoomTypesAction(Request $request)
     {
@@ -176,6 +177,7 @@ class ExternalApiController extends BaseController
      */
     public function getHotelsAction(Request $request)
     {
+        header('Access-Control-Allow-Origin: ' . 'http://localhost:4200');
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
         $isEnabled = !empty($queryData->get('isEnabled')) ? $queryData->get('isEnabled') === 'true' : true;

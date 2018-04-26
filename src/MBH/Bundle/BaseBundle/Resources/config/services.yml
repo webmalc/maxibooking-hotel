@@ -482,3 +482,6 @@ services:
     mbh.multi_lang_translator:
         class: MBH\Bundle\BaseBundle\Service\MultiLangTranslator
         arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper']
+    mbh.document_fields_manager:
+        class: MBH\Bundle\BaseBundle\Service\DocumentFieldsManager
+        arguments: ['@translator', '@property_accessor']

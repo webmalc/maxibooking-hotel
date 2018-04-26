@@ -121,3 +121,17 @@ external_api_controller.error.hotel_with_specified_id_not_exists: 'Отеля с
 external_api_controller.error.specified_room_type_not_contains_in_form_config: 'Тип номера с ID = "%roomTypeId%" не указан в списке типов номеров конфигурации указанной онлайн-формы'
 external_api_controller.error.specified_hotel_not_contains_in_form_config: 'Отель с ID = "%hotelId%" не указан списке отелей конфигурации указанной онлайн-формы'
 external_api_controller.error.room_type_with_specified_id_not_exists: 'Тип комнат с ID = "%roomTypeId%" не существует'
+
+views.mb_site.title: Сайт
+views.mb_site.index.main_settings: Настройки
+views.mb_site.hotel_settings.empty_fields_error: 'Не заполнены обязательные поля: %fields%'
+site_form.is_enabled.label: 'Включен?'
+site_form.key_words.label: 'Ключевые слова'
+site_form.contract.label: Договор
+site_form.pers_data_policy.label: 'Политика обработки персональных данных'
+site_form.hotels.label: Отели
+site_form.hotels.help: 'Отели, данные по которым отображаются на сайте'
+site_form.hotels.hotel_data: 'Данные отеля'
+mb_site_controller.site_config_saved: 'Настройки успешно сохранены!'
+site_manager.photos_tab: Изображение
+site_manager.mandatory_field_empty.error: 'Поле %fieldTitle% обязательно для заполнения, так как оно используется на сайте'

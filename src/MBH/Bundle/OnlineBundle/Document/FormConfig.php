@@ -265,6 +265,12 @@ class FormConfig extends Base
     private $isHorizontal = false;
 
     /**
+     * @ODM\Field(type="boolean")
+     * @var bool
+     */
+    private $forMbSite = false;
+
+    /**
      * @return bool
      */
     public function isRequestPatronymic(): ?bool
@@ -628,7 +634,7 @@ class FormConfig extends Base
     }
 
     /**
-     * @param array $hotels
+     * @param array|ArrayCollection $hotels
      * @return FormConfig
      */
     public function setHotels($hotels)
@@ -743,6 +749,25 @@ class FormConfig extends Base
     public function setCssLibraries(array $cssLibraries = null): FormConfig
     {
         $this->cssLibraries = $cssLibraries;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForMbSite(): ?bool
+    {
+        return $this->forMbSite;
+    }
+
+    /**
+     * @param bool $forMbSite
+     * @return FormConfig
+     */
+    public function setForMbSite(bool $forMbSite): FormConfig
+    {
+        $this->forMbSite = $forMbSite;
 
         return $this;
     }

@@ -1617,10 +1617,13 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Add image
      * @param Image $image
+     * @return Hotel
      */
     public function addImage(Image $image)
     {
         $this->images->add($image);
+
+        return $this;
     }
 
     /**
@@ -1828,7 +1831,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
-
     /**
      * @param bool $isFull
      * @return array
@@ -1846,6 +1848,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                 'isDefault' => $this->getIsDefault(),
                 'isHostel' => $this->getIsHostel(),
                 'facilities' => $this->getFacilities(),
+                'description' => $this->getDescription()
             ];
             if (!is_null($this->latitude)) {
                 $comprehensiveData['latitude'] = $this->latitude;
