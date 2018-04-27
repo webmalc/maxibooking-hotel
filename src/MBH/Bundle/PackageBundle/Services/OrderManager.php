@@ -255,6 +255,8 @@ class OrderManager
             $this->container->get('mbh.channelmanager')
                 ->updateRoomsInBackground($package->getBegin(), $package->getEnd());
 
+            $this->_removeCache($package->getBegin(), $package->getEnd());
+
             return true;
         }
 
@@ -633,6 +635,14 @@ class OrderManager
         }
 
         return $order;
+    }
+
+    private function _removeCache(\DateTime $begin = null, \DateTime $end = null)
+    {
+        $cache = $this->container->get('mbh.cache');
+        $cache->clear('accommodation_rooms', $begin, $end);
+        $cache->clear('room_cache', $begin, $end);
+        $cache->clear('packages', $begin, $end);
     }
 }
 
