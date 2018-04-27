@@ -124,7 +124,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
     /**
      * Edits an existing entity.
      *
-     * @Route("/{id}", name="restaurant_ingredient_category_update")
+     * @Route("/{id}/update", name="restaurant_ingredient_category_update")
      * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_CATEGORY_EDIT')")
      * @Template("MBHRestaurantBundle:Ingredient:editCategory.html.twig")
@@ -324,7 +324,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * save entries prices
      *
      * @Route("/quicksave", name="restaurant_category_save_prices")
-     * @Method("POST")
+     * @Method("POST")g
      * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -371,7 +371,4 @@ class IngredientController extends BaseController implements CheckHotelControlle
 
         return $this->redirectToRoute('restaurant_ingredient_category',  ['tab' => substr($activetab,1)]);
     }
-
-
-
 }
