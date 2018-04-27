@@ -15,24 +15,36 @@ class HotelType extends AbstractType
 {
     private $languages;
 
-    public function __construct(ClientConfigManager $clientConfigManager) {
+    public function __construct(ClientConfigManager $clientConfigManager)
+    {
         $this->languages = $clientConfigManager->fetchConfig()->getLanguages();
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('fullTitle', MultiLanguagesType::class, [
+        $isHotelExists = !empty($builder->getData()->getId());
+        if ($isHotelExists) {
+            $builder->add('fullTitle', MultiLanguagesType::class, [
                 'mapped' => false,
                 'group' => 'form.hotelType.general_info',
                 'data' => $builder->getData(),
                 'fields_options' => [
                     'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel'],
                     'label' => 'form.hotelType.name',
-                    'required' => true
+                    'required' => false
                 ],
                 'field_type' => TextType::class,
-            ])
+            ]);
+        } else {
+            $builder->add('fullTitle', TextType::class, [
+                'label' => 'form.hotelType.name',
+                'group' => 'form.hotelType.general_info',
+                'required' => true,
+                'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel']
+            ]);
+        }
+
+        $builder
             ->add('title', TextType::class, [
                 'label' => 'form.hotelType.inner_name',
                 'group' => 'form.hotelType.general_info',
@@ -51,7 +63,7 @@ class HotelType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'HTL'],
                 'help' => 'form.hotelType.document_use_name'
-        ]);
+            ]);
 
         $builder
             ->add('description', MultiLanguagesType::class, [

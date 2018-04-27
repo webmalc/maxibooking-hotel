@@ -46,21 +46,34 @@ class RoomTypeType extends AbstractType
                         }
                         return $qb;
                     }
-                ])
-            ;
+                ]);
         }
-        $builder
-            ->add('fullTitle', MultiLanguagesType::class, [
-                'fields_options' => [
-                    'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus'],
+
+        $isRoomTypeExists = !empty($builder->getData()->getId());
+        if ($isRoomTypeExists) {
+            $builder
+                ->add('fullTitle', MultiLanguagesType::class, [
+                    'fields_options' => [
+                        'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus'],
+                        'label' => 'form.roomTypeType.name',
+                        'required' => true
+                    ],
+                    'field_type' => TextType::class,
+                    'group' => 'form.roomTypeType.general_info',
+                    'data' => $builder->getData(),
+                    'mapped' => false
+                ]);
+        } else {
+            $builder
+                ->add('fullTitle', TextType::class, [
                     'label' => 'form.roomTypeType.name',
-                    'required' => true
-                ],
-                'field_type' => TextType::class,
-                'group' => 'form.roomTypeType.general_info',
-                'data' => $builder->getData(),
-                'mapped' => false
-            ])
+                    'required' => true,
+                    'group' => 'form.roomTypeType.general_info',
+                    'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus']
+                ]);
+        }
+
+        $builder
             ->add('title', TextType::class, [
                 'label' => 'form.roomTypeType.inner_name',
                 'required' => false,
@@ -159,8 +172,7 @@ class RoomTypeType extends AbstractType
                     'value' => true,
                     'required' => false,
                     'help' => 'form.roomTypeType.isIndividualAdditionalPricesDesc'
-                ])
-            ;
+                ]);
         }
 
         $builder
@@ -170,8 +182,7 @@ class RoomTypeType extends AbstractType
                 'value' => true,
                 'required' => false,
                 'help' => 'form.roomTypeType.is_room_included_in_search'
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

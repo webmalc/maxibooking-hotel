@@ -104,7 +104,7 @@
                         {% set decomposedAddress = tourist.addressObjectDecomposed %}
                     {% endif %}
                     {% if decomposedAddress and decomposedAddress.countryTld and decomposedAddress.cityId %}
-                        {{ get_country(decomposedAddress.countryTld).name ~ ' ' ~ get_city(decomposedAddress.cityId).name ~ ' ' ~ decomposedAddress.settlement }}
+                        {{ get_country(decomposedAddress.countryTld).name ~ ' ' ~ decomposedAddress ~ ' ' ~ decomposedAddress.settlement }}
                         {% if decomposedAddress.street %} {{ 'mbhpackagebundle.view.documents.pdftemplates.ul'|trans }}. {{ decomposedAddress.street }}
                             {% if decomposedAddress.house %}
                                 {{ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans }}. {{ decomposedAddress.house }}

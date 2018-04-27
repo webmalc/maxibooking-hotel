@@ -99,7 +99,7 @@ class HotelController extends Controller
     /**
      * Creates a new entity.
      *
-     * @Route("/create", name="hotel_create")
+     * @Route("/new", name="hotel_create")
      * @Method("POST")
      * @Security("is_granted('ROLE_HOTEL_NEW')")
      * @Template("MBHHotelBundle:Hotel:new.html.twig")
@@ -115,6 +115,8 @@ class HotelController extends Controller
 
         if ($form->isValid()) {
             $this->get('mbh.hotel.hotel_manager')->create($entity);
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
             $this->addFlash('success', 'controller.hotelController.record_created_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
