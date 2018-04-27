@@ -40,22 +40,22 @@ class Special extends Base
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
 
-    
-    /** 
+
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="specials")
      * @Assert\NotNull(message="validator.hotel.empty")
      * @ODM\Index()
      */
     protected $hotel;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -84,7 +84,7 @@ class Special extends Base
      * @ODM\Index()
      */
     protected $title;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -272,6 +272,7 @@ class Special extends Base
     public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
+
         return $this;
     }
 
@@ -291,9 +292,10 @@ class Special extends Base
      * @param string $fullTitle
      * @return self
      */
-    public function setFullTitle(string $fullTitle = null) :self
+    public function setFullTitle(string $fullTitle = null): self
     {
         $this->fullTitle = $fullTitle;
+
         return $this;
     }
 
@@ -316,6 +318,7 @@ class Special extends Base
     public function setTitle(string $title = null): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -326,7 +329,7 @@ class Special extends Base
      */
     public function getTitle(): ?string
     {
-        return (string) $this->title;
+        return (string)$this->title;
     }
 
     /**
@@ -338,6 +341,7 @@ class Special extends Base
     public function setDescription(string $description = null)
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -360,6 +364,7 @@ class Special extends Base
     public function setBegin(\DateTime $begin = null)
     {
         $this->begin = $begin;
+
         return $this;
     }
 
@@ -382,6 +387,7 @@ class Special extends Base
     public function setEnd(\DateTime $end = null)
     {
         $this->end = $end;
+
         return $this;
     }
 
@@ -410,6 +416,7 @@ class Special extends Base
     public function setTariffs(ArrayCollection $tariffs): Special
     {
         $this->tariffs = $tariffs;
+
         return $this;
     }
 
@@ -420,6 +427,14 @@ class Special extends Base
     public function addTariff(Tariff $tariff): self
     {
         $this->tariffs[] = $tariff;
+
+        return $this;
+    }
+
+    public function setTariff(Tariff $tariff): self
+    {
+        $this->tariffs = new ArrayCollection([$tariff]);
+
         return $this;
     }
 
@@ -438,6 +453,7 @@ class Special extends Base
     public function setRoomTypes(ArrayCollection $roomTypes): Special
     {
         $this->roomTypes = $roomTypes;
+
         return $this;
     }
 
@@ -448,6 +464,7 @@ class Special extends Base
     public function addRoomType(RoomType $roomType): self
     {
         $this->roomTypes[] = $roomType;
+
         return $this;
     }
 
@@ -466,6 +483,7 @@ class Special extends Base
     public function setDisplayFrom(\DateTime $displayFrom = null): Special
     {
         $this->displayFrom = $displayFrom;
+
         return $this;
     }
 
@@ -484,6 +502,7 @@ class Special extends Base
     public function setDisplayTo(\DateTime $displayTo = null): Special
     {
         $this->displayTo = $displayTo;
+
         return $this;
     }
 
@@ -506,6 +525,7 @@ class Special extends Base
     public function setDiscount(float $discount = null): Special
     {
         $this->discount = $discount;
+
         return $this;
     }
 
@@ -566,6 +586,7 @@ class Special extends Base
     public function setSold(int $sold = null): Special
     {
         $this->sold = $sold;
+
         return $this;
     }
 
@@ -584,6 +605,7 @@ class Special extends Base
     public function setRemain(int $remain = null): Special
     {
         $this->remain = $remain;
+
         return $this;
     }
 
@@ -639,6 +661,7 @@ class Special extends Base
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -824,8 +847,6 @@ class Special extends Base
     {
         return null !== $this->promotion && $this->promotion->getDiscount();
     }
-
-
 
 
 }

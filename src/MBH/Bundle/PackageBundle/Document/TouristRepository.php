@@ -220,4 +220,20 @@ class TouristRepository extends DocumentRepository
 
         return $tourist;
     }
+
+    /**
+     * @param string $query
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException]
+     */
+    public function getIdsWithNameByQueryString(string $query)
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
 }

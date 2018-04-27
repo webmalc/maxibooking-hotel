@@ -4,14 +4,21 @@
 namespace MBH\Bundle\PriceBundle\Lib;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
-class SpecialBatcherHolder
+class SpecialBatchHolder
 {
     /** @var array|Special[] */
     protected $specials = [];
 
+     /** @var Promotion */
     protected $promotion;
+
+    /** @var Tariff */
+    protected $tariff;
 
 
     /**
@@ -33,7 +40,7 @@ class SpecialBatcherHolder
     /**
      * @return mixed
      */
-    public function getPromotion()
+    public function getPromotion(): ?Promotion
     {
         return $this->promotion;
     }
@@ -41,7 +48,7 @@ class SpecialBatcherHolder
     /**
      * @param mixed $promotion
      */
-    public function setPromotion($promotion): void
+    public function setPromotion(Promotion $promotion): void
     {
         $this->promotion = $promotion;
     }
@@ -58,7 +65,21 @@ class SpecialBatcherHolder
         return $result;
     }
 
+    /**
+     * @return Tariff
+     */
+    public function getTariff(): ?Tariff
+    {
+        return $this->tariff;
+    }
 
+    /**
+     * @param Tariff $tariff
+     */
+    public function setTariff(Tariff $tariff): void
+    {
+        $this->tariff = $tariff;
+    }
 
 
 }

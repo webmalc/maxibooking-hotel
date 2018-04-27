@@ -10,18 +10,14 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\PriceBundle\Form\BatchSpecialPromotionApplyType;
 use MBH\Bundle\PriceBundle\Form\SpecialFilterType;
 use MBH\Bundle\PriceBundle\Form\SpecialType;
-use MBH\Bundle\PriceBundle\Lib\SpecialBatcherException;
-use MBH\Bundle\PriceBundle\Lib\SpecialBatcherHolder;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -284,44 +280,5 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
 
     }
 
-    /**
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @Route("/batch/promotion/apply", name="special_batch_promotion_apply", options={"expose"=true} )
-     * @Security("is_granted('ROLE_SPECIAL_EDIT')")
-     */
-    public function batchSpecialPromotionApplyAction(Request $request)
-    {
-        $form = $this->createForm(
-            BatchSpecialPromotionApplyType::class,
-            null,
-            [
-                'action' => $this->generateUrl('special_batch_promotion_apply'),
-            ]
-        );
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var SpecialBatcherHolder $holder */
-            $holder = $form->getData();
-            $batcher = $this->get('mbh.batcher');
-            $specialHandler = $this->get('mbh.special_handler');
-            try {
-                $batcher->batchPromotionToSpecialApply($holder);
-                $specialHandler->calculatePrices($holder->getSpecialIds());
-
-                return new JsonResponse(['result' => 'ok'], 200);
-            } catch (SpecialBatcherException $e) {
-                return new JsonResponse(['error' => $e->getMessage()], 500);
-            }
-
-        }
-
-        return $this->render(
-            '@MBHPrice/Special/batch_promotion_apply.html.twig',
-            [
-                'form' => $form->createView(),
-            ]
-        );
-    }
 
 }
