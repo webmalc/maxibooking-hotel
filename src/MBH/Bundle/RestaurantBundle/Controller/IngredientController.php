@@ -324,7 +324,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * save entries prices
      *
      * @Route("/quicksave", name="restaurant_category_save_prices")
-     * @Method("POST")g
+     * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
