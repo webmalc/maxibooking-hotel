@@ -5,6 +5,9 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\GoogleAnalyticConfig;
+use MBH\Bundle\OnlineBundle\Document\YandexAnalyticConfig;
+use MBH\Bundle\OnlineBundle\Form\AnalyticsForm;
 use MBH\Bundle\OnlineBundle\Form\FormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -103,10 +106,40 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
         }
 
         return [
-            'entity' => $entity,
+            'config' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity),
-            'config' => $this->container->getParameter('mbh.online.form')
+        ];
+    }
+
+    /**
+     * @Route("/{id}/form_code", name="form_code")
+     * @Template()
+     * @param FormConfig $config
+     * @return array
+     */
+    public function formCodeAction(FormConfig $config)
+    {
+        return [
+            'config' => $config
+        ];
+    }
+
+    /**
+     * @Template()
+     * @Route("/{id}/analytics", name="form_analytics")
+     * @param FormConfig $config
+     * @return array
+     */
+    public function analyticsAction(FormConfig $config)
+    {
+        $config->setGoogleAnalyticConfig(new GoogleAnalyticConfig());
+        $config->setYandexAnalyticConfig(new YandexAnalyticConfig());
+        $form = $this->createForm(AnalyticsForm::class, $config);
+        return [
+            'config' => $config,
+            'form' => $form->createView(),
+            'logs' => $this->logs($config),
         ];
     }
 
