@@ -40,6 +40,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
  */
 class PackageController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {
+
     /**
      * List entities
      *
