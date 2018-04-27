@@ -7,7 +7,7 @@ parameters:
 
     #currencies
     mbh.currency.data:
-      usd: {text: '$', small: '$', icon: 'fa fa-usd'}
+      usd: {text: '$', small: '¢', icon: 'fa fa-usd'}
       eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
       rub: {text: 'currency.rub.text', small: 'currency.rub.small', icon: 'fa fa-ruble'}
       uah: {text: 'currency.uah.text', small: 'currency.uah.small', icon: 'fa fa-money'}
