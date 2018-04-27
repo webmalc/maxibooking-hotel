@@ -529,4 +529,13 @@ class Helper
     {
         return (string)$entry['_id'];
     }
+
+    public static function getAllMethodExept(string $className, array $methods): array
+    {
+        $reflection = new \ReflectionClass($className);
+        $methods = array_diff(get_class_methods($reflection), $methods);
+
+        return $methods;
+
+    }
 }

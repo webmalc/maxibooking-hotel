@@ -4,8 +4,10 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Cache;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 
 class RestrictionRepository extends DocumentRepository
 {
@@ -186,5 +188,24 @@ class RestrictionRepository extends DocumentRepository
         }
 
         return $result;
+    }
+
+    public function getWithConditions(SearchConditions $conditions)
+    {
+        $qb = $this->createQueryBuilder();
+        if ($conditions->getTariffs()->count()) {
+            $tariffIds = Helper::toIds($conditions->getTariffs());
+            $qb->field('tariff.id')->in($tariffIds);
+        }
+
+        if ($conditions->getRoomTypes()->count()) {
+            $roomTypeIds = Helper::toIds($conditions->getRoomTypes());
+            $qb->field('roomType.id')->in($roomTypeIds);
+        }
+
+        if($conditions)
+
+
+        return $qb->hydrate(false)->getQuery()->toArray();
     }
 }

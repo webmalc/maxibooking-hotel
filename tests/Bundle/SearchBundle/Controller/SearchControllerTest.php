@@ -32,7 +32,7 @@ class SearchControllerTest extends WebTestCase
                 'begin' => '21.04.2018',
                 'end' => '22.04.2018',
                 'adults' => 3,
-                'children' => 4,
+                'children' => 0,
                 'roomTypes' => $ids
             ],
             'results' => [

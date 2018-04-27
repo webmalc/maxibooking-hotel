@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class SearchController extends Controller
 {
+
+    public const PRE_RESTRICTION_CHECK = true;
+
     /**
      * @Route(
      *     "/json",
@@ -35,13 +38,22 @@ class SearchController extends Controller
             $searchRequestReceiver = $this->get('mbh_search.search_request_receiver');
             $conditions = $searchRequestReceiver->handleData($data);
             $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
-            $searchQueryGenerator->generate($conditions);
-            $result
-                ->setOkStatus()
-                ->setExpectedResults($searchQueryGenerator->getQueuesNum())
-                ->setQueryHash(
-                    $searchQueryGenerator->getSearchQueryHash()
-                );
+            $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
+            $restrictionChecker = $this->get('mbh_search.restrictions_checker_service');
+
+            if (self::PRE_RESTRICTION_CHECK) {
+                $searchQueries = array_filter($searchQueries, [$restrictionChecker, 'check']);
+            }
+
+
+
+
+//            $result
+//                ->setOkStatus()
+//                ->setExpectedResults($searchQueryGenerator->getQueuesNum())
+//                ->setQueryHash(
+//                    $searchQueryGenerator->getSearchQueryHash()
+//                );
         } catch (SearchException $e) {
             $result->setErrorStatus()->setErrorMessage($e->getMessage());
         }

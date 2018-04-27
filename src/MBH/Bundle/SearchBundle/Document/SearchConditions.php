@@ -234,9 +234,11 @@ class SearchConditions
         return $this;
     }
 
-    public function addTariff(Tariff $tariff): void
+    public function addTariff(Tariff $tariff): SearchConditions
     {
         $this->tariffs->add($tariff);
+
+        return $this;
     }
 
     /**

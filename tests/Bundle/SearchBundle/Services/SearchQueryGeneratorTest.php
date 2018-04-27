@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
+use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
 
 class SearchQueryGeneratorTest extends WebTestCase
@@ -25,22 +26,22 @@ class SearchQueryGeneratorTest extends WebTestCase
 
     public function testGenerate()
     {
-        $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
-        $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
+        $dateBegin = new \DateTime('2018-04-21 midnight');
+        $dateEnd = new \DateTime('2018-04-22 midnight');
+        $additionalDays = 10;
         $conditions = new SearchConditions();
         $conditions
-            ->setBegin(new \DateTime('2018-04-21 midnight'))
-            ->setEnd(new \DateTime('2018-04-22 midnight'))
+            ->setBegin($dateBegin)
+            ->setEnd($dateEnd)
             ->setAdults(3)
             ->setChildren(4)
-//            ->setRoomTypes(new ArrayCollection(array_values($roomTypes)))
-//            ->setTariffs(new ArrayCollection(array_values($tariffs)))
-            ->setAdditionalBegin(0);
-        $generator->generate($conditions);
+            ->setAdditionalBegin($additionalDays);
+        $actual = $generator->generateSearchQueries($conditions);
+        $expectedCount = $this->getAllExpectedVariants($dateBegin, $dateEnd, $additionalDays);
 
-        $this->assertEquals(3, $generator->getQueuesNum());
-        $this->assertEquals('this is must be hash', $generator->getSearchQueryHash());
+        $this->assertCount($expectedCount, $actual);
+        $this->assertContainsOnlyInstancesOf(SearchQuery::class, $actual);
     }
 
 
@@ -66,18 +67,7 @@ class SearchQueryGeneratorTest extends WebTestCase
 
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'prepareConditionsForSearchQueries');
         $actual = $method->invokeArgs($generator, [$conditions]);
-        $roomTypeQb = $this->dm->getRepository(RoomType::class)->createQueryBuilder();
-        $tariffQb = $this->dm->getRepository(Tariff::class)->createQueryBuilder();
-
-        $hotels = $this->dm->getRepository(Hotel::class)->findAll();
-        $expectedCount = 0;
-        /** @var Hotel $hotel */
-        foreach ($hotels as $hotel) {
-            $roomTypesCount = $roomTypeQb->field('hotel.id')->equals($hotel->getId())->getQuery()->count();
-            $tariffCount = $tariffQb->field('hotel.id')->equals($hotel->getId())->getQuery()->count();
-            $expectedCount += $roomTypesCount * $tariffCount;
-        }
-        $expectedCount *= $this->calculateAdditionalDays($dateBegin, $dateEnd, $additionalDays);
+        $expectedCount = $this->getAllExpectedVariants($dateBegin, $dateEnd, $additionalDays);
 
         $this->assertCount($expectedCount, $actual);
 
@@ -393,8 +383,8 @@ class SearchQueryGeneratorTest extends WebTestCase
             [
 
                 new \DateTime('01-05-2018 midnight'),
-                new \DateTime('02-05-2018 midnight'),
-                3,
+                new \DateTime('09-05-2018 midnight'),
+                5,
 
             ],
             [
@@ -412,5 +402,22 @@ class SearchQueryGeneratorTest extends WebTestCase
         $dates = count($this->getContainer()->get('mbh_search.additional_days_generator')->generate($begin, $end, $range, $range));
 
         return $dates;
+    }
+
+    private function getAllExpectedVariants($dateBegin, $dateEnd, $additionalDays): int
+    {
+        $roomTypeQb = $this->dm->getRepository(RoomType::class)->createQueryBuilder();
+        $tariffQb = $this->dm->getRepository(Tariff::class)->createQueryBuilder();
+        $hotels = $this->dm->getRepository(Hotel::class)->findAll();
+        $expectedCount = 0;
+        /** @var Hotel $hotel */
+        foreach ($hotels as $hotel) {
+            $roomTypesCount = $roomTypeQb->field('hotel.id')->equals($hotel->getId())->getQuery()->count();
+            $tariffCount = $tariffQb->field('hotel.id')->equals($hotel->getId())->getQuery()->count();
+            $expectedCount += $roomTypesCount * $tariffCount;
+        }
+        $expectedCount *= $this->calculateAdditionalDays($dateBegin, $dateEnd, $additionalDays);
+
+        return $expectedCount;
     }
 }

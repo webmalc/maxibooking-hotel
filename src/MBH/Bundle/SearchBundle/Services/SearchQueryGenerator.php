@@ -13,16 +13,10 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Lib\SearchQueryHelper;
 
 class SearchQueryGenerator
 {
-
-    /** @var string */
-    private $searchQueryHash;
-
-    /** @var int */
-    private $queuesNum;
-
     /** @var DocumentManager */
     private $dm;
 
@@ -37,19 +31,24 @@ class SearchQueryGenerator
 
     /**
      * @param SearchConditions $conditions
+     * @return SearchQuery[]
      * @throws SearchQueryGeneratorException
      */
-    public function generate(SearchConditions $conditions): void
+    public function generateSearchQueries(SearchConditions $conditions): array
     {
-        $combinations = $this->prepareConditionsForSearchQueries($conditions);
-        $a = 'b';
+        $queryHelpers = $this->prepareConditionsForSearchQueries($conditions);
+        $searchQueries = [];
+        foreach ($queryHelpers as $queryHelper) {
+            $searchQueries[] = SearchQuery::createInstance($queryHelper, $conditions);
+        }
 
+        return $searchQueries;
     }
 
 
     /**
      * @param SearchConditions $conditions
-     * @return SearchQuery[]
+     * @return SearchQueryHelper[]
      * @throws SearchQueryGeneratorException
      */
     private function prepareConditionsForSearchQueries(SearchConditions $conditions): array
@@ -70,25 +69,25 @@ class SearchQueryGenerator
 
 
         $tariffRoomTypeCombined = $this->combineTariffWithRoomType($roomTypeIds, $tariffIds);
-        $combinations = $this->combineDataForSearchQuery($dates, $tariffRoomTypeCombined);
-        if (empty($combinations)) {
+        $queryHelpers = $this->combineDataForSearchQuery($dates, $tariffRoomTypeCombined);
+        if (empty($queryHelpers)) {
             throw new SearchQueryGeneratorException('No combinations for search');
         }
 
-        return $combinations;
+        return $queryHelpers;
     }
 
-    private function searchQueryGenerate(array $variants, SearchConditions $conditions): array
-    {
-        return [];
-    }
-
+    /**
+     * @param array $dates
+     * @param array $tariffRoomTypeCombined
+     * @return SearchQueryHelper[]
+     */
     private function combineDataForSearchQuery(array $dates, array $tariffRoomTypeCombined): array
     {
         $result = [];
         foreach ($dates as $date) {
             foreach ($tariffRoomTypeCombined as $tariffRoomType) {
-                $result[] = array_merge($date, $tariffRoomType);
+                $result[] = SearchQueryHelper::createInstance($date, $tariffRoomType);
             }
         }
 
@@ -211,7 +210,12 @@ class SearchQueryGenerator
         return $result;
     }
 
-    private function mixRoomTypeTariff(array $roomTypes, array $tariffs)
+    /**
+     * @param array $roomTypes
+     * @param array $tariffs
+     * @return array
+     */
+    private function mixRoomTypeTariff(array $roomTypes, array $tariffs): array
     {
         $values = [];
         foreach ($roomTypes as $roomType) {
@@ -222,22 +226,5 @@ class SearchQueryGenerator
 
         return $values;
     }
-
-    /**
-     * @return string
-     */
-    public function getSearchQueryHash(): string
-    {
-        return $this->searchQueryHash;
-    }
-
-    /**
-     * @return int
-     */
-    public function getQueuesNum(): int
-    {
-        return $this->queuesNum;
-    }
-
 
 }
