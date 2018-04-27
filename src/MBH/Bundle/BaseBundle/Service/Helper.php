@@ -664,4 +664,14 @@ class Helper
             . (!is_null($begin) && !is_null($end) ? ' - ' : '')
             . (!is_null($end) ? $end->format($format) : '');
     }
+
+    /**
+     * @param string $traitName
+     * @param $document
+     * @return bool
+     */
+    public function hasDocumentClassTrait(string $traitName, $document)
+    {
+        return in_array($traitName, class_uses(get_class($document)));
+    }
 }

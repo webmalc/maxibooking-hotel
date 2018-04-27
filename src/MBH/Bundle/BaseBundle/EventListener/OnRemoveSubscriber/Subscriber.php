@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\CustomRepository\Repository;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -44,10 +45,21 @@ class Subscriber implements EventSubscriber
         $this->container = $container;
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     * @throws DeleteException
+     */
     public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getDocument();
         $dm = $this->container->get('doctrine_mongodb')->getManager();
+
+        if ($this->container->get('mbh.helper')->hasDocumentClassTrait(SoftDeleteableDocument::class, $entity)
+            && !empty($entity->getDeletedAt())
+        ) {
+            throw new DeleteException('exception.relation_delete.document_already_deleted');
+        }
+
         $settings = DocumentsRelationships::getRelationships();
         if (array_key_exists(get_class($entity), $settings)) {
             $settings = $settings[get_class($entity)];

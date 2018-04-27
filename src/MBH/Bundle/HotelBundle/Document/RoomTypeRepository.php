@@ -78,4 +78,22 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
     {
         return $this->fetchQueryBuilder($hotel, $roomTypes)->getQuery()->execute();
     }
+
+    /**
+     * @param string $query
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getByQueryName(string $query)
+    {
+        $qb = $this->createQueryBuilder();
+
+        return $qb
+            ->addOr($qb->expr()->field('title')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')))
+            ->addOr($qb->expr()->field('fullTitle')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')))
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
 }
