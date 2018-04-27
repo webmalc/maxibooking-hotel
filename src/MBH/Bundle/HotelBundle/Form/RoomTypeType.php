@@ -146,14 +146,14 @@ class RoomTypeType extends AbstractType
                 'label' => 'form.roomTypeType.main_places',
                 'group' => 'form.roomTypeType.places',
                 'required' => true,
-                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
+                'attr' => ['class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_main_places_amount'
             ])
             ->add('additionalPlaces', TextType::class, [
                 'label' => 'form.roomTypeType.additional_places',
                 'group' => 'form.roomTypeType.places',
                 'required' => true,
-                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
+                'attr' => ['class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_additional_places_amount'
             ]);
 

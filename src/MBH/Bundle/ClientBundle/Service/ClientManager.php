@@ -190,6 +190,7 @@ class ClientManager
 
     /**
      * @return Client
+     * @throws \Exception
      */
     public function getClient()
     {
@@ -209,6 +210,10 @@ class ClientManager
                 $client = $this->session->get(self::SESSION_CLIENT_FIELD);
                 $this->logger->err($exception->getMessage());
             } finally {
+                $client = $this->getDefaultClientData();
+                if (!isset($client)) {
+                    throw new \Exception('Error while receiving client from billing');
+                }
                 $this->updateSessionClientData($client, $currentDateTime);
             }
         } else {

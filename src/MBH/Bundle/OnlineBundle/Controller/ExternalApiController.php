@@ -116,6 +116,7 @@ class ExternalApiController extends BaseController
      * @Route("/tariffs")
      * @param Request $request
      * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getTariffsAction(Request $request)
     {
@@ -177,13 +178,14 @@ class ExternalApiController extends BaseController
      */
     public function getHotelsAction(Request $request)
     {
-        header('Access-Control-Allow-Origin: ' . 'http://localhost:4200');
+        $this->addAccessControlAllowOriginHeaders(['http://localhost:4200']);
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
         $isEnabled = !empty($queryData->get('isEnabled')) ? $queryData->get('isEnabled') === 'true' : true;
         $isFull = !empty($queryData->get('isFull')) ? $queryData->get('isFull') === 'true' : false;
         $onlineFormId = $queryData->get('onlineFormId');
         $this->setLocaleByRequest();
+//        $locale = $queryData->get('locale');
 
         $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
         if ($isEnabled) {
@@ -206,6 +208,8 @@ class ExternalApiController extends BaseController
                 || $formConfig->getHotels()->count() == 0
                 || in_array($hotel, $formConfig->getHotels()->toArray())
             ) {
+//                $hotel->setLocale($locale);
+//                $this->dm->refresh($hotel);
                 $responseData[] = $hotel->getJsonSerialized($isFull);
             }
         }

@@ -15,7 +15,7 @@ framework:
     serializer:
         enabled: true
     #esi:             ~
-    translator:      { fallback: ["%locale%", ru, en] }
+    translator:      { fallback: ["%locale%", en, ru] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -80,12 +80,12 @@ assetic:
         cssrewrite: ~
         uglifycss:
             bin: /usr/local/lib/node_modules/uglifycss/uglifycss
-            node: /usr/bin/node
+            node: /usr/local/bin/node
         uglifyjs2:
             bin: /usr/local/lib/node_modules/uglify-js/bin/uglifyjs
-            node: /usr/bin/node
+            node: /usr/local/bin/node
         less:
-            node: /usr/bin/node
+            node: /usr/local/bin/node
             node_paths: [/usr/local/lib/node_modules/]
             apply_to: ".less$"
         scssphp:
@@ -233,7 +233,7 @@ parameters:
 
 # Lexik translation bundle
 lexik_translation:
-    fallback_locale: [ru]         # (required) default locale(s) to use
+    fallback_locale: [en, ru]         # (required) default locale(s) to use
     managed_locales: [ru, en]
     storage:
         type: mongodb
@@ -366,7 +366,7 @@ liip_imagine:
 
 
 bazinga_js_translation:
-    locale_fallback:      ru
+    locale_fallback:      en
     default_domain:       front_messages
     active_domains:
             - front_messages

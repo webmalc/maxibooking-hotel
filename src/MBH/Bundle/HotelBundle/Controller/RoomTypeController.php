@@ -84,10 +84,12 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     /**
      * Creates a new entity.
      *
-     * @Route("/create", name="room_type_create")
+     * @Route("/new", name="room_type_create")
      * @Method("POST")
      * @Security("is_granted('ROLE_ROOM_TYPE_NEW')")
      * @Template("MBHHotelBundle:RoomType:new.html.twig")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createAction(Request $request)
     {
@@ -108,10 +110,10 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView()
-        );
+        ];
     }
 
     /**

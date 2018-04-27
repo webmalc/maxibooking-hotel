@@ -471,7 +471,7 @@ class BillingApi
         if ($response->getStatusCode() == 400) {
             $requestResult->setErrors(json_decode((string)$response->getBody(), true));
         } else {
-            $this->logErrorResponse($response, $url, $requestData);
+            $this->logErrorResponse((string)$response->getBody(), $url, $requestData);
         }
 
         return $requestResult;
@@ -696,15 +696,15 @@ class BillingApi
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param $errorMessage
      * @param string $url
      * @param array $requestData
      */
-    private function logErrorResponse(ResponseInterface $response, string $url, array $requestData): void
+    private function logErrorResponse($errorMessage, string $url, array $requestData): void
     {
         $this->logger->err('Exception was thrown by requesting ' . ' by url ' . $url
             . '. Request data: ' . json_encode($requestData)
-            . '. Response: ' . (string)$response->getBody()
+            . '. Response: ' . $errorMessage
         );
     }
 
@@ -714,7 +714,8 @@ class BillingApi
      */
     private function logErrorAndThrowException($exception, $url): void
     {
-        $this->logErrorResponse($exception->getResponse(), $url, []);
+        $message = $exception->getResponse() ? (string)$exception->getResponse()->getBody : $exception->getMessage();
+        $this->logErrorResponse($message, $url, []);
         throw new \RuntimeException('Can not get data by url ' . $url);
     }
 }
