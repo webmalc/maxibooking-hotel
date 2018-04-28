@@ -19,7 +19,7 @@ class SpecialsToStringTransformer implements DataTransformerInterface
 
     public function transform($specialArray)
     {
-        return $specialArray?implode(',', $specialArray):'';
+        return $specialArray ? implode(',', $specialArray) : '';
     }
 
     public function reverseTransform($specialString)

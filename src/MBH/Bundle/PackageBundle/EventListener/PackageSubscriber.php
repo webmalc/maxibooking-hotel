@@ -80,10 +80,9 @@ class PackageSubscriber implements EventSubscriber
             $dm->persist($entity);
             $dm->flush($entity);
 
-            /*$this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());*/
+//            $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
         }
 
-        return;
     }
 
     public function postPersist(LifecycleEventArgs $args)
@@ -208,7 +207,7 @@ class PackageSubscriber implements EventSubscriber
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
             $lastEntity = $dm->getRepository('MBHPackageBundle:Package')
-                ->createQueryBuilder('q')
+                ->createQueryBuilder()
                 ->field('order.id')->equals($package->getOrder()->getId())
                 ->sort('number', 'desc')
                 ->getQuery()
@@ -230,7 +229,7 @@ class PackageSubscriber implements EventSubscriber
         if ($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
             $package->setPromotion($package->getTariff()->getDefaultPromotion());
         }
-        /*$this->_removeCache(clone $package->getBegin(), clone $package->getEnd());*/
+        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
     }
 
     public function preUpdate(LifecycleEventArgs $args)
@@ -248,7 +247,7 @@ class PackageSubscriber implements EventSubscriber
             $meta = $dm->getClassMetadata(get_class($package));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $package);
         }
-        /*$this->_removeCache(clone $package->getBegin(), clone $package->getEnd());*/
+        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
     }
 
     public function postUpdate(LifecycleEventArgs $args)
