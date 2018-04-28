@@ -100,7 +100,6 @@ class RoomType extends Base implements RoomTypeInterface
      *      max=1000,
      *      maxMessage="validator.document.roomType.max_description"
      * )
-     * @ODM\Index()
      */
     protected $description;
 

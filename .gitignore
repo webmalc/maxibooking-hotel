@@ -22,7 +22,7 @@ app/config/database.env
 
 .ansible/*.retry
 
-
+phpunit.xml
 
 /src/MBH/Bundle/TestBundle
 !var/cache/.gitkeep
