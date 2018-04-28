@@ -299,7 +299,7 @@ jQuery(document).ready(function() {
                 // results next button
                 (function() {
                     jQuery('#mbh-results-next').click(function() {
-                        if (typeof yaCounterObjName !== undefined) {
+                        if (typeof yaCounterObjName !== 'undefined') {
                             yaCounterObjName.reachGoal('rooms');
                         }
                         var urlParams = getUrlVars(),
@@ -460,7 +460,7 @@ jQuery(document).ready(function() {
 
                                 // user form next button
                                 jQuery('#mbh-user-form-next').click(function() {
-                                    if (typeof yaCounterObjName !== undefined) {
+                                    if (typeof yaCounterObjName !== 'undefined') {
                                         yaCounterObjName.reachGoal('contacts');
                                     }
                                     servicesCount = jQuery('select.mbh-results-services-count')
@@ -570,7 +570,7 @@ jQuery(document).ready(function() {
 
                                             //user payment types next button
                                             jQuery('#mbh-payment-types-next').click(function() {
-                                                if (typeof yaCounterObjName !== undefined) {
+                                                if (typeof yaCounterObjName !== 'undefined') {
                                                     yaCounterObjName.reachGoal('choose');
                                                 }
                                                 requestParams.total = jQuery('#mbh-package-info-total-hidden').text();
