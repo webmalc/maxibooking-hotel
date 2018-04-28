@@ -40,13 +40,10 @@ class SearchController extends Controller
             $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
             $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
             $restrictionChecker = $this->get('mbh_search.restrictions_checker_service');
-
+            $restrictionChecker->setConditions($conditions);
             if (self::PRE_RESTRICTION_CHECK) {
                 $searchQueries = array_filter($searchQueries, [$restrictionChecker, 'check']);
             }
-
-
-
 
 //            $result
 //                ->setOkStatus()

@@ -94,8 +94,16 @@ class SearchConditions
      */
     private $tariffs;
 
-    /** @var bool */
+    /** @var bool
+     * @Assert\Type(type="bool")
+     */
     private $isOnline = false;
+
+    /** @var bool
+     * @Assert\Type(type="bool")
+     *
+     */
+    private $isIgnoreRestrictions = false;
 
     /**
      * SearchConditions constructor.
@@ -246,6 +254,10 @@ class SearchConditions
      */
     public function getAdditionalBegin(): ?int
     {
+        if (null === $this->additionalBegin) {
+            return 0;
+        }
+
         return $this->additionalBegin;
     }
 
@@ -265,8 +277,8 @@ class SearchConditions
      */
     public function getAdditionalEnd(): ?int
     {
-        if (!$this->additionalEnd && $this->additionalBegin) {
-            return $this->additionalBegin;
+        if (null === $this->additionalEnd && null !== $this->getAdditionalBegin()) {
+            return $this->getAdditionalBegin();
         }
 
         return $this->additionalEnd;
@@ -322,6 +334,18 @@ class SearchConditions
     public function setIsOnline($isOnline): SearchConditions
     {
         $this->isOnline = $isOnline;
+
+        return $this;
+    }
+
+    public function isIgnoreRestrictoins(): bool
+    {
+        return $this->isIgnoreRestrictions;
+    }
+
+    public function setIgnoreRestrictions(): SearchConditions
+    {
+        $this->isIgnoreRestrictions = true;
 
         return $this;
     }

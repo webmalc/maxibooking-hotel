@@ -17,6 +17,17 @@ class SearchQuery
      * @var \DateTime
      */
     private $end;
+
+    /**
+     * @var string
+     */
+    private $tariffId;
+
+    /**
+     * @var string
+     */
+    private $roomTypeId;
+
     /**
      * @var int
      */
@@ -37,6 +48,8 @@ class SearchQuery
      * @var bool
      */
     private $isRestrictionsWhereChecked = false;
+
+    private $isIgnoreRestrictions = false;
 
     /**
      * @return mixed
@@ -75,6 +88,46 @@ class SearchQuery
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getTariffId(): string
+    {
+        return $this->tariffId;
+    }
+
+    /**
+     * @param string $tariffId
+     * @return SearchQuery
+     */
+    public function setTariffId(string $tariffId): SearchQuery
+    {
+        $this->tariffId = $tariffId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoomTypeId(): string
+    {
+        return $this->roomTypeId;
+    }
+
+    /**
+     * @param string $roomTypeId
+     * @return SearchQuery
+     */
+    public function setRoomTypeId(string $roomTypeId): SearchQuery
+    {
+        $this->roomTypeId = $roomTypeId;
+
+        return $this;
+    }
+
+
 
     /**
      * @return mixed
@@ -167,6 +220,18 @@ class SearchQuery
         return $this;
     }
 
+    public function isIgnoreRestrictions(): bool
+    {
+        return $this->isIgnoreRestrictions;
+    }
+
+    public function setIgnoreRestrictions(bool $isIgnore): SearchQuery
+    {
+        $this->isIgnoreRestrictions = $isIgnore;
+
+        return $this;
+    }
+
 
 public static function createInstance(SearchQueryHelper $queryHelper, SearchConditions $conditions): SearchQuery
     {
@@ -177,7 +242,11 @@ public static function createInstance(SearchQueryHelper $queryHelper, SearchCond
             ->setBegin($queryHelper->getBegin())
             ->setEnd($queryHelper->getEnd())
             ->setAdults($conditions->getAdults())
-            ->setChildren($conditions->getChildren());
+            ->setChildren($conditions->getChildren())
+            ->setTariffId($queryHelper->getTariffId())
+            ->setRoomTypeId($queryHelper->getRoomTypeId())
+            ->setIgnoreRestrictions($conditions->isIgnoreRestrictoins())
+        ;
 
         return $searchQuery;
     }

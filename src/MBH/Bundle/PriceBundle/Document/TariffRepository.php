@@ -4,7 +4,6 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\PriceBundle\Lib\TariffFilter;
@@ -58,12 +57,6 @@ class TariffRepository extends DocumentRepository
         }
 
         return $qb->hydrate(false)->getQuery()->toArray();
-//        $ids = array_map(
-//            [Helper::class, 'returnNonHydrateIds'],
-//            $qb->hydrate(false)->getQuery()->toArray()
-//        );
-//
-//        return array_keys($ids);
     }
 
 

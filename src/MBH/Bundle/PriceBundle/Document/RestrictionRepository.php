@@ -53,7 +53,7 @@ class RestrictionRepository extends DocumentRepository
                 $hotel = $restriction->getRoomType()->getHotel();
 
                 $data[$restriction->getRoomType()->getId()][$dateStr] = $dateStr;
-                $data['allrooms_' . $hotel->getId()][$dateStr] = $dateStr;
+                $data['allrooms_'.$hotel->getId()][$dateStr] = $dateStr;
                 $hotels[$hotel->getId()] = $hotel;
             }
         };
@@ -61,7 +61,7 @@ class RestrictionRepository extends DocumentRepository
         foreach ($hotels as $hotel) {
             foreach ($hotel->getRoomTypes() as $roomType) {
                 isset($data[$roomType->getId()]) ? $dates = $data[$roomType->getId()] : $dates = [];
-                $data['allrooms_' . $hotel->getId()] = array_intersect($data['allrooms_' . $hotel->getId()], $dates);
+                $data['allrooms_'.$hotel->getId()] = array_intersect($data['allrooms_'.$hotel->getId()], $dates);
             }
         }
 
@@ -83,7 +83,7 @@ class RestrictionRepository extends DocumentRepository
         array $roomTypes = [],
         array $tariffs = []
     ) {
-    
+
         $qb = $this->createQueryBuilder('q');
 
         // hotel
@@ -161,7 +161,7 @@ class RestrictionRepository extends DocumentRepository
         $grouped = false,
         Cache $memcached = null
     ) {
-    
+
         if ($memcached) {
             $cache = $memcached->get('restrictions_fetch', func_get_args());
             if ($cache !== false) {
@@ -180,7 +180,9 @@ class RestrictionRepository extends DocumentRepository
         }
         $result = [];
         foreach ($caches as $cache) {
-            $result[$cache->getRoomType()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
+            $result[$cache->getRoomType()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format(
+                'd.m.Y'
+            )] = $cache;
         }
 
         if ($memcached) {
@@ -190,22 +192,41 @@ class RestrictionRepository extends DocumentRepository
         return $result;
     }
 
-    public function getWithConditions(SearchConditions $conditions)
+    /**
+     * @param SearchConditions $conditions
+     * @return array
+     */
+    public function getWithConditions(SearchConditions $conditions): array
     {
         $qb = $this->createQueryBuilder();
-        if ($conditions->getTariffs()->count()) {
+        $isTariffIds = (bool)$conditions->getTariffs()->count();
+        if ($isTariffIds) {
             $tariffIds = Helper::toIds($conditions->getTariffs());
             $qb->field('tariff.id')->in($tariffIds);
         }
 
-        if ($conditions->getRoomTypes()->count()) {
+        $isRoomTypeIds = $conditions->getRoomTypes()->count();
+        if ($isRoomTypeIds) {
             $roomTypeIds = Helper::toIds($conditions->getRoomTypes());
             $qb->field('roomType.id')->in($roomTypeIds);
         }
 
-        if($conditions)
+        /** Priority to tariff or roomTpe */
+        $isHotelIds = $conditions->getHotels()->count();
+        if (!$isTariffIds && !$isRoomTypeIds && $isHotelIds) {
+            $hotelIds = Helper::toIds($conditions->getHotels());
+            $qb->field('hotel.id')->in($hotelIds);
+        }
 
+        $begin = (clone $conditions->getBegin())->modify("- {$conditions->getAdditionalBegin()} days");
+        $end = (clone $conditions->getEnd())->modify("+ {$conditions->getAdditionalEnd()} days");
+
+        $qb
+            ->field('date')->gte($begin)
+            ->field('date')->lte($end);
 
         return $qb->hydrate(false)->getQuery()->toArray();
     }
 }
+
+;
