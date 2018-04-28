@@ -2,19 +2,16 @@
 
 namespace MBH\Bundle\ClientBundle\Service;
 
-use Liip\ImagineBundle\Templating\ImagineExtension;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
+use MBH\Bundle\ClientBundle\Service\Document\HotelSerialize;
+use MBH\Bundle\ClientBundle\Service\Document\OrderSerialize;
+use MBH\Bundle\ClientBundle\Service\Document\Payer;
 use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\UserBundle\Document\User;
 use Psr\Container\ContainerInterface;
-use Symfony\Bridge\Twig\Extension\AssetExtension;
-use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
-use Symfony\Bridge\Twig\Extension\TranslationExtension;
-use Symfony\Component\HttpFoundation\Response;
-use Vich\UploaderBundle\Twig\Extension\UploaderExtension;
 
 class TemplateFormatter
 {
@@ -75,9 +72,9 @@ class TemplateFormatter
         $organization = $doc->getOrganization() ? $doc->getOrganization() : $hotel->getOrganization();
         $params = [
             'package' => $package,
-            'order' => $order,
-            'hotel' => $hotel,
-            'payer' => $order->getPayer(),
+            'order' => new OrderSerialize($order),
+            'hotel' => new HotelSerialize($hotel),
+            'payer' => Payer::instance($order->getPayer()),
             'organization' => $organization,
             'user' => $user,
             'arrivalTimeDefault' => $hotel->getPackageArrivalTime(),
@@ -86,6 +83,10 @@ class TemplateFormatter
         ];
 
         $params = $this->addCalculatedParams($params, $package);
+
+
+////        dump($params);
+//        exit;
         $twig = $this->container->get('twig');
         $renderedTemplate = $twig->createTemplate($doc->getContent())->render($params);
 

@@ -72,3 +72,8 @@ services:
     mbh.fms_dictionaries:
         class: MBH\Bundle\ClientBundle\Lib\FMSDictionaries
         arguments: ['@mbh.csv_reader']
+
+    mbh.hotel_serialize:
+        class: MBH\Bundle\ClientBundle\Service\Document\HotelSerialize
+        calls:
+            - [setBilling, ['@mbh.billing.api']]

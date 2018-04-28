@@ -44,18 +44,25 @@
         <script src="{{ asset('assets/vendor/tinymce/plugins/' ~ plugin ~ '/plugin.min.js') }}"></script>
     {% endfor %}
 
+    <script>
+        var mbh_property = {{ get_properties() }};
+    </script>
+
     {% javascripts '@MBHClientBundle/Resources/public/js/mbh_data.tinymce.plugin.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
     <script>
         if (document.getElementById('mbh_client_document_template_content')) {
+
             tinymce.init({
                 selector: '#mbh_client_document_template_content',
                 theme: 'modern',
                 skin_url: '/assets/vendor/tinymce/skins/lightgray',
                 plugins_url: '/assets/vendor/tinymce/skins/lightgray',
                 resize: 'both',
+                fix_list_elements: false,
+                protect: [/\{\%.*?\%\}/g],
                 height: 300,
                 fullpage_default_title: 'PDF',
                 fullpage_default_encoding: '{{ injection|replace({"\n": "", "  ": ""})|raw }}',
@@ -71,7 +78,7 @@
                         tools  : {title : 'Tools' , items : 'code'},
                         maxi   : {title : 'MaxiBooking ', items : 'mbh_hotel mbh_payer'}
                     },
-                contextmenu: 'mbh_hotel mbh_payer | link image | inserttable tableprops | cell row column deletetable'
+                contextmenu: 'setting_table statement_mbh | mbh_order mbh_hotel mbh_payer | link image | inserttable tableprops | cell row column deletetable'
             });
         }
     </script>
