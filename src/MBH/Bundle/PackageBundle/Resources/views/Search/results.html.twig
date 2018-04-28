@@ -36,7 +36,7 @@
             {% for special in specials %}
                 {% if query.special == special %}{% set selectedSpecial = true %}{% else %}{% set selectedSpecial = false %}{% endif %}
                 {% set discount %}
-                    {{ special.discount|number_format(2) }} {% if not special.isPercent %}{{ currency()['text'] }}{% else %}%{% endif %}
+                    {{ special.discount|number_format(2) }} {% if not special.isPercent %}{{ currency()['text']|trans }}{% else %}%{% endif %}
                 {% endset %}
                 {% set btn_special %}
                     <a href="" data-id="{{ special.id }}" class="search-special-apply btn btn-{{ selectedSpecial ? 'default' : 'primary' }} {{ selectedSpecial ? 'cancel' }} btn-xs">
