@@ -145,6 +145,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->flush();
+            $this->addFlash('success', 'controller.formController.settings_saved_success');
         }
 
         return [
