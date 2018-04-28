@@ -447,10 +447,17 @@ class HotelController extends Controller
      * @Security("is_granted('ROLE_HOTEL_DELETE')")
      * @param $id
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \MBH\Bundle\PackageBundle\Lib\DeleteException
      */
     public function deleteAction($id)
     {
+        $hotelMainTariff = $this->dm
+            ->getRepository('MBHPriceBundle:Tariff')
+            ->findOneBy(['isDefault' => true, 'hotel.id' => $id]);
+
+        $this->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
         $response = $this->deleteEntity($id, 'MBHHotelBundle:Hotel', 'hotel');
+
         return $response;
     }
 }
