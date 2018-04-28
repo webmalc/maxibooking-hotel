@@ -299,6 +299,9 @@ jQuery(document).ready(function() {
                 // results next button
                 (function() {
                     jQuery('#mbh-results-next').click(function() {
+                        if (typeof yaCounterObjName !== undefined) {
+                            yaCounter48663167.reachGoal('rooms');
+                        }
                         var urlParams = getUrlVars(),
                             roomCount = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked'),
                             servicesCount = jQuery('select.mbh-results-services-count');
@@ -457,6 +460,9 @@ jQuery(document).ready(function() {
 
                                 // user form next button
                                 jQuery('#mbh-user-form-next').click(function() {
+                                    if (typeof yaCounterObjName !== undefined) {
+                                        yaCounter48663167.reachGoal('contacts');
+                                    }
                                     servicesCount = jQuery('select.mbh-results-services-count')
 
                                     servicesCount.each(function() {
@@ -564,6 +570,9 @@ jQuery(document).ready(function() {
 
                                             //user payment types next button
                                             jQuery('#mbh-payment-types-next').click(function() {
+                                                if (typeof yaCounterObjName !== undefined) {
+                                                    yaCounter48663167.reachGoal('choose');
+                                                }
                                                 requestParams.total = jQuery('#mbh-package-info-total-hidden').text();
                                                 requestParams.paymentType = jQuery('.mbh-payment-types-radio:checked').val();
                                                 requestParams.paymentSystem = jQuery('#mbh-form-payment-system').val();

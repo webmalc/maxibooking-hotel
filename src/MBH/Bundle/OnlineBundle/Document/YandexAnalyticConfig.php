@@ -25,7 +25,7 @@ class YandexAnalyticConfig
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
-    protected $isEnabled = true;
+    protected $isEnabled = false;
 
     /**
      * @return string $id
@@ -33,6 +33,17 @@ class YandexAnalyticConfig
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return YandexAnalyticConfig
+     */
+    public function setId(string $id): YandexAnalyticConfig
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

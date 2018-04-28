@@ -30,7 +30,11 @@ jQuery(document).ready(function() {
         }
     };
 
-    $("#mbh-form").on('submit', function() {
+    var $mbhForm = $("#mbh-form");
+    $mbhForm.on('submit', function(e) {
+        if (typeof yaCounterObjName !== undefined) {
+            yaCounter48663167.reachGoal('search');
+        }
         window.sessionStorage.setItem('MBHSearchData',$(this).serialize());
     })
 

@@ -19,14 +19,16 @@ class AnalyticsForm extends AbstractType
                 'required' => false,
                 'group' => 'Google',
                 'attr' => [
-                    'class' => 'box-full-visibility-checkbox'
+                    'class' => 'box-full-visibility-checkbox',
                 ],
-                'label' => 'analytics_form.is_enabled.label'
+                'label' => 'analytics_form.is_enabled.label',
+                'data' => false
             ])
             ->add('googleAnalyticConfigId', TextType::class, [
                 'property_path' => 'googleAnalyticConfig.id',
                 'required' => false,
-                'group' => 'Google'
+                'group' => 'Google',
+                'label' => 'analytics_form.id.label'
             ])
             ->add('yandexAnalyticConfigIsEnabled', CheckboxType::class, [
                 'property_path' => 'yandexAnalyticConfig.isEnabled',
@@ -40,7 +42,8 @@ class AnalyticsForm extends AbstractType
             ->add('yandexAnalyticConfigId', TextType::class, [
                 'property_path' => 'yandexAnalyticConfig.id',
                 'required' => false,
-                'group' => 'Yandex'
+                'group' => 'Yandex',
+                'label' => 'analytics_form.id.label'
             ]);
     }
 

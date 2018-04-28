@@ -25,7 +25,7 @@ class GoogleAnalyticConfig
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
-    protected $isEnabled = true;
+    protected $isEnabled = false;
 
     /**
      * @return string $id
@@ -33,6 +33,17 @@ class GoogleAnalyticConfig
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return GoogleAnalyticConfig
+     */
+    public function setId(string $id): GoogleAnalyticConfig
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

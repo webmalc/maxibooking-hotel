@@ -76,6 +76,9 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      * @Security("is_granted('ROLE_ONLINE_FORM_EDIT')")
      * @Template()
      * @ParamConverter(class="MBHOnlineBundle:FormConfig")
+     * @param Request $request
+     * @param FormConfig $entity
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAction(Request $request, FormConfig $entity)
     {
@@ -129,13 +132,21 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      * @Template()
      * @Route("/{id}/analytics", name="form_analytics")
      * @param FormConfig $config
+     * @param Request $request
      * @return array
      */
-    public function analyticsAction(FormConfig $config)
+    public function analyticsAction(FormConfig $config, Request $request)
     {
-        $config->setGoogleAnalyticConfig(new GoogleAnalyticConfig());
-        $config->setYandexAnalyticConfig(new YandexAnalyticConfig());
+        $config->getGoogleAnalyticConfig() ?: $config->setGoogleAnalyticConfig(new GoogleAnalyticConfig());
+        $config->getYandexAnalyticConfig() ?: $config->setYandexAnalyticConfig(new YandexAnalyticConfig());
+
         $form = $this->createForm(AnalyticsForm::class, $config);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dm->flush();
+        }
+
         return [
             'config' => $config,
             'form' => $form->createView(),
