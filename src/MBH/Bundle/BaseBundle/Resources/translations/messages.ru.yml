@@ -611,6 +611,9 @@ currency.uah.small: коп.
 currency.kzt.text: тенге
 currency.uzs.text: 'узбек'
 currency.kzt.small: тиын
+currency.uzs.text: сум.
+currency.uzs.small: тийин
+
 mbh.weekdays.sun: Воскресенье
 mbh.weekdays.mon: Понедельник
 mbh.weekdays.tue: Вторник
