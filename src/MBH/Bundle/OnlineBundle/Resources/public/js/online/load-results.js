@@ -54,6 +54,17 @@ addLoadEvent(function() {
         <!-- /Yandex.Metrika counter -->
     }
 
+    var useGoogleMetrics = typeof googleCounterId !== 'undefined';
+    if (useGoogleMetrics) {
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', googleCounterId, 'auto');
+        ga('send', 'pageview');
+    }
+
     var resultsWrapper = document.getElementById('mbh-results-wrapper');
     if (!resultsWrapper) {
         return;
@@ -79,6 +90,9 @@ addLoadEvent(function() {
             var purposeType = e.data.purpose;
             if (useYaMetrics) {
                 window[yaCounterObjName].reachGoal(purposeType);
+            }
+            if (useGoogleMetrics) {
+                ga('send', 'pageview', purposeType);
             }
         }
     };
