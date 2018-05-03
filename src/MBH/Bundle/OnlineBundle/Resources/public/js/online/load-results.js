@@ -18,14 +18,13 @@ function addLoadEvent(func) {
     }
 }
 addLoadEvent(function() {
-    <!-- Yandex.Metrika counter -->
-    console.log(yaCounterId);
     var yaCounterObjName = 'yaCounter' + yaCounterId;
+    <!-- Yandex.Metrika counter -->
     (function (d, w, c) {
         (w[c] = w[c] || []).push(function() {
             try {
                 w[yaCounterObjName] = new Ya.Metrika({
-                    id: counterId,
+                    id: yaCounterId,
                     clickmap:true,
                     trackLinks:true,
                     accurateTrackBounce:true,
@@ -67,10 +66,18 @@ addLoadEvent(function() {
             resultsIframe.style.height =  e.data.height > 300 ? e.data.height + 'px' : '300px';
         }
     };
+    var processMetricMessage = function (e) {
+        if (e.data.type === 'form-event') {
+            var purposeType = e.data.purpose;
+            window[yaCounterObjName].reachGoal(purposeType);
+        }
+    };
     if (window.addEventListener) {
 	      window.addEventListener("message", processMessage, false);
+        window.addEventListener("message", processMetricMessage, false);
     } else {
 	      window.attachEvent("onmessage", processMessage);
+        window.attachEvent("onmessage", processMetricMessage);
     }
     window.onscroll = function () {
         var frameTopOffset = resultsIframe.getBoundingClientRect().top;
