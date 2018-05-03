@@ -4,12 +4,15 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Image;
+use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use MBH\Bundle\HotelBundle\Form\HotelImageType;
 use MBH\Bundle\HotelBundle\Form\HotelType;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -451,6 +454,18 @@ class HotelController extends Controller
      */
     public function deleteAction($id)
     {
+        $hotel = $this->dm->find('MBHHotelBundle:Hotel', $id);
+        $relatedDocumentsData = $this->helper->getRelatedDocuments($hotel);
+        foreach ($relatedDocumentsData as $relatedDocumentData) {
+            /** @var Relationship $relationship */
+            $relationship = $relatedDocumentData['relation'];
+            $quantity = $relatedDocumentData['quantity'];
+            if ($relationship->getDocumentClass() !== Tariff::class && $quantity > 0) {
+                $message = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
+                throw new DeleteException($message, $quantity);
+            }
+        }
+
         $hotelMainTariff = $this->dm
             ->getRepository('MBHPriceBundle:Tariff')
             ->findOneBy(['isDefault' => true, 'hotel.id' => $id]);
