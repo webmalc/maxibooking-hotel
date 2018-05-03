@@ -12,6 +12,7 @@ form.clientConfigType.currency.options.rub: Рубли
 form.clientConfigType.currency.options.eur: Евро
 form.clientConfigType.currency.options.uah: Гривны
 form.clientConfigType.currency.options.kzt: Тенге
+form.clientConfigType.currency.options.uzs: 'Узбекские сумы'
 form.clientConfigType.currency.options.gel: 'Грузинские лари'
 form.clientConfigType.currency.options.usd: Доллары
 

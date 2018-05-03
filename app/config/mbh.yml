@@ -12,6 +12,7 @@ parameters:
       rub: {text: 'currency.rub.text', small: 'currency.rub.small', icon: 'fa fa-ruble'}
       uah: {text: 'currency.uah.text', small: 'currency.uah.small', icon: 'fa fa-money'}
       kzt: {text: 'currency.kzt.text', small: 'currency.kzt.small', icon: 'fa fa-money'}
+      uzs: {text: 'currency.uzs.text', small: 'currency.uzs.small', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
 
     # ReCaptcha

@@ -79,7 +79,6 @@ class PackageSubscriber implements EventSubscriber
             $dm->persist($entity);
             $dm->flush();
 
-            $this->container->get('mbh.room.cache')->recalculateByPackage($entity);
             $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
         }
 
@@ -102,13 +101,14 @@ class PackageSubscriber implements EventSubscriber
             }
 
             $end = clone $package->getEnd();
-            $this->container->get('mbh.room.cache')->recalculateByPackage($package);
+
             $this->container->get('mbh.room.cache')->recalculate(
                 $package->getBegin(),
                 $end->modify('-1 day'),
                 $package->getRoomType(),
                 $package->getTariff()
             );
+            $this->container->get('mbh.room.cache')->recalculateByPackage($package);
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($package->getBegin(), $package->getEnd());
 
             //corrupted
@@ -184,6 +184,7 @@ class PackageSubscriber implements EventSubscriber
                 $doc->getTariff(),
                 false
             );
+            $this->container->get('mbh.room.cache')->recalculateByPackage($doc);
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
             $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
         }

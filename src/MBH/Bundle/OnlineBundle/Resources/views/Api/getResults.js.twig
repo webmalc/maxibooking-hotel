@@ -95,6 +95,7 @@ jQuery(document).ready(function() {
             crossDomain: true,
             success: function(data) {
                 wrapper.html('{{ styles|escape("js") }}' + data);
+                wrapper.trigger('results-load-event');
                 setSelect2();
                 //show full image
                 // (function() {
