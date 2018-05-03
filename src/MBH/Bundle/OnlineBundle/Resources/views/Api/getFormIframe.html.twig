@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
     {% set isYandexAnalyticEnabled = formConfig and formConfig.yandexAnalyticConfig and formConfig.yandexAnalyticConfig.isEnabled == true %}
     {% if isYandexAnalyticEnabled %}
-        <!-- Yandex.Metrika counter -->
-        <!-- /Yandex.Metrika counter -->
     {% endif %}
     {% if formConfig and formConfig.theme %}
         <link rel="stylesheet" href="{{ formConfig.theme }}">
