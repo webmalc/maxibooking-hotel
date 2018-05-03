@@ -1,5 +1,6 @@
 <?php
 
+namespace Tests\Bundle\SearchBundle\Services;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 
@@ -8,8 +9,8 @@ class AdditionalDatesGeneratorTest extends WebTestCase
 
 
     /**
-     * @param DateTime $begin
-     * @param DateTime $end
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @param int|null $rangeBegin
      * @param int|null $rangeEnd
      * @param int $countExpected
@@ -17,8 +18,8 @@ class AdditionalDatesGeneratorTest extends WebTestCase
      * @dataProvider datesProvider
      */
     public function testGenerate(
-        DateTime $begin,
-        DateTime $end,
+        \DateTime $begin,
+        \DateTime $end,
         ?int $rangeBegin = null,
         ?int $rangeEnd = null,
         int $countExpected,

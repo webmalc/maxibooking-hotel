@@ -1,5 +1,6 @@
 <?php
 
+namespace Tests\Bundle\SearchBundle\Services;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;

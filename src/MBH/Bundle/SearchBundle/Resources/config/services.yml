@@ -18,4 +18,4 @@ services:
 
     mbh_search.restrictions.on_close:
         public: false
-        class: MBH\Bundle\SearchBundle\Lib\Restrictions\OnClose
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\Closed

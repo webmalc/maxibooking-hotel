@@ -6,6 +6,7 @@
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
+      "Tests\\": "tests/",
       "": "src/"
     },
     "classmap": [

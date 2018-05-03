@@ -10,22 +10,24 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 
 abstract class AbstractFieldChecker implements RestrictionsCheckerInterface
 {
+
     public function check(SearchQuery $searchQuery, array $restrictions): void
     {
         $accessor = PropertyAccess::createPropertyAccessor();
-        $key = "[{$this->getCheckedFieldName()}]";
+        $key = "[{$this->getCheckingFieldName()}]";
         foreach ($restrictions as $restriction) {
-            $date = $restriction['date']->toDateTime();
+            $date = $restriction['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()));
             if (null !== $value = $accessor->getValue($restriction, $key)) {
                 $this->doCheck($date, $value, $searchQuery);
             }
         }
+
     }
 
     /** @throws RestrictionsCheckerException */
     abstract protected function doCheck(\DateTime $date, $value, SearchQuery $searchQuery): void;
 
-    abstract protected function getCheckedFieldName(): string;
+    abstract protected function getCheckingFieldName(): string;
 
 
 

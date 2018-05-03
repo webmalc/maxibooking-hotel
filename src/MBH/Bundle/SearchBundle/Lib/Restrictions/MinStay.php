@@ -4,19 +4,18 @@
 namespace MBH\Bundle\SearchBundle\Lib\Restrictions;
 
 
-use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
-class OnArrival extends AbstractFieldChecker
+class MinStay extends AbstractFieldChecker
 {
     protected function doCheck(\DateTime $date, $value, SearchQuery $searchQuery): void
     {
-        $a = 'b';
+        // TODO: Implement doCheck() method.
     }
 
-    protected function getCheckedFieldName(): string
+    protected function getCheckingFieldName(): string
     {
-        return 'closedOnArrival';
+        return 'maxStay';
     }
 
 }

@@ -1,5 +1,6 @@
 <?php
 
+namespace Tests\Bundle\SearchBundle\Services;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -46,8 +47,8 @@ class SearchQueryGeneratorTest extends WebTestCase
 
 
     /**
-     * @param DateTime $dateBegin
-     * @param DateTime $dateEnd
+     * @param \DateTime $dateBegin
+     * @param \DateTime $dateEnd
      * @param int $additionalDays
      * @dataProvider addingDatesProvider
      */
@@ -279,13 +280,12 @@ class SearchQueryGeneratorTest extends WebTestCase
 
     private function getPrivateMethod($className, $methodName)
     {
-        $reflector = new ReflectionClass($className);
+        $reflector = new \ReflectionClass($className);
         $method = $reflector->getMethod($methodName);
         $method->setAccessible(true);
 
         return $method;
     }
-
 
 
     public function combineIdsProvider(): array
@@ -399,7 +399,9 @@ class SearchQueryGeneratorTest extends WebTestCase
 
     private function calculateAdditionalDays(\DateTime $begin, \DateTime $end, $range): int
     {
-        $dates = count($this->getContainer()->get('mbh_search.additional_days_generator')->generate($begin, $end, $range, $range));
+        $dates = count(
+            $this->getContainer()->get('mbh_search.additional_days_generator')->generate($begin, $end, $range, $range)
+        );
 
         return $dates;
     }

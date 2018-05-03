@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\SearchBundle\Tests\Controller;
+namespace Tests\Bundle\SearchBundle\Tests\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;

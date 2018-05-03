@@ -1,14 +1,12 @@
 <?php
 
+namespace Tests\Bundle\SearchBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
-use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
-use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use Symfony\Component\Form\Test\TypeTestCase;
 
 class SearchConditionsTypeTest extends TypeTestCase

@@ -1,16 +1,15 @@
 <?php
 
+namespace Tests\Bundle\SearchBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException;
-use MBH\Bundle\SearchBundle\Lib\Restrictions\OnClose;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\RestrictionsCheckerInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
@@ -91,16 +90,16 @@ class RestrictionsCheckerServiceTest extends WebTestCase
         $service = $this->service;
         $searchQuery = new SearchQuery();
         $searchQuery
-            ->setBegin(new DateTime('01.05.2018'))
-            ->setEnd(new DateTime('3.05.2018'))
+            ->setBegin(new \DateTime('01.05.2018'))
+            ->setEnd(new \DateTime('3.05.2018'))
             ->setTariffId('5ad744393755eb001962adab')
             ->setRoomTypeId('5ad744393755eb001962adc9')
 
         ;
         $conditions = new SearchConditions();
         $conditions
-            ->setBegin(new DateTime('01.05.2018'))
-            ->setEnd(new DateTime('3.05.2018'))
+            ->setBegin(new \DateTime('01.05.2018'))
+            ->setEnd(new \DateTime('3.05.2018'))
             ->setAdditionalBegin(5)
         ;
         $service->setConditions($conditions);
@@ -131,8 +130,8 @@ class RestrictionsCheckerServiceTest extends WebTestCase
         $service->addChecker($checker);
         $conditions = new SearchConditions();
         $conditions
-            ->setBegin(new DateTime('03-05-2018'))
-            ->setEnd(new DateTime('06-05-2018'))
+            ->setBegin(new \DateTime('03-05-2018'))
+            ->setEnd(new \DateTime('06-05-2018'))
             ->setAdults(2)
             ->setChildren(1)
             ->setChildrenAges([7])
@@ -162,15 +161,15 @@ class RestrictionsCheckerServiceTest extends WebTestCase
             '04-05-2018_5ad744393755eb001962adab_5ad744393755eb001962adc9' => [],
         ];
         $service = $this->service;
-        $reflection = new ReflectionClass($service);
+        $reflection = new \ReflectionClass($service);
         $property = $reflection->getProperty('restrictions');
         $property->setAccessible(true);
         $property->setValue($service, $restrictions);
         $method = $this->getPrivateMethod(RestrictionsCheckerService::class, 'getNecessaryRestrictions');
         $searchQuery = new SearchQuery();
         $searchQuery
-            ->setBegin(new DateTime('01.05.2018'))
-            ->setEnd(new DateTime('3.05.2018'))
+            ->setBegin(new \DateTime('01.05.2018'))
+            ->setEnd(new \DateTime('3.05.2018'))
             ->setTariffId('5ad744393755eb001962adab')
             ->setRoomTypeId('5ad744393755eb001962adc9')
 
@@ -187,7 +186,7 @@ class RestrictionsCheckerServiceTest extends WebTestCase
 
     private function getPrivateMethod($className, $methodName)
     {
-        $reflector = new ReflectionClass($className);
+        $reflector = new \ReflectionClass($className);
         $method = $reflector->getMethod($methodName);
         $method->setAccessible(true);
 
@@ -198,7 +197,7 @@ class RestrictionsCheckerServiceTest extends WebTestCase
     {
         $restrictions = [[
             '_id' =>
-                MongoId::__set_state(
+                \MongoId::__set_state(
                     [
                         'objectID' =>
                             new ObjectId('5ad744443755eb001962c458'),
@@ -223,7 +222,7 @@ class RestrictionsCheckerServiceTest extends WebTestCase
                     '$db' => 'template_db_for_test',
                 ],
             'date' =>
-                new MongoDate(1525122000, 0),
+                new \MongoDate(1525122000, 0),
             'minStay' => 3,
             'closedOnArrival' => false,
             'closedOnDeparture' => false,
@@ -232,7 +231,7 @@ class RestrictionsCheckerServiceTest extends WebTestCase
         ],
         array (
             '_id' =>
-                MongoId::__set_state(array(
+                \MongoId::__set_state(array(
                     'objectID' =>
                         new ObjectId('5ad744443755eb001962c513'),
                 )),
@@ -255,7 +254,7 @@ class RestrictionsCheckerServiceTest extends WebTestCase
                     '$db' => 'template_db_for_test',
                 ),
             'date' =>
-                new MongoDate(1525467600, 0),
+                new \MongoDate(1525467600, 0),
             'minStay' => 2,
             'closedOnArrival' => false,
             'closedOnDeparture' => false,
@@ -273,8 +272,8 @@ class RestrictionsCheckerServiceTest extends WebTestCase
         $service = $this->service;
         $conditions = new SearchConditions();
         $conditions
-            ->setBegin(new DateTime('01.05.2018'))
-            ->setEnd(new DateTime('3.05.2018'))
+            ->setBegin(new \DateTime('01.05.2018'))
+            ->setEnd(new \DateTime('3.05.2018'))
             ->setAdditionalBegin(5)
         ;
         $service->setConditions($conditions);
@@ -286,8 +285,8 @@ class RestrictionsCheckerServiceTest extends WebTestCase
     {
         $searchQuery = new SearchQuery();
         $searchQuery
-            ->setBegin(new DateTime('01.05.2018'))
-            ->setEnd(new DateTime('3.05.2018'))
+            ->setBegin(new \DateTime('01.05.2018'))
+            ->setEnd(new \DateTime('3.05.2018'))
             ->setTariffId('5ad744393755eb001962adab')
             ->setRoomTypeId('5ad744393755eb001962adc9')
 
