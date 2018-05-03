@@ -90,7 +90,7 @@ class RoomController extends BaseController
     /**
      * Create room.
      *
-     * @Route("/{id}/room/new/", name="room_create")
+     * @Route("/{id}/new/", name="room_create")
      * @Method("POST")
      * @Security("is_granted('ROLE_ROOM_NEW')")
      * @Template("MBHHotelBundle:Room:new.html.twig")

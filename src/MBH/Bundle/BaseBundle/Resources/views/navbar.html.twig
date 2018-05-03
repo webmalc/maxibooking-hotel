@@ -31,7 +31,7 @@
                                 <li>
                                     <a href="{{ is_granted('ROLE_CASH_EDIT') ? path('cash_edit', {'id': doc.id}) : '#' }}">
                                     <small>
-                                        {{ 'mbhbasebundle.views.doc'|trans }} #{{ doc.number }}, {{ 'mbhbasebundle.views.sum'|trans }}: {{ doc.total|number_format }} {{ currency()['text'] }}<br>
+                                        {{ 'mbhbasebundle.views.doc'|trans }} #{{ doc.number }}, {{ 'mbhbasebundle.views.sum'|trans }}: {{ doc.total|number_format }} {{ currency()['text']|trans }}<br>
                                         {{ doc.payer ? doc.payer.shortName : null }} {{ 'mbhbasebundle.views.not_allow'|trans }}
                                     </small>
                                     </a>
