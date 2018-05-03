@@ -461,8 +461,11 @@ class HotelController extends Controller
             $relationship = $relatedDocumentData['relation'];
             $quantity = $relatedDocumentData['quantity'];
             if ($relationship->getDocumentClass() !== Tariff::class && $quantity > 0) {
-                $message = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
-                throw new DeleteException($message, $quantity);
+                $messageId = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
+                $flashMessage = $this->get('translator')->trans($messageId, ['%total%' =>  $quantity]);
+                $this->addFlash('danger', $flashMessage);
+
+                return $this->redirectToRoute('hotel');
             }
         }
 
