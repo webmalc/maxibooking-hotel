@@ -271,7 +271,7 @@ csv.form.dateEnd: To
 csv.form.guests: Payer
 csv.form.adults: Adults
 csv.form.children: Children
-csv.form.price: Cost
+csv.form.package_price: 'Accommodation cost'
 csv.form.createdAt: 'Added on'
 csv.form.createdBy: 'Added by'
 csv.form.modal_title: 'Document generation'
