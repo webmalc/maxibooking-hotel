@@ -13,6 +13,10 @@ abstract class CommonSerialize
 
     public function __call($name, $arg)
     {
+        if(strpos($name, 'get') !== 0) {
+            $name = 'get' . ucfirst($name);
+        }
+
         return $this->entity->$name();
     }
 
@@ -22,9 +26,6 @@ abstract class CommonSerialize
         $methods = [];
 
         foreach ($self->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
-//            if($method->isConstructor() || $method->isStatic()){
-//                continue;
-//            }
             if ($method->isPublic() && strpos($method->name, 'get') === 0){
                 $methods[] = $method->name;
             }

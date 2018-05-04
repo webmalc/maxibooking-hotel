@@ -3,10 +3,13 @@ namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\ClientBundle\Service\Document\Helper;
 use MBH\Bundle\ClientBundle\Service\Document\HotelSerialize;
 use MBH\Bundle\ClientBundle\Service\Document\MortalSerialize;
 use MBH\Bundle\ClientBundle\Service\Document\OrderSerialize;
 use MBH\Bundle\ClientBundle\Service\Document\OrganizationSerialize;
+use MBH\Bundle\ClientBundle\Service\Document\PackageSerialize;
+use MBH\Bundle\ClientBundle\Service\Document\UserSerialize;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -328,16 +331,7 @@ class Extension extends \Twig_Extension
 
     public function getMethodsForTemplate(): string
     {
-        return json_encode(
-            [
-                'hotel'  => HotelSerialize::methods(),
-                'payer'  => [
-                    'mortal' => MortalSerialize::methods(),
-                    'organ'  => OrganizationSerialize::methods()
-                ],
-                'order' => OrderSerialize::methods(),
-            ]
-        );
+        return json_encode(Helper::methodsOfEntity());
     }
 
     /**

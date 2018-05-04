@@ -14,11 +14,6 @@ class HotelSerialize extends CommonSerialize
 {
     use AddressSerialize;
 
-    /**
-     * @var Hotel
-     */
-    protected $entity;
-
     public function __construct(Hotel $hotel)
     {
         $this->entity = $hotel;
@@ -50,6 +45,14 @@ class HotelSerialize extends CommonSerialize
         return $this->getInternationalStreetName() ?? '';
     }
 
+    public function getLogo(): string
+    {
+        $return = '';
+        if (!empty($this->entity->getLogo())){
+            $return = '<img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, \'imageFile\')|imagine_filter(\'thumb_95x80\'))) }}" alt="Hotel logo" />';
+        }
 
+        return $return;
+    }
 
 }

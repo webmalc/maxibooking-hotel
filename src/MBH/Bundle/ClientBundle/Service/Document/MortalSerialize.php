@@ -8,17 +8,13 @@ namespace MBH\Bundle\ClientBundle\Service\Document;
 
 
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 
 
-class MortalSerialize extends CommonSerialize
+class MortalSerialize extends CommonSerialize implements DataOfMortalInterface
 {
     use AddressSerialize;
-
-    /**
-     * @var Tourist
-     */
-    protected $entity;
-
+    use DataOfMortalSerialize;
 
     public function __construct(Tourist $mortal)
     {
@@ -31,34 +27,9 @@ class MortalSerialize extends CommonSerialize
         return $this->entity->getSex() ?? '';
     }
 
-    public function getFullName(): string
-    {
-        return $this->entity->getFullName() ?? '';
-    }
-
-    public function getLastName(): string
-    {
-        return $this->entity->getLastName() ?? '';
-    }
-
-    public function getFirstName(): string
-    {
-        return $this->entity->getFirstName() ?? '';
-    }
-
-    public function getBirthday(): string
-    {
-        return $this->entity->getBirthday() !== null ? $this->entity->getBirthday()->format('d.m.Y') : '';
-    }
-
     public function getAge(): string
     {
         return $this->entity->getAge() !== null ? $this->entity->getAge() : '';
-    }
-
-    public function getEmail(): string
-    {
-        return $this->entity->getEmail() ?? '';
     }
 
     public function getBirthPlaceCity(): string

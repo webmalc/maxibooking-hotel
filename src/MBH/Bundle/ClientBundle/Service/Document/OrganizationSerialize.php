@@ -13,11 +13,6 @@ class OrganizationSerialize extends CommonSerialize
 {
     use AddressSerialize;
 
-    /**
-     * @var Organization
-     */
-    protected $entity;
-
     public function __construct(Organization $organization)
     {
         $this->entity = $organization;

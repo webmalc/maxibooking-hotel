@@ -98,7 +98,7 @@ trait AddressSerialize
 
     private function returnValue($method): string
     {
-        $temp = explode('::',$method);
+        $temp = explode('::', $method);
         $method = end($temp);
         return $this->address !== null && $this->address->$method() !== null ? $this->address->$method() : '';
     }

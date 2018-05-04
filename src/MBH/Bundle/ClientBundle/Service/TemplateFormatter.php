@@ -6,7 +6,9 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\ClientBundle\Service\Document\HotelSerialize;
 use MBH\Bundle\ClientBundle\Service\Document\OrderSerialize;
-use MBH\Bundle\ClientBundle\Service\Document\Payer;
+use MBH\Bundle\ClientBundle\Service\Document\PackageSerialize;
+use MBH\Bundle\ClientBundle\Service\Document\Helper;
+use MBH\Bundle\ClientBundle\Service\Document\UserSerialize;
 use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -71,30 +73,38 @@ class TemplateFormatter
         $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
         $organization = $doc->getOrganization() ? $doc->getOrganization() : $hotel->getOrganization();
         $params = [
-            'package' => $package,
-            'order' => new OrderSerialize($order),
-            'hotel' => new HotelSerialize($hotel),
-            'payer' => Payer::instance($order->getPayer()),
-            'organization' => $organization,
-            'user' => $user,
-            'arrivalTimeDefault' => $hotel->getPackageArrivalTime(),
+//            'package'              => $package,
+            'package'              => new PackageSerialize($package),
+//            'order'                => $order,
+            'order'                => new OrderSerialize($order),
+            'hotel'                => new HotelSerialize($hotel),
+            'payer'                => Helper::payerInstance($order->getPayer()),
+            'organization'         => $organization,
+            'user'                 => new UserSerialize($user),
+            'arrivalTimeDefault'   => $hotel->getPackageArrivalTime(),
             'departureTimeDefault' => $hotel->getPackageDepartureTime(),
-            'documentTypes' => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes()
+            'documentTypes'        => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes(),
+            'currentDate'          => (new \DateTime())->format('d.m.Y'),
         ];
 
         $params = $this->addCalculatedParams($params, $package);
 
 
-////        dump($params);
+//        dump($params);
+//        dump($package->getAddress());
+//        dump($order->getPackages());
 //        exit;
         $twig = $this->container->get('twig');
         $renderedTemplate = $twig->createTemplate($doc->getContent())->render($params);
 
-        return  $this->container->get('knp_snappy.pdf')
+        echo $renderedTemplate;
+        exit;
+
+        return $this->container->get('knp_snappy.pdf')
             ->getOutputFromHtml(
                 $renderedTemplate, [
-                    'orientation' => $doc->getOrientation(),
-                ]
+                                     'orientation' => $doc->getOrientation(),
+                                 ]
             );
     }
 
