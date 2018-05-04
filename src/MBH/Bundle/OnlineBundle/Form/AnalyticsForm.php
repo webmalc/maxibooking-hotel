@@ -22,13 +22,15 @@ class AnalyticsForm extends AbstractType
                     'class' => 'box-full-visibility-checkbox',
                 ],
                 'label' => 'analytics_form.is_enabled.label',
-                'data' => false
             ])
             ->add('googleAnalyticConfigId', TextType::class, [
                 'property_path' => 'googleAnalyticConfig.id',
                 'required' => false,
                 'group' => 'Google',
-                'label' => 'analytics_form.id.label'
+                'label' => 'analytics_form.google_id.label',
+                'attr' => [
+                    'placeholder' => 'UA-XXXXXXXXX-Y'
+                ]
             ])
             ->add('yandexAnalyticConfigIsEnabled', CheckboxType::class, [
                 'property_path' => 'yandexAnalyticConfig.isEnabled',
@@ -43,7 +45,7 @@ class AnalyticsForm extends AbstractType
                 'property_path' => 'yandexAnalyticConfig.id',
                 'required' => false,
                 'group' => 'Yandex',
-                'label' => 'analytics_form.id.label'
+                'label' => 'analytics_form.yandex_id.label'
             ]);
     }
 
