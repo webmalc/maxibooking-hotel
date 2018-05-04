@@ -32,12 +32,10 @@ jQuery(document).ready(function() {
 
     var $mbhForm = $("#mbh-form");
     $mbhForm.on('submit', function(e) {
-        if (typeof yaCounterObjName !== 'undefined') {
-            window.parent.postMessage({
-                type: 'form-event',
-                purpose: 'search'
-            }, "*");
-        }
+        window.parent.postMessage({
+            type: 'form-event',
+            purpose: 'search'
+        }, "*");
         window.sessionStorage.setItem('MBHSearchData',$(this).serialize());
     })
 
