@@ -173,7 +173,7 @@ addLoadEvent(function () {
                 window[yaCounterObjName].reachGoal(purposeType);
             }
             if (useGoogleMetrics) {
-                ga('send', 'event', purposeType);
+                ga('send', 'event', purposeType, 'click');
             }
         }
     };
