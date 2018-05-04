@@ -684,7 +684,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @param Package $package
      * @param PackageService $service
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws \Doctrine\ODM\MongoDB\LockException
      *
      */
     public function serviceEditAction(Request $request, Package $package, PackageService $service)

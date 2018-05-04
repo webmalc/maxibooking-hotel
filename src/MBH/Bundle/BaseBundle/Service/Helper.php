@@ -674,4 +674,14 @@ class Helper
     {
         return in_array($traitName, class_uses(get_class($document)));
     }
+
+    /**
+     * @param $haystack
+     * @param $needle
+     * @return bool
+     */
+    public function startsWith($haystack, $needle)
+    {
+        return substr($haystack, 0, strlen($needle)) === $needle;
+    }
 }

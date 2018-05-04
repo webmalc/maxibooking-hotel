@@ -16,6 +16,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -264,6 +265,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+            /** @var BookingConfig $config */
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
@@ -282,7 +284,9 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 $roomTypeId = $this->getRoomTypeArray($roomTypeInfo['doc'])[0];
+                $bookingRoom = $config->getRoomById($roomTypeInfo['syncId']);
 
+                /** @var \DateTime $day */
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariff) {
                         /** @var Tariff $tariffDocument */
@@ -303,13 +307,13 @@ class Booking extends Base implements ChannelManagerServiceInterface
                         }
 
                         if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
+                            /** @var PriceCache $info */
                             $info = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $this->currencyConvertFromRub($config, $info->getPrice()),
-                                'price1' => $info->getSinglePrice() ? $this->currencyConvertFromRub(
-                                    $config,
-                                    $info->getSinglePrice()
-                                ) : null,
+                                'price1' => $info->getSinglePrice() && $bookingRoom->isUploadSinglePrices()
+                                    ? $this->currencyConvertFromRub($config, $info->getSinglePrice())
+                                    : null,
                                 'closed' => false
                             ];
                         } else {
