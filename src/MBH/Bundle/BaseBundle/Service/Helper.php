@@ -714,4 +714,14 @@ class Helper
 
         return $relatedDocumentsData;
     }
+
+    /**
+     * @param $haystack
+     * @param $needle
+     * @return bool
+     */
+    public function startsWith($haystack, $needle)
+    {
+        return substr($haystack, 0, strlen($needle)) === $needle;
+    }
 }
