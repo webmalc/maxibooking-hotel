@@ -34,7 +34,7 @@ class HotelContactInformationType extends AbstractType
                 'group' => 'form.hotelExtendedType.address',
                 'required' => true,
                 'attr' => [
-                    'class' => 'citySelect',
+                    'class' => 'citySelect  billing-city',
                     'placeholder' => 'form.hotelExtendedType.city',
                 ],
                 'help' => $cityHelp
