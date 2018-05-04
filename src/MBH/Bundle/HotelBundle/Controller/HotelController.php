@@ -4,12 +4,16 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Image;
+use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use MBH\Bundle\HotelBundle\Form\HotelImageType;
 use MBH\Bundle\HotelBundle\Form\HotelType;
+use MBH\Bundle\PriceBundle\Document\Service;
+use MBH\Bundle\PriceBundle\Document\ServiceCategory;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -61,10 +65,13 @@ class HotelController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_HOTEL_VIEW')")
      * @Template()
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder()
+        $entities = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->createQueryBuilder()
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
@@ -451,11 +458,37 @@ class HotelController extends Controller
      */
     public function deleteAction($id)
     {
+        $hotel = $this->dm->find('MBHHotelBundle:Hotel', $id);
+        $relatedDocumentsData = $this->helper->getRelatedDocuments($hotel);
+        foreach ($relatedDocumentsData as $relatedDocumentData) {
+            /** @var Relationship $relationship */
+            $relationship = $relatedDocumentData['relation'];
+            $quantity = $relatedDocumentData['quantity'];
+            if (!in_array($relationship->getDocumentClass(), [Tariff::class, ServiceCategory::class, Service::class]) && $quantity > 0) {
+                $messageId = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
+                $flashMessage = $this->get('translator')->trans($messageId, ['%total%' =>  $quantity]);
+                $this->addFlash('danger', $flashMessage);
+
+                return $this->redirectToRoute('hotel');
+            }
+        }
+
         $hotelMainTariff = $this->dm
             ->getRepository('MBHPriceBundle:Tariff')
             ->findOneBy(['isDefault' => true, 'hotel.id' => $id]);
 
         $this->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
+
+        foreach ($hotel->getServices() as $service) {
+            $this->dm->remove($service);
+        }
+        $this->dm->flush();
+
+        foreach ($hotel->getServicesCategories() as $serviceCategory) {
+            $this->dm->remove($serviceCategory);
+        }
+        $this->dm->flush();
+
         $response = $this->deleteEntity($id, 'MBHHotelBundle:Hotel', 'hotel');
 
         return $response;
