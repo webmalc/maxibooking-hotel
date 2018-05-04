@@ -77,7 +77,7 @@ class City implements BillingClientRelatedInterface, BillingEnablableInterface, 
      * @param string $full_name
      * @return City
      */
-    public function setFullName(string $full_name): City
+    public function setFullName(?string $full_name): City
     {
         $this->full_name = $full_name;
 
@@ -96,7 +96,7 @@ class City implements BillingClientRelatedInterface, BillingEnablableInterface, 
      * @param string $alternate_names
      * @return City
      */
-    public function setAlternateNames(string $alternate_names): City
+    public function setAlternateNames(?string $alternate_names): City
     {
         $this->alternate_names = $alternate_names;
 
@@ -115,7 +115,7 @@ class City implements BillingClientRelatedInterface, BillingEnablableInterface, 
      * @param string $latitude
      * @return City
      */
-    public function setLatitude(string $latitude): City
+    public function setLatitude(?string $latitude): City
     {
         $this->latitude = $latitude;
 
@@ -134,7 +134,7 @@ class City implements BillingClientRelatedInterface, BillingEnablableInterface, 
      * @param string $longitude
      * @return City
      */
-    public function setLongitude(string $longitude): City
+    public function setLongitude(?string $longitude): City
     {
         $this->longitude = $longitude;
 
@@ -153,7 +153,7 @@ class City implements BillingClientRelatedInterface, BillingEnablableInterface, 
      * @param string $population
      * @return City
      */
-    public function setPopulation(string $population): City
+    public function setPopulation(?string $population): City
     {
         $this->population = $population;
 

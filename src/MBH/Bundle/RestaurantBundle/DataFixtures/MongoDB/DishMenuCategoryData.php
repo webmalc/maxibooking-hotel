@@ -9,8 +9,8 @@
 namespace MBH\Bundle\RestaurantBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -19,7 +19,7 @@ class DishMenuCategoryData extends AbstractFixture implements OrderedFixtureInte
 {
     use ContainerAwareTrait;
 
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
@@ -60,4 +60,11 @@ class DishMenuCategoryData extends AbstractFixture implements OrderedFixtureInte
         return 9995;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    protected function getEnvs(): array
+    {
+        return ['test', 'dev', 'sandbox'];
+    }
 }
