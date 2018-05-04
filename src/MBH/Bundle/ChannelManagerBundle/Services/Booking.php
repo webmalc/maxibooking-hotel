@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface;
@@ -311,7 +312,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
                             $info = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $this->currencyConvertFromRub($config, $info->getPrice()),
-                                'price1' => $info->getSinglePrice() && $bookingRoom->isUploadSinglePrices()
+                                'price1' => $info->getSinglePrice() && (!($bookingRoom instanceOf BookingRoom) || $bookingRoom->isUploadSinglePrices())
                                     ? $this->currencyConvertFromRub($config, $info->getSinglePrice())
                                     : null,
                                 'closed' => false

@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Form\AbstractType;
@@ -39,7 +40,7 @@ class BookingRoomsType extends AbstractType
                     'group' => $groupName,
                     'label' => 'booking_rooms_type.single_prices.label',
                     'required' => false,
-                    'data' => $bookingRoom ? $bookingRoom->isUploadSinglePrices() : true,
+                    'data' => $bookingRoom instanceOf BookingRoom ? $bookingRoom->isUploadSinglePrices() : true,
                     'help' => 'booking_rooms_type.single_prices.help'
                 ])
                 ->add(self::ROOM_TYPE_FIELD_PREFIX . $roomId, DocumentType::class, [
