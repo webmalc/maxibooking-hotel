@@ -68,6 +68,24 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         return $qb->hydrate(false)->getQuery()->toArray();
     }
 
+    public function fetchRawWithCategory(array $categoryIds, array $hotelIds): array
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $qb = $this->createQueryBuilder();
+
+        // hotel
+        if (\is_array($hotelIds) && !empty($hotelIds)) {
+            $qb->field('hotel.id')->in($hotelIds);
+        }
+        // roomTypes
+        if (!empty($categoryIds) && \is_array($categoryIds)) {
+            $qb->field('types.$id')->in($categoryIds);
+        }
+        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
+
+        return $qb->hydrate(false)->getQuery()->toArray();
+    }
+
     /**
      * @param array $roomTypeIds
      * @param array|null $hotelIds

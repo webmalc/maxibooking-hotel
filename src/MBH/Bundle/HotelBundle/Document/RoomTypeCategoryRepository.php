@@ -15,7 +15,7 @@ class RoomTypeCategoryRepository extends DocumentRepository implements RoomTypeR
     public function fetchQueryBuilder(Hotel $hotel = null, $roomTypesCats = null)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
 
         // hotel
         if ($hotel) {
@@ -40,5 +40,6 @@ class RoomTypeCategoryRepository extends DocumentRepository implements RoomTypeR
     {
         return $this->fetchQueryBuilder($hotel, $roomTypesCats)->getQuery()->execute();
     }
+
 
 }

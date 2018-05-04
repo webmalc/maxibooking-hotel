@@ -35,22 +35,27 @@ class SearchController extends Controller
         $result = new ExpectedResult();
         try {
             $data = json_decode($request->getContent(), true);
+
             $searchRequestReceiver = $this->get('mbh_search.search_request_receiver');
-            $conditions = $searchRequestReceiver->handleData($data);
             $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
-            $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
             $restrictionChecker = $this->get('mbh_search.restrictions_checker_service');
+
+            $conditions = $searchRequestReceiver->handleData($data);
+            $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
             $restrictionChecker->setConditions($conditions);
+
             if (self::PRE_RESTRICTION_CHECK) {
                 $searchQueries = array_filter($searchQueries, [$restrictionChecker, 'check']);
             }
 
-//            $result
-//                ->setOkStatus()
-//                ->setExpectedResults($searchQueryGenerator->getQueuesNum())
-//                ->setQueryHash(
-//                    $searchQueryGenerator->getSearchQueryHash()
-//                );
+
+
+            $result
+                ->setOkStatus()
+                ->setExpectedResults($searchQueryGenerator->getQueuesNum())
+                ->setQueryHash(
+                    $searchQueryGenerator->getSearchQueryHash()
+                );
         } catch (SearchException $e) {
             $result->setErrorStatus()->setErrorMessage($e->getMessage());
         }

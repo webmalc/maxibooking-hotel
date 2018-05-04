@@ -41,6 +41,12 @@ class SearchQuery
      */
     private $childrenAges;
 
+    /** @var int  */
+    private $childAge;
+
+    /** @var int  */
+    private $infantAge;
+
     /** @var SearchConditions */
     private $searchCondition;
 
@@ -92,7 +98,7 @@ class SearchQuery
     /**
      * @return string
      */
-    public function getTariffId(): string
+    public function getTariffId(): ?string
     {
         return $this->tariffId;
     }
@@ -232,20 +238,82 @@ class SearchQuery
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getChildAge(): int
+    {
+        return $this->childAge;
+    }
+
+    /**
+     * @param int $childAge
+     * @return SearchQuery
+     */
+    public function setChildAge(int $childAge): SearchQuery
+    {
+        $this->childAge = $childAge;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInfantAge(): int
+    {
+        return $this->infantAge;
+    }
+
+    /**
+     * @param int $infantAge
+     * @return SearchQuery
+     */
+    public function setInfantAge(int $infantAge): SearchQuery
+    {
+        $this->infantAge = $infantAge;
+
+        return $this;
+    }
+
+    public function getTotalPlaces()
+    {
+        return $this->adults + $this->infantSeparate();
+    }
+
+    private function infantSeparate(): int
+    {
+        $actualAges =  array_filter(
+            $this->childrenAges,
+            function ($age) {
+                return $age > $this->infantAge;
+            }
+        );
+
+        return \count($actualAges);
+    }
+
+
+
+
+
 
 public static function createInstance(SearchQueryHelper $queryHelper, SearchConditions $conditions): SearchQuery
     {
         $searchQuery = new static();
 
+
         $searchQuery
-            ->setSearchCondition($conditions)
             ->setBegin($queryHelper->getBegin())
             ->setEnd($queryHelper->getEnd())
-            ->setAdults($conditions->getAdults())
-            ->setChildren($conditions->getChildren())
             ->setTariffId($queryHelper->getTariffId())
             ->setRoomTypeId($queryHelper->getRoomTypeId())
+            ->setChildAge($queryHelper->getChildAge())
+            ->setInfantAge($queryHelper->getInfantAge())
+            ->setSearchCondition($conditions)
             ->setIgnoreRestrictions($conditions->isIgnoreRestrictoins())
+            ->setChildren($conditions->getChildren())
+            ->setAdults($conditions->getAdults())
         ;
 
         return $searchQuery;

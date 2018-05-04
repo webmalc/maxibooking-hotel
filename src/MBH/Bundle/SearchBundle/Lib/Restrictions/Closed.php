@@ -9,17 +9,17 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class Closed extends AbstractFieldChecker
 {
-    protected function getCheckingFieldName(): string
-    {
-        return 'closed';
-    }
-
     protected function doCheck(\DateTime $date, $value, SearchQuery $searchQuery): void
     {
         if ($value) {
             throw new RestrictionsCheckerException('Room closed in '. $date->format('d-m-Y') );
         }
 
+    }
+
+    protected function getCheckingFieldName(): string
+    {
+        return 'closed';
     }
 
 

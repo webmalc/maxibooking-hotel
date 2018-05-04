@@ -97,33 +97,31 @@ class SearchQueryGeneratorTest extends WebTestCase
         $tariff = $this->dm->getRepository(Tariff::class)->findOneBy([]);
 
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
-        $actual = $method->invokeArgs($generator, [new ArrayCollection([$tariff]), [], true]);
-
-        $expected = [
-            $tariff->getHotel()->getId() => [
-                $tariff->getId(),
-            ],
-        ];
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffs');
+        $rawTariffIds = Helper::toIds(new ArrayCollection([$tariff]));
+        $actual = $method->invokeArgs($generator, [$rawTariffIds, [], true]);
 
         $this->assertNotEmpty($actual, 'Result is empty!');
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals($tariff->getId(), $actual[$tariff->getHotel()->getId()][0]['id']);
+        $this->assertArrayHasKey('rawTariff', $actual[$tariff->getHotel()->getId()][0]);
+        $this->assertEquals($tariff->getId(), (string)$actual[$tariff->getHotel()->getId()][0]['rawTariff']['_id']);
     }
 
     public function testGetTariffIdsNoTariffNoHotel(): void
     {
         $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
-        $actual = $method->invokeArgs($generator, [new ArrayCollection(), [], false]);
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffs');
+        $rawTariffIds = Helper::toIds(new ArrayCollection());
+        $actual = $method->invokeArgs($generator, [$rawTariffIds, [], false]);
 
         $expected = [];
         foreach ($tariffs as $tariff) {
-            $expected[$tariff->getHotel()->getId()][] = $tariff->getId();
+            $expected[$tariff->getHotel()->getId()][] = [];
         }
 
         $this->assertNotEmpty($actual, 'Result is empty!');
-        $this->assertEquals($expected, $actual);
+        $this->assertSameSize($expected, $actual);
     }
 
     public function testGetTariffIdsOneTariffOneHotel(): void
@@ -134,18 +132,20 @@ class SearchQueryGeneratorTest extends WebTestCase
             1
         )->getQuery()->execute()->toArray();
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffs');
+        $rawTariffIds = Helper::toIds(new ArrayCollection([$tariff]));
         $actual = $method->invokeArgs(
             $generator,
-            [new ArrayCollection([$tariff]), [array_values($strangerHotel)], false]
+            [$rawTariffIds, [array_values($strangerHotel)], false]
         );
-        $expected = [
-            $tariff->getHotel()->getId() => [
-                $tariff->getId(),
-            ],
-        ];
+
         $this->assertNotEmpty($actual, 'Result is empty!');
-        $this->assertEquals($expected, $actual);
+        $this->assertCount(1, $actual);
+        $this->assertCount(1, $actual[$tariff->getHotel()->getId()]);
+        $this->assertArrayHasKey('id', $actual[$tariff->getHotel()->getId()][0]);
+        $this->assertArrayHasKey('rawTariff', $actual[$tariff->getHotel()->getId()][0]);
+        $this->assertEquals($tariff->getId(), (string)$actual[$tariff->getHotel()->getId()][0]['rawTariff']['_id']);
+
 
     }
 
@@ -155,15 +155,13 @@ class SearchQueryGeneratorTest extends WebTestCase
         $tariffs = $this->dm->createQueryBuilder(Tariff::class)->field('hotel.id')->equals($hotel->getId())->getQuery(
         )->execute()->toArray();
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffIds');
-        $actual = $method->invokeArgs($generator, [new ArrayCollection([]), [$hotel->getId()], false]);
-
-        foreach ($tariffs as $tariff) {
-            $expected[$hotel->getId()][] = $tariff->getId();
-        }
+        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffs');
+        $rawTariffIds = Helper::toIds(new ArrayCollection());
+        $actual = $method->invokeArgs($generator, [$rawTariffIds, [$hotel->getId()], false]);
 
         $this->assertNotEmpty($actual, 'Result is empty!');
-        $this->assertEquals($expected, $actual);
+        $this->assertCount(1, $actual);
+        $this->assertCount(count($tariffs), $actual[$hotel->getId()]);
     }
 
 
@@ -172,7 +170,8 @@ class SearchQueryGeneratorTest extends WebTestCase
         $roomType = $this->dm->getRepository(RoomType::class)->findOneBy([]);
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
-        $actual = $method->invokeArgs($generator, [new ArrayCollection([$roomType]), []]);
+        $roomTypeIds = Helper::toIds(new ArrayCollection([$roomType]));
+        $actual = $method->invokeArgs($generator, [$roomTypeIds, []]);
         $expected = [
             $roomType->getHotel()->getId() => [
                 $roomType->getId(),
@@ -190,9 +189,11 @@ class SearchQueryGeneratorTest extends WebTestCase
             $roomType->getHotel()->getId()
         )->getQuery()->execute()->toArray();
         $hotelIds = Helper::toIds($hotel);
+        $roomTypeIds = Helper::toIds(new ArrayCollection([$roomType]));
+
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
-        $actual = $method->invokeArgs($generator, [new ArrayCollection([$roomType]), [$hotelIds]]);
+        $actual = $method->invokeArgs($generator, [$roomTypeIds, [$hotelIds]]);
         $expected = [
             $roomType->getHotel()->getId() => [
                 $roomType->getId(),
@@ -207,7 +208,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
-        $actual = $method->invokeArgs($generator, [new ArrayCollection(), []]);
+        $actual = $method->invokeArgs($generator, [[], []]);
         $expected = [];
         foreach ($roomTypes as $roomType) {
             $expected[$roomType->getHotel()->getId()][] = $roomType->getId();
@@ -225,7 +226,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         )->getQuery()->execute()->toArray();
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
-        $actual = $method->invokeArgs($generator, [new ArrayCollection(), [$hotel->getId()]]);
+        $actual = $method->invokeArgs($generator, [[], [$hotel->getId()]]);
         $expected = [];
         foreach ($roomTypes as $roomType) {
             $expected[$hotel->getId()][] = $roomType->getId();
@@ -243,7 +244,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         )->execute()->toArray();
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
-        $actual = $method->invokeArgs($generator, [new ArrayCollection(), $hotelsIds]);
+        $actual = $method->invokeArgs($generator, [[], $hotelsIds]);
         $expected = [];
         foreach ($roomTypes as $roomType) {
             $expected[$roomType->getHotel()->getId()][] = $roomType->getId();
@@ -261,8 +262,6 @@ class SearchQueryGeneratorTest extends WebTestCase
         $generator = $this->getContainer()->get('mbh_search.search_query_generator');
         $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'combineTariffWithRoomType');
         $actual = $method->invokeArgs($generator, [$roomTypeIds, $tariffIds]);
-
-
         $this->assertArraySimilar($expected, $actual);
     }
 
@@ -307,24 +306,25 @@ class SearchQueryGeneratorTest extends WebTestCase
                 'tariffids' => [
                     'hotelOne' =>
                         [
-                            'tariffHotel1Id1',
-                            'tariffHotel1Id2',
+                            ['id' => 'tariffHotel1Id1', 'rawTariff' => ['_id' => 'tariffHotel1Id1']],
+                            ['id' => 'tariffHotel1Id2', 'rawTariff' => ['_id' => 'tariffHotel1Id2']],
+
                         ],
                     'hotelTwo' =>
                         [
-                            'tariffHotel2Id1',
-                            'tariffHotel2Id2',
+                            ['id' => 'tariffHotel2Id1', 'rawTariff' => ['_id' => 'tariffHotel2Id1']],
+                            ['id' => 'tariffHotel2Id2', 'rawTariff' => ['_id' => 'tariffHotel2Id2']],
                         ],
                 ],
                 'expected' => [
-                    ['roomType' => 'roomTypeHotel1Id1', 'tariff' => 'tariffHotel1Id1'],
-                    ['roomType' => 'roomTypeHotel1Id1', 'tariff' => 'tariffHotel1Id2'],
-                    ['roomType' => 'roomTypeHotel1Id2', 'tariff' => 'tariffHotel1Id1'],
-                    ['roomType' => 'roomTypeHotel1Id2', 'tariff' => 'tariffHotel1Id2'],
-                    ['roomType' => 'roomTypeHotel2Id1', 'tariff' => 'tariffHotel2Id1'],
-                    ['roomType' => 'roomTypeHotel2Id1', 'tariff' => 'tariffHotel2Id2'],
-                    ['roomType' => 'roomTypeHotel2Id2', 'tariff' => 'tariffHotel2Id1'],
-                    ['roomType' => 'roomTypeHotel2Id2', 'tariff' => 'tariffHotel2Id2'],
+                    ['roomTypeId' => 'roomTypeHotel1Id1', 'tariffId' => 'tariffHotel1Id1', 'tariff' => ['_id' => 'tariffHotel1Id1']],
+                    ['roomTypeId' => 'roomTypeHotel1Id1', 'tariffId' => 'tariffHotel1Id2', 'tariff' => ['_id' => 'tariffHotel1Id2']],
+                    ['roomTypeId' => 'roomTypeHotel1Id2', 'tariffId' => 'tariffHotel1Id1', 'tariff' => ['_id' => 'tariffHotel1Id1']],
+                    ['roomTypeId' => 'roomTypeHotel1Id2', 'tariffId' => 'tariffHotel1Id2', 'tariff' => ['_id' => 'tariffHotel1Id2']],
+                    ['roomTypeId' => 'roomTypeHotel2Id1', 'tariffId' => 'tariffHotel2Id1', 'tariff' => ['_id' => 'tariffHotel2Id1']],
+                    ['roomTypeId' => 'roomTypeHotel2Id1', 'tariffId' => 'tariffHotel2Id2', 'tariff' => ['_id' => 'tariffHotel2Id2']],
+                    ['roomTypeId' => 'roomTypeHotel2Id2', 'tariffId' => 'tariffHotel2Id1', 'tariff' => ['_id' => 'tariffHotel2Id1']],
+                    ['roomTypeId' => 'roomTypeHotel2Id2', 'tariffId' => 'tariffHotel2Id2', 'tariff' => ['_id' => 'tariffHotel2Id2']],
                 ],
             ],
         ];

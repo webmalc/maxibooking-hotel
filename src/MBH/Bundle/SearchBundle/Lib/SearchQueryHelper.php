@@ -34,6 +34,11 @@ class SearchQueryHelper
      */
     private $roomTypeId;
 
+    /** @var int */
+    private $childAge;
+    /** @var int */
+    private $infantAge;
+
     /**
      * @return \DateTime
      */
@@ -110,14 +115,57 @@ class SearchQueryHelper
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getChildAge(): int
+    {
+        return $this->childAge;
+    }
+
+    /**
+     * @param int $childAge
+     * @return SearchQueryHelper
+     */
+    public function setChildAge(int $childAge): SearchQueryHelper
+    {
+        $this->childAge = $childAge;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInfantAge(): int
+    {
+        return $this->infantAge;
+    }
+
+    /**
+     * @param int $infantAge
+     * @return SearchQueryHelper
+     */
+    public function setInfantAge(int $infantAge): SearchQueryHelper
+    {
+        $this->infantAge = $infantAge;
+
+        return $this;
+    }
+
+
+
     public static function createInstance(array $dates, array $tariffRoomType)
     {
         $helper = new static();
         $helper
             ->setBegin($dates['begin'])
             ->setEnd($dates['end'])
-            ->setTariffId($tariffRoomType['tariff'])
-            ->setRoomTypeId($tariffRoomType['roomType']);
+            ->setTariffId($tariffRoomType['tariffId'])
+            ->setRoomTypeId($tariffRoomType['roomTypeId'])
+            ->setChildAge($tariffRoomType['tariff']['childAge'])
+            ->setInfantAge($tariffRoomType['tariff']['infantAge'])
+        ;
 
         return $helper;
     }

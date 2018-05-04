@@ -42,7 +42,7 @@ class RestrictionsCheckerServiceTest extends WebTestCase
         /** @var SearchQuery $searchQuery */
         $actual = $service->check($searchQuery);
 
-        $this->assertTrue($actual);
+        $this->assertArraySimilar([], $actual);
         $this->assertTrue($searchQuery->isRestrictionsWhereChecked());
 
     }
@@ -53,23 +53,14 @@ class RestrictionsCheckerServiceTest extends WebTestCase
         $searchQuery = $this->getDummySearchQuery();
 
         $checker = $this->createMock(RestrictionsCheckerInterface::class);
-        $checker->expects($this->once())->method('check')->willThrowException(new RestrictionsCheckerException());
+        $checker->expects($this->once())->method('check')->willThrowException(new RestrictionsCheckerException('Check Failed'));
         $service->addChecker($checker);
 
         /** @var SearchQuery $searchQuery*/
         $actual = $service->check($searchQuery);
 
-        $this->assertFalse($actual);
-        $this->assertFalse($searchQuery->isRestrictionsWhereChecked());
-    }
-
-    public function testCheckFunctional()
-    {
-        $service = $this->getDummyService();
-        $searchQuery = $this->getDummySearchQuery();
-
-        $actual = $service->check($searchQuery);
-        $this->assertTrue($actual);
+        $this->assertArraySubset([0 => 'Check Failed'], $actual);
+        $this->assertTrue($searchQuery->isRestrictionsWhereChecked());
     }
 
     /** Тест переделать! Там получается что исключение на все ошибки! */
@@ -289,7 +280,6 @@ class RestrictionsCheckerServiceTest extends WebTestCase
             ->setEnd(new \DateTime('3.05.2018'))
             ->setTariffId('5ad744393755eb001962adab')
             ->setRoomTypeId('5ad744393755eb001962adc9')
-
         ;
 
         return $searchQuery;

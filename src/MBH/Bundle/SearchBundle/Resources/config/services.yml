@@ -1,7 +1,7 @@
 services:
     mbh_search.search_query_generator:
         class: MBH\Bundle\SearchBundle\Services\SearchQueryGenerator
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh_search.additional_days_generator']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh_search.additional_days_generator', '@mbh_search.room_type_fetcher']
 
     mbh_search.search_request_receiver:
         class: MBH\Bundle\SearchBundle\Services\SearchRequestReceiver
@@ -14,8 +14,73 @@ services:
         class: MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService
         calls:
             - [addChecker, ['@mbh_search.restrictions.on_close']]
+            - [addChecker, ['@mbh_search.restrictions.on_close_arrival']]
+            - [addChecker, ['@mbh_search.restrictions.on_close_departure']]
+            - [addChecker, ['@mbh_search.restrictions.on_max_before_arrival']]
+            - [addChecker, ['@mbh_search.restrictions.on_max_guest']]
+            - [addChecker, ['@mbh_search.restrictions.on_max_stay']]
+            - [addChecker, ['@mbh_search.restrictions.on_max_stay_arrival']]
+            - [addChecker, ['@mbh_search.restrictions.on_min_before_arrival']]
+            - [addChecker, ['@mbh_search.restrictions.on_min_guest']]
+            - [addChecker, ['@mbh_search.restrictions.on_min_stay']]
+            - [addChecker, ['@mbh_search.restrictions.on_min_stay_arrival']]
+
         arguments: ['@doctrine.odm.mongodb.document_manager']
 
     mbh_search.restrictions.on_close:
         public: false
         class: MBH\Bundle\SearchBundle\Lib\Restrictions\Closed
+
+    mbh_search.restrictions.on_close_arrival:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\ClosedOnArrival
+
+    mbh_search.restrictions.on_close_departure:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\ClosedOnDeparture
+
+    mbh_search.restrictions.on_max_before_arrival:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\MaxBeforeArrival
+
+    mbh_search.restrictions.on_max_guest:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\MaxGuest
+
+    mbh_search.restrictions.on_max_stay:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\MaxStay
+
+    mbh_search.restrictions.on_max_stay_arrival:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\MaxStayArrival
+
+    mbh_search.restrictions.on_min_before_arrival:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\MinBeforeArrival
+
+    mbh_search.restrictions.on_min_guest:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\MinGuest
+
+    mbh_search.restrictions.on_min_stay:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\MinStay
+
+    mbh_search.restrictions.on_min_stay_arrival:
+        public: false
+        class: MBH\Bundle\SearchBundle\Lib\Restrictions\MinStayArrival
+
+    mbh_search.searcher:
+        class: MBH\Bundle\SearchBundle\Services\Searcher
+        arguments: ['@doctrine.odm.mongodb.document_manager']
+
+    mbh_search.room_type_repository:
+        class: MBH\Bundle\HotelBundle\Document\RoomTypeRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\HotelBundle\Document\RoomType
+
+    mbh_search.room_type_fetcher:
+        class: MBH\Bundle\SearchBundle\Services\RoomTypeFetcher
+        arguments: ['@doctrine.odm.mongodb.document_manager','@mbh_search.room_type_repository']

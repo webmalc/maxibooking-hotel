@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
@@ -23,10 +24,15 @@ class SearchQueryGenerator
     /** @var AdditionalDatesGenerator */
     private $addDatesGenerator;
 
-    public function __construct(DocumentManager $dm, AdditionalDatesGenerator $generator)
+    /** @var RoomTypeFetcher */
+    private $roomTypeFetcher;
+
+    public function __construct(DocumentManager $dm, AdditionalDatesGenerator $generator, RoomTypeFetcher $roomTypeFetcher)
     {
         $this->dm = $dm;
         $this->addDatesGenerator = $generator;
+        $this->roomTypeFetcher = $roomTypeFetcher;
+
     }
 
     /**
@@ -54,8 +60,11 @@ class SearchQueryGenerator
     private function prepareConditionsForSearchQueries(SearchConditions $conditions): array
     {
         $hotelIds = $this->getEntryIds($conditions->getHotels());
-        $tariffIds = $this->getTariffIds($conditions->getTariffs(), $hotelIds, $conditions->isOnline());
-        $roomTypeIds = $this->getRoomTypeIds($conditions->getRoomTypes(), $hotelIds);
+
+        $rawTariffIds = $this->getEntryIds($conditions->getTariffs()->toArray());
+        $tariffs = $this->getTariffs($rawTariffIds, $hotelIds, $conditions->isOnline());
+        $rawRoomTypeIds = $this->getEntryIds($conditions->getRoomTypes());
+        $roomTypeIds = $this->getRoomTypeIds($rawRoomTypeIds, $hotelIds);
 
         $dates =
             $this->addDatesGenerator->generate(
@@ -63,12 +72,11 @@ class SearchQueryGenerator
                 $conditions->getEnd(),
                 $conditions->getAdditionalBegin(),
                 $conditions->getAdditionalEnd(),
-                $tariffIds,
+                $tariffs,
                 $roomTypeIds
             );
+        $tariffRoomTypeCombined = $this->combineTariffWithRoomType($roomTypeIds, $tariffs);
 
-
-        $tariffRoomTypeCombined = $this->combineTariffWithRoomType($roomTypeIds, $tariffIds);
         $queryHelpers = $this->combineDataForSearchQuery($dates, $tariffRoomTypeCombined);
         if (empty($queryHelpers)) {
             throw new SearchQueryGeneratorException('No combinations for search');
@@ -77,44 +85,20 @@ class SearchQueryGenerator
         return $queryHelpers;
     }
 
-    /**
-     * @param array $dates
-     * @param array $tariffRoomTypeCombined
-     * @return SearchQueryHelper[]
-     */
-    private function combineDataForSearchQuery(array $dates, array $tariffRoomTypeCombined): array
-    {
-        $result = [];
-        foreach ($dates as $date) {
-            foreach ($tariffRoomTypeCombined as $tariffRoomType) {
-                $result[] = SearchQueryHelper::createInstance($date, $tariffRoomType);
-            }
-        }
-
-        return $result;
-    }
-
-    private function getEntryIds(ArrayCollection $entry): array
-    {
-        return Helper::toIds($entry);
-    }
 
     /**
-     * @param ArrayCollection|Tariff[] $tariffs
+     * @param ArrayCollection|Tariff[] $tariffIds
      * @param array $hotelIds
      * @param bool $isOnline
      * @return array
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
      */
-    private function getTariffIds(ArrayCollection $tariffs, array $hotelIds, bool $isOnline): array
+    private function getTariffs(array $tariffIds, array $hotelIds, bool $isOnline): array
     {
-        $tariffIds = [];
-        if ($tariffs->count()) {
-            foreach ($tariffs as $tariff) {
-                $tariffIds[$tariff->getHotel()->getId()][] = $tariff->getId();
-            }
-
-            return $tariffIds;
+        $tariffs = [];
+        /** Priority to Tariff even if hotels exists */
+        if (\count($tariffIds)) {
+            $hotelIds = [];
         }
         try {
             $tariffsRaw = $this->dm->getRepository(Tariff::class)->fetchRaw(
@@ -134,31 +118,30 @@ class SearchQueryGenerator
         }
 
         foreach ($tariffsRaw as $tariffId => $tariff) {
-            $tariffIds[(string)$tariff['hotel']['$id']][] = $tariffId;
+            $tariffs[(string)$tariff['hotel']['$id']][] = [
+                'id' => $tariffId,
+                'rawTariff' => $tariff
+            ];
         }
 
-        return $tariffIds;
+        return $tariffs;
     }
 
-
     /**
-     * @param ArrayCollection|RoomType[] $roomTypes
+     * @param iterable $rawRoomTypeIds
      * @param array $hotelIds
      * @return array
      * @throws SearchQueryGeneratorException
      */
-    private function getRoomTypeIds(ArrayCollection $roomTypes, array $hotelIds): array
+    private function getRoomTypeIds(iterable $rawRoomTypeIds, array $hotelIds): array
     {
         $roomTypeIds = [];
-        if ($roomTypes->count()) {
-            foreach ($roomTypes as $roomType) {
-                $roomTypeIds[$roomType->getHotel()->getId()][] = $roomType->getId();
-            }
-
-            return $roomTypeIds;
+        /** Prior to roomType even hotel is defined */
+        if (\count($rawRoomTypeIds)) {
+            $hotelIds = [];
         }
 
-        $roomTypesRaw = $this->dm->getRepository(RoomType::class)->fetchRaw($roomTypeIds, $hotelIds);
+        $roomTypesRaw = $this->roomTypeFetcher->fetch($rawRoomTypeIds, $hotelIds);
         if (empty($roomTypesRaw)) {
             throw new SearchQueryGeneratorException(
                 'Empty Result in RoomType query, cannot create SearchQuery without any RoomType'
@@ -174,27 +157,51 @@ class SearchQueryGenerator
 
 
     /**
-     * @param array $roomTypeIds
-     * @param array $tariffIds
+     * @param array $dates
+     * @param array $tariffRoomTypeCombined
+     * @return SearchQueryHelper[]
+     */
+    private function combineDataForSearchQuery(array $dates, array $tariffRoomTypeCombined): array
+    {
+        $result = [];
+        foreach ($dates as $date) {
+            foreach ($tariffRoomTypeCombined as $tariffRoomType) {
+                $result[] = SearchQueryHelper::createInstance($date, $tariffRoomType);
+            }
+        }
+
+        return $result;
+    }
+
+
+    private function getEntryIds(iterable $entry): array
+    {
+        return Helper::toIds($entry);
+    }
+
+
+    /**
+     * @param array $rawRoomTypeIds
+     * @param array $rawTariffs
      * @return array
      * @throws SearchQueryGeneratorException
      */
-    private function combineTariffWithRoomType(array $roomTypeIds, array $tariffIds): array
+    private function combineTariffWithRoomType(array $rawRoomTypeIds, array $rawTariffs): array
     {
-        $roomTypeHotelKeys = array_keys($roomTypeIds);
-        $tariffHotelKeys = array_keys($tariffIds);
+        $roomTypeHotelKeys = array_keys($rawRoomTypeIds);
+        $tariffHotelKeys = array_keys($rawTariffs);
         $sharedHotelKeys = array_intersect($roomTypeHotelKeys, $tariffHotelKeys);
         if (empty($sharedHotelKeys)) {
             throw new SearchQueryGeneratorException('There is an error in combine Tariff with RoomType');
         }
         $combined = [];
         foreach ($sharedHotelKeys as $hotelKey) {
-            $roomTypes = $roomTypeIds[$hotelKey];
-            $tariffs = $tariffIds[$hotelKey];
+            $roomTypeIds = $rawRoomTypeIds[$hotelKey];
+            $tariffId = $rawTariffs[$hotelKey];
             /** https://stackoverflow.com/questions/23348339/optimizing-array-merge-operation
              * Potential performance problem if use array_merge in loop.
              */
-            $combined[] = $this->mixRoomTypeTariff($roomTypes, $tariffs);
+            $combined[] = $this->mixRoomTypeTariff($roomTypeIds, $tariffId);
         }
 
         $result = [];
@@ -220,7 +227,7 @@ class SearchQueryGenerator
         $values = [];
         foreach ($roomTypes as $roomType) {
             foreach ($tariffs as $tariff) {
-                $values[] = ['roomType' => $roomType, 'tariff' => $tariff];
+                $values[] = ['roomTypeId' => $roomType, 'tariffId' => $tariff['id'], 'tariff' => $tariff['rawTariff']];
             }
         }
 

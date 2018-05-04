@@ -48,7 +48,7 @@ class RestrictionsCheckerService
     }
 
 
-    public function check(SearchQuery $searchQuery): bool
+    public function check(SearchQuery $searchQuery): array
     {
         if ($searchQuery->isIgnoreRestrictions()) {
             return true;
@@ -58,6 +58,7 @@ class RestrictionsCheckerService
             $this->restrictions = $this->getRestrictions();
         }
 
+        $errors = [];
         if (!$searchQuery->isRestrictionsWhereChecked()) {
             $restrictions = $this->getNecessaryRestrictions($searchQuery);
             $errors = [];
@@ -67,16 +68,14 @@ class RestrictionsCheckerService
                         $checker->check($searchQuery, $restrictions);
                     } catch (RestrictionsCheckerException $e) {
                         $errors[] = $e->getMessage();
-                    } finally {
-                        $searchQuery->setRestrictionsWhereChecked();
                     }
-
                 }
+                $searchQuery->setRestrictionsWhereChecked();
             }
 
         }
 
-        return true;
+        return $errors;
     }
 
     /**

@@ -194,7 +194,7 @@ class RoomType extends Base implements RoomTypeInterface
     protected $facilities = [];
     /**
      * @var RoomTypeCategory|null
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomTypeCategory")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomTypeCategory", inversedBy="types")
      */
     protected $category;
 

@@ -11,8 +11,9 @@ class ClosedOnArrival extends AbstractFieldChecker
 {
     protected function doCheck(\DateTime $date, $value, SearchQuery $searchQuery): void
     {
+
         $isArrival = $date == $searchQuery->getBegin();
-        if ($value && $isArrival) {
+        if ($isArrival) {
             throw new RestrictionsCheckerException("Room {$this->getCheckingFieldName()} at {$date->format('d-m-Y')}" );
 
         }

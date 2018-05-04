@@ -18,8 +18,10 @@ abstract class RestrictionWebTestCase extends WebTestCase
                 ->setBegin(clone $begin)
                 ->setEnd(clone $end)
                 ->setAdults(2)
-                ->setChildren(1)
-                ->setChildrenAges([2]);
+                ->setChildren(2)
+                ->setChildrenAges([1,3])
+                ->setInfantAge(2)
+        ;
 
         $restrictions = [];
 
