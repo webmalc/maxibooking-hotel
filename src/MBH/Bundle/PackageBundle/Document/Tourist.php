@@ -13,6 +13,7 @@ use MBH\Bundle\BaseBundle\Lib\Exportable;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
+use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -22,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Tourist extends Base implements \JsonSerializable, PayerInterface, RecipientInterface, Exportable
+class Tourist extends Base implements \JsonSerializable, PayerInterface, RecipientInterface, Exportable, DataOfMortalInterface
 {
     /**
      * Hook timestampable behavior
