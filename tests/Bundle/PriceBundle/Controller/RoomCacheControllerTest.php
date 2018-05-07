@@ -21,6 +21,8 @@ class RoomCacheControllerTest extends WebTestCase
     private $roomTypeCache;
     private $tariffs;
 
+    private static $amountRoomCacheDefault;
+
     private const BASE_URL = '/price/room_cache/';
     private const NAME_TEST_HOTEL = 'Отель Волга';
     private const SPECIAL_TARIFFS = 'Special tariff';
@@ -37,14 +39,6 @@ class RoomCacheControllerTest extends WebTestCase
     private const NAME_FOR_UPDATE_ROOM_CACHES = 'updateRoomCaches';
     private const NAME_FOR_NEW_ROOM_CACHES = 'newRoomCaches';
 
-    private const AMOUNT_ROOM_CACHE_DEFAULT = 546;
-
-    /**
-     * +1 in testAddRoomCache
-     * +6 это комнаты созданые в testGeneration
-     */
-    private const AMOUNT_ROOM_CACHE = self::AMOUNT_ROOM_CACHE_DEFAULT + 1 + 6;
-
     private const AMOUNT_TWIN_ROOMS = 10;
 
     private const AMOUNT_TRIPLE_ROOMS = 10;
@@ -53,6 +47,7 @@ class RoomCacheControllerTest extends WebTestCase
     {
         self::baseFixtures();
         self::command('mbh:cache:recalculate');
+        self::setDefaultAmountRooms();
     }
 
     public static function tearDownAfterClass()
@@ -145,9 +140,9 @@ class RoomCacheControllerTest extends WebTestCase
             ]
         );
 
-        $this->assertEquals(['0', '0%', '60', ], $this->getResultFromTable($date));
+        $this->assertEquals(['0', '0%', '60',], $this->getResultFromTable($date));
 
-        $this->assertCount(self::AMOUNT_ROOM_CACHE_DEFAULT + 1, $roomCache->findAll());
+        $this->assertCount($this->getDefaultAmountRoomCache() + 1, $roomCache->findAll());
     }
 
     public function testInvalidDateInGeneration()
@@ -185,7 +180,7 @@ class RoomCacheControllerTest extends WebTestCase
     {
         $roomCache = $this->getRoomCache();
 
-        $this->assertCount(self::AMOUNT_ROOM_CACHE, $roomCache->findAll());
+        $this->assertCount($this->getAmountRoomCache(), $roomCache->findAll());
         $this->assertEquals(
             ['0', '0%', '35', '0', '0%', '35', '0', '0%', '35'],
             $this->getResultFromTable(new \DateTime('noon -1 days'))
@@ -248,8 +243,11 @@ class RoomCacheControllerTest extends WebTestCase
         );
 
         $this->assertEquals(['7', '0%', '-7', '0', '0%', '35'], $this->getResultFromTable());
-        $this->assertEquals(['0', '0%', '35', '8', '22.86%', '27', '0', '0%', '35'], $this->getResultFromTable(new \DateTime('noon +1 day')));
-        $this->assertCount(self::AMOUNT_ROOM_CACHE - 1, $roomCache->findAll());
+        $this->assertEquals(
+            ['0', '0%', '35', '8', '22.86%', '27', '0', '0%', '35'],
+            $this->getResultFromTable(new \DateTime('noon +1 day'))
+        );
+        $this->assertCount($this->getAmountRoomCache() - 1, $roomCache->findAll());
     }
 
     /**
@@ -529,6 +527,8 @@ class RoomCacheControllerTest extends WebTestCase
 
     private function removeViaGenerationForRoomType(int $places)
     {
+        $date = new \DateTime('noon +1 day');
+
         $roomCache = $this->getRoomCache();
 
         $form = $this->getGenerationFormWithValues('-1', $places);
@@ -537,14 +537,14 @@ class RoomCacheControllerTest extends WebTestCase
 
         switch ($places) {
             case self::TWIN_ROOM:
-                $amountRoom = 523;
+                $amountRoom = $this->getDefaultAmountRoomCache() - 23;
                 break;
             case self::TRIPLE_ROOM:
-                $amountRoom = 529;
+                $amountRoom = $this->getDefaultAmountRoomCache() - 17;
                 break;
         }
 
-        $this->assertEquals(['8', '22.86%', '27', '0', '0%', '35'], $this->getResultFromTable(new \DateTime('noon +1 day')));
+        $this->assertEquals(['8', '22.86%', '27', '0', '0%', '35'], $this->getResultFromTable($date));
         $this->assertCount($amountRoom, $roomCache->findAll());
     }
 
@@ -767,5 +767,36 @@ class RoomCacheControllerTest extends WebTestCase
                 ->findBy(['hotel.id' => $this->getHotelId()]);
         }
         return $this->roomTypeCache;
+    }
+
+    private static function setDefaultAmountRooms(): void
+    {
+        $container = self::getContainerStat();
+
+        $dm = $container->get('doctrine.odm.mongodb.document_manager');
+
+        $dm->getRepository('MBHPriceBundle:RoomCache');
+
+        $roomCache = $dm->getRepository('MBHPriceBundle:RoomCache');
+        self::$amountRoomCacheDefault = count($roomCache->findAll());
+    }
+
+    /**
+     * @return int
+     */
+    private function getDefaultAmountRoomCache(): int
+    {
+        return self::$amountRoomCacheDefault;
+    }
+
+    /**
+     * +1 in testAddRoomCache
+     * +6 это комнаты созданые в testGeneration
+     *
+     * @return int
+     */
+    private function getAmountRoomCache(): int
+    {
+        return $this->getDefaultAmountRoomCache() + 1 + 6;
     }
 }
