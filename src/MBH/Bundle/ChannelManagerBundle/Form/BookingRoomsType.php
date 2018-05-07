@@ -48,7 +48,10 @@ class BookingRoomsType extends AbstractType
                     'class' => 'MBHHotelBundle:RoomType',
                     'query_builder' => function (DocumentRepository $repository) use ($hotel) {
                         $qb = $repository->createQueryBuilder();
-                        $qb->field('hotel.id')->equals($hotel->getId());
+                        $qb
+                            ->field('isEnabled')->equals(true)
+                            ->field('hotel.id')->equals($hotel->getId())
+                        ;
                         return $qb;
                     },
                     'required' => false,
