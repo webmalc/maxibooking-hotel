@@ -9,6 +9,12 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class MinStay extends AbstractFieldChecker
 {
+    /**
+     * @param \DateTime $date
+     * @param $value
+     * @param SearchQuery $searchQuery
+     * @throws RestrictionsCheckerException
+     */
     protected function doCheck(\DateTime $date, $value, SearchQuery $searchQuery): void
     {
         $duration = $searchQuery->getEnd()->diff($searchQuery->getBegin())->format('%a');

@@ -209,4 +209,19 @@ class RoomCacheRepository extends DocumentRepository
             ->execute()
             ->toArray();
     }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param string $roomTypeId
+     * @param string $tariffId
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchRaw(\DateTime $begin, \DateTime $end, string $roomTypeId): array
+    {
+        $qb = $this->fetchQueryBuilder($begin, $end, null, [$roomTypeId], false);
+
+        return $qb->hydrate(false)->getQuery()->execute()->toArray();
+    }
 }

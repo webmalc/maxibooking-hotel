@@ -71,15 +71,29 @@ services:
         public: false
         class: MBH\Bundle\SearchBundle\Lib\Restrictions\MinStayArrival
 
+    #search
     mbh_search.searcher:
-        class: MBH\Bundle\SearchBundle\Services\Searcher
-        arguments: ['@doctrine.odm.mongodb.document_manager']
+        class: MBH\Bundle\SearchBundle\Services\Search\Searcher
+        arguments: ["@mbh_search.room_cache_search_provider", "@doctrine_mongodb.odm.default_document_manager", '@mbh_search.tariff_limit_checker', '@mbh_search.restrictions_checker_service']
+
+    mbh_search.room_cache_search_provider:
+        class: MBH\Bundle\SearchBundle\Services\Search\RoomCacheSearchProvider
+        arguments: ["@mbh_search.room_cache_repository", "%mbh_cache%"]
+
+    mbh_search.tariff_limit_checker:
+        class: MBH\Bundle\SearchBundle\Services\Search\TariffLimitChecker
 
     mbh_search.room_type_repository:
         class: MBH\Bundle\HotelBundle\Document\RoomTypeRepository
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
         arguments:
             - MBH\Bundle\HotelBundle\Document\RoomType
+
+    mbh_search.room_cache_repository:
+        class: MBH\Bundle\PriceBundle\Document\RoomCacheRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\PriceBundle\Document\RoomCache
 
     mbh_search.room_type_fetcher:
         class: MBH\Bundle\SearchBundle\Services\RoomTypeFetcher

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Tests\Bundle\SearchBundle\Services;
+namespace Tests\Bundle\SearchBundle\Services\Search;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;

@@ -276,21 +276,41 @@ class SearchQuery
         return $this;
     }
 
-    public function getTotalPlaces()
+    public function getTotalPlaces(): int
     {
-        return $this->adults + $this->infantSeparate();
+        $actualAdults = $this->childrenAdultsSeparate();
+        $actualChildren = $this->childrenInfantSeparate();
+
+        return $actualAdults + $actualChildren;
     }
 
-    private function infantSeparate(): int
+    private function childrenAdultsSeparate(): int
     {
-        $actualAges =  array_filter(
+        $actualAdultAges =  array_filter(
             $this->childrenAges,
             function ($age) {
-                return $age > $this->infantAge;
+                return $age > $this->childAge;
             }
         );
 
-        return \count($actualAges);
+        return $this->adults + \count($actualAdultAges);
+    }
+
+    private function childrenInfantSeparate(): int
+    {
+        $actualChildrenAges =  array_filter(
+            $this->childrenAges,
+            function ($age) {
+                return $age >= $this->infantAge && $age <= $this->childAge;
+            }
+        );
+
+        return \count($actualChildrenAges);
+    }
+
+    public function getInfants(): int
+    {
+        return $this->children - $this->childrenInfantSeparate();
     }
 
 
