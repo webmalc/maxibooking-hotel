@@ -522,6 +522,10 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 //new
                 if (((string)$reservation->status == 'new' && !$order) || ($isPulledAllPackages && !$order)) {
                     $result = $this->createPackage($reservation, $config);
+                    if ($isPulledAllPackages) {
+                        $result->setConfirmed(true);
+                        $this->dm->flush();
+                    }
                     $this->notify($result, 'booking', 'new');
                 }
                 //edit
