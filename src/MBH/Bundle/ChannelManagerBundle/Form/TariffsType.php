@@ -24,7 +24,10 @@ class TariffsType extends AbstractType
                 'query_builder' => function(DocumentRepository $er) use($options) {
                     $qb = $er->createQueryBuilder();
                     if ($options['hotel'] instanceof Hotel) {
-                        $qb->field('hotel.id')->equals($options['hotel']->getId());
+                        $qb
+                            ->field('hotel.id')->equals($options['hotel']->getId())
+                            ->field('isEnabled')->equals(true)
+                        ;
                     }
                     return $qb;
                 },
