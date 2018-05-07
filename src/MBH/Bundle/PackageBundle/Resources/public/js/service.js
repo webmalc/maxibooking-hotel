@@ -41,7 +41,6 @@ var docReadyServices = function() {
                 nightsInput.val(nightsInput.val() || 1);
                 amountInput.closest('div.input-group').next('span.help-block').html('');
                 serviceHelp.html('<small>' + Translator.trans('service.service_for_addtition_to_package') + '</small>');
-                serviceHelp.html('<small>' + Translator.trans('service.service_for_addtition_to_package') + '</small>');
             },
             calc = function() {
 
@@ -50,7 +49,11 @@ var docReadyServices = function() {
                 if (serviceInput.val() !== null && typeof info !== 'undefined') {
                     var nights = nightsInput.val(),
                         price = priceInput.val() * amountInput.val() * nights * personsInput.val();
-                    amountInput.closest('div.input-group').next('span.help-block').html($.number(price, 2) + ' ' + mbh.currency.text + ' ' + Translator.trans('service.price_for_amount', {'amount' : amountInput.val()}));
+                    var sumText = $.number(price, 2) + ' ' + mbh.currency.text + ' ' + Translator.trans('service.price_for_amount', {'amount' : amountInput.val()});
+                    amountInput.closest('div.input-group').next('span.help-block')
+                        .css('color', '#a20a0a')
+                        .css('font-size', '20px')
+                        .html(Translator.trans('total.text', {'sumText': sumText}));
                 }
             },
             show = function(info) {
