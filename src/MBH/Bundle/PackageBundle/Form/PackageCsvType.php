@@ -20,12 +20,6 @@ class PackageCsvType extends AbstractType
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',
             ])
-            ->add('typeOrder', CheckboxType::class, [
-                'label' => 'csv.type.order.type',
-                'required' => false,
-                'attr' => array('checked' => 'checked'),
-                'group' => 'csv.form.group',
-            ])
             ->add('orderSource', CheckboxType::class, [
                 'label' => 'csv.type.order.source',
                 'required' => false,
@@ -92,10 +86,16 @@ class PackageCsvType extends AbstractType
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',
             ])
-            ->add('price', CheckboxType::class, [
-                'label' => 'csv.form.price',
+            ->add('packagePrice', CheckboxType::class, [
+                'label' => 'csv.form.package_price',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
+                'group' => 'csv.form.group',
+            ])
+            ->add('packageServicesPrice', CheckboxType::class, [
+                'label' => 'csv.form.package_services_price',
+                'required' => false,
+                'attr' => ['checked' => 'checked'],
                 'group' => 'csv.form.group',
             ])
             ->add('paids', CheckboxType::class, [
