@@ -10,7 +10,7 @@
             "{{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}",
             "<small>{{ entity.roomTypes|join(';<br>')|raw }}</small>",
             "<small>{{ entity.tariffs|join(';<br>')|raw }}</small>",
-            "{{ entity.discount|number_format(2) }} {% if not entity.isPercent  %}{{ currency()['text'] }}{% else %}%{% endif %}",
+            "{{ entity.discount|number_format(2) }} {% if not entity.isPercent  %}{{ currency()['text']|trans }}{% else %}%{% endif %}",
             "<div class='text-center'>{{ entity.sold }}/{{ entity.limit }}</div>",
             "<div class='btn-list text-right'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'special'} %}{% endembed %}</div>"
         ]{% if loop.index != entities|length %},{% endif %}

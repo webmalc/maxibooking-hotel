@@ -121,3 +121,6 @@ external_api_controller.error.hotel_with_specified_id_not_exists: 'Отеля с
 external_api_controller.error.specified_room_type_not_contains_in_form_config: 'Тип номера с ID = "%roomTypeId%" не указан в списке типов номеров конфигурации указанной онлайн-формы'
 external_api_controller.error.specified_hotel_not_contains_in_form_config: 'Отель с ID = "%hotelId%" не указан списке отелей конфигурации указанной онлайн-формы'
 external_api_controller.error.room_type_with_specified_id_not_exists: 'Тип комнат с ID = "%roomTypeId%" не существует'
+analytics_form.is_enabled.label: 'Включена?'
+analytics_form.google_id.label: 'Идентификатор отслеживания'
+analytics_form.yandex_id.label: 'Номер счетчика'

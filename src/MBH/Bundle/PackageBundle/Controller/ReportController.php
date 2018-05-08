@@ -613,7 +613,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         }
 
         if ($request->get('roomTypes')) {
-            $roomTypes = $roomTypeRepository->fetch(null, $request->get('roomTypes'))->toArray();
+            $requestedRoomTypesIds = $request->get('roomTypes');
+            $roomTypeIds = $requestedRoomTypesIds === [] || $requestedRoomTypesIds === [''] ? null : $requestedRoomTypesIds;
+            $roomTypes = $roomTypeRepository->fetch(null, $roomTypeIds)->toArray();
         } else {
             $roomTypes = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
         }

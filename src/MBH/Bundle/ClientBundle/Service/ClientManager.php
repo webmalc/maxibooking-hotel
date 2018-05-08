@@ -92,13 +92,15 @@ class ClientManager
     {
         $totalNumbersOfRoomsByDates = [];
         foreach ($rawNewRoomCachesData as $rawRoomCache) {
-            /** @var \MongoDate $date */
-            $date = $rawRoomCache['date'];
-            $dateString = $date->toDateTime()->format('d.m.Y');
-            if (isset($totalNumbersOfRoomsByDates[$dateString])) {
-                $totalNumbersOfRoomsByDates[$dateString] += $rawRoomCache['totalRooms'];
-            } else {
-                $totalNumbersOfRoomsByDates[$dateString] = $rawRoomCache['totalRooms'];
+            if (!isset($rawRoomCache['tariff'])) {
+                /** @var \MongoDate $date */
+                $date = $rawRoomCache['date'];
+                $dateString = $date->toDateTime()->format('d.m.Y');
+                if (isset($totalNumbersOfRoomsByDates[$dateString])) {
+                    $totalNumbersOfRoomsByDates[$dateString] += $rawRoomCache['totalRooms'];
+                } else {
+                    $totalNumbersOfRoomsByDates[$dateString] = $rawRoomCache['totalRooms'];
+                }
             }
         }
 

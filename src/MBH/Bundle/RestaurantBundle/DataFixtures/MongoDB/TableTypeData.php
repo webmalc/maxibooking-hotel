@@ -3,8 +3,8 @@
 namespace MBH\Bundle\RestaurantBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use MBH\Bundle\RestaurantBundle\Document\TableType;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -13,7 +13,7 @@ class TableTypeData extends AbstractFixture implements OrderedFixtureInterface, 
 {
     use ContainerAwareTrait;
 
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
@@ -48,5 +48,13 @@ class TableTypeData extends AbstractFixture implements OrderedFixtureInterface, 
     public function getOrder()
     {
         return 9996;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getEnvs(): array
+    {
+        return ['test', 'dev', 'sandbox'];
     }
 }

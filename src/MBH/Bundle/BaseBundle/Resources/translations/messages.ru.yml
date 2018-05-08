@@ -208,6 +208,7 @@ not.stopped: 'Не заехали'
 stopped: заехали
 left: выехали
 exception.relation_delete.message: 'Запись имеет связанные данные  (%total%).'
+exception.relation_delete.document_already_deleted: 'Документ уже удален!'
 exception.relation_delete.message.task: 'Невозможно удалить. Этот Тип имеет существующие задачи  (%total%)'
 exception.relation_delete.message.taskType: 'Невозможно удалить. Категория имеет существующие типы задач (%total%).'
 exception.relation_delete.message.roomTypeCategory: 'Невозможно удалить. Группа привязана к существующим номерам'
@@ -609,6 +610,9 @@ currency.uah.text: грн.
 currency.uah.small: коп.
 currency.kzt.text: тенге
 currency.kzt.small: тиын
+currency.uzs.text: сум.
+currency.uzs.small: тийин
+
 mbh.weekdays.sun: Воскресенье
 mbh.weekdays.mon: Понедельник
 mbh.weekdays.tue: Вторник

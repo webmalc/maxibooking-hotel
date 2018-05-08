@@ -3,7 +3,10 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\DocumentsRelationships;
+use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -523,6 +526,63 @@ class Helper
         return (!is_null($begin) ? $begin->format($format) : '')
             . (!is_null($begin) && !is_null($end) ? ' - ' : '')
             . (!is_null($end) ? $end->format($format) : '');
+    }
+
+    /**
+     * @param string $traitName
+     * @param $document
+     * @return bool
+     */
+    public function hasDocumentClassTrait(string $traitName, $document)
+    {
+        return in_array($traitName, class_uses(get_class($document)));
+    }
+
+    /**
+     * @param Base $document
+     * @return array
+     */
+    public function getRelatedDocuments(Base $document)
+    {
+        $relationships = DocumentsRelationships::getRelationships();
+        $relatedDocumentsData = [];
+        if (array_key_exists(get_class($document), $relationships)) {
+            $relationships = $relationships[get_class($document)];
+            foreach ($relationships as $relationship) {
+                /** @var Relationship $relationship */
+                /** @var DocumentRepository $repository */
+                $repository = $this->container
+                    ->get('doctrine.odm.mongodb.document_manager')
+                    ->getRepository($relationship->getDocumentClass());
+                if ($relationship->IsMany()) {
+                    $quantity = $repository->createQueryBuilder()
+                        ->field($relationship->getFieldName())->includesReferenceTo($document)
+                        ->field('deletedAt')->exists(false)
+                        ->getQuery()
+                        ->count();
+                } else {
+                    $query = $repository->createQueryBuilder()
+                        ->field($relationship->getFieldName())->references($document)
+                        ->field('deletedAt')->exists(false)
+                        ->getQuery();
+                    $quantity = $query->count();
+                }
+
+                $relatedDocumentsData[] = ['quantity' => $quantity, 'relation' => $relationship];
+            }
+        }
+
+        return $relatedDocumentsData;
+    }
+
+    /**
+     * @param $haystack
+     * @param $needle
+     * @return bool
+     */
+    public function startsWith($haystack, $needle)
+    {
+        return substr($haystack, 0, strlen($needle)) === $needle;
     }
 
     public static function returnNonHydrateIds($entry): string
