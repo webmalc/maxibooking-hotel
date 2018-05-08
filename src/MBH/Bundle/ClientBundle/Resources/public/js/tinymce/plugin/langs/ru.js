@@ -1,8 +1,9 @@
 tinymce.addI18n('ru', {
-    'MB Entity'          : 'MB данные',
-    'MB Table Entity'    : 'MB табличные данные',
+    'MB Entity'          : 'MB Данные',
+    'MB Table Entity'    : 'MB Табличные Данные',
     'Cash Document'      : 'Документы оплаты',
-    'MB Table properties': 'MB свойства таблицы',
+    'MB Table properties': 'MB Свойства таблицы',
+    'MB Conditions'      : 'MB Условия',
     'Style table'        : 'Стиль таблицы',
     'Tourist'            : 'Гости',
     'Border'             : 'Граница',

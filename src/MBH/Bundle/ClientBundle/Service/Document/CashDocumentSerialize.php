@@ -9,12 +9,16 @@ namespace MBH\Bundle\ClientBundle\Service\Document;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 
+/**
+ * Class CashDocumentSerialize
+ *
+ * @property CashDocument $entity
+ *
+ * @package MBH\Bundle\ClientBundle\Service\Document
+ */
+
 class CashDocumentSerialize extends CommonSerialize
 {
-    public function __construct(CashDocument $cashDocument)
-    {
-        $this->entity = $cashDocument;
-    }
 
     public function getPaidDate(): string
     {
@@ -31,7 +35,8 @@ class CashDocumentSerialize extends CommonSerialize
     public function getMethod(): string
     {
         return $this->entity->getMethod() !== null
-            ? "cashDocument.method.". $this->entity->getMethod()."|trans({}, 'MBHCashBundle')"
+            ? $this->container->get('translator')
+                ->trans('cashDocument.method.'. $this->entity->getMethod(),[],'MBHCashBundle')
             : '';
     }
 

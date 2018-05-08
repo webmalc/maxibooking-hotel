@@ -7,18 +7,22 @@
 namespace MBH\Bundle\ClientBundle\Service\Document;
 
 
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class HotelSerialize
+ *
+ * @property Hotel $entity
+ *
+ * @package MBH\Bundle\ClientBundle\Service\Document
+ */
 
 class HotelSerialize extends CommonSerialize
 {
     use AddressSerialize;
 
-    public function __construct(Hotel $hotel)
-    {
-        $this->entity = $hotel;
-        $this->setAddress($this->entity);
-    }
 
     public function getPhoneNumber(): string
     {
@@ -33,11 +37,6 @@ class HotelSerialize extends CommonSerialize
     public function getInternationalTitle(): string
     {
         return $this->entity->getInternationalTitle() ?? '';
-    }
-
-    public function getStreet(): string
-    {
-        return $this->entity->getStreet()?? '';
     }
 
     public function getInternationalStreetName(): string

@@ -5,19 +5,19 @@
  */
 
 namespace MBH\Bundle\ClientBundle\Service\Document;
-
-
 use MBH\Bundle\PackageBundle\Document\Organization;
+
+/**
+ * Class OrganizationSerialize
+ *
+ * @property Organization $entity
+ *
+ * @package MBH\Bundle\ClientBundle\Service\Document
+ */
 
 class OrganizationSerialize extends CommonSerialize
 {
     use AddressSerialize;
-
-    public function __construct(Organization $organization)
-    {
-        $this->entity = $organization;
-        $this->setAddress($this->entity);
-    }
 
     public function getName(): string
     {

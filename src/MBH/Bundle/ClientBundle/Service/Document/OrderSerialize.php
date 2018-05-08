@@ -10,13 +10,16 @@ namespace MBH\Bundle\ClientBundle\Service\Document;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 
+/**
+ * Class OrderSerialize
+ *
+ * @property Order $entity
+ *
+ * @package MBH\Bundle\ClientBundle\Service\Document
+ */
+
 class OrderSerialize extends CommonSerialize
 {
-    public function __construct(Order $order)
-    {
-        $this->entity = $order;
-    }
-
     public function getPrice(): string
     {
         return $this->entity->getPrice() !== null ? Helper::numFormat($this->entity->getPrice()) : '';
@@ -25,8 +28,9 @@ class OrderSerialize extends CommonSerialize
     public function allCashDocuments():array
     {
         $return = [];
+        $cashDocumentSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\Document\CashDocumentSerialize');
         foreach ($this->entity->getCashDocuments() as $cashDocument){
-            $return[] = new CashDocumentSerialize($cashDocument);
+            $return[] = (clone $cashDocumentSerialize)->newInstance($cashDocument);
         }
         return $return;
     }

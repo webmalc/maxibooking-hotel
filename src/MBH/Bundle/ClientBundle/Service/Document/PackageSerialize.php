@@ -9,18 +9,22 @@ namespace MBH\Bundle\ClientBundle\Service\Document;
 
 use MBH\Bundle\PackageBundle\Document\Package;
 
+/**
+ * Class PackageSerialize
+ *
+ * @property Package $entity
+ *
+ * @package MBH\Bundle\ClientBundle\Service\Document
+ */
+
 class PackageSerialize extends CommonSerialize
 {
-    public function __construct(Package $package)
-    {
-        $this->entity = $package;
-    }
-
     public function allTourists()
     {
         $return = [];
+        $mortalSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\Document\MortalSerialize');
         foreach ($this->entity->getTourists() as $tourist){
-            $return[] = new MortalSerialize($tourist);
+            $return[] = (clone $mortalSerialize)->newInstance($tourist);
         }
         return $return;
     }

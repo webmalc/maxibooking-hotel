@@ -10,16 +10,24 @@ namespace MBH\Bundle\ClientBundle\Service\Document;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 
+/**
+ * Class MortalSerialize
+ *
+ * @property Tourist $entity
+ *
+ * @package MBH\Bundle\ClientBundle\Service\Document
+ */
 
 class MortalSerialize extends CommonSerialize implements DataOfMortalInterface
 {
     use AddressSerialize;
     use DataOfMortalSerialize;
 
-    public function __construct(Tourist $mortal)
+    public function newInstance($entity)
     {
-        $this->entity = $mortal;
+        $this->entity = $entity;
         $this->setAddress($this->entity->getAddressObjectDecomposed());
+        return $this;
     }
 
     public function getSex(): string

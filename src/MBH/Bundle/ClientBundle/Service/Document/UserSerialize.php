@@ -13,9 +13,4 @@ use MBH\Bundle\UserBundle\Document\User;
 class UserSerialize extends CommonSerialize implements DataOfMortalInterface
 {
     use DataOfMortalSerialize;
-
-    public function __construct(User $user)
-    {
-        $this->entity = $user;
-    }
 }

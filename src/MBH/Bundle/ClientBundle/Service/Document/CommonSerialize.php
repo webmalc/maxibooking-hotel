@@ -7,9 +7,22 @@
 namespace MBH\Bundle\ClientBundle\Service\Document;
 
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 abstract class CommonSerialize
 {
+    public function __construct(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
     protected $entity;
+
+    public function newInstance($entity)
+    {
+        $this->entity = $entity;
+        return $this;
+    }
 
     public function __call($name, $arg)
     {

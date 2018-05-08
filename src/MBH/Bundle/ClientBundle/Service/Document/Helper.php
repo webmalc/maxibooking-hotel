@@ -9,15 +9,23 @@ namespace MBH\Bundle\ClientBundle\Service\Document;
 
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Helper
 {
-    public static function payerInstance($obj)
+    private $container;
+
+    public function __construct(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
+    public function payerInstance($obj)
     {
         if ($obj instanceof Tourist) {
-            return new MortalSerialize($obj);
+            return $this->container->get('MBH\Bundle\ClientBundle\Service\Document\MortalSerialize')->newInstance($obj);
         } elseif ($obj instanceof Organization) {
-            return new OrganizationSerialize($obj);
+            return $this->container->get('MBH\Bundle\ClientBundle\Service\Document\OrganizationSerialize')->newInstance($obj);
         } else {
             throw new \LogicException('can not be');
         }

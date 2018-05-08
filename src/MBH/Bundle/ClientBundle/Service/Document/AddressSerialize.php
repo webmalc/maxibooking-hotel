@@ -8,10 +8,24 @@ namespace MBH\Bundle\ClientBundle\Service\Document;
 
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 trait AddressSerialize
 {
+    public function __construct(ContainerInterface $container, BillingApi $billingApi)
+    {
+        parent::__construct($container);
+        $this->billing = $billingApi;
+    }
+
+    public function newInstance($entity)
+    {
+        $this->entity = $entity;
+        $this->setAddress($this->entity);
+        return $this;
+    }
+
     /**
      * @var BillingApi
      */
@@ -21,11 +35,6 @@ trait AddressSerialize
      * @var AddressInterface
      */
     private $address;
-
-    public function setBilling(BillingApi $billingApi): void
-    {
-        $this->billing = $billingApi;
-    }
 
     public function getCity(): string
     {

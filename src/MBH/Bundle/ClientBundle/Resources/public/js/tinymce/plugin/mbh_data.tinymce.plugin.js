@@ -8,7 +8,6 @@ document.onready = function (ev) {
 
 
 tinymce.PluginManager.add('mbh_data', function (editor, url) {
-
     "use strict";
 
     String.prototype.ucFirst = function () {
@@ -43,6 +42,9 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
     // console.log(editor.editorManager.DOM.doc);
 
     var self = this;
+
+    // self.mbh_border_style = 'none';
+    // self.mbh_border_color = 'white';
 
     // var hotelProperty = mbh_property.hotel;
 
@@ -125,15 +127,25 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
     //     })
     // }
 
+    function menuText(str){
+        var name = '',
+            match = str.match(/get([A-Z].+)([A-Z].+)([A-Z].+)|([A-Z].+)([A-Z].+)|([A-Z].+)/);
+        for (var i = 1, len = match.length; i <= len; i++){
+            if (match[i] !== undefined){
+                name += match[i] + ' ';
+            }
+        }
+        return name.trim();
+    }
 
     self.getMenu = function (entity, property, onSelect) {
         var menuItems = [];
         var func = onSelect === undefined ? true : onSelect;
-        for (var i = 0; i < property.length; i++) {
+        for (var i = 0, len = property.length; i < len; i++) {
             var str = '{{ ' + entity + '.' + property[i] + ' }}';
             var tempObj = {
                 tempStr: str,
-                text   : property[i].replace(/([a-z].*?)([A-Z][\w])/, '$1 $2')
+                text   : menuText(property[i])
             };
             if (func) {
                 tempObj['onselect'] = function (e) {
@@ -205,27 +217,36 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         menu   : menuItems
     });
 
+    var firstItem = function (entity) {
+        return [
+            {
+                text   : menuText(entity.ucFirst()),
+                style  : 'margin-top: -6px; background-color: #888888; border-bottom: 1px solid black;',
+                disabled: true,
+                classes: 'first-item-in-table-with-entity'
+            }
+        ]
+    };
+
     editor.addMenuItem('mbh_table_entity', {
         context     : 'contextmenu',
         text        : 'MB Table Entity',
         icon        : false,
         onPostRender: function () {
             var menu = this;
-            // var table = editor.dom.getParent(editor.selection.getStart(),'table');
             editor.on('NodeChange', function (e) {
                 var table = editor.dom.getParent(e.element, 'table');
                 if (table === null || table.classList.value.search(/mbh_/) == -1) {
                     menu.disabled(true);
                     menu.settings.menu = null;
                 } else {
-                    var match = table.classList.value.match(/mbh_(.*)\s|$/);
+                    var match = table.classList.value.match(/mbh_(.+)\s|$/);
                     if (match[1] !== undefined) {
                         menu.disabled(false);
-                        menu.settings.menu = self.getMenu(match[1], self[match[1] + 'Property']);
+                        menu.settings.menu = firstItem(match[1]).concat(self.getMenu(match[1], self[match[1] + 'Property']));
                     }
                 }
             })
-
         }
     });
 
@@ -295,7 +316,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
     }
 
     editor.addMenuItem('statement_mbh', {
-        text: 'EEE',
+        text: 'MB Conditions',
         menu: [
             {
                 text    : 'if Payer is Human',
@@ -312,21 +333,68 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         ]
     });
 
-    var tableForm = {
-        title: 'pizdec',
-        // type: 'form',
-        // layout: 'flex',
-        items: [
-            {
-                type : 'form',
-                items: [
-                    {
-                        label: 'Width', name: 'width'
-                    }
-                ]
+    function createColorPickAction() {
+        var colorPickerCallback = editor.settings.color_picker_callback;
+
+        if (colorPickerCallback) {
+            return function () {
+                var self = this;
+
+                colorPickerCallback.call(
+                    editor,
+                    function (value) {
+                        self.value(value).fire('change');
+                    },
+                    self.value()
+                );
+            };
+        }
+    }
+
+    function getBorderStyle() {
+        if (self.mbh_border_style === 'none') {
+            return '';
+        }
+        return self.mbh_border_width + 'px ' + self.mbh_border_style + ' ' + self.mbh_border_color;
+    }
+
+    function changeStyleTableProperty(where, value) {
+        if (where !== undefined) {
+            switch (where) {
+                case 'style':
+                    self.mbh_border_style = value;
+                    break;
+                case 'color':
+                    self.mbh_border_color = value;
+                    break;
+                case 'width':
+                    self.mbh_border_width = value;
+                    break;
             }
-        ]
-    };
+        }
+
+        document.querySelector('#example_border_style div').style.border = getBorderStyle();
+    }
+
+    function setTableProperty(table, data) {
+        editor.dom.setStyle(table, 'width', data.width + 'px');
+        editor.dom.setStyle(table, 'height', data.height + 'px');
+        editor.dom.setStyle(table, 'borderCollapse', data['border-collapse']);
+        editor.dom.setStyle(table, 'border', getBorderStyle());
+    }
+
+    function convertColor(str) {
+        function convertDexToHex(number) {
+            var n = parseInt(number, 10).toString(16);
+            return n.length > 1 ? n : '0' + n;
+        }
+
+        if (str.search(/rgb/) != -1) {
+            var num = str.match(/rgb\(\s?([\d]*?),\s?([\d]*?),\s?([\d]*?)\)/);
+            return '#' + convertDexToHex(num[1]) + convertDexToHex(num[2]) + convertDexToHex(num[3]);
+        }
+        return str;
+    }
 
     editor.addMenuItem('mbh_table_property', {
         title       : "MB Table properties",
@@ -350,23 +418,38 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                 styleStr.split(';').map(function (item) {
                     if (item !== '') {
                         var singleStyle = item.split(':');
-                        style[singleStyle[0]] = singleStyle[1].trim().replace(/px$/, '');
+                        var name = singleStyle[0].trim();
+                        if (name === 'border') {
+                            var border = singleStyle[1].trim().match(/([\d]*)px\s([\w]*?)\s(.*)/);
+                            if (border[1] !== undefined) {
+                                style['border-width'] = self.mbh_border_width = border[1];
+                                style['border-style'] = self.mbh_border_style = border[2];
+                                style['border-color'] = self.mbh_border_color = convertColor(border[3]);
+                            }
+                        } else {
+                            style[name] = singleStyle[1].trim().replace(/px$/, '');
+                        }
                     }
                 });
-
             }
 
+            console.log(style);
+
             editor.windowManager.open({
-                title: 'Parent xz',
-                data : style,
-                body : [
+                title       : 'Style table',
+                data        : style,
+                heigth      : 'auto',
+                onPostRender: function (e) {
+                    changeStyleTableProperty();
+                },
+                body        : [
                     {
                         type   : 'textbox',
                         name   : 'width',
                         label  : 'Width',
                         tooltip: 'Only integer',
                         onkeyup: function (e) {
-                            changeBorderColor(e.target,isInteger);
+                            changeBorderColor(e.target, isInteger);
                         }
                     },
                     {
@@ -375,15 +458,59 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                         label  : 'Height',
                         tooltip: 'Only integer',
                         onkeyup: function (e) {
-                            changeBorderColor(e.target,isInteger);
+                            changeBorderColor(e.target, isInteger);
                         }
                     },
                     {
-                        type   : 'colorbutton'
+                        type  : 'listbox',
+                        name  : 'border-collapse',
+                        label : 'Border collapse',
+                        values: [
+                            {text: 'Separate', value: 'separate'},
+                            {text: 'Collapse', value: 'collapse'}
+                        ]
+                    },
+                    {
+                        type : 'container',
+                        label: 'Example border',
+                        html : '<div id="example_border_style"><div style="padding: 2px; text-align: center;">Example</div></div>'
+                    },
+                    {
+                        type    : 'listbox',
+                        name    : 'border-style',
+                        label   : 'Border style',
+                        values  : [
+                            {text: 'None', value: 'none'},
+                            {text: 'Solid', style: 'border: 2px solid black;', value: 'solid'},
+                            {text: 'Dotted', style: 'border: 2px dotted black;', value: 'dotted'}
+                        ],
+                        onSelect: function (e) {
+                            changeStyleTableProperty('style', this.value());
+                        }
+                    },
+
+                    {
+                        type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
+                        name    : 'border-color',
+                        label   : 'Border color',
+                        onaction: createColorPickAction(),
+                        onChange: function (e) {
+                            changeStyleTableProperty('color', this.value());
+                        }
+                    },
+                    {
+                        type   : 'textbox',
+                        name   : 'border-width',
+                        label  : 'Border width',
+                        tooltip: 'Only integer',
+                        onkeyup: function (e) {
+                            changeBorderColor(e.target, isInteger);
+                            changeStyleTableProperty('width', this.value());
+                        }
                     }
                 ],
-                onsubmit: function (e) {
-                    console.log(e.data)
+                onsubmit    : function (e) {
+                    setTableProperty(table, e.data);
                 }
             });
             // console.dir(table);
@@ -416,7 +543,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                         tooltip: 'Only numbers',
                         value  : '4',
                         onkeyup: function (e) {
-                            changeBorderColor(e.target,itemColumnIsValid);
+                            changeBorderColor(e.target, itemColumnIsValid);
                         }
                     }
 
