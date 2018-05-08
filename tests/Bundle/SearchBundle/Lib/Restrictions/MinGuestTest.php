@@ -23,7 +23,7 @@ class MinGuestTest extends RestrictionWebTestCase
     public function testMinGuestViolation(SearchQuery $searchQuery, array $restriction)
     {
         $minGuest = new MinGuest();
-        $restriction[1]['minGuest'] = 4;
+        $restriction[1]['minGuest'] = 5;
         $this->expectExceptionMessage('Room minGuest at '. $restriction[1]['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format('d-m-Y'));
         $minGuest->check($searchQuery, $restriction);
     }

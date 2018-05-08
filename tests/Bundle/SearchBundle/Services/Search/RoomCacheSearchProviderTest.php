@@ -8,10 +8,10 @@ use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomCacheLimitException;
 
-class RoomCacheSearchProvider extends WebTestCase
+class RoomCacheSearchProviderTest extends WebTestCase
 {
 
-
+    //** TODO: Привести в божеский вид */
     public function testCheck()
     {
         $provider = $this->getContainer()->get('mbh_search.room_cache_search_provider');
@@ -24,6 +24,7 @@ class RoomCacheSearchProvider extends WebTestCase
         $end = new \DateTime('tomorrow midnight + 3 days');
         $actual = $provider->fetchAndCheck($begin, $end, $roomType, $tariff);
         $cachesCount = (int)$end->diff($begin)->format('%a');
+
         $this->assertCount($cachesCount, $actual);
     }
 
@@ -37,6 +38,7 @@ class RoomCacheSearchProvider extends WebTestCase
         $tariff = $hotel->getTariffs()->first();
         $begin = new \DateTime('tomorrow midnight +1 year');
         $end = new \DateTime('tomorrow midnight + 3 days +1 year');
+
         $this->expectException(RoomCacheLimitException::class);
         $this->assertNull($provider->fetchAndCheck($begin, $end, $roomType, $tariff));
     }

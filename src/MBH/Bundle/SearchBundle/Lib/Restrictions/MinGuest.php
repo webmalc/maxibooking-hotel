@@ -11,7 +11,7 @@ class MinGuest extends AbstractFieldChecker
 {
     protected function doCheck(\DateTime $date, $value, SearchQuery $searchQuery): void
     {
-        $totalPlaces = $searchQuery->getTotalPlaces();
+        $totalPlaces = $searchQuery->getSearchTotalPlaces();
         if ($value > $totalPlaces) {
             throw new RestrictionsCheckerException("Room {$this->getCheckingFieldName()} at {$date->format('d-m-Y')}");
         }

@@ -70,8 +70,9 @@ class RestrictionsCheckerService
                         $errors[] = $e->getMessage();
                     }
                 }
-                $searchQuery->setRestrictionsWhereChecked();
+
             }
+            $searchQuery->setRestrictionsWhereChecked();
 
         }
 

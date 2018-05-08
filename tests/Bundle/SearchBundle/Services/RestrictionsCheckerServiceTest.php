@@ -263,8 +263,8 @@ class RestrictionsCheckerServiceTest extends WebTestCase
         $service = $this->service;
         $conditions = new SearchConditions();
         $conditions
-            ->setBegin(new \DateTime('01.05.2018'))
-            ->setEnd(new \DateTime('3.05.2018'))
+            ->setBegin(new \DateTime('now midnight'))
+            ->setEnd(new \DateTime('now midnight +4 days'))
             ->setAdditionalBegin(5)
         ;
         $service->setConditions($conditions);
@@ -276,8 +276,8 @@ class RestrictionsCheckerServiceTest extends WebTestCase
     {
         $searchQuery = new SearchQuery();
         $searchQuery
-            ->setBegin(new \DateTime('01.05.2018'))
-            ->setEnd(new \DateTime('3.05.2018'))
+            ->setBegin(new \DateTime('now midnight'))
+            ->setEnd(new \DateTime('now midnight +4 days'))
             ->setTariffId('5ad744393755eb001962adab')
             ->setRoomTypeId('5ad744393755eb001962adc9')
         ;

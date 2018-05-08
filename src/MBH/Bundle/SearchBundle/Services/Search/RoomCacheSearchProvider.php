@@ -112,9 +112,4 @@ class RoomCacheSearchProvider
         return $roomCachesWithNoQuotas;
     }
 
-    private function mergeQutedCacheWithGeneral(array $roomCaches)
-    {
-
-    }
-
 }

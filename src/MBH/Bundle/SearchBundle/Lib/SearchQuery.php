@@ -276,15 +276,15 @@ class SearchQuery
         return $this;
     }
 
-    public function getTotalPlaces(): int
+    public function getSearchTotalPlaces(): int
     {
-        $actualAdults = $this->childrenAdultsSeparate();
-        $actualChildren = $this->childrenInfantSeparate();
+        $actualAdults = $this->getActualAdults();
+        $actualChildren = $this->getActualChildren();
 
         return $actualAdults + $actualChildren;
     }
 
-    private function childrenAdultsSeparate(): int
+    public function getActualAdults(): int
     {
         $actualAdultAges =  array_filter(
             $this->childrenAges,
@@ -296,7 +296,7 @@ class SearchQuery
         return $this->adults + \count($actualAdultAges);
     }
 
-    private function childrenInfantSeparate(): int
+    public function getActualChildren(): int
     {
         $actualChildrenAges =  array_filter(
             $this->childrenAges,
@@ -310,7 +310,7 @@ class SearchQuery
 
     public function getInfants(): int
     {
-        return $this->children - $this->childrenInfantSeparate();
+        return $this->children - $this->getActualChildren();
     }
 
 

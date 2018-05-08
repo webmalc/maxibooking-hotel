@@ -16,24 +16,20 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 class Searcher
 {
 
-    /** @var RoomCacheSearchProvider */
-    private $roomCacheLimitChecker;
-
-    /** @var  */
-    private $tariffLimitChecker;
-
     /** @var DocumentManager */
     private $dm;
 
     /** @var RestrictionsCheckerService */
     private $restrictionChecker;
 
-    public function __construct(RoomCacheSearchProvider $roomCacheChecker, DocumentManager $dm, TariffLimitChecker $limitCheckertariffLimitChecker, RestrictionsCheckerService $restrictionsChecker)
+    /** @var  SearchLimitChecker*/
+    private $searchLimitChecker;
+
+    public function __construct(DocumentManager $dm,  RestrictionsCheckerService $restrictionsChecker, SearchLimitChecker $limitChecker)
     {
-        $this->roomCacheLimitChecker = $roomCacheChecker;
         $this->dm = $dm;
-        $this->tariffLimitChecker = $limitCheckertariffLimitChecker;
         $this->restrictionChecker = $restrictionsChecker;
+        $this->searchLimitChecker = $limitChecker;
 
     }
 
@@ -48,16 +44,18 @@ class Searcher
     public function search(SearchQuery $searchQuery): ?SearchResult
     {
         $searchResult = new SearchResult();
+
         $this->preFilter($searchQuery);
+
         $this->checkRestrictions($searchQuery);
 
         $currentTariff = $this->dm->find(Tariff::class, $searchQuery->getTariffId());
         $this->checkTariffDates($currentTariff);
+        $this->checkTariffConditions($currentTariff, $searchQuery);
+
 
         $currentRoomType = $this->dm->find(RoomType::class, $searchQuery->getRoomTypeId());
-        // RoomCache limit check
-        $this->fetchAndCheckRoomCaches($searchQuery, $currentRoomType, $currentTariff);
-
+        $this->checkRoomCacheLimit($searchQuery, $currentRoomType, $currentTariff);
         $this->checkRoomTypePopulationLimit($currentRoomType, $searchQuery);
 
         return $searchResult;
@@ -89,29 +87,22 @@ class Searcher
      * @param SearchQuery $searchQuery
      * @throws SearchException
      */
-    private function checkRestrictions(SearchQuery $searchQuery)
+    private function checkRestrictions(SearchQuery $searchQuery): void
     {
         $errors = $this->restrictionChecker->check($searchQuery);
-        if (count($errors)) {
+        if (\count($errors)) {
             throw new SearchException('Error in restriction');
         }
     }
 
-    private function checkRoomTypePopulationLimit(RoomType $roomType, SearchQuery $searchQuery): void
+    private function checkTariffDates(Tariff $tariff): void
     {
-        $totalPlaces = $searchQuery->getTotalPlaces();
-        $infants = $searchQuery->getInfants();
-        //** TODO: Подумать как сюда закинуть настройки макс возможно бесплатных инфантов */
-        $freeInfants = 100;
-        if (($payInfants = $freeInfants - $infants) < 0) {
-            $payInfants = abs($payInfants);
-        } else {
-            $payInfants = 0;
-        }
-        $roomTypeTotalPlaces = $roomType->getTotalPlaces() + $payInfants;
-        if ($roomTypeTotalPlaces < $totalPlaces) {
-            throw new SearchException('RoomType total place less than need in query');
-        }
+        $this->searchLimitChecker->checkDateLimit($tariff);
+    }
+
+    private function checkTariffConditions(Tariff $tariff, SearchQuery $searchQuery): void
+    {
+        $this->searchLimitChecker->checkTariffConditions($tariff, $searchQuery);
     }
 
     /**
@@ -122,13 +113,13 @@ class Searcher
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RoomCacheLimitException
      */
-    private function fetchAndCheckRoomCaches(SearchQuery $searchQuery, RoomType $currentRoomType, Tariff $currentTariff): array
+    private function checkRoomCacheLimit(SearchQuery $searchQuery, RoomType $currentRoomType, Tariff $currentTariff): void
     {
-        return $this->roomCacheLimitChecker->fetchAndCheck($searchQuery->getBegin(), $searchQuery->getEnd(), $currentRoomType, $currentTariff);
+        $this->searchLimitChecker->checkRoomCacheLimit($searchQuery, $currentRoomType, $currentTariff);
     }
 
-    private function checkTariffDates(Tariff $tariff): void
+    private function checkRoomTypePopulationLimit(RoomType $roomType, SearchQuery $searchQuery): void
     {
-        $this->tariffLimitChecker->check($tariff);
+        $this->searchLimitChecker->checkRoomTypePopulationLimit($roomType, $searchQuery);
     }
 }
