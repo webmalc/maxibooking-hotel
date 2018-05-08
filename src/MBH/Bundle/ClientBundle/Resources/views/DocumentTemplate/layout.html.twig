@@ -7,7 +7,7 @@
     'advlist', 'autolink', 'link', 'lists', 'charmap', 'preview', 'hr', 'anchor', 'pagebreak',
     'searchreplace','visualblocks','visualchars','code','fullscreen','insertdatetime', 'nonbreaking',
     'save', 'table' ,'contextmenu', 'directionality', 'emoticons', 'paste', 'textcolor', 'fullpage',
-
+    'colorpicker',
 ] %}
 
 {#'image', 'media', 'template', 'print',#}
@@ -48,7 +48,15 @@
         var mbh_property = {{ get_properties() }};
     </script>
 
-    {% javascripts '@MBHClientBundle/Resources/public/js/mbh_data.tinymce.plugin.js' %}
+    {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/langs/ru.js' %}
+        {% set url_lang_ru %}{{ asset_url }}{% endset %}
+        <script src="{{ url_lang_ru }}"></script>
+    {% endjavascripts %}
+
+    {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/plugin/mbh_data.tinymce.plugin.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/plugin/langs/ru.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
@@ -58,6 +66,7 @@
             tinymce.init({
                 selector: '#mbh_client_document_template_content',
                 theme: 'modern',
+                language_url: '{{ url_lang_ru }}',
                 skin_url: '/assets/vendor/tinymce/skins/lightgray',
                 plugins_url: '/assets/vendor/tinymce/skins/lightgray',
                 resize: 'both',
@@ -90,5 +99,15 @@
         div.mce-fullscreen {
             z-index: 10000;
         }
+
+        .mce-first-item-in-table-with-entity {
+            cursor: default !important;
+
+        }
+
+        .mce-first-item-in-table-with-entity span {
+            color: white !important;
+        }
+
     </style>
 {% endblock %}
