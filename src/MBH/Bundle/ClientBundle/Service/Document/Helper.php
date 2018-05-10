@@ -34,19 +34,25 @@ class Helper
     public static function methodsOfEntity(): array
     {
         return [
-            'hotel'     => HotelSerialize::methods(),
-            'payer'     => [
-                'mortal' => MortalSerialize::methods(),
-                'organ'  => OrganizationSerialize::methods(),
+            'common' => [
+                'hotel'   => HotelSerialize::methods(),
+                'payer'   => [
+                    'mortal' => MortalSerialize::methods(),
+                    'organ'  => OrganizationSerialize::methods(),
+                ],
+                'order'   => OrderSerialize::methods(),
+                'user'    => UserSerialize::methods(),
+                'package' => PackageSerialize::methods(),
             ],
-            'order'     => OrderSerialize::methods(),
-            'user'      => UserSerialize::methods(),
-            'package'   => PackageSerialize::methods(),
-            'cashDocument' => CashDocumentSerialize::methods(),
+            'table'  => [
+                'cashDocument' => CashDocumentSerialize::methods(),
+                'tourist'      => MortalSerialize::methods(),
+            ],
+
         ];
     }
 
-    public static function numFormat($value):string
+    public static function numFormat($value): string
     {
         return number_format($value, 2);
     }

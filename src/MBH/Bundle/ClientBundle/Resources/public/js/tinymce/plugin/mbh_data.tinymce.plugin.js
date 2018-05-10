@@ -10,6 +10,8 @@ document.onready = function (ev) {
 tinymce.PluginManager.add('mbh_data', function (editor, url) {
     "use strict";
 
+    var self = this;
+
     String.prototype.ucFirst = function () {
         var str = this;
         if (str.length) {
@@ -18,40 +20,45 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         return str;
     };
 
-    // editor.addButton('mbh_example', {
-    //     text: 'MBH button',
-    //     icon: false,
-    //     onclick: function() {
-    //         // Open window
-    //         editor.windowManager.open({
-    //             title: 'Example plugin 2',
-    //             body: [
-    //                 {type: 'textbox', name: 'title', label: 'Title'}
-    //             ],
-    //             onsubmit: function(e) {
-    //                 // Insert content when the window form is submitted
-    //                 editor.insertContent('Title: ' + e.data.title);
-    //             }
-    //         });
-    //     }
-    // });
+    function menuText(str){
+        var name = '',
+            match = str.match(/get([A-Z].+)([A-Z].+)([A-Z].+)|([A-Z].+)([A-Z].+)|([A-Z].+)/);
+        for (var i = 1, len = match.length; i <= len; i++){
+            if (match[i] !== undefined){
+                name += match[i] + ' ';
+            }
+        }
+        return name.trim();
+    }
 
-    // var editor = editor.activeEditor;
+    self.getMenu = function (entity, property, onSelect) {
+        var menuItems = [];
+        var func = onSelect === undefined ? true : onSelect;
+        for (var i = 0, len = property.length; i < len; i++) {
+            var str = '{{ ' + entity + '.' + property[i] + ' }}';
+            var tempObj = {
+                tempStr: str,
+                text   : menuText(property[i])
+            };
+            if (func) {
+                tempObj['onselect'] = function (e) {
+                    editor.insertContent(this.settings.tempStr);
+                }
+            } else {
+                tempObj.value = str;
+            }
+            menuItems.push(tempObj);
+        }
 
-    // console.log(editor);
-    // console.log(editor.editorManager.DOM.doc);
+        return menuItems;
+    };
 
-    var self = this;
+    self.mbh_property = {};
+    self.mbh_property.table = {};
+    for (var tableKey in mbh_property.table){
+        self.mbh_property.table[tableKey] = mbh_property.table[tableKey];
+    }
 
-    // self.mbh_border_style = 'none';
-    // self.mbh_border_color = 'white';
-
-    // var hotelProperty = mbh_property.hotel;
-
-    var payerProperty = mbh_property.payer;
-
-    self.touristProperty = payerProperty.mortal;
-    self.cashDocumentProperty = mbh_property.cashDocument;
 
     var borderShow = 'border: 1px dotted black;';
     var borderHide = 'border: 1px dotted white;';
@@ -119,80 +126,29 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         }
     });
 
-    // function ucFirst(str) {
-    //     return str.map(function (value, index) {
-    //         if (index === 0) {
-    //             return value.toUpperCase();
-    //         }
-    //     })
-    // }
-
-    function menuText(str){
-        var name = '',
-            match = str.match(/get([A-Z].+)([A-Z].+)([A-Z].+)|([A-Z].+)([A-Z].+)|([A-Z].+)/);
-        for (var i = 1, len = match.length; i <= len; i++){
-            if (match[i] !== undefined){
-                name += match[i] + ' ';
-            }
+    for(var entityName in mbh_property.common){
+        if (entityName === 'payer'){
+            editor.addMenuItem('mbh_payer', {
+                text: 'Payer',
+                menu: [
+                    {
+                        text: 'Organization',
+                        menu: self.getMenu('payer', mbh_property.common.payer.organ)
+                    },
+                    {
+                        text: 'Human',
+                        menu: self.getMenu('payer', mbh_property.common.payer.mortal)
+                    }
+                ]
+            });
+        } else {
+            editor.addMenuItem('mbh_' + entityName, {
+                text: menuText(entityName.ucFirst()),
+                menu: self.getMenu(entityName, mbh_property.common[entityName])
+            });
         }
-        return name.trim();
+
     }
-
-    self.getMenu = function (entity, property, onSelect) {
-        var menuItems = [];
-        var func = onSelect === undefined ? true : onSelect;
-        for (var i = 0, len = property.length; i < len; i++) {
-            var str = '{{ ' + entity + '.' + property[i] + ' }}';
-            var tempObj = {
-                tempStr: str,
-                text   : menuText(property[i])
-            };
-            if (func) {
-                tempObj['onselect'] = function (e) {
-                    editor.insertContent(this.settings.tempStr);
-                }
-            } else {
-                tempObj.value = str;
-            }
-            menuItems.push(tempObj);
-        }
-
-        return menuItems;
-    };
-
-    editor.addMenuItem('mbh_user', {
-        text: 'User',
-        menu: self.getMenu('user', mbh_property.user)
-    });
-
-    editor.addMenuItem('mbh_package', {
-        text: 'Package',
-        menu: self.getMenu('package', mbh_property.package)
-    });
-
-    editor.addMenuItem('mbh_hotel', {
-        text: 'Hotel',
-        menu: self.getMenu('hotel', mbh_property.hotel)
-    });
-
-    editor.addMenuItem('mbh_order', {
-        text: 'Order',
-        menu: self.getMenu('order', mbh_property.order)
-    });
-
-    editor.addMenuItem('mbh_payer', {
-        text: 'Payer',
-        menu: [
-            {
-                text: 'Organization',
-                menu: self.getMenu('payer', payerProperty.organ)
-            },
-            {
-                text: 'Human',
-                menu: self.getMenu('payer', payerProperty.mortal)
-            }
-        ]
-    });
 
     var menuItems = [];
     // var menuItems2 = '';
@@ -217,16 +173,49 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         menu   : menuItems
     });
 
-    var firstItem = function (entity) {
-        return [
-            {
-                text   : menuText(entity.ucFirst()),
-                style  : 'margin-top: -6px; background-color: #888888; border-bottom: 1px solid black;',
-                disabled: true,
-                classes: 'first-item-in-table-with-entity'
+    // var firstItem = function (entity) {
+    //     return [
+    //         {
+    //             text   : menuText(entity.ucFirst()),
+    //             style  : 'margin-top: -6px; background-color: #888888; border-bottom: 1px solid black;',
+    //             disabled: true,
+    //             classes: 'first-item-in-table-with-entity'
+    //         }
+    //     ]
+    // };
+
+
+    function changeMenuItemsTableEntity(entityMenu) {
+        if (self.mbh_table !== null) {
+            try {
+                if (entityMenu.settings.entity === self.mbh_table_match[1]){
+                    entityMenu.show();
+                } else {
+                    entityMenu.hide();
+                }
+            } catch (error) {
+
             }
-        ]
-    };
+        }
+    }
+
+    var menuEntityTable = [];
+    for (var entityNameInTable in self.mbh_property.table) {
+        menuEntityTable.push(
+            {
+                text: menuText(entityNameInTable.ucFirst()),
+                menu: self.getMenu(entityNameInTable, self.mbh_property.table[entityNameInTable]),
+                entity: entityNameInTable,
+                onPostRender: function (e) {
+                    var entityMenu = this;
+                    changeMenuItemsTableEntity(entityMenu);
+                    editor.on('NodeChange', function (e) {
+                        changeMenuItemsTableEntity(entityMenu);
+                    });
+                }
+            }
+        )
+    }
 
     editor.addMenuItem('mbh_table_entity', {
         context     : 'contextmenu',
@@ -235,16 +224,14 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         onPostRender: function () {
             var menu = this;
             editor.on('NodeChange', function (e) {
-                var table = editor.dom.getParent(e.element, 'table');
-                if (table === null || table.classList.value.search(/mbh_/) == -1) {
+                self.mbh_table = editor.dom.getParent(e.element, 'table');
+                if (self.mbh_table === null || self.mbh_table.classList.value.search(/mbh_/) == -1) {
                     menu.disabled(true);
                     menu.settings.menu = null;
                 } else {
-                    var match = table.classList.value.match(/mbh_(.+)\s|$/);
-                    if (match[1] !== undefined) {
-                        menu.disabled(false);
-                        menu.settings.menu = firstItem(match[1]).concat(self.getMenu(match[1], self[match[1] + 'Property']));
-                    }
+                    self.mbh_table_match = self.mbh_table.classList.value.match(/mbh_(.+)\s|$/);
+                    menu.disabled(false);
+                    menu.settings.menu = menuEntityTable;
                 }
             })
         }
@@ -293,11 +280,6 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         table += '</tr>{% endfor %}</tbody></table>';
         return table;
     }
-
-    self.dataForTable = [
-        {text: 'Cash Document', value: 'cashDocument'},
-        {text: 'Tourist', value: 'tourist', selected: true}
-    ];
 
     self.touristInsertTable = function (thead, variables) {
         return insertThead('tourist', thead) + insertTbody('tourist', 'package.allTourists', variables);
@@ -529,7 +511,13 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                         type  : 'listbox',
                         name  : 'source',
                         label : 'Source Data',
-                        values: self.dataForTable
+                        values: (function () {
+                            var menu = [];
+                            for (var key in self.mbh_property.table){
+                                menu.push({text: menuText(key.ucFirst()), value: key});
+                            }
+                            return menu;
+                        })()
                     },
                     {
                         type : 'checkbox',
@@ -550,7 +538,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                 ],
                 onsubmit: function (e) {
                     if (itemColumnIsValid(e.data['amount'])) {
-                        var menu = self.getMenu(e.data['source'], self[e.data['source'] + 'Property'], false);
+                        var menu = self.getMenu(e.data['source'], self.mbh_property.table[e.data['source']], false);
 
                         var items = [];
 
@@ -578,7 +566,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                         self.mbh_SourceName = e.data['source'];
                         self.mbh_Counter = e.data['counter'];
                         editor.windowManager.open({
-                            title   : 'Container',
+                            title   : 'Table for ' + menuText(self.mbh_SourceName.ucFirst()),
                             body    : items,
                             onsubmit: function (e) {
                                 var headers = [];
