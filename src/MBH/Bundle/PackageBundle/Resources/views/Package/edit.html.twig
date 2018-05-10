@@ -56,6 +56,10 @@
                                 {% endif %}
                             </td>
                         </tr>
+                        <tr>
+                            <td><strong>{{ 'package.edit.package_price'|trans({}, 'MBHPackageBundle') }}</strong></td>
+                            <td>{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                        </tr>
 
                         {% if package.prices is not empty %}
                             <tr>
@@ -99,47 +103,7 @@
                                 </td>
                             </tr>
                         {% endif %}
-                        {% if package.searchQuery is iterable %}
-                            {% for query in package.searchQuery %}
-                                <tr>
-                                <td class="col-md-3">
-                                    <strong>{{ 'package.edit.query'|trans({}, 'MBHPackageBundle') }} {{ loop.index }}</strong>
-                                </td>
-                                <td>
-                                    <p>
-                                        <small><a href="javascript: toggler('main-query{{ loop.index }}')">{{ 'package.edit.show_display'|trans}}</a></small>
-                                    </p>
-                                    <div id="main-query{{ loop.index }}" style="display: none;">
-                                        <small>
-                                            <p>
-                                                {{ query.createdAt|date('d.m.Y') }}
-                                            </p>
-                                            {% if query.adults %}
-                                                <p>
-                                                    {{ 'pacakge.edit.number_of_adults'|trans}} - <strong>{{ query.adults }} {{ 'adults.full'|transchoice(query.adults) }}</strong>
-                                                </p>
-                                            {% endif %}
-                                            {% if query.children %}
-                                                <p>
-                                                    {{ 'pacakge.edit.number_of_children'|trans}} - <strong>{{ query.children }} {{ 'children.full'|transchoice(query.children) }}</strong>
-                                                </p>
-                                            {% endif %}
-                                            {% if query.childrenAges and query.childrenAges is iterable %}
-                                                <p>
-                                                    {{ 'pacakge.edit.children_ages'|trans}} -
-                                                    <strong>
-                                                        {% for age in query.childrenAges %}
-                                                            {{ age }} {{ 'age.full'|transchoice(age) }}
-                                                        {% endfor %}
-                                                    </strong>
-                                                </p>
-                                            {% endif %}
-                                        </small>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% endif %}
+
 
                         {% if package.pricesByDate is not empty and package.prices is empty %}
                             <tr>
@@ -208,6 +172,47 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% if package.searchQuery is iterable %}
+                        {% for query in package.searchQuery %}
+                            <tr>
+                                <td class="col-md-3">
+                                    <strong>{{ 'package.edit.query'|trans({}, 'MBHPackageBundle') }} {{ loop.index }}</strong>
+                                </td>
+                                <td>
+                                    <p>
+                                        <small><a href="javascript: toggler('main-query{{ loop.index }}')">{{ 'package.edit.show_display'|trans}}</a></small>
+                                    </p>
+                                    <div id="main-query{{ loop.index }}" style="display: none;">
+                                        <small>
+                                            <p>
+                                                {{ query.createdAt|date('d.m.Y') }}
+                                            </p>
+                                            {% if query.adults %}
+                                                <p>
+                                                    {{ 'pacakge.edit.number_of_adults'|trans}} - <strong>{{ query.adults }} {{ 'adults.full'|transchoice(query.adults) }}</strong>
+                                                </p>
+                                            {% endif %}
+                                            {% if query.children %}
+                                                <p>
+                                                    {{ 'pacakge.edit.number_of_children'|trans}} - <strong>{{ query.children }} {{ 'children.full'|transchoice(query.children) }}</strong>
+                                                </p>
+                                            {% endif %}
+                                            {% if query.childrenAges and query.childrenAges is iterable %}
+                                                <p>
+                                                    {{ 'pacakge.edit.children_ages'|trans}} -
+                                                    <strong>
+                                                        {% for age in query.childrenAges %}
+                                                            {{ age }} {{ 'age.full'|transchoice(age) }}
+                                                        {% endfor %}
+                                                    </strong>
+                                                </p>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
                     {% if package.virtualRoom %}
                     <tr>
                         <td>
@@ -218,7 +223,6 @@
                         </td>
                     </tr>
                     {% endif %}
-
                     </tbody>
                 </table>
             </div>

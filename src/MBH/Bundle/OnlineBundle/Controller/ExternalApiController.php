@@ -40,6 +40,7 @@ class ExternalApiController extends BaseController
      * @Route("/roomTypes")
      * @param Request $request
      * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getRoomTypesAction(Request $request)
     {
@@ -47,11 +48,17 @@ class ExternalApiController extends BaseController
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $queryData = $request->query;
 
+        $onlineFormId = $queryData->get('onlineFormId');
+        /** @var FormConfig $formConfig */
+        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
+        if (!is_null($formConfig)) {
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+        }
+
         $responseCompiler = $requestHandler->checkIsArrayFields($queryData, ['roomTypeIds', 'hotelIds'], $responseCompiler);
 
         $isEnabled = !empty($queryData->get('isEnabled')) ? $queryData->get('isEnabled') === 'true' : true;
         $isFull = !empty($queryData->get('isFull')) ? $queryData->get('isFull') === 'true' : false;
-        $onlineFormId = $queryData->get('onlineFormId');
 
         $roomTypeIds = $queryData->get('roomTypeIds');
         $hotelIds = $queryData->get('hotelIds');
@@ -79,8 +86,6 @@ class ExternalApiController extends BaseController
             ->getQuery()
             ->execute();
 
-        /** @var FormConfig $formConfig */
-        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
         if ($responseCompiler->isSuccessful()) {
             $responseData = [];
             /** @var RoomType $roomType */
@@ -115,6 +120,7 @@ class ExternalApiController extends BaseController
      * @Route("/tariffs")
      * @param Request $request
      * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getTariffsAction(Request $request)
     {
@@ -132,6 +138,9 @@ class ExternalApiController extends BaseController
         /** @var FormConfig $formConfig */
         $onlineFormId = $queryData->get('onlineFormId');
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
+        if (!is_null($formConfig)) {
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+        }
 
         $hotelIds = $queryData->get('hotelIds');
 
@@ -193,6 +202,10 @@ class ExternalApiController extends BaseController
         $responseCompiler = $this->get('mbh.api_response_compiler');
         /** @var FormConfig $formConfig */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
+        if (!is_null($formConfig)) {
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+        }
+
         if (!$responseCompiler->isSuccessful()) {
             return $responseCompiler->getResponse();
         }
@@ -219,7 +232,8 @@ class ExternalApiController extends BaseController
      *     produces={"application/json"},
      *     @SWG\Response(response="200", description="Return array of services for tariff"),
      *     @SWG\Parameter(name="tariffId", in="query", type="string", required=true, description="The ID of the rate for which receive the services"),
-     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response")
+     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
+     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form")
      * )
      * @Route("/services")
      * @param Request $request
@@ -230,6 +244,14 @@ class ExternalApiController extends BaseController
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
+
+        $onlineFormId = $queryData->get('onlineFormId');
+        /** @var FormConfig $formConfig */
+        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
+        if (!is_null($formConfig)) {
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+        }
+
         $requestHandler->checkMandatoryFields($queryData, ['tariffId'], $responseCompiler);
 
         if (!$responseCompiler->isSuccessful()) {
@@ -322,6 +344,12 @@ class ExternalApiController extends BaseController
         $responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['begin', 'end', 'adults'], $responseCompiler);
 
         $onlineFormId = $queryData->get('onlineFormId');
+        /** @var FormConfig $formConfigData */
+        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
+        if (!is_null($formConfig)) {
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+        }
+
         $hotelIds = $queryData->get('hotelIds');
         $roomTypeIds = $queryData->get('roomTypeIds');
         $this->setLocaleByRequest();
@@ -329,9 +357,6 @@ class ExternalApiController extends BaseController
         if (!$responseCompiler->isSuccessful()) {
             return $responseCompiler->getResponse();
         }
-
-        /** @var FormConfig $formConfigData */
-        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
 
         $query = new SearchQuery();
         $query->isOnline = false;

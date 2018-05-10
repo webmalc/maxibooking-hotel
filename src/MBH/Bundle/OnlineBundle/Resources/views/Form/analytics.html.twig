@@ -1,0 +1,16 @@
+{% extends 'MBHOnlineBundle:Form:layout.html.twig' %}
+{% set active = 2 %}
+
+{% block content %}
+    {% include '@MBHOnline/Form/tabs.html.twig' %}
+    <div class="tab-content">
+
+        {{ form_start(form, {'action': path('form_analytics', {id: config.id}), 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+        {{ form_end(form) }}
+        {% if config %}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs } %}
+        {% endif %}
+    </div>
+{% endblock %}
