@@ -151,6 +151,8 @@ ROLE_POLLS: Голосования
 ROLE_REPORTS: Отчеты
 ROLE_ANALYTICS: Аналитика
 
+ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT: 'Отчет "Заезд/Выезд"'
+ROLE_DAILY_REPORT_BY_PACKAGES: 'Отчет "Денежные средства"'
 ROLE_PACKAGE: Брони
 ROLE_SEARCH: Подбор
 ROLE_PACKAGE_VIEW: Просмотр брони

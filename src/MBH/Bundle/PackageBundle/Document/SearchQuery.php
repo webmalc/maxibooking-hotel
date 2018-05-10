@@ -1,26 +1,44 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Lib;
+namespace MBH\Bundle\PackageBundle\Document;
 
+use Gedmo\Mapping\Annotation as Gedmo;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class SearchQuery
+  * Class SearchQuery
  * @package MBH\Bundle\PackageBundle\Lib
+ * @ODM\Document(collection="SearchQuery", repositoryClass="MBH\Bundle\PackageBundle\Document\SearchQueryRepository")
+ * @Gedmo\Loggable()
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class SearchQuery
+class SearchQuery extends Base
 {
+
+    use TimestampableDocument;
+
+    use SoftDeleteableDocument;
+
+    use BlameableDocument;
+
     /**
      * @var bool
+     * @ODM\Field(type="boolean")
+     * @Assert\Type(type="boolean")
      */
     public $memcached = true;
 
     /**
      * @var \DateTime
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message="form.searchType.check_in_date_not_filled")
      * @Assert\Date()
      */
@@ -28,6 +46,7 @@ class SearchQuery
     
     /**
      * @var \DateTime
+     * @ODM\Field(type="date")
      * @Assert\NotNull(message="orm.searchType.check_out_date_not_filled")
      * @Assert\Date()
      */
@@ -35,16 +54,19 @@ class SearchQuery
 
     /**
      * @var \DateTime
+     * @ODM\Field(type="date")
      */
     public $excludeBegin = null;
 
     /**
      * @var \DateTime
+     * @ODM\Field(type="date")
      */
     public $excludeEnd = null;
     
     /**
      * @var int
+     * @ODM\Field(type="integer")
      * @Assert\NotNull(message="form.searchType.adults_amount_not_filled")
      * @Assert\Range(
      *     min = 0,
@@ -56,6 +78,7 @@ class SearchQuery
     
     /**
      * @var int
+     * @ODM\Field(type="integer")
      * @Assert\NotNull(message="orm.searchType.children_amount_not_filled")
      * @Assert\Range(
      *     min = 0,
@@ -67,29 +90,32 @@ class SearchQuery
 
     /**
      * @var array
+     * @ODM\Field(type="collection")
      */
     public $childrenAges = [];
 
     /**
      * @var boolean
+     * @ODM\Field(type="boolean")
      */
     public $isOnline = false;
     
     /**
      * RoomTypes ids
-     * 
+     * @ODM\Field(type="collection")
      * @var []
      */
     public $roomTypes = [];
 
     /**
      * @var boolean
+     * @ODM\Field(type="boolean")
      */
     public $forceRoomTypes = false;
 
     /**
      * ExcludeRoomTypes ids
-     *
+     * @ODM\Field(type="collection")
      * @var []
      */
     public $excludeRoomTypes = [];
@@ -97,11 +123,13 @@ class SearchQuery
     /**
      * With accommodations on/off
      * @var bool
+     * @ODM\Field(type="boolean")
      */
     public $accommodations = false;
 
     /**
      * @var bool
+     * @ODM\Field(type="boolean")
      */
     public $grouped = false;
 
@@ -112,23 +140,25 @@ class SearchQuery
 
     /**
      * @var Promotion
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Promotion")
      */
     protected $promotion;
 
     /**
      * @var Special
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Special")
      */
     protected $special;
     
     /**
      * Tariff id
-     * 
      * @var mixed
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      */
     public $tariff;
 
-    protected $preferredVirtualRoom;
 
+    protected $preferredVirtualRoom;
 
     /**
      * @var Package
@@ -141,6 +171,7 @@ class SearchQuery
     /**
      * Additional days for search
      * @var int
+     * @ODM\Field(type="integer")
      * @Assert\Range(
      *     min = 0,
      *     max = 10,
@@ -152,22 +183,26 @@ class SearchQuery
 
     /**
      * @var RoomTypes|array ids
+     * @ODM\Field(type="collection")
      */
     public $availableRoomTypes = [];
 
     /**
      * @var bool
+     * @ODM\Field(type="boolean")
      */
     public $forceBooking = false;
 
     /**
      * @var int
+     * @ODM\Field(type="integer")
      */
     public $infants = 0;
 
     /**
      * @var int
      * @Assert\Range(min = 0)
+     * @ODM\Field(type="integer")
      */
     public $limit;
 
@@ -177,6 +212,15 @@ class SearchQuery
     private $isShowNoVirtRoomFlash = false;
 
     protected $isSpecialStrict = false;
+
+    /** @var bool  */
+    protected $save = false;
+
+    /** @var  string */
+    protected $querySavedId;
+
+    /** @var bool */
+    protected $ignoreGuestRestriction = false;
 
     /**
      * @return bool
@@ -375,7 +419,58 @@ class SearchQuery
         $this->isSpecialStrict = $isSpecialStrict;
     }
 
+    /**
+     * @return bool
+     */
+    public function isSave(): bool
+    {
+        return $this->save;
+    }
 
+    /**
+     * @param bool $save
+     * @return SearchQuery
+     */
+    public function setSave(bool $save): SearchQuery
+    {
+        $this->save = $save;
 
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuerySavedId(): ?string
+    {
+        return $this->querySavedId;
+    }
+
+    /**
+     * @param string $querySavedId
+     * @return SearchQuery
+     */
+    public function setQuerySavedId(string $querySavedId): SearchQuery
+    {
+        $this->querySavedId = $querySavedId;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIgnoreGuestRestriction()
+    {
+        return $this->ignoreGuestRestriction;
+    }
+
+    /**
+     * @param bool $ignoreGuestRestriction
+     */
+    public function setIgnoreGuestRestriction(bool $ignoreGuestRestriction)
+    {
+        $this->ignoreGuestRestriction = $ignoreGuestRestriction;
+    }
 
 }

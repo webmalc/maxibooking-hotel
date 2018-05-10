@@ -78,12 +78,11 @@ class PackageSubscriber implements EventSubscriber
             }
             $entity->setServicesPrice(0);
             $dm->persist($entity);
-            $dm->flush();
+            $dm->flush($entity);
 
-            $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
+//            $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
         }
 
-        return;
     }
 
     public function postPersist(LifecycleEventArgs $args)
@@ -181,7 +180,7 @@ class PackageSubscriber implements EventSubscriber
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
-            $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
+//            $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
         }
     }
 
@@ -208,7 +207,7 @@ class PackageSubscriber implements EventSubscriber
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
             $lastEntity = $dm->getRepository('MBHPackageBundle:Package')
-                ->createQueryBuilder('q')
+                ->createQueryBuilder()
                 ->field('order.id')->equals($package->getOrder()->getId())
                 ->sort('number', 'desc')
                 ->getQuery()

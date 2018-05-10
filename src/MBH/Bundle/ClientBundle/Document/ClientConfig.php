@@ -30,7 +30,7 @@ class ClientConfig extends Base
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -172,6 +172,51 @@ class ClientConfig extends Base
      * @Assert\Range(min=0, max=365)
      */
      protected $noticeUnpaid = 0;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Field(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Type(type="integer", message="validate.type.integer")
+     * @Assert\Range(min=0, max=2, invalidMessage="")
+     */
+    protected $priceRoundSign = 2;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $queryStat = true;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     */
+    protected $isDisableableOn = false;
+
+    /**
+     * @return bool
+     */
+    public function isIsDisableableOn(): bool
+    {
+        return $this->isDisableableOn;
+    }
+
+    /**
+     * @param bool $isDisableableOn
+     * @return ClientConfig
+     */
+    public function setIsDisableableOn(bool $isDisableableOn): ClientConfig
+    {
+        $this->isDisableableOn = $isDisableableOn;
+
+        return $this;
+    }
 
     /**
      * @return integer
@@ -533,6 +578,42 @@ class ClientConfig extends Base
     {
         $this->beginDate = $beginDate;
     }
+
+    /**
+     * @return integer
+     */
+    public function getPriceRoundSign()
+    {
+        return $this->priceRoundSign;
+    }
+
+    /**
+     * @param integer $priceRoundSign
+     */
+    public function setPriceRoundSign($priceRoundSign)
+    {
+        $this->priceRoundSign = $priceRoundSign;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isQueryStat(): bool
+    {
+        return $this->queryStat;
+    }
+
+    /**
+     * @param bool $queryStat
+     * @return ClientConfig
+     */
+    public function setQueryStat($queryStat): ClientConfig
+    {
+        $this->queryStat = $queryStat;
+
+        return $this;
+    }
+
 
 
 }

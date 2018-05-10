@@ -3,9 +3,11 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Form\SpecialFilterType;
@@ -33,7 +35,10 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
      *
      * @param Request $request
      * @return array| \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
+
     public function indexAction(Request $request)
     {
         $filter = new SpecialFilter();
@@ -44,14 +49,16 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
 
         if ($request->isXmlHttpRequest()) {
             $form->submit($request->get('form'));
-            $entities = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($filter);
+            $tableFilter = ClientDataTableParams::createFromRequest($request);
+            $entities = $this->dm->getRepository('MBHPriceBundle:Special')->getTableFiltered($filter, $tableFilter);
 
             return $this->render(
                 'MBHPriceBundle:Special:list.json.twig',
                 [
-                    'entities' => $entities,
-                    'draw' => $request->get('draw'),
+                    'entities' => $entities->toArray(),
+                    'draw' => $tableFilter->getDraw(),
                     'total' => $entities->count(),
+                    'filtered' => $entities->count(),
                 ]
             );
         }
@@ -127,16 +134,21 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
-    private function createSpecialName(RoomType $roomType = null, \DateTime $begin = null, \DateTime $end = null, Room $virtualRoom = null)
-    {
-        $roomTypeName = str_replace(' ','_',($roomType ? $roomType->getName() : ''));
+    private function createSpecialName(
+        RoomType $roomType = null,
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        Room $virtualRoom = null
+    ) {
+        $roomTypeName = str_replace(' ', '_', ($roomType ? $roomType->getName() : ''));
         $beginAsString = $begin ? $begin->format('d_m-Y') : '';
         $endAsString = $end ? $end->format('d_m_Y') : '';
-        $virtualName = $virtualRoom ? '_'.$virtualRoom->getName():'';
+        $virtualName = $virtualRoom ? '_'.$virtualRoom->getName() : '';
         $specialName = "Спец_{$roomTypeName}_{$beginAsString}_{$endAsString}_{$virtualName}";
 
         return $specialName;
     }
+
     /**
      * Displays a form to edit an existing entity.
      *
@@ -163,6 +175,8 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($entity);
             $this->dm->flush();
+            /** Висел слушатель но какие то глюки. Указываю тут явно пересчет. */
+            $this->container->get('mbh.special_handler')->calculatePrices([$entity->getId()]);
 
             $this->addFlash('success', 'document.saved');
 
@@ -196,24 +210,26 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
      * @param int $children
      * @param int $infants
      * @return array
-     * @Route("/{id}/booking/{adults}/{children}/{infants}", name="special_booking", defaults={"adults":0, "children":0})
+     * @Route("/{id}/booking/{adults}/{children}/{infants}", name="special_booking", defaults={"adults":0, "children":0}, options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_NEW')")
      * @Template()
      */
     public function bookingAction(Special $special, int $adults = 0, int $children = 0, int $infants = 0)
     {
-        $search = $this->get('mbh.online.special_result_generator');
+        $search = $this->get('mbh.online.data_provider_special');
         $searchData = $this->get('mbh.online.search_form_data');
         $searchData
             ->setSpecial($special)
-            ->setRoomType($special->getVirtualRoom()->getRoomType());
+            ->setRoomType($special->getVirtualRoom()->getRoomType())
+            ->setForceCapacityRestriction(true);
         $specialResult = $search->getResults($searchData);
         $searchResult = null;
         $errors = [];
         if (count($specialResult)) {
-            $searchResult = $specialResult->first()->getResults()->first()??null;
-            if ($searchResult->getVirtualRoom() === null) {
+            $searchResult = reset($specialResult)->getResults()->first() ?? null;
+            /** @var SearchResult $searchResult */
+            if (!$searchResult || $searchResult->getVirtualRoom() === null) {
                 $errors[] = 'Возможно спецпредложение уже не активно.';
             }
         } else {
@@ -229,7 +245,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
             'adults' => $adults,
             'children' => $children,
             'infants' => $infants,
-            'errors' => $errors
+            'errors' => $errors,
         ];
     }
 
@@ -263,5 +279,6 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         return $this->redirectToRoute('special_edit', ['id' => $special->getId()]);
 
     }
+
 
 }

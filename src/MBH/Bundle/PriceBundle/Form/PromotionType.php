@@ -37,7 +37,7 @@ class PromotionType extends AbstractType
                 'group' => 'form.promotionType.group.main',
                 'required' => false
             ])
-            ->add('discount', NumberType::class, [
+            ->add('discount', TextType::class, [
                 'label' => 'form.promotionType.label.discount',
                 'group' => 'form.promotionType.group.main',
                 'required' => false,

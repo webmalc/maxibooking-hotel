@@ -21,13 +21,15 @@ services:
     mbh.tourists.messenger:
             class: MBH\Bundle\PackageBundle\Services\TouristsMessenger
             arguments: ['@service_container']
-        
+
     mbh.calculation:
-            class: MBH\Bundle\PackageBundle\Services\Calculation
+            class: MBH\Bundle\PackageBundle\Services\CalculationFactory
+            factory: ['MBH\Bundle\PackageBundle\Services\CalculationFactory', createCalculation]
             arguments: ['@service_container']
 
     mbh.magic.calculation:
-            class: MBH\Bundle\PackageBundle\Services\MagicCalculation
+            class: MBH\Bundle\PackageBundle\Services\MagicCalculationFactory
+            factory: ['MBH\Bundle\PackageBundle\Services\MagicCalculationFactory', createCalculation]
             arguments: ['@service_container']
 
     mbh.order_manager:
@@ -162,7 +164,32 @@ services:
             - '@mbh.package_moving'
             - '@doctrine_mongodb.odm.document_manager'
 
+    mbh.packages_daily_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\PackagesDailyReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+            - '@mbh.calculation'
+
+    mbh.distribution_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\DistributionReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+
+
     mbh.dynamic_sales_report.dynamic_sales_day:
-        class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
-        arguments: ['@doctrine.odm.mongodb.document_manager']
-        shared: false
+      class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
+      arguments: ['@doctrine.odm.mongodb.document_manager']
+      shared: false
+
+    mbh.reservation_report:
+        class: MBH\Bundle\PackageBundle\Services\ReservationReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+            - '@mbh.helper'
+            - '@mbh.calculation'

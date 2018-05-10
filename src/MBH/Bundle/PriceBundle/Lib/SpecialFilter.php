@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Lib;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
@@ -96,6 +97,9 @@ class SpecialFilter
      * @var array
      */
     private $roomTypes;
+
+    /** @var Promotion */
+    private $promotion;
 
 
 
@@ -390,6 +394,24 @@ class SpecialFilter
     {
         $this->roomTypes = $roomTypes;
     }
+
+    /**
+     * @return Promotion
+     */
+    public function getPromotion(): ?Promotion
+    {
+        return $this->promotion;
+    }
+
+    /**
+     * @param Promotion $promotion
+     */
+    public function setPromotion(Promotion $promotion = null): void
+    {
+        $this->promotion = $promotion;
+    }
+
+
 
 
 

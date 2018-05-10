@@ -114,6 +114,7 @@ class SignType extends AbstractType
             ->add('total', HiddenType::class)
             ->add('promotion', HiddenType::class)
             ->add('special', HiddenType::class)
+            ->add('savedQueryId', HiddenType::class)
         ;
         $builder->get('cash')->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event){
             $data = $event->getForm()->getParent()->getData();

@@ -8,8 +8,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
-use MBH\Bundle\OnlineBookingBundle\Document\LeftRoom;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -43,16 +42,17 @@ class OnlineResultInstance
     protected $type;
     /** @var Special */
     protected $special;
+    /** @var string */
+    protected $queryId;
+
 
     /**
      * OnlineResultInstance constructor.
-     * @param DocumentManager $documentManager
      * @param array|null $thresholds
      */
-    public function __construct(DocumentManager $documentManager,  array $thresholds = null)
+    public function __construct(array $thresholds = null)
     {
         $this->results = new ArrayCollection();
-        $this->dm = $documentManager;
         if (!$thresholds) {
             $this->minThreshold = self::MIN_THRESHOLD;
             $this->maxThreshold = self::MAX_THRESHOLD;
@@ -250,7 +250,7 @@ class OnlineResultInstance
     public function isSameVirtualRoomInSpec()
     {
         $result = false;
-        if (!empty($this->results) && !empty($this->special)) {
+        if (null !== $this->results && null !== $this->special) {
             $specialVirtualRoom = $this->special->getVirtualRoom();
             /** @var SearchResult $result */
             $searchResult = $this->results->first();
@@ -295,48 +295,71 @@ class OnlineResultInstance
         ];
     }
 
-    public function getLeftSale()
+
+    public function getLeftSale(): ?int
     {
-        $actualRoomsCount = $this->getRemain();
-        $leftRoomKey = $this->getLeftRoomKey();
-        if (!$actualRoomsCount || !$leftRoomKey) {
-            return 0;
-        }
-
-        $maxOutput = min($this->maxThreshold, $actualRoomsCount);
-        if ($maxOutput < $this->maxThreshold) {
-            return $maxOutput;
-        }
-
-        $leftRoom = $this->dm->getRepository('MBHOnlineBookingBundle:LeftRoom')->findOneBy(
-            [
-                'key' => $leftRoomKey,
-            ]
-        );
-
-        $now = new \DateTime("now");
-        $start = rand($this->minThreshold, $this->maxThreshold);
-        if (!$leftRoom) {
-            $leftRoom = new LeftRoom();
-            $leftRoom
-                ->setKey($leftRoomKey)
-                ->setDate($now)
-                ->setCount($start);
-        }
-
-        $interval = date_diff($now, $leftRoom->getDate(), true);
-
-        if (1 <= $interval->d){
-            if ($this->minThreshold <= $leftRoom->getCount()) {
-                $leftRoom->setCount($leftRoom->getCount() - 1);
-            } else {
-                $leftRoom->setCount($start);
-            }
-        }
-        $this->dm->persist($leftRoom);
-        $this->dm->flush($leftRoom);
-
-        return $leftRoom->getCount();
+        return null;
+//        $actualRoomsCount = $this->getRemain();
+//        $leftRoomKey = $this->getLeftRoomKey();
+//        if (!$actualRoomsCount || !$leftRoomKey) {
+//            return 0;
+//        }
+//
+//        $maxOutput = min($this->maxThreshold, $actualRoomsCount);
+//        if ($maxOutput < $this->maxThreshold) {
+//            return $maxOutput;
+//        }
+//
+//        $leftRoom = $this->dm->getRepository('MBHOnlineBookingBundle:LeftRoom')->findOneBy(
+//            [
+//                'key' => $leftRoomKey,
+//            ]
+//        );
+//
+//        $now = new \DateTime("now");
+//        $start = rand($this->minThreshold, $this->maxThreshold);
+//        if (!$leftRoom) {
+//            $leftRoom = new LeftRoom();
+//            $leftRoom
+//                ->setKey($leftRoomKey)
+//                ->setDate($now)
+//                ->setCount($start);
+//        }
+//
+//        $interval = date_diff($now, $leftRoom->getDate(), true);
+//
+//        if (1 <= $interval->d){
+//            if ($this->minThreshold <= $leftRoom->getCount()) {
+//                $leftRoom->setCount($leftRoom->getCount() - 1);
+//            } else {
+//                $leftRoom->setCount($start);
+//            }
+//        }
+//        $this->dm->persist($leftRoom);
+//        $this->dm->flush($leftRoom);
+//
+//        return $leftRoom->getCount();
     }
+
+    /**
+     * @return string
+     */
+    public function getQueryId(): ?string
+    {
+        return $this->queryId;
+    }
+
+    /**
+     * @param string $queryId
+     * @return OnlineResultInstance
+     */
+    public function setQueryId(string $queryId): OnlineResultInstance
+    {
+        $this->queryId = $queryId;
+
+        return $this;
+    }
+
+
 
 }

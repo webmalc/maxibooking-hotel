@@ -33,7 +33,8 @@
             <div class="leftinrdm">
                 <p class="titlerdm">
                     {% if hotelsLinks is defined and roomType.hotel.id in hotelsLinks|keys %}
-                        <a href="{{ hotelsLinks[roomType.hotel.id] }}" class="hotel_link" target="_blank">
+                        {% set link = hotelsLinks[roomType.hotel.id] %}
+                        <a href="{{ link.url }}" class="hotel_link" target="_blank">
                             {{ roomType.hotel.fullTitle }}
                         </a>
                     {% else %}
@@ -44,6 +45,9 @@
                     {% if roomType.category.descriptionurl is defined and roomType.category.descriptionurl is not empty %}
                         <a class="room_link" href="{{ roomType.category.descriptionUrl }}"
                            target="_blank">{{ roomType.category.name }}</a>
+                    {% elseif roomType.descriptionurl is defined and roomType.descriptionurl is not empty  %}
+                        <a class="room_link" href="{{ roomType.descriptionUrl }}"
+                           target="_blank">{{ roomType.name }}</a>
                     {% else %}
                         {{ roomType.category.fullTitle??roomType.fullTitle }}
                     {% endif %}
@@ -55,12 +59,15 @@
                     {{ onlineResult.query.children }} {{ 'children'|transchoice(onlineResult.query.children) }}
                     {% endif %}
                 </p>
-                {% if hotelsLinks.eat is defined and hotelsLinks.eat is not empty %}
-                    <a href="{{ hotelsLinks.eat }}" class="eat_link" target="_blank">
-                        <p class="eattype"><img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
-                    </a>
+                {% if hotelsLinks is defined and roomType.hotel.id in hotelsLinks|keys %}
+                    {% if hotelsLinks[roomType.hotel.id].eat is defined %}
+                        {% set eat = hotelsLinks[roomType.hotel.id].eat %}
+                        <a href="{{ eat.url }}" class="eat_link" target="_blank">
+                            <p class="eattype"><img src="/images/vl.png" alt=""> {{ eat.number }}-разовое питание<br>шведский стол</p>
+                        </a>
+                    {% endif %}
                 {% else %}
-                    <img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
+                    <img src="/images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
                 {% endif %}
                 <div class="iconstype">
                     {% for facility in (onlineResult.isCategory?onlineResult.roomType.types|first:onlineResult.roomType).facilities %}
@@ -76,20 +83,24 @@
                         {% set prices = onlineResult.getPrices %}
                         <span class="noneprice">
                             {% block oldPrice %}
-                            {{ prices.old|number_format(0, thousandSep=' ') }}
+                                {% if prices.old %}
+                                    {{ prices.old|number_format(0, thousandSep=' ') }}
+                                {% endif %}
                             {% endblock %}
                         </span>
-                    &#8381;
+                    {% if prices.old %}
+                        &#8381;
+                    {% endif %}
                     {% block newPrice %}
                         <span class="newprice">{{ prices.new|number_format(0, thousandSep=' ') }}&#8381;</span></p>
                     {% endblock newPrice %}
                     {% endblock prices %}
                 <p class="datesrdm">{{ onlineResult.dates.begin|date("d.m.Y") }} - {{ onlineResult.dates.end|date("d.m.Y") }}</p>
                 <p class="daysrdm">{{ onlineResult.firstResult.days }} {{ 'days'|transchoice(onlineResult.firstResult.days) }} / {{ onlineResult.firstResult.nights }} {{ 'nights'|transchoice(onlineResult.firstResult.nights) }}</p>
-                {% block remain %}
-                    {% set left_rooms = onlineResult.leftSale %}
-                    <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>
-                {% endblock remain %}
+                {#{% block remain %}#}
+                    {#{% set left_rooms = onlineResult.leftSale %}#}
+                    {#<p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>#}
+                {#{% endblock remain %}#}
                 <p class="bronsrdm"></p>
             </div>
             <div class="clear"></div>
@@ -119,7 +130,7 @@
                             data-end="{{ tariffResult.end|date('d.m.Y') }}"
                             data-payment_type="{{ tariffResult.tariff.paymentType }}"
                             {% block data_url %}
-                            data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ tariffResult.adults }}&form[children]={{ tariffResult.children }}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}"
+                            data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ tariffResult.adults }}&form[children]={{ tariffResult.children }}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}&form[savedQueryId]={{ onlineResult.queryId }}"
                             {% endblock %}
 
                     >

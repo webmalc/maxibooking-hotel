@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,6 +26,49 @@ class Helper
     {
         $this->container = $container;
         $this->tr = $this->container->get('translator');
+    }
+
+    /**
+     * @param array $collection
+     * @param bool $withMultipleValues
+     * @param string $method
+     * @return array
+     */
+    public function sortByValue($collection, $withMultipleValues = false, $method = 'getId')
+    {
+        $result = [];
+
+        foreach ($collection as $item) {
+            if ($withMultipleValues) {
+                $result[$item->$method()][] = $item;
+            } else {
+                $result[$item->$method()] = $item;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $collection
+     * @param $callback
+     * @param bool $withMultipleValues
+     * @return array
+     */
+    public function sortByValueByCallback($collection, $callback, $withMultipleValues = false)
+    {
+        $result = [];
+
+        foreach ($collection as $item) {
+            $key = $callback($item);
+            if ($withMultipleValues) {
+                $result[$key][] = $item;
+            } else {
+                $result[$key] = $item;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -317,6 +362,41 @@ class Helper
 
         return $result;
     }
+    /**
+     * Get filtered values for the specified filter
+     *
+     * @param DocumentManager $dm
+     * @param  $callback
+     * @param bool $isFilterOn
+     * @param string $filter
+     * @return mixed
+     */
+    public function getFilteredResult(DocumentManager $dm, $callback, $isFilterOn = true, $filter = 'disableable')
+    {
+        if ($isFilterOn && !$dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->enable($filter);
+        }
+        $result = $callback();
+
+        if ($isFilterOn && $dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->disable($filter);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $fieldData
+     * @return array
+     */
+    public function getDataFromMultipleSelectField($fieldData)
+    {
+        if (!empty($fieldData) && is_array($fieldData)) {
+            return  array_values(array_diff($fieldData, array('', null, false)));
+        }
+
+        return [];
+    }
 
     /**
      * @param string $text
@@ -338,5 +418,22 @@ class Helper
         ];
 
         return str_replace($rus, $lat, $text);
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaultDatesOfSettlement()
+    {
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $this->container
+            ->get('doctrine_mongodb.odm.default_document_manager')
+            ->getRepository('MBHClientBundle:ClientConfig')
+            ->fetchConfig();
+
+        $calculationBegin = $clientConfig->getBeginDate() ?? new \DateTime('first day of January ' . date('Y'));
+        $calculationEnd = (clone $calculationBegin)->add(new \DateInterval('P6M'));
+
+        return [$calculationBegin, $calculationEnd];
     }
 }

@@ -49,7 +49,7 @@ $(function () {
         //boostat: 50,
         stepinterval: 50,
         decimals: 2,
-        step: 0.1,
+        step: 0.05,
         maxboostedstep: 10000000,
         postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });

@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-
 /**
  * @Route("/")
  */
@@ -95,12 +94,11 @@ class DefaultController extends BaseController
         if ($form->isValid()) {
             /** @var OnlineSearchFormData $data */
             $data = $form->getData();
-            $resultGenerator = $this->get('mbh.online.search_helper');
-            $searchResults = $resultGenerator->getResults($data);
+            $resultDataProvider = $this->get('mbh.online.search_helper');
+            $searchResults = $resultDataProvider->getResults($data);
         }
         $html = '';
         $requestSearchUrl = $this->onlineOptions['request_search_url'];
-        $response = new Response();
         if ($request->get('getalltariff')) {
             if ($results = $searchResults[0]['results']??null) {
                 $html = $this->renderView(
@@ -129,6 +127,7 @@ class DefaultController extends BaseController
             );
         }
 
+        $response = new Response();
         $response->setContent($html);
         $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
 
@@ -219,6 +218,7 @@ class DefaultController extends BaseController
                     'accommodation' => false,
                     'isOnline' => true,
                     'special' => $formData['special'],
+                    'savedQueryId' => $formData['savedQueryId']
                 ],
             ];
             $tourist = [

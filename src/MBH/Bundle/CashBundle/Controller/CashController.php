@@ -403,12 +403,16 @@ class CashController extends Controller
         $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $entity->setIsConfirmed(true);
+        $entity->setResponsible($this->getUser());
         $this->dm->persist($entity);
         $this->dm->flush();
 
+        $responsible = $entity->getResponsible() ? $entity->getResponsible()->getName() : null;
+
         return new JsonResponse([
             'error' => false,
-            'message' => $this->get('translator')->trans('controller.cashController.payment_confirmed_success')
+            'message' => $this->get('translator')->trans('controller.cashController.payment_confirmed_success'),
+            'responsible' => $responsible
         ]);
     }
 

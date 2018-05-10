@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -157,7 +158,7 @@ class SearchType extends AbstractType
             'orderId' => null,
             'roomManager' => null,
             'startDate' => new \DateTime(),
-            'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery',
+            'data_class' => SearchQuery::class,
             'method' => 'GET'
         ]);
     }

@@ -42,9 +42,14 @@ services:
     class:      MBH\Bundle\PriceBundle\Task\CalculateSpecialPrices
     arguments: ["@kernel"]
 
+  task_cache_clear:
+    class:      MBH\Bundle\BaseBundle\Task\CacheClear
+    arguments: ["@mbh.cache"]
+
+
   mbh.special_handler:
     class: MBH\Bundle\PriceBundle\Services\SpecialHandler
-    arguments: ['@mbh.package.search', '@doctrine_mongodb.odm.document_manager','@mbh.specials.logger', '@mbh.online.special_data_preparer', '@mbh.online.special_result_generator', '@mbh.online.search_form_data', '@mbh.notifier.mailer']
+    arguments: ['@mbh.package.search', '@doctrine_mongodb.odm.document_manager','@mbh.specials.logger', '@mbh.online.special_data_preparer', '@mbh.online.data_provider_special', '@mbh.online.search_form_data', '@mbh.notifier.mailer']
 
   mbh.type.special:
       class:      MBH\Bundle\PriceBundle\Form\SpecialType
@@ -71,3 +76,17 @@ services:
   mbh.special_display_dates_mass_changer:
     class: MBH\Bundle\PriceBundle\Services\SpecialDisplayDatesMassChanger
     arguments: ['@doctrine_mongodb.odm.document_manager']
+
+  mbh.special_batch_type:
+    class: MBH\Bundle\PriceBundle\Form\SpecialsTransformedType
+    arguments: ['@doctrine_mongodb.odm.default_document_manager']
+    tags:
+      - {name: form.type}
+
+  mbh.batch.promotion:
+    class: MBH\Bundle\PriceBundle\Services\SpecialBatch\BatchHelper
+    arguments: ['@doctrine_mongodb.odm.default_document_manager', 'getPromotion','setPromotion']
+
+  mbh.batch.tariff:
+    class: MBH\Bundle\PriceBundle\Services\SpecialBatch\BatchHelper
+    arguments: ['@doctrine_mongodb.odm.default_document_manager', 'getTariff','setTariff']

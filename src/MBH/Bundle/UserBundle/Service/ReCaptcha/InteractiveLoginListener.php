@@ -29,10 +29,10 @@ class InteractiveLoginListener
     {
         $request = $event->getRequest();
 
-        $reCaptcha = new ReCaptcha($this->params['secret']);
-        if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
-            throw new BadCredentialsException('Captcha is invalid');
-        }
+        #$reCaptcha = new ReCaptcha($this->params['secret']);
+        #if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
+        #    throw new BadCredentialsException('Captcha is invalid');
+        #}
     }
 
 }

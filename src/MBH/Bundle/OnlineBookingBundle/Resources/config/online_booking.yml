@@ -1,22 +1,30 @@
 parameters:
     online_booking:
-        request_search_url: '/mbresults.php'
+        request_search_url: '/mbresults/'
         payonlineurl: http://azovsky-billing.com/pay/
         use_charts: false
         add_search_dates: 1
         show_all: false
         hotels_links:
-            56fbd22174eb5383728b4567: 'http://azovsky.ru/azovsky/main/'
-            5705190e74eb53461c8b4916: 'http://azovsky.ru/azovland/main/'
-            eat: 'http://azovsky.ru/shvedskiy-stol/'
+            56fbd22174eb5383728b4567:
+                url: '/azovsky/'
+                eat:
+                    number: 3
+                    url: '/shvedskiy-stol/'
+            5705190e74eb53461c8b4916:
+                url: '/azovland/'
+                eat:
+                    number: 5
+                    url: '/shvedskiy-stol/azovland/'
+
         show_specials: true
         show_special_restrict: 10
-        special_list_sort: byDate
-#        special_list_sort: byPrice
+#       special_list_sort: byDate
+        special_list_sort: byPrice
 
 
     online_reservation_manager_email: "mail@azovsky.ru"
-    offera: "https://yadi.sk/i/aSRIUwg0zjWVw"
+    offera: "https://yadi.sk/i/bNDRgure3TZhSq"
 
     domain_access_control_prod: 'http://testaz.maxibooking.ru'
     domain_access_control_dev: 'http://localhost:8080'

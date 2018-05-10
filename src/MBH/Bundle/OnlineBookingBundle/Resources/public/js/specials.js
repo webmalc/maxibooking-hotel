@@ -63,13 +63,12 @@ Special.prototype.recalculatePrice = function () {
 
 Special.prototype.reNewPrices = function () {
     var prices = this.recalculatePrice();
-    console.log(prices.newPrice);
     this.$newPrice.text(this.numberWithCommas(prices.newPrice));
     this.$oldPrice.text(this.numberWithCommas(prices.oldPrice));
 };
 
 Special.prototype.reNewHref = function () {
-    var page = '/mbresults.php?',
+    var page = '/mbresults/?',
         data = {
             step: 1,
             search_form: {
@@ -159,7 +158,8 @@ MonthSwitcher.prototype.showClickedSpecials = function () {
         this.specials[special].removeLast();
     }
     //last element
-    this.specials[special].setLast();
+    $("article div#block_spec_container div.oneblockspec:visible:last").addClass('spec-last');
+    // this.specials[special].setLast();
     this.setActive()
 };
 
@@ -186,7 +186,12 @@ HotelSwitcher.prototype.bindHandlers = function () {
         event.preventDefault();
         event.stopPropagation();
         that.showClickedSpecials();
+        that.setActive(this);
     });
+};
+HotelSwitcher.prototype.setActive = function(link) {
+    $('.hotel-switcher').removeClass('activespc');
+    $(link).closest('.hotel-switcher').addClass('activespc');
 };
 HotelSwitcher.prototype.showClickedSpecials = function () {
     var special;
@@ -228,7 +233,7 @@ UrlTool.prototype.getDefaultMonth = function () {
         month = null;
     }
 
-    return month || 'month_07';
+    return month || 'month_05';
 };
 UrlTool.prototype.changeUrl = function (month) {
     var state = this.pathName + '?' + month;
@@ -266,7 +271,9 @@ MonthSwitcherContainer.prototype.showFirstEnabledSwitcher = function (defaultMon
     if(!this.defaultSwitcher) {
         this.defaultSwitcherDetermine(defaultMonth);
     }
-    this.defaultSwitcher.showClickedSpecials();
+    if(this.defaultSwitcher) {
+        this.defaultSwitcher.showClickedSpecials();
+    }
 };
 MonthSwitcherContainer.prototype.getActivePage = function() {
     if(!this.defaultSwitcher) {

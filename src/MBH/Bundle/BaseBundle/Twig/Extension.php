@@ -1,6 +1,7 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -120,12 +121,27 @@ class Extension extends \Twig_Extension
         return $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
+    public function getFilterBeginDate()
+    {
+        /** @var  ClientConfig $config */
+        $now = new \DateTime("midnight");
+        $config = $this->clientConfig();
+        $beginDate = $config->getBeginDate();
+        if (!$beginDate || $beginDate < $now) {
+            return $now;
+        }
+
+        return $beginDate;
+    }
+
+
     /**
      * @return array
      */
     public function getFilters()
     {
         return [
+            'days_diff' => new \Twig_SimpleFilter('days_diff', [$this, 'daysDiff']),
             'mbh_format' => new \Twig_SimpleFilter('mbh_format', [$this, 'format'], ['is_safe' => array('html')]),
             'mbh_md5' => new \Twig_SimpleFilter('mbh_md5', [$this, 'md5']),
             'num2str' => new \Twig_SimpleFilter('num2str', [$this, 'num2str']),
@@ -135,6 +151,27 @@ class Extension extends \Twig_Extension
             'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
         ];
+    }
+
+    public function daysDiff(\DateTime $firstDate = null, \DateTime $lastDate = null)
+    {
+        if (!$firstDate || !$lastDate) {
+            return '';
+        }
+
+        $dDiff = $firstDate->diff($lastDate);
+        $result = '';
+        foreach (\Twig_Extensions_Extension_Date::$units as $attribute => $unit) {
+            $count = $dDiff->$attribute;
+            if (0 !== $count) {
+                $result .= sprintf('%s%s', $dDiff->invert ? '+' : '-', $count);
+            }
+        }
+        if (empty($result)) {
+            $result = '0';
+        }
+
+        return $result ;
     }
 
     public function friendlyInterval(\DateInterval $interval)
@@ -170,8 +207,10 @@ class Extension extends \Twig_Extension
             'currency' => new \Twig_SimpleFunction('currency', [$this, 'currency'], ['is_safe' => ['html']]),
             'user_cash' => new \Twig_SimpleFunction('user_cash', [$this, 'cashDocuments'], ['is_safe' => ['html']]),
             'client_config' => new \Twig_SimpleFunction('client_config', [$this, 'clientConfig']),
+            'filter_begin_date' => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
             'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
+            'get_current_hotel' => new \Twig_SimpleFunction('get_current_hotel', [$this, 'getCurrentHotel'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -191,5 +230,13 @@ class Extension extends \Twig_Extension
     public function timezoneOffsetGet()
     {
         return (new \DateTime())->getOffset();
+    }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel|null
+     */
+    public function getCurrentHotel()
+    {
+        return $this->container->get('mbh.hotel.selector')->getSelected();
     }
 }

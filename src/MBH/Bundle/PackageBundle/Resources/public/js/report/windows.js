@@ -67,13 +67,13 @@ $(document).ready(function ($) {
         };
 
     //пока в ящик откладываем
-    var Special = function($cell) {
+    var Special = function ($cell) {
         this.$cell = $cell;
         this.specialId = $cell.data('special');
         this.url = Routing.generate('special_edit', {id: this.specialId});
 
     };
-    Special.prototype.edit = function() {
+    Special.prototype.edit = function () {
 
     };
     Special.prototype.init = function () {
@@ -81,24 +81,24 @@ $(document).ready(function ($) {
     };
     Special.prototype.bindHandler = function () {
         var that = this;
-        this.$cell.click(function(e) {
+        this.$cell.click(function (e) {
             window.open(that.url);
         })
     };
     Special.prototype.show = function () {
-        if(this.$cell.hasClass('special-hidden')) {
+        if (this.$cell.hasClass('special-hidden')) {
             this.$cell.removeClass('special-hidden');
         }
     };
 
     Special.prototype.hide = function () {
-        if(!this.$cell.hasClass('special-hidden')) {
+        if (!this.$cell.hasClass('special-hidden')) {
             this.$cell.addClass('special-hidden');
         }
     };
 
     Special.prototype.checkVisible = function () {
-        isSpecials()?this.show():this.hide();
+        isSpecials() ? this.show() : this.hide();
     };
 
 
@@ -135,8 +135,6 @@ $(document).ready(function ($) {
     };
 
 
-
-
     var form = $('#windows-report-filter'),
         table = $('#windows-report-content'),
         modal = $('#package-info-modal'),
@@ -159,7 +157,9 @@ $(document).ready(function ($) {
                 data: data,
                 success: function (response) {
                     table.html(response);
-
+                    setVerticalScrollable($('.vertical-scrollable').first(), document.getElementById('windows-report-content'));
+                    $('.vertical-scrollable').closest('table').css('z-index', 200);
+                    // Далее идет вызов демона, вероятнее всего. Не читайте следующий код, во избежание повреждения рассудка.
                     // $('tr').hover(function () {
                     //     $(this).children('td').each(function (index, elem) {
                     //
@@ -199,7 +199,6 @@ $(document).ready(function ($) {
                         processLinks(this, event);
                     });
 
-
                     $('.descr').readmore({
                         moreLink: '<div class="more-link"><a href="#">' + $('#expand-window').text() + ' <i class="fa fa-caret-right"></i></a></div>',
                         lessLink: '<div class="less-link"><a href="#">' + $('#turn-window').text() + ' <i class="fa fa-caret-up"></i></a></div>',
@@ -209,14 +208,20 @@ $(document).ready(function ($) {
                     specialsInit();
                 }
             });
+        },
+        getFormData = function() {
+            var formData = form.serializeObject();
+            formData['show-disabled-rooms'] = $('#windows-report-filter-show-disabled-rooms').bootstrapSwitch('state');
+
+            return formData;
         };
 
     table.html(mbh.loader.html);
-    update(form.serializeObject());
+    update(getFormData());
     $('#report-submit-button').click(function (event) {
         event.preventDefault();
         table.html(mbh.loader.html);
-        update(form.serializeObject());
+        update(getFormData());
     });
     hangPackagingHandlers();
 });

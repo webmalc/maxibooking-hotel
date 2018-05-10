@@ -10,6 +10,10 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+/**
+ * Class CalculateSpecialPrices
+ * @package MBH\Bundle\PriceBundle\Task
+ */
 class CalculateSpecialPrices implements ConsumerInterface
 {
     /**
@@ -17,14 +21,19 @@ class CalculateSpecialPrices implements ConsumerInterface
      */
     private $kernel;
 
+    /**
+     * CalculateSpecialPrices constructor.
+     * @param KernelInterface $kernel
+     */
     public function __construct(KernelInterface $kernel)
     {
         $this->kernel = $kernel;
     }
 
     /**
-     * @param AMQPMessage $msg The message
-     * @return mixed false to reject and requeue, any other value to acknowledge
+     * @param AMQPMessage $msg
+     * @return bool|mixed
+     * @throws \Exception
      */
     public function execute(AMQPMessage $msg)
     {

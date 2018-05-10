@@ -70,7 +70,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
-     * @return Response
+     * @return Response|array
      * @Template()
      * @throws \Exception
      */

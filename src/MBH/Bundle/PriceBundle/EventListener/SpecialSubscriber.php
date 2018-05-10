@@ -27,7 +27,7 @@ class SpecialSubscriber implements EventSubscriber
     {
         return [
             'postPersist',
-            'postUpdate'
+//            'postUpdate'
         ];
     }
 

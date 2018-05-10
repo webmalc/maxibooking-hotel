@@ -139,6 +139,7 @@ controller.analyticsController.proceeds: 'Выручка'
 controller.analyticsController.percentage: 'Процент'
 controller.analyticsController.package_trips_amount: 'Количество путевок'
 controller.analyticsController.sale_date: 'Даты продажи'
+controller.analyticsController.series_total_name: 'Итог'
 controller.orderController.cash_register_paper_deleted_success: 'Кассовый документ успешно удален.'
 controller.orderController.add_cash_register_paper: 'Добавить кассовый документ'
 controller.orderController.cash_register_paper_added_success: 'Кассовый документ успешно добавлен.'
@@ -434,6 +435,13 @@ virtual_room_handler.package_virtual_room_changed: 'Брони %package_number% 
 virtual_room_handler.empty_interval_data: 'Виртуальная комната %roomName% имеющая тип номера с ID = "%roomTypeId%" содержит окно в промежутке %emptyIntervalDates%'
 windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'
 
+mbh.analytics.types.sales_packages: "Динамика продаж по количеству броней"
+mbh.analytics.types.sales_cash: "Динамика продаж по стоимости броней"
+mbh.analytics.types.sales_cash_documents: "Динамика продаж в полученных деньгах"
+mbh.analytics.types.sales_sources: "Источники продаж"
+mbh.analytics.types.hotel_occupancy: "Заполняемость отеля"
+mbh.analytics.types.sales_services: "Динамика реализации услуг"
+mbh.analytics.types.sales_managers: "Менеджеры и брони"
 special.virtualRoom: Виртуальная комната
 special.virtualRoom.help: Выбор виртуальной комнаты
 
@@ -465,3 +473,60 @@ form.deleteReasonsType.isActive: Активна
 delete.reasons.category.noitems: В категории нет содержимого
 default.category: По-умолчанию
 delete.reasons.category.action.edit: редактирование категории
+report.packages_daily_report_compiler.non_cash_receipts: 'Приход безнал'
+report.packages_daily_report_compiler.cash_receipts: 'Приход наличные'
+report.packages_daily_report_compiler.cancellation_of_unpaid_packages: 'Аннуляция неоплаченных броней'
+report.packages_daily_report_compiler.receivables_not_paid_vouchers: 'Дебиторская задолженность неоплаченных путевок'
+report.packages_daily_report_compiler.receivables_partially_paid_vouchers: 'Дебиторская задолженность частично оплаченных путевок'
+report.packages_daily_report_compiler.cash_debt: 'Кредиторская задолженность наличные'
+report.packages_daily_report_compiler.non_cash_debt: 'Кредиторская задолженность б/н'
+report.packages_daily_report_compiler.number_of_packages: 'Количество броней за день'
+report.packages_daily_report_compiler.sum_for_day: 'Сумма броней за день'
+report.packages_daily_report_compiler.total_sum_for_day: 'Всего за день'
+report.packages_daily_report_compiler.sum_for_packages: 'Приход за брони'
+report.packages_daily_report_compiler.cancellation_for_packages: 'Аннуляция за брони'
+report.packages_daily_report_compiler.return_for_packages: 'Вернули за брони'
+views.report.packages_daily_report.title: 'Денежные средства'
+views.report.reservation_report.title: 'Отчет по бронированию номеров'
+reservation_report.title: 'Бронирование'
+views.report.packages_daily_report.mail_title: 'Отчет по денежным средствам'
+views.report.packages_daily_report.dates_input.title: 'Даты бронирования'
+views.report.packages_daily_report.calculation_dates.title: 'Даты проживания'
+views.report.packages_daily_report.hotels.title: 'Отели'
+views.report.packages_daily_report.hotels.placeholder: 'Отели'
+views.report.packages_daily_report.update_button: 'Применить'
+views.report.distribution_report.group_by.by_arrival_date: 'По дате заезда'
+views.report.distribution_report.group_by.by_departure_date: 'По дате выезда'
+views.report.distribution_report.packages_types.actual: 'Актуальные'
+views.report.distribution_report.packages_types.all: 'Все'
+views.report.distribution_report.packages_types.deleted: 'Удаленные'
+views.report.distribution_report.creation_date.title: 'Дата создания'
+distribution_by_days_report.title.number_of_packages: 'Кол-во броней'
+distribution_by_days_report.title.sum: 'Сумма'
+distribution_by_days_report.title: 'Заезд/Выезд'
+
+distribution_by_days_report.title.relative_value: '% соотношение'
+distribution_by_days_report.days_of_week_abbr.mon: 'Пн'
+distribution_by_days_report.days_of_week_abbr.tue: 'Вт'
+distribution_by_days_report.days_of_week_abbr.wed: 'Ср'
+distribution_by_days_report.days_of_week_abbr.thu: 'Чт'
+distribution_by_days_report.days_of_week_abbr.fri: 'Пт'
+distribution_by_days_report.days_of_week_abbr.sat: 'Сб'
+distribution_by_days_report.days_of_week_abbr.sun: 'Вс'
+distribution_by_days_report.total_row: 'Итого'
+
+views.report.reservation_report.period.title: 'Период'
+views.report.reservation_report.report_date.title: 'Дата'
+views.report.reservation_report.room_types.title: 'Типы комнат'
+reservation_report.number_of_packages_common: 'Забронировано номеров'
+reservation_report.number_of_packages: 'Забронировано номеров по состоянию на %date%'
+reservation_report.previous_number_of_packages: 'Забронировано номеров по состоянию на %previousDate%'
+reservation_report.date: 'Дата'
+reservation_report.delta_number_of_packages: 'Дельта забронировано номеров'
+reservation_report.delta_numb_of_packages_in_percent: '% по бронированию номеров'
+reservation_report.packages_price: 'Цена по состоянию на %date%'
+reservation_report.previous_packages_price: 'Цена по состоянию на %previousDate%'
+
+mbhpricebundle.view.pricecache.filter.displayed_price_caches_date: Дата, для которой указаны цены
+mbhpricebundle.view.pricecache.filter.displayed_price_caches_time: Время, для которого указаны цены
+price.views.priceCache.index.warning_displayed_irrelevant_prices: 'Указаны неактульные цены'

@@ -257,11 +257,11 @@ $(function () {
     moment.locale("ru");
 
     var dateBeginDefaults = function () {
-            var defaultMinDate = '23.04.2017',
+            var defaultMinDate = '24.04.2018',
                 minDate = moment(defaultMinDate, "DD.MM.YYYY", true),
                 now = moment(),
                 startDate = moment(Math.max(minDate, now)),
-                endDate = startDate.clone().add(1, 'year');
+                endDate = startDate.clone().add(2, 'year');
 
             while ($.inArray(startDate.format("DD.MM.YYYY"), restrictions) != -1) {
                 startDate.add(1, "day");

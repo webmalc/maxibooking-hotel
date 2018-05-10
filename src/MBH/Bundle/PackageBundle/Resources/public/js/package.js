@@ -211,9 +211,9 @@ var docReadyPackages = function () {
     $('.price-spinner').TouchSpin({
         min: 0,
         max: 9999999999999999,
-        step: 0.1,
+        step: 0.01,
         decimals: 2,
-        boostat: 10,
+        boostat: 1,
         maxboostedstep: 20,
         postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });
@@ -238,7 +238,22 @@ var docReadyPackages = function () {
     }());
 
     //package datatable
-    var pTable = $('#package-table').dataTable({
+    var pTable = $('#package-table')
+        .on('init.dt', function () {
+            var  timeout = 0;
+            var $input = $('.dataTables_filter input');
+            $input.unbind();
+            $input.on('keyup keydown', function (event) {
+                clearTimeout(timeout);
+                var that = this;
+                timeout = setTimeout(function () {
+                    searchTable(event, $(that))
+                }, 500);
+            });
+
+        })
+        .dataTable({
+        searchDelay: 350,
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
             {
@@ -257,12 +272,11 @@ var docReadyPackages = function () {
             {
                 text: '<i class="fa fa-file-excel-o" title="CSV" data-toggle="tooltip" data-placement="bottom"></i>',
                 className: 'btn btn-default btn-sm',
-                action: function ( e, dt, button, config ) {
+                action: function (e, dt, button, config) {
                     $.ajax({
                         url: Routing.generate('package_csv'),
-                        type:'POST',
-                        data: {
-                        } ,
+                        type: 'POST',
+                        data: {},
                         success: function (response) {
 
                             $('<div id="template-document-csv-modal" class="modal"> </div> ').insertAfter($('.content-wrapper'));
@@ -347,13 +361,12 @@ var docReadyPackages = function () {
         }
     });
 
-    $('.dataTables_filter input')
-        .unbind('keypress keyup input')
-        .on('keypress keyup input', function(e){
-            var value = $(this).val();
-            if ($(this).val().length < 4 && e.keyCode != 13) return;
-            pTable.fnFilter($(this).val());
-        });
+    var searchTable = function (event, $search) {
+        var value = $search.val();
+        if (value.length >= 4 || event.keyCode === 13 || value.length === 0) {
+            pTable.api().search(value).draw();
+        }
+    };
 
 
     // package datatable filter
@@ -370,7 +383,10 @@ var docReadyPackages = function () {
                 .removeClass('btn-default').addClass('btn-primary');
         }
 
-        $('.package-filter').on('change switchChange.bootstrapSwitch', function () {
+        $('.package-filter:not(#package-filter-begin):not(#package-filter-end)').on('change switchChange.bootstrapSwitch', function () {
+            $('#package-table').dataTable().fnDraw();
+        });
+        $('#package-filter-begin, #package-filter-end').on('changeDate clearDate', function () {
             $('#package-table').dataTable().fnDraw();
         });
         $('#package-table-quick-links a').click(function () {
@@ -510,7 +526,7 @@ var bindSwitchHandlers = function () {
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
-    doFixVirtualRoom();
+    /*doFixVirtualRoom();*/
 
     //package ajax tabs
     (function () {
@@ -536,7 +552,7 @@ $(document).ready(function () {
                 docReadyPackages();
                 docReadyCash();
                 docReadyDocs();
-                doFixVirtualRoom();
+                /*doFixVirtualRoom();*/
             });
         });
     }());

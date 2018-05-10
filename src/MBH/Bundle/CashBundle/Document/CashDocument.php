@@ -17,6 +17,7 @@ use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -168,6 +169,11 @@ class CashDocument extends Base
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\CashBundle\Document\CashDocumentArticle")
      */
     protected $article;
+
+    /** @var  User
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\UserBundle\Document\User")
+     */
+    protected $responsible;
 
     /**
      * Set method
@@ -524,4 +530,25 @@ class CashDocument extends Base
     {
         $this->article = $article;
     }
+
+    /**
+     * @return User
+     */
+    public function getResponsible()
+    {
+        return $this->responsible;
+    }
+
+    /**
+     * @param User $responsible
+     * @return CashDocument
+     */
+    public function setResponsible(User $responsible): CashDocument
+    {
+        $this->responsible = $responsible;
+
+        return $this;
+    }
+
+
 }

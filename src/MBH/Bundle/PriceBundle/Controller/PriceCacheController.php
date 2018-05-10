@@ -80,11 +80,41 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             'period' => iterator_to_array($period),
             'begin' => $begin,
             'end' => $end,
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
         ];
 
-        //get roomTypes
-        $roomTypes = $this->manager->getRooms($this->hotel, $request->get('roomTypes'));
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $inputRoomTypeIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
+        $roomTypesCallback = function () use ($inputRoomTypeIds) {
+            return $this->manager->getRooms($this->hotel, $inputRoomTypeIds);
+        };
+
+        $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+        if (empty($roomTypeIds = $inputRoomTypeIds)) {
+            $roomTypeIds = $helper->toIds($roomTypes);
+        }
+
+        $cancelDate = null;
+        if (!empty($displayedPricesDateString = $request->get('displayed-prices-date'))) {
+            if (empty($displayedPricesTimeString = $request->get('displayed-prices-time'))) {
+                $displayedPricesTimeString = '00:00';
+            }
+            $cancelDate = \DateTime::createFromFormat(
+                'd.m.Y H:i',
+                $displayedPricesDateString.' '.$displayedPricesTimeString
+            );
+        }
+
+        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetchWithCancelDate(
+            $begin,
+            $end,
+            $this->hotel,
+            $roomTypeIds,
+            $request->get('tariffs') ? $request->get('tariffs') : [],
+            $this->manager->useCategories,
+            $cancelDate
+        );
+
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
         }
@@ -95,20 +125,14 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             return array_merge($response, ['error' => 'Тарифы не найдены']);
         }
 
-        //get priceCaches
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-            $begin, $end, $this->hotel,
-            $request->get('roomTypes') ? $request->get('roomTypes') : [],
-            $request->get('tariffs') ? $request->get('tariffs') : [],
-            true,
-            $this->manager->useCategories
+        return array_merge(
+            $response,
+            [
+                'roomTypes' => $roomTypes,
+                'tariffs' => $tariffs,
+                'priceCaches' => $priceCaches,
+            ]
         );
-
-        return array_merge($response, [
-            'roomTypes' => $roomTypes,
-            'tariffs' => $tariffs,
-            'priceCaches' => $priceCaches
-        ]);
     }
 
     /**
@@ -123,7 +147,9 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     {
         $helper = $this->get('mbh.helper');
         $validator = $this->get('validator');
-        (empty($request->get('updatePriceCaches'))) ? $updateData = [] : $updateData = $request->get('updatePriceCaches');
+        (empty($request->get('updatePriceCaches'))) ? $updateData = [] : $updateData = $request->get(
+            'updatePriceCaches'
+        );
         (empty($request->get('newPriceCaches'))) ? $newData = [] : $newData = $request->get('newPriceCaches');
         $availableTariffs = $this->helper->toIds(
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
@@ -148,16 +174,27 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                     }
 
                     $newPriceCache = new PriceCache();
-                    $newPriceCache->setHotel($this->hotel)
+                    $newPriceCache
+                        ->setHotel($this->hotel)
                         ->setCategoryOrRoomType($roomType, $this->manager->useCategories)
                         ->setTariff($tariff)
                         ->setDate($helper->getDateFromString($date))
                         ->setPrice($prices['price'])
-                        ->setChildPrice(isset($prices['childPrice']) && $prices['childPrice'] !== '' ? $prices['childPrice'] : null)
-                        ->setIsPersonPrice(isset($prices['isPersonPrice']) && $prices['isPersonPrice'] !== '' ? true : false)
-                        ->setSinglePrice(isset($prices['singlePrice']) && $prices['singlePrice'] !== '' ? $prices['singlePrice'] : null)
-                        ->setAdditionalPrice(isset($prices['additionalPrice']) && $prices['additionalPrice'] !== '' ? $prices['additionalPrice'] : null)
-                        ->setAdditionalChildrenPrice(isset($prices['additionalChildrenPrice']) && $prices['additionalChildrenPrice'] !== '' ? $prices['additionalChildrenPrice'] : null);
+                        ->setChildPrice(
+                            isset($prices['childPrice']) && $prices['childPrice'] !== '' ? $prices['childPrice'] : null
+                        )
+                        ->setIsPersonPrice(
+                            isset($prices['isPersonPrice']) && $prices['isPersonPrice'] !== '' ? true : false
+                        )
+                        ->setSinglePrice(
+                            isset($prices['singlePrice']) && $prices['singlePrice'] !== '' ? $prices['singlePrice'] : null
+                        )
+                        ->setAdditionalPrice(
+                            isset($prices['additionalPrice']) && $prices['additionalPrice'] !== '' ? $prices['additionalPrice'] : null
+                        )
+                        ->setAdditionalChildrenPrice(
+                            isset($prices['additionalChildrenPrice']) && $prices['additionalChildrenPrice'] !== '' ? $prices['additionalChildrenPrice'] : null
+                        );
 
                     $newPriceCache = $this->addAdditionalPrices($roomType, $newPriceCache, $prices);
 
@@ -171,31 +208,53 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
         //update
         foreach ($updateData as $priceCacheId => $prices) {
-            $priceCache = $this->dm->getRepository('MBHPriceBundle:PriceCache')->find($priceCacheId);
+            $priceCacheCallback = function () use ($priceCacheId) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->find($priceCacheId);
+            };
+            /** @var PriceCache $priceCache */
+            $priceCache = $helper->getFilteredResult($this->dm, $priceCacheCallback);
             if (!$priceCache || $priceCache->getHotel() != $this->hotel) {
                 continue;
             }
 
             //delete
             if (isset($prices['price']) && $prices['price'] === '') {
-                $this->dm->remove($priceCache);
+                $priceCache->setCancelDate(new \DateTime(), true);
                 continue;
             }
 
-            $priceCache
+            $newPriceCache = (new PriceCache())
+                ->setHotel($this->hotel)
+                ->setDate($priceCache->getDate())
+                ->setTariff($priceCache->getTariff())
+                ->setCategoryOrRoomType(
+                    $priceCache->getCategoryOrRoomType($this->manager->useCategories),
+                    $this->manager->useCategories
+                )
                 ->setPrice($prices['price'])
-                ->setChildPrice(isset($prices['childPrice']) && $prices['childPrice'] !== '' ? $prices['childPrice'] : null)
+                ->setChildPrice(
+                    isset($prices['childPrice']) && $prices['childPrice'] !== '' ? $prices['childPrice'] : null
+                )
                 ->setIsPersonPrice(isset($prices['isPersonPrice']) ? true : false)
-                ->setSinglePrice(isset($prices['singlePrice']) && $prices['singlePrice'] !== '' ? $prices['singlePrice'] : null)
-                ->setAdditionalPrice(isset($prices['additionalPrice']) && $prices['additionalPrice'] !== '' ? $prices['additionalPrice'] : null)
-                ->setAdditionalChildrenPrice(isset($prices['additionalChildrenPrice']) && $prices['additionalChildrenPrice'] !== '' ? $prices['additionalChildrenPrice'] : null);
+                ->setSinglePrice(
+                    isset($prices['singlePrice']) && $prices['singlePrice'] !== '' ? $prices['singlePrice'] : null
+                )
+                ->setAdditionalPrice(
+                    isset($prices['additionalPrice']) && $prices['additionalPrice'] !== '' ? $prices['additionalPrice'] : null
+                )
+                ->setAdditionalChildrenPrice(
+                    isset($prices['additionalChildrenPrice']) && $prices['additionalChildrenPrice'] !== '' ? $prices['additionalChildrenPrice'] : null
+                );
 
-            $priceCache = $this->addAdditionalPrices(
-                $priceCache->getCategoryOrRoomType($this->manager->useCategories), $priceCache, $prices
+            $newPriceCache = $this->addAdditionalPrices(
+                $priceCache->getCategoryOrRoomType($this->manager->useCategories),
+                $newPriceCache,
+                $prices
             );
 
-            if ($validator->validate($priceCache)) {
-                $this->dm->persist($priceCache);
+            if ($validator->validate($newPriceCache) && !$priceCache->isSamePriceCaches($newPriceCache)) {
+                $this->dm->persist($newPriceCache);
+                $priceCache->setCancelDate(new \DateTime(), true);
             }
         }
         $this->dm->flush();
@@ -206,12 +265,17 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $this->get('mbh.channelmanager')->updatePricesInBackground();
         $this->get('mbh.cache')->clear('price_cache');
 
-        return $this->redirect($this->generateUrl('price_cache_overview', [
-            'begin' => $request->get('begin'),
-            'end' => $request->get('end'),
-            'roomTypes' => $request->get('roomTypes'),
-            'tariffs' => $request->get('tariffs'),
-        ]));
+        return $this->redirect(
+            $this->generateUrl(
+                'price_cache_overview',
+                [
+                    'begin' => $request->get('begin'),
+                    'end' => $request->get('end'),
+                    'roomTypes' => $request->get('roomTypes'),
+                    'tariffs' => $request->get('tariffs'),
+                ]
+            )
+        );
     }
 
     /**
@@ -225,11 +289,11 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         if ($roomType->getIsIndividualAdditionalPrices() && $roomType->getAdditionalPlaces() > 1) {
             $childrenPrices = $additionalPrices = [];
             for ($i = 1; $i < $roomType->getAdditionalPlaces(); $i++) {
-                if (isset($prices['additionalPrice' . $i])) {
-                    $additionalPrices[$i] = $prices['additionalPrice' . $i];
+                if (isset($prices['additionalPrice'.$i])) {
+                    $additionalPrices[$i] = $prices['additionalPrice'.$i];
                 }
-                if (isset($prices['additionalChildrenPrice' . $i])) {
-                    $childrenPrices[$i] = $prices['additionalChildrenPrice' . $i];
+                if (isset($prices['additionalChildrenPrice'.$i])) {
+                    $childrenPrices[$i] = $prices['additionalChildrenPrice'.$i];
                 }
 
                 $priceCache->setAdditionalPrices($additionalPrices);
@@ -252,22 +316,27 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         if ($request->getSession()->has('priceCacheGeneratorForm')) {
             $sessionFormData = $request->getSession()->get('priceCacheGeneratorForm');
             foreach ($sessionFormData['roomTypes'] as $id) {
-                $sessionFormData['roomTypes'][$id] = $this->dm->getRepository($this->manager->useCategories ? RoomTypeCategory::class : RoomType::class)->find($id);
-
+                $sessionFormData['roomTypes'][$id] = $this->dm->getRepository(
+                    $this->manager->useCategories ? RoomTypeCategory::class : RoomType::class
+                )->find($id);
             }
             foreach ($sessionFormData['tariffs'] as $id) {
                 $sessionFormData['tariffs'][$id] = $this->dm->getRepository(Tariff::class)->find($id);
             }
         }
 
-        $form = $this->createForm(PriceCacheGeneratorType::class, $sessionFormData, [
-            'weekdays' => $this->container->getParameter('mbh.weekdays'),
-            'hotel' => $this->hotel,
-            'useCategories' => $this->manager->useCategories,
-        ]);
+        $form = $this->createForm(
+            PriceCacheGeneratorType::class,
+            $sessionFormData,
+            [
+                'weekdays' => $this->container->getParameter('mbh.weekdays'),
+                'hotel' => $this->hotel,
+                'useCategories' => $this->manager->useCategories,
+            ]
+        );
 
         return [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ];
     }
 
@@ -281,11 +350,15 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      */
     public function generatorSaveAction(Request $request)
     {
-        $form = $this->createForm(PriceCacheGeneratorType::class, [], [
-            'weekdays' => $this->container->getParameter('mbh.weekdays'),
-            'hotel' => $this->hotel,
-            'useCategories' => $this->manager->useCategories
-        ]);
+        $form = $this->createForm(
+            PriceCacheGeneratorType::class,
+            [],
+            [
+                'weekdays' => $this->container->getParameter('mbh.weekdays'),
+                'hotel' => $this->hotel,
+                'useCategories' => $this->manager->useCategories,
+            ]
+        );
 
         $form->handleRequest($request);
 
@@ -296,33 +369,49 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
             if ($data['saveForm']) {
 
-                $session->set('priceCacheGeneratorForm', array_merge($data, [
-                    'roomTypes' => $this->helper->toIds($data['roomTypes']),
-                    'tariffs' => $this->helper->toIds($data['tariffs'])
-                ]));
+                $session->set(
+                    'priceCacheGeneratorForm',
+                    array_merge(
+                        $data,
+                        [
+                            'roomTypes' => $this->helper->toIds($data['roomTypes']),
+                            'tariffs' => $this->helper->toIds($data['tariffs']),
+                        ]
+                    )
+                );
             } else {
                 $session->remove('priceCacheGeneratorForm');
             }
 
             $childrenPrices = [
-                0 => $data['additionalChildrenPrice']
+                0 => $data['additionalChildrenPrice'],
             ];
             $additionalPrices = [
-                0 => $data['additionalPrice']
+                0 => $data['additionalPrice'],
             ];
 
             if (!empty($data['additionalPricesCount'])) {
                 for ($i = 1; $i < $data['additionalPricesCount']; $i++) {
-                    $additionalPrices[$i] = $data['additionalPrice' . $i];
-                    $childrenPrices[$i] = $data['additionalChildrenPrice' . $i];
+                    $additionalPrices[$i] = $data['additionalPrice'.$i];
+                    $childrenPrices[$i] = $data['additionalChildrenPrice'.$i];
                 }
             }
 
             $this->get('mbh.price.cache')->update(
-                $data['begin'], $data['end'], $this->hotel, $data['price'], $data['isPersonPrice'],
-                $data['singlePrice'], $data['additionalPrice'], $data['additionalChildrenPrice'],
-                $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays'],
-                $data['childPrice'], $additionalPrices, $childrenPrices
+                $data['begin'],
+                $data['end'],
+                $this->hotel,
+                $data['price'],
+                $data['isPersonPrice'],
+                $data['singlePrice'],
+                $data['additionalPrice'],
+                $data['additionalChildrenPrice'],
+                $data['roomTypes']->toArray(),
+                $data['tariffs']->toArray(),
+                $data['weekdays'],
+                $data['childPrice'],
+                $additionalPrices,
+                $childrenPrices
             );
 
             $this->get('mbh.channelmanager')->updatePricesInBackground();
@@ -336,7 +425,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         }
 
         return [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ];
     }
 }

@@ -9,14 +9,17 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
 
 /**
  * @ODM\Document(collection="PriceCache", repositoryClass="MBH\Bundle\PriceBundle\Document\PriceCacheRepository")
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
- * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="PriceCache already exist.")
- * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff"}, message="PriceCache already exist.")
+ * @MongoDBUnique(fields={"roomType", "date", "tariff", "cancelDate"}, message="PriceCache already exist.")
+ * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff", "cancelDate"}, message="PriceCache already exist.")
  * @ODM\HasLifecycleCallbacks
+ * @Disableable\Disableable
+ * @ODM\Index(keys={"hotel"="asc","roomType"="asc","tariff"="asc","date"="asc"})
  */
 class PriceCache extends Base
 {
@@ -52,7 +55,7 @@ class PriceCache extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()
@@ -80,7 +83,7 @@ class PriceCache extends Base
 
     /**
      * @var boolean
-     * @ODM\Boolean()
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
      * @Assert\NotNull()
      * @ODM\Index()
@@ -98,7 +101,7 @@ class PriceCache extends Base
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      * @Assert\Type(type="array")
      */
     protected $additionalPrices = [];
@@ -114,7 +117,7 @@ class PriceCache extends Base
 
     /**
      * @var array
-     * @ODM\Collection()
+     * @ODM\Field(type="collection")
      * @Assert\Type(type="array")
      */
     protected $additionalChildrenPrices = [];
@@ -128,6 +131,64 @@ class PriceCache extends Base
      */
     protected $singlePrice = null;
 
+    /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     * @ODM\Index()
+     * @Assert\Date()
+     */
+    protected $cancelDate;
+
+    /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="create")
+     * @ODM\Field(type="date")
+     * @Assert\Date()
+     * @Assert\NotNull()
+     */
+    protected $createdAt;
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     * @return PriceCache
+     */
+    public function setCreatedAt(\DateTime $createdAt): PriceCache
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCancelDate(): ?\DateTime
+    {
+        return $this->cancelDate;
+    }
+
+    /**
+     * @param \DateTime $cancelDate
+     * @param bool $isDisabled
+     * @return PriceCache
+     */
+    public function setCancelDate(\DateTime $cancelDate, $isDisabled = false): PriceCache
+    {
+        $this->cancelDate = $cancelDate;
+        if ($isDisabled) {
+            $this->setIsEnabled(false);
+        }
+
+        return $this;
+    }
 
     /**
      * Set hotel
@@ -176,7 +237,7 @@ class PriceCache extends Base
     /**
      * Set date
      *
-     * @param date $date
+     * @param \DateTime $date
      * @return self
      */
     public function setDate($date)
@@ -517,4 +578,37 @@ class PriceCache extends Base
         return $category ? $this->getRoomTypeCategory() : $this->getRoomType();
     }
 
+    /**
+     * @param PriceCache $newPriceCache
+     * @return bool
+     */
+    public function isSamePriceCaches(PriceCache $newPriceCache)
+    {
+        return $this->getAdditionalPrice() == $newPriceCache->getAdditionalPrice()
+            && $this->getIsPersonPrice() == $newPriceCache->getIsPersonPrice()
+            && $this->getPrice() == $newPriceCache->getPrice()
+            && $this->getChildPrice() == $newPriceCache->getChildPrice()
+            && $this->getAdditionalChildrenPrice() == $newPriceCache->getAdditionalChildrenPrice()
+            && $this->getSinglePrice() == $newPriceCache->getSinglePrice()
+            && $this->isDataCollectionsEqual($this->getAdditionalPrices(),
+                $newPriceCache->getAdditionalPrices())
+            && $this->isDataCollectionsEqual($newPriceCache->getAdditionalChildrenPrices(),
+                $newPriceCache->getAdditionalChildrenPrices());
+    }
+
+    /**
+     * @param array $firstPriceCacheCollection
+     * @param array $secondPriceCacheCollection
+     * @return bool
+     */
+    public function isDataCollectionsEqual(array $firstPriceCacheCollection, array $secondPriceCacheCollection)
+    {
+        $additionalChildrenPricesDiff = array_diff($firstPriceCacheCollection, $secondPriceCacheCollection);
+        if (count($additionalChildrenPricesDiff) == 0
+            || (count($additionalChildrenPricesDiff) == 1 && current($additionalChildrenPricesDiff) == null)) {
+            return true;
+        }
+
+        return true;
+    }
 }

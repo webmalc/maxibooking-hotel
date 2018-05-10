@@ -5,6 +5,7 @@
     {% endfor %}
 {% else %}
     {% set roomTypesQuantity = dynamicSalesData.dynamicSales|length %}
+    {% set showOnlyTotalValues = roomTypeOptions|length == 1 and roomTypeOptions[0] == 'total' %}
     {% if roomTypesQuantity > 0 %}
         {% set commonDynamicSalesData = dynamicSalesData.dynamicSales[0] %}
         {% set maxCount = 0 %}
@@ -62,7 +63,14 @@
             </tbody>
         </table>
 
-        {% set numberOfRightTables = (roomTypesQuantity > 1 ? roomTypesQuantity + 1 : roomTypesQuantity) %}
+        {% if showOnlyTotalValues %}
+            {% set numberOfRightTables = 1 %}
+        {% elseif roomTypesQuantity > 1 %}
+            {% set numberOfRightTables = roomTypesQuantity + 1 %}
+        {% else %}
+            {% set numberOfRightTables = roomTypesQuantity %}
+        {% endif %}
+
         {% for i in 1..numberOfRightTables %}
             <table class="table table-bordered table-condensed rightTable">
                 <tbody>
@@ -114,82 +122,84 @@
             {% endif %}
         {% endfor %}
 
-        {% for dynamicSaleTypeData in dynamicSalesData.dynamicSales %}
-            <table id="{{ dynamicSaleTypeData.roomType.id }}"
-                   class="dynamic-sales-table table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center">
-                <tbody>
-                <tr class="mbh-grid-header2 warning">
-                    <td colspan="{{ maxCount +2 }}" style="text-align: left">
-                        <strong class="table-title">
-                            {{ dynamicSaleTypeData.roomType }}
-                        </strong>&nbsp;&nbsp;
-                    </td>
-                </tr>
-                {% for shownOption in optionsShows %}
-                    {% for periodNumber, dynamicSalePeriod in dynamicSaleTypeData.periods %}
-                        <tr data-class="{{ shownOption }}">
-                            <td class="left-offset-line"></td>
-                            {% for saleDateIndex, dynamicSaleDay in dynamicSalePeriod.dynamicSalesDays %}
-                                <td class="table-cell">
-                                    {{ dynamicSaleDay.getSpecifiedValue(shownOption) }}
-                                </td>
-                                {% if loop.last %}
-                                    {% if (maxCount - dynamicSalePeriod.dynamicSalesDays|length) > 0 %}
-                                        {% for i in 1..(maxCount - dynamicSalePeriod.dynamicSalesDays|length) %}
-                                            <td>-</td>
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                            <td class="text-right table-cell" style="text-align: right">
-                                <strong>{{ dynamicSalePeriod.getTotalValue(shownOption) }}</strong>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-                {% if comparisonRowsCount > 0 and optionsShows|length > 0 %}
-                    <tr class="info">
-                        <td class="comparison-cell text-left" rowspan="1"
-                            style="text-align: left"
-                            colspan="{{ maxCount + 2 }}">
-                            <strong class="table-title">{{ 'dynamic.sales.day.sales.comparison'|trans({},'MBHPackageBundle') }}</strong>
+        {% if not showOnlyTotalValues %}
+            {% for dynamicSaleTypeData in dynamicSalesData.dynamicSales %}
+                <table id="{{ dynamicSaleTypeData.roomType.id }}"
+                       class="dynamic-sales-table table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center">
+                    <tbody>
+                    <tr class="mbh-grid-header2 warning">
+                        <td colspan="{{ maxCount +2 }}" style="text-align: left">
+                            <strong class="table-title">
+                                {{ dynamicSaleTypeData.roomType }}
+                            </strong>&nbsp;&nbsp;
                         </td>
                     </tr>
-
                     {% for shownOption in optionsShows %}
-                        {% for comparisonPeriodNumber in 1..(comparisonRowsCount) %}
-                            {% set comparisonPeriod = dynamicSaleTypeData.periods[comparisonPeriodNumber] %}
-                            {% for lineNumber in 0..1 %}
-                                {% set isRelativeRow = lineNumber == 1 %}
-                                <tr class="{{ isRelativeRow? 'warning' : 'success' }}"
-                                    data-class="{{ shownOption ~ (isRelativeRow ? '-compare-percentage' : '-compare') }}">
-                                    <td class="left-offset-line"></td>
-                                    {% for saleDateIndex in 0..(maxCount - 1) %}
-                                        <td>
-                                            {% if dynamicSaleTypeData.hasBothPeriodsDayByNumber(0, comparisonPeriodNumber, saleDateIndex) %}
-                                                {% set value = dynamicSaleTypeData.getComparativeData(comparisonPeriodNumber, saleDateIndex, shownOption, isRelativeRow) %}
-                                                <span {% if value < 0 %}class="text-danger" {% endif %}>
-                                                    {{ value }}{% if isRelativeRow %}%{% endif %}
-                                                </span>
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        </td>
-                                    {% endfor %}
-                                    {% set totalValue = dynamicSaleTypeData.getComparativeTotalData(comparisonPeriodNumber, shownOption, isRelativeRow) %}
-                                    <td {% if totalValue < 0 %}class="text-danger" {% endif %}>
-                                        {{ totalValue }}{% if isRelativeRow %}%{% endif %}
+                        {% for periodNumber, dynamicSalePeriod in dynamicSaleTypeData.periods %}
+                            <tr data-class="{{ shownOption }}">
+                                <td class="left-offset-line"></td>
+                                {% for saleDateIndex, dynamicSaleDay in dynamicSalePeriod.dynamicSalesDays %}
+                                    <td class="table-cell">
+                                        {{ dynamicSaleDay.getSpecifiedValue(shownOption) }}
                                     </td>
-                                </tr>
-                            {% endfor %}
+                                    {% if loop.last %}
+                                        {% if (maxCount - dynamicSalePeriod.dynamicSalesDays|length) > 0 %}
+                                            {% for i in 1..(maxCount - dynamicSalePeriod.dynamicSalesDays|length) %}
+                                                <td>-</td>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                <td class="text-right table-cell" style="text-align: right">
+                                    <strong>{{ dynamicSalePeriod.getTotalValue(shownOption) }}</strong>
+                                </td>
+                            </tr>
                         {% endfor %}
                     {% endfor %}
-                {% endif %}
-                </tbody>
-            </table>
-        {% endfor %}
+                    {% if comparisonRowsCount > 0 and optionsShows|length > 0 %}
+                        <tr class="info">
+                            <td class="comparison-cell text-left" rowspan="1"
+                                style="text-align: left"
+                                colspan="{{ maxCount + 2 }}">
+                                <strong class="table-title">{{ 'dynamic.sales.day.sales.comparison'|trans({},'MBHPackageBundle') }}</strong>
+                            </td>
+                        </tr>
 
-        {% if roomTypesQuantity > 1 %}
+                        {% for shownOption in optionsShows %}
+                            {% for comparisonPeriodNumber in 1..(comparisonRowsCount) %}
+                                {% set comparisonPeriod = dynamicSaleTypeData.periods[comparisonPeriodNumber] %}
+                                {% for lineNumber in 0..1 %}
+                                    {% set isRelativeRow = lineNumber == 1 %}
+                                    <tr class="{{ isRelativeRow? 'warning' : 'success' }}"
+                                        data-class="{{ shownOption ~ (isRelativeRow ? '-compare-percentage' : '-compare') }}">
+                                        <td class="left-offset-line"></td>
+                                        {% for saleDateIndex in 0..(maxCount - 1) %}
+                                            <td>
+                                                {% if dynamicSaleTypeData.hasBothPeriodsDayByNumber(0, comparisonPeriodNumber, saleDateIndex) %}
+                                                    {% set value = dynamicSaleTypeData.getComparativeData(comparisonPeriodNumber, saleDateIndex, shownOption, isRelativeRow) %}
+                                                    <span {% if value < 0 %}class="text-danger" {% endif %}>
+                                                    {{ value }}{% if isRelativeRow %}%{% endif %}
+                                                </span>
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                        {% set totalValue = dynamicSaleTypeData.getComparativeTotalData(comparisonPeriodNumber, shownOption, isRelativeRow) %}
+                                        <td {% if totalValue < 0 %}class="text-danger" {% endif %}>
+                                            {{ totalValue }}{% if isRelativeRow %}%{% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        {% endif %}
+
+        {% if roomTypesQuantity > 1 or showOnlyTotalValues %}
             <table id="summary"
                    class="dynamic-sales-table table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center">
                 <tbody>

@@ -2,6 +2,7 @@
 
 {% block scripts %}
     {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.09/jquery.form.min.js"></script>
     {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/*'%}
 
     <script type="text/javascript" src="{{ asset_url }}"></script>

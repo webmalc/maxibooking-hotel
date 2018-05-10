@@ -254,9 +254,9 @@ var docReadyForms = function () {
         });
     }());
 
-
     $('form.remember input:not(.not-remember), form.remember select:not(.not-remember), form.remember textarea:not(.not-remember)').phoenix({
-        webStorage: 'sessionStorage'
+        webStorage: 'sessionStorage',
+        namespace: 'phoenixStorage' + mbh.currentHotel
     });
 
     $(".timepicker").timepicker({
@@ -849,9 +849,11 @@ var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
     $discountInput.TouchSpin({
         min: 0.01,
         max: 9999999999999999,
-        step: 0.1,
+        step: 0.05,
         decimals: 2,
-        postfix: '%'
+        postfix: '%',
+        boostat: 5,
+        forcestepdivisibility: 'none'
     });
     var $discountTypeInputPostfix = $discountInput.siblings('span.bootstrap-touchspin-postfix');
 

@@ -1,7 +1,8 @@
 analytics.index.sales_date: 'Даты продажи'
 analytics.index.report_type: 'Тип отчета'
 analytics.index.room_type: 'Тип номера'
-analytics.index.all_rooms: Все номера
+analytics.index.all_rooms: 'Все номера'
+analytics.index.rooms_total: 'Итого'
 analytics.index.cumulative: 'Накопительный?'
 analytics.index.monthly: 'По месяцам?'
 analytics.layout.analytics: 'Аналитика'
@@ -29,6 +30,8 @@ order.cash.confirm: Подтвердить
 order.cash.pay: Подтвердить
 order.cash.short_pay: оплатить
 order.cash.cash_documents_not_found: Кассовые документы не найдены.
+order.cash.responsible: Ответственный
+package.edit.query: Подробности запроса
 order.edit.order_editing: 'редактирование заказа #'
 order.edit.deleted: удален
 order.edit.room: Номер
@@ -493,3 +496,4 @@ dynamic.sales.dates: Даты
 dynamic.sales.show.title: Отображаемые категории
 dynamic.sales.type.room: Тип номера
 dynamic.sales.result: Итого
+dynamic_sales.room_type_options.total: 'Итого'

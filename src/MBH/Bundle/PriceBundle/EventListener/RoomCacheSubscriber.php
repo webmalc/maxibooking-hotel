@@ -48,7 +48,7 @@ class RoomCacheSubscriber implements EventSubscriber
             ]
         ));
 
-        $this->container->get('mbh.cache')->clear('room_cache');
+        $this->container->get('mbh.cache')->clear('room_cache', clone $doc->getDate(), clone $doc->getDate());
     }
 
     public function prePersist(LifecycleEventArgs $args)

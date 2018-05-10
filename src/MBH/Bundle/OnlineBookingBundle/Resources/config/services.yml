@@ -50,26 +50,81 @@ services:
         class: MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData
         arguments: ['@mbh.hotel.room_type_manager']
 
-    mbh.online.abstract_result_generator:
-        abstract: true
-        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\AbstractResultGenerator
-        arguments: ['@mbh.package.search', '%online_booking%', '@mbh.helper', '%mbh_cache%', '@service_container']
 
-    mbh.online.common_result_generator:
-        parent: mbh.online.abstract_result_generator
-        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineCommonResultGenerator
-
-    mbh.online.special_result_generator:
-        parent: mbh.online.abstract_result_generator
-        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialResultGenerator
-
+# TODO: Будет время - сделать фабрику.
     mbh.online.search_helper:
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSearchHelper
         arguments: ['%online_booking%', '@mbh.helper']
         calls:
-            - [addGenerator, ['@mbh.online.special_result_generator']]
-            - [addGenerator, ['@mbh.online.common_result_generator']]
+            - [addDataProvider, ['@mbh.online.data_provider_common']]
+            - [addDataProvider, ['@mbh.online.data_provider_special']]
+            - [setAdditionalProvider, ['@mbh.online.data_provider_additional']]
+###
+    mbh.online.data_provider_common:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineDataProviderWrapper
+        arguments: ["@mbh.common_data_provider", "@mbh.online.common_sorter", "%mbh_cache%"]
 
+    mbh.online.data_provider_special:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineDataProviderWrapper
+        arguments: ["@mbh.special_data_provider", "@mbh.online.special_sorter"]
+
+    mbh.online.data_provider_additional:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineDataProviderWrapper
+        arguments: ["@mbh.additional_data_provider", "@mbh.online.additional_sorter"]
+###
+    mbh.common_data_provider:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\CommonDataProvider
+        arguments: ['@mbh.package.search', '@mbh.online.common_result_creator','@mbh.online.query_generator' ,'%online_booking%']
+
+    mbh.special_data_provider:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\SpecialDataProvider
+        arguments: ['@mbh.package.search', '@mbh.online.special_result_creator' ,'@mbh.online.query_generator','%online_booking%']
+
+    mbh.additional_data_provider:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\AdditionalDataProvider
+        arguments: ['@mbh.package.search', '@mbh.online.additional_result_creator' ,'@mbh.online.query_generator','%online_booking%']
+
+###
+    mbh.online.common_result_creator:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\CommonCreator
+
+    mbh.online.special_result_creator:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\SpecialCreator
+
+    mbh.online.additional_result_creator:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\AdditionalCreator
+###
+    mbh.online.foo_sorter:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters\FooSorter
+
+    mbh.online.common_sorter:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters\CommonSorterByPrice
+
+    mbh.online.special_sorter:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters\SpecialByDateSorter
+
+    mbh.online.additional_sorter:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\Sorters\AdditionalSorter
+
+###
+    mbh.online.query_generator:
+        public: false
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\SearchQuery\OnlineSearchQueryGenerator
+        arguments: ["%mbh_cache%"]
+###
     mbh.online_result_instance:
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance
         shared: false

@@ -37,6 +37,8 @@ class OnlineSearchFormData
     protected $addDates = false;
     /** @var bool */
     protected $forceSearchDisabledSpecial = false;
+    /** @var bool */
+    protected $forceCapacityRestriction = false;
 
     /**
      * OnlineSearchFormData constructor.
@@ -266,6 +268,24 @@ class OnlineSearchFormData
     {
         $this->forceSearchDisabledSpecial = $forceSearchDisabledSpecial;
     }
+
+    /**
+     * @return bool
+     */
+    public function isForceCapacityRestriction()
+    {
+        return $this->forceCapacityRestriction;
+    }
+
+    /**
+     * @param bool $forceCapacityRestriction
+     */
+    public function setForceCapacityRestriction(bool $forceCapacityRestriction)
+    {
+        $this->forceCapacityRestriction = $forceCapacityRestriction;
+    }
+
+
 
 
 

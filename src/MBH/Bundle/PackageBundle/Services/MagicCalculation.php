@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by Zavalyuk Alexandr (Zalex).
- * email: zalex@zalex.com.ua
- * Date: 02.03.17
- * Time: 14:37
- */
 
 namespace MBH\Bundle\PackageBundle\Services;
 
@@ -56,25 +50,24 @@ class MagicCalculation extends Calculation
         }
         $tariffId = $tariff->getId();
         $duration = (int) $end->diff($begin)->format('%a') + 1;
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-            ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
+
+        $priceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $tariffId, $memcached) {
+            return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
+        };
+
+        $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
         if (!$tariff->getIsDefault()) {
             $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
             if (!$defaultTariff) {
                 return false;
             }
-            $defaultPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                ->fetch(
-                    $begin,
-                    $end,
-                    $hotel,
-                    [$roomTypeId],
-                    [$defaultTariff->getId()],
-                    true,
-                    $this->manager->useCategories,
-                    $memcached
-                );
+            $defaultPriceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                    ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories, $memcached);
+            };
+            $defaultPriceCaches = $this->helper->getFilteredResult($this->dm, $defaultPriceCachesCallback);
 
         } else {
             $defaultPriceCaches = $priceCaches;
@@ -89,17 +82,21 @@ class MagicCalculation extends Calculation
             } else {
                 $ids = [$mergingTariff->getId()];
             }
-            $mergingTariff = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                ->fetch(
-                    $begin,
-                    $end,
-                    $hotel,
-                    [$roomTypeId],
-                    $ids,
-                    true,
-                    $this->manager->useCategories,
-                    $memcached
-                );
+            $mergingTariffCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached, $ids) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                    ->fetch(
+                        $begin,
+                        $end,
+                        $hotel,
+                        [$roomTypeId],
+                        $ids,
+                        true,
+                        $this->manager->useCategories,
+                        $memcached
+                    );
+            };
+            $mergingTariff = $this->helper->getFilteredResult($this->dm, $mergingTariffCallback);
+
 
             if ($mergingTariff) {
                 $mergingTariffsPrices += $mergingTariff;
@@ -343,7 +340,7 @@ class MagicCalculation extends Calculation
             $prices[$combination['adults'].'_'.$combination['children']] = [
                 'adults' => $combination['adults'],
                 'children' => $combination['children'],
-                'total' => $total,
+                'total' => $this->getTotalPrice($total),
                 'prices' => $dayPrices,
                 'packagePrices' => $packagePrices,
             ];
@@ -423,6 +420,11 @@ class MagicCalculation extends Calculation
 
         return $table[$adults.'adult'];
 
+    }
+
+    protected function getTotalPrice($total)
+    {
+        return $total;
     }
 
 }

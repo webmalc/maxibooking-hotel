@@ -241,6 +241,8 @@ $(document).ready(function () {
         var $quantitySelect = $wrapper.find('.quantity-select');
         var $searchRoomsSelect = $wrapper.find('.search-room-select');
         var $searchTouristsSelect = $wrapper.find('.search-tourists-select');
+        var $specialTouristSelect = $wrapper.find('.search-special-tourist-select');
+        var $specialPrice = $wrapper.find('.special-price');
 
         $quantitySelect.select2({
             minimumResultsForSearch: -1
@@ -259,6 +261,31 @@ $(document).ready(function () {
             //templateResult: format,
             //templateSelection: format
         });
+        $specialTouristSelect.select2({
+            placeholder: '',
+            allowClear: false,
+            width: 'element'
+        }).on('change.select2', function () {
+            $(this).closest('td').siblings('td').find('span.special-price').html($(this).val());
+        });
+        $.each($('.special-price'), function () {
+            $(this).html($(this).closest('td').siblings('td').find('select.search-special-tourist-select').val());
+        });
+        $('a.booking-special-apply').on('click', function (event) {
+            event.preventDefault();
+            var relatedSelect = $(this).closest('td').siblings('td').find('select.search-special-tourist-select option:selected');
+            var linkAdults = relatedSelect.data('adults');
+            var linkChildren = relatedSelect.data('children');
+            var bookingUrl = Routing.generate('special_booking', {
+                'id': $(this).data('id'),
+                'adults': linkAdults,
+                'children': linkChildren
+            });
+
+            window.open(bookingUrl);
+        });
+
+
         $wrapper.find('[data-toggle="tooltip"]').tooltip();
 
         $wrapper.find('.package-search-table tbody tr:not(.mbh-grid-header1)').each(function () {
@@ -277,6 +304,7 @@ $(document).ready(function () {
             $('#s_special').val(special);
             sendForm();
         });
+
 
         $('.search-all-tariffs-link').click(function (e) {
             e.preventDefault();
@@ -443,5 +471,7 @@ $(document).ready(function () {
          (checkChildrenAge())?sendForm():checkFormChildrenAge();
 
     });
+
+
 });
 

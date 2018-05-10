@@ -9,7 +9,6 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
-use MBH\Bundle\PackageBundle\Document\DeleteReason;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -20,7 +19,6 @@ use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
 use MBH\Bundle\PackageBundle\Form\PackageCsvType;
 use MBH\Bundle\PackageBundle\Form\PackageMainType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
-use MBH\Bundle\PackageBundle\Services\CsvGenerate;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PackageBundle\Services\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -35,7 +33,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Class PackageController
@@ -43,6 +40,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
  */
 class PackageController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {
+
     /**
      * List entities
      *
@@ -474,6 +472,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             //check by search
             $newTariff = $form->get('tariff')->getData();
             $isFixVirtualRoom = $form->get('isFixVirtualRoom')->getData();
+            if ($isFixVirtualRoom && $oldPackage->getVirtualRoom()) {
+                $package->setVirtualRoom($oldPackage->getVirtualRoom());
+            }
             $result = $this->container->get('mbh.order_manager')
                 ->updatePackage($oldPackage, $package, $newTariff, $isFixVirtualRoom);
             /** @var FlashBagInterface $flashBag */
@@ -529,7 +530,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'accommodation' => $request->get('accommodation'),
             'forceBooking' => $request->get('forceBooking'),
             'infants' => $request->get('infants'),
-            'childrenAges' => $request->get('children_age')
+            'childrenAges' => $request->get('children_age'),
+            'savedQueryId' => $request->get('query_id')
 
         ];
 
@@ -551,6 +553,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         try {
             $order = $orderManager->createPackages($data, $order, $this->getUser());
         } catch (PackageCreationException $e) {
+            $this->get('logger')->err($e->getMessage());
             $createdPackageCount = count($e->order->getPackages());
             if ($packages > 1 && $createdPackageCount > 0) {
                 $request->getSession()->getFlashBag()
@@ -563,6 +566,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 return [];
             }
         } catch (\Exception $e) {
+            $this->get('logger')->err($e->getMessage());
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 dump($e);
             };
@@ -1023,7 +1027,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid()) {
 
             $orderId = $entity->getOrder()->getId();
-            $this->dm->persist($entity);
+            /*$this->dm->persist($entity);*/
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 

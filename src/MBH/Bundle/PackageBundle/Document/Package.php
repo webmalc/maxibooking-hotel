@@ -11,7 +11,6 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
@@ -397,6 +396,12 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Field(type="bool")
      */
     protected $isMovable = true;
+
+    /**
+     * @var SearchQuery
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\SearchQuery")
+     */
+    protected $searchQuery;
 
     /**
      * @return bool
@@ -827,6 +832,7 @@ class Package extends Base implements \JsonSerializable
         $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->searchQuery = new ArrayCollection();
     }
 
 
@@ -1574,6 +1580,19 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getPricesByDateWithDiscount()
+    {
+        $prices = [];
+        foreach ($this->pricesByDate as $dateString => $price) {
+            $prices[$dateString] = $price - ($this->getDiscountMoney() / $this->getNights());
+        }
+
+        return $prices;
+    }
+
+    /**
      * @param array $prices
      * @return Package
      */
@@ -1652,5 +1671,27 @@ class Package extends Base implements \JsonSerializable
     {
         return $this->getHotel()->getOrganization() ?? $this->getHotel();
     }
+
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getSearchQuery()
+    {
+        return $this->searchQuery;
+    }
+
+    /**
+     * @param SearchQuery $searchQuery
+     * @return Package
+     */
+    public function addSearchQuery(SearchQuery $searchQuery): Package
+    {
+        $this->searchQuery->add($searchQuery);
+
+        return $this;
+    }
+
+
 
 }

@@ -191,7 +191,7 @@ class RestrictionGeneratorType extends AbstractType
 
     public function checkGuest($data, ExecutionContextInterface $context)
     {
-        if ((int)$data['maxGuest'] < (int)$data['minGuest']) {
+        if ($data['maxGuest'] && (int)$data['maxGuest'] < (int)$data['minGuest']) {
             $context->addViolation('Минимальное количество гостей не может быть больше максимального количества гостей');
         }
 

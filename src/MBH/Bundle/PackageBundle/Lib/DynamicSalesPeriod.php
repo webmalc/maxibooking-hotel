@@ -67,9 +67,11 @@ class DynamicSalesPeriod
             foreach ($this->dynamicSalesDays as $dynamicSalesDay) {
                 $sum += $dynamicSalesDay->getSpecifiedValue($option);
             }
-            return DynamicSales::getRoundedValue($sum / count($this->dynamicSalesDays), $option);
+
+            return DynamicSales::getRoundedValue($sum, $option);
         } elseif (in_array($option, DynamicSales::FOR_PERIOD_OPTIONS)) {
             $lastDayData = end($this->dynamicSalesDays);
+
             return DynamicSales::getRoundedValue($lastDayData->getSpecifiedValue($option), $option);
         }
 

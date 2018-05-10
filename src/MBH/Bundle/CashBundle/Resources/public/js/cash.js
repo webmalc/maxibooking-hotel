@@ -14,6 +14,10 @@ var cashDocumentConfirmation = function (link) {
                     link.hide();
                     link.closest('tr').removeClass('info');
                 }
+                var $responsible = link.parents('tr').find('.responsible');
+                if($responsible.length && response.responsible) {
+                    $responsible.text(response.responsible);
+                }
             } else {
                 alert('Error: ' + response.message);
             }
@@ -126,6 +130,7 @@ $(document).ready(function () {
             {"bSortable": false}, // icon
             null, // prefix
             {"class": "text-center"},
+            null, //packages
             null, // in
             null, // out
             null, //operation
@@ -134,6 +139,7 @@ $(document).ready(function () {
             null, // date
             null, // isPaid
             null, // user
+            null, // responsible
             null, // deletedAt
             {"class": "show-on-print"}, // note
             {"bSortable": false, "class": "table-actions-td"} // actions

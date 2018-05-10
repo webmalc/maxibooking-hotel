@@ -1,4 +1,5 @@
 views.cash.edit.new_document: 'создание документа #'
+views.cash.index.responsible: 'Ответственный'
 views.cash.edit.edit_document: 'редактирование документа #'
 views.cash.index.period: 'Период'
 views.cash.index.filter.byPaidDate: 'По поступлению'
@@ -7,6 +8,7 @@ views.cash.index.filter.byDeletedDate: 'По удалению'
 views.cash.index.document_list: 'список документов'
 views.cash.index.note: Комментарий
 views.cash.index.reservation: Заказ
+views.cash.index.packages: Брони
 views.cash.index.income: Приход
 views.cash.index.expense: Расход
 views.cash.index.saldo: Сальдо

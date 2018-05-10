@@ -18,15 +18,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SpecialsController extends BaseController
 {
-    const SPECIAL_MONTH_BEGIN = 6;
-    const SPECIAL_MONTH_END = 10;
-    const SPECIAL_PER_PAGE = 4;
-    const SPECIALS_SORT_BY_PRICE = 'mbh.online.special_data_preparer.price_sort';
-    const SPECIALS_SORT_BY_DATE = 'mbh.online.special_data_preparer.date_sort';
+    public const SPECIAL_MONTH_BEGIN = 5;
+    public const SPECIAL_MONTH_END = 10;
+    public const SPECIAL_PER_PAGE = 5;
+    public const SPECIALS_SORT_BY_PRICE = 'mbh.online.special_data_preparer.price_sort';
+    public const SPECIALS_SORT_BY_DATE = 'mbh.online.special_data_preparer.date_sort';
 
-    const DATA_PREPARER = [
+    public const DATA_PREPARER = [
         'byDate' => self::SPECIALS_SORT_BY_DATE,
-        'byPrice' => self::SPECIALS_SORT_BY_PRICE
+        'byPrice' => self::SPECIALS_SORT_BY_PRICE,
     ];
 
 
@@ -52,9 +52,8 @@ class SpecialsController extends BaseController
             'data' => $preparedData,
             'monthList' => $this->getMonthList(),
             'hotels' => $hotels,
-            'multiHotel' => $hotel == false,
-            'specialPerPage' => self::SPECIAL_PER_PAGE
-
+            'multiHotel' => $hotel === null,
+            'specialPerPage' => self::SPECIAL_PER_PAGE,
         ];
     }
 
@@ -94,7 +93,6 @@ class SpecialsController extends BaseController
 
         return $result;
     }
-
 
 
 }

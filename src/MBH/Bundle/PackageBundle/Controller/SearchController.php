@@ -12,7 +12,7 @@ use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
 use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\SearchType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -61,7 +61,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
         $tourist->setBirthplace(new BirthPlace());
-        $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $repository = $this->dm->getRepository('MBHVegaBundle:VegaState');
+        $tourist->setCitizenship($repository->findOneByOriginalName('РОССИЯ'));
         $tourist->getDocumentRelation()->setType('vega_russian_passport');
 
 
@@ -129,6 +130,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                     ->setAdditionalDates($query->range)
                     ->setWithTariffs();
                 $specials = $search->searchSpecials($query)->toArray();
+                /** store query in db */
+                $query->setSave(true);
                 $groupedResult = $search->search($query);
 
             } else {

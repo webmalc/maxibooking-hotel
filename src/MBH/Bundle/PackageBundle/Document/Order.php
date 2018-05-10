@@ -404,6 +404,9 @@ class Order extends Base
      */
     public function getIsPaid()
     {
+        if (!$this->getPrice()) {
+            return false;
+        }
         return $this->isPaid;
     }
 

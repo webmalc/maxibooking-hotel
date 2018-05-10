@@ -1,10 +1,28 @@
-/*global window, document, $, Routing, console, mbh, Highcharts, Translator */
+/*global window, document, $, Routing, mbh, Highcharts, Translator */
 
 $(document).ready(function ($) {
     'use strict';
     //Show table
     $('#dynamic-sales-filter-begin2').val('');
     $('#dynamic-sales-filter-begin3').val('');
+    var $roomTypeOptionsSelect = $('#dynamic-sales-filter-roomType');
+
+    var wasTotalValuesSelected = false;
+    $roomTypeOptionsSelect.on("change", (function () {
+        var selectedOptions = $roomTypeOptionsSelect.val();
+        var isTotalValueSelected = selectedOptions && selectedOptions.indexOf('total') > -1;
+        if (!wasTotalValuesSelected && isTotalValueSelected && selectedOptions.length > 1) {
+            $roomTypeOptionsSelect.val('total').trigger('change');
+            wasTotalValuesSelected = true;
+        } else if (wasTotalValuesSelected && isTotalValueSelected) {
+            selectedOptions.splice(selectedOptions.indexOf('total'), 1);
+            $roomTypeOptionsSelect.val(selectedOptions[0]).trigger('change');
+            wasTotalValuesSelected = false;
+        } else {
+            wasTotalValuesSelected = isTotalValueSelected;
+        }
+    }));
+
     var pricesProcessing = false,
         showTable = function () {
             var wrapper = $('#dynamic-sales-table-wrapper'),
@@ -21,7 +39,7 @@ $(document).ready(function ($) {
             var data = {
                 'begin': begin,
                 'end': end,
-                'roomTypes': $('#dynamic-sales-filter-roomType').val(),
+                'roomTypes': $roomTypeOptionsSelect.val(),
                 'optionsShow': $('#dynamic-sales-show-filter-roomType').val()
             };
 
@@ -191,6 +209,7 @@ var collectGraphData = function ($row, $dateRow, isFirstRow) {
         $dateElements = $dateElements.not(':first, :last');
     }
     var previousDate;
+    var lastDate;
     $row.children().not(':first, :last').each(function (index, element) {
         var span = element.getElementsByTagName('span');
         var innerHtml = span.length > 0 ? span[0].innerHTML : element.innerHTML;
@@ -199,36 +218,45 @@ var collectGraphData = function ($row, $dateRow, isFirstRow) {
         var date;
         if (hasValue) {
             value = parseFloat(innerHtml);
-            var dateString = $dateElements.eq(index).find('.date-string').text();
-            var momentDate = moment(dateString, "DD.MM");
-            previousDate = momentDate;
-            date = momentDate.valueOf();
+            date = getDateByIndex($dateElements, index);
+            previousDate = date;
         } else {
+            if (!lastDate) {
+                lastDate = moment(previousDate, "DD.MM.YY");
+            }
             value = null;
-            date = previousDate.add(1, 'days').valueOf();
+            date = previousDate.add(1, 'days');
         }
 
-        rowData.push([date, value]);
+        rowData.push([date.valueOf(), value]);
     });
 
-    return rowData;
+    return {
+        values: rowData,
+        periodEnd: lastDate ? lastDate : previousDate
+    };
+};
+
+var getDateByIndex = function ($dateElements, index) {
+    var dateString = $dateElements.eq(index).find('.date-string').text();
+    return moment(dateString, "DD.MM.YY");
 };
 
 var showDynamicSalesGraph = function (data, optionData) {
     $('#graph-modal').modal('show');
     var dates = [];
-
     data.forEach(function (rowData, index) {
-        var Schedule = {};
+        var values = rowData.values;
+        var series = {};
 
-        var periodBegin = rowData[0][0];
-        var periodEnd = getLastDateWithValue(rowData);
-        Schedule.name = moment(periodBegin).format("DD.MM.YYYY") + ' - ' + moment(periodEnd).format("DD.MM.YYYY");
+        var periodBegin = values[0][0];
+        var periodEnd = rowData.periodEnd;
+        series.name = moment(periodBegin).format("DD.MM.YYYY") + ' - ' + periodEnd.format("DD.MM.YYYY");
 
-        Schedule.data = rowData;
-        Schedule.xAxis = index;
-        Schedule.tickPosition = 'inside';
-        dates.push(Schedule);
+        series.data = values;
+        series.xAxis = index;
+        series.tickPosition = 'inside';
+        dates.push(series);
     });
 
     var graphName;

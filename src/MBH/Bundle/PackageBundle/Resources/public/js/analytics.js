@@ -55,15 +55,43 @@ $(document).ready(function () {
                     data.html = data.html.replace(/"@/g, '').replace(/@"/g, '');
                     eval(data.html);
                     $('text:contains("Highcharts.com")').hide();
+
+                    $('.highcharts-line-series').dblclick(function (event) {
+                        event.preventDefault();
+                        var seriesClassNameBeginning = 'highcharts-series-';
+                        var seriesNumber = parseInt(this.classList[3].substring(seriesClassNameBeginning.length), 10);
+                        $(analytics_filter_content).highcharts().series[seriesNumber].hide();
+                        var series = $(analytics_filter_content).highcharts().series;
+
+                        var numberOfVisibleSeries = getNumberOfVisibleSeries(series);
+                        var showAllSeries = numberOfVisibleSeries === 0 || numberOfVisibleSeries === 1;
+                        series.forEach(function (elem, index) {
+                            if (index === seriesNumber || showAllSeries) {
+                                elem.setVisible(true, false);
+                            } else {
+                                elem.setVisible(false, false);
+                            }
+                        });
+                        $chart.redraw();
+                    })
                 }
             }
         });
-
     };
     chartGet();
+
+    var numberOfRequests = 0;
+    var numberOfPendingRequests = 0;
     $('.analytics-filter').on('change switchChange.bootstrapSwitch', function () {
-        chartGet()
+        numberOfRequests++;
+        setTimeout(function () {
+            numberOfPendingRequests++;
+            if (numberOfRequests === numberOfPendingRequests) {
+                chartGet();
+            }
+        }, 500);
     });
+    
     $('#analytics-filter-cumulative').on('switchChange', function () {
         chartGet();
     });
@@ -71,3 +99,14 @@ $(document).ready(function () {
         chartGet();
     });
 });
+
+function getNumberOfVisibleSeries(series) {
+    var numberOfVisibleSeries = 0;
+    series.forEach(function (line) {
+        if (line.visible) {
+            numberOfVisibleSeries++;
+        }
+    });
+
+    return numberOfVisibleSeries;
+}

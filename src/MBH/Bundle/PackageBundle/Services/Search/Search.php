@@ -3,14 +3,17 @@
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Restriction;
+use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
@@ -28,7 +31,7 @@ class Search implements SearchInterface
     protected $container;
 
     /**
-     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
+     * @var DocumentManager
      */
     protected $dm;
 
@@ -68,9 +71,10 @@ class Search implements SearchInterface
         $this->memcached = $this->container->get('mbh.cache');
     }
 
+
     /**
-     * @param \MBH\Bundle\PackageBundle\Lib\SearchQuery $query
-     * @return \MBH\Bundle\PackageBundle\Lib\SearchResult[]
+     * @param SearchQuery $query
+     * @return array
      */
     public function search(SearchQuery $query)
     {
@@ -103,7 +107,6 @@ class Search implements SearchInterface
         $today = new \DateTime('midnight');
         $beforeArrival = $today->diff($query->begin)->format('%a');
         $helper = $this->container->get('mbh.helper');
-
 
         //roomTypes
         if (empty($query->roomTypes)) {
@@ -262,11 +265,11 @@ class Search implements SearchInterface
                 }
 
                 //MaxGuest
-                if ($restriction->getMaxGuest() && $query->getTotalPlaces() > $restriction->getMaxGuest()) {
+                if ($restriction->getMaxGuest() && $query->getTotalPlaces() > $restriction->getMaxGuest() && !$query->isIgnoreGuestRestriction()) {
                     $delete = true;
                 }
                 //MinGuest
-                if ($restriction->getMinGuest() && $restriction->getMinGuest() > $query->getTotalPlaces()) {
+                if ($restriction->getMinGuest() && $restriction->getMinGuest() > $query->getTotalPlaces() && !$query->isIgnoreGuestRestriction()) {
                     $delete = true;
                 }
                 //ClosedOnArrival
@@ -520,7 +523,6 @@ class Search implements SearchInterface
      */
     public function setVirtualRoom($result, Tariff $tariff, Package $package = null, $forcedVirtualRoom = null)
     {
-
         if ($result->getBegin() <= new \DateTime('midnight')) {
             return true;
         }
@@ -532,12 +534,19 @@ class Search implements SearchInterface
         $roomType = $result->getRoomType();
         $begin = clone $result->getBegin();
         $end = clone $result->getEnd();
-        $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')
-            ->findOneByDate($begin, $roomType, $tariff, $this->memcached);
 
-        if ($restriction && $restriction->getMinStayArrival()) {
-            $begin->modify('-' . $restriction->getMinStayArrival() . ' days');
-            $end->modify('+' . $restriction->getMinStayArrival() . ' days');
+        /** @var RestrictionRepository $restrictionRepo */
+        $restrictionRepo = $this->dm->getRepository('MBHPriceBundle:Restriction');
+        /** @var Restriction $beginRestriction */
+        $beginRestriction = $restrictionRepo->findOneByDate($begin, $roomType, $tariff, $this->memcached);
+        /** @var Restriction $endRestriction */
+        $endRestriction = $restrictionRepo->findOneByDate($end, $roomType, $tariff, $this->memcached);
+
+        if ($beginRestriction && $beginRestriction->getMinStayArrival()) {
+            $begin->modify('-' . $beginRestriction->getMinStayArrival() . ' days');
+        }
+        if ($endRestriction && $endRestriction->getMinStayArrival()) {
+            $end->modify('+' . $endRestriction->getMinStayArrival() . ' days');
         }
 
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')
@@ -545,19 +554,21 @@ class Search implements SearchInterface
         ;
 
         $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(
-            $begin,
-            $end,
+            $result->getBegin(),
+            $result->getEnd(),
             $roomType,
             null,
             $this->memcached
         );
 
         $groupedPackages = [];
+        /** @var Package $package */
         foreach ($packages as $package) {
             $groupedPackages[$package->getVirtualRoom()->getId()][] = [$package->getBegin(), $package->getEnd()];
         }
 
-        $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
+        $rooms = $this->dm
+            ->getRepository('MBHHotelBundle:Room')
             ->fetch(
                 null,
                 [$result->getRoomType()->getId()],
@@ -609,6 +620,10 @@ class Search implements SearchInterface
         $result->setRoomsCount($emptyRooms->count() + $preferredRooms->count());
 
         $collection = $preferredRooms->count() ? $preferredRooms :  $emptyRooms;
+        /** Специально для спецпредложений доступны все вирт комнаты */
+        if ($forcedVirtualRoom && $emptyRooms->count()) {
+            $collection->addAll($emptyRooms);
+        }
 
         if ($collection->count()) {
             if ($forcedVirtualRoom && $collection->contains($forcedVirtualRoom)) {
@@ -771,4 +786,5 @@ class Search implements SearchInterface
 
         return $results;
     }
+
 }
