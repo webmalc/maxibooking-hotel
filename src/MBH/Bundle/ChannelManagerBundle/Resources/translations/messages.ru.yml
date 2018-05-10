@@ -145,3 +145,6 @@ channel_manager.logs.no_entries_in_file: 'Нет записей в файле л
 channel_manager.logs.small_title: логи
 channel_manager.logs.clear: Очистить
 channel_manager.push_link.link_to_push_notifications: 'Ссылка для push уведомлений'
+booking_rooms_type.room_type.label: 'Тип номера'
+booking_rooms_type.single_prices.label: '1-местное размещение'
+booking_rooms_type.single_prices.help: 'Выгружать ли цену за одноместное размещение?'

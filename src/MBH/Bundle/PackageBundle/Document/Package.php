@@ -1596,7 +1596,7 @@ class Package extends Base implements \JsonSerializable
     {
         if (!$this->isPackagePricesWithDiscountInit) {
             foreach ($this->getPrices() as $price) {
-                $priceFraction = $price->getPrice() / $this->getPackagePrice();
+                $priceFraction = $this->getPackagePrice() != 0 ? $price->getPrice() / $this->getPackagePrice() : 0;
 
                 $clonedPrice = clone $price;
                 $priceWithDiscount = $this->isPercentDiscount
