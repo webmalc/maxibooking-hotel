@@ -54,7 +54,6 @@ class Calculation
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->manager = $container->get('mbh.hotel.room_type_manager');
-        $this->mergingTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->getMergingTariffs();
         $this->helper = $container->get('mbh.helper');
     }
 
@@ -198,11 +197,11 @@ class Calculation
 
 
         $mergingTariffsPrices = [];
-        foreach ($this->mergingTariffs as $mergingTariff) {
-            if ($mergingTariff->getParent() && $mergingTariff->getChildOptions()->isInheritPrices()) {
-                $ids = [$mergingTariff->getParent()->getId()];
+        if ($tariff->getMergingTariff()) {
+            if ($tariff->getMergingTariff()->getParent() && $tariff->getMergingTariff()->getChildOptions()->isInheritPrices()) {
+                $ids = [$tariff->getMergingTariff()->getParent()->getId()];
             } else {
-                $ids = [$mergingTariff->getId()];
+                $ids = [$tariff->getMergingTariff()->getId()];
             }
 
             $mergingTariffCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached, $ids) {
@@ -235,13 +234,9 @@ class Calculation
 
             if (isset($priceCaches[$roomTypeId][$tariffId][$cacheDayStr])) {
                 $caches[$cacheDayStr] = $priceCaches[$roomTypeId][$tariffId][$cacheDayStr];
-            } else {
-                foreach ($this->mergingTariffs as $mergingTariff) {
-                    if (isset($mergingTariffsPrices[$roomTypeId][$mergingTariff->getId()][$cacheDayStr])) {
-                        $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$mergingTariff->getId()][$cacheDayStr];
-                        break;
-                    }
-                }
+            } elseif ($tariff->getMergingTariff()
+                && isset($mergingTariffsPrices[$roomTypeId][$tariff->getMergingTariff()->getId()][$cacheDayStr])) {
+                $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$tariff->getMergingTariff()->getId()][$cacheDayStr];
             }
 
             if (empty($caches[$cacheDayStr]) && isset($defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr])) {
@@ -380,7 +375,7 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
-                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $originTariff, $roomType, $special);
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $cache->getTariff(), $roomType, $special);
                 $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
 

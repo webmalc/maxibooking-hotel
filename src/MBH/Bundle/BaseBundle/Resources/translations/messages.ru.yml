@@ -294,6 +294,7 @@ exception.tariff_relation_delete.message.restriction: 'Невозможно уд
 exception.tariff_relation_delete.message.roomCache: 'Невозможно удалить тариф, так как он используется в текущих номерах в продаже (%total%).'
 exception.tariff_relation_delete.message.package: 'Невозможно удалить тариф, так как он используется в текущих бронях (%total%).'
 exception.tariff_relation_delete.message.parentTariff: 'Невозможно удалить тариф, так как он используется как родительский для другого тарифа (%total%).'
+exception.tariff_relation_delete.message.mergingTariff: 'Невозможно удалить тариф, так как он используется как тариф для комбинирования (%total%).'
 exception.serviceCategory_relation_message.service: 'Невозможно удалить категорию услуг, так как она используется в существующих услугах (%total%).'
 exception.promotion_relation_delete.message.tariff: 'Невозможно удалить текущую акцию, так как она испольуется как стандартная для тарифа'
 exception.promotion_relation_delete.message.package: 'Невозможно удалить текущую акцию, так как она испольуется в брони (%total%).'

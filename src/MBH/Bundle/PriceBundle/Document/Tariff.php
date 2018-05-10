@@ -231,13 +231,12 @@ class Tariff extends Base implements ConditionsInterface
     protected $minPerPrepay = 0;
 
     /**
-     * @var boolean
+     * @var Tariff
      * @Gedmo\Versioned
-     * @ODM\Boolean()
-     * @Assert\NotNull()
-     * @Assert\Type(type="boolean")
+     * @ODM\ReferenceOne(targetDocument="Tariff")
      */
-    protected $defaultForMerging = false;
+    protected $mergingTariff;
+
     /**
      *@Gedmo\Versioned
      *@ODM\Field(type="string", name="paymentType")
@@ -632,20 +631,20 @@ class Tariff extends Base implements ConditionsInterface
     }
 
     /**
-     * @return boolean
+     * @return Tariff
      */
-    public function isDefaultForMerging(): bool
+    public function getMergingTariff(): ?Tariff
     {
-        return $this->defaultForMerging;
+        return $this->mergingTariff;
     }
 
     /**
-     * @param boolean $defaultForMerging
+     * @param Tariff $mergingTariff
      * @return Tariff
      */
-    public function setDefaultForMerging(bool $defaultForMerging)
+    public function setMergingTariff(?Tariff $mergingTariff)
     {
-        $this->defaultForMerging = $defaultForMerging;
+        $this->mergingTariff = $mergingTariff;
 
         return $this;
     }

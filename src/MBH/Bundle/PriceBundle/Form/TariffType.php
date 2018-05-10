@@ -13,14 +13,16 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Document\TariffRepository;
 
 class TariffType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
-        $conditions = PromotionConditionFactory::getAvailableConditions();
+        $formTariff = $builder->getData();
 
         $builder
             ->add('fullTitle', TextType::class, [
@@ -153,14 +155,24 @@ class TariffType extends AbstractType
                     'help' => 'До какого возраста клиент считается инфантом?'
                 ]
             )
-            ->add('defaultForMerging', CheckboxType::class, [
-                'label' => 'Использовать для комбинирования?',
+            ->add('mergingTariff', DocumentType::class, [
+                'label' => 'Тариф для комбинирования',
                 'group' => 'configuration',
-                'value' => true,
+                'class' => Tariff::class,
+                'query_builder' => function(TariffRepository $repository) use ($options, $formTariff) {
+                    $qb = $repository->createQueryBuilder();
+                    $qb
+                        ->field('hotel')->equals($options['hotel'])
+                        ->field('isEnabled')->equals(true);
+                    if (!is_null($formTariff)) {
+                        $qb->field('id')->notEqual($formTariff->getId());
+                    }
+
+                    return $qb;
+                },
                 'required' => false,
                 'help' =>
-                    'Использовать для комбинирования тарифов в переходных периодах?<br>
-                     По-молчанию спец. тарифы комбинируются с основным тарифом'
+                    'Тариф для комбинирования в переходных периодах <br> По-молчанию спец. тарифы комбинируются с основным тарифом'
             ])
             ->add('paymentType', ChoiceType::class, [
                 'label' => 'Процент для первой оплаты',
