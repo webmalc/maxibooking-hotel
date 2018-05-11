@@ -51,7 +51,7 @@ class RestrictionsCheckerService
     public function check(SearchQuery $searchQuery): array
     {
         if ($searchQuery->isIgnoreRestrictions()) {
-            return true;
+            return [];
         }
 
         if (null === $this->restrictions) {

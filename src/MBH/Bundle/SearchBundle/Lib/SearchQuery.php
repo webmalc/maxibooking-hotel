@@ -5,7 +5,13 @@ namespace MBH\Bundle\SearchBundle\Lib;
 
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 
+/**
+ * Class SearchQuery
+ * @package MBH\Bundle\SearchBundle\Lib
+ * @ChildrenAgesSameAsChildren()
+ */
 class SearchQuery
 {
     /**
@@ -39,7 +45,7 @@ class SearchQuery
     /**
      * @var array
      */
-    private $childrenAges;
+    private $childrenAges = [];
 
     /** @var int  */
     private $childAge;
@@ -310,7 +316,14 @@ class SearchQuery
 
     public function getInfants(): int
     {
-        return $this->children - $this->getActualChildren();
+        $infants =  array_filter(
+            $this->childrenAges,
+            function ($age) {
+                return $age <= $this->infantAge;
+            }
+        );
+
+        return \count($infants);
     }
 
 
@@ -334,6 +347,7 @@ public static function createInstance(SearchQueryHelper $queryHelper, SearchCond
             ->setIgnoreRestrictions($conditions->isIgnoreRestrictoins())
             ->setChildren($conditions->getChildren())
             ->setAdults($conditions->getAdults())
+            ->setChildrenAges($conditions->getChildrenAges())
         ;
 
         return $searchQuery;

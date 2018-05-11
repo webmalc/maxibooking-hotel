@@ -44,6 +44,15 @@ class ClosedOnArrivalTest extends RestrictionWebTestCase
 
     }
 
+    /** @dataProvider dataProvider */
+    public function testCloseOnArrivalBeginCheckNoViolation(SearchQuery $searchQuery, array $restriction): void
+    {
+        $closedOnArrival = new ClosedOnArrival();
+        $restriction[0]['closedOnArrival'] = false;
+        $this->assertNull($closedOnArrival->check($searchQuery, $restriction));
+
+    }
+
 
 
 }

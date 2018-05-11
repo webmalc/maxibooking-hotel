@@ -43,4 +43,13 @@ class ClosedOnDepartureTest extends RestrictionWebTestCase
         $this->assertNull($closedOnDeparture->check($searchQuery, $restriction));
 
     }
+
+    /** @dataProvider dataProvider */
+    public function testCloseOnDepartureEndCheckNoViolation(SearchQuery $searchQuery, array $restriction): void
+    {
+        $closedOnDeparture = new ClosedOnDeparture();
+        $restriction[2]['closedOnDeparture'] = false;
+        $this->assertNull($closedOnDeparture->check($searchQuery, $restriction));
+
+    }
 }

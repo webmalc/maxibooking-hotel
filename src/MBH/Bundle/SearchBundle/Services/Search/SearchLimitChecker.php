@@ -13,28 +13,35 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 class SearchLimitChecker
 {
 
-    /** @var RoomCacheSearchProvider  */
-    private $roomCacheLimitChecker;
-
-    public function __construct(RoomCacheSearchProvider $roomCacheChecker)
-    {
-        $this->roomCacheLimitChecker = $roomCacheChecker;
-    }
-
+    /**
+     * @param Tariff $tariff
+     * @throws SearchLimitCheckerException
+     */
     public function checkDateLimit(Tariff $tariff): void
     {
         $tariffBegin = $tariff->getBegin();
         $tariffEnd = $tariff->getEnd();
         $now = new \DateTime("now midnight");
-        $isTariffNotYetStarted = $tariffBegin > $now;
-        $isTariffAlreadyEnded = $tariffEnd < $now;
+        $isTariffNotYetStarted = $isTariffAlreadyEnded = false;
+        if (null !== $tariffBegin) {
+            $isTariffNotYetStarted = $tariffBegin > $now;
+        }
+
+        if (null !== $tariffEnd) {
+            $isTariffAlreadyEnded = $tariffEnd < $now;
+        }
 
         if ($isTariffNotYetStarted || $isTariffAlreadyEnded) {
             throw new SearchLimitCheckerException('Tariff time limit violated');
         }
     }
 
-    public function checkTariffConditions(Tariff $tariff, SearchQuery $searchQuery)
+    /**
+     * @param Tariff $tariff
+     * @param SearchQuery $searchQuery
+     * @throws SearchLimitCheckerException
+     */
+    public function checkTariffConditions(Tariff $tariff, SearchQuery $searchQuery): void
     {
         //** TODO: Уточнить у сергея, тут должны быть приведенные значения взрослых-детей или из запроса ибо в поиске из запрсоа. */
         $duration = $searchQuery->getEnd()->diff($searchQuery->getBegin())->format('%a');
@@ -50,11 +57,11 @@ class SearchLimitChecker
         }
     }
 
-    public function checkRoomCacheLimit(SearchQuery $searchQuery, RoomType $currentRoomType, Tariff $currentTariff): void
-    {
-        $this->roomCacheLimitChecker->fetchAndCheck($searchQuery->getBegin(), $searchQuery->getEnd(), $currentRoomType, $currentTariff);
-    }
-
+    /**
+     * @param RoomType $roomType
+     * @param SearchQuery $searchQuery
+     * @throws SearchLimitCheckerException
+     */
     public function checkRoomTypePopulationLimit(RoomType $roomType, SearchQuery $searchQuery): void
     {
         $searchTotalPlaces = $searchQuery->getSearchTotalPlaces();

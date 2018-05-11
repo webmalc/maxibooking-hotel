@@ -7,7 +7,6 @@ namespace Tests\Bundle\SearchBundle\Services\Search;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
-use MBH\Bundle\SearchBundle\Services\Search\RoomCacheSearchProvider;
 use MBH\Bundle\SearchBundle\Services\Search\SearchLimitChecker;
 
 class SearchLimitCheckerTest extends WebTestCase
@@ -19,9 +18,15 @@ class SearchLimitCheckerTest extends WebTestCase
         $tariffEnd = new \DateTime("midnight + 5 day");
         $tariff = new Tariff();
         $tariff->setBegin($tariffBegin)->setEnd($tariffEnd);
-        $mock = $this->createMock(RoomCacheSearchProvider::class);
-        $checker = new SearchLimitChecker($mock);
+        $checker = new SearchLimitChecker();
 
+        $this->assertNull($checker->checkDateLimit($tariff));
+    }
+
+    public function testCheckTariffNoTariffConditions()
+    {
+        $tariff = new Tariff();
+        $checker = new SearchLimitChecker();
         $this->assertNull($checker->checkDateLimit($tariff));
     }
 
@@ -31,8 +36,7 @@ class SearchLimitCheckerTest extends WebTestCase
         $tariffEnd = new \DateTime("midnight + 5 day");
         $tariff = new Tariff();
         $tariff->setBegin($tariffBegin)->setEnd($tariffEnd);
-        $mock = $this->createMock(RoomCacheSearchProvider::class);
-        $checker = new SearchLimitChecker($mock);
+        $checker = new SearchLimitChecker();
         $this->expectException(SearchLimitCheckerException::class);
         $checker->checkDateLimit($tariff);
     }
@@ -43,8 +47,7 @@ class SearchLimitCheckerTest extends WebTestCase
         $tariffEnd = new \DateTime("midnight -1 day");
         $tariff = new Tariff();
         $tariff->setBegin($tariffBegin)->setEnd($tariffEnd);
-        $mock = $this->createMock(RoomCacheSearchProvider::class);
-        $checker = new SearchLimitChecker($mock);
+        $checker = new SearchLimitChecker();
         $this->expectException(SearchLimitCheckerException::class);
         $checker->checkDateLimit($tariff);
     }

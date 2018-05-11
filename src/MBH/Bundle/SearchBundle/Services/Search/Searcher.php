@@ -6,12 +6,14 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Lib\SearchResult;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Searcher
 {
@@ -25,12 +27,30 @@ class Searcher
     /** @var  SearchLimitChecker*/
     private $searchLimitChecker;
 
-    public function __construct(DocumentManager $dm,  RestrictionsCheckerService $restrictionsChecker, SearchLimitChecker $limitChecker)
+    /** @var RoomCacheSearchProvider */
+    private $roomCacheSearchProvider;
+
+    /** @var SearchResultComposer */
+    private $resultComposer;
+
+    /** @var ValidatorInterface  */
+    private $validator;
+
+    public function __construct(
+        DocumentManager $dm,
+        RestrictionsCheckerService $restrictionsChecker,
+        SearchLimitChecker $limitChecker,
+        RoomCacheSearchProvider $roomCacheSearchProvider,
+        SearchResultComposer $resultComposer,
+        ValidatorInterface $validator
+)
     {
         $this->dm = $dm;
         $this->restrictionChecker = $restrictionsChecker;
         $this->searchLimitChecker = $limitChecker;
-
+        $this->roomCacheSearchProvider = $roomCacheSearchProvider;
+        $this->resultComposer = $resultComposer;
+        $this->validator = $validator;
     }
 
 
@@ -41,24 +61,35 @@ class Searcher
      * @throws SearchException
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function search(SearchQuery $searchQuery): ?SearchResult
+    public function search(SearchQuery $searchQuery): SearchResult
     {
-        $searchResult = new SearchResult();
+        $errors = $this->validator->validate($searchQuery);
+        if (\count($errors)) {
+            throw new SearcherException('There is a problem in SearchQuery. '. $errors);
+        }
+        $currentTariff = $this->dm->find(Tariff::class, $searchQuery->getTariffId());
+        $currentRoomType = $this->dm->find(RoomType::class, $searchQuery->getRoomTypeId());
 
         $this->preFilter($searchQuery);
 
         $this->checkRestrictions($searchQuery);
 
-        $currentTariff = $this->dm->find(Tariff::class, $searchQuery->getTariffId());
+
         $this->checkTariffDates($currentTariff);
         $this->checkTariffConditions($currentTariff, $searchQuery);
 
-
-        $currentRoomType = $this->dm->find(RoomType::class, $searchQuery->getRoomTypeId());
-        $this->checkRoomCacheLimit($searchQuery, $currentRoomType, $currentTariff);
         $this->checkRoomTypePopulationLimit($currentRoomType, $searchQuery);
 
-        return $searchResult;
+        $roomCaches = $this->checkRoomCacheLimitAndReturnActual($searchQuery, $currentRoomType, $currentTariff);
+
+        return $this->searchResultCompose($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
+    }
+
+    private function searchResultCompose(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, array $roomCaches): SearchResult
+    {
+        $searchResult = new SearchResult();
+
+        return $this->resultComposer->composeResult($searchResult, $searchQuery, $roomType, $tariff, $roomCaches);
     }
 
     /**
@@ -89,9 +120,10 @@ class Searcher
      */
     private function checkRestrictions(SearchQuery $searchQuery): void
     {
+        $this->restrictionChecker->setConditions($searchQuery->getSearchCondition());
         $errors = $this->restrictionChecker->check($searchQuery);
         if (\count($errors)) {
-            throw new SearchException('Error in restriction');
+            throw new SearchException('Error in restriction. '. implode(';', $errors));
         }
     }
 
@@ -113,9 +145,9 @@ class Searcher
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RoomCacheLimitException
      */
-    private function checkRoomCacheLimit(SearchQuery $searchQuery, RoomType $currentRoomType, Tariff $currentTariff): void
+    private function checkRoomCacheLimitAndReturnActual(SearchQuery $searchQuery, RoomType $currentRoomType, Tariff $currentTariff): array
     {
-        $this->searchLimitChecker->checkRoomCacheLimit($searchQuery, $currentRoomType, $currentTariff);
+        return $this->roomCacheSearchProvider->fetchAndCheck($searchQuery->getBegin(), $searchQuery->getEnd(), $currentRoomType, $currentTariff);
     }
 
     private function checkRoomTypePopulationLimit(RoomType $roomType, SearchQuery $searchQuery): void

@@ -6,10 +6,10 @@ namespace Tests\Bundle\SearchBundle\Services\Search;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Lib\SearchResult;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
 
 class SearcherTest extends WebTestCase
@@ -18,7 +18,7 @@ class SearcherTest extends WebTestCase
     {
         $conditions = new SearchConditions();
         $begin = new \DateTime("midnight + 1 day");
-        $end = new \DateTime("midnight + 4 day");
+        $end = new \DateTime("midnight + 8 day");
 
         $conditions
             ->setBegin($begin)
@@ -43,6 +43,7 @@ class SearcherTest extends WebTestCase
     }
 
     /**
+     * TODO: Проверка перенесена в сервис, перенести туда тест
      * @dataProvider populationDataProvider
      */
     public function testCheckRoomTypePopulationLimit(int $places, int $additionalPlaces, int $maxInfants, bool $expectedSuccess)

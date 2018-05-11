@@ -13,7 +13,7 @@ class ClosedOnArrival extends AbstractFieldChecker
     {
 
         $isArrival = $date == $searchQuery->getBegin();
-        if ($isArrival) {
+        if ($isArrival && $value) {
             throw new RestrictionsCheckerException("Room {$this->getCheckingFieldName()} at {$date->format('d-m-Y')}" );
 
         }

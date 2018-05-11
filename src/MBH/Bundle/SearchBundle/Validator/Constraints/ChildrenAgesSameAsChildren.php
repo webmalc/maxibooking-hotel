@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class ChildrenAgesSameAsChildren extends Constraint
 {
-    public $message = 'The children ages not same as children';
+    public $message = 'The children ages num not same as children num';
 
     /**
      * @return string

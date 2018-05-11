@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
@@ -372,6 +373,7 @@ class Search implements SearchInterface
                 }
                 $useCategories = $query->isOnline && $this->config && $this->config->getUseRoomTypeCategory();
                 $result = new SearchResult();
+                /** @var RoomType $roomType */
                 $tourists = $roomType->getAdultsChildrenCombination($adults, $children, $this->manager->useCategories);
 
                 if ($query->accommodations) {
