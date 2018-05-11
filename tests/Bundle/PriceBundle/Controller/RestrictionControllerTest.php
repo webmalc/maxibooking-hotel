@@ -423,7 +423,7 @@ class RestrictionControllerTest extends WebTestCase
                 $data['minGuest'] = mt_rand(1, $data['maxGuest']);
             } else {
                 $data['minGuest'] = mt_rand(2, 200);
-                $data['maxGuest'] = mt_rand(2, $data['minGuest']-1);
+                $data['maxGuest'] = mt_rand(1, $data['minGuest']-1);
             }
         }
 
