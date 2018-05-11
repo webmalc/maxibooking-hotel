@@ -20,11 +20,24 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         return str;
     };
 
-    function menuText(str){
+    String.prototype.convertStyle = function () {
+        var strArr = this.split('-'),
+            str = '';
+        for (var i = 0, len = strArr.length; i < len; i++ ){
+            if (i>0){
+                str += strArr[i].ucFirst();
+            } else {
+                str += strArr[i];
+            }
+        }
+        return str;
+    };
+
+    function menuText(str) {
         var name = '',
             match = str.match(/get([A-Z].+)([A-Z].+)([A-Z].+)|([A-Z].+)([A-Z].+)|([A-Z].+)/);
-        for (var i = 1, len = match.length; i <= len; i++){
-            if (match[i] !== undefined){
+        for (var i = 1, len = match.length; i <= len; i++) {
+            if (match[i] !== undefined) {
                 name += match[i] + ' ';
             }
         }
@@ -55,7 +68,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
 
     self.mbh_property = {};
     self.mbh_property.table = {};
-    for (var tableKey in mbh_property.table){
+    for (var tableKey in mbh_property.table) {
         self.mbh_property.table[tableKey] = mbh_property.table[tableKey];
     }
 
@@ -126,8 +139,8 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         }
     });
 
-    for(var entityName in mbh_property.common){
-        if (entityName === 'payer'){
+    for (var entityName in mbh_property.common) {
+        if (entityName === 'payer') {
             editor.addMenuItem('mbh_payer', {
                 text: 'Payer',
                 menu: [
@@ -188,7 +201,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
     function changeMenuItemsTableEntity(entityMenu) {
         if (self.mbh_table !== null) {
             try {
-                if (entityMenu.settings.entity === self.mbh_table_match[1]){
+                if (entityMenu.settings.entity === self.mbh_table_match[1]) {
                     entityMenu.show();
                 } else {
                     entityMenu.hide();
@@ -203,9 +216,9 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
     for (var entityNameInTable in self.mbh_property.table) {
         menuEntityTable.push(
             {
-                text: menuText(entityNameInTable.ucFirst()),
-                menu: self.getMenu(entityNameInTable, self.mbh_property.table[entityNameInTable]),
-                entity: entityNameInTable,
+                text        : menuText(entityNameInTable.ucFirst()),
+                menu        : self.getMenu(entityNameInTable, self.mbh_property.table[entityNameInTable]),
+                entity      : entityNameInTable,
                 onPostRender: function (e) {
                     var entityMenu = this;
                     changeMenuItemsTableEntity(entityMenu);
@@ -245,7 +258,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         return value.search(/[^0-9]/) === -1;
     }
 
-    function changeBorderColor(target, func) {
+    function changeBorderColorInForm(target, func) {
         if (func(target.value)) {
             target.style.borderColor = 'green';
         } else {
@@ -333,36 +346,39 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         }
     }
 
-    function getBorderStyle() {
-        if (self.mbh_border_style === 'none') {
-            return '';
+    function changeStyleExample(prefix, style, value) {
+        var node = document.querySelector('#' + prefix + 'example div');
+
+        if (typeof style === "object") {
+            for (var key in style){
+                if (key.search(new RegExp(prefix)) !== -1){
+                    var nameStyle = key.split('_')[1];
+                    if (nameStyle === 'width' || nameStyle === 'height'){
+                        continue;
+                    }
+                    node.style[nameStyle] = addSuffixPX(key, style);
+                }
+            }
+        } else if (typeof style === "string") {
+            node.style[style] = addSuffixPX(style, value);
         }
-        return self.mbh_border_width + 'px ' + self.mbh_border_style + ' ' + self.mbh_border_color;
     }
 
-    function changeStyleTableProperty(where, value) {
-        if (where !== undefined) {
-            switch (where) {
-                case 'style':
-                    self.mbh_border_style = value;
-                    break;
-                case 'color':
-                    self.mbh_border_color = value;
-                    break;
-                case 'width':
-                    self.mbh_border_width = value;
-                    break;
-            }
+    function addSuffixPX(style, data) {
+        var suffix = '';
+        if (style.search(/width/i) !== -1 || style.search(/height/i) !== -1 ){
+            suffix = 'px';
         }
-
-        document.querySelector('#example_border_style div').style.border = getBorderStyle();
+        if (typeof data === "string"){
+            return data + suffix;
+        }
+        return data[style] + suffix;
     }
 
     function setTableProperty(table, data) {
-        editor.dom.setStyle(table, 'width', data.width + 'px');
-        editor.dom.setStyle(table, 'height', data.height + 'px');
-        editor.dom.setStyle(table, 'borderCollapse', data['border-collapse']);
-        editor.dom.setStyle(table, 'border', getBorderStyle());
+        for (var style in data){
+            editor.dom.setStyle(table, style, addSuffixPX(style, data));
+        }
     }
 
     function convertColor(str) {
@@ -376,6 +392,304 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
             return '#' + convertDexToHex(num[1]) + convertDexToHex(num[2]) + convertDexToHex(num[3]);
         }
         return str;
+    }
+
+    var PREFIX_TABLE = 'table_',
+        PREFIX_THEAD = 'thead_',
+        PREFIX_TBODY = 'tbody_';
+
+    var PREFIX = [
+        PREFIX_THEAD,
+        PREFIX_TBODY,
+        PREFIX_TABLE
+    ];
+
+    // for (var i = 0, len = PREFIX.length; i<len; i++){
+    //     self[PREFIX[i] + 'sideBorder'] = '';
+    // }
+
+    function isPrefix(prefixRaw) {
+        var prefix = prefixRaw.split('_')[0] + '_';
+        return PREFIX.some(function (value) {
+            return value === prefix;
+        })
+    }
+
+
+    function formStyleChangeBorder(prefix) {
+        function add(side) {
+            return {
+                type: 'container',
+                    // label  : 'flex row',
+                    layout: 'flex',
+                direction: 'row',
+                align: 'center',
+                spacing: 5,
+                disabled: true,
+                // minWidth: 20,
+                // maxWidth: 160,
+                // minHeight: 160,
+                items: [
+                {
+                    type: 'container',
+                    layout: 'flex',
+                    direction: 'column',
+                    // label  : 'flex row1',
+                    items: [
+                        {type: 'label', text: 'Border style'},
+                        {
+                            type    : 'listbox',
+                            name    : prefix + 'border' + side +'Style',
+                            label   : 'Border style',
+                            values  : [
+                                {text: 'None', value: 'none'},
+                                {text: 'Solid', style: 'border: 2px solid black;', value: 'solid'},
+                                {text: 'Dotted', style: 'border: 2px dotted black;', value: 'dotted'}
+                            ],
+                            onSelect: function (e) {
+                                changeStyleExample(prefix, 'border' + side +'Style', this.value());
+                            }
+                        },
+                    ]
+                },
+                {
+                    type: 'container',
+                    layout: 'flex',
+                    direction: 'column',
+                    // label  : 'flex row2',
+                    items: [
+                        {type: 'label', text: 'Border color'},
+                        {
+                            type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
+                            name    : prefix + 'border' + side +'Color',
+                            label   : 'Border color',
+                            onaction: createColorPickAction(),
+                            onChange: function (e) {
+                                changeStyleExample(prefix, 'border' + side +'Color', this.value());
+                            }
+                        },
+                    ]
+                },
+                {
+                    type: 'container',
+                    layout: 'flex',
+                    direction: 'column',
+                    // label  : 'flex row1',
+                    items: [
+                        {type: 'label', text: 'Border width'},
+                        {
+                            type   : 'textbox',
+                            name   : prefix + 'border' + side +'Width',
+                            label  : 'Border width',
+                            tooltip: 'Only integer',
+                            onkeyup: function (e) {
+                                changeBorderColorInForm(e.target, isInteger);
+                                changeStyleExample(prefix, 'border' + side +'Width', this.value());
+                            }
+                        },
+                    ]
+                }
+            ]
+            }
+        }
+
+
+        return [
+
+            // {
+            //     type    : 'listbox',
+            //     name    : prefix + 'borderStyle',
+            //     label   : 'Border style',
+            //     values  : [
+            //         {text: 'None', value: 'none'},
+            //         {text: 'Solid', style: 'border: 2px solid black;', value: 'solid'},
+            //         {text: 'Dotted', style: 'border: 2px dotted black;', value: 'dotted'}
+            //     ],
+            //     onSelect: function (e) {
+            //         changeStyleExample(prefix, 'borderStyle', this.value());
+            //     }
+            // },
+            // {
+            //     type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
+            //     name    : prefix + 'borderColor',
+            //     label   : 'Border color',
+            //     onaction: createColorPickAction(),
+            //     onChange: function (e) {
+            //         changeStyleExample(prefix, 'borderColor', this.value());
+            //     }
+            // },
+            // {
+            //     type   : 'textbox',
+            //     name   : prefix + 'borderWidth',
+            //     label  : 'Border width',
+            //     tooltip: 'Only integer',
+            //     onkeyup: function (e) {
+            //         changeBorderColorInForm(e.target, isInteger);
+            //         changeStyleExample(prefix, 'borderWidth', this.value());
+            //     }
+            // },
+            {
+                type: 'label',
+                style: 'text-align: center',
+                text: 'Border'
+            },
+            add('Top'),
+            add('Left'),
+            add('Right'),
+            add('Bottom')
+
+        ];
+    }
+
+    function formStyleTableGeneral(styleData) {
+        var items = [
+            {
+                type   : 'textbox',
+                name   : PREFIX_TABLE + 'width',
+                label  : 'Width',
+                tooltip: 'Only integer',
+                onkeyup: function (e) {
+                    changeBorderColorInForm(e.target, isInteger);
+                }
+            },
+            {
+                type   : 'textbox',
+                name   : PREFIX_TABLE + 'height',
+                label  : 'Height',
+                tooltip: 'Only integer',
+                onkeyup: function (e) {
+                    changeBorderColorInForm(e.target, isInteger);
+                }
+            },
+            {
+                type  : 'listbox',
+                name  : PREFIX_TABLE + 'borderCollapse',
+                label : 'Border collapse',
+                values: [
+                    {text: 'Separate', value: 'separate'},
+                    {text: 'Collapse', value: 'collapse'}
+                ]
+            },
+            {
+                type : 'container',
+                label: 'Example border',
+                html : '<div id="' + PREFIX_TABLE + 'example"><div style="padding: 2px; text-align: center;">Example</div></div>',
+                onPostRender: function () {
+                    changeStyleExample(PREFIX_TABLE,styleData);
+                }
+            }
+        ];
+
+
+        return {
+            title: 'General',
+            type : 'form',
+            items: items.concat(formStyleChangeBorder(PREFIX_TABLE))
+        }
+    }
+
+    function formStyleTableTHEAD(styleData){
+        var items = [
+            {
+                type : 'container',
+                label: 'Example thead',
+                html : '<div id="' + PREFIX_THEAD + 'example"><div style="padding: 2px;">Example</div></div>',
+                onPostRender: function () {
+                    changeStyleExample(PREFIX_THEAD,styleData);
+                }
+            },
+            {
+                type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
+                name    : PREFIX_THEAD + 'backgroundColor',
+                label   : 'Background color',
+                onaction: createColorPickAction(),
+                onChange: function (e) {
+                    changeStyleExample(PREFIX_THEAD, 'backgroundColor', this.value());
+                }
+            },
+            {
+                type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
+                name    : PREFIX_THEAD + 'color',
+                label   : 'Text color',
+                onaction: createColorPickAction(),
+                onChange: function (e) {
+                    changeStyleExample(PREFIX_THEAD, 'color', this.value());
+                }
+            },
+            {
+                type   : 'listbox',
+                name   : PREFIX_THEAD + 'textAlign',
+                label  : 'Text align',
+                values : [
+                    { text: 'Default', value: '' },
+                    { text: 'Center', value: 'center' },
+                    { text: 'Left', value: 'left' },
+                    { text: 'Right', value: 'right' }
+                ],
+                onSelect: function (e) {
+                    changeStyleExample(PREFIX_THEAD, 'textAlign', this.value());
+                }
+            },
+            {
+                type   : 'textbox',
+                name   : PREFIX_THEAD + 'height',
+                label  : 'Height',
+                tooltip: 'Only integer',
+                onkeyup: function (e) {
+                    changeBorderColorInForm(e.target, isInteger);
+                }
+            }
+        ];
+
+        return {
+            title: 'style THEAD',
+            type : 'form',
+            items: items.concat(formStyleChangeBorder(PREFIX_THEAD))
+        }
+    }
+
+    function appendStylesToData(dom) {
+
+        dom.thead = dom.table.querySelector('thead tr');
+        dom.tbody = dom.table.querySelector('tbody');
+        var styleTableStr = dom.table.getAttribute('style'),
+            styleTheadStr = dom.thead.getAttribute('style'),
+            styleTbodyStr = dom.tbody.getAttribute('style'),
+            style = {};
+
+        function getStyle(item) {
+            var prefix = this;
+            if (item !== '') {
+                var singleStyle = item.split(':'),
+                    name = singleStyle[0].trim();
+                console.log(name);
+                if (name === 'border') {
+                    var border = singleStyle[1].trim().match(/([\d]*)px\s([\w]*?)\s(.*)/);
+                    if (border[1] !== undefined) {
+                        style[prefix + 'borderWidth'] = border[1];
+                        style[prefix + 'borderStyle'] = border[2];
+                        style[prefix + 'borderColor'] = convertColor(border[3]);
+                    }
+                } else {
+                    style[prefix + name.convertStyle()] = convertColor(singleStyle[1].trim().replace(/px$/, ''));
+                }
+                // style[prefix + name.convertStyle()] = convertColor(singleStyle[1].trim().replace(/px$/, ''));
+            }
+        }
+
+        if (styleTableStr !== null) {
+            styleTableStr.split(';').map(getStyle,PREFIX_TABLE);
+        }
+
+        if (styleTheadStr !== null) {
+            styleTheadStr.split(';').map(getStyle,PREFIX_THEAD);
+        }
+
+        if (styleTbodyStr !== null) {
+            styleTbodyStr.split(';').map(getStyle,PREFIX_TBODY);
+        }
+
+        return style;
     }
 
     editor.addMenuItem('mbh_table_property', {
@@ -393,110 +707,48 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
             })
         },
         onclick     : function (e) {
-            var table = editor.dom.getParent(editor.selection.getStart(), 'table'),
-                styleStr = table.getAttribute('style'),
-                style = {};
-            if (styleStr !== null) {
-                styleStr.split(';').map(function (item) {
-                    if (item !== '') {
-                        var singleStyle = item.split(':');
-                        var name = singleStyle[0].trim();
-                        if (name === 'border') {
-                            var border = singleStyle[1].trim().match(/([\d]*)px\s([\w]*?)\s(.*)/);
-                            if (border[1] !== undefined) {
-                                style['border-width'] = self.mbh_border_width = border[1];
-                                style['border-style'] = self.mbh_border_style = border[2];
-                                style['border-color'] = self.mbh_border_color = convertColor(border[3]);
-                            }
-                        } else {
-                            style[name] = singleStyle[1].trim().replace(/px$/, '');
-                        }
-                    }
-                });
-            }
-
-            console.log(style);
-
+            var dom = {
+                table: editor.dom.getParent(editor.selection.getStart(), 'table')
+            };
+            var style = appendStylesToData(dom);
             editor.windowManager.open({
                 title       : 'Style table',
                 data        : style,
-                heigth      : 'auto',
-                onPostRender: function (e) {
-                    changeStyleTableProperty();
-                },
+                // onPostRender: function (e) {
+                //     // for draw example
+                //     changeStyleExample(PREFIX_TABLE,style);
+                //     changeStyleExample(PREFIX_THEAD,style);
+                // },
+                bodyType    : 'tabpanel',
                 body        : [
-                    {
-                        type   : 'textbox',
-                        name   : 'width',
-                        label  : 'Width',
-                        tooltip: 'Only integer',
-                        onkeyup: function (e) {
-                            changeBorderColor(e.target, isInteger);
-                        }
-                    },
-                    {
-                        type   : 'textbox',
-                        name   : 'height',
-                        label  : 'Height',
-                        tooltip: 'Only integer',
-                        onkeyup: function (e) {
-                            changeBorderColor(e.target, isInteger);
-                        }
-                    },
-                    {
-                        type  : 'listbox',
-                        name  : 'border-collapse',
-                        label : 'Border collapse',
-                        values: [
-                            {text: 'Separate', value: 'separate'},
-                            {text: 'Collapse', value: 'collapse'}
-                        ]
-                    },
-                    {
-                        type : 'container',
-                        label: 'Example border',
-                        html : '<div id="example_border_style"><div style="padding: 2px; text-align: center;">Example</div></div>'
-                    },
-                    {
-                        type    : 'listbox',
-                        name    : 'border-style',
-                        label   : 'Border style',
-                        values  : [
-                            {text: 'None', value: 'none'},
-                            {text: 'Solid', style: 'border: 2px solid black;', value: 'solid'},
-                            {text: 'Dotted', style: 'border: 2px dotted black;', value: 'dotted'}
-                        ],
-                        onSelect: function (e) {
-                            changeStyleTableProperty('style', this.value());
-                        }
-                    },
-
-                    {
-                        type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
-                        name    : 'border-color',
-                        label   : 'Border color',
-                        onaction: createColorPickAction(),
-                        onChange: function (e) {
-                            changeStyleTableProperty('color', this.value());
-                        }
-                    },
-                    {
-                        type   : 'textbox',
-                        name   : 'border-width',
-                        label  : 'Border width',
-                        tooltip: 'Only integer',
-                        onkeyup: function (e) {
-                            changeBorderColor(e.target, isInteger);
-                            changeStyleTableProperty('width', this.value());
-                        }
-                    }
+                    formStyleTableGeneral(style),
+                    formStyleTableTHEAD(style)
                 ],
                 onsubmit    : function (e) {
-                    setTableProperty(table, e.data);
+                    var newStyle = {};
+                    var data = this.toJSON();
+                    for (var rawKey in data) {
+                        if (isPrefix(rawKey)) {
+                            var key = rawKey.split('_'),
+                                prefix = key[0],
+                                name = key[1];
+
+                            if (newStyle[prefix] === undefined) {
+                                newStyle[prefix] = {};
+                            }
+                            // if (self[prefix + '_sideBorder'] !== ''){
+                            //     name = name.replace(/(border)([A-Z][\w]+)/, '$1' + self[prefix + '_sideBorder'] + '$2');
+                            //     console.log(name);
+                            // }
+                            newStyle[prefix][name] = data[rawKey];
+                        }
+                    }
+
+                    for (var key in newStyle) {
+                        setTableProperty(dom[key], newStyle[key]);
+                    }
                 }
             });
-            // console.dir(table);
-            // console.log(style);
         }
     });
 
@@ -513,7 +765,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                         label : 'Source Data',
                         values: (function () {
                             var menu = [];
-                            for (var key in self.mbh_property.table){
+                            for (var key in self.mbh_property.table) {
                                 menu.push({text: menuText(key.ucFirst()), value: key});
                             }
                             return menu;
@@ -531,7 +783,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                         tooltip: 'Only numbers',
                         value  : '4',
                         onkeyup: function (e) {
-                            changeBorderColor(e.target, itemColumnIsValid);
+                            changeBorderColorInForm(e.target, itemColumnIsValid);
                         }
                     }
 
