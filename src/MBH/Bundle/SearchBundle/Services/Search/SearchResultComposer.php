@@ -44,7 +44,12 @@ class SearchResultComposer
         $children = $searchQuery->getActualChildren();
         $infants = $searchQuery->getInfants();
         $tourists = $roomType->getAdultsChildrenCombination($searchQuery->getActualAdults(), $searchQuery->getActualChildren(), $isUserCategories);
-        $accomodationRoom = $this->getAccommodationRooms($searchQuery, $roomType);
+        $accomodationRooms = $this->getAccommodationRooms($searchQuery, $roomType);
+
+        $acr = reset($accomodationRooms);
+        $room = new Room();
+        $this->dm->getHydratorFactory()->hydrate($room, $acr);
+        //** TODO: Подумать на счет гидрации */
         return $searchResult;
     }
 

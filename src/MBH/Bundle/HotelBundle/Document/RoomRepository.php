@@ -146,6 +146,7 @@ class RoomRepository extends AbstractBaseRepository
         $rooms =  $this->createQueryBuilder()
             ->field('isEnabled')->equals(true)
             ->field('roomType.id')->equals($roomTypeId)
+            ->select(['id', 'fullTitle'])
             ->hydrate(false)
             ->getQuery()
             ->execute()
