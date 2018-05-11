@@ -119,6 +119,7 @@ class DocumentsRelationships
                 //new Relationship(Restriction::class, 'tariff', 'exception.tariff_relation_delete.message.restriction'),
                 //new Relationship(RoomCache::class, 'tariff', 'exception.tariff_relation_delete.message.roomCache'),
                 new Relationship(Tariff::class, 'parent', 'exception.tariff_relation_delete.message.parentTariff'),
+                new Relationship(Tariff::class, 'mergingTariff', 'exception.tariff_relation_delete.message.mergingTariff'),
                 new Relationship(Package::class, 'tariff', 'exception.tariff_relation_delete.message.package')
             ],
             ServiceCategory::class => [
