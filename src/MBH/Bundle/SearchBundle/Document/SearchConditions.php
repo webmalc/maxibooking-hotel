@@ -231,6 +231,19 @@ class SearchConditions
         return $this->tariffs;
     }
 
+    /** @return ArrayCollection|Tariff[] */
+    public function getRestrictionTariffs(): ArrayCollection
+    {
+        $restrictionTariffs = [];
+        foreach ($this->tariffs as $tariff) {
+            if ($tariff->getParent() && $tariff->getChildOptions()->isInheritRooms()) {
+                $restrictionTariffs[] = $tariff->getParent();
+            }
+        }
+
+        return new ArrayCollection($restrictionTariffs);
+    }
+
     /**
      * @param ArrayCollection|Tariff[] $tariffs
      * @return SearchConditions

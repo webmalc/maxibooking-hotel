@@ -227,11 +227,27 @@ class SearchQueryGenerator
         $values = [];
         foreach ($roomTypes as $roomType) {
             foreach ($tariffs as $tariff) {
-                $values[] = ['roomTypeId' => $roomType, 'tariffId' => $tariff['id'], 'tariff' => $tariff['rawTariff']];
+                $values[] = [
+                    'roomTypeId' => $roomType,
+                    'tariffId' => $tariff['id'],
+                    'tariff' => $tariff['rawTariff'],
+                    'restrictionTariffId' => $this->determineRestrictionTariffId($tariff['rawTariff'])
+
+                ];
             }
         }
 
         return $values;
+    }
+
+    private function determineRestrictionTariffId(array $rawTariff): string
+    {
+        if (isset($rawTariff['parent']) ) {
+            throw new \Exception('Требуется обавить проверку на наличие наследуемых параметров');
+            return (string)$rawTariff['parent']['_id'];
+        }
+
+        return (string)$rawTariff['_id'];
     }
 
 }

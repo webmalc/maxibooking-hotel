@@ -32,6 +32,13 @@ class SearchQueryHelper
      * @Assert\Type(type="string")
      * @Assert\NotNull()
      */
+    private $restrictedTariffId;
+
+    /**
+     * @var string
+     * @Assert\Type(type="string")
+     * @Assert\NotNull()
+     */
     private $roomTypeId;
 
     /** @var int */
@@ -99,6 +106,27 @@ class SearchQueryHelper
     /**
      * @return string
      */
+    public function getRestrictionTariffId(): string
+    {
+        return $this->restrictedTariffId;
+    }
+
+    /**
+     * @param string $restrictedTariffId
+     * @return SearchQueryHelper
+     */
+    public function setRestrictionTariffId(string $restrictedTariffId): SearchQueryHelper
+    {
+        $this->restrictedTariffId = $restrictedTariffId;
+
+        return $this;
+    }
+
+
+
+    /**
+     * @return string
+     */
     public function getRoomTypeId(): string
     {
         return $this->roomTypeId;
@@ -162,6 +190,7 @@ class SearchQueryHelper
             ->setBegin($dates['begin'])
             ->setEnd($dates['end'])
             ->setTariffId($tariffRoomType['tariffId'])
+            ->setRestrictionTariffId($tariffRoomType['restrictionTariffId'])
             ->setRoomTypeId($tariffRoomType['roomTypeId'])
             ->setChildAge($tariffRoomType['tariff']['childAge'])
             ->setInfantAge($tariffRoomType['tariff']['infantAge'])

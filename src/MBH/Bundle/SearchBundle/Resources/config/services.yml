@@ -99,6 +99,14 @@ services:
         class: MBH\Bundle\SearchBundle\Services\RoomTypeFetcher
         arguments: ['@doctrine.odm.mongodb.document_manager','@mbh_search.room_type_repository']
 
+#    mbh_search.result_composer:
+#        class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
+#        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager', '@mbh.calculation']
+
     mbh_search.result_composer:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager', '@mbh_search.calculation']
+
+    mbh_search.calculation:
+        class: MBH\Bundle\SearchBundle\Services\Calculation
+        arguments: ['@mbh.hotel.room_type_manager', '@doctrine.odm.mongodb.document_manager']

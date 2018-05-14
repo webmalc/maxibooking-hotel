@@ -199,10 +199,11 @@ class RestrictionRepository extends DocumentRepository
     public function getWithConditions(SearchConditions $conditions): array
     {
         $qb = $this->createQueryBuilder();
-        $isTariffIds = (bool)$conditions->getTariffs()->count();
+        $restrictionTariffs = $conditions->getRestrictionTariffs();
+        $isTariffIds = (bool)$restrictionTariffs->count();
         if ($isTariffIds) {
-            $tariffIds = Helper::toIds($conditions->getTariffs());
-            $qb->field('tariff.id')->in($tariffIds);
+            $tariffIds = Helper::toIds($restrictionTariffs);
+            $qb->field('tariff.id')->in(array_unique($tariffIds));
         }
 
         $isRoomTypeIds = $conditions->getRoomTypes()->count();

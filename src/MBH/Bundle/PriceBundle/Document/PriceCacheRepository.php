@@ -90,6 +90,19 @@ class PriceCacheRepository extends DocumentRepository
         return $qb;
     }
 
+    public function fetchRaw(
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        string $roomTypeId,
+        string $tariffId,
+        $categories = false
+    )
+    {
+        $qb = $this->fetchQueryBuilder($begin, $end, null, [$roomTypeId], [$tariffId], $categories);
+
+        return $qb->hydrate()->field('tariff')->prime(true)->getQuery()->execute()->toArray();
+    }
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end

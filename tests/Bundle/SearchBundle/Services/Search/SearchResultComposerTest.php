@@ -49,13 +49,13 @@ class SearchResultComposerTest extends WebTestCase
         $roomType = $dm->find(RoomType::class, $searchQuery->getRoomTypeId());
         $tariff = $dm->find(Tariff::class, $searchQuery->getTariffId());
         $roomCaches = $this->getContainer()->get('mbh_search.room_cache_search_provider')->fetchAndCheck($searchQuery->getBegin(), $searchQuery->getEnd(), $roomType, $tariff);
+        $duration = (int)$searchQuery->getEnd()->diff($searchQuery->getBegin())->format('%a');
+        /** @var SearchResult $actual */
+        $actual = $this->searchComposer->composeResult($searchResult, $searchQuery, $roomType, $tariff, $roomCaches);
 
-        $this->searchComposer->composeResult($searchResult, $searchQuery, $roomType, $tariff, $roomCaches);
-//        $actual = $this->searchComposer->composeResult($searchResult, $roomCaches, $searchQuery, $roomType, $tariff);
+        $this->assertCount($duration, $actual->getPackagePrices($searchQuery->getActualAdults(), $searchQuery->getActualChildren()));
+        $this->assertTrue(true);
+
     }
 
-    public function dataProvider(): array
-    {
-
-    }
 }

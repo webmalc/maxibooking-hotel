@@ -80,29 +80,6 @@ class RestrictionsCheckerService
     }
 
     /**
-     * @param SearchQuery $query
-     * @return array
-     */
-    private function getNecessaryRestrictions(SearchQuery $query): array
-    {
-        $restrictions = [];
-        $accessor = PropertyAccess::createPropertyAccessor();
-        $tariffId = $query->getTariffId();
-        $roomTypeId = $query->getRoomTypeId();
-        $restrictionBegin = $query->getBegin();
-        $restrictionEnd = (clone $query->getEnd())->modify('+ 1 day');
-        foreach (new \DatePeriod($restrictionBegin, \DateInterval::createFromDateString('1 day'), $restrictionEnd) as $day) {
-            $key = $this->getAccessRestrictionKey($day, $tariffId, $roomTypeId);
-            if (null !== $restriction = $accessor->getValue($this->restrictions, $key)) {
-                $restrictions[] = $restriction;
-            }
-        }
-
-        return $restrictions;
-
-    }
-
-    /**
      * @throws RestrictionsCheckerServiceException
      */
     private function getRestrictions(): array
@@ -123,6 +100,29 @@ class RestrictionsCheckerService
         }
 
         return $result;
+
+    }
+
+    /**
+     * @param SearchQuery $query
+     * @return array
+     */
+    private function getNecessaryRestrictions(SearchQuery $query): array
+    {
+        $restrictions = [];
+        $accessor = PropertyAccess::createPropertyAccessor();
+        $tariffId = $query->getTariffId();
+        $roomTypeId = $query->getRoomTypeId();
+        $restrictionBegin = $query->getBegin();
+        $restrictionEnd = (clone $query->getEnd())->modify('+ 1 day');
+        foreach (new \DatePeriod($restrictionBegin, \DateInterval::createFromDateString('1 day'), $restrictionEnd) as $day) {
+            $key = $this->getAccessRestrictionKey($day, $tariffId, $roomTypeId);
+            if (null !== $restriction = $accessor->getValue($this->restrictions, $key)) {
+                $restrictions[] = $restriction;
+            }
+        }
+
+        return $restrictions;
 
     }
 

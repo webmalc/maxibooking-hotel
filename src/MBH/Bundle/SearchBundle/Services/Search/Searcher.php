@@ -69,27 +69,14 @@ class Searcher
         }
         $currentTariff = $this->dm->find(Tariff::class, $searchQuery->getTariffId());
         $currentRoomType = $this->dm->find(RoomType::class, $searchQuery->getRoomTypeId());
-
         $this->preFilter($searchQuery);
-
         $this->checkRestrictions($searchQuery);
-
-
         $this->checkTariffDates($currentTariff);
         $this->checkTariffConditions($currentTariff, $searchQuery);
-
         $this->checkRoomTypePopulationLimit($currentRoomType, $searchQuery);
-
         $roomCaches = $this->checkRoomCacheLimitAndReturnActual($searchQuery, $currentRoomType, $currentTariff);
 
         return $this->searchResultCompose($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
-    }
-
-    private function searchResultCompose(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, array $roomCaches): SearchResult
-    {
-        $searchResult = new SearchResult();
-
-        return $this->resultComposer->composeResult($searchResult, $searchQuery, $roomType, $tariff, $roomCaches);
     }
 
     /**
@@ -137,6 +124,11 @@ class Searcher
         $this->searchLimitChecker->checkTariffConditions($tariff, $searchQuery);
     }
 
+    private function checkRoomTypePopulationLimit(RoomType $roomType, SearchQuery $searchQuery): void
+    {
+        $this->searchLimitChecker->checkRoomTypePopulationLimit($roomType, $searchQuery);
+    }
+
     /**
      * @param SearchQuery $searchQuery
      * @param RoomType $currentRoomType
@@ -150,8 +142,10 @@ class Searcher
         return $this->roomCacheSearchProvider->fetchAndCheck($searchQuery->getBegin(), $searchQuery->getEnd(), $currentRoomType, $currentTariff);
     }
 
-    private function checkRoomTypePopulationLimit(RoomType $roomType, SearchQuery $searchQuery): void
+    private function searchResultCompose(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, array $roomCaches): SearchResult
     {
-        $this->searchLimitChecker->checkRoomTypePopulationLimit($roomType, $searchQuery);
+        $searchResult = new SearchResult();
+
+        return $this->resultComposer->composeResult($searchResult, $searchQuery, $roomType, $tariff, $roomCaches);
     }
 }

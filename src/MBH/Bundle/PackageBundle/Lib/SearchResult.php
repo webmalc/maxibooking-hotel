@@ -421,6 +421,11 @@ class SearchResult
         return null;
     }
 
+    public function getAllPackagesPrices(): array
+    {
+        return $this->packagePrices;
+    }
+
     /**
      * @param array $packagePrices
      * @param int $adults

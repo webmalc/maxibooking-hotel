@@ -29,6 +29,9 @@ class SearchQuery
      */
     private $tariffId;
 
+    /** @var string */
+    private $restrictionTariffId;
+
     /**
      * @var string
      */
@@ -116,6 +119,18 @@ class SearchQuery
     public function setTariffId(string $tariffId): SearchQuery
     {
         $this->tariffId = $tariffId;
+
+        return $this;
+    }
+
+    public function getRestrictionTariffId(): ?string
+    {
+        return $this->restrictionTariffId;
+    }
+
+    public function setRestrictionTariffId(string $restrictionTariffId): SearchQuery
+    {
+        $this->restrictionTariffId = $restrictionTariffId;
 
         return $this;
     }
@@ -340,6 +355,7 @@ public static function createInstance(SearchQueryHelper $queryHelper, SearchCond
             ->setBegin($queryHelper->getBegin())
             ->setEnd($queryHelper->getEnd())
             ->setTariffId($queryHelper->getTariffId())
+            ->setRestrictionTariffId($queryHelper->getRestrictionTariffId())
             ->setRoomTypeId($queryHelper->getRoomTypeId())
             ->setChildAge($queryHelper->getChildAge())
             ->setInfantAge($queryHelper->getInfantAge())
