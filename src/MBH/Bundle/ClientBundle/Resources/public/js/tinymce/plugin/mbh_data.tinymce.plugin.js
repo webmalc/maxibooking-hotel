@@ -23,8 +23,8 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
     String.prototype.convertStyle = function () {
         var strArr = this.split('-'),
             str = '';
-        for (var i = 0, len = strArr.length; i < len; i++ ){
-            if (i>0){
+        for (var i = 0, len = strArr.length; i < len; i++) {
+            if (i > 0) {
                 str += strArr[i].ucFirst();
             } else {
                 str += strArr[i];
@@ -186,17 +186,6 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         menu   : menuItems
     });
 
-    // var firstItem = function (entity) {
-    //     return [
-    //         {
-    //             text   : menuText(entity.ucFirst()),
-    //             style  : 'margin-top: -6px; background-color: #888888; border-bottom: 1px solid black;',
-    //             disabled: true,
-    //             classes: 'first-item-in-table-with-entity'
-    //         }
-    //     ]
-    // };
-
 
     function changeMenuItemsTableEntity(entityMenu) {
         if (self.mbh_table !== null) {
@@ -350,10 +339,10 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         var node = document.querySelector('#' + prefix + 'example div');
 
         if (typeof style === "object") {
-            for (var key in style){
-                if (key.search(new RegExp(prefix)) !== -1){
+            for (var key in style) {
+                if (key.search(new RegExp(prefix)) !== -1) {
                     var nameStyle = key.split('_')[1];
-                    if (nameStyle === 'width' || nameStyle === 'height'){
+                    if (nameStyle === 'width' || nameStyle === 'height') {
                         continue;
                     }
                     node.style[nameStyle] = addSuffixPX(key, style);
@@ -366,17 +355,17 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
 
     function addSuffixPX(style, data) {
         var suffix = '';
-        if (style.search(/width/i) !== -1 || style.search(/height/i) !== -1 ){
+        if (style.search(/width/i) !== -1 || style.search(/height/i) !== -1) {
             suffix = 'px';
         }
-        if (typeof data === "string"){
+        if (typeof data === "string") {
             return data + suffix;
         }
         return data[style] + suffix;
     }
 
     function setTableProperty(table, data) {
-        for (var style in data){
+        for (var style in data) {
             editor.dom.setStyle(table, style, addSuffixPX(style, data));
         }
     }
@@ -404,10 +393,6 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         PREFIX_TABLE
     ];
 
-    // for (var i = 0, len = PREFIX.length; i<len; i++){
-    //     self[PREFIX[i] + 'sideBorder'] = '';
-    // }
-
     function isPrefix(prefixRaw) {
         var prefix = prefixRaw.split('_')[0] + '_';
         return PREFIX.some(function (value) {
@@ -419,125 +404,88 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
     function formStyleChangeBorder(prefix) {
         function add(side) {
             return {
-                type: 'container',
-                    // label  : 'flex row',
-                    layout: 'flex',
+                type     : 'container',
+                layout   : 'flex',
                 direction: 'row',
-                align: 'center',
-                spacing: 5,
-                disabled: true,
-                // minWidth: 20,
-                // maxWidth: 160,
-                // minHeight: 160,
-                items: [
-                {
-                    type: 'container',
-                    layout: 'flex',
-                    direction: 'column',
-                    // label  : 'flex row1',
-                    items: [
-                        {type: 'label', text: 'Border style'},
-                        {
-                            type    : 'listbox',
-                            name    : prefix + 'border' + side +'Style',
-                            label   : 'Border style',
-                            values  : [
-                                {text: 'None', value: 'none'},
-                                {text: 'Solid', style: 'border: 2px solid black;', value: 'solid'},
-                                {text: 'Dotted', style: 'border: 2px dotted black;', value: 'dotted'}
-                            ],
-                            onSelect: function (e) {
-                                changeStyleExample(prefix, 'border' + side +'Style', this.value());
-                            }
-                        },
-                    ]
-                },
-                {
-                    type: 'container',
-                    layout: 'flex',
-                    direction: 'column',
-                    // label  : 'flex row2',
-                    items: [
-                        {type: 'label', text: 'Border color'},
-                        {
-                            type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
-                            name    : prefix + 'border' + side +'Color',
-                            label   : 'Border color',
-                            onaction: createColorPickAction(),
-                            onChange: function (e) {
-                                changeStyleExample(prefix, 'border' + side +'Color', this.value());
-                            }
-                        },
-                    ]
-                },
-                {
-                    type: 'container',
-                    layout: 'flex',
-                    direction: 'column',
-                    // label  : 'flex row1',
-                    items: [
-                        {type: 'label', text: 'Border width'},
-                        {
-                            type   : 'textbox',
-                            name   : prefix + 'border' + side +'Width',
-                            label  : 'Border width',
-                            tooltip: 'Only integer',
-                            onkeyup: function (e) {
-                                changeBorderColorInForm(e.target, isInteger);
-                                changeStyleExample(prefix, 'border' + side +'Width', this.value());
-                            }
-                        },
-                    ]
-                }
-            ]
+                align    : 'center',
+                spacing  : 5,
+                disabled : true,
+                items    : [
+                    {
+                        type     : 'container',
+                        layout   : 'flex',
+                        direction: 'column',
+                        items    : [
+                            {type: 'label', text: side + ' style'},
+                            {
+                                type    : 'listbox',
+                                // id      : prefix + side + '_style',
+                                name    : prefix + 'border' + side + 'Style',
+                                label   : side + ' style',
+                                values  : [
+                                    {text: 'None', value: 'none'},
+                                    {text: 'Solid', style: 'border: 2px solid black;', value: 'solid'},
+                                    {text: 'Dotted', style: 'border: 2px dotted black;', value: 'dotted'}
+                                ],
+                                minWidth: 100,
+                                onSelect: function (e) {
+                                    changeStyleExample(prefix, 'border' + side + 'Style', this.value());
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        type     : 'container',
+                        layout   : 'flex',
+                        direction: 'column',
+                        items    : [
+                            {type: 'label', text: side + ' color'},
+                            {
+                                type    : 'colorbox',
+                                // id      : prefix + side + '_color',
+                                name    : prefix + 'border' + side + 'Color',
+                                label   : side + ' color',
+                                onaction: createColorPickAction(),
+                                onChange: function (e) {
+                                    changeStyleExample(prefix, 'border' + side + 'Color', this.value());
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        type     : 'container',
+                        layout   : 'flex',
+                        direction: 'column',
+                        items    : [
+                            {type: 'label', text: side + ' width'},
+                            {
+                                type   : 'textbox',
+                                // id     : prefix + side + '_width',
+                                name   : prefix + 'border' + side + 'Width',
+                                label  : side + ' width',
+                                tooltip: 'Only integer',
+                                onkeyup: function (e) {
+                                    changeBorderColorInForm(e.target, isInteger);
+                                    changeStyleExample(prefix, 'border' + side + 'Width', this.value());
+                                }
+                            },
+                        ]
+                    }
+                ]
             }
         }
 
 
         return [
-
-            // {
-            //     type    : 'listbox',
-            //     name    : prefix + 'borderStyle',
-            //     label   : 'Border style',
-            //     values  : [
-            //         {text: 'None', value: 'none'},
-            //         {text: 'Solid', style: 'border: 2px solid black;', value: 'solid'},
-            //         {text: 'Dotted', style: 'border: 2px dotted black;', value: 'dotted'}
-            //     ],
-            //     onSelect: function (e) {
-            //         changeStyleExample(prefix, 'borderStyle', this.value());
-            //     }
-            // },
-            // {
-            //     type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
-            //     name    : prefix + 'borderColor',
-            //     label   : 'Border color',
-            //     onaction: createColorPickAction(),
-            //     onChange: function (e) {
-            //         changeStyleExample(prefix, 'borderColor', this.value());
-            //     }
-            // },
-            // {
-            //     type   : 'textbox',
-            //     name   : prefix + 'borderWidth',
-            //     label  : 'Border width',
-            //     tooltip: 'Only integer',
-            //     onkeyup: function (e) {
-            //         changeBorderColorInForm(e.target, isInteger);
-            //         changeStyleExample(prefix, 'borderWidth', this.value());
-            //     }
-            // },
             {
-                type: 'label',
+                type : 'label',
                 style: 'text-align: center',
-                text: 'Border'
+                text : 'Border'
             },
             add('Top'),
-            add('Left'),
             add('Right'),
-            add('Bottom')
-
+            add('Bottom'),
+            add('Left')
         ];
     }
 
@@ -571,11 +519,11 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                 ]
             },
             {
-                type : 'container',
-                label: 'Example border',
-                html : '<div id="' + PREFIX_TABLE + 'example"><div style="padding: 2px; text-align: center;">Example</div></div>',
+                type        : 'container',
+                label       : 'Example border',
+                html        : '<div id="' + PREFIX_TABLE + 'example"><div style="padding: 2px; text-align: center;">Example</div></div>',
                 onPostRender: function () {
-                    changeStyleExample(PREFIX_TABLE,styleData);
+                    changeStyleExample(PREFIX_TABLE, styleData);
                 }
             }
         ];
@@ -588,14 +536,14 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         }
     }
 
-    function formStyleTableTHEAD(styleData){
+    function formStyleTableTHEAD(styleData) {
         var items = [
             {
-                type : 'container',
-                label: 'Example thead',
-                html : '<div id="' + PREFIX_THEAD + 'example"><div style="padding: 2px;">Example</div></div>',
+                type        : 'container',
+                label       : 'Example thead',
+                html        : '<div id="' + PREFIX_THEAD + 'example"><div style="padding: 2px;">Example</div></div>',
                 onPostRender: function () {
-                    changeStyleExample(PREFIX_THEAD,styleData);
+                    changeStyleExample(PREFIX_THEAD, styleData);
                 }
             },
             {
@@ -617,14 +565,14 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                 }
             },
             {
-                type   : 'listbox',
-                name   : PREFIX_THEAD + 'textAlign',
-                label  : 'Text align',
-                values : [
-                    { text: 'Default', value: '' },
-                    { text: 'Center', value: 'center' },
-                    { text: 'Left', value: 'left' },
-                    { text: 'Right', value: 'right' }
+                type    : 'listbox',
+                name    : PREFIX_THEAD + 'textAlign',
+                label   : 'Text align',
+                values  : [
+                    {text: 'Default', value: ''},
+                    {text: 'Center', value: 'center'},
+                    {text: 'Left', value: 'left'},
+                    {text: 'Right', value: 'right'}
                 ],
                 onSelect: function (e) {
                     changeStyleExample(PREFIX_THEAD, 'textAlign', this.value());
@@ -648,10 +596,123 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         }
     }
 
+    function formStyleTableTbody(styleData) {
+        var items = [
+            {
+                type        : 'container',
+                label       : 'Example tbody',
+                html        : '<div id="' + PREFIX_TBODY + 'example" style="padding: 2px;"><div style="padding: 2px;">Example</div></div>',
+                onPostRender: function () {
+                    changeStyleExample(PREFIX_TBODY, styleData);
+                }
+            },
+            {
+                type    : 'listbox',
+                name    : PREFIX_TBODY + 'textAlign',
+                label   : 'Text align',
+                values  : [
+                    {text: 'Default', value: ''},
+                    {text: 'Center', value: 'center'},
+                    {text: 'Left', value: 'left'},
+                    {text: 'Right', value: 'right'}
+                ],
+                onSelect: function (e) {
+                    changeStyleExample(PREFIX_TBODY, 'textAlign', this.value());
+                }
+            },
+        ];
+        return {
+            title: 'style TBODY',
+            type : 'form',
+            items: items.concat(formStyleChangeBorder(PREFIX_TBODY))
+        }
+    }
+
+    function setStyleValue(rawVal) {
+        return convertColor(rawVal.trim().replace(/px$/, ''));
+    }
+
+    function parseStyle(style, prefix, param, data) {
+        var sides = ['Top', 'Right', 'Bottom', 'Left'];
+        var d = data.match(/([\d]*)px\s([\w]*?)\s([rgb]|\#.*)/);
+
+        var params = ['Width', 'Style', 'Color'];
+
+
+        if (d === null) {
+            switch (param.toLowerCase()) {
+                case 'color':
+                    d = data.split('rgb').filter(function (val) {
+                        return val !== '';
+                    });
+                    if (d.length > 1) {
+                        d = d.map(function (val) {
+                            return 'rgb' + val;
+                        })
+                    } else {
+                        d = data.split('#').filter(function (val) {
+                            return val !== '';
+                        });
+                        if (d.length > 1) {
+                            d = d.map(function (val) {
+                                return '#' + val;
+                            })
+                        } else {
+                            d = [data];
+                        }
+                    }
+                    break;
+                case 'width':
+                case 'style':
+                    d = data.split(' ').map(function (value) {
+                        return value.replace('px', '')
+                    });
+            }
+
+            if (d.length > 1) {
+                var len = d.length;
+                sides.forEach(function (value, index) {
+                    if (len === 4) {
+                        style[prefix + 'border' + value + param] = setStyleValue(d[index]);
+                    } else if (len === 3) {
+                        if (value === 'Left') {
+                            style[prefix + 'border' + value + param] = setStyleValue(d[1]);
+                        } else {
+                            style[prefix + 'border' + value + param] = setStyleValue(d[index]);
+                        }
+                    } else if (len === 2) {
+                        if (value === 'Top' || value === 'Bottom') {
+                            style[prefix + 'border' + value + param] = setStyleValue(d[0]);
+                        } else {
+                            style[prefix + 'border' + value + param] = setStyleValue(d[1]);
+                        }
+                    }
+                })
+            } else {
+                sides.forEach(function (value) {
+                    style[prefix + 'border' + value + param] = setStyleValue(data);
+                })
+            }
+        } else {
+
+            if (param === 'border') {
+                sides.forEach(function (side) {
+                    params.forEach(function (value, index) {
+                        style[prefix + 'border' + this + value] = setStyleValue(d[index + 1]);
+                    }, side)
+                })
+            } else {
+                params.forEach(function (value, index) {
+                    style[prefix + 'border' + param + value] = setStyleValue(d[index + 1]);
+                })
+            }
+        }
+    }
+
     function appendStylesToData(dom) {
 
         dom.thead = dom.table.querySelector('thead tr');
-        dom.tbody = dom.table.querySelector('tbody');
+        dom.tbody = dom.table.querySelector('tbody tr');
         var styleTableStr = dom.table.getAttribute('style'),
             styleTheadStr = dom.thead.getAttribute('style'),
             styleTbodyStr = dom.tbody.getAttribute('style'),
@@ -662,31 +723,31 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
             if (item !== '') {
                 var singleStyle = item.split(':'),
                     name = singleStyle[0].trim();
-                console.log(name);
-                if (name === 'border') {
-                    var border = singleStyle[1].trim().match(/([\d]*)px\s([\w]*?)\s(.*)/);
-                    if (border[1] !== undefined) {
-                        style[prefix + 'borderWidth'] = border[1];
-                        style[prefix + 'borderStyle'] = border[2];
-                        style[prefix + 'borderColor'] = convertColor(border[3]);
+                if (name.search('border') !== -1 && name.search('border-collapse') === -1) {
+                    var n = name.split('-');
+                    if (n[2] !== undefined) {
+                        style[prefix + n[0] + n[1].ucFirst() + n[2].ucFirst()] = setStyleValue(singleStyle[1]);
+                    } else if (n[1] !== undefined) {
+                        parseStyle(style, prefix, n[1].ucFirst(), singleStyle[1].trim());
+                    } else {
+                        parseStyle(style, prefix, n[0], singleStyle[1].trim());
                     }
                 } else {
-                    style[prefix + name.convertStyle()] = convertColor(singleStyle[1].trim().replace(/px$/, ''));
+                    style[prefix + name.convertStyle()] = setStyleValue(singleStyle[1]);
                 }
-                // style[prefix + name.convertStyle()] = convertColor(singleStyle[1].trim().replace(/px$/, ''));
             }
         }
 
         if (styleTableStr !== null) {
-            styleTableStr.split(';').map(getStyle,PREFIX_TABLE);
+            styleTableStr.split(';').forEach(getStyle, PREFIX_TABLE);
         }
 
         if (styleTheadStr !== null) {
-            styleTheadStr.split(';').map(getStyle,PREFIX_THEAD);
+            styleTheadStr.split(';').forEach(getStyle, PREFIX_THEAD);
         }
 
         if (styleTbodyStr !== null) {
-            styleTbodyStr.split(';').map(getStyle,PREFIX_TBODY);
+            styleTbodyStr.split(';').forEach(getStyle, PREFIX_TBODY);
         }
 
         return style;
@@ -712,19 +773,20 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
             };
             var style = appendStylesToData(dom);
             editor.windowManager.open({
-                title       : 'Style table',
-                data        : style,
+                title   : 'Style table',
+                data    : style,
                 // onPostRender: function (e) {
                 //     // for draw example
                 //     changeStyleExample(PREFIX_TABLE,style);
                 //     changeStyleExample(PREFIX_THEAD,style);
                 // },
-                bodyType    : 'tabpanel',
-                body        : [
+                bodyType: 'tabpanel',
+                body    : [
                     formStyleTableGeneral(style),
-                    formStyleTableTHEAD(style)
+                    formStyleTableTHEAD(style),
+                    formStyleTableTbody(style)
                 ],
-                onsubmit    : function (e) {
+                onsubmit: function (e) {
                     var newStyle = {};
                     var data = this.toJSON();
                     for (var rawKey in data) {
@@ -736,10 +798,6 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                             if (newStyle[prefix] === undefined) {
                                 newStyle[prefix] = {};
                             }
-                            // if (self[prefix + '_sideBorder'] !== ''){
-                            //     name = name.replace(/(border)([A-Z][\w]+)/, '$1' + self[prefix + '_sideBorder'] + '$2');
-                            //     console.log(name);
-                            // }
                             newStyle[prefix][name] = data[rawKey];
                         }
                     }
