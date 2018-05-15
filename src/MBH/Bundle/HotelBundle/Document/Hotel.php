@@ -111,7 +111,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isDefault")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
@@ -1612,6 +1612,8 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     public function addImage(Image $image)
     {
         $this->images->add($image);
+
+        return $this;
     }
 
     /**

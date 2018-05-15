@@ -258,3 +258,9 @@ services:
             - '@translator'
             - '%mbh.package.statuses%'
             - '@mbh.helper'
+
+    mbh.search_cache:
+        class: MBH\Bundle\PackageBundle\Services\SearchCache
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.document_fields_manager'

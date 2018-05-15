@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Lib;
 
 use Doctrine\ODM\MongoDB\Cursor;
+use MBH\Bundle\BaseBundle\Lib\HasSpecialSerializableFieldsInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
@@ -10,9 +11,8 @@ use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
-class SearchResult
+class SearchResult implements HasSpecialSerializableFieldsInterface
 {
-
     /**
      * @var \DateTime 
      */
@@ -489,7 +489,7 @@ class SearchResult
     }
 
     /**
-     * @return SplObjectStorage
+     * @return \SplObjectStorage
      */
     public function getPriceTariffs()
     {
@@ -499,6 +499,7 @@ class SearchResult
             return $tariffs;
         }
 
+        /** @var PackagePrice $packagePrice */
         foreach (array_values($this->packagePrices)[0] as $packagePrice) {
             $tariffs->attach($packagePrice->getTariff());
         }
@@ -572,5 +573,10 @@ class SearchResult
         ];
 
         return $data;
+    }
+
+    public static function getSpecialSerializeableFieldsTypes(): array
+    {
+        return [];
     }
 }
