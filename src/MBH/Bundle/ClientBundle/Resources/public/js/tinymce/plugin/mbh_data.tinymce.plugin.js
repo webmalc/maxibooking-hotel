@@ -49,6 +49,9 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         var func = onSelect === undefined ? true : onSelect;
         for (var i = 0, len = property.length; i < len; i++) {
             var str = '{{ ' + entity + '.' + property[i] + ' }}';
+            if (entity === 'hotel' && property[i] === 'getLogo') {
+                str = '<div style="width: 95px; height: 80px; background-color: lightgrey;">' + str + '</div>';
+            }
             var tempObj = {
                 tempStr: str,
                 text   : menuText(property[i])
@@ -160,15 +163,12 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                 menu: self.getMenu(entityName, mbh_property.common[entityName])
             });
         }
-
     }
 
     var menuItems = [];
-    // var menuItems2 = '';
     tinymce.each(editor.menuItems, function (value, index) {
         if (index.search('mbh_') != -1) {
             menuItems.push(editor.menuItems[index]);
-            // menuItems2 += index + ' ';
         }
     });
 
@@ -185,7 +185,6 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         icon   : false,
         menu   : menuItems
     });
-
 
     function changeMenuItemsTableEntity(entityMenu) {
         if (self.mbh_table !== null) {
@@ -227,7 +226,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
             var menu = this;
             editor.on('NodeChange', function (e) {
                 self.mbh_table = editor.dom.getParent(e.element, 'table');
-                if (self.mbh_table === null || self.mbh_table.classList.value.search(/mbh_/) == -1) {
+                if (self.mbh_table === null || self.mbh_table.classList.value.search(/mbh_/) === -1) {
                     menu.disabled(true);
                     menu.settings.menu = null;
                 } else {
@@ -299,22 +298,23 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         return html;
     }
 
+    function typeOfPayer() {
+        var html = '<div>{% if payer is instanceof Mortal %}';
+        html += '{# data for payer is a Mortal #}<div></div>';
+        html += '{# end data Mortal#}<br>';
+        html += '{% elseif payer is instanceof Organization %}';
+        html += '{# data for payer is a Organization #}<div></div>';
+        html += '{# end data Organization#}';
+        html += '{% endif %}</div>';
+
+        return html;
+    }
+
     editor.addMenuItem('statement_mbh', {
-        text: 'MB Conditions',
-        menu: [
-            {
-                text    : 'if Payer is Human',
-                onselect: function () {
-                    editor.insertContent(statementIf('Mortal'));
-                }
-            },
-            {
-                text    : 'if Payer is Organization',
-                onselect: function () {
-                    editor.insertContent(statementIf('Organization'));
-                }
-            }
-        ]
+        text   : 'MB Type Of Payer',
+        onClick: function () {
+            editor.insertContent(typeOfPayer());
+        }
     });
 
     function createColorPickAction() {
@@ -400,7 +400,6 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         })
     }
 
-
     function formStyleChangeBorder(prefix) {
         function add(side) {
             return {
@@ -475,7 +474,6 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
             }
         }
 
-
         return [
             {
                 type : 'label',
@@ -527,7 +525,6 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
                 }
             }
         ];
-
 
         return {
             title: 'General',
@@ -633,11 +630,9 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
     }
 
     function parseStyle(style, prefix, param, data) {
-        var sides = ['Top', 'Right', 'Bottom', 'Left'];
-        var d = data.match(/([\d]*)px\s([\w]*?)\s([rgb]|\#.*)/);
-
-        var params = ['Width', 'Style', 'Color'];
-
+        var sides = ['Top', 'Right', 'Bottom', 'Left'],
+            d = data.match(/([\d]*)px\s([\w]*?)\s([rgb]|\#.*)/),
+            params = ['Width', 'Style', 'Color'];
 
         if (d === null) {
             switch (param.toLowerCase()) {
@@ -760,7 +755,7 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
             var menu = this;
             editor.on('NodeChange', function (e) {
                 var table = editor.dom.getParent(e.element, 'table');
-                if (table === null) {
+                if (table === null || table.classList.value.search(/mbh_/) === -1) {
                     menu.disabled(true);
                 } else {
                     menu.disabled(false);
@@ -775,11 +770,6 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
             editor.windowManager.open({
                 title   : 'Style table',
                 data    : style,
-                // onPostRender: function (e) {
-                //     // for draw example
-                //     changeStyleExample(PREFIX_TABLE,style);
-                //     changeStyleExample(PREFIX_THEAD,style);
-                // },
                 bodyType: 'tabpanel',
                 body    : [
                     formStyleTableGeneral(style),
@@ -899,83 +889,3 @@ tinymce.PluginManager.add('mbh_data', function (editor, url) {
         }
     });
 });
-
-// {
-//     type   : 'textbox',
-//         name   : 'headers',
-//     label  : 'Name headers table',
-//     // tooltip: 'Some nice tooltip to use',
-//     value  : 'Name | Address'
-//     // onchange: function (e) {
-//     //     console.log(e);
-//     // },
-//     // onkeyup: function (e) {
-//     //     console.log(e.target.value.search(/\D|^$/));
-//     //     if (e.target.value.search(/[\D]|^$/) === -1 && e.target.value.length < 8 ){
-//     //         e.target.style.borderColor = 'green';
-//     //     } else {
-//     //         // e.target.value =
-//     //         e.target.style.borderColor = 'red';
-//     //         return;
-//     //     }
-//     //     console.dir(e.target);
-//     // }
-// },
-// {
-//     type   : 'textbox',
-//         name   : 'textbox multiline',
-//     label  : 'textbox multiline',
-//     multiline : true,
-//     value  : 'default value\non another line'
-// },
-// {
-//     type   : 'tooltip',
-//         name   : 'tooltip',
-//     label  : 'tooltip',
-//     text   : 'Tooltip'
-// },
-// {
-//     type   : 'button',
-//         name   : 'button',
-//     label  : 'button',
-//     text   : 'My Button',
-//     onclick: function(e) {
-//     console.log(e);
-//     alert('Click')
-// }
-// },
-// {
-//     type   : 'buttongroup',
-//         name   : 'buttongroup',
-//     label  : 'buttongroup',
-//     items  : [
-//     { text: 'Button 1', value: 'button1', onclick: function(e) {alert('Click')} },
-//     { text: 'Button 2', value: 'button2', tooltip: 'A button' }
-// ]
-// },
-// {
-//     type   : 'checkbox',
-//         name   : 'checkbox',
-//     label  : 'checkbox',
-//     text   : 'My Checkbox',
-//     checked : true
-// },
-// {
-//     type   : 'panelbutton',
-//         label  : 'panelbutton',
-//     name   : 'panelbutotn',
-//     panel: {
-//     autohide: true,
-//         html: function() { return '<div>HTML can also be in a function.</div>' },
-// }
-// },
-// // {
-// //  type   : 'colorbutton',
-// // },
-// // Please see textcolor plugin for more information on colorbutton
-// {
-//     type   : 'radio',
-//         name   : 'radio',
-//     label  : 'radio ( defaults to checkbox with a class of "radio" )',
-//     text   : 'My Radio Button'
-// }

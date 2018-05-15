@@ -69,6 +69,7 @@
                 language_url: '{{ url_lang_ru }}',
                 skin_url: '/assets/vendor/tinymce/skins/lightgray',
                 plugins_url: '/assets/vendor/tinymce/skins/lightgray',
+                entity_encoding: 'raw',
                 resize: 'both',
                 fix_list_elements: false,
                 protect: [/\{\%.*?\%\}/g],
@@ -99,15 +100,5 @@
         div.mce-fullscreen {
             z-index: 10000;
         }
-
-        .mce-first-item-in-table-with-entity {
-            cursor: default !important;
-
-        }
-
-        .mce-first-item-in-table-with-entity span {
-            color: white !important;
-        }
-
     </style>
 {% endblock %}
