@@ -479,4 +479,4 @@ services:
 
     mbh.serializer:
         class: MBH\Bundle\BaseBundle\Service\MBHSerializer
-        arguments: ['@annotation_reader', '@property_accessor']
+        arguments: ['@annotation_reader', '@property_accessor', '@mbh.helper']
