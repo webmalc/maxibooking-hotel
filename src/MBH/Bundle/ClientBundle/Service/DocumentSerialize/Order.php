@@ -17,7 +17,6 @@ use MBH\Bundle\PackageBundle\Document\Order as OrderBase;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-
 class Order extends Common
 {
     public function getPrice(): string
@@ -25,13 +24,14 @@ class Order extends Common
         return $this->entity->getPrice() !== null ? Helper::numFormat($this->entity->getPrice()) : '';
     }
 
-    public function allCashDocuments():array
+    public function allCashDocuments(): array
     {
         $return = [];
         $cashDocumentSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\CashDocument');
-        foreach ($this->entity->getCashDocuments() as $cashDocument){
+        foreach ($this->entity->getCashDocuments() as $cashDocument) {
             $return[] = (clone $cashDocumentSerialize)->newInstance($cashDocument);
         }
+
         return $return;
     }
 
@@ -39,11 +39,12 @@ class Order extends Common
     {
         $amount = 0;
         /** @var CashDocument $cashDocument */
-        foreach ($this->entity->getCashDocuments() as $cashDocument){
-            if (in_array($cashDocument->getOperation(),['fine', 'in'])){
+        foreach ($this->entity->getCashDocuments() as $cashDocument) {
+            if (in_array($cashDocument->getOperation(), ['fine', 'in'])) {
                 $amount += $cashDocument->getTotal();
             }
         }
+
         return Helper::numFormat($amount);
     }
 }

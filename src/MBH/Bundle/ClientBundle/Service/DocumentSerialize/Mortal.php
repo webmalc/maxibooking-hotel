@@ -17,12 +17,16 @@ use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-
 class Mortal extends Common implements DataOfMortalInterface
 {
     use TraitAddress;
     use TraitDataOfMortal;
 
+
+    /**
+     * @param $entity
+     * @return $this
+     */
     public function newInstance($entity)
     {
         $this->entity = $entity;
@@ -30,32 +34,44 @@ class Mortal extends Common implements DataOfMortalInterface
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getSex(): string
     {
         return $this->entity->getSex() ?? '';
     }
 
+    /**
+     * @return string
+     */
     public function getAge(): string
     {
         return $this->entity->getAge() !== null ? $this->entity->getAge() : '';
     }
 
+    /**
+     * @return string
+     */
     public function getBirthPlaceCity(): string
     {
         $city = '';
 
-        if ($this->entity->getBirthplace() !== null && !empty($id = $this->entity->getBirthplace()->getCity())){
+        if ($this->entity->getBirthplace() !== null && !empty($id = $this->entity->getBirthplace()->getCity())) {
             $city = $this->billing->getCityById($id)->getName();
         }
 
         return $city;
     }
 
+    /**
+     * @return string
+     */
     public function getBirthPlaceCountry(): string
     {
         $country = '';
 
-        if ($this->entity->getBirthplace() !== null && !empty($id = $this->entity->getBirthplace()->getCountryTld())){
+        if ($this->entity->getBirthplace() !== null && !empty($id = $this->entity->getBirthplace()->getCountryTld())) {
             $country = $this->billing->getCountryByTld($id)->getName();
         }
         return $country;

@@ -5,6 +5,7 @@
  */
 
 namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
+
 use MBH\Bundle\PackageBundle\Document\Organization as OrganizationBase;
 
 /**
@@ -14,16 +15,21 @@ use MBH\Bundle\PackageBundle\Document\Organization as OrganizationBase;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-
 class Organization extends Common
 {
     use TraitAddress;
 
+    /**
+     * @return string
+     */
     public function getName(): string
     {
         return $this->entity->getName() ?? '';
     }
 
+    /**
+     * @return string
+     */
     public function getShortName(): string
     {
         return $this->entity->getShortName() ?? '';

@@ -20,6 +20,10 @@ class Helper
         $this->container = $container;
     }
 
+    /**
+     * @param $obj
+     * @return Mortal|Organization
+     */
     public function payerInstance($obj)
     {
         if ($obj instanceof TouristBase) {
@@ -31,6 +35,10 @@ class Helper
         }
     }
 
+    /**
+     * @return array
+     * @throws \ReflectionException
+     */
     public static function methodsOfEntity(): array
     {
         return [
@@ -52,6 +60,10 @@ class Helper
         ];
     }
 
+    /**
+     * @param $value
+     * @return string
+     */
     public static function numFormat($value): string
     {
         return number_format($value, 2);

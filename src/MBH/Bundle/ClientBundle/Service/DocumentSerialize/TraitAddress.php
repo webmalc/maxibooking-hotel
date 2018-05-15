@@ -19,10 +19,15 @@ trait TraitAddress
         $this->billing = $billingApi;
     }
 
+    /**
+     * @param $entity
+     * @return $this
+     */
     public function newInstance($entity)
     {
         $this->entity = $entity;
         $this->setAddress($this->entity);
+
         return $this;
     }
 
@@ -36,6 +41,9 @@ trait TraitAddress
      */
     private $address;
 
+    /**
+     * @return string
+     */
     public function getCity(): string
     {
         $city = '';
@@ -43,9 +51,13 @@ trait TraitAddress
         if ($this->address !== null && !empty($id = $this->address->getCityId() !== null)) {
             $city = $this->billing->getCityById($id)->getName();
         }
+
         return $city;
     }
 
+    /**
+     * @return string
+     */
     public function getRegion(): string
     {
         $region = '';
@@ -53,9 +65,13 @@ trait TraitAddress
         if ($this->address !== null && !empty($id = $this->address->getRegionId())) {
             $region = $this->billing->getRegionById($id)->getName();
         }
+
         return $region;
     }
 
+    /**
+     * @return string
+     */
     public function getCountry(): string
     {
         $country = '';
@@ -63,14 +79,21 @@ trait TraitAddress
         if ($this->address !== null && !empty($id = $this->address->getCountryTld())) {
             $country = $this->billing->getCountryByTld($id)->getName();
         }
+
         return $country;
     }
 
+    /**
+     * @return string
+     */
     public function getZipCode(): string
     {
         return $this->returnValue(__METHOD__);
     }
 
+    /**
+     * @return string
+     */
     public function getStreet(): string
     {
         return $this->returnValue(__METHOD__);
@@ -100,15 +123,23 @@ trait TraitAddress
         return $this->returnValue(__METHOD__);
     }
 
+    /**
+     * @param AddressInterface|null $address
+     */
     protected function setAddress(?AddressInterface $address): void
     {
         $this->address = $address;
     }
 
+    /**
+     * @param $method
+     * @return string
+     */
     private function returnValue($method): string
     {
         $temp = explode('::', $method);
         $method = end($temp);
+
         return $this->address !== null && $this->address->$method() !== null ? $this->address->$method() : '';
     }
 }

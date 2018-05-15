@@ -16,10 +16,12 @@ use MBH\Bundle\CashBundle\Document\CashDocument as CashDocumentBase;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-
 class CashDocument extends Common
 {
 
+    /**
+     * @return string
+     */
     public function getPaidDate(): string
     {
         return $this->entity->getPaidDate()
@@ -27,26 +29,38 @@ class CashDocument extends Common
             : '';
     }
 
+    /**
+     * @return string
+     */
     public function getTotal(): string
     {
         return $this->entity->getTotal() !== null ? Helper::numFormat($this->entity->getTotal()) : '';
     }
 
+    /**
+     * @return string
+     */
     public function getMethod(): string
     {
         return $this->entity->getMethod() !== null
             ? $this->container->get('translator')
-                ->trans('cashDocument.method.'. $this->entity->getMethod(),[],'MBHCashBundle')
+                ->trans('cashDocument.method.' . $this->entity->getMethod(), [], 'MBHCashBundle')
             : '';
     }
 
+    /**
+     * @return string
+     */
     public function getTotalWithSigned(): string
     {
         return $this->getSigned() . ' ' . $this->getTotal();
     }
 
+    /**
+     * @return string
+     */
     public function getSigned(): string
     {
-        return in_array($this->entity->getOperation(),['fee', 'out']) ? '-' : '+';
+        return in_array($this->entity->getOperation(), ['fee', 'out']) ? '-' : '+';
     }
 }
