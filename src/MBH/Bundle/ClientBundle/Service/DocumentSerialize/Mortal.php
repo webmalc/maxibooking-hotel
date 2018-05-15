@@ -22,6 +22,10 @@ class Mortal extends Common implements DataOfMortalInterface
     use TraitAddress;
     use TraitDataOfMortal;
 
+    protected const METHOD = [
+        'getSex',
+        'getAge',
+    ];
 
     /**
      * @param $entity
@@ -32,22 +36,6 @@ class Mortal extends Common implements DataOfMortalInterface
         $this->entity = $entity;
         $this->setAddress($this->entity->getAddressObjectDecomposed());
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSex(): string
-    {
-        return $this->entity->getSex() ?? '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getAge(): string
-    {
-        return $this->entity->getAge() !== null ? $this->entity->getAge() : '';
     }
 
     /**

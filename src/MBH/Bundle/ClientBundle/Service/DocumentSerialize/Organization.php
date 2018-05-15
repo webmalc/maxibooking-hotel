@@ -19,19 +19,8 @@ class Organization extends Common
 {
     use TraitAddress;
 
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->entity->getName() ?? '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getShortName(): string
-    {
-        return $this->entity->getShortName() ?? '';
-    }
+    protected const METHOD = [
+        'getName',
+        'getShortName',
+    ];
 }

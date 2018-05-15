@@ -18,6 +18,13 @@ use MBH\Bundle\PackageBundle\Document\Package as PackageBase;
  */
 class Package extends Common
 {
+    protected const METHOD = [
+        'getNumber',
+        'getNumberWithPrefix',
+        'getAdults',
+        'getChildren',
+    ];
+
     /**
      * @return array
      */
@@ -30,22 +37,6 @@ class Package extends Common
         }
 
         return $return;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNumber(): string
-    {
-        return $this->entity->getNumber() ?? '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getNumberWithPrefix(): string
-    {
-        return $this->entity->getNumberWithPrefix() ?? '';
     }
 
     /**
@@ -66,21 +57,5 @@ class Package extends Common
         return $this->entity->getEnd()
             ? $this->entity->getEnd()->format('d.m.Y')
             : '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getAdults(): string
-    {
-        return $this->entity->getAdults() ?? '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getChildren(): string
-    {
-        return $this->entity->getChildren() ?? '';
     }
 }

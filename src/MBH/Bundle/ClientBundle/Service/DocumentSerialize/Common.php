@@ -11,6 +11,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class Common
 {
+    /**
+     * @var array
+     */
+    protected const METHOD = [];
+
+    /**
+     * @var array
+     */
+    protected const EXCLUDED_METHOD = [];
+
     protected $entity;
 
     /**
@@ -40,6 +50,16 @@ abstract class Common
      */
     public function __call($name, $arg)
     {
+        if (static::EXCLUDED_METHOD !== []) {
+            if (in_array($name, static::EXCLUDED_METHOD)) {
+                return null;
+            }
+        }
+
+        if (in_array($name, static::METHOD)) {
+            return $this->entity->$name ?? '';
+        }
+
         if (strpos($name, 'get') !== 0) {
             $name = 'get' . ucfirst($name);
         }
@@ -55,7 +75,6 @@ abstract class Common
     {
         $self = new \ReflectionClass(static::class);
         $methods = [];
-
         foreach ($self->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
             if ($method->isPublic() && strpos($method->name, 'get') === 0) {
                 $methods[] = $method->name;
@@ -63,6 +82,6 @@ abstract class Common
 
         }
 
-        return $methods;
+        return array_merge(static::METHOD, $methods);
     }
 }
