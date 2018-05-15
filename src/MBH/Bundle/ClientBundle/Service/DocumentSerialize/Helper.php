@@ -53,8 +53,18 @@ class Helper
                 'package' => Package::methods(),
             ],
             'table'  => [
-                'cashDocument' => CashDocument::methods(),
-                'tourist'      => Mortal::methods(),
+                'cashDocument' => [
+                    'methods' => CashDocument::methods(),
+                    'source'  => 'order.allCashDocuments',
+                ],
+                'tourist'      => [
+                    'methods' => Mortal::methods(),
+                    'source'  => 'package.allTourists',
+                ],
+                'serviceGroup' => [
+                    'methods' => ServiceGroup::methods(),
+                    'source'  => 'order.allServices',
+                ],
             ],
 
         ];
