@@ -4,7 +4,7 @@
  * Date: 03.05.18
  */
 
-namespace MBH\Bundle\ClientBundle\Service\Document;
+namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 
 
@@ -13,10 +13,10 @@ use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
  *
  * @property DataOfMortalInterface $entity
  *
- * @package MBH\Bundle\ClientBundle\Service\Document
+ * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
 
-trait DataOfMortalSerialize
+trait TraitDataOfMortal
 {
     public function getFullName(): string
     {

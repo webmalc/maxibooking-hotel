@@ -4,25 +4,25 @@
  * Date: 03.05.18
  */
 
-namespace MBH\Bundle\ClientBundle\Service\Document;
+namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 
-use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\Package as PackageBase;
 
 /**
- * Class PackageSerialize
+ * Class Package
  *
- * @property Package $entity
+ * @property PackageBase $entity
  *
- * @package MBH\Bundle\ClientBundle\Service\Document
+ * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
 
-class PackageSerialize extends CommonSerialize
+class Package extends Common
 {
     public function allTourists()
     {
         $return = [];
-        $mortalSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\Document\MortalSerialize');
+        $mortalSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal');
         foreach ($this->entity->getTourists() as $tourist){
             $return[] = (clone $mortalSerialize)->newInstance($tourist);
         }

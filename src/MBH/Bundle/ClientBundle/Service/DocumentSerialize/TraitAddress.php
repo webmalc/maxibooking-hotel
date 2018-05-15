@@ -4,14 +4,14 @@
  * Date: 27.04.18
  */
 
-namespace MBH\Bundle\ClientBundle\Service\Document;
+namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
-trait AddressSerialize
+trait TraitAddress
 {
     public function __construct(ContainerInterface $container, BillingApi $billingApi)
     {

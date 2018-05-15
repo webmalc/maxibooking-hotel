@@ -4,16 +4,11 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
-use MBH\Bundle\ClientBundle\Service\Document\HotelSerialize;
-use MBH\Bundle\ClientBundle\Service\Document\OrderSerialize;
-use MBH\Bundle\ClientBundle\Service\Document\PackageSerialize;
-use MBH\Bundle\ClientBundle\Service\Document\Helper;
-use MBH\Bundle\ClientBundle\Service\Document\UserSerialize;
 use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\UserBundle\Document\User;
 use Psr\Container\ContainerInterface;
+use MBH\Bundle\UserBundle\Document\User;
 
 class TemplateFormatter
 {
@@ -73,14 +68,12 @@ class TemplateFormatter
         $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
         $organization = $doc->getOrganization() ? $doc->getOrganization() : $hotel->getOrganization();
         $params = [
-            //            'package'              => $package,
-            'package'              => $this->container->get('MBH\Bundle\ClientBundle\Service\Document\PackageSerialize')->newInstance($package),
-            //            'order'                => $order,
-            'order'                => $this->container->get('MBH\Bundle\ClientBundle\Service\Document\OrderSerialize')->newInstance($order),
-            'hotel'                => $this->container->get('MBH\Bundle\ClientBundle\Service\Document\HotelSerialize')->newInstance($hotel),
-            'payer'                => $this->container->get('MBH\Bundle\ClientBundle\Service\Document\Helper')->payerInstance($order->getPayer()),
+            'package'              => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Package')->newInstance($package),
+            'order'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order')->newInstance($order),
+            'hotel'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Hotel')->newInstance($hotel),
+            'payer'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper')->payerInstance($order->getPayer()),
             'organization'         => $organization,
-            'user'                 => $this->container->get('MBH\Bundle\ClientBundle\Service\Document\UserSerialize')->newInstance($user),
+            'user'                 => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\User')->newInstance($user),
             'arrivalTimeDefault'   => $hotel->getPackageArrivalTime(),
             'departureTimeDefault' => $hotel->getPackageDepartureTime(),
             'documentTypes'        => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes(),
@@ -89,16 +82,8 @@ class TemplateFormatter
 
         $params = $this->addCalculatedParams($params, $package);
 
-
-//        dump($params);
-//        dump($package->getAddress());
-//        dump($order->getPackages());
-//        exit;
         $twig = $this->container->get('twig');
         $renderedTemplate = $twig->createTemplate($doc->getContent())->render($params);
-
-        echo $renderedTemplate;
-        exit;
 
         return $this->container->get('knp_snappy.pdf')
             ->getOutputFromHtml(

@@ -4,24 +4,24 @@
  * Date: 28.04.18
  */
 
-namespace MBH\Bundle\ClientBundle\Service\Document;
+namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 
-use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Document\Tourist as TouristBase;
 use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 
 /**
- * Class MortalSerialize
+ * Class Mortal
  *
- * @property Tourist $entity
+ * @property TouristBase $entity
  *
- * @package MBH\Bundle\ClientBundle\Service\Document
+ * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
 
-class MortalSerialize extends CommonSerialize implements DataOfMortalInterface
+class Mortal extends Common implements DataOfMortalInterface
 {
-    use AddressSerialize;
-    use DataOfMortalSerialize;
+    use TraitAddress;
+    use TraitDataOfMortal;
 
     public function newInstance($entity)
     {

@@ -3,13 +3,9 @@ namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
-use MBH\Bundle\ClientBundle\Service\Document\Helper;
-use MBH\Bundle\ClientBundle\Service\Document\HotelSerialize;
-use MBH\Bundle\ClientBundle\Service\Document\MortalSerialize;
-use MBH\Bundle\ClientBundle\Service\Document\OrderSerialize;
-use MBH\Bundle\ClientBundle\Service\Document\OrganizationSerialize;
-use MBH\Bundle\ClientBundle\Service\Document\PackageSerialize;
-use MBH\Bundle\ClientBundle\Service\Document\UserSerialize;
+use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper;
+use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal;
+use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Organization;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -400,11 +396,14 @@ class Extension extends \Twig_Extension
      */
     public function isInstanceofMortal($obj): bool
     {
-        return $obj instanceof MortalSerialize;
+        return $obj instanceof Mortal;
     }
 
+    /**
+     * @return bool
+     */
     public function isInstanceofOrganization($obj): bool
     {
-        return $obj instanceof OrganizationSerialize;
+        return $obj instanceof Organization;
     }
 }

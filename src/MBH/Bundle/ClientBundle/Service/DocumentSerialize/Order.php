@@ -4,21 +4,21 @@
  * Date: 28.04.18
  */
 
-namespace MBH\Bundle\ClientBundle\Service\Document;
+namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Order as OrderBase;
 
 /**
- * Class OrderSerialize
+ * Class Order
  *
- * @property Order $entity
+ * @property OrderBase $entity
  *
- * @package MBH\Bundle\ClientBundle\Service\Document
+ * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
 
-class OrderSerialize extends CommonSerialize
+class Order extends Common
 {
     public function getPrice(): string
     {
@@ -28,7 +28,7 @@ class OrderSerialize extends CommonSerialize
     public function allCashDocuments():array
     {
         $return = [];
-        $cashDocumentSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\Document\CashDocumentSerialize');
+        $cashDocumentSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\CashDocument');
         foreach ($this->entity->getCashDocuments() as $cashDocument){
             $return[] = (clone $cashDocumentSerialize)->newInstance($cashDocument);
         }

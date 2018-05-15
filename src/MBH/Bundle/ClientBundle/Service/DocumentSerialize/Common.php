@@ -4,12 +4,12 @@
  * Date: 28.04.18
  */
 
-namespace MBH\Bundle\ClientBundle\Service\Document;
+namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-abstract class CommonSerialize
+abstract class Common
 {
     public function __construct(ContainerInterface $container = null)
     {

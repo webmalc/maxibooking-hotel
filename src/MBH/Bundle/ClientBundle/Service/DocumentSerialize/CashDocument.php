@@ -4,20 +4,20 @@
  * Date: 03.05.18
  */
 
-namespace MBH\Bundle\ClientBundle\Service\Document;
+namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 
-use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\CashBundle\Document\CashDocument as CashDocumentBase;
 
 /**
- * Class CashDocumentSerialize
+ * Class CashDocument
  *
- * @property CashDocument $entity
+ * @property CashDocumentBase $entity
  *
- * @package MBH\Bundle\ClientBundle\Service\Document
+ * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
 
-class CashDocumentSerialize extends CommonSerialize
+class CashDocument extends Common
 {
 
     public function getPaidDate(): string

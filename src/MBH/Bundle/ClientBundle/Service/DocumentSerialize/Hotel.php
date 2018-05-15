@@ -4,24 +4,21 @@
  * Date: 27.04.18
  */
 
-namespace MBH\Bundle\ClientBundle\Service\Document;
+namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
-
-use MBH\Bundle\BillingBundle\Service\BillingApi;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel as HotelBase;
 
 /**
- * Class HotelSerialize
+ * Class Hotel
  *
- * @property Hotel $entity
+ * @property HotelBase $entity
  *
- * @package MBH\Bundle\ClientBundle\Service\Document
+ * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
 
-class HotelSerialize extends CommonSerialize
+class Hotel extends Common
 {
-    use AddressSerialize;
+    use TraitAddress;
 
 
     public function getPhoneNumber(): string
