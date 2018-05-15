@@ -341,6 +341,11 @@ class SearchQuery
         return \count($infants);
     }
 
+    public function getDuration(): int
+    {
+        return (int)$this->end->diff($this->begin)->format('%a');
+    }
+
 
 
 

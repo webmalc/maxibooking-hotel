@@ -108,5 +108,5 @@ services:
         arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager', '@mbh_search.calculation']
 
     mbh_search.calculation:
-        class: MBH\Bundle\SearchBundle\Services\Calculation
-        arguments: ['@mbh.hotel.room_type_manager', '@doctrine.odm.mongodb.document_manager']
+        class: MBH\Bundle\SearchBundle\Services\Calc\Calculation
+        arguments: ['@doctrine.odm.mongodb.document_manager']

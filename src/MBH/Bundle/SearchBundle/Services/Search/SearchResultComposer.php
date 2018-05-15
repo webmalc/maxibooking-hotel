@@ -10,9 +10,11 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Calculation;
+use MBH\Bundle\SearchBundle\Services\Calc\CalcHelper;
+use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 
 
 class SearchResultComposer
@@ -47,23 +49,22 @@ class SearchResultComposer
 
         $minCache = $this->getMinCacheValue($searchQuery, $roomCaches);
         $isUseCategories = $this->roomManager->useCategories;
-        $adults = $searchQuery->getActualAdults();
-        $children = $searchQuery->getActualChildren();
+        $actualAdults = $searchQuery->getActualAdults();
+        $actualChildren = $searchQuery->getActualChildren();
         $infants = $searchQuery->getInfants();
         $accommodationRooms = $this->getAccommodationRooms($searchQuery, $roomType);
-        //* TODO: Promotion  */
+        $this->checkTariffConditions($tariff, $searchQuery->getDuration(), $actualAdults, $actualChildren);
         //* TODO: check windows */
-        $priceEnd = (clone $searchQuery->getEnd())->modify('-1 day');
-        $prices = $this->getPrices($searchQuery, $roomType, $tariff, $adults, $children);
+        $prices = $this->getPrices($searchQuery, $roomType, $tariff, $actualAdults, $actualChildren);
 
         $searchResult
             ->setBegin($searchQuery->getBegin())
-            ->setEnd($priceEnd)
+            ->setEnd($searchQuery->getEnd())
             ->setTariff($tariff)
             ->setRoomType($roomType)
             ->setRoomsCount($minCache)
-            ->setAdults($adults)
-            ->setChildren($children)
+            ->setAdults($actualAdults)
+            ->setChildren($actualChildren)
             ->setUseCategories($isUseCategories)
             ->setInfants($infants)
             ->setRooms($accommodationRooms)
@@ -72,6 +73,14 @@ class SearchResultComposer
         $this->pricePopulate($searchResult, $prices);
 
         return $searchResult;
+    }
+
+    private function checkTariffConditions(Tariff $tariff, int $duration, int $actualAdults, int $actualChildren)
+    {
+        $check = PromotionConditionFactory::checkConditions($tariff, $duration, $actualAdults, $actualChildren);
+        if (!$check) {
+            throw new SearchResultComposerException('There is fail when check tariff condition');
+        }
     }
 
     private function pricePopulate(SearchResult $searchResult, array $prices): void
@@ -85,19 +94,21 @@ class SearchResultComposer
         }
     }
 
-    private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $adults, int $children): array
+    private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $actualAdults, int $actualChildren): array
     {
-        $prices = $this->calculation->calcPrices(
-            $roomType,
-            $tariff,
-            $searchQuery->getBegin(),
-            (clone $searchQuery->getEnd())->modify('-1 day'),
-            $adults,
-            $children
+        $helper = new CalcHelper();
+        $helper
+            ->setSearchBegin($searchQuery->getBegin())
+            ->setSearchEnd($searchQuery->getEnd())
+            ->setRoomType($roomType)
+            ->setTariff($tariff)
+            ->setActualAdults($actualAdults)
+            ->setActualChildren($actualChildren)
+            ->setIsUseCategory($this->roomManager->useCategories)
 
-        );
+        ;
 
-        return $prices;
+        return $this->calculation->calcPrices($helper);
     }
 
 
@@ -120,9 +131,9 @@ class SearchResultComposer
 
     private function getMinCacheValue(SearchQuery $searchQuery, array $roomCaches): int
     {
-        $duration = (int)$searchQuery->getEnd()->diff($searchQuery->getBegin())->format('%a');
-        $min = min(array_column($roomCaches, 'leftRooms'));
 
+        $min = min(array_column($roomCaches, 'leftRooms'));
+        $duration = $searchQuery->getDuration();
         if ($min < 1 || \count($roomCaches) !== $duration) {
             throw new SearchResultComposerException('Error! RoomCaches count not equal duration');
         }

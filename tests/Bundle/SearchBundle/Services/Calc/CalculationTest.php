@@ -1,12 +1,13 @@
 <?php
 
 
-namespace Tests\Bundle\SearchBundle\Services;
+namespace Tests\Bundle\SearchBundle\Services\Calc;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\SearchBundle\Services\Calculation;
+use MBH\Bundle\SearchBundle\Services\Calc\CalcHelper as Helper;
+use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 
 class CalculationTest extends WebTestCase
 {
@@ -38,7 +39,20 @@ class CalculationTest extends WebTestCase
         $adults = 2;
         $children = 1;
 
-        $actual = $this->service->calcPrices($roomType, $tariff, $begin, (clone $end)->modify('-1 day'));
+        $calcHelper = new Helper();
+        $calcHelper
+            ->setSearchBegin($begin)
+            ->setSearchEnd($end)
+            ->setRoomType($roomType)
+            ->setTariff($tariff)
+            ->setIsUseCategory(false)
+            ->setActualAdults(3)
+            ->setActualChildren(2)
+
+        ;
+
+        $actual = $this->service->calcPrices($calcHelper);
+        $a = 'b';
     }
 
     public function testOldCalcPrices()
@@ -54,6 +68,8 @@ class CalculationTest extends WebTestCase
         $adults = 2;
         $children = 1;
 
-        $actual = $this->oldService->calcPrices($roomType, $tariff, $begin, (clone $end)->modify('-1 day'));
+        $actual = $this->oldService->calcPrices($roomType, $tariff, $begin, (clone $end)->modify('-1 day'), 5, 4);
+        $a = 'b';
+
     }
 }
