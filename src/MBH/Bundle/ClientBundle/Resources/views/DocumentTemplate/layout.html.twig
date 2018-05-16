@@ -47,18 +47,20 @@
     <script>
         var mbh_property = {{ get_properties() }};
     </script>
-
-    {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/langs/ru.js' %}
-        {% set url_lang_ru %}{{ asset_url }}{% endset %}
-        <script src="{{ url_lang_ru }}"></script>
-    {% endjavascripts %}
-
     {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/plugin/mbh_data.tinymce.plugin.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
-    {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/plugin/langs/ru.js' %}
-        <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    {% if app.request.locale == 'ru' %}
+        {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/langs/ru.js' %}
+            {% set url_lang %}{{ asset_url }}{% endset %}
+            <script src="{{ url_lang }}"></script>
+        {% endjavascripts %}
+        {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/plugin/langs/ru.js' %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% else %}
+        {% set url_lang = '' %}
+    {% endif %}
 
     <script>
         if (document.getElementById('mbh_client_document_template_content')) {
@@ -66,7 +68,7 @@
             tinymce.init({
                 selector: '#mbh_client_document_template_content',
                 theme: 'modern',
-                language_url: '{{ url_lang_ru }}',
+                language_url: '{{ url_lang }}',
                 skin_url: '/assets/vendor/tinymce/skins/lightgray',
                 plugins_url: '/assets/vendor/tinymce/skins/lightgray',
                 entity_encoding: 'raw',
@@ -85,8 +87,7 @@
                         view   : {title : 'View'  , items : 'visualaid'},
                         format : {title : 'Format', items : 'bold italic underline strikethrough superscript subscript | formats | removeformat'},
                         table  : {title : 'Table' , items : 'inserttable tableprops deletetable | cell row column'},
-                        tools  : {title : 'Tools' , items : 'code'},
-                        maxi   : {title : 'MaxiBooking ', items : 'mbh_hotel mbh_payer'}
+                        tools  : {title : 'Tools' , items : 'code'}
                     },
                 contextmenu: 'mbh_table_add statement_mbh mbh_table_property | mbh_all_data mbh_table_entity | link image | inserttable tableprops | cell row column deletetable'
             });
