@@ -327,7 +327,7 @@ class Extension extends \Twig_Extension
 
     public function getMethodsForTemplate(): string
     {
-        return json_encode(Helper::methodsOfEntity());
+        return json_encode($this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper')->methodsOfEntity());
     }
 
     /**

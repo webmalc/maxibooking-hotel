@@ -35,6 +35,7 @@ class Mortal extends Common implements DataOfMortalInterface
     {
         $this->entity = $entity;
         $this->setAddress($this->entity->getAddressObjectDecomposed());
+
         return $this;
     }
 
@@ -62,6 +63,7 @@ class Mortal extends Common implements DataOfMortalInterface
         if ($this->entity->getBirthplace() !== null && !empty($id = $this->entity->getBirthplace()->getCountryTld())) {
             $country = $this->billing->getCountryByTld($id)->getName();
         }
+
         return $country;
     }
 }

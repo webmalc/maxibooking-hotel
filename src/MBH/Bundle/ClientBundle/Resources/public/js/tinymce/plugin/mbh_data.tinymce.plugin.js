@@ -52,7 +52,8 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
     for (var i = 0, len = property.length; i < len; i++) {
       var str = '{{ ' + entity + '.' + property[i] + ' }}';
       if (entity === 'hotel' && property[i] === 'getLogo') {
-        str = '<div style="width: 95px; height: 80px; background-color: lightgrey;">' + str + '</div>';
+        str = '<table><tr><td><div style="width: 95px; height: 80px; background-color: lightgrey;">{{ ' + entity + '.' +
+            property[i] + '|raw }}</div></td></tr></table>';
       }
       var tempObj = {
         tempStr: str,
@@ -105,7 +106,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
       table += '</tr>{% endfor %}</tbody></table>';
       return table;
     },
-    insert: function(counter, name, thead, variables) {
+    insert  : function(counter, name, thead, variables) {
       this.counter = counter;
       this.propertyName = name;
       this.nameThead = thead;
@@ -276,23 +277,6 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
     }
   });
 
-  function itemColumnIsValid(value) {
-    return value.search(/[^1-9]|^$/) === -1 && value <= 9;
-  }
-
-  function isInteger(value) {
-    return value.search(/[^0-9]/) === -1;
-  }
-
-  function changeBorderColorInForm(target, func) {
-    if (func(target.value)) {
-      target.style.borderColor = 'green';
-    } else {
-      target.style.borderColor = 'red';
-    }
-  }
-
-
   function typeOfPayer() {
     var html = '<div>{% if payer is instanceof Mortal %}';
     html += '{# data for payer is a Mortal #}<div></div>';
@@ -330,54 +314,6 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
     }
   }
 
-  function changeStyleExample(prefix, style, value) {
-    var node = document.querySelector('#' + prefix + 'example div');
-
-    if (typeof style === 'object') {
-      for (var key in style) {
-        if (key.search(new RegExp(prefix)) !== -1) {
-          var nameStyle = key.split('_')[1];
-          if (nameStyle === 'width' || nameStyle === 'height') {
-            continue;
-          }
-          node.style[nameStyle] = addSuffixPX(key, style);
-        }
-      }
-    } else if (typeof style === 'string') {
-      node.style[style] = addSuffixPX(style, value);
-    }
-  }
-
-  function addSuffixPX(style, data) {
-    var suffix = '';
-    if (style.search(/width/i) !== -1 || style.search(/height/i) !== -1) {
-      suffix = 'px';
-    }
-    if (typeof data === 'string') {
-      return data + suffix;
-    }
-    return data[style] + suffix;
-  }
-
-  function setTableProperty(table, data) {
-    for (var style in data) {
-      editor.dom.setStyle(table, style, addSuffixPX(style, data));
-    }
-  }
-
-  function convertColor(str) {
-    function convertDexToHex(number) {
-      var n = parseInt(number, 10).toString(16);
-      return n.length > 1 ? n : '0' + n;
-    }
-
-    if (str.search(/rgb/) != -1) {
-      var num = str.match(/rgb\(\s?([\d]*?),\s?([\d]*?),\s?([\d]*?)\)/);
-      return '#' + convertDexToHex(num[1]) + convertDexToHex(num[2]) + convertDexToHex(num[3]);
-    }
-    return str;
-  }
-
   var PREFIX_TABLE = 'table_',
       PREFIX_THEAD = 'thead_',
       PREFIX_TBODY = 'tbody_';
@@ -388,6 +324,72 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
     PREFIX_TABLE
   ];
 
+  var colorBorder = {
+    change       : function(target, func) {
+      if (func(target.value)) {
+        target.style.borderColor = 'green';
+      } else {
+        target.style.borderColor = 'red';
+      }
+    },
+    isInteger    : function(value) {
+      return value.search(/[^0-9]/) === -1;
+    },
+    isValidColumn: function(value) {
+      return value.search(/[^1-9]|^$/) === -1 && value <= 9;
+    }
+  };
+
+  var styleTable = {
+    changeExample: function(prefix, style, value) {
+      var node = document.querySelector('#' + prefix + 'example div');
+
+      if (typeof style === 'object') {
+        for (var key in style) {
+          if (key.search(new RegExp(prefix)) !== -1) {
+            var nameStyle = key.split('_')[1];
+            if (nameStyle === 'width' || nameStyle === 'height') {
+              continue;
+            }
+            node.style[nameStyle] = this.addSuffixPX(key, style);
+          }
+        }
+      } else if (typeof style === 'string') {
+        node.style[style] = this.addSuffixPX(style, value);
+      }
+    },
+    addSuffixPX  : function(style, data) {
+      var suffix = '';
+      if (style.search(/width/i) !== -1 || style.search(/height/i) !== -1) {
+        suffix = 'px';
+      }
+      if (typeof data === 'string') {
+        return data + suffix;
+      }
+      return data[style] + suffix;
+    },
+    setProperty  : function(table, data) {
+      for (var style in data) {
+        editor.dom.setStyle(table, style, this.addSuffixPX(style, data));
+      }
+    },
+    convertColor : function(str) {
+      function convertDexToHex(number) {
+        var n = parseInt(number, 10).toString(16);
+        return n.length > 1 ? n : '0' + n;
+      }
+
+      if (str.search(/rgb/) != -1) {
+        var num = str.match(/rgb\(\s?([\d]*?),\s?([\d]*?),\s?([\d]*?)\)/);
+        return '#' + convertDexToHex(num[1]) + convertDexToHex(num[2]) + convertDexToHex(num[3]);
+      }
+      return str;
+    },
+    setValue     : function(rawVal) {
+      return this.convertColor(rawVal.trim().replace(/px$/, ''));
+    }
+  };
+
   function isPrefix(prefixRaw) {
     var prefix = prefixRaw.split('_')[0] + '_';
     return PREFIX.some(function(value) {
@@ -395,245 +397,240 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
     });
   }
 
-  function formStyleChangeBorder(prefix) {
-    function add(side) {
-      return {
-        type     : 'container',
-        layout   : 'flex',
-        direction: 'row',
-        align    : 'center',
-        spacing  : 5,
-        disabled : true,
-        items    : [
-          {
-            type     : 'container',
-            layout   : 'flex',
-            direction: 'column',
-            items    : [
-              {type: 'label', text: side + ' style'},
-              {
-                type    : 'listbox',
-                // id      : prefix + side + '_style',
-                name    : prefix + 'border' + side + 'Style',
-                label   : side + ' style',
-                values  : [
-                  {text: 'None', value: 'none'},
-                  {
-                    text : 'Solid',
-                    style: 'border: 2px solid black;',
-                    value: 'solid'
-                  },
-                  {
-                    text : 'Dotted',
-                    style: 'border: 2px dotted black;',
-                    value: 'dotted'
+  var form = {
+    changeBorder: function(prefix) {
+      function add(side) {
+        return {
+          type     : 'container',
+          layout   : 'flex',
+          direction: 'row',
+          align    : 'center',
+          spacing  : 5,
+          disabled : true,
+          items    : [
+            {
+              type     : 'container',
+              layout   : 'flex',
+              direction: 'column',
+              items    : [
+                {type: 'label', text: side + ' style'},
+                {
+                  type    : 'listbox',
+                  // id      : prefix + side + '_style',
+                  name    : prefix + 'border' + side + 'Style',
+                  label   : side + ' style',
+                  values  : [
+                    {text: 'None', value: 'none'},
+                    {
+                      text : 'Solid',
+                      style: 'border: 2px solid black;',
+                      value: 'solid'
+                    },
+                    {
+                      text : 'Dotted',
+                      style: 'border: 2px dotted black;',
+                      value: 'dotted'
+                    }
+                  ],
+                  minWidth: 100,
+                  onSelect: function(e) {
+                    styleTable.changeExample(prefix, 'border' + side + 'Style', this.value());
                   }
-                ],
-                minWidth: 100,
-                onSelect: function(e) {
-                  changeStyleExample(prefix, 'border' + side + 'Style', this.value());
                 }
-              }
-            ]
-          },
-          {
-            type     : 'container',
-            layout   : 'flex',
-            direction: 'column',
-            items    : [
-              {type: 'label', text: side + ' color'},
-              {
-                type    : 'colorbox',
-                // id      : prefix + side + '_color',
-                name    : prefix + 'border' + side + 'Color',
-                label   : side + ' color',
-                onaction: createColorPickAction(),
-                onChange: function(e) {
-                  changeStyleExample(prefix, 'border' + side + 'Color', this.value());
+              ]
+            },
+            {
+              type     : 'container',
+              layout   : 'flex',
+              direction: 'column',
+              items    : [
+                {type: 'label', text: side + ' color'},
+                {
+                  type    : 'colorbox',
+                  // id      : prefix + side + '_color',
+                  name    : prefix + 'border' + side + 'Color',
+                  label   : side + ' color',
+                  onaction: createColorPickAction(),
+                  onChange: function(e) {
+                    styleTable.changeExample(prefix, 'border' + side + 'Color', this.value());
+                  }
                 }
-              }
-            ]
-          },
-          {
-            type     : 'container',
-            layout   : 'flex',
-            direction: 'column',
-            items    : [
-              {type: 'label', text: side + ' width'},
-              {
-                type   : 'textbox',
-                // id     : prefix + side + '_width',
-                name   : prefix + 'border' + side + 'Width',
-                label  : side + ' width',
-                tooltip: 'Only integer',
-                onkeyup: function(e) {
-                  changeBorderColorInForm(e.target, isInteger);
-                  changeStyleExample(prefix, 'border' + side + 'Width', this.value());
+              ]
+            },
+            {
+              type     : 'container',
+              layout   : 'flex',
+              direction: 'column',
+              items    : [
+                {type: 'label', text: side + ' width'},
+                {
+                  type   : 'textbox',
+                  // id     : prefix + side + '_width',
+                  name   : prefix + 'border' + side + 'Width',
+                  label  : side + ' width',
+                  tooltip: 'Only integer',
+                  onkeyup: function(e) {
+                    colorBorder.change(e.target, colorBorder.isInteger);
+                    styleTable.changeExample(prefix, 'border' + side + 'Width', this.value());
+                  }
                 }
-              }
-            ]
+              ]
+            }
+          ]
+        };
+      }
+
+      return [
+        {
+          type : 'label',
+          style: 'text-align: center',
+          text : 'Border'
+        },
+        add('Top'),
+        add('Right'),
+        add('Bottom'),
+        add('Left')
+      ];
+    },
+    general     : function(styleData) {
+      var items = [
+        {
+          type   : 'textbox',
+          name   : PREFIX_TABLE + 'width',
+          label  : 'Width',
+          tooltip: 'Only integer',
+          onkeyup: function(e) {
+            colorBorder.change(e.target, colorBorder.isInteger);
           }
-        ]
+        },
+        {
+          type   : 'textbox',
+          name   : PREFIX_TABLE + 'height',
+          label  : 'Height',
+          tooltip: 'Only integer',
+          onkeyup: function(e) {
+            colorBorder.change(e.target, colorBorder.isInteger);
+          }
+        },
+        {
+          type  : 'listbox',
+          name  : PREFIX_TABLE + 'borderCollapse',
+          label : 'Border collapse',
+          values: [
+            {text: 'Separate', value: 'separate'},
+            {text: 'Collapse', value: 'collapse'}
+          ]
+        },
+        {
+          type        : 'container',
+          label       : 'Example border',
+          html        : '<div id="' + PREFIX_TABLE +
+          'example"><div style="padding: 2px; text-align: center;">Example</div></div>',
+          onPostRender: function() {
+            styleTable.changeExample(PREFIX_TABLE, styleData);
+          }
+        }
+      ];
+
+      return {
+        title: 'General',
+        type : 'form',
+        items: items.concat(this.changeBorder(PREFIX_TABLE))
+      };
+    },
+    thead       : function(styleData) {
+      var items = [
+        {
+          type        : 'container',
+          label       : 'Example thead',
+          html        : '<div id="' + PREFIX_THEAD +
+          'example"><div style="padding: 2px;">Example</div></div>',
+          onPostRender: function() {
+            styleTable.changeExample(PREFIX_THEAD, styleData);
+          }
+        },
+        {
+          type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
+          name    : PREFIX_THEAD + 'backgroundColor',
+          label   : 'Background color',
+          onaction: createColorPickAction(),
+          onChange: function(e) {
+            styleTable.changeExample(PREFIX_THEAD, 'backgroundColor', this.value());
+          }
+        },
+        {
+          type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
+          name    : PREFIX_THEAD + 'color',
+          label   : 'Text color',
+          onaction: createColorPickAction(),
+          onChange: function(e) {
+            styleTable.changeExample(PREFIX_THEAD, 'color', this.value());
+          }
+        },
+        {
+          type    : 'listbox',
+          name    : PREFIX_THEAD + 'textAlign',
+          label   : 'Text align',
+          values  : [
+            {text: 'Default', value: ''},
+            {text: 'Center', value: 'center'},
+            {text: 'Left', value: 'left'},
+            {text: 'Right', value: 'right'}
+          ],
+          onSelect: function(e) {
+            styleTable.changeExample(PREFIX_THEAD, 'textAlign', this.value());
+          }
+        },
+        {
+          type   : 'textbox',
+          name   : PREFIX_THEAD + 'height',
+          label  : 'Height',
+          tooltip: 'Only integer',
+          onkeyup: function(e) {
+            colorBorder.change(e.target, colorBorder.isInteger);
+          }
+        }
+      ];
+
+      return {
+        title: 'style THEAD',
+        type : 'form',
+        items: items.concat(this.changeBorder(PREFIX_THEAD))
+      };
+    },
+    tbody       : function(styleData) {
+      var items = [
+        {
+          type        : 'container',
+          label       : 'Example tbody',
+          html        : '<div id="' + PREFIX_TBODY +
+          'example" style="padding: 2px;"><div style="padding: 2px;">Example</div></div>',
+          onPostRender: function() {
+            styleTable.changeExample(PREFIX_TBODY, styleData);
+          }
+        },
+        {
+          type    : 'listbox',
+          name    : PREFIX_TBODY + 'textAlign',
+          label   : 'Text align',
+          values  : [
+            {text: 'Default', value: ''},
+            {text: 'Center', value: 'center'},
+            {text: 'Left', value: 'left'},
+            {text: 'Right', value: 'right'}
+          ],
+          onSelect: function(e) {
+            styleTable.changeExample(PREFIX_TBODY, 'textAlign', this.value());
+          }
+        }
+      ];
+      return {
+        title: 'style TBODY',
+        type : 'form',
+        items: items.concat(this.changeBorder(PREFIX_TBODY))
       };
     }
-
-    return [
-      {
-        type : 'label',
-        style: 'text-align: center',
-        text : 'Border'
-      },
-      add('Top'),
-      add('Right'),
-      add('Bottom'),
-      add('Left')
-    ];
-  }
-
-  function formStyleTableGeneral(styleData) {
-    var items = [
-      {
-        type   : 'textbox',
-        name   : PREFIX_TABLE + 'width',
-        label  : 'Width',
-        tooltip: 'Only integer',
-        onkeyup: function(e) {
-          changeBorderColorInForm(e.target, isInteger);
-        }
-      },
-      {
-        type   : 'textbox',
-        name   : PREFIX_TABLE + 'height',
-        label  : 'Height',
-        tooltip: 'Only integer',
-        onkeyup: function(e) {
-          changeBorderColorInForm(e.target, isInteger);
-        }
-      },
-      {
-        type  : 'listbox',
-        name  : PREFIX_TABLE + 'borderCollapse',
-        label : 'Border collapse',
-        values: [
-          {text: 'Separate', value: 'separate'},
-          {text: 'Collapse', value: 'collapse'}
-        ]
-      },
-      {
-        type        : 'container',
-        label       : 'Example border',
-        html        : '<div id="' + PREFIX_TABLE +
-        'example"><div style="padding: 2px; text-align: center;">Example</div></div>',
-        onPostRender: function() {
-          changeStyleExample(PREFIX_TABLE, styleData);
-        }
-      }
-    ];
-
-    return {
-      title: 'General',
-      type : 'form',
-      items: items.concat(formStyleChangeBorder(PREFIX_TABLE))
-    };
-  }
-
-  function formStyleTableTHEAD(styleData) {
-    var items = [
-      {
-        type        : 'container',
-        label       : 'Example thead',
-        html        : '<div id="' + PREFIX_THEAD +
-        'example"><div style="padding: 2px;">Example</div></div>',
-        onPostRender: function() {
-          changeStyleExample(PREFIX_THEAD, styleData);
-        }
-      },
-      {
-        type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
-        name    : PREFIX_THEAD + 'backgroundColor',
-        label   : 'Background color',
-        onaction: createColorPickAction(),
-        onChange: function(e) {
-          changeStyleExample(PREFIX_THEAD, 'backgroundColor', this.value());
-        }
-      },
-      {
-        type    : 'colorbox',  // colorpicker plugin MUST be included for this to work
-        name    : PREFIX_THEAD + 'color',
-        label   : 'Text color',
-        onaction: createColorPickAction(),
-        onChange: function(e) {
-          changeStyleExample(PREFIX_THEAD, 'color', this.value());
-        }
-      },
-      {
-        type    : 'listbox',
-        name    : PREFIX_THEAD + 'textAlign',
-        label   : 'Text align',
-        values  : [
-          {text: 'Default', value: ''},
-          {text: 'Center', value: 'center'},
-          {text: 'Left', value: 'left'},
-          {text: 'Right', value: 'right'}
-        ],
-        onSelect: function(e) {
-          changeStyleExample(PREFIX_THEAD, 'textAlign', this.value());
-        }
-      },
-      {
-        type   : 'textbox',
-        name   : PREFIX_THEAD + 'height',
-        label  : 'Height',
-        tooltip: 'Only integer',
-        onkeyup: function(e) {
-          changeBorderColorInForm(e.target, isInteger);
-        }
-      }
-    ];
-
-    return {
-      title: 'style THEAD',
-      type : 'form',
-      items: items.concat(formStyleChangeBorder(PREFIX_THEAD))
-    };
-  }
-
-  function formStyleTableTbody(styleData) {
-    var items = [
-      {
-        type        : 'container',
-        label       : 'Example tbody',
-        html        : '<div id="' + PREFIX_TBODY +
-        'example" style="padding: 2px;"><div style="padding: 2px;">Example</div></div>',
-        onPostRender: function() {
-          changeStyleExample(PREFIX_TBODY, styleData);
-        }
-      },
-      {
-        type    : 'listbox',
-        name    : PREFIX_TBODY + 'textAlign',
-        label   : 'Text align',
-        values  : [
-          {text: 'Default', value: ''},
-          {text: 'Center', value: 'center'},
-          {text: 'Left', value: 'left'},
-          {text: 'Right', value: 'right'}
-        ],
-        onSelect: function(e) {
-          changeStyleExample(PREFIX_TBODY, 'textAlign', this.value());
-        }
-      }
-    ];
-    return {
-      title: 'style TBODY',
-      type : 'form',
-      items: items.concat(formStyleChangeBorder(PREFIX_TBODY))
-    };
-  }
-
-  function setStyleValue(rawVal) {
-    return convertColor(rawVal.trim().replace(/px$/, ''));
-  }
+  };
 
   function parseStyle(style, prefix, param, data) {
     var sides = ['Top', 'Right', 'Bottom', 'Left'],
@@ -674,24 +671,24 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
         var len = d.length;
         sides.forEach(function(value, index) {
           if (len === 4) {
-            style[prefix + 'border' + value + param] = setStyleValue(d[index]);
+            style[prefix + 'border' + value + param] = styleTable.setValue(d[index]);
           } else if (len === 3) {
             if (value === 'Left') {
-              style[prefix + 'border' + value + param] = setStyleValue(d[1]);
+              style[prefix + 'border' + value + param] = styleTable.setValue(d[1]);
             } else {
-              style[prefix + 'border' + value + param] = setStyleValue(d[index]);
+              style[prefix + 'border' + value + param] = styleTable.setValue(d[index]);
             }
           } else if (len === 2) {
             if (value === 'Top' || value === 'Bottom') {
-              style[prefix + 'border' + value + param] = setStyleValue(d[0]);
+              style[prefix + 'border' + value + param] = styleTable.setValue(d[0]);
             } else {
-              style[prefix + 'border' + value + param] = setStyleValue(d[1]);
+              style[prefix + 'border' + value + param] = styleTable.setValue(d[1]);
             }
           }
         });
       } else {
         sides.forEach(function(value) {
-          style[prefix + 'border' + value + param] = setStyleValue(data);
+          style[prefix + 'border' + value + param] = styleTable.setValue(data);
         });
       }
     } else {
@@ -699,12 +696,12 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
       if (param === 'border') {
         sides.forEach(function(side) {
           params.forEach(function(value, index) {
-            style[prefix + 'border' + this + value] = setStyleValue(d[index + 1]);
+            style[prefix + 'border' + this + value] = styleTable.setValue(d[index + 1]);
           }, side);
         });
       } else {
         params.forEach(function(value, index) {
-          style[prefix + 'border' + param + value] = setStyleValue(d[index + 1]);
+          style[prefix + 'border' + param + value] = styleTable.setValue(d[index + 1]);
         });
       }
     }
@@ -728,14 +725,14 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
           var n = name.split('-');
           if (n[2] !== undefined) {
             style[prefix + n[0] + n[1].ucFirst() +
-            n[2].ucFirst()] = setStyleValue(singleStyle[1]);
+            n[2].ucFirst()] = styleTable.setValue(singleStyle[1]);
           } else if (n[1] !== undefined) {
             parseStyle(style, prefix, n[1].ucFirst(), singleStyle[1].trim());
           } else {
             parseStyle(style, prefix, n[0], singleStyle[1].trim());
           }
         } else {
-          style[prefix + name.convertStyle()] = setStyleValue(singleStyle[1]);
+          style[prefix + name.convertStyle()] = styleTable.setValue(singleStyle[1]);
         }
       }
     }
@@ -774,14 +771,15 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
         table: editor.dom.getParent(editor.selection.getStart(), 'table')
       };
       var style = appendStylesToData(dom);
+
       editor.windowManager.open({
         title   : 'Style table',
         data    : style,
         bodyType: 'tabpanel',
         body    : [
-          formStyleTableGeneral(style),
-          formStyleTableTHEAD(style),
-          formStyleTableTbody(style)
+          form.general(style),
+          form.thead(style),
+          form.tbody(style)
         ],
         onsubmit: function(e) {
           var newStyle = {};
@@ -800,7 +798,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
           }
 
           for (var key in newStyle) {
-            setTableProperty(dom[key], newStyle[key]);
+            styleTable.setProperty(dom[key], newStyle[key]);
           }
         }
       });
@@ -838,7 +836,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
             tooltip: 'Only numbers',
             value  : '4',
             onkeyup: function(e) {
-              changeBorderColorInForm(e.target, itemColumnIsValid);
+              colorBorder.change(e.target, colorBorder.isValidColumn);
             }
           }
         ],
@@ -886,7 +884,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
                 }
                 tinymce.activeEditor.execCommand('mceInsertContent', false,
                     (function() {
-                      return mbhTable.insert(needCounter,sourceName,headers,variables);
+                      return mbhTable.insert(needCounter, sourceName, headers, variables);
                     })());
               }
             });

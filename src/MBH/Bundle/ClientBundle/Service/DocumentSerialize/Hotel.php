@@ -38,7 +38,7 @@ class Hotel extends Common
      */
     public function getLogo(): string
     {
-        $url = '';
+        $url = '/bundles/mbhbase/images/empty_logo.png';
         if ($this->entity->getLogoImage() !== null) {
             // должно работать
             $helper = $this->container->get('Vich\UploaderBundle\Templating\Helper\UploaderHelper');
@@ -46,8 +46,9 @@ class Hotel extends Common
         } elseif ($this->entity->getLogo() !== null) {
             $url = $this->entity->getPath();
         }
-        $return = '<img src="' . $url . '" alt="Hotel logo" />';
+//        $return = '<img src="' . $url . '" alt="Hotel logo" />';
 
-        return $url === '' ? '' : $return;
+//        return $url;
+        return '<div style="width: 95px; height: 80px; background-color: lightgrey;"><img src="' . $url . '" alt="Hotel logo" /></div>';
     }
 }

@@ -23,12 +23,66 @@ class Package extends Common
         'getNumberWithPrefix',
         'getAdults',
         'getChildren',
+        'getNights',
+        'getArrivalTime',
+        'getDepartureTime',
+        'getPrice|money',
+        'getServicesPrice|money',
     ];
+
+    public function getRoomName(): string
+    {
+        $roomType = $this->entity->getRoomType();
+
+        return $roomType !== null
+            ? $roomType->getName() ?? ''
+            : '';
+    }
+
+    public function getRoomNameInternational(): string
+    {
+        $roomType = $this->entity->getRoomType();
+
+        return $roomType !== null
+            ? $roomType->getInternationalTitle() ?? ''
+            : '';
+    }
+
+    public function getNightsExtra(): string
+    {
+        $nights = $this->entity->getNights();
+        if ($nights === null) {
+            return '';
+        }
+
+        $translator = $this->container->get('translator');
+
+        return $nights . ' ' . $translator->transChoice('nights', $nights);
+    }
+
+    public function getPriceToString(): string
+    {
+        $string = $this->entity->getPrice();
+
+        return $string !== null
+            ? $this->container->get('mbh.helper')->num2str($string)
+            : '';
+    }
+
+    public function getPackagePrice(): string
+    {
+        $price = $this->entity->getPackagePrice(true);
+
+        return $price !== null
+            ? Helper::numFormat($price)
+            : '';
+    }
+
 
     /**
      * @return array
      */
-    public function allTourists()
+    public function allTourists(): array
     {
         $return = [];
         $mortalSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal');

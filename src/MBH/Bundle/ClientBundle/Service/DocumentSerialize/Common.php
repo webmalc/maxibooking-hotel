@@ -14,6 +14,26 @@ abstract class Common
     /**
      * @var array
      */
+    private $methodsClear;
+
+    /**
+     * @var bool
+     */
+    private $isMethodsClearInit = false;
+
+    /**
+     * @var array
+     */
+    private $methodsWithParams;
+
+    /**
+     * @var bool
+     */
+    private $isMethodsWithParamsInit = false;
+
+    /**
+     * @var array
+     */
     protected const METHOD = [];
 
     /**
@@ -56,8 +76,8 @@ abstract class Common
             }
         }
 
-        if (in_array($name, static::METHOD)) {
-            return $this->entity->$name ?? '';
+        if (in_array($name, $this->getMethodsClear())) {
+            return $this->getEntityValue($name);
         }
 
         if (strpos($name, 'get') !== 0) {
@@ -71,7 +91,7 @@ abstract class Common
      * @return array
      * @throws \ReflectionException
      */
-    public static function methods(): array
+    public function methods(): array
     {
         $self = new \ReflectionClass(static::class);
         $methods = [];
@@ -79,9 +99,72 @@ abstract class Common
             if ($method->isPublic() && strpos($method->name, 'get') === 0) {
                 $methods[] = $method->name;
             }
-
         }
 
-        return array_merge(static::METHOD, $methods);
+        return array_merge($this->getMethodsClear(), $methods);
+    }
+
+    /**
+     * @param $methodName
+     * @return string
+     */
+    protected function getEntityValue($methodName): string
+    {
+        if (array_key_exists($methodName,$this->getMethodsWithParams())) {
+            $param = $this->getMethodsWithParams()[$methodName];
+            $value = '';
+            if (in_array('money', $param)) {
+                if ($this->entity->$methodName() !== null) {
+                    $value = Helper::numFormat($this->entity->$methodName());
+                }
+            }
+
+            return $value;
+        }
+
+        return $this->entity->$methodName() ?? '';
+    }
+
+    /**
+     * Все методы. доп параметры удаляются
+     *
+     * @return array
+     */
+    private function getMethodsClear(): array
+    {
+        if (!$this->isMethodsClearInit) {
+            $this->methodsClear = array_map(
+                function ($rawName) {
+                    return explode('|', $rawName)[0];
+                },
+                static::METHOD);
+            $this->isMethodsClearInit = true;
+        }
+
+        return $this->methodsClear;
+    }
+
+    /**
+     * Методы только с параметрами
+     * (ключ - имя метода, данные массив параметров)
+     *
+     * @return array
+     */
+    private function getMethodsWithParams(): array
+    {
+        if (!$this->isMethodsWithParamsInit) {
+            $this->methodsWithParams = [];
+            foreach (static::METHOD as $method) {
+                if (strpos($method, '|') !== false) {
+                    $p = explode('|', $method);
+                    $key = array_shift($p);
+                    $this->methodsWithParams[$key] = $p;
+                }
+            }
+
+            $this->isMethodsWithParamsInit = true;
+        }
+
+        return $this->methodsWithParams;
     }
 }

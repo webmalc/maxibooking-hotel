@@ -39,30 +39,45 @@ class Helper
      * @return array
      * @throws \ReflectionException
      */
-    public static function methodsOfEntity(): array
+    public function methodsOfEntity(): array
     {
+        $c = $this->container;
+        $hotel = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Hotel');
+        $mortal = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal');
+        $organization = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Organization');
+        $order = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order');
+        $user = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\User');
+        $package = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Package');
+        $cashDocument = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\CashDocument');
+        $serviceGroup = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\ServiceGroup');
+        $service = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Service');
+
         return [
             'common' => [
-                'hotel'   => Hotel::methods(),
+                'hotel'   => $hotel->methods(),
                 'payer'   => [
-                    'mortal' => Mortal::methods(),
-                    'organ'  => Organization::methods(),
+                    'mortal' => $mortal->methods(),
+                    'organ'  => $organization->methods(),
                 ],
-                'order'   => Order::methods(),
-                'user'    => User::methods(),
-                'package' => Package::methods(),
+                'order'   => $order->methods(),
+                'user'    => $user->methods(),
+                'package' => $package->methods(),
             ],
             'table'  => [
                 'cashDocument' => [
-                    'methods' => CashDocument::methods(),
+                    'methods' => $cashDocument->methods(),
                     'source'  => 'order.allCashDocuments',
                 ],
                 'tourist'      => [
-                    'methods' => Mortal::methods(),
+                    'methods' => $mortal->methods(),
                     'source'  => 'package.allTourists',
                 ],
-                'serviceGroup' => [
-                    'methods' => ServiceGroup::methods(),
+                'servicesByGroup' => [
+                    'methods' => $serviceGroup->methods(),
+                    'source'  => 'order.allServicesByGroup',
+                ],
+                'services' => [
+                    'methods' => $service->methods(),
                     'source'  => 'order.allServices',
                 ],
             ],
