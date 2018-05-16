@@ -78,14 +78,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
     self.mbh_property.table[tableKey] = mbh_property.table[tableKey].methods;
   }
 
-  var MbhTable = function(counter, name, thead, variables) {
-    this.counter = counter;
-    this.propertyName = name;
-    this.nameThead = thead;
-    this.variablesTbody = variables;
-  };
-
-  MbhTable.prototype = {
+  var mbhTable = {
     getThead: function() {
       var table = '<table class="mbh_' + this.propertyName + '"><thead><tr>';
       if (this.counter) {
@@ -112,7 +105,11 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
       table += '</tr>{% endfor %}</tbody></table>';
       return table;
     },
-    insert: function() {
+    insert: function(counter, name, thead, variables) {
+      this.counter = counter;
+      this.propertyName = name;
+      this.nameThead = thead;
+      this.variablesTbody = variables;
       return this.getThead() + this.getTbody();
     }
   };
@@ -844,7 +841,6 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
               changeBorderColorInForm(e.target, itemColumnIsValid);
             }
           }
-
         ],
         onsubmit: function(e) {
           if (itemColumnIsValid(e.data['amount'])) {
@@ -875,8 +871,6 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
               });
             }
 
-            // self.mbh_SourceName = e.data['source'];
-            // self.mbh_Counter = e.data['counter'];
             editor.windowManager.open({
               title   : 'Table for ' + menuText(sourceName.ucFirst()),
               body    : items,
@@ -890,15 +884,9 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
                     headers.push(e.data[key]);
                   }
                 }
-                // tinymce.activeEditor.execCommand('mceInsertContent', false, self[self.mbh_SourceName + 'InsertTable'](headers, variables))
                 tinymce.activeEditor.execCommand('mceInsertContent', false,
                     (function() {
-                      var table = new MbhTable(needCounter,sourceName,headers,variables);
-                      return table.insert();
-                      // return insertThead(needCounter, sourceName, headers) + insertTbody(needCounter,
-                      //     sourceName,
-                      //     mbh_property.table[sourceName].source,
-                      //     variables);
+                      return mbhTable.insert(needCounter,sourceName,headers,variables);
                     })());
               }
             });
