@@ -231,7 +231,7 @@ class ExternalApiController extends BaseController
      *     path="/management/online/api/services",
      *     produces={"application/json"},
      *     @SWG\Response(response="200", description="Return array of services for tariff"),
-     *     @SWG\Parameter(name="tariffId", in="query", type="string", required=true, description="ID of the rate for which the services are received"),
+     *     @SWG\Parameter(name="tariffId", in="query", type="string", required=true, description="The ID of the rate for which receive the services"),
      *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
      *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form")
      * )

@@ -735,6 +735,7 @@ csv.form.adults: Взрослые
 csv.form.children: Дети
 csv.form.package_price: 'Стоимость проживания'
 csv.form.package_services_price: 'Стоимость услуг'
+csv.form.price: 'Общая сумма'
 csv.form.createdAt: 'Дата создания'
 csv.form.createdBy: Создал
 csv.form.modal_title: 'Генерация документа'
