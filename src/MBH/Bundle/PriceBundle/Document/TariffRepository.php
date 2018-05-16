@@ -78,6 +78,7 @@ class TariffRepository extends DocumentRepository
     /**
      * Get Tariffs with > 1 package
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getWithPackages()
     {

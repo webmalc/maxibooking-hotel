@@ -2,6 +2,10 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -24,6 +28,7 @@ class TariffType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $formTariff = $builder->getData();
         $builder
             ->add('fullTitle', TextType::class, [
                 'label' => 'mbhpricebundle.form.tarifftype.nazvaniye',
@@ -80,12 +85,12 @@ class TariffType extends AbstractType
             );
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
-            ->add('condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('condition',  InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
                 'group' => 'form.tariffType.conditions_and_restrictions',
                 'choices' => array_combine($conditions, $conditions),
-                'choice_label' => function ($value, $label) {
+                'choice_label' => function ($value) {
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
@@ -98,12 +103,12 @@ class TariffType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-            ->add('additional_condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('additional_condition',  InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.add_condition',
                 'required' => false,
                 'group' => 'form.tariffType.conditions_and_restrictions',
                 'choices' => array_combine($conditions, $conditions),
-                'choice_label' => function ($value, $label) {
+                'choice_label' => function ($value) {
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
@@ -132,7 +137,7 @@ class TariffType extends AbstractType
                 'help' => 'price.form.using_tariff_in_online_booking'
             ])
             ->add(
-                'childAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
+                'childAge',  InvertChoiceType::class,
                 [
                     'label' => 'mbhpricebundle.form.tarifftype.rebenok.do',
                     'group' => 'configuration',
@@ -144,7 +149,7 @@ class TariffType extends AbstractType
                 ]
             )
             ->add(
-                'infantAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
+                'infantAge',  InvertChoiceType::class,
                 [
                     'label' => 'mbhpricebundle.form.tarifftype.infant.do',
                     'group' => 'configuration',
@@ -155,10 +160,21 @@ class TariffType extends AbstractType
                     'help' => 'price.form.what_age_is_client_considered_infant'
                 ]
             )
-            ->add('defaultForMerging', CheckboxType::class, [
+            ->add('mergingTariff', DocumentType::class, [
                 'label' => 'price.form.use_combination',
                 'group' => 'configuration',
-                'value' => true,
+                'class' => Tariff::class,
+                'query_builder' => function(TariffRepository $repository) use ($options, $formTariff) {
+                    $qb = $repository->createQueryBuilder();
+                    $qb
+                        ->field('hotel')->equals($options['hotel'])
+                        ->field('isEnabled')->equals(true);
+                    if (!is_null($formTariff)) {
+                        $qb->field('id')->notEqual($formTariff->getId());
+                    }
+
+                    return $qb;
+                },
                 'required' => false,
                 'help' => 'mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help'
             ])
@@ -183,7 +199,8 @@ class TariffType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff'
+            'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff',
+            'hotel' => null
         ));
     }
 
