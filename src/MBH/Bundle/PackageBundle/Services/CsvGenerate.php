@@ -29,6 +29,7 @@ class CsvGenerate
         'children' => ['title' => 'csv.type.children', 'method' => 'getChildren'],
         'countNight' => ['title' => 'csv.form.countNight', 'method' => 'getNights'],
         'countPersons' => ['title' => 'csv.form.countPersons', 'method' => 'countPersons'],
+        'price' => ['title' => 'csv.form.price', 'method' => 'getPrice'],
         'packagePrice' => ['title' => 'csv.form.package_price', 'method' => 'getPackagePrice'],
         'packageServicesPrice' => ['title' => 'csv.form.package_services_price', 'method' => 'getServicesPrice'],
         'paids' => ['title' => 'csv.type.paids', 'method' => 'getPaids'],
