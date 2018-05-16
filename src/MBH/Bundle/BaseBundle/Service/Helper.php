@@ -682,7 +682,7 @@ class Helper
      * @param Base $document
      * @return array
      */
-    public function getRelatedDocuments(Base $document)
+    public function getRelatedDocuments($document)
     {
         $relationships = DocumentsRelationships::getRelationships();
         $relatedDocumentsData = [];
