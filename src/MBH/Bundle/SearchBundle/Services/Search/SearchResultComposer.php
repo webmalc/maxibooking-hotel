@@ -13,7 +13,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Calc\CalcHelper;
+use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 
 
@@ -67,9 +67,7 @@ class SearchResultComposer
             ->setChildren($actualChildren)
             ->setUseCategories($isUseCategories)
             ->setInfants($infants)
-            ->setRooms($accommodationRooms)
-
-        ;
+            ->setRooms($accommodationRooms);
         $this->pricePopulate($searchResult, $prices);
 
         return $searchResult;
@@ -88,15 +86,14 @@ class SearchResultComposer
     {
         foreach ($prices as $price) {
             $searchResult->addPrice($price['total'], $price['adults'], $price['children'])
-                ->setPricesByDate($price['prices'], $price['adults'], $price['children'])
-                ->setPackagePrices($price['packagePrices'], $price['adults'], $price['children'])
-            ;
+                /*->setPricesByDate($price['prices'], $price['adults'], $price['children'])*/
+                ->setPackagePrices($price['packagePrices'], $price['adults'], $price['children']);
         }
     }
 
     private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $actualAdults, int $actualChildren): array
     {
-        $helper = new CalcHelper();
+        $helper = new CalcQuery();
         $helper
             ->setSearchBegin($searchQuery->getBegin())
             ->setSearchEnd($searchQuery->getEnd())
@@ -104,11 +101,14 @@ class SearchResultComposer
             ->setTariff($tariff)
             ->setActualAdults($actualAdults)
             ->setActualChildren($actualChildren)
-            ->setIsUseCategory($this->roomManager->useCategories)
+            ->setIsUseCategory($this->roomManager->useCategories);
 
-        ;
+        $prices = $this->calculation->calcPrices($helper);
+        if (!\count($prices)) {
+            throw new SearchResultComposerException('No prices returned from calculation');
+        }
 
-        return $this->calculation->calcPrices($helper);
+        return $prices;
     }
 
 

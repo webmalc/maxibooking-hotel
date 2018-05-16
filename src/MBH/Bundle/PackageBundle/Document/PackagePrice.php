@@ -127,9 +127,9 @@ class PackagePrice
 
     /**
      * @param Promotion $promotion
-     * @return Promotion
+     * @return PackagePrice
      */
-    public function setPromotion($promotion)
+    public function setPromotion($promotion): PackagePrice
     {
         $this->promotion = $promotion;
 

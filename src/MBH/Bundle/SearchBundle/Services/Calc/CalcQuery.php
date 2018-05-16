@@ -9,25 +9,45 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException;
+use Symfony\Component\Validator\Constraints as Assert;
 
-class CalcHelper
+class CalcQuery
 {
-    /** @var \DateTime */
+    /**
+     * @var \DateTime
+     * @Assert\Date()
+     */
     private $searchBegin;
 
-    /** @var \DateTime */
+    /**
+     * @var \DateTime
+     * @Assert\NotNull()
+     * @Assert\Date()
+     */
     private $searchEnd;
 
-    /** @var RoomType */
+    /**
+     * @var RoomType
+     * @Assert\NotNull()
+     */
     private $roomType;
 
-    /** @var Tariff */
+    /**
+     * @var Tariff
+     * @Assert\NotNull()
+     */
     private $tariff;
 
-    /** @var int */
+    /**
+     * @var int
+     * @Assert\Type(type="int")
+     */
     private $actualAdults = 0;
 
-    /** @var int */
+    /**
+     * @var int
+     * @Assert\Type(type="int")
+     */
     private $actualChildren = 0;
 
     /** @var Promotion */
@@ -36,10 +56,18 @@ class CalcHelper
     /** @var Special */
     private $special;
 
-    /** @var bool */
+    /**
+     * @var bool
+     * @Assert\Type(type="bool")
+     * @Assert\NotNull()
+     */
     private $isStrictDuration = true;
 
-    /** @var bool */
+    /**
+     * @var bool
+     * @Assert\Type(type="bool")
+     * @Assert\NotNull()
+     */
     private $isUseCategory;
 
 
@@ -53,9 +81,9 @@ class CalcHelper
 
     /**
      * @param \DateTime $searchBegin
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setSearchBegin(\DateTime $searchBegin): CalcHelper
+    public function setSearchBegin(\DateTime $searchBegin): CalcQuery
     {
         $this->searchBegin = $searchBegin;
 
@@ -72,9 +100,9 @@ class CalcHelper
 
     /**
      * @param \DateTime $searchEnd
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setSearchEnd(\DateTime $searchEnd): CalcHelper
+    public function setSearchEnd(\DateTime $searchEnd): CalcQuery
     {
         $this->searchEnd = $searchEnd;
 
@@ -91,9 +119,9 @@ class CalcHelper
 
     /**
      * @param RoomType $roomType
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setRoomType(RoomType $roomType): CalcHelper
+    public function setRoomType(RoomType $roomType): CalcQuery
     {
         $this->roomType = $roomType;
 
@@ -110,9 +138,9 @@ class CalcHelper
 
     /**
      * @param Tariff $tariff
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setTariff(Tariff $tariff): CalcHelper
+    public function setTariff(Tariff $tariff): CalcQuery
     {
         $this->tariff = $tariff;
 
@@ -129,9 +157,9 @@ class CalcHelper
 
     /**
      * @param int $actualAdults
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setActualAdults(int $actualAdults): CalcHelper
+    public function setActualAdults(int $actualAdults): CalcQuery
     {
         $this->actualAdults = $actualAdults;
 
@@ -148,9 +176,9 @@ class CalcHelper
 
     /**
      * @param int $actualChildren
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setActualChildren(int $actualChildren): CalcHelper
+    public function setActualChildren(int $actualChildren): CalcQuery
     {
         $this->actualChildren = $actualChildren;
 
@@ -167,9 +195,9 @@ class CalcHelper
 
     /**
      * @param Promotion $promotion
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setPromotion(Promotion $promotion): CalcHelper
+    public function setPromotion(Promotion $promotion): CalcQuery
     {
         $this->promotion = $promotion;
 
@@ -186,9 +214,9 @@ class CalcHelper
 
     /**
      * @param Special $special
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setSpecial(Special $special): CalcHelper
+    public function setSpecial(Special $special): CalcQuery
     {
         $this->special = $special;
 
@@ -205,9 +233,9 @@ class CalcHelper
 
     /**
      * @param bool $isStrictDuration
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setIsStrictDuration(bool $isStrictDuration): CalcHelper
+    public function setIsStrictDuration(bool $isStrictDuration): CalcQuery
     {
         $this->isStrictDuration = $isStrictDuration;
 
@@ -224,9 +252,9 @@ class CalcHelper
 
     /**
      * @param bool $isUseCategory
-     * @return CalcHelper
+     * @return CalcQuery
      */
-    public function setIsUseCategory(bool $isUseCategory): CalcHelper
+    public function setIsUseCategory(bool $isUseCategory): CalcQuery
     {
         $this->isUseCategory = $isUseCategory;
 
@@ -252,6 +280,15 @@ class CalcHelper
         }
 
         return $this->tariff->getId();
+    }
+
+    public function getMergingTariffId(): ?string
+    {
+        if ($mergingTariff = $this->tariff->getMergingTariff()) {
+            return $mergingTariff->getId();
+        }
+
+        return null;
     }
 
     public function getPriceRoomTypeId(): string

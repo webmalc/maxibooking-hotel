@@ -17,7 +17,7 @@ class PriceHelper
     /** @var int */
     private $children;
 
-    /** @var CalcHelper */
+    /** @var CalcQuery */
     private $calcHelper;
 
 }

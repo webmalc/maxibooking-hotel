@@ -6,7 +6,7 @@ namespace Tests\Bundle\SearchBundle\Services\Calc;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\SearchBundle\Services\Calc\CalcHelper as Helper;
+use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery as Helper;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 
 class CalculationTest extends WebTestCase
