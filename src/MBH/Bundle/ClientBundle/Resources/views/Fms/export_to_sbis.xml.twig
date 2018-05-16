@@ -7,10 +7,15 @@
            xmlns:ns6="http://umms.fms.gov.ru/replication/migration/staying/unreg"
            xmlns:ns7="http://umms.fms.gov.ru/replication/migration/staying"
            xmlns:ns8="http://umms.fms.gov.ru/replication/invitation-application">
+
+    {% set isRussianTourist = tourist.citizenshipTld == 'ru' %}
+
+    {% if tourist.documentRelation and tourist.documentRelation.authorityOrganId %}
     <subdivision>
         <type>officialOrgan</type>
         <element>{{ tourist.documentRelation.authorityOrganId }}</element>
     </subdivision>
+    {% endif %}
 
     <date>{{ date()|date('Y-m-d\\TH:i:s') }}</date>
 
@@ -79,7 +84,7 @@
 
     {% if tourist.addressObjectDecomposed %}
         <ns1:livingAddress>
-            {% if tourist.citizenshipTld == 'ru' %}
+            {% if isRussianTourist %}
                 <russianAddress>
                     {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
                     <addressObjectString>{{ get_region(tourist.addressObjectDecomposed.regionId).name|replace({'область' : 'обл'}) }}

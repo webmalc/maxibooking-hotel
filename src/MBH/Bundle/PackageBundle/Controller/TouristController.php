@@ -705,12 +705,15 @@ class TouristController extends Controller
         foreach ($touristQB->getQuery()->execute() as $tourist) {
             $touristPackage = $packageRepository->findOneByTourist($tourist, $packageCriteria);
             if (!is_null($touristPackage) && $tourist->getLastName() != 'Н/д') {
+                $isRussianTourist = $tourist->getCitizenshipTld() === Country::RUSSIA_TLD;
                 if ($system === 'kontur') {
-                    $viewFile = $tourist->getCitizenshipTld() === Country::RUSSIA_TLD
+                    $viewFile = $isRussianTourist
                         ? '@MBHClient/Fms/fms_export_russian.xml.twig'
                         : '@MBHClient/Fms/fms_export_foreign.xml.twig';
                 } elseif($system === 'sbis') {
-                    $viewFile = '@MBHClient/Fms/export_to_sbis.xml.twig';
+                    $viewFile = $isRussianTourist
+                        ? '@MBHClient/Fms/export_to_sbis.xml.twig'
+                        : '@MBHClient/Fms/export_to_sbis_foreign.xml.twig';
                 } else {
                     throw new \InvalidArgumentException('Incorrect export system name "' . $system . '"');
                 }
