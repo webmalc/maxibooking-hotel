@@ -136,12 +136,20 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
     var change = select === undefined ? false : select;
 
     var portrait = {
-      value: 'width: 1240px;height: 1769px;',
-      name : 'portrait'
+      value : function() {
+        return this.width + ';' + this.height + ';';
+      },
+      name  : 'portrait',
+      width : 'width: 1240px',
+      height: 'height: 1769px'
     };
     var landscape = {
-      value: 'width: 1769px;height: 1223px;',
-      name : 'landscape'
+      value : function() {
+        return this.width + ';' + this.height + ';';
+      },
+      name  : 'landscape',
+      width : 'width: 1769px',
+      height: 'height: 1223px'
     };
 
     function changeSelect(change, orientation) {
@@ -161,16 +169,48 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
           val();
     }
 
-    var content = editor.getContent();
+    function newOrientation(str, newOrientation) {
+      var stAsArr = str.trim().split(';').map(function(value) {
+        // console.log(value);
+        var n = value.trim().split(':')[0];
+        if (n == 'width') {
+          value = this.width;
+        }
+        if (n == 'height') {
+          value = this.height;
+        }
+        return value;
+      }, newOrientation);
 
-    if (content.search(portrait.value) != -1) {
-      content = content.replace(portrait.value, landscape.value);
-      changeSelect(change, landscape.name);
-    } else {
-      content = content.replace(landscape.value, portrait.value);
-      changeSelect(change, portrait.name);
+      return stAsArr.join(';');
     }
-    editor.setContent(content);
+
+    var content = editor.getContent();
+    // т.к. при вставки стилей при создании нового шаблона используется не совсем корректный способ
+    // образуется лишний, пустой тег
+    content = content.replace('<meta="" />', '');
+
+    var el = document.createElement('html');
+    el.innerHTML = content;
+
+    var st = el.querySelector('head style');
+
+    if (st !== null) {
+      st.innerHTML = st.innerHTML.replace(/\n/g, '');
+      st.innerHTML = st.innerHTML.replace(/\s{2,}/g, '');
+      var regExp = /html\s?{(.*?)}/;
+      var match = st.innerHTML.match(regExp);
+      if (match[1] !== undefined) {
+        if (match[1].search(portrait.value()) !== -1) {
+          st.innerHTML = st.innerHTML.replace(regExp, 'html {' + newOrientation(match[1], landscape) + '}');
+          changeSelect(change, landscape.name);
+        } else if (match[1].search(landscape.value()) !== -1) {
+          st.innerHTML = st.innerHTML.replace(regExp, 'html {' + newOrientation(match[1], portrait) + '}');
+          changeSelect(change, portrait.name);
+        }
+        editor.setContent(el.innerHTML);
+      }
+    }
   };
 
   editor.addButton('mbh_rotate', {
