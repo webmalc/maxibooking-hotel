@@ -4,8 +4,12 @@ namespace Tests\Bundle\BaseBundle\Service;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use MBH\Bundle\BaseBundle\Document\Image;
+use MBH\Bundle\BaseBundle\Lib\Normalization\BooleanFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\DocumentsCollectionFieldType;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -68,5 +72,62 @@ class DocumentFieldsManagerTest extends WebTestCase
             'cityId' => 123,
             'countryTld' => 'ru'
         ], $this->documentFieldsManager->fillByDocumentFieldsWithFieldNameKeys($testHotel, $testFields));
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testGetClassFullNameByShortNameFromUseStatementsInTheSameNamespace()
+    {
+        $shortName = 'RoomType';
+        $reflClass = new \ReflectionClass(Hotel::class);
+
+        $this->assertEquals(RoomType::class, $this->documentFieldsManager->getClassFullNameByShortNameFromUseStatements($reflClass, $shortName));
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testGetClassFullNameByShortNameFromUseStatementsInTheAnotherNamespace()
+    {
+        $shortName = 'Image';
+        $reflClass = new \ReflectionClass(Hotel::class);
+
+        $this->assertEquals(Image::class, $this->documentFieldsManager->getClassFullNameByShortNameFromUseStatements($reflClass, $shortName));
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testGetClassFullNameByShortNameFromUseStatementsForMissingClass()
+    {
+        $shortName = 'PriceCache';
+        $reflClass = new \ReflectionClass(Hotel::class);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->documentFieldsManager->getClassFullNameByShortNameFromUseStatements($reflClass, $shortName);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testGetFieldTypeWithFieldAnnotation()
+    {
+        $testedProperty = new \ReflectionProperty(Hotel::class, 'isDefault');
+
+        $this->assertInstanceOf(BooleanFieldType::class, $this->documentFieldsManager->getFieldType($testedProperty));
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @depends testGetClassFullNameByShortNameFromUseStatementsInTheSameNamespace
+     */
+    public function testGetFieldTypeWithDocAnnotation()
+    {
+        $testedProperty = new \ReflectionProperty(Hotel::class, 'rooms');
+        $fieldType = $this->documentFieldsManager->getFieldType($testedProperty);
+
+        $this->assertInstanceOf(DocumentsCollectionFieldType::class, $fieldType);
+        $this->assertEquals(Room::class, $fieldType->getClass());
     }
 }

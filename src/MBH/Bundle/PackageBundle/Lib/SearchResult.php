@@ -4,6 +4,15 @@ namespace MBH\Bundle\PackageBundle\Lib;
 
 use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\BaseBundle\Lib\HasSpecialSerializableFieldsInterface;
+use MBH\Bundle\BaseBundle\Lib\Normalization\BooleanFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\CollectionFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\DateTimeFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\DocumentFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\DocumentsCollectionFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\EmbedManyFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\IntegerFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\StringFieldType;
+use MBH\Bundle\BaseBundle\Service\MBHSerializer;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
@@ -575,8 +584,30 @@ class SearchResult implements HasSpecialSerializableFieldsInterface
         return $data;
     }
 
-    public static function getSpecialSerializeableFieldsTypes(): array
+    /**
+     * Return class fields types data. Used for classes that don't have doctrine annotations or have some special settings
+     *
+     * @return array
+     */
+    public static function getSpecialNormalizationFieldsTypes(): array
     {
-        return [];
+        return [
+            'begin' => new DateTimeFieldType(),
+            'end' => new DateTimeFieldType(),
+            'adults' => new IntegerFieldType(),
+            'children' => new IntegerFieldType(),
+            'roomType' => new DocumentFieldType(RoomType::class),
+            'virtualRoom' => new DocumentFieldType(Room::class),
+            'tariff' => new DocumentFieldType(Tariff::class),
+            'prices' => new CollectionFieldType(),
+            'pricesByDate' => new CollectionFieldType(),
+            'roomsCount' =>new IntegerFieldType(),
+            'rooms' => new DocumentsCollectionFieldType(Room::class),
+            'packagePrices' => new EmbedManyFieldType(PackagePrice::class),
+            'useCategories' => new BooleanFieldType(),
+            'forceBooking' => new BooleanFieldType(),
+            'infants' => new IntegerFieldType(),
+            'queryId' => new StringFieldType()
+        ];
     }
 }

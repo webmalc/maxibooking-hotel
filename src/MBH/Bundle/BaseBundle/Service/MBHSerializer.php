@@ -9,11 +9,14 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
+use MBH\Bundle\BaseBundle\Lib\HasSpecialSerializableFieldsInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class MBHSerializer
 {
     const DATE_FORMAT = 'd.m.Y';
+    const DATETIME_FORMAT = 'd.m.Y H:i';
+    const TIME_FORMAT = 'H:i';
 
     private $annotationReader;
     private $propertyAccessor;
@@ -35,31 +38,42 @@ class MBHSerializer
     {
         $normalizedDocument = [];
         $reflClass = new \ReflectionClass(get_class($document));
+        $specialFieldsSettings = $document instanceof HasSpecialSerializableFieldsInterface
+            ? $document::getSpecialNormalizationFieldsTypes()
+            : [];
         foreach ($reflClass->getProperties() as $property) {
             $propertyName = $property->getName();
             if (in_array($propertyName, $excludedFields)) {
                 continue;
             }
 
-            $normalizedDocument[$propertyName] = $this->normalizeValue($document, $propertyName, $property);
+            $fieldValue = $this->propertyAccessor->getValue($document, $propertyName);
+
+            $normalizedDocument[$propertyName] = isset($specialFieldsSettings[$propertyName])
+                ? $this->convertBySpecialFieldSettings()
+                : $this->convertByAnnotations($fieldValue, $property);
         }
 
         return $normalizedDocument;
     }
 
+    private function convertBySpecialFieldSettings()
+    {
+
+    }
+
     /**
-     * @param $document
-     * @param $propertyName
+     * @param $fieldValue
      * @param $property
      * @return bool|string|array
      * @throws \ReflectionException
      */
-    private function normalizeValue($document, $propertyName, $property)
+    private function convertByAnnotations($fieldValue, $property)
     {
-        $fieldValue = $this->propertyAccessor->getValue($document, $propertyName);
         if (is_null($fieldValue)) {
             return null;
         }
+
         //TODO: Проверить специально указанные случаи
         $annotation = $this->annotationReader->getPropertyAnnotation($property, Field::class);
 
@@ -109,8 +123,8 @@ class MBHSerializer
         return $normalizedValue = (string)$fieldValue;
     }
 
-    public function denormalize($document)
+    public function denormalize(array $dataToDenormalize, $document)
     {
-        //TODO: Реализовать
+        return [];
     }
 }

@@ -475,7 +475,7 @@ services:
 
     mbh.document_fields_manager:
         class: MBH\Bundle\BaseBundle\Service\DocumentFieldsManager
-        arguments: ['@translator', '@property_accessor']
+        arguments: ['@translator', '@property_accessor', '@annotation_reader']
 
     mbh.serializer:
         class: MBH\Bundle\BaseBundle\Service\MBHSerializer
