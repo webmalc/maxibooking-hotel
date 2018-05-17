@@ -13,13 +13,15 @@ use MBH\Bundle\PriceBundle\Document\RoomCache;
  * Class RoomCacheData
 
  */
-class RoomCacheData extends AbstractFixture implements OrderedFixtureInterface
+class AdditionalRoomCacheData extends AbstractFixture implements OrderedFixtureInterface
 {
 
     const DATA = [
-        'single' => 10,
-        'roomtype-double' => 10,
-        'hotel-triple' => 10,
+        'one' => 6,
+        'two' => 4,
+        'three' => 5,
+        'four' => 20,
+        'hostel' => 3
     ];
 
     /**
@@ -27,8 +29,8 @@ class RoomCacheData extends AbstractFixture implements OrderedFixtureInterface
      */
     public function doLoad(ObjectManager $manager)
     {
-        $begin = new \DateTime('midnight');
-        $end = new \DateTime('midnight +3 month');
+        $begin = new \DateTime('midnight +2 days');
+        $end = new \DateTime('midnight +1 month -2 days');
         $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end);
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
@@ -52,7 +54,7 @@ class RoomCacheData extends AbstractFixture implements OrderedFixtureInterface
 
     public function getOrder()
     {
-        return 500;
+        return 510;
     }
 
     /**
@@ -60,6 +62,6 @@ class RoomCacheData extends AbstractFixture implements OrderedFixtureInterface
      */
     protected function getEnvs(): array
     {
-        return ['test', 'dev', 'sandbox'];
+        return ['test', 'dev'];
     }
 }

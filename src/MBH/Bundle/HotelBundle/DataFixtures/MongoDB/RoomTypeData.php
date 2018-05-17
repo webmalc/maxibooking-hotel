@@ -93,6 +93,6 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
 
     public function getOrder()
     {
-        return 4;
+        return 200;
     }
 }

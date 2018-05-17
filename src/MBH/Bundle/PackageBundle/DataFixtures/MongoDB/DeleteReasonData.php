@@ -48,6 +48,6 @@ class DeleteReasonData extends AbstractFixture implements OrderedFixtureInterfac
      */
     public function getOrder()
     {
-        return 10;
+        return 450;
     }
 }

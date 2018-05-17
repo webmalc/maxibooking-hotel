@@ -580,11 +580,12 @@ class Tariff extends Base implements ConditionsInterface
 
     /**
      * @param mixed $parent
-     * @return TariffChildOptions
+     * @return Tariff
      */
     public function setParent($parent)
     {
         $this->parent = $parent;
+
         return $this;
     }
 
