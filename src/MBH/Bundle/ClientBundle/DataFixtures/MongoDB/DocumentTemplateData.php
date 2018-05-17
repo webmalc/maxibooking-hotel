@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\ClientBundle\DataFixtures;
+namespace MBH\Bundle\ClientBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;

@@ -7,39 +7,101 @@
 namespace MBH\Bundle\ClientBundle\Command;
 
 
+use \Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ClientBundle\DataFixtures\MongoDB\DocumentTemplateData;
+use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class DocumentTemplateUpdateCommand extends ContainerAwareCommand
 {
-
+    /**
+     * @var string
+     */
     private $rootDir;
+    /**
+     * @var bool
+     */
     private $isRootDirInit = false;
 
+    /**
+     * @var DocumentManager
+     */
     private $dm;
+    /**
+     * @var bool
+     */
     private $isDmInit = false;
+
+    /**
+     * @var array
+     */
+    private $defaultNameTemplates;
+    /**
+     * @var bool
+     */
+    private $isDefaultNameTemplatesInit = false;
 
     protected function configure()
     {
         $this
             ->setName('mbh:document_template:update')
-            ->setDescription('Updating default document templates from files (all or not edited)');
+            ->setDescription('Updating default document templates from files (all or not edited)')
+            ->addOption('all', 'a', null, 'update all');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->removeTemplate($this->getTemplates());
-
-        $command = 'doctrine:mongodb:fixtures:load --append --fixtures=' . $this->getRootDir();
-        $command .= '/../src/MBH/Bundle/ClientBundle/DataFixtures/MongoDB/DocumentTemplateData.php';
-        $this->runCommand($command);
+        if ($input->getOption('all') === true) {
+            $this->updateAll();
+        } else {
+            $this->updateNotEdited();
+        }
     }
 
-    private function getTemplates(bool $all = true)
+    private function msgUpdateAll()
     {
-        $criteria = ['isDefault' => true];
+        dump('update all');
+    }
+
+    private function msgUnchanged()
+    {
+        dump(array_diff($this->getDefaultNameTemplates(), $this->getNotEditedNameTemplates()));
+    }
+
+    private function updateNotEdited(): void
+    {
+        $t = $this->getTemplates(false);
+
+        if (count($t) < count($this->getDefaultNameTemplates())) {
+            $this->msgUnchanged();
+        } else {
+            $this->msgUpdateAll();
+        }
+
+        $this->updateTemplates($t);
+    }
+
+    private function updateAll(): void
+    {
+        $t = $this->getTemplates();
+        $this->updateTemplates($t);
+
+        $this->msgUpdateAll();
+
+    }
+
+    /**
+     * @param bool $all
+     * @return DocumentTemplate[]
+     */
+    private function getTemplates(bool $all = true): array
+    {
+        $criteria = [];
+        $criteria['title'] = [
+            '$in' => $this->getDefaultNameTemplates(),
+        ];
 
         if (!$all) {
             $criteria['updatedBy'] = null;
@@ -48,39 +110,46 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
         return $this->getDM()->getRepository('MBHClientBundle:DocumentTemplate')->findBy($criteria);
     }
 
-    private function removeTemplate($data)
+    /**
+     * @param $data
+     */
+    private function updateTemplates($data): void
     {
         $dm = $this->getDM();
 
-        foreach ($data as $t) {
-            $dm->remove($t);
+        $defaultData = $this->getDefaultTemplatesData();
+        /** @var DocumentTemplate $template */
+        foreach ($data as $template) {
+            $filePath = $this->getRootDir()
+                . '/../src/MBH/Bundle/PackageBundle/Resources/views/Documents/pdfTemplates/'
+                . $defaultData[$template->getTitle()]
+                . '.html.twig';
+
+            $content = file_get_contents($filePath);
+            $template->setContent($content);
+            $dm->persist($template);
         }
 
         $dm->flush();
     }
 
-    private function runCommand(string $command)
-    {
-        $env = $this->getContainer()->get('kernel')->getEnvironment();
-        $client = $this->getContainer()->getParameter('client');
-        $process = new Process(
-            'nohup php ' . $this->getRootDir() . '/../bin/console ' . $command . ' --no-debug --env=' . $env,
-            null, [\AppKernel::CLIENT_VARIABLE => $client]
-        );
-        $process->run();
-    }
-
+    /**
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
+     */
     private function getDM()
     {
         if (!$this->isDmInit) {
-            $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+            $this->dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
             $this->isDmInit = true;
         }
 
         return $this->dm;
     }
 
-    private function getRootDir()
+    /**
+     * @return string
+     */
+    private function getRootDir(): string
     {
         if (!$this->isRootDirInit) {
             $this->rootDir = $this->getContainer()->get('kernel')->getRootDir();
@@ -88,5 +157,44 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
         }
 
         return $this->rootDir;
+    }
+
+    /**
+     * @return array
+     */
+    private function getDefaultTemplatesData(): array
+    {
+        $locale = $this->getContainer()->getParameter('locale') === 'ru' ? 'ru' : 'com';
+
+        return DocumentTemplateData::DOCUMENT_TEMPLATE_DATA[$locale];
+    }
+
+
+    /**
+     * @return array
+     */
+    private function getDefaultNameTemplates(): array
+    {
+        if (!$this->isDefaultNameTemplatesInit) {
+
+            $this->defaultNameTemplates = array_keys($this->getDefaultTemplatesData());
+            $this->isDefaultNameTemplatesInit = true;
+        }
+
+        return $this->defaultNameTemplates;
+    }
+
+    /**
+     * @return array
+     */
+    private function getNotEditedNameTemplates(): array
+    {
+        return array_map(
+            function ($entity) {
+                /** @var DocumentTemplate $entity */
+                return $entity->getTitle();
+            },
+            $this->getTemplates(false)
+        );
     }
 }
