@@ -43,6 +43,16 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
      */
     private $isDefaultNameTemplatesInit = false;
 
+    /**
+     * @var
+     */
+    private $templates;
+
+    /**
+     * @var bool
+     */
+    private $isTemplatesInit = false;
+
     protected function configure()
     {
         $this
@@ -60,16 +70,50 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
         }
     }
 
-    private function msgUpdateAll()
+    /**
+     * Готовит сообщение при обновлении всех записей
+     */
+    private function msgUpdateAll(): void
     {
-        dump('update all');
+        $this->logger('OK. Update all templates.');
     }
 
-    private function msgUnchanged()
+    /**
+     * Готовит сообщение, со списком шаблонов которые не были обновленны
+     */
+    private function msgUnchanged(): void
     {
-        dump(array_diff($this->getDefaultNameTemplates(), $this->getNotEditedNameTemplates()));
+        $msg = 'ATTENTION. Updated templates default, except: ';
+        $msg .= implode(
+            ', ',
+            array_diff(
+                $this->getDefaultNameTemplates(),
+                $this->getNotEditedNameTemplates()
+            )
+        );
+        $msg .= '.';
+        $this->logger($msg);
     }
 
+    /**
+     * Логирование (в файл)
+     *
+     * @param string $msg
+     */
+    private function logger(string $msg)
+    {
+//        $this->getContainer()->get('logger')->addInfo($msg);
+        $client = $this->getContainer()->get('kernel')->getClient();
+        $date = new \DateTime();
+        $str = $date->format($date::ISO8601) . " {$client} \"{$msg}\"" . PHP_EOL;
+        $fileName = $this->getRootDir() . '/../var/logs/document_template_update.log';
+
+        file_put_contents($fileName, $str, FILE_APPEND);
+    }
+
+    /**
+     * Обновление шаблонов, исключая измененные
+     */
     private function updateNotEdited(): void
     {
         $t = $this->getTemplates(false);
@@ -83,13 +127,15 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
         $this->updateTemplates($t);
     }
 
+    /**
+     * Обновление всех шаблонов
+     */
     private function updateAll(): void
     {
         $t = $this->getTemplates();
         $this->updateTemplates($t);
 
         $this->msgUpdateAll();
-
     }
 
     /**
@@ -98,16 +144,21 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
      */
     private function getTemplates(bool $all = true): array
     {
-        $criteria = [];
-        $criteria['title'] = [
-            '$in' => $this->getDefaultNameTemplates(),
-        ];
+        if (!$this->isTemplatesInit) {
+            $criteria = [];
+            $criteria['title'] = [
+                '$in' => $this->getDefaultNameTemplates(),
+            ];
 
-        if (!$all) {
-            $criteria['updatedBy'] = null;
+            if (!$all) {
+                $criteria['updatedBy'] = null;
+            }
+
+            $this->templates = $this->getDM()->getRepository('MBHClientBundle:DocumentTemplate')->findBy($criteria);
+            $this->isTemplatesInit = true;
         }
 
-        return $this->getDM()->getRepository('MBHClientBundle:DocumentTemplate')->findBy($criteria);
+        return $this->templates;
     }
 
     /**
@@ -185,6 +236,8 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
     }
 
     /**
+     * Имена шаблонов (без изменений)
+     *
      * @return array
      */
     private function getNotEditedNameTemplates(): array
