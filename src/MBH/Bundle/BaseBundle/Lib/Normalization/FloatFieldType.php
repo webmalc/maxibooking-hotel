@@ -12,18 +12,20 @@ class FloatFieldType implements NormalizableInterface
 
     /**
      * @param $value
+     * @param array $options
      * @return float
      */
-    public function normalize($value)
+    public function normalize($value, array $options)
     {
         return round(floatval($value), $this->numberOfDecimal);
     }
 
     /**
      * @param $value
+     * @param array $options
      * @return float
      */
-    public function denormalize($value)
+    public function denormalize($value, array $options)
     {
         return round(floatval($value), $this->numberOfDecimal);
     }

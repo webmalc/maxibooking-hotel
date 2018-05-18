@@ -5,11 +5,13 @@ namespace Tests\Bundle\BaseBundle\Service;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Lib\Normalization\BooleanFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\DocumentFieldType;
 use MBH\Bundle\BaseBundle\Lib\Normalization\DocumentsCollectionFieldType;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -106,6 +108,18 @@ class DocumentFieldsManagerTest extends WebTestCase
 
         $this->expectException(\InvalidArgumentException::class);
         $this->documentFieldsManager->getClassFullNameByShortNameFromUseStatements($reflClass, $shortName);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testGetFieldTypeForSpecialField()
+    {
+        $testedProperty = new \ReflectionProperty(SearchResult::class, 'roomType');
+        $fieldType = $this->documentFieldsManager->getFieldType($testedProperty);
+
+        $this->assertInstanceOf(DocumentFieldType::class, $fieldType);
+        $this->assertEquals(RoomType::class, $fieldType->getClass());
     }
 
     /**

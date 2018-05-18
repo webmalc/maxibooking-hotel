@@ -22,6 +22,7 @@ mbhpricebundle.form.restrictiongeneratortype.ogranichenie_zaezda_viezda: 'Огр
 mbhpricebundle.form.restrictiongeneratortype.net_viezda: 'Нет выезда?'
 mbhpricebundle.form.restrictiongeneratortype.zakrito: 'Закрыто?'
 mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey: 'Макс. количество гостей'
+mbhpricebundle.form.restrictiongeneratortype.min_kolichestvo_gostey: 'Мин. количество гостей'
 mbhpricebundle.form.restrictiongeneratortype.ogranichenie_po_kolichestvu_gostey: 'Ограничение по количеству гостей'
 form.promotionType.label.fullTitle: Название
 mbhpricebundle.view.tariff.index.osnovnoy: Основной

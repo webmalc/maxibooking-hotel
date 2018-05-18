@@ -479,4 +479,4 @@ services:
 
     mbh.serializer:
         class: MBH\Bundle\BaseBundle\Service\MBHSerializer
-        arguments: ['@annotation_reader', '@property_accessor', '@mbh.helper']
+        arguments: ['@property_accessor', '@mbh.document_fields_manager', '@doctrine.odm.mongodb.document_manager']

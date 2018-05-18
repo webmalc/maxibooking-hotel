@@ -6,28 +6,39 @@ use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 class CollectionFieldType implements NormalizableInterface
 {
-    /**
-     * @param $value
-     * @return array
-     * @throws InvalidArgumentException
-     */
-    public function normalize($value)
-    {
-        $this->checkIsIterable($value);
+    /** @var NormalizableInterface */
+    private $elementFieldType;
 
-        return (array)$value;
+    public function __construct($elementFieldType = null) {
+        $this->elementFieldType = $elementFieldType;
     }
 
     /**
      * @param $value
+     * @param array $options
      * @return array
-     * @throws InvalidArgumentException
      */
-    public function denormalize($value)
+    public function normalize($value, array $options)
     {
         $this->checkIsIterable($value);
 
-        return (array)$value;
+        return is_null($this->elementFieldType) ? (array)$value : array_map(function ($element) use ($options) {
+            return $this->elementFieldType->normalize($element, $options);
+        }, $value);
+    }
+
+    /**
+     * @param $value
+     * @param array $options
+     * @return array
+     */
+    public function denormalize($value, array $options)
+    {
+        $this->checkIsIterable($value);
+
+        return is_null($this->elementFieldType) ? (array)$value : array_map(function ($element) use ($options) {
+            return $this->elementFieldType->denormalize($element, $options);
+        }, $value);
     }
 
     /**

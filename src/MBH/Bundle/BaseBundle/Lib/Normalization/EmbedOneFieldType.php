@@ -2,9 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
-use MBH\Bundle\BaseBundle\Service\MBHSerializer;
-
-class EmbedOneFieldType implements EmbedNormalizableInterface
+class EmbedOneFieldType implements NormalizableInterface
 {
     private $documentClass;
 
@@ -14,22 +12,25 @@ class EmbedOneFieldType implements EmbedNormalizableInterface
 
     /**
      * @param $value
-     * @param MBHSerializer $serializer
+     * @param array $options
      * @return array
-     * @throws \ReflectionException
      */
-    public function normalize($value, MBHSerializer $serializer)
+    public function normalize($value, array $options)
     {
+        $serializer = $options['serializer'];
+
         return $serializer->normalize($value);
     }
 
     /**
      * @param $value
-     * @param MBHSerializer $serializer
-     * @return array
+     * @param array $options
+     * @return array|object
      */
-    public function denormalize($value, MBHSerializer $serializer)
+    public function denormalize($value, array $options)
     {
+        $serializer = $options['serializer'];
+
         return $serializer->denormalize($value, new $this->documentClass());
     }
 

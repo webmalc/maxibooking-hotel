@@ -13,8 +13,13 @@ use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\CashBundle\Document\CardType;
+use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PriceBundle\Document\Service;
@@ -160,7 +165,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="int")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -438,6 +443,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         $this->TableTypes = new ArrayCollection();
         $this->acceptedCardTypes = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->servicesCategories = new ArrayCollection();
     }
 
     /**
@@ -573,9 +579,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Add roomType
      *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param RoomType $roomType
      */
-    public function addRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
+    public function addRoomType(RoomType $roomType)
     {
         $this->roomTypes[] = $roomType;
     }
@@ -583,9 +589,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Remove roomType
      *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param RoomType $roomType
      */
-    public function removeRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
+    public function removeRoomType(RoomType $roomType)
     {
         $this->roomTypes->removeElement($roomType);
     }
@@ -603,9 +609,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Add room
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Room $room
+     * @param Room $room
      */
-    public function addRoom(\MBH\Bundle\HotelBundle\Document\Room $room)
+    public function addRoom(Room $room)
     {
         $this->rooms[] = $room;
     }
@@ -613,9 +619,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Remove room
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Room $room
+     * @param Room $room
      */
-    public function removeRoom(\MBH\Bundle\HotelBundle\Document\Room $room)
+    public function removeRoom(Room $room)
     {
         $this->rooms->removeElement($room);
     }
@@ -673,10 +679,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set vashotelConfig
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig $vashotelConfig
+     * @param VashotelConfig $vashotelConfig
      * @return self
      */
-    public function setVashotelConfig(\MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig $vashotelConfig)
+    public function setVashotelConfig(?VashotelConfig $vashotelConfig)
     {
         $this->vashotelConfig = $vashotelConfig;
 
@@ -695,7 +701,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param mixed $hundredOneHotelsConfig
      * @return $this
      */
-    public function setHundredOneHotelsConfig(HundredOneHotelsConfig $hundredOneHotelsConfig)
+    public function setHundredOneHotelsConfig(?HundredOneHotelsConfig $hundredOneHotelsConfig)
     {
         $this->hundredOneHotelsConfig = $hundredOneHotelsConfig;
         return $this;
@@ -714,10 +720,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set oktogoConfig
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig $oktogoConfig
+     * @param OktogoConfig $oktogoConfig
      * @return self
      */
-    public function setOktogoConfig(\MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig $oktogoConfig)
+    public function setOktogoConfig(?OktogoConfig $oktogoConfig)
     {
         $this->oktogoConfig = $oktogoConfig;
 
@@ -916,7 +922,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get type
      *
-     * @return collection $type
+     * @return array $type
      */
     public function getType()
     {
@@ -926,7 +932,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set type
      *
-     * @param collection $type
+     * @param array $type
      * @return self
      */
     public function setType($type)
@@ -939,7 +945,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get theme
      *
-     * @return collection $theme
+     * @return array $theme
      */
     public function getTheme()
     {
@@ -949,7 +955,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set theme
      *
-     * @param collection $theme
+     * @param array $theme
      * @return self
      */
     public function setTheme($theme)
@@ -962,7 +968,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get facilities
      *
-     * @return collection $facilities
+     * @return array $facilities
      */
     public function getFacilities()
     {
@@ -972,7 +978,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set facilities
      *
-     * @param collection $facilities
+     * @param array $facilities
      * @return self
      */
     public function setFacilities($facilities)
@@ -1008,7 +1014,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get bookingConfig
      *
-     * @return \MBH\Bundle\ChannelManagerBundle\Document\BookingConfig $bookingConfig
+     * @return BookingConfig $bookingConfig
      */
     public function getBookingConfig()
     {
@@ -1018,10 +1024,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set bookingConfig
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\BookingConfig $bookingConfig
+     * @param BookingConfig $bookingConfig
      * @return self
      */
-    public function setBookingConfig(\MBH\Bundle\ChannelManagerBundle\Document\BookingConfig $bookingConfig)
+    public function setBookingConfig(?BookingConfig $bookingConfig)
     {
         $this->bookingConfig = $bookingConfig;
 
@@ -1031,7 +1037,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get hotelinnConfig
      *
-     * @return \MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig
+     * @return HotelinnConfig
      */
     public function getHotelinnConfig()
     {
@@ -1041,10 +1047,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set hotelinnConfig
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig $hotelinnConfig
+     * @param HotelinnConfig $hotelinnConfig
      * @return self
      */
-    public function setHotelinnConfig(\MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig $hotelinnConfig)
+    public function setHotelinnConfig(?HotelinnConfig $hotelinnConfig)
     {
         $this->hotelinnConfig = $hotelinnConfig;
         return $this;
@@ -1053,7 +1059,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get ostrovokConfig
      *
-     * @return \MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig
+     * @return OstrovokConfig
      */
     public function getOstrovokConfig()
     {
@@ -1063,10 +1069,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Set ostrovokConfig
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig $ostrovokConfig
+     * @param OstrovokConfig $ostrovokConfig
      * @return self
      */
-    public function setOstrovokConfig(\MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig $ostrovokConfig)
+    public function setOstrovokConfig(?OstrovokConfig $ostrovokConfig)
     {
         $this->ostrovokConfig = $ostrovokConfig;
 
@@ -1194,7 +1200,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @param Housing[] $$housings
+     * @param array $housings
      */
     public function setHousings(array $housings)
     {
@@ -1353,7 +1359,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param mixed $myallocatorConfig
      * @return Hotel
      */
-    public function setMyallocatorConfig(MyallocatorConfig $myallocatorConfig)
+    public function setMyallocatorConfig(?MyallocatorConfig $myallocatorConfig)
     {
         $this->myallocatorConfig = $myallocatorConfig;
         return $this;
@@ -1368,11 +1374,14 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @param mixed $roomTypesCategories
+     * @param array $roomTypesCategories
+     * @return Hotel
      */
-    public function setRoomTypesCategories(RoomTypeCategory $roomTypesCategories = null)
+    public function setRoomTypesCategories($roomTypesCategories = [])
     {
         $this->roomTypesCategories = $roomTypesCategories;
+
+        return $this;
     }
 
     /**
@@ -1608,6 +1617,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Add image
      * @param Image $image
+     * @return Hotel
      */
     public function addImage(Image $image)
     {
@@ -1638,9 +1648,11 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this->logoImage;
     }
 
-    public function setLogoImage(Image $logoImage)
+    public function setLogoImage(?Image $logoImage)
     {
         $this->logoImage = $logoImage;
+
+        return $this;
     }
 
     public function removeLogoImage()
@@ -1701,7 +1713,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param string $aboutLink
      * @return Hotel
      */
-    public function setAboutLink(string $aboutLink): Hotel
+    public function setAboutLink(?string $aboutLink): Hotel
     {
         $this->aboutLink = $aboutLink;
 
@@ -1720,7 +1732,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param string $roomsLink
      * @return Hotel
      */
-    public function setRoomsLink(string $roomsLink): Hotel
+    public function setRoomsLink(?string $roomsLink): Hotel
     {
         $this->roomsLink = $roomsLink;
 
@@ -1739,7 +1751,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param string $mapLink
      * @return Hotel
      */
-    public function setMapLink(string $mapLink): Hotel
+    public function setMapLink(string $mapLink = null): Hotel
     {
         $this->mapLink = $mapLink;
 
@@ -1758,7 +1770,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param string $contactsLink
      * @return Hotel
      */
-    public function setContactsLink(string $contactsLink): Hotel
+    public function setContactsLink(string $contactsLink = null): Hotel
     {
         $this->contactsLink = $contactsLink;
 
@@ -1777,7 +1789,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param string $pollLink
      * @return Hotel
      */
-    public function setPollLink(string $pollLink): Hotel
+    public function setPollLink(string $pollLink = null): Hotel
     {
         $this->pollLink = $pollLink;
 

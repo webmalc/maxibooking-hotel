@@ -24,7 +24,11 @@ use MBH\Bundle\BaseBundle\Lib\Normalization\IntegerFieldType;
 use MBH\Bundle\BaseBundle\Lib\Normalization\StringFieldType;
 use MBH\Bundle\HotelBundle\Document\ContactInfo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -75,6 +79,7 @@ class DocumentFieldsManager
 
     private $classUseStatements;
     private $isClassUseStatementsInit = false;
+    private $normalizationFieldTypes = [];
 
     private $translator;
     /** @var PropertyAccessor */
@@ -86,6 +91,8 @@ class DocumentFieldsManager
         $this->translator = $translator;
         $this->accessor = $accessor;
         $this->annotationReader = $reader;
+
+        $this->normalizationFieldTypes = $this->getSpecialNormalizationFieldsTypes();
     }
 
     /**
@@ -198,7 +205,11 @@ class DocumentFieldsManager
         if (isset($useStatements[$lowerCaseShortName])) {
             return $useStatements[$lowerCaseShortName];
         }
-        
+
+        if (class_exists($shortName)) {
+            return $shortName;
+        }
+
         $classInCurrentNamespace = $reflectionClass->getNamespaceName() . '\\' . $shortName;
         if (class_exists($classInCurrentNamespace)) {
             return $classInCurrentNamespace;
@@ -213,6 +224,54 @@ class DocumentFieldsManager
      * @throws \InvalidArgumentException
      */
     public function getFieldType(\ReflectionProperty $property)
+    {
+        $class = $property->class;
+        if (!isset($this->normalizationFieldTypes[$class][$property->getName()])) {
+            if (!isset($this->normalizationFieldTypes[$class])) {
+                $this->normalizationFieldTypes[$class] = [];
+            }
+
+            $this->normalizationFieldTypes[$class][$property->getName()] = $this->calcFieldType($property);
+        }
+
+        return $this->normalizationFieldTypes[$class][$property->getName()];
+    }
+
+    /**
+     * Return class fields types data. Used for classes that don't have doctrine annotations or have some special settings
+     *
+     * @return array
+     */
+    private function getSpecialNormalizationFieldsTypes(): array
+    {
+        return [
+            SearchResult::class => [
+                'begin' => new DateTimeFieldType(),
+                'end' => new DateTimeFieldType(),
+                'adults' => new IntegerFieldType(),
+                'children' => new IntegerFieldType(),
+                'packagesCount' => new IntegerFieldType(),
+                'roomType' => new DocumentFieldType(RoomType::class),
+                'virtualRoom' => new DocumentFieldType(Room::class),
+                'tariff' => new DocumentFieldType(Tariff::class),
+                'prices' => new CollectionFieldType(new FloatFieldType()),
+                'pricesByDate' => new CollectionFieldType(new CollectionFieldType(new FloatFieldType())),
+                'roomsCount' => new IntegerFieldType(),
+                'rooms' => new DocumentsCollectionFieldType(Room::class),
+                'packagePrices' => new CollectionFieldType(new CollectionFieldType(new EmbedOneFieldType(PackagePrice::class))),
+                'useCategories' => new BooleanFieldType(),
+                'forceBooking' => new BooleanFieldType(),
+                'infants' => new IntegerFieldType(),
+                'queryId' => new StringFieldType()
+            ]
+        ];
+    }
+
+    /**
+     * @param \ReflectionProperty $property
+     * @return mixed
+     */
+    private function calcFieldType(\ReflectionProperty $property)
     {
         $annotation = $this->annotationReader->getPropertyAnnotation($property, Field::class);
 
@@ -255,8 +314,7 @@ class DocumentFieldsManager
             . $property->getName()
             . '" of class "'
             . $property->class
-            . '"'
-        ;
+            . '"';
 
         throw new \InvalidArgumentException($exceptionMessage);
     }

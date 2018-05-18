@@ -171,7 +171,7 @@ class RestrictionGeneratorType extends AbstractType
                 ],
             ])
             ->add('minGuest', TextType::class, [
-                'label' => 'mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.min_kolichestvo_gostey',
                 'group' => 'mbhpricebundle.form.restrictiongeneratortype.ogranichenie_po_kolichestvu_gostey',
                 'required' => false,
                 'data' => null,

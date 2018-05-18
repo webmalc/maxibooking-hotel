@@ -6,18 +6,20 @@ class StringFieldType implements NormalizableInterface
 {
     /**
      * @param $value
+     * @param array $options
      * @return string
      */
-    public function normalize($value)
+    public function normalize($value, array $options)
     {
         return (string)$value;
     }
 
     /**
      * @param $value
+     * @param array $options
      * @return string
      */
-    public function denormalize($value)
+    public function denormalize($value, array $options)
     {
         return (string)$value;
     }

@@ -14,9 +14,10 @@ class DateTimeFieldType implements NormalizableInterface
 
     /**
      * @param \DateTime $dateTime
+     * @param array $options
      * @return string
      */
-    public function normalize($dateTime)
+    public function normalize($dateTime, array $options)
     {
         if (!$dateTime instanceof \DateTime) {
             throw new InvalidArgumentException('Can not normalize value because it\'s not instance of DateTime');
@@ -27,9 +28,10 @@ class DateTimeFieldType implements NormalizableInterface
 
     /**
      * @param $dateTimeString
+     * @param array $options
      * @return bool|\DateTime
      */
-    public function denormalize($dateTimeString)
+    public function denormalize($dateTimeString, array $options)
     {
         $denormalizationResult = \DateTime::createFromFormat($this->format, $dateTimeString);
         if ($denormalizationResult instanceof \DateTime) {

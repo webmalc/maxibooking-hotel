@@ -2,14 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
-use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Date;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
-use MBH\Bundle\BaseBundle\Lib\HasSpecialSerializableFieldsInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Lib\Normalization\NormalizableInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class MBHSerializer
@@ -18,113 +12,108 @@ class MBHSerializer
     const DATETIME_FORMAT = 'd.m.Y H:i';
     const TIME_FORMAT = 'H:i';
 
-    private $annotationReader;
     private $propertyAccessor;
-    private $helper;
+    private $fieldsManager;
+    private $dm;
 
-    public function __construct(CachedReader $annotationReader, PropertyAccessor $propertyAccessor, Helper $helper) {
-        $this->annotationReader = $annotationReader;
+    public function __construct(PropertyAccessor $propertyAccessor, DocumentFieldsManager $fieldsManager, DocumentManager $dm)
+    {
         $this->propertyAccessor = $propertyAccessor;
-        $this->helper = $helper;
+        $this->fieldsManager = $fieldsManager;
+        $this->dm = $dm;
     }
 
     /**
      * @param $document
+     * @param array|null $includedFields
      * @param array $excludedFields
      * @return array
      * @throws \ReflectionException
      */
-    public function normalize($document, $excludedFields = [])
+    public function normalize($document, array $includedFields = null, $excludedFields = [])
     {
         $normalizedDocument = [];
         $reflClass = new \ReflectionClass(get_class($document));
-        $specialFieldsSettings = $document instanceof HasSpecialSerializableFieldsInterface
-            ? $document::getSpecialNormalizationFieldsTypes()
-            : [];
+
         foreach ($reflClass->getProperties() as $property) {
             $propertyName = $property->getName();
-            if (in_array($propertyName, $excludedFields)) {
+            if (in_array($propertyName, $excludedFields)
+                || (!is_null($includedFields) && !in_array($propertyName, $includedFields))) {
                 continue;
             }
 
             $fieldValue = $this->propertyAccessor->getValue($document, $propertyName);
+            $normalizedValue = $this->normalizeSingleField($fieldValue, $property);
 
-            $normalizedDocument[$propertyName] = isset($specialFieldsSettings[$propertyName])
-                ? $this->convertBySpecialFieldSettings()
-                : $this->convertByAnnotations($fieldValue, $property);
+            $normalizedDocument[$propertyName] = $normalizedValue;
         }
 
         return $normalizedDocument;
     }
 
-    private function convertBySpecialFieldSettings()
-    {
-
-    }
-
     /**
      * @param $fieldValue
-     * @param $property
-     * @return bool|string|array
-     * @throws \ReflectionException
+     * @param \ReflectionProperty $property
+     * @return array|bool|float|int|null|string
      */
-    private function convertByAnnotations($fieldValue, $property)
+    public function normalizeSingleField($fieldValue, \ReflectionProperty $property)
     {
         if (is_null($fieldValue)) {
             return null;
         }
 
-        //TODO: Проверить специально указанные случаи
-        $annotation = $this->annotationReader->getPropertyAnnotation($property, Field::class);
-
-        if (!is_null($annotation)) {
-            switch ($annotation->type) {
-                case 'boolean':
-                case 'bool':
-                    return (bool)$fieldValue;
-                case 'string':
-                    return (string)$fieldValue;
-                case 'float':
-                    return round($fieldValue, 2);
-                case 'collection':
-                    return $fieldValue;
-                case 'numeric':
-                case 'int':
-                    return (int)$fieldValue;
-                case 'date':
-                    return $fieldValue->format(self::DATE_FORMAT);
-            }
+        $options = ['dm' => $this->dm, 'serializer' => $this];
+        $fieldType = $this->fieldsManager->getFieldType($property);
+        if (!$fieldType instanceof NormalizableInterface) {
+            throw new \InvalidArgumentException('Unexpected field type "' . get_class($fieldType) . '"');
         }
 
-        if (!is_null($this->annotationReader->getPropertyAnnotation($property, ReferenceOne::class))) {
-            return $fieldValue->getId();
-        }
-
-        if (!is_null($this->annotationReader->getPropertyAnnotation($property, ReferenceMany::class))) {
-            return $this->helper->toIds($fieldValue);
-        }
-
-        if (!is_null($this->annotationReader->getPropertyAnnotation($property, EmbedOne::class))) {
-            return $this->normalize($fieldValue);
-        }
-
-        if (!is_null($this->annotationReader->getPropertyAnnotation($property, EmbedMany::class))) {
-            array_walk($fieldValue, function ($embeddedDoc) {
-                return $this->normalize($embeddedDoc);
-            });
-
-            return $fieldValue;
-        }
-
-        if (!is_null($this->annotationReader->getPropertyAnnotation($property, Date::class))) {
-            return $fieldValue->format(self::DATE_FORMAT);
-        }
-
-        return $normalizedValue = (string)$fieldValue;
+        return $fieldType->normalize($fieldValue, $options);
     }
 
-    public function denormalize(array $dataToDenormalize, $document)
+    /**
+     * @param array $dataToDenormalize
+     * @param $document
+     * @param array $excludedFields
+     * @return object
+     * @throws \ReflectionException
+     */
+    public function denormalize(array $dataToDenormalize, $document, $excludedFields = [])
     {
-        return [];
+        $documentClass = get_class($document);
+
+        foreach ($dataToDenormalize as $fieldName => $value) {
+            if (in_array($fieldName, $excludedFields)) {
+                continue;
+            }
+
+            $denormalizedValue = $this->denormalizeSingleField($value, $documentClass, $fieldName);
+            $this->propertyAccessor->setValue($document, $fieldName, $denormalizedValue);
+        }
+
+        return $document;
+    }
+
+    /**
+     * @param $value
+     * @param string $documentClass
+     * @param string $fieldName
+     * @return array|bool|\DateTime|float|int|null|string
+     * @throws \ReflectionException
+     */
+    public function denormalizeSingleField($value, string $documentClass, string $fieldName)
+    {
+        if (is_null($value)) {
+            return null;
+        }
+
+        $fieldType = $this->fieldsManager->getFieldType(new \ReflectionProperty($documentClass, $fieldName));
+        if (!$fieldType instanceof NormalizableInterface) {
+            throw new \InvalidArgumentException('Unexpected field type "' . get_class($fieldType) . '"');
+        }
+
+        $options = ['dm' => $this->dm, 'serializer' => $this];
+
+        return $fieldType->denormalize($value, $options);
     }
 }

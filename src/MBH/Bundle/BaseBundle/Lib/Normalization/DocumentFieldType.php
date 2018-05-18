@@ -4,9 +4,10 @@ namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Service\MBHSerializer;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
-class DocumentFieldType implements DBNormalizableInterface
+class DocumentFieldType implements NormalizableInterface
 {
     private $documentName;
 
@@ -16,10 +17,10 @@ class DocumentFieldType implements DBNormalizableInterface
 
     /**
      * @param $value
+     * @param array $options
      * @return string
-     * @throws InvalidArgumentException
      */
-    public function normalize($value)
+    public function normalize($value, array $options)
     {
         if (!is_object($value)) {
             throw new InvalidArgumentException('Passed to normalization value is not an object');
@@ -34,15 +35,15 @@ class DocumentFieldType implements DBNormalizableInterface
 
     /**
      * @param $value
-     * @param DocumentManager $dm
+     * @param array $options
      * @return object
-     * @throws InvalidArgumentException
      */
-    public function denormalize($value, DocumentManager $dm)
+    public function denormalize($value, array $options)
     {
         if (!\MongoId::isValid($value)) {
             throw new InvalidArgumentException($value . ' is not a valid mongo ID');
         }
+        $dm = $options['dm'];
 
         return $dm->find($this->documentName, $value);
     }

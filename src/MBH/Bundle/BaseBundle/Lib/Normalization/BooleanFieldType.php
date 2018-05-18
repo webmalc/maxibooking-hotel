@@ -6,18 +6,20 @@ class BooleanFieldType implements NormalizableInterface
 {
     /**
      * @param $value
+     * @param array $options
      * @return bool
      */
-    public function normalize($value)
+    public function normalize($value, array $options)
     {
         return (bool)$value;
     }
 
     /**
      * @param $value
+     * @param array $options
      * @return bool
      */
-    public function denormalize($value)
+    public function denormalize($value, array $options)
     {
         return (bool)$value;
     }

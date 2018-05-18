@@ -2,9 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
-use MBH\Bundle\BaseBundle\Service\MBHSerializer;
-
-class EmbedManyFieldType implements EmbedNormalizableInterface
+class EmbedManyFieldType implements NormalizableInterface
 {
     private $documentClass;
 
@@ -14,26 +12,39 @@ class EmbedManyFieldType implements EmbedNormalizableInterface
 
     /**
      * @param $value
-     * @param MBHSerializer $serializer
+     * @param array $options
      * @return array
      */
-    public function normalize($value, MBHSerializer $serializer)
+    public function normalize($value, array $options)
     {
+        $serializer = $options['serializer'];
+
         return array_map(function($singleEmbedded) use ($serializer) {
             return $serializer->normalize($singleEmbedded);
-        }, (array)$value);
+        }, $this->castToArray($value));
     }
 
     /**
      * @param $value
-     * @param MBHSerializer $serializer
+     * @param array $options
      * @return array
      */
-    public function denormalize($value, MBHSerializer $serializer)
+    public function denormalize($value, array $options)
     {
+        $serializer = $options['serializer'];
+
         return array_map(function($singleEmbedded) use ($serializer) {
             return $serializer->denormalize($singleEmbedded, new $this->documentClass());
-        }, (array)$value);
+        }, $this->castToArray($value));
+    }
+
+    /**
+     * @param $value
+     * @return array
+     */
+    private function castToArray($value)
+    {
+        return is_array($value) ? $value : iterator_to_array($value);
     }
 
     /**

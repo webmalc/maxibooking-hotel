@@ -4,7 +4,8 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
-use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\BaseBundle\Service\MBHSerializer;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\BaseBundle\Document\SearchResultCacheItem;
@@ -34,11 +35,13 @@ class SearchCache
 
     private $dm;
     private $fieldsManager;
+    private $serializer;
 
-    public function __construct(DocumentManager $dm, DocumentFieldsManager $fieldsManager)
+    public function __construct(DocumentManager $dm, DocumentFieldsManager $fieldsManager, MBHSerializer $serializer)
     {
         $this->dm = $dm;
         $this->fieldsManager = $fieldsManager;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -55,44 +58,30 @@ class SearchCache
             ->findOneBy($searchCriteriaArray);
     }
 
+    /**
+     * @param SearchQuery $query
+     * @param $results
+     * @throws \ReflectionException
+     */
     public function saveToCache(SearchQuery $query, $results)
     {
         $serializedResults = [];
-        if ($query->grouped) {
+        if ($query->grouped || true) {
             foreach ($results as $resultsByRoomType) {
                 $roomTypeResults = [];
                 /** @var SearchResult $searchResult */
                 foreach ($resultsByRoomType['results'] as $searchResult) {
-                    $packagePrices = $searchResult->getPackagePrices($searchResult->getAdults(), $searchResult->getChildren());
-                    $serializedPackagePrices = array_walk($packagePrices, function (PackagePrice $packagePrice) {
-                        return [
-                            'date' => $packagePrice->getDate()->format(self::DATE_FORMAT),
-                            'price' => $packagePrice->getPrice(),
-                            'tariff' => $packagePrice->getTariff()->getId(),
-                            'promotion' => $packagePrice->getPromotion() ? $packagePrice->getPromotion()->getId() : null
-                        ];
-                    });
-
-                    $roomTypeResults[] = [
-                        'begin' => $searchResult->getBegin()->format(self::DATE_FORMAT),
-                        'end' => $searchResult->getEnd()->format(self::DATE_FORMAT),
-                        'adults' => $searchResult->getAdults(),
-                        'children' => $searchResult->getChildren(),
-                        'roomType' => $searchResult->getRoomType()->getId(),
-                        'tariff' => $searchResult->getTariff()->getId(),
-                        'price' => $searchResult->getPrice($searchResult->getAdults(), $searchResult->getChildren()),
-                        'prices' => $searchResult->getPrices(),
-                        'packagePrices' => $serializedPackagePrices,
-                        'roomsCount' => $searchResult->getRoomsCount(),
-                        'nights' => (int)$searchResult->getNights()
-                    ];
+                    $roomTypeResults[] = $this->serializer->normalize($searchResult);
                 }
 
+                /** @var RoomType $roomType */
+                $roomType = $resultsByRoomType['roomType'];
                 $serializedResults[] = [
-                    'roomTypeId' => $resultsByRoomType['roomType']->getId(),
+                    'roomTypeId' => $roomType->getId(),
                     'results' => $roomTypeResults
                 ];
             }
         }
+        $sdf = 123;
     }
 }

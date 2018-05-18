@@ -2,12 +2,11 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
-class DocumentsCollectionFieldType implements DBNormalizableInterface
+class DocumentsCollectionFieldType implements NormalizableInterface
 {
     private $documentClass;
 
@@ -17,28 +16,28 @@ class DocumentsCollectionFieldType implements DBNormalizableInterface
 
     /**
      * @param $value
+     * @param array $options
      * @return array
-     * @throws InvalidArgumentException
      */
-    public function normalize($value)
+    public function normalize($value, array $options)
     {
         $this->checkIsIterable($value);
 
         return array_map(function (Base $document) {
             return $document->getId();
-        }, (array)$value);
+        }, $this->castToArray($value));
     }
 
     /**
      * @param $value
-     * @param DocumentManager $dm
+     * @param array $options
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws InvalidArgumentException
      */
-    public function denormalize($value, DocumentManager $dm)
+    public function denormalize($value, array $options)
     {
         $this->checkIsIterable($value);
+        $dm = $options['dm'];
 
         /** @var DocumentRepository $documentRepo */
         $documentRepo = $dm->getRepository($this->documentClass);
@@ -49,6 +48,16 @@ class DocumentsCollectionFieldType implements DBNormalizableInterface
             ->getQuery()
             ->execute()
             ->toArray();
+    }
+
+
+    /**
+     * @param $value
+     * @return array
+     */
+    private function castToArray($value)
+    {
+        return is_array($value) ? $value : iterator_to_array($value);
     }
 
     /**

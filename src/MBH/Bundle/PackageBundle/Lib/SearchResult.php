@@ -3,16 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Lib;
 
 use Doctrine\ODM\MongoDB\Cursor;
-use MBH\Bundle\BaseBundle\Lib\HasSpecialSerializableFieldsInterface;
-use MBH\Bundle\BaseBundle\Lib\Normalization\BooleanFieldType;
-use MBH\Bundle\BaseBundle\Lib\Normalization\CollectionFieldType;
-use MBH\Bundle\BaseBundle\Lib\Normalization\DateTimeFieldType;
-use MBH\Bundle\BaseBundle\Lib\Normalization\DocumentFieldType;
-use MBH\Bundle\BaseBundle\Lib\Normalization\DocumentsCollectionFieldType;
-use MBH\Bundle\BaseBundle\Lib\Normalization\EmbedManyFieldType;
-use MBH\Bundle\BaseBundle\Lib\Normalization\IntegerFieldType;
-use MBH\Bundle\BaseBundle\Lib\Normalization\StringFieldType;
-use MBH\Bundle\BaseBundle\Service\MBHSerializer;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
@@ -20,7 +10,7 @@ use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
-class SearchResult implements HasSpecialSerializableFieldsInterface
+class SearchResult
 {
     /**
      * @var \DateTime 
@@ -317,12 +307,17 @@ class SearchResult implements HasSpecialSerializableFieldsInterface
         return $this;
     }
 
+    public function getPricesByDate()
+    {
+        return $this->pricesByDate;
+    }
+
     /**
      * @param $adults
      * @param $children
      * @return null|array
      */
-    public function getPricesByDate($adults, $children)
+    public function getPricesByDateForCombination($adults, $children)
     {
         if (isset($this->pricesByDate[$adults . '_' . $children])) {
             return $this->pricesByDate[$adults . '_' . $children];
@@ -383,7 +378,6 @@ class SearchResult implements HasSpecialSerializableFieldsInterface
         return $this;
     }
 
-
     /**
      * @param bool $full
      * @return null|string
@@ -417,11 +411,19 @@ class SearchResult implements HasSpecialSerializableFieldsInterface
     }
 
     /**
+     * @return PackagePrice[]
+     */
+    public function getPackagePrices()
+    {
+        return $this->packagePrices;
+    }
+
+    /**
      * @param $adults
      * @param $children
      * @return null|array
      */
-    public function getPackagePrices($adults, $children)
+    public function getPackagePricesForCombination($adults, $children)
     {
         if (isset($this->packagePrices[$adults . '_' . $children])) {
             return $this->packagePrices[$adults . '_' . $children];
@@ -561,7 +563,7 @@ class SearchResult implements HasSpecialSerializableFieldsInterface
         $packagePrices = [];
         $originalPrice = 0;
         /** @var PackagePrice $packagePrice */
-        foreach ($this->getPackagePrices($this->getAdults(), $this->getChildren()) as $packagePrice) {
+        foreach ($this->getPackagePricesForCombination($this->getAdults(), $this->getChildren()) as $packagePrice) {
             $packagePrices[] = $packagePrice->getJsonSerialized();
             $originalPrice += $packagePrice->getPriceWithoutPromotionDiscount();
         }
@@ -582,32 +584,5 @@ class SearchResult implements HasSpecialSerializableFieldsInterface
         ];
 
         return $data;
-    }
-
-    /**
-     * Return class fields types data. Used for classes that don't have doctrine annotations or have some special settings
-     *
-     * @return array
-     */
-    public static function getSpecialNormalizationFieldsTypes(): array
-    {
-        return [
-            'begin' => new DateTimeFieldType(),
-            'end' => new DateTimeFieldType(),
-            'adults' => new IntegerFieldType(),
-            'children' => new IntegerFieldType(),
-            'roomType' => new DocumentFieldType(RoomType::class),
-            'virtualRoom' => new DocumentFieldType(Room::class),
-            'tariff' => new DocumentFieldType(Tariff::class),
-            'prices' => new CollectionFieldType(),
-            'pricesByDate' => new CollectionFieldType(),
-            'roomsCount' =>new IntegerFieldType(),
-            'rooms' => new DocumentsCollectionFieldType(Room::class),
-            'packagePrices' => new EmbedManyFieldType(PackagePrice::class),
-            'useCategories' => new BooleanFieldType(),
-            'forceBooking' => new BooleanFieldType(),
-            'infants' => new IntegerFieldType(),
-            'queryId' => new StringFieldType()
-        ];
     }
 }
