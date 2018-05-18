@@ -21,9 +21,6 @@ class AdditionalTariffData extends AbstractFixture implements OrderedFixtureInte
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
         foreach ($hotels as $hotelNumber => $hotel) {
-            $baseTariff = $manager->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
-
-
 
             if ($this->getEnv() !== 'prod') {
 
@@ -62,7 +59,7 @@ class AdditionalTariffData extends AbstractFixture implements OrderedFixtureInte
                 $manager->persist($childUpTariff);
 
                 $manager->flush();
-                $this->setReference('ChildUpTariff-tariff/' . $hotelNumber, $upTariff);
+                $this->setReference('childUpTariff-tariff/' . $hotelNumber, $upTariff);
             }
         }
     }

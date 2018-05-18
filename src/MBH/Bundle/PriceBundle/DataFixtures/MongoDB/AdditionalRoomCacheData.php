@@ -21,7 +21,8 @@ class AdditionalRoomCacheData extends AbstractFixture implements OrderedFixtureI
         'two' => 4,
         'three' => 5,
         'four' => 20,
-        'hostel' => 3
+        'hostel' => 3,
+        'zero' => 6
     ];
 
     /**
