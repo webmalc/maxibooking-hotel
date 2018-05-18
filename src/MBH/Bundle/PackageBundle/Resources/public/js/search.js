@@ -81,7 +81,7 @@ $(document).ready(function() {
         this.$searchTouristsSelect = this.$row.find('.search-tourists-select');
         this.$packageSearchBook = this.$row.find('.package-search-book');
         this.$bookCount = this.$row.find('span.package-search-book-count');
-        this.bookCount = parseInt(this.$bookCount.text());
+        this.bookCount = parseInt(this.$bookCount.eq(0).text());
         if (this.bookCount < 0) {
             this.bookCount = 0;
         }
