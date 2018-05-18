@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  */
 class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureInterface
 {
+    public const TWO_ONLY_ROOM_TYPE = 'zero';
     /**
      * Get roomType data
      *

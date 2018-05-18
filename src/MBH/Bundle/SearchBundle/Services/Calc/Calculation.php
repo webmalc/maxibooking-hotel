@@ -19,17 +19,16 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 class Calculation
 {
 
-
-    /** @var DocumentManager */
-    private $dm;
+    /** @var PriceCachesMerger */
+    private $priceCacheMerger;
 
     /**
      * Calculation constructor.
-     * @param RoomTypeManager $roomTypeManager
+     * @param PriceCachesMerger $merger
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(PriceCachesMerger $merger)
     {
-        $this->dm = $dm;
+        $this->priceCacheMerger = $merger;
     }
 
 
@@ -43,27 +42,7 @@ class Calculation
 
     private function getPriceCaches(CalcQuery $calcQuery): array
     {
-
-        $priceTariffCaches = $this->getPriceTariffPriceCaches($calcQuery);
-//        $this->checkPriceCaches($priceTariffCaches, $calcQuery->getDuration(), $calcQuery->isStrictDuration());
-        /*if (!$isStrictDuration && $duration !== \count($priceCaches)) {
-            throw new CalculationException('Duration not equal priceCaches count');
-        }*/
-        if (!\count($priceTariffCaches)) {
-            throw new CalculationException('No even one priceCache for tariff ' . $calcQuery->getTariff()->getName());
-        }
-//        if ($calcQuery->getDuration() === \count($priceTariffCaches)) {
-//            return $priceTariffCaches;
-//        }
-
-        $mergintPriceCaches = $this->getMergingTariffPriceCaches($calcQuery);
-        //** TODO: Тут смерджить прайс кэши и если не хватает берем базовый */
-
-        $baseTariffPriceCaches = $this->getBaseTariffPriceCaches($calcQuery);
-        //** TODO: Мерджим и если не хватает тогда эксепшн */
-
-
-        return $priceTariffCaches;
+        return $this->priceCacheMerger->getMergedPriceCaches($calcQuery);
     }
 
     private function getPrices(array $priceCaches, array $combinations, CalcQuery $calcHelper): array
@@ -389,46 +368,5 @@ class Calculation
     }
 
 
-    private function getBaseTariffPriceCaches(CalcQuery $calcQuery)
-    {
-        if (!$calcQuery->getTariff()->getIsDefault()) {
-            $hotelId = $calcQuery->getTariff()->getHotel()->getId();
-            $rawBaseTariffArray = $this->dm->getRepository(Tariff::class)->fetchRawBaseTariffId($hotelId);
-            $baseTariffId = (string)reset($rawBaseTariffArray)['_id'];
-            if ($baseTariffId) {
-                return $this->getRawPriceCaches($calcQuery, $baseTariffId);
-            }
-        }
 
-        return [];
-    }
-
-
-    private function getMergingTariffPriceCaches(CalcQuery $calcQuery): array
-    {
-        if ($mergingTariffId = $calcQuery->getMergingTariffId()) {
-            return $this->getRawPriceCaches($calcQuery, $mergingTariffId);
-        }
-
-        return [];
-
-    }
-
-    private function getPriceTariffPriceCaches(CalcQuery $calcQuery): array
-    {
-        return $this->getRawPriceCaches($calcQuery, $calcQuery->getPriceTariffId());
-    }
-
-    private function getRawPriceCaches(CalcQuery $calcQuery, string $searchingTariffId): array
-    {
-        return $this->dm
-            ->getRepository(PriceCache::class)
-            ->fetchRaw(
-                $calcQuery->getSearchBegin(),
-                $calcQuery->getPriceCacheEnd(),
-                $calcQuery->getPriceRoomTypeId(),
-                $searchingTariffId,
-                $calcQuery->isUseCategory()
-            );
-    }
 }

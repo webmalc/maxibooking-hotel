@@ -95,10 +95,23 @@ services:
         arguments:
             - MBH\Bundle\PriceBundle\Document\RoomCache
 
+    mbh_search.price_cache_repository:
+        class: MBH\Bundle\PriceBundle\Document\PriceCacheRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\PriceBundle\Document\PriceCache
+
+    mbh_search.tariff_repository:
+        class: MBH\Bundle\PriceBundle\Document\TariffRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\PriceBundle\Document\Tariff
+
     mbh_search.room_type_fetcher:
         class: MBH\Bundle\SearchBundle\Services\RoomTypeFetcher
         arguments: ['@doctrine.odm.mongodb.document_manager','@mbh_search.room_type_repository']
 
+# Для теста - калькуляции - брал текущую.
 #    mbh_search.result_composer:
 #        class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
 #        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager', '@mbh.calculation']
@@ -109,4 +122,8 @@ services:
 
     mbh_search.calculation:
         class: MBH\Bundle\SearchBundle\Services\Calc\Calculation
-        arguments: ['@doctrine.odm.mongodb.document_manager']
+        arguments: ['@mbh_search.price_caches_merger']
+
+    mbh_search.price_caches_merger:
+        class: MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger
+        arguments: ['@mbh_search.price_cache_repository', '@mbh_search.tariff_repository']

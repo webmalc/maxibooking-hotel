@@ -5,6 +5,7 @@ namespace MBH\Bundle\BaseBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class CreateTemplateTestDBCommand extends ContainerAwareCommand
@@ -33,9 +34,12 @@ class CreateTemplateTestDBCommand extends ContainerAwareCommand
 //            self::MB_CLIENT_TEST_USER
 //        );
 
+        $output->writeln('Dropping mongodb schema.');
         $this->runCommand('doctrine:mongodb:schema:drop');
+        $output->writeln('Mongodb Schema was dropped.');
 
-        $this->runCommand('doctrine:mongodb:fixtures:load --append');
+        $output->writeln('Start loading fixtures.');
+        $this->runCommand('doctrine:mongodb:fixtures:load --append', null, $output);
 
         $paramsString = '--collections=LogEntry';
         $this->runCommand('mbh:drop_collection_command', $paramsString);
@@ -46,7 +50,7 @@ class CreateTemplateTestDBCommand extends ContainerAwareCommand
      * @param null $paramsString
      * @throws \Symfony\Component\Process\Exception\RuntimeException
      */
-    private function runCommand(string $command, $paramsString = null): void
+    private function runCommand(string $command, $paramsString = null, OutputInterface $output = null): void
     {
         $rootDir = $this->getContainer()->get('kernel')->getRootDir();
         $process = new Process(
@@ -54,6 +58,22 @@ class CreateTemplateTestDBCommand extends ContainerAwareCommand
             null,
             [\AppKernel::CLIENT_VARIABLE => self::CLIENT_NAME_FOR_CREATION_OF_TEMPLATE_TEST_DB]
         );
-        $process->mustRun();
+        try {
+            $process->mustRun(function ($type, $buffer) use($output) {
+                if ($output) {
+                    if (Process::ERR === $type) {
+                        $output->writeln("ERR>>> $buffer");
+                    } else {
+                        $output->writeln("OUT>>> $buffer");
+                    }
+                }
+
+            });
+        } catch (ProcessFailedException $exception) {
+            if ($output) {
+                $output->writeln($exception->getMessage());
+            }
+        }
+
     }
 }
