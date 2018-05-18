@@ -25,6 +25,7 @@ trait TraitAddress
      */
     public function newInstance($entity)
     {
+        $this->instanseOf($entity);
         $this->entity = $entity;
         $this->setAddress($this->entity);
 

@@ -23,4 +23,9 @@ class Organization extends Common
         'getName',
         'getShortName',
     ];
+
+    protected function getSourceClassName()
+    {
+        return OrganizationBase::class;
+    }
 }

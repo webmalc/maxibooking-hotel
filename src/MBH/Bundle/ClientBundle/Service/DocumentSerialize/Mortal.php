@@ -33,6 +33,7 @@ class Mortal extends Common implements DataOfMortalInterface
      */
     public function newInstance($entity)
     {
+        $this->instanseOf($entity);
         $this->entity = $entity;
         $this->setAddress($this->entity->getAddressObjectDecomposed());
 
@@ -65,5 +66,10 @@ class Mortal extends Common implements DataOfMortalInterface
         }
 
         return $country;
+    }
+
+    protected function getSourceClassName()
+    {
+        return \MBH\Bundle\PackageBundle\Document\Tourist::class;
     }
 }

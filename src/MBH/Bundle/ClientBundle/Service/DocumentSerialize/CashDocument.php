@@ -18,7 +18,6 @@ use MBH\Bundle\CashBundle\Document\CashDocument as CashDocumentBase;
  */
 class CashDocument extends Common
 {
-
     /**
      * @return string
      */
@@ -62,5 +61,10 @@ class CashDocument extends Common
     public function getSigned(): string
     {
         return in_array($this->entity->getOperation(), ['fee', 'out']) ? '-' : '+';
+    }
+
+    protected function getSourceClassName()
+    {
+        return CashDocumentBase::class;
     }
 }

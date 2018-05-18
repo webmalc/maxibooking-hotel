@@ -13,4 +13,9 @@ use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 class User extends Common implements DataOfMortalInterface
 {
     use TraitDataOfMortal;
+
+    protected function getSourceClassName()
+    {
+        return \MBH\Bundle\UserBundle\Document\User::class;
+    }
 }

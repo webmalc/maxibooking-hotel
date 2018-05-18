@@ -27,4 +27,9 @@ class Service extends Common
     {
         return $this->entity->getService() ?? '';
     }
+
+    protected function getSourceClassName()
+    {
+        return PackageService::class;
+    }
 }

@@ -51,4 +51,9 @@ class Hotel extends Common
 //        return $url;
         return '<div style="width: 95px; height: 80px; background-color: lightgrey;"><img src="' . $url . '" alt="Hotel logo" /></div>';
     }
+
+    protected function getSourceClassName()
+    {
+        return HotelBase::class;
+    }
 }

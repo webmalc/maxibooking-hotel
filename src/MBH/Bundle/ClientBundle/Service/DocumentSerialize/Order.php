@@ -113,6 +113,11 @@ class Order extends Common
             : '';
     }
 
+    protected function getSourceClassName()
+    {
+        return OrderBase::class;
+    }
+
     /**
      * @return array
      */

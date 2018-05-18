@@ -14,6 +14,18 @@ abstract class Common
     /**
      * @var array
      */
+    protected const METHOD = [];
+
+    /**
+     * @var array
+     */
+    protected const EXCLUDED_METHOD = [];
+
+    protected $entity;
+
+    /**
+     * @var array
+     */
     private $methodsClear;
 
     /**
@@ -32,18 +44,6 @@ abstract class Common
     private $isMethodsWithParamsInit = false;
 
     /**
-     * @var array
-     */
-    protected const METHOD = [];
-
-    /**
-     * @var array
-     */
-    protected const EXCLUDED_METHOD = [];
-
-    protected $entity;
-
-    /**
      * Common constructor.
      * @param ContainerInterface|null $container
      */
@@ -58,6 +58,7 @@ abstract class Common
      */
     public function newInstance($entity)
     {
+        $this->instanseOf($entity);
         $this->entity = $entity;
 
         return $this;
@@ -102,6 +103,28 @@ abstract class Common
         }
 
         return array_merge($this->getMethodsClear(), $methods);
+    }
+
+    /**
+     * Должен возрашать имя класса источника данных
+     *
+     * @return string
+     */
+    abstract protected function getSourceClassName();
+
+    /**
+     * @param $entity
+     */
+    protected function instanseOf($entity)
+    {
+        $sourceName = $this->getSourceClassName();
+        if (!($entity instanceof $sourceName)) {
+            $msg = 'Class must be an instance of ';
+            $msg .= $sourceName . ', ';
+            $msg .= 'instance of ' . get_class($entity) .' given';
+
+            throw new \TypeError($msg);
+        }
     }
 
     /**

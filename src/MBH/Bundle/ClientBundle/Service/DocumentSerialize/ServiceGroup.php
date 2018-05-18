@@ -43,4 +43,9 @@ class ServiceGroup extends Common
     {
         $this->entity->add($packageService);
     }
+
+    protected function getSourceClassName()
+    {
+        return PackageServiceGroupByService::class;
+    }
 }

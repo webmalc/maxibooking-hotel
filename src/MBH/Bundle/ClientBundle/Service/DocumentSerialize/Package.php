@@ -112,4 +112,9 @@ class Package extends Common
             ? $this->entity->getEnd()->format('d.m.Y')
             : '';
     }
+
+    protected function getSourceClassName()
+    {
+        return PackageBase::class;
+    }
 }
