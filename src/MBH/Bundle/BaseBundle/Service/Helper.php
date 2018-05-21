@@ -598,4 +598,9 @@ class Helper
         return $methods;
 
     }
+
+    public static function convertMongoDateToDate(\MongoDate $mongoDate): \DateTime
+    {
+        return $mongoDate->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+    }
 }

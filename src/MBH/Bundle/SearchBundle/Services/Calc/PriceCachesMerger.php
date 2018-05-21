@@ -6,7 +6,7 @@ namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 use MBH\Bundle\PriceBundle\Document\PriceCacheRepository;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 
 class PriceCachesMerger
 {
@@ -29,28 +29,58 @@ class PriceCachesMerger
     public function getMergedPriceCaches(CalcQuery $calcQuery): array
     {
         $priceTariffCaches = $this->getPriceTariffPriceCaches($calcQuery);
-//        $this->checkPriceCaches($priceTariffCaches, $calcQuery->getDuration(), $calcQuery->isStrictDuration());
-        /*if (!$isStrictDuration && $duration !== \count($priceCaches)) {
-            throw new CalculationException('Duration not equal priceCaches count');
-        }*/
         if (!\count($priceTariffCaches)) {
-            throw new CalculationException('No even one priceCache for tariff ' . $calcQuery->getTariff()->getName());
+            throw new PriceCachesMergerException('No one priceCache for tariff ' . $calcQuery->getTariff()->getName());
         }
-//        if ($calcQuery->getDuration() === \count($priceTariffCaches)) {
-//            return $priceTariffCaches;
-//        }
+        if ($this->checkCachesCount($priceTariffCaches, $calcQuery->getDuration())) {
+            return $priceTariffCaches;
+        }
 
-        $mergintPriceCaches = $this->getMergingTariffPriceCaches($calcQuery);
-        //** TODO: Тут смерджить прайс кэши и если не хватает берем базовый */
+        $mergingPriceCaches = $this->getMergingTariffPriceCaches($calcQuery);
+        $mergedPriceCaches = $this->mergePriceCaches($priceTariffCaches, $mergingPriceCaches);
+        if ($this->checkCachesCount($mergedPriceCaches, $calcQuery->getDuration())) {
+            return $mergedPriceCaches;
+        }
 
         $baseTariffPriceCaches = $this->getBaseTariffPriceCaches($calcQuery);
-        //** TODO: Мерджим и если не хватает тогда эксепшн */
+        $lastMergedPriceCaches = $this->mergePriceCaches($mergedPriceCaches, $baseTariffPriceCaches);
+        if ($this->checkCachesCount($lastMergedPriceCaches, $calcQuery->getDuration())) {
+            return $lastMergedPriceCaches;
+        }
 
-
-        return [];
+        throw new PriceCachesMergerException('There is not enough price caches even after merging.');
     }
 
-    private function getBaseTariffPriceCaches(CalcQuery $calcQuery)
+    private function checkCachesCount(array $roomCaches, int $duration): bool
+    {
+        return \count($roomCaches) === $duration;
+    }
+
+    private function mergePriceCaches(array $mainCaches, array $auxiliaryCaches): array
+    {
+        $main = $this->keyWithDate($mainCaches);
+        $auxiliary = $this->keyWithDate($auxiliaryCaches);
+        $merged = $main + $auxiliary;
+        uasort($merged, function ($cache1, $cache2) {
+            return $cache1['date'] <=> $cache2['date'];
+        });
+
+        return $merged;
+    }
+
+    private function keyWithDate(array $caches): array
+    {
+        $result = [];
+        foreach ($caches as $cache) {
+            $key = $cache['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format('d_m_Y');
+            $result[$key] = $cache;
+        }
+
+        return $result;
+    }
+
+
+    private function getBaseTariffPriceCaches(CalcQuery $calcQuery): array
     {
         if (!$calcQuery->getTariff()->getIsDefault()) {
             $hotelId = $calcQuery->getTariff()->getHotel()->getId();
@@ -72,7 +102,6 @@ class PriceCachesMerger
         }
 
         return [];
-
     }
 
     private function getPriceTariffPriceCaches(CalcQuery $calcQuery): array
