@@ -24,6 +24,9 @@ class PackageServiceGroupByService extends PackageServiceGroup
         $this->price = $price;
     }
 
+    /**
+     * @return float
+     */
     public function getPrice()
     {
         return $this->price;
