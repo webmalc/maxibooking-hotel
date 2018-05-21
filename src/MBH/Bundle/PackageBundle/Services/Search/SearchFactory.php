@@ -65,6 +65,7 @@ class SearchFactory implements SearchInterface
     /**
      * @param SearchQuery $query
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult[]
+     * @throws \ReflectionException
      */
     public function search(SearchQuery $query)
     {
@@ -72,10 +73,16 @@ class SearchFactory implements SearchInterface
         $clientConfig = $this->dm->getRepository(ClientConfig::class)->fetchConfig();
         $query->setSave(($clientConfig->isQueryStat() === true) && $query->isSave());
 
-        $savedQueryId = $query->isSave() ? $this->saveQuery($query): null;
-        $search = $this->search->search($query);
-        if (null !== $savedQueryId ) {
-            array_walk($search, [$this, 'injectQueryId'], $savedQueryId);
+        $search = $this->container->get('mbh.search_cache')->searchByQuery($query);
+        if (is_null($search)) {
+            $savedQueryId = $query->isSave() ? $this->saveQuery($query): null;
+            $search = $this->search->search($query);
+
+            if (null !== $savedQueryId ) {
+                array_walk($search, [$this, 'injectQueryId'], $savedQueryId);
+            }
+
+            $this->container->get('mbh.search_cache')->saveToCache($query, $search);
         }
 
         return $search;

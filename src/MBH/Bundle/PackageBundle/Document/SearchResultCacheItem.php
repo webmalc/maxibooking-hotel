@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use MBH\Bundle\PackageBundle\Document\SearchQueryTrait;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -25,48 +24,29 @@ class SearchResultCacheItem
      * @var string
      * @ODM\Field(type="string")
      */
-    private $serializedSearchResults;
+    private $serializedSearchResult;
 
     /**
-     * @var bool
-     * @ODM\Field(type="bool")
+     * @var string
+     * @ODM\Field(type="string")
      */
-    private $byRoomTypes = true;
-
-    /**
-     * @return bool
-     */
-    public function isByRoomTypes(): ?bool
-    {
-        return $this->byRoomTypes;
-    }
-
-    /**
-     * @param bool $byRoomTypes
-     * @return SearchResultCacheItem
-     */
-    public function setByRoomTypes(bool $byRoomTypes): SearchResultCacheItem
-    {
-        $this->byRoomTypes = $byRoomTypes;
-
-        return $this;
-    }
+    private $roomTypeId;
 
     /**
      * @return string
      */
-    public function getSerializedSearchResults()
+    public function getSerializedSearchResult()
     {
-        return $this->serializedSearchResults;
+        return $this->serializedSearchResult;
     }
 
     /**
-     * @param string $serializedSearchResults
+     * @param string $serializedSearchResult
      * @return SearchResultCacheItem
      */
-    public function setSerializedSearchResults(string $serializedSearchResults)
+    public function setSerializedSearchResult(string $serializedSearchResult)
     {
-        $this->serializedSearchResults = $serializedSearchResults;
+        $this->serializedSearchResult = $serializedSearchResult;
 
         return $this;
     }
@@ -86,6 +66,25 @@ class SearchResultCacheItem
     public function setId(string $id): SearchResultCacheItem
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoomTypeId(): ?string
+    {
+        return $this->roomTypeId;
+    }
+
+    /**
+     * @param string $roomTypeId
+     * @return SearchResultCacheItem
+     */
+    public function setRoomTypeId(string $roomTypeId): SearchResultCacheItem
+    {
+        $this->roomTypeId = $roomTypeId;
 
         return $this;
     }

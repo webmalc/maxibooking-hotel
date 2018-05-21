@@ -266,3 +266,5 @@ services:
             - '@mbh.document_fields_manager'
             - '@mbh.serializer'
             - '@mbh.helper'
+            - '@mbh.package.search'
+            - '@mbh.hotel.room_type_manager'

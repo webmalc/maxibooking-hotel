@@ -2,11 +2,11 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Validator\Constraints as Assert;
 
 trait SearchQueryTrait
@@ -75,12 +75,6 @@ trait SearchQueryTrait
      */
     public $isOnline = false;
 
-    /**
-     * RoomTypes ids
-     * @ODM\Field(type="collection")
-     * @var []
-     */
-    public $roomTypes = [];
 
     /**
      * @var boolean
@@ -172,40 +166,6 @@ trait SearchQueryTrait
     }
 
     /**
-     * @param Hotel $hotel
-     * @return $this
-     */
-    public function addHotel(Hotel $hotel = null)
-    {
-        if (empty($hotel)) {
-            return $this;
-        }
-        $roomTypes = $hotel->getRoomTypes();
-        foreach ($roomTypes as $roomType) {
-            $this->addRoomType($roomType->getId());
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    public function addRoomType($id)
-    {
-        if (!empty($this->availableRoomTypes) && !in_array($id, $this->availableRoomTypes)) {
-            return false;
-        }
-
-        if (!in_array($id, $this->roomTypes) && !empty($id)) {
-            $this->roomTypes[] = $id;
-        }
-
-        return true;
-    }
-
-    /**
      * @param array $ages
      */
     public function setChildrenAges(array $ages)
@@ -260,6 +220,17 @@ trait SearchQueryTrait
     public function setSpecial(Special $special = null)
     {
         $this->special = $special;
+
+        return $this;
+    }
+
+    /**
+     * @param Tariff $tariff
+     * @return static
+     */
+    public function setTariff(Tariff $tariff)
+    {
+        $this->tariff = $tariff;
 
         return $this;
     }

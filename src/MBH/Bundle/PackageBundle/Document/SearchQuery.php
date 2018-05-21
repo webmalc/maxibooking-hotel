@@ -8,6 +8,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -59,6 +60,13 @@ class SearchQuery extends Base
      * @var string
      */
     public $room;
+
+    /**
+     * RoomTypes ids
+     * @ODM\Field(type="collection")
+     * @var []
+     */
+    public $roomTypes = [];
 
     /**
      * @return bool
@@ -114,6 +122,40 @@ class SearchQuery extends Base
     public function setExcludePackage(Package $excludePackage = null): SearchQuery
     {
         $this->excludePackage = $excludePackage;
+
+        return $this;
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function addRoomType($id)
+    {
+        if (!empty($this->availableRoomTypes) && !in_array($id, $this->availableRoomTypes)) {
+            return false;
+        }
+
+        if (!in_array($id, $this->roomTypes) && !empty($id)) {
+            $this->roomTypes[] = $id;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return $this
+     */
+    public function addHotel(Hotel $hotel = null)
+    {
+        if (empty($hotel)) {
+            return $this;
+        }
+        $roomTypes = $hotel->getRoomTypes();
+        foreach ($roomTypes as $roomType) {
+            $this->addRoomType($roomType->getId());
+        }
 
         return $this;
     }
