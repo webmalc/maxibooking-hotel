@@ -26,7 +26,6 @@ class SearchCache
         'excludeRoomTypes',
         'promotion',
         'special',
-        'range',
         'availableRoomTypes',
         'forceBooking',
         'infants',
@@ -77,7 +76,7 @@ class SearchCache
             ->execute()
             ->toArray();
 
-        return is_null($cacheItem) ? null : $this->getGroupedDeserializedResults($cacheItem);
+        return empty($cacheItem) ? null : $this->getGroupedDeserializedResults($cacheItem);
     }
 
     /**
@@ -97,7 +96,8 @@ class SearchCache
                 $searchResultsByTariffAndRoomType = array_filter(
                     $searchResultsList,
                     function (SearchResult $result) use ($tariff, $roomTypeId) {
-                        return $result->getTariff()->getId() === $tariff->getId() && $result->getRoomType()->getId() === $roomTypeId;
+                        return $result->getTariff()->getId() === $tariff->getId()
+                            && $result->getRoomType()->getId() === $roomTypeId;
                     }
                 );
 
@@ -119,6 +119,11 @@ class SearchCache
         }
 
         $this->dm->flush();
+    }
+
+    public function clearCache(\DateTime $begin, \DateTime $end, $tariffs = [], $roomTypes = [])
+    {
+
     }
 
     /**

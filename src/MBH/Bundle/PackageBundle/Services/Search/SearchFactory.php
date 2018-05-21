@@ -66,6 +66,7 @@ class SearchFactory implements SearchInterface
      * @param SearchQuery $query
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult[]
      * @throws \ReflectionException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function search(SearchQuery $query)
     {

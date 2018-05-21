@@ -69,6 +69,19 @@ class SearchQuery extends Base
     public $roomTypes = [];
 
     /**
+     * Additional days for search
+     * @var int
+     * @ODM\Field(type="integer")
+     * @Assert\Range(
+     *     min = 0,
+     *     max = 10,
+     *     maxMessage = "form.searchType.range_validator",
+     *     minMessage = "form.searchType.range_validator"
+     * )
+     */
+    public $range = 0;
+
+    /**
      * @return bool
      */
     public function isSave(): bool
