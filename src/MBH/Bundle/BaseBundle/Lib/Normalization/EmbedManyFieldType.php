@@ -34,7 +34,7 @@ class EmbedManyFieldType implements NormalizableInterface
         $serializer = $options['serializer'];
 
         return array_map(function($singleEmbedded) use ($serializer) {
-            return $serializer->denormalize($singleEmbedded, new $this->documentClass());
+            return $serializer->denormalize($singleEmbedded, $this->documentClass);
         }, $this->castToArray($value));
     }
 

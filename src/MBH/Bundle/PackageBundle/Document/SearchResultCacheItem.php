@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\BaseBundle\Document;
+namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\PackageBundle\Document\SearchQueryTrait;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class SearchResultCacheItem
  * @package MBH\Bundle\BaseBundle\Document
  * @ODM\Document
+ * @ODM\Index(keys={"begin"="asc","end"="asc","adults"="asc","tariff"="asc"})
  */
 class SearchResultCacheItem
 {
@@ -21,26 +22,51 @@ class SearchResultCacheItem
     private $id;
 
     /**
-     * @var
-     * @ODM\Field(type="collection")
+     * @var string
+     * @ODM\Field(type="string")
      */
-    private $searchResults;
+    private $serializedSearchResults;
 
     /**
-     * @return array
+     * @var bool
+     * @ODM\Field(type="bool")
      */
-    public function getSearchResults()
+    private $byRoomTypes = true;
+
+    /**
+     * @return bool
+     */
+    public function isByRoomTypes(): ?bool
     {
-        return $this->searchResults;
+        return $this->byRoomTypes;
     }
 
     /**
-     * @param array $searchResults
+     * @param bool $byRoomTypes
      * @return SearchResultCacheItem
      */
-    public function setSearchResults($searchResults)
+    public function setByRoomTypes(bool $byRoomTypes): SearchResultCacheItem
     {
-        $this->searchResults = $searchResults;
+        $this->byRoomTypes = $byRoomTypes;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSerializedSearchResults()
+    {
+        return $this->serializedSearchResults;
+    }
+
+    /**
+     * @param string $serializedSearchResults
+     * @return SearchResultCacheItem
+     */
+    public function setSerializedSearchResults(string $serializedSearchResults)
+    {
+        $this->serializedSearchResults = $serializedSearchResults;
 
         return $this;
     }

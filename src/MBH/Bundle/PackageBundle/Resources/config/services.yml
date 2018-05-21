@@ -265,3 +265,4 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@mbh.document_fields_manager'
             - '@mbh.serializer'
+            - '@mbh.helper'

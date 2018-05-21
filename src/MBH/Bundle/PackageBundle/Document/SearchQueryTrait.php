@@ -152,13 +152,6 @@ trait SearchQueryTrait
     public $infants = 0;
 
     /**
-     * @var int
-     * @Assert\Range(min = 0)
-     * @ODM\Field(type="integer")
-     */
-    public $limit;
-
-    /**
      * @param $id
      */
     public function addExcludeRoomType($id)

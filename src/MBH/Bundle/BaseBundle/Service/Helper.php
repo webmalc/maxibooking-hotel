@@ -724,4 +724,18 @@ class Helper
     {
         return substr($haystack, 0, strlen($needle)) === $needle;
     }
+
+    /**
+     * @param array $values
+     * @return array
+     */
+    public function getArrayWithSameKeysAndValues(array $values)
+    {
+        $result = [];
+        foreach ($values as $value) {
+            $result[$value] = $value;
+        }
+
+        return $result;
+    }
 }

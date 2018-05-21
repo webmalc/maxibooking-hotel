@@ -31,7 +31,7 @@ class EmbedOneFieldType implements NormalizableInterface
     {
         $serializer = $options['serializer'];
 
-        return $serializer->denormalize($value, new $this->documentClass());
+        return $serializer->denormalize($value, $this->documentClass);
     }
 
     /**

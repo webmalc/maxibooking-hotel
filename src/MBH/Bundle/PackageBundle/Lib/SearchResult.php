@@ -313,6 +313,17 @@ class SearchResult
     }
 
     /**
+     * @param $pricesByDate
+     * @return SearchResult
+     */
+    public function setPricesByDate($pricesByDate)
+    {
+        $this->pricesByDate = $pricesByDate;
+
+        return $this;
+    }
+
+    /**
      * @param $adults
      * @param $children
      * @return null|array
@@ -333,7 +344,7 @@ class SearchResult
      * @return self
      * @deprecated
      */
-    public function setPricesByDate(array $prices, $adults, $children)
+    public function setPricesByDateForCombination(array $prices, $adults, $children)
     {
         $this->pricesByDate[$adults . '_' . $children] = $prices;
 
@@ -438,9 +449,20 @@ class SearchResult
      * @param int $children
      * @return SearchResult
      */
-    public function setPackagePrices(array $packagePrices, $adults, $children)
+    public function setPackagePricesForCombination(array $packagePrices, $adults, $children)
     {
         $this->packagePrices[$adults . '_' . $children] = $packagePrices;
+
+        return $this;
+    }
+
+    /**
+     * @param $packagePrices
+     * @return SearchResult
+     */
+    public function setPackagePrices($packagePrices)
+    {
+        $this->packagePrices = $packagePrices;
 
         return $this;
     }
@@ -530,7 +552,7 @@ class SearchResult
      * @param Room $virtualRoom
      * @return SearchResult
      */
-    public function setVirtualRoom(Room $virtualRoom): SearchResult
+    public function setVirtualRoom(?Room $virtualRoom): SearchResult
     {
         $this->virtualRoom = $virtualRoom;
         return $this;

@@ -52,35 +52,28 @@ class MBHSerializer
     }
 
     /**
-     * @param $fieldValue
-     * @param \ReflectionProperty $property
-     * @return array|bool|float|int|null|string
+     * @param array $documents
+     * @param array|null $includedFields
+     * @param array $excludedFields
+     * @return array
      */
-    public function normalizeSingleField($fieldValue, \ReflectionProperty $property)
+    public function normalizeArrayOfDocuments(array $documents, array $includedFields = null, $excludedFields = [])
     {
-        if (is_null($fieldValue)) {
-            return null;
-        }
-
-        $options = ['dm' => $this->dm, 'serializer' => $this];
-        $fieldType = $this->fieldsManager->getFieldType($property);
-        if (!$fieldType instanceof NormalizableInterface) {
-            throw new \InvalidArgumentException('Unexpected field type "' . get_class($fieldType) . '"');
-        }
-
-        return $fieldType->normalize($fieldValue, $options);
+        return array_map(function($document) use ($includedFields, $excludedFields) {
+            return $this->normalize($document, $includedFields, $excludedFields);
+        }, $documents);
     }
 
     /**
      * @param array $dataToDenormalize
-     * @param $document
+     * @param $documentClass
      * @param array $excludedFields
      * @return object
      * @throws \ReflectionException
      */
-    public function denormalize(array $dataToDenormalize, $document, $excludedFields = [])
+    public function denormalize(array $dataToDenormalize, string $documentClass, $excludedFields = [])
     {
-        $documentClass = get_class($document);
+        $document = new $documentClass();
 
         foreach ($dataToDenormalize as $fieldName => $value) {
             if (in_array($fieldName, $excludedFields)) {
@@ -95,25 +88,76 @@ class MBHSerializer
     }
 
     /**
+     * @param array $normalizedObjects
+     * @param string $documentClass
+     * @param array $excludedFields
+     * @return array
+     */
+    public function denormalizeArrayOfObjects(array $normalizedObjects, string $documentClass, $excludedFields = [])
+    {
+        return array_map(function($object) use ($documentClass, $excludedFields) {
+            return $this->denormalize($object, $documentClass, $excludedFields);
+        }, $normalizedObjects);
+    }
+
+    /**
+     * @param $value
+     * @param $fieldType
+     * @return mixed
+     */
+    public function denormalizeByFieldType($value, NormalizableInterface $fieldType)
+    {
+        if (is_null($value)) {
+            return null;
+        }
+
+        $options = ['dm' => $this->dm, 'serializer' => $this];
+
+        return $fieldType->denormalize($value, $options);
+    }
+
+    /**
+     * @param $fieldValue
+     * @param $fieldType
+     * @return null
+     */
+    public function normalizeByFieldType($fieldValue, NormalizableInterface $fieldType)
+    {
+        if (is_null($fieldValue)) {
+            return null;
+        }
+
+        $options = ['dm' => $this->dm, 'serializer' => $this];
+
+        return $fieldType->normalize($fieldValue, $options);
+    }
+
+    /**
+     * @param $fieldValue
+     * @param \ReflectionProperty $property
+     * @return array|bool|float|int|null|string
+     */
+    private function normalizeSingleField($fieldValue, \ReflectionProperty $property)
+    {
+        $fieldType = $this->fieldsManager->getFieldType($property);
+        if (!$fieldType instanceof NormalizableInterface) {
+            throw new \InvalidArgumentException('Unexpected field type "' . get_class($fieldType) . '"');
+        }
+
+        return $this->normalizeByFieldType($fieldValue, $fieldType);
+    }
+
+    /**
      * @param $value
      * @param string $documentClass
      * @param string $fieldName
      * @return array|bool|\DateTime|float|int|null|string
      * @throws \ReflectionException
      */
-    public function denormalizeSingleField($value, string $documentClass, string $fieldName)
+    private function denormalizeSingleField($value, string $documentClass, string $fieldName)
     {
-        if (is_null($value)) {
-            return null;
-        }
-
         $fieldType = $this->fieldsManager->getFieldType(new \ReflectionProperty($documentClass, $fieldName));
-        if (!$fieldType instanceof NormalizableInterface) {
-            throw new \InvalidArgumentException('Unexpected field type "' . get_class($fieldType) . '"');
-        }
 
-        $options = ['dm' => $this->dm, 'serializer' => $this];
-
-        return $fieldType->denormalize($value, $options);
+        return $this->denormalizeByFieldType($value, $fieldType);
     }
 }

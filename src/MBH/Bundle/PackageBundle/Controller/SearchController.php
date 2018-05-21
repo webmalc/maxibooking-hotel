@@ -125,14 +125,17 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                     }
                 }
 
-                $search = $this->get('mbh.package.search')
-                    ->setAdditionalDates($query->range)
-                    ->setWithTariffs();
-                $specials = $search->searchSpecials($query)->toArray();
-                /** store query in db */
-                $query->setSave(true);
-                $groupedResult = $search->search($query);
-
+                $groupedResult = $this->get('mbh.search_cache')->searchByQuery($query);
+                if (is_null($groupedResult)) {
+                    $search = $this->get('mbh.package.search')
+                        ->setAdditionalDates($query->range)
+                        ->setWithTariffs();
+                    $specials = $search->searchSpecials($query)->toArray();
+                    /** store query in db */
+                    $query->setSave(true);
+                    $groupedResult = $search->search($query);
+                    $this->get('mbh.search_cache')->saveToCache($query, $groupedResult);
+                }
             } else {
                 $errors = $form->getErrors();
             }

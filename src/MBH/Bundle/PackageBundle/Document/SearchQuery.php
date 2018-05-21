@@ -49,6 +49,13 @@ class SearchQuery extends Base
     protected $querySavedId;
 
     /**
+     * @var int
+     * @Assert\Range(min = 0)
+     * @ODM\Field(type="integer")
+     */
+    public $limit;
+
+    /**
      * @var string
      */
     public $room;

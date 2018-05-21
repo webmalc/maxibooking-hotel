@@ -178,6 +178,22 @@ class DocumentFieldsManager
     }
 
     /**
+     * @param $document
+     * @param $documentToFill
+     * @param array $fields
+     * @return array
+     */
+    public function fillDocumentByAnotherDocumentFields($document, $documentToFill, array $fields)
+    {
+        foreach ($fields as $documentToFillField => $fieldName) {
+            $value = $this->accessor->getValue($document, $fieldName);
+            $this->accessor->setValue($documentToFill, $documentToFillField, $value);
+        }
+
+        return $documentToFill;
+    }
+
+    /**
      * @param \ReflectionClass $reflectionClass
      * @return array
      */
@@ -255,7 +271,7 @@ class DocumentFieldsManager
                 'virtualRoom' => new DocumentFieldType(Room::class),
                 'tariff' => new DocumentFieldType(Tariff::class),
                 'prices' => new CollectionFieldType(new FloatFieldType()),
-                'pricesByDate' => new CollectionFieldType(new CollectionFieldType(new FloatFieldType())),
+                'pricesByDate' => new CollectionFieldType(new FloatFieldType()),
                 'roomsCount' => new IntegerFieldType(),
                 'rooms' => new DocumentsCollectionFieldType(Room::class),
                 'packagePrices' => new CollectionFieldType(new CollectionFieldType(new EmbedOneFieldType(PackagePrice::class))),
