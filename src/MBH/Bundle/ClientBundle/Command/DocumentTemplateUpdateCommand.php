@@ -64,7 +64,7 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('all') === true) {
-            $this->updateAll();
+            $this->updateAll('all');
         } else {
             $this->updateNotEdited();
         }
@@ -72,10 +72,18 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
 
     /**
      * Готовит сообщение при обновлении всех записей
+     *
+     * @param string|null $option
      */
-    private function msgUpdateAll(): void
+    private function msgUpdateAll(string $option = null): void
     {
-        $this->logger('OK. Update all templates.');
+        $msg = 'OK. Update all templates.';
+
+        if ($option !== null) {
+            $msg .= ' with options "'. $option .'".';
+        }
+
+        $this->logger($msg);
     }
 
     /**
@@ -129,13 +137,15 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
 
     /**
      * Обновление всех шаблонов
+     *
+     * @param string|null $option
      */
-    private function updateAll(): void
+    private function updateAll(string $option = null): void
     {
         $t = $this->getTemplates();
         $this->updateTemplates($t);
 
-        $this->msgUpdateAll();
+        $this->msgUpdateAll($option);
     }
 
     /**
