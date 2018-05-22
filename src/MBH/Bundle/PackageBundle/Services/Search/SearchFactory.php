@@ -73,20 +73,22 @@ class SearchFactory implements SearchInterface
         /** @var ClientConfig $clientConfig */
         $clientConfig = $this->dm->getRepository(ClientConfig::class)->fetchConfig();
         $query->setSave(($clientConfig->isQueryStat() === true) && $query->isSave());
+        $searchCache = $this->container->get('mbh.search_cache');
 
-        $search = $this->container->get('mbh.search_cache')->searchByQuery($query);
-        if (is_null($search)) {
+        $groupedByRoomTypes = $this->search instanceof SearchWithTariffs;
+        $searchResults = $searchCache->searchByQuery($query, $groupedByRoomTypes);
+        if (is_null($searchResults)) {
             $savedQueryId = $query->isSave() ? $this->saveQuery($query): null;
-            $search = $this->search->search($query);
+            $searchResults = $this->search->search($query);
 
             if (null !== $savedQueryId ) {
-                array_walk($search, [$this, 'injectQueryId'], $savedQueryId);
+                array_walk($searchResults, [$this, 'injectQueryId'], $savedQueryId);
             }
 
-            $this->container->get('mbh.search_cache')->saveToCache($query, $search);
+            $searchCache->saveToCache($query, $searchResults, $groupedByRoomTypes);
         }
 
-        return $search;
+        return $searchResults;
     }
 
     /**

@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class SearchResultCacheItem
  * @package MBH\Bundle\BaseBundle\Document
  * @ODM\Document
- * @ODM\Index(keys={"begin"="asc","end"="asc","adults"="asc","tariff"="asc"})
+ * @ODM\Index(keys={"begin"="asc","end"="asc","roomTypeId"="asc","tariff"="asc"})
  */
 class SearchResultCacheItem
 {
@@ -41,10 +41,10 @@ class SearchResultCacheItem
     }
 
     /**
-     * @param string $serializedSearchResult
+     * @param string|null $serializedSearchResult
      * @return SearchResultCacheItem
      */
-    public function setSerializedSearchResult(string $serializedSearchResult)
+    public function setSerializedSearchResult(?string $serializedSearchResult)
     {
         $this->serializedSearchResult = $serializedSearchResult;
 

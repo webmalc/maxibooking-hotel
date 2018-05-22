@@ -108,11 +108,23 @@ trait SearchQueryTrait
     protected $special;
 
     /**
-     * Tariff id
      * @var mixed
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      */
     public $tariff;
+
+    /**
+     * Additional days for search
+     * @var int
+     * @ODM\Field(type="integer")
+     * @Assert\Range(
+     *     min = 0,
+     *     max = 10,
+     *     maxMessage = "form.searchType.range_validator",
+     *     minMessage = "form.searchType.range_validator"
+     * )
+     */
+    public $range = 0;
 
     /**
      * @var RoomType[]|array ids

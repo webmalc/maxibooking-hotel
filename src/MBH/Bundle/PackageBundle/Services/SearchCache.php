@@ -29,6 +29,7 @@ class SearchCache
         'availableRoomTypes',
         'forceBooking',
         'infants',
+        'range'
     ];
     const DATE_FORMAT = 'd.m.Y';
 
@@ -46,7 +47,8 @@ class SearchCache
         Helper $helper,
         SearchFactory $search,
         RoomTypeManager $roomTypeManager
-    ) {
+    )
+    {
         $this->dm = $dm;
         $this->fieldsManager = $fieldsManager;
         $this->serializer = $serializer;
@@ -57,26 +59,20 @@ class SearchCache
 
     /**
      * @param SearchQuery $query
-     * @return array|null
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @return SearchResultCacheItem
      */
     public function searchByQuery(SearchQuery $query)
     {
         $searchCriteriaArray = $this->fieldsManager
             ->fillByDocumentFieldsWithFieldNameKeys($query, self::SEARCH_CRITERIA_FIELDS);
 
-        /** @var DocumentRepository $repo */
-        $repo = $this->dm->getRepository('MBHPackageBundle:SearchResultCacheItem');
-        $cacheItem = $repo
-            ->createQueryBuilder()
-            ->setQueryArray($searchCriteriaArray)
-            ->field('tariff.id')->in($this->helper->toIds($this->getQueryTariffs($query)))
-            ->field('roomTypeId')->in($this->getQueryRoomTypesIds($query))
-            ->getQuery()
-            ->execute()
-            ->toArray();
+        $searchCriteriaArray = array_merge(
+            ['tariff.id' => $query->tariff, 'roomTypeId' => $query->roomTypes[0]],
+            $searchCriteriaArray);
 
-        return empty($cacheItem) ? null : $this->getGroupedDeserializedResults($cacheItem);
+        return $this->dm
+            ->getRepository('MBHPackageBundle:SearchResultCacheItem')
+            ->findOneBy($searchCriteriaArray);
     }
 
     /**
@@ -89,7 +85,7 @@ class SearchCache
     {
         $queryRoomTypesIds = $this->getQueryRoomTypesIds($query);
         $queryTariffs = $this->getQueryTariffs($query);
-        $searchResultsList = $this->getSearchResults($results, $byRoomTypes);
+        $searchResultsList = $byRoomTypes ? $this->getSearchResultsFromGroupedArray($results) : $results;
 
         foreach ($queryTariffs as $tariff) {
             foreach ($queryRoomTypesIds as $roomTypeId) {
@@ -101,11 +97,9 @@ class SearchCache
                     }
                 );
 
-                $normalizedResult = empty($searchResultsByTariffAndRoomType)
-                    ? []
-                    : $this->serializer->normalize(current($searchResultsByTariffAndRoomType));
-
-                $serializedResult = json_encode($normalizedResult);
+                $serializedResult = empty($searchResultsByTariffAndRoomType)
+                    ? null
+                    : json_encode($this->serializer->normalize(current($searchResultsByTariffAndRoomType)));
 
                 $searchCacheItem = (new SearchResultCacheItem())
                     ->setTariff($tariff)
@@ -121,44 +115,29 @@ class SearchCache
         $this->dm->flush();
     }
 
-    public function clearCache(\DateTime $begin, \DateTime $end, $tariffs = [], $roomTypes = [])
-    {
-
-    }
-
     /**
-     * @param SearchResultCacheItem[] $cacheItems
-     * @param bool $byRoomTypes
-     * @return array
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array $tariffsIds
+     * @param array $roomTypesIds
+     * @return
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    private function getGroupedDeserializedResults(array $cacheItems, $byRoomTypes = true)
+    public function clearCache(\DateTime $begin, \DateTime $end, $tariffsIds = [], $roomTypesIds = [])
     {
-        $deserializedResults = array_map(function(SearchResultCacheItem $cacheItem) {
-            $deserializedResult = json_decode($cacheItem->getSerializedSearchResult(), true);
+        /** @var DocumentRepository $cacheRepo */
+        $cacheRepo = $this->dm->getRepository('MBHPackageBundle:SearchResultCacheItem');
+        $result = $cacheRepo
+            ->createQueryBuilder()
+            ->remove()
+            ->field('begin')->lte($end)
+            ->field('end')->gt($begin)
+            ->field('tariff.id')->in($tariffsIds)
+            ->field('roomTypeId')->in($roomTypesIds)
+            ->getQuery()
+            ->execute();
 
-            return $this->serializer->denormalize($deserializedResult, SearchResult::class);
-        }, $cacheItems);
-
-        if (!$byRoomTypes) {
-            return $deserializedResults;
-        }
-
-        $resultsByRoomTypes = [];
-        /** @var SearchResult $searchResult */
-        foreach ($deserializedResults as $searchResult) {
-            $roomTypeId = $searchResult->getRoomType()->getId();
-            if (isset($resultsByRoomTypes[$roomTypeId])) {
-                $resultsByRoomTypes[$roomTypeId]['results'][] = $searchResult;
-            } else {
-                $resultsByRoomTypes[$roomTypeId] = [
-                    'results' => [$searchResult],
-                    'roomType' => $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId)
-                ];
-            }
-        }
-        $resultsByRoomTypes = array_values($resultsByRoomTypes);
-
-        return $resultsByRoomTypes;
+        return $result['n'];
     }
 
     /**
@@ -193,15 +172,10 @@ class SearchCache
 
     /**
      * @param $results
-     * @param $byRoomTypes
      * @return array
      */
-    private function getSearchResults($results, $byRoomTypes): array
+    private function getSearchResultsFromGroupedArray($results): array
     {
-        if (!$byRoomTypes) {
-            return $results;
-        }
-
         $searchResultsList = [];
         foreach ($results as $resultsByRoomType) {
             /** @var SearchResult $searchResultByTariffAndRoomType */
