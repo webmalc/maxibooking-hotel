@@ -18,6 +18,14 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
 {
     public const COMMAND_NAME = 'mbh:document_template:update';
 
+    public const FILE_PATH = '/../var/logs/document_template_update.log';
+
+    public const MSG_OK_ALL_UPDATE = 'OK. Update all templates.';
+
+    public const MSG_ATTENTION_NOT_FOUND_DEFAULT_TEMPLATES = 'ATTENTION. Not found default templates.';
+
+    public const MSG_ATTENTION_UPDATED_TEMPLATES_DEFAULT_EXCEPT = 'ATTENTION. Updated templates default, except: ';
+
     /**
      * @var string
      */
@@ -65,35 +73,60 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption('all') === true) {
-            $this->updateAll('all');
+        $all = $input->getOption('all') === true;
+
+        if ($all) {
+            $t = $this->getTemplates();
         } else {
-            $this->updateNotEdited();
+            $t = $this->getTemplates(false);
         }
-    }
 
-    /**
-     * Готовит сообщение при обновлении всех записей
-     *
-     * @param string|null $option
-     */
-    private function msgUpdateAll(string $option = null): void
-    {
-        $msg = 'OK. Update all templates.';
-
-        if ($option !== null) {
-            $msg .= ' with options "'. $option .'".';
+        if ($t === []) {
+            $msg = $this->msgNotFoundTemplates();
+        } else {
+            if ($all) {
+                $msg = $this->updateAll($t, 'all');
+            } else {
+                $msg = $this->updateNotEdited($t);
+            }
         }
 
         $this->logger($msg);
     }
 
     /**
-     * Готовит сообщение, со списком шаблонов которые не были обновленны
+     * Готовит сообщение при обновлении всех записей
+     *
+     * @param string|null $option
+     * @return string
      */
-    private function msgUnchanged(): void
+    private function msgUpdateAll(string $option = null): string
     {
-        $msg = 'ATTENTION. Updated templates default, except: ';
+        $msg = self::MSG_OK_ALL_UPDATE;
+
+        if ($option !== null) {
+            $msg .= ' with option: ' . $option . '.';
+        }
+
+        return $msg;
+    }
+
+    /**
+     * @return string
+     */
+    private function msgNotFoundTemplates(): string
+    {
+        return self::MSG_ATTENTION_NOT_FOUND_DEFAULT_TEMPLATES;
+    }
+
+    /**
+     * Готовит сообщение, со списком шаблонов которые не были обновленны
+     *
+     * @return string
+     */
+    private function msgUnchanged(): string
+    {
+        $msg = self::MSG_ATTENTION_UPDATED_TEMPLATES_DEFAULT_EXCEPT;
         $msg .= implode(
             ', ',
             array_diff(
@@ -102,7 +135,8 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
             )
         );
         $msg .= '.';
-        $this->logger($msg);
+
+        return $msg;
     }
 
     /**
@@ -116,38 +150,42 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
         $client = $this->getContainer()->get('kernel')->getClient();
         $date = new \DateTime();
         $str = $date->format($date::ISO8601) . " {$client} \"{$msg}\"" . PHP_EOL;
-        $fileName = $this->getRootDir() . '/../var/logs/document_template_update.log';
+        $fileName = $this->getRootDir() . self::FILE_PATH;
 
         file_put_contents($fileName, $str, FILE_APPEND);
     }
 
     /**
      * Обновление шаблонов, исключая измененные
+     *
+     * @param DocumentTemplate[] $templates
+     *
+     * @return string
      */
-    private function updateNotEdited(): void
+    private function updateNotEdited(array $templates): string
     {
-        $t = $this->getTemplates(false);
+        $this->updateTemplates($templates);
 
-        if (count($t) < count($this->getDefaultNameTemplates())) {
-            $this->msgUnchanged();
-        } else {
-            $this->msgUpdateAll();
+        if (count($templates) < count($this->getDefaultNameTemplates())) {
+            return $this->msgUnchanged();
         }
 
-        $this->updateTemplates($t);
+        return $this->msgUpdateAll();
     }
 
     /**
      * Обновление всех шаблонов
      *
+     * @param DocumentTemplate[] $templates
      * @param string|null $option
+     *
+     * @return string
      */
-    private function updateAll(string $option = null): void
+    private function updateAll(array $templates, string $option = null): string
     {
-        $t = $this->getTemplates();
-        $this->updateTemplates($t);
+        $this->updateTemplates($templates);
 
-        $this->msgUpdateAll($option);
+        return $this->msgUpdateAll($option);
     }
 
     /**
@@ -227,7 +265,9 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
      */
     private function getDefaultTemplatesData(): array
     {
-        $locale = $this->getContainer()->getParameter('locale') === 'ru' ? 'ru' : 'com';
+        $locale = $this->getContainer()->getParameter('locale') === DocumentTemplateData::LOCALE_RU
+            ? DocumentTemplateData::LOCALE_RU
+            : DocumentTemplateData::LOCALE_COM;
 
         return DocumentTemplateData::DOCUMENT_TEMPLATE_DATA[$locale];
     }
