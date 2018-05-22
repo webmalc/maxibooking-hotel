@@ -271,7 +271,6 @@ class Package extends Base implements \JsonSerializable
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="note")
-     * @ODM\Index()
      */
     protected $note;
 
