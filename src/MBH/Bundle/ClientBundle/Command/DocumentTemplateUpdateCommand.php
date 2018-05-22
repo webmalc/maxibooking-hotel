@@ -16,6 +16,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DocumentTemplateUpdateCommand extends ContainerAwareCommand
 {
+    public const COMMAND_NAME = 'mbh:document_template:update';
+
     /**
      * @var string
      */
@@ -56,7 +58,7 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('mbh:document_template:update')
+            ->setName(self::COMMAND_NAME)
             ->setDescription('Updating default document templates from files (all or not edited)')
             ->addOption('all', 'a', null, 'update all');
     }
