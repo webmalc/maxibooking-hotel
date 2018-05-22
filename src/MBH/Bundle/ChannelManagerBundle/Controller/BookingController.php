@@ -11,6 +11,7 @@ use MBH\Bundle\ChannelManagerBundle\Form\BookingRoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\BookingType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
+use MBH\Bundle\ChannelManagerBundle\Services\Booking;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManager;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -78,11 +79,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     {
         $config = $this->hotel->getBookingConfig();
         if ($config) {
-            $this->get('mbh.channelmanager')->pullOrders('booking', ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS);
-            $this->addFlash(
-                'warning',
-                $this->get('translator')->trans('controller.bookingController.packages_sync_start')
-            );
+            $this->get('mbh.channelmanager')->pullOrdersInBackground('booking', true);
+            $this->addFlash('warning', 'controller.bookingController.packages_sync_start');
         }
 
         return $this->redirect($this->generateUrl('booking'));
