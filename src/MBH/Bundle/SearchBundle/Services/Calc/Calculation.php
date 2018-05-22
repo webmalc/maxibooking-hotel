@@ -16,6 +16,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationAdditionalPriceException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
+use MBH\Bundle\SearchBundle\Lib\HotelContentHolder;
 
 class Calculation
 {
@@ -23,13 +24,18 @@ class Calculation
     /** @var PriceCachesMerger */
     private $priceCacheMerger;
 
+    /** @var HotelContentHolder */
+    private $hotelContentHolder;
+
     /**
      * Calculation constructor.
      * @param PriceCachesMerger $merger
+     * @param HotelContentHolder $contentHolder
      */
-    public function __construct(PriceCachesMerger $merger)
+    public function __construct(PriceCachesMerger $merger, HotelContentHolder $contentHolder)
     {
         $this->priceCacheMerger = $merger;
+        $this->hotelContentHolder = $contentHolder;
     }
 
 
@@ -102,7 +108,7 @@ class Calculation
             $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $calcQuery, $mainChildren, $promotion);
             $multiPrices = ($addsAdults + $addsChildren) > 1;
             $additionalAdultPrice = $this->getAdditionalAdultsPrice($rawPriceCache, $addsAdults, $multiPrices);
-            $additionalChildrenPrice = $this->getAdditionalChildrenPrice($rawPriceCache, $calcQuery, $addsChildren, $multiPrices, $addsAdults, $promotion);
+            $additionalChildrenPrice = $this->getAdditionalChildrenPrice($rawPriceCache, $addsChildren, $multiPrices, $addsAdults, $promotion);
 
             $dayPrice = $mainAdultPrice + $mainChildrenPrice + $additionalAdultPrice + $additionalChildrenPrice;
 
@@ -111,11 +117,10 @@ class Calculation
             }
 
             $rawPriceDate = Helper::convertMongoDateToDate($rawPriceCache['date']);
-            $packagePrice = $this->getPackagePrice($dayPrice, $rawPriceDate, $calcQuery->getTariff(), $calcQuery->getRoomType(), $calcQuery->getSpecial());
-
+            /** @var Tariff $tariff */
+            $tariff = $this->hotelContentHolder->getFetchedTariff((string)$rawPriceCache['tariff']['$id']);
+            $packagePrice = $this->getPackagePrice($dayPrice, $rawPriceDate, $tariff, $calcQuery->getRoomType(), $calcQuery->getSpecial());
             $dayPrices[$rawPriceDate->format('d_m_Y')] = $dayPrice;
-
-
             $packagePrices[] = $packagePrice;
             $total += $dayPrice;
         }
@@ -189,14 +194,16 @@ class Calculation
         return $addsAdultsPrices;
     }
 
-    private function getAdditionalChildrenPrice(array $rawPriceCache, CalcQuery $calcQuery, int $addsChildren, bool $multiPrices, int $addsAdults, Promotion $promotion = null): int
+    private function getAdditionalChildrenPrice(array $rawPriceCache, int $addsChildren, bool $multiPrices, int $addsAdults, Promotion $promotion = null): int
     {
-        if ($addsChildren && $rawPriceCache['additionalChildrenPrice'] === null) {
-            throw new CalculationAdditionalPriceException('There is additional children, but no additional price');
+        $additionalChildrenPrice = $rawPriceCache['additionalChildrenPrice'] ?? null;
+
+        if ($addsChildren && null === $additionalChildrenPrice) {
+            throw new CalculationAdditionalPriceException('There is additional additional child, but no additional price for children');
         }
 
         $addsChildrenPrices = 0;
-        if (!$multiPrices && $addsChildren) {
+        if (!$multiPrices && $addsChildren ) {
             $addsChildrenPrices = $addsChildren * $rawPriceCache['additionalChildrenPrice'];
         }
         if ($multiPrices) {

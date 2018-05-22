@@ -26,7 +26,7 @@ class SearcherTest extends WebTestCase
             ->setAdults(1)
             ->setChildren(1)
             ->setChildrenAges([5])
-            ->setAdditionalBegin(7);
+            ->setAdditionalBegin(0);
 
         $searchQueries = $this
             ->getContainer()
@@ -36,10 +36,14 @@ class SearcherTest extends WebTestCase
         $searcher = $this->getContainer()->get('mbh_search.searcher');
 
         foreach ($searchQueries as $searchQuery) {
-            $actual = $searcher->search($searchQuery);
-            $this->assertInstanceOf(SearchResult::class, $actual);
+            try {
+                $actual = $searcher->search($searchQuery);
+                $this->assertInstanceOf(SearchResult::class, $actual);
+            } catch (SearchException $e) {
+                $errors[] = $e->getMessage();
+            }
         }
-
+        $a = 'b';
     }
 
     /**

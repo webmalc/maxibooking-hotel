@@ -32,35 +32,46 @@ class SearchController extends Controller
      */
     public function searchRequestAction(Request $request): JsonResponse
     {
+        $stopwatch = $this->get('debug.stopwatch');
+        $stopwatch->start('searchTime');
+
         $result = new ExpectedResult();
-        try {
-            $data = json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), true);
 
-            $searchRequestReceiver = $this->get('mbh_search.search_request_receiver');
-            $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
-            $restrictionChecker = $this->get('mbh_search.restrictions_checker_service');
+        $searchRequestReceiver = $this->get('mbh_search.search_request_receiver');
+        $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
+        $restrictionChecker = $this->get('mbh_search.restrictions_checker_service');
 
-            $conditions = $searchRequestReceiver->handleData($data);
-            $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
-            $restrictionChecker->setConditions($conditions);
+        $conditions = $searchRequestReceiver->handleData($data);
+        $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
+        $restrictionChecker->setConditions($conditions);
 
-            if (self::PRE_RESTRICTION_CHECK) {
-                $searchQueries = array_filter($searchQueries, [$restrictionChecker, 'check']);
-            }
-
-
-
-            $result
-                ->setOkStatus()
-                ->setExpectedResults($searchQueryGenerator->getQueuesNum())
-                ->setQueryHash(
-                    $searchQueryGenerator->getSearchQueryHash()
-                );
-        } catch (SearchException $e) {
-            $result->setErrorStatus()->setErrorMessage($e->getMessage());
+        if (self::PRE_RESTRICTION_CHECK) {
+            $searchQueries = array_filter($searchQueries, [$restrictionChecker, 'check']);
         }
 
-        return new JsonResponse($result);
+
+        $searcher = $this->get('mbh_search.searcher');
+        foreach ($searchQueries as $searchQuery) {
+            try {
+                $results[] = $searcher->search($searchQuery);
+            } catch (SearchException $e) {
+                continue;
+            }
+
+        }
+        $searchDone = $stopwatch->stop('searchTime');
+        $time = $searchDone->getDuration();
+
+        $a = 'b';
+//            $result
+//                ->setOkStatus()
+//                ->setExpectedResults($searchQueryGenerator->getQueuesNum())
+//                ->setQueryHash(
+//                    $searchQueryGenerator->getSearchQueryHash()
+//                );
+
+        return new JsonResponse([$time]);
     }
 
     /**

@@ -29,10 +29,11 @@ class SearchControllerTest extends WebTestCase
         $inputData = [
             'url' => '/search/json',
             'data' => [
-                'begin' => '01.05.2018',
-                'end' => '15.05.2018',
+                'begin' => '23.05.2018',
+                'end' => '05.06.2018',
                 'adults' => 3,
-                'children' => 0
+                'children' => 0,
+                'additionalBegin' => 4
 
             ],
             'results' => [
@@ -43,14 +44,14 @@ class SearchControllerTest extends WebTestCase
             ],
         ];
 
-
+        $json = json_encode($inputData['data']);
         $this->client->request(
             'POST',
             $inputData['url'],
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($inputData['data'])
+            $json
         );
 
         $this->isSuccessful($this->client->getResponse());

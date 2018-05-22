@@ -15,6 +15,7 @@ use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQueryHelper;
+use MBH\Bundle\SearchBundle\Lib\HotelContentHolder;
 
 class SearchQueryGenerator
 {
@@ -27,12 +28,15 @@ class SearchQueryGenerator
     /** @var RoomTypeFetcher */
     private $roomTypeFetcher;
 
-    public function __construct(DocumentManager $dm, AdditionalDatesGenerator $generator, RoomTypeFetcher $roomTypeFetcher)
+    /** @var HotelContentHolder */
+    private $hotelContentHolder;
+
+    public function __construct(DocumentManager $dm, AdditionalDatesGenerator $generator, RoomTypeFetcher $roomTypeFetcher, HotelContentHolder $contentHolder)
     {
         $this->dm = $dm;
         $this->addDatesGenerator = $generator;
         $this->roomTypeFetcher = $roomTypeFetcher;
-
+        $this->hotelContentHolder = $contentHolder;
     }
 
     /**
@@ -217,11 +221,7 @@ class SearchQueryGenerator
         return $result;
     }
 
-    /**
-     * @param array $roomTypes
-     * @param array $tariffs
-     * @return array
-     */
+
     private function mixRoomTypeTariff(array $roomTypes, array $tariffs): array
     {
         $values = [];
@@ -242,12 +242,18 @@ class SearchQueryGenerator
 
     private function determineRestrictionTariffId(array $rawTariff): string
     {
-        if (isset($rawTariff['parent']) ) {
-            throw new \Exception('Требуется обавить проверку на наличие наследуемых параметров');
-            return (string)$rawTariff['parent']['_id'];
+        $tariff = $this->hotelContentHolder->getFetchedTariff((string)$rawTariff['_id']);
+        if ($tariff) {
+            if ($tariff->getParent() && $tariff->getChildOptions() && $tariff->getChildOptions()->isInheritRestrictions()) {
+                $restrictionTariffId = $tariff->getParent()->getId();
+            } else {
+                $restrictionTariffId = $tariff->getId();
+            }
+
+            return $restrictionTariffId;
         }
 
-        return (string)$rawTariff['_id'];
+        throw new SearchQueryGeneratorException('No tariff for restriction');
     }
 
 }

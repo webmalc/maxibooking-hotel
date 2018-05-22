@@ -44,8 +44,6 @@ class SearchRequestReceiver
         }
 
         return $conditionForm->getData();
-
-
     }
 
 

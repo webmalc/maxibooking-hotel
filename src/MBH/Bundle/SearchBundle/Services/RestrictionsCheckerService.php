@@ -9,6 +9,7 @@ use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\RestrictionsCheckerInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -33,6 +34,9 @@ class RestrictionsCheckerService
     /** @var DocumentManager */
     private $dm;
 
+    /** @var string[] */
+    private $errors = [];
+
     public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
@@ -47,36 +51,34 @@ class RestrictionsCheckerService
         $this->checkers[] = $checker;
     }
 
-
-    public function check(SearchQuery $searchQuery): array
+    //** TODO -  */
+    public function check(SearchQuery $searchQuery): bool
     {
         if ($searchQuery->isIgnoreRestrictions()) {
-            return [];
+            return true;
         }
 
         if (null === $this->restrictions) {
             $this->restrictions = $this->getRestrictions();
         }
 
-        $errors = [];
+
         if (!$searchQuery->isRestrictionsWhereChecked()) {
             $restrictions = $this->getNecessaryRestrictions($searchQuery);
-            $errors = [];
             if (!empty($restrictions)) {
                 foreach ($this->checkers as $checker) {
                     try {
                         $checker->check($searchQuery, $restrictions);
                     } catch (RestrictionsCheckerException $e) {
-                        $errors[] = $e->getMessage();
+                        $this->errors[] = $e->getMessage();
                     }
                 }
 
             }
             $searchQuery->setRestrictionsWhereChecked();
-
         }
 
-        return $errors;
+        return !(bool)\count($this->errors);
     }
 
     /**

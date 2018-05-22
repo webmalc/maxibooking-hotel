@@ -347,10 +347,6 @@ class SearchQuery
     }
 
 
-
-
-
-
 public static function createInstance(SearchQueryHelper $queryHelper, SearchConditions $conditions): SearchQuery
     {
         $searchQuery = new static();

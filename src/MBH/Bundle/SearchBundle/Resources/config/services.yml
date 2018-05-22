@@ -1,7 +1,7 @@
 services:
     mbh_search.search_query_generator:
         class: MBH\Bundle\SearchBundle\Services\SearchQueryGenerator
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh_search.additional_days_generator', '@mbh_search.room_type_fetcher']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh_search.additional_days_generator', '@mbh_search.room_type_fetcher', '@mbh_search.hotel_content_holder']
 
     mbh_search.search_request_receiver:
         class: MBH\Bundle\SearchBundle\Services\SearchRequestReceiver
@@ -74,7 +74,7 @@ services:
     #search
     mbh_search.searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\Searcher
-        arguments: ["@doctrine_mongodb.odm.default_document_manager", '@mbh_search.restrictions_checker_service', '@mbh_search.search_limit_checker', '@mbh_search.room_cache_search_provider', '@mbh_search.result_composer', '@validator']
+        arguments: ["@doctrine_mongodb.odm.default_document_manager", '@mbh_search.restrictions_checker_service', '@mbh_search.search_limit_checker', '@mbh_search.room_cache_search_provider', '@mbh_search.result_composer', '@validator', '@mbh_search.hotel_content_holder']
 
     mbh_search.room_cache_search_provider:
         class: MBH\Bundle\SearchBundle\Services\Search\RoomCacheSearchProvider
@@ -122,8 +122,12 @@ services:
 
     mbh_search.calculation:
         class: MBH\Bundle\SearchBundle\Services\Calc\Calculation
-        arguments: ['@mbh_search.price_caches_merger']
+        arguments: ['@mbh_search.price_caches_merger', '@mbh_search.hotel_content_holder']
 
     mbh_search.price_caches_merger:
         class: MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger
         arguments: ['@mbh_search.price_cache_repository', '@mbh_search.tariff_repository']
+
+    mbh_search.hotel_content_holder:
+        class: MBH\Bundle\SearchBundle\Lib\HotelContentHolder
+        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository']

@@ -77,7 +77,15 @@ class Extension extends \Twig_Extension
             $this->translator->trans('twig.extension.december', [])
         ];
 
-        return $date->format('d') . " <span class='date-month'> " . $months[$date->format('n') - 1] . '.</span>';
+        return $date->format('d') . " <span class='date-month'> " . $months[$date->format('n') - 1] .'.</span>';
+    }
+
+    public function offset(\DateTime $date, string $html)
+    {
+        $isDev = $this->container->get('kernel')->getEnvironment() === 'dev';
+        $offset = !$isDev ? '' : "{$date->diff(new \DateTime('now midnight'))->format('%a')}<br>";
+
+        return $offset . $html;
     }
 
     public function md5($value)
@@ -349,6 +357,7 @@ class Extension extends \Twig_Extension
             'get_imperial_city'       => new \Twig_SimpleFunction('get_imperial_city', [$this, 'getImperialAddressCity'], ['is_safe' => ['html']]),
             'get_imperial_street'     => new \Twig_SimpleFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], ['is_safe' => ['html']]),
             'get_twig_data'           => new \Twig_SimpleFunction('get_twig_data', [$this, 'getTwigData'], ['is_safe' => ['html']]),
+            'offset'                  => new \Twig_SimpleFunction('mbh_offset', [$this, 'offset'], ['is_safe' => ['html']])
         ];
     }
 

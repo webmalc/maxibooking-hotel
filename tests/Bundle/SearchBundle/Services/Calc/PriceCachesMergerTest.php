@@ -65,6 +65,7 @@ class PriceCachesMergerTest extends WebTestCase
         $duration = $data['endOffset'] - $data['beginOffset'];
         $this->assertCount($duration, $actual);
         $matched = 0;
+        //** TODO: Добавить дополнительно проверки дат и попробовать  */
         foreach ($actual as $cache) {
             $cacheDate = $cache['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()));
             $cacheOffset = (int)$cacheDate->diff(new \DateTime('midnight'))->format('%d');
