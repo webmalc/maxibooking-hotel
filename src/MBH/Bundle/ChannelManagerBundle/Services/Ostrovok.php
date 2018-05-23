@@ -513,11 +513,11 @@ class Ostrovok extends Base
                 }
 
                 if (($reservation['status'] === 'cancelled' || $isModified) && !$order) {
-                    $this->notifyError(
+                    /*$this->notifyError(
                         'ostrovok',
                         '#'.$reservation['uuid'].' '.
                         $reservation['last_name'].' '.$reservation['first_name']
-                    );
+                    );*/
                     $this->log('Error! Бронь существует, но нет в базе. '.$reservation['uuid']);
                 }
             }
