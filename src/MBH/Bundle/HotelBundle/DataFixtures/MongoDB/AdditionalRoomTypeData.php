@@ -7,6 +7,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -31,7 +32,8 @@ class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureIn
                 'color' => '#008000',
                 'isHostel' => false,
                 'isChildPrice' => false,
-                'isIndividualAddPrice' => false
+                'isIndividualAddPrice' => false,
+                'category' => 'categoryTwo'
             ],
             'one' => [
                 'title' => 'OneAndOneRoomType',
@@ -40,7 +42,9 @@ class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureIn
                 'color' => '#008000',
                 'isHostel' => false,
                 'isChildPrice' => false,
-                'isIndividualAddPrice' => false
+                'isIndividualAddPrice' => false,
+                'category' => 'categoryTwo'
+
             ],
             'two' => [
                 'title' => 'TwoAndOneAndChildPriceRoomType',
@@ -49,7 +53,8 @@ class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureIn
                 'color' => '#b50e2c',
                 'isHostel' => false,
                 'isChildPrice' => true,
-                'isIndividualAddPrice' => false
+                'isIndividualAddPrice' => false,
+                'category' => 'categoryThree'
             ],
             'three' => [
                 'title' => 'ThreeAndThreeAndIndividualPriceRoomType',
@@ -58,7 +63,8 @@ class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureIn
                 'color' => '#008000',
                 'isHostel' => false,
                 'isChildPrice' => false,
-                'isIndividualAddPrice' => true
+                'isIndividualAddPrice' => true,
+                'category' => 'categoryThree'
             ],
             'four' => [
                 'title' => 'TwoAndOneAndChildPriceAndIndividualPriceRoomType',
@@ -67,7 +73,8 @@ class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureIn
                 'color' => '#b50e2c',
                 'isHostel' => false,
                 'isChildPrice' => true,
-                'isIndividualAddPrice' => true
+                'isIndividualAddPrice' => true,
+                'category' => 'categoryThree'
             ],
             'hostel' => [
                 'title' => 'ThreeAndTwoHostel',
@@ -76,7 +83,8 @@ class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureIn
                 'color' => '#008000',
                 'isHostel' => true,
                 'isChildPrice' => false,
-                'isIndividualAddPrice' => false
+                'isIndividualAddPrice' => false,
+                'category' => 'categoryOne'
             ]
         ];
     }
@@ -108,6 +116,14 @@ class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureIn
                 } else {
                     $roomType->setIsHostel(true);
                 }
+
+                $categoryName = $data['category'] ?? null;
+                if ($categoryName) {
+                    /** @var RoomTypeCategory $category */
+                    $category = $this->getReference($data['category'] . '/' . $hotelNumber);
+                    $roomType->setCategory($category);
+                }
+
 
                 $manager->persist($roomType);
                 $manager->flush();

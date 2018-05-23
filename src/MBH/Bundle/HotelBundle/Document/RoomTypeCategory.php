@@ -101,10 +101,13 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
 
     /**
      * @param Hotel $hotel
+     * @return RoomTypeCategory
      */
     public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
+
+        return $this;
     }
 
     /**
@@ -121,7 +124,7 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
      * Set fullTitle
      *
      * @param string $fullTitle
-     * @return self
+     * @return RoomTypeCategory
      */
     public function setFullTitle($fullTitle)
     {

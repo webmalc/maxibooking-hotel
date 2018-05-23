@@ -29,11 +29,11 @@ class SearchControllerTest extends WebTestCase
         $inputData = [
             'url' => '/search/json',
             'data' => [
-                'begin' => '23.05.2018',
-                'end' => '05.06.2018',
-                'adults' => 3,
+                'begin' => '01.06.2018',
+                'end' => '15.06.2018',
+                'adults' => 2,
                 'children' => 0,
-                'additionalBegin' => 4
+                'additionalBegin' => 0
 
             ],
             'results' => [

@@ -4,16 +4,15 @@ namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class TaskData
  */
-class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface
 {
     /**
      * Get roomType data
@@ -27,19 +26,22 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
                 'title' => 'mbhhotelbundle.roomTypeData.single.place',
                 'places' => 1,
                 'additionalPlaces' => 1,
-                'color' => '#008000'
+                'color' => '#008000',
+                'category' => 'categoryOne'
             ],
             'roomtype-double' => [
                 'title' => 'mbhhotelbundle.roomTypeData.two.place',
                 'places' => 2,
                 'additionalPlaces' => 1,
-                'color' => '#b50e2c'
+                'color' => '#b50e2c',
+                'category' => 'categoryOne'
             ],
             'hotel-triple' => [
                 'title' => 'mbhhotelbundle.roomTypeData.three.place',
                 'places' => 3,
                 'additionalPlaces' => 2,
-                'color' => '#008000'
+                'color' => '#008000',
+                'category' => 'categoryOne'
             ]
         ];
     }
@@ -51,7 +53,7 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
      */
     public function doLoad(ObjectManager $manager)
     {
-        if (count($manager->getRepository('MBHHotelBundle:RoomType')->findAll())) {
+        if (\count($manager->getRepository('MBHHotelBundle:RoomType')->findAll())) {
             return;
         }
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
@@ -65,6 +67,13 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
                     ->setPlaces($data['places'])
                     ->setAdditionalPlaces($data['additionalPlaces'])
                 ;
+
+                $categoryName = $data['category'] ?? null;
+                if ($categoryName) {
+                    /** @var RoomTypeCategory $category */
+                    $category = $this->getReference($data['category'] . '/' . $hotelNumber);
+                    $roomType->setCategory($category);
+                }
 
                 $manager->persist($roomType);
                 $manager->flush();

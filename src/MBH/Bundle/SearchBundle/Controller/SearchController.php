@@ -2,8 +2,6 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
-use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\ExpectedResult;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -56,12 +54,34 @@ class SearchController extends Controller
             try {
                 $results[] = $searcher->search($searchQuery);
             } catch (SearchException $e) {
-                continue;
+                $errors[] = $e->getMessage();
             }
 
         }
         $searchDone = $stopwatch->stop('searchTime');
         $time = $searchDone->getDuration();
+
+//        foreach ($results as $result) {
+//            /** @var SearchResult $result */
+//            $grouped[$result->getRoomType()->getName()][] = $result;
+//        }
+//        foreach($results as $result) {
+//            /** @var SearchResult $result */
+//            $roomType = $result->getRoomType();
+//
+//            if ($result->isUseCategories()) {
+//                $roomType = $roomType->getCategory();
+//            }
+//
+//            if (!isset($groupedResult[$roomType->getId()])) {
+//                $groupedResult[$roomType->getId()] = [
+//                    'roomType' => $roomType,
+//                    'results' => []
+//                ];
+//            }
+//
+//            $groupedResult[$roomType->getId()]['results'][] = $result;
+//        }
 
         $a = 'b';
 //            $result
@@ -71,7 +91,7 @@ class SearchController extends Controller
 //                    $searchQueryGenerator->getSearchQueryHash()
 //                );
 
-        return new JsonResponse([$time]);
+        return new JsonResponse([$time, count($results)]);
     }
 
     /**
