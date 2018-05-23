@@ -633,7 +633,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @return Tariff
      */
-    public function getMergingTariff(): ?Tariff
+    public function getMergingTariff()
     {
         return $this->mergingTariff;
     }
@@ -642,7 +642,7 @@ class Tariff extends Base implements ConditionsInterface
      * @param Tariff $mergingTariff
      * @return Tariff
      */
-    public function setMergingTariff(?Tariff $mergingTariff)
+    public function setMergingTariff(Tariff $mergingTariff = null)
     {
         $this->mergingTariff = $mergingTariff;
 
