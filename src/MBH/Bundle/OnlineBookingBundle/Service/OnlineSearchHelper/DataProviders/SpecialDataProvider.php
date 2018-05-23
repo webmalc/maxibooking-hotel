@@ -19,7 +19,7 @@ use MBH\Bundle\PriceBundle\Document\Special;
 class SpecialDataProvider implements DataProviderInterface
 {
     /** @var string */
-    const TYPE = 'special';
+    public const TYPE = 'special';
 
     /** @var SearchFactory */
     private $search;
@@ -87,14 +87,14 @@ class SpecialDataProvider implements DataProviderInterface
                         $founded[] = $foundedSpecial;
                         $count++;
                     }
-                    if ($this->isSpecialLimitExceeded($count)) {
+                    /*if ($this->isSpecialLimitExceeded($count)) {
                         break;
-                    }
+                    }*/
 
                 }
             }
         }
-        if (count($founded)) {
+        if (\count($founded)) {
             foreach ($founded as $result) {
                 $results[] = $this->onlineResultCreator->create($result['searchResult'], $result['searchQuery']);
             }
@@ -131,9 +131,9 @@ class SpecialDataProvider implements DataProviderInterface
                 'searchResult' => $searchResult,
                 'searchQuery' => $searchQuery,
             ];
-        } else {
-            return [];
         }
+
+        return [];
     }
 
     /**
@@ -142,18 +142,7 @@ class SpecialDataProvider implements DataProviderInterface
      */
     private function isVirtualRoomIsNull(SearchResult $searchResult)
     {
-        return $searchResult->getVirtualRoom() === null ? true : false;
-    }
-
-    /**
-     * @param int $count
-     * @return bool
-     */
-    private function isSpecialLimitExceeded(int $count): bool
-    {
-        $limit = $this->onlineOptions['show_special_restrict'] ?? null;
-
-        return ($limit && $count >= $limit);
+        return $searchResult->getVirtualRoom() === null;
     }
 
     /**
@@ -167,7 +156,7 @@ class SpecialDataProvider implements DataProviderInterface
 
     public function getType(): string
     {
-        return 'special';
+        return static::TYPE;
     }
 
 

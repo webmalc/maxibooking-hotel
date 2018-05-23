@@ -5,6 +5,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\SpecialDataProvider;
 
 class OnlineSearchHelper
 {
@@ -45,7 +46,7 @@ class OnlineSearchHelper
     /**
      * @param OnlineSearchFormData $formInstance
      * @return array
-     * TODO: Очень костыльно получилось с доп датами. В идеале рефакторить и тут.
+     * TODO: Очень костыльно получилось с доп датами. В идеале рефакторить и тут. Лимит получения лучше бы в интерфейс ?.
      */
     public function getResults(OnlineSearchFormData $formInstance)
     {
@@ -53,9 +54,16 @@ class OnlineSearchHelper
         if (!$this->isAdditionalData($formInstance)) {
             foreach ($this->dataProviders as $dataProvider) {
                 /** @var OnlineDataProviderWrapperInterface $dataProvider */
-                $results[$dataProvider->getType()] = $dataProvider->getResults($formInstance);
+                $dataResults = $dataProvider->getResults($formInstance);
+                if ($dataProvider->getType() === SpecialDataProvider::TYPE) {
+                    $limit = $this->options['show_special_restrict'];
+                    if ($limit) {
+                        $dataResults = \array_slice($dataResults, 0, $limit, true);
+                    }
+                }
+                $results[$dataProvider->getType()] = $dataResults;
             }
-            if (count($results)) {
+            if (\count($results)) {
                 $results = $this->finishFilter($results);
             }
         } else {
