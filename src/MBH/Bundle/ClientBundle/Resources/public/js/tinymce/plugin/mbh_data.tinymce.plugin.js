@@ -881,7 +881,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
           }
         ],
         onsubmit: function(e) {
-          if (itemColumnIsValid(e.data['amount'])) {
+          if (colorBorder.isValidColumn(e.data['amount'])) {
             var menu = self.getMenu(e.data['source'], self.mbh_property.table[e.data['source']], false),
                 items = [],
                 sourceName = e.data['source'],
