@@ -24,6 +24,21 @@
   padding: 0px;
 }
 
+.parent_badge {
+  margin-left: 20px;
+  .badge-sidebar-left,
+  .badge-sidebar-right {
+    display: inline-block;
+    width: 30px;
+  }
+}
+
+.sidebar-collapse .parent_badge {
+  margin-left: -8px;
+  display: flex;
+  flex-direction: column;
+}
+
 @media (max-width: 1024px) {
   .content-header > .breadcrumb {
     position: relative;
@@ -37,16 +52,6 @@
   .content-header > .breadcrumb li:before {
     color: #97a0b3;
   }
-}
-
-.parent_badge {
-  margin-left: 20px;
-  .badge-sidebar-left,
-  .badge-sidebar-right {
-    display: inline-block;
-    width: 30px;
-  }
-
 }
 
 //.badge-sidebar-margin.badge-sidebar-left {
