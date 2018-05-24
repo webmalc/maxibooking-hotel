@@ -3,94 +3,105 @@
 namespace MBH\Bundle\PackageBundle\Lib;
 
 use Doctrine\ODM\MongoDB\Cursor;
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PackageBundle\Document\PackagePricesForCombination;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @ODM\EmbeddedDocument
+ * Class SearchResult
+ * @package MBH\Bundle\PackageBundle\Lib
+ */
 class SearchResult
 {
     /**
-     * @var \DateTime 
+     * @ODM\Field(type="date")
+     * @var \DateTime
      */
     protected $begin;
 
     /**
+     * @ODM\Field(type="date")
      * @var \DateTime 
      */
     protected $end;
 
     /**
+     * @ODM\Field(type="int")
      * @var int
      */
     protected $adults;
 
     /**
+     * @ODM\Field(type="int")
      * @var int
      */
     protected $children;
 
     /**
+     * @ODM\ReferenceOne(targetDocument="RoomType")
      * @var RoomType
      */
     protected $roomType;
 
     /**
+     * @ODM\ReferenceOne(targetDocument="Room")
      * @var Room
      */
     protected $virtualRoom;
 
     /**
+     * @ODM\ReferenceOne(targetDocument="Tariff")
      * @var Tariff 
      */
     protected $tariff;
 
     /**
-     * mixed array of prices
-     * 
-     * @var []
-     */
-    protected $prices = [];
-
-    /**
-     * mixed array of pricesByDate
-     *
-     * @var []
-     */
-    protected $pricesByDate = [];
-
-    /**
+     * @ODM\Field(type="int")
      * @var int 
      */
     protected $roomsCount = 0;
 
     /**
+     * @ODM\Field(type="int")
      * @var int
      */
     protected $packagesCount = 0;
 
     /**
+     * @ODM\ReferenceMany(targetDocument="Room")
      * @var array
      */
     protected $rooms = [];
 
     /**
-     * @var PackagePrice[]
-     */
-    protected $packagePrices = [];
-
-    /**
+     * @ODM\Field(type="bool")
      * @var bool
      */
     protected $useCategories = false;
 
+    /**
+     * @ODM\Field(type="bool")
+     * @var bool
+     */
     protected $forceBooking = false;
 
+    /**
+     * @ODM\Field(type="int")
+     * @var int
+     */
     protected $infants = 0;
 
-    /** @var string */
+    /**
+     * @ODM\Field(type="string")
+     * @var string
+     */
     protected $queryId;
 
     /**
@@ -307,22 +318,6 @@ class SearchResult
         return $this;
     }
 
-    public function getPricesByDate()
-    {
-        return $this->pricesByDate;
-    }
-
-    /**
-     * @param $pricesByDate
-     * @return SearchResult
-     */
-    public function setPricesByDate($pricesByDate)
-    {
-        $this->pricesByDate = $pricesByDate;
-
-        return $this;
-    }
-
     /**
      * @param $adults
      * @param $children
@@ -330,25 +325,19 @@ class SearchResult
      */
     public function getPricesByDateForCombination($adults, $children)
     {
-        if (isset($this->pricesByDate[$adults . '_' . $children])) {
-            return $this->pricesByDate[$adults . '_' . $children];
+        /** @var PackagePricesForCombination $packagePricesForCombination */
+        foreach ($this->getPackagePrices() as $packagePricesForCombination) {
+            if ($packagePricesForCombination->getAdults() === $adults && $packagePricesForCombination->getChildren() === $children) {
+                $pricesByDate = [];
+                foreach ($packagePricesForCombination->getPackagePrices() as $packagePrice) {
+                    $pricesByDate[$packagePrice->getDate()->format('d.m.Y')] = $packagePrice->getPrice();
+                }
+
+                return $pricesByDate;
+            }
         }
 
         return null;
-    }
-
-    /**
-     * @param array $prices
-     * @param int $adults
-     * @param int $children
-     * @return self
-     * @deprecated
-     */
-    public function setPricesByDateForCombination(array $prices, $adults, $children)
-    {
-        $this->pricesByDate[$adults . '_' . $children] = $prices;
-
-        return $this;
     }
 
     /**
@@ -405,7 +394,7 @@ class SearchResult
     }
 
     /**
-     * @return RoomTypeInterface
+     * @return RoomTypeInterface|Base
      */
     public function getRoomTypeInterfaceObject()
     {
@@ -422,7 +411,7 @@ class SearchResult
     }
 
     /**
-     * @return PackagePrice[]
+     * @return PackagePricesForCombination[]
      */
     public function getPackagePrices()
     {

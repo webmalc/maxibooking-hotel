@@ -3,7 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\OnlineBundle\Controller\ExternalApiController;
 use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;

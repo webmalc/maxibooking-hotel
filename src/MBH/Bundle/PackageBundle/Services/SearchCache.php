@@ -141,6 +141,28 @@ class SearchCache
     }
 
     /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param int $maxLength
+     * @param int $minLength
+     * @param array $roomTypes
+     * @param array $tariffs
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
+    public function warmUpCache(\DateTime $begin, \DateTime $end, int $maxLength, int $minLength, array $roomTypes, array $tariffs)
+    {
+        $periodsGenerator = $this->helper->getDatePeriodsGenerator($begin, $end, $maxLength, $minLength);
+        foreach ($periodsGenerator as $datePeriod) {
+            foreach ($roomTypes as $roomType) {
+                foreach ($tariffs as $tariff) {
+                    //TODO: Тут будет запуск поисков с указанными датами, тафрифами и типами комнат
+                }
+            }
+        }
+    }
+
+    /**
      * @param SearchQuery $query
      * @return array
      */

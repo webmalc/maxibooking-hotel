@@ -26,6 +26,52 @@ class SearchQuery extends Base
     use SearchQueryTrait;
 
     /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     * @Assert\NotNull(message="form.searchType.check_in_date_not_filled")
+     * @Assert\Date()
+     */
+    public $begin;
+
+    /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     * @Assert\NotNull(message="form.searchType.check_out_date_not_filled")
+     * @Assert\Date()
+     */
+    public $end;
+
+    /**
+     * @var int
+     * @ODM\Field(type="integer")
+     * @Assert\NotNull(message="form.searchType.adults_amount_not_filled")
+     * @Assert\Range(
+     *     min = 0,
+     *     max = 12,
+     *     minMessage = "form.searchType.adults_amount_less_zero"
+     * )
+     */
+    public $adults;
+
+    /**
+     * @var int
+     * @ODM\Field(type="integer")
+     * @Assert\NotNull(message="orm.searchType.children_amount_not_filled")
+     * @Assert\Range(
+     *     min = 0,
+     *     max = 6,
+     *     minMessage = "form.searchType.children_amount_less_zero"
+     * )
+     */
+    public $children;
+
+    /**
+     * @var array
+     * @ODM\Field(type="collection")
+     */
+    public $childrenAges = [];
+
+    /**
      * @var bool
      * @ODM\Field(type="boolean")
      * @Assert\Type(type="boolean")
@@ -80,6 +126,18 @@ class SearchQuery extends Base
      * )
      */
     public $range = 0;
+
+    /**
+     * @var mixed
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
+     */
+    public $tariff;
+
+    /**
+     * @var int
+     * @ODM\Field(type="integer")
+     */
+    public $infants = 0;
 
     /**
      * @return bool

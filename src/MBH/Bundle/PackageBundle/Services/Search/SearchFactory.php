@@ -75,9 +75,8 @@ class SearchFactory implements SearchInterface
         $query->setSave(($clientConfig->isQueryStat() === true) && $query->isSave());
         $searchCache = $this->container->get('mbh.search_cache');
 
-        $groupedByRoomTypes = $this->search instanceof SearchWithTariffs;
-        $searchResults = $searchCache->searchByQuery($query, $groupedByRoomTypes);
-        if (is_null($searchResults)) {
+//        $searchResults = $searchCache->searchByQuery($query);
+//        if (empty($searchResults)) {
             $savedQueryId = $query->isSave() ? $this->saveQuery($query): null;
             $searchResults = $this->search->search($query);
 
@@ -85,8 +84,8 @@ class SearchFactory implements SearchInterface
                 array_walk($searchResults, [$this, 'injectQueryId'], $savedQueryId);
             }
 
-            $searchCache->saveToCache($query, $searchResults, $groupedByRoomTypes);
-        }
+//            $searchCache->saveToCache($query, $searchResults);
+//        }
 
         return $searchResults;
     }

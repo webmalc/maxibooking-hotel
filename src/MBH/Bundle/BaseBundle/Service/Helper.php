@@ -269,6 +269,7 @@ class Helper
     /**
      * @param string $interface
      * @return array
+     * @throws \ReflectionException
      */
     public function getClassesByInterface($interface)
     {
@@ -353,16 +354,16 @@ class Helper
         $smallCurrency = $translator->trans($currency['small']);
         $currencyText = $translator->trans($currency['text']);
 
-        $unit = array( // Units
-            array($smallCurrency, $smallCurrency, $smallCurrency, 1),
-            array($currencyText, $currencyText, $currencyText, 0),
-            array('тысяча', 'тысячи', 'тысяч', 1),
-            array('миллион', 'миллиона', 'миллионов', 0),
-            array('миллиард', 'милиарда', 'миллиардов', 0),
-        );
+        $unit = [ // Units
+            [$smallCurrency, $smallCurrency, $smallCurrency, 1],
+            [$currencyText, $currencyText, $currencyText, 0],
+            ['тысяча', 'тысячи', 'тысяч', 1],
+            ['миллион', 'миллиона', 'миллионов', 0],
+            ['миллиард', 'милиарда', 'миллиардов', 0],
+        ];
         //
         list($rub, $kop) = explode('.', sprintf("%015.2f", floatval($num)));
-        $out = array();
+        $out = [];
         if (intval($rub) > 0) {
             foreach (str_split($rub, 3) as $uk => $v) { // by 3 symbols
                 if (!intval($v)) {
@@ -420,7 +421,7 @@ class Helper
         $separator = ', ';
         $negative = 'negative ';
         $decimal = ' point ';
-        $dictionary = array(
+        $dictionary = [
             0 => 'zero',
             1 => 'one',
             2 => 'two',
@@ -456,7 +457,7 @@ class Helper
             1000000000000 => 'trillion',
             1000000000000000 => 'quadrillion',
             1000000000000000000 => 'quintillion'
-        );
+        ];
 
         if (!is_numeric($number)) {
             return false;
@@ -516,7 +517,7 @@ class Helper
 
         if (null !== $fraction && is_numeric($fraction)) {
             $string .= $decimal;
-            $words = array();
+            $words =[];
             foreach (str_split((string)$fraction) as $number) {
                 $words[] = $dictionary[$number];
             }
@@ -570,7 +571,7 @@ class Helper
     public function getDataFromMultipleSelectField($fieldData)
     {
         if (!empty($fieldData) && is_array($fieldData)) {
-            return  array_values(array_diff($fieldData, array('', null, false)));
+            return  array_values(array_diff($fieldData, ['', null, false]));
         }
 
         return [];
@@ -639,6 +640,7 @@ class Helper
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function getDefaultDatesOfSettlement()
     {
@@ -737,5 +739,38 @@ class Helper
         }
 
         return $result;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param int $maxLength
+     * @param int $minLength
+     * @return \Generator|\DatePeriod[]
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
+    public function getDatePeriodsGenerator(\DateTime $begin, \DateTime $end, int $maxLength, int $minLength = 1)
+    {
+        if ($begin >= $end) {
+            throw new \InvalidArgumentException('Begin of period must not be less or equal than end!');
+        }
+
+        $oneDayInterval = new \DateInterval('P1D');
+        $period = new \DatePeriod($begin, $oneDayInterval, $end);
+        $generatorPeriodLength = $end->diff($begin)->days;
+        if ($generatorPeriodLength < $minLength) {
+            throw new \InvalidArgumentException('Length of passed period must not be less than minimum length!');
+        }
+
+        /** @var \DateTime $startDay */
+        foreach ($period as $numberOfDay => $startDay) {
+            $periodLength = $minLength;
+            while ($periodLength <= $maxLength && ($generatorPeriodLength - $numberOfDay) >= $periodLength) {
+                $periodEnd = (clone $startDay)->modify('+' . $periodLength . 'days');
+                yield new \DatePeriod((clone $startDay), $oneDayInterval, $periodEnd);
+                $periodLength++;
+            }
+        }
     }
 }

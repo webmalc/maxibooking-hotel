@@ -7,26 +7,9 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use Symfony\Component\Validator\Constraints as Assert;
 
 trait SearchQueryTrait
 {
-    /**
-     * @var \DateTime
-     * @ODM\Field(type="date")
-     * @Assert\NotNull(message="form.searchType.check_in_date_not_filled")
-     * @Assert\Date()
-     */
-    public $begin;
-
-    /**
-     * @var \DateTime
-     * @ODM\Field(type="date")
-     * @Assert\NotNull(message="form.searchType.check_out_date_not_filled")
-     * @Assert\Date()
-     */
-    public $end;
-
     /**
      * @var \DateTime
      * @ODM\Field(type="date")
@@ -40,41 +23,10 @@ trait SearchQueryTrait
     public $excludeEnd = null;
 
     /**
-     * @var int
-     * @ODM\Field(type="integer")
-     * @Assert\NotNull(message="form.searchType.adults_amount_not_filled")
-     * @Assert\Range(
-     *     min = 0,
-     *     max = 12,
-     *     minMessage = "form.searchType.adults_amount_less_zero"
-     * )
-     */
-    public $adults;
-
-    /**
-     * @var int
-     * @ODM\Field(type="integer")
-     * @Assert\NotNull(message="orm.searchType.children_amount_not_filled")
-     * @Assert\Range(
-     *     min = 0,
-     *     max = 6,
-     *     minMessage = "form.searchType.children_amount_less_zero"
-     * )
-     */
-    public $children;
-
-    /**
-     * @var array
-     * @ODM\Field(type="collection")
-     */
-    public $childrenAges = [];
-
-    /**
      * @var boolean
      * @ODM\Field(type="boolean")
      */
     public $isOnline = false;
-
 
     /**
      * @var boolean
@@ -108,25 +60,6 @@ trait SearchQueryTrait
     protected $special;
 
     /**
-     * @var mixed
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
-     */
-    public $tariff;
-
-    /**
-     * Additional days for search
-     * @var int
-     * @ODM\Field(type="integer")
-     * @Assert\Range(
-     *     min = 0,
-     *     max = 10,
-     *     maxMessage = "form.searchType.range_validator",
-     *     minMessage = "form.searchType.range_validator"
-     * )
-     */
-    public $range = 0;
-
-    /**
      * @var RoomType[]|array ids
      * @ODM\Field(type="collection")
      */
@@ -138,11 +71,6 @@ trait SearchQueryTrait
      */
     public $forceBooking = false;
 
-    /**
-     * @var int
-     * @ODM\Field(type="integer")
-     */
-    public $infants = 0;
 
     /**
      * @param $id
