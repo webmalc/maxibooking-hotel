@@ -1,8 +1,8 @@
 <aside class="main-sidebar">
-    <!-- sidebar: style can be found in sidebar.less -->
+    {#<!-- sidebar: style can be found in sidebar.less -->#}
     <section class="sidebar">
 
-        <!-- Sidebar Menu -->
+        {#<!-- Sidebar Menu -->#}
         {% if selected_hotel() is empty %}
             {% set menu = knp_menu_get('base_createHotelMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
             {{ knp_menu_render(menu) }}
@@ -12,7 +12,7 @@
             {% set menu = knp_menu_get('base_managementMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
             {{ knp_menu_render(menu) }}
         {% endif %}
-        <!-- /.sidebar-menu -->
+        {#<!-- /.sidebar-menu -->#}
     </section>
-    <!-- /.sidebar -->
+    {#<!-- /.sidebar -->#}
 </aside>

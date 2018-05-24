@@ -226,12 +226,12 @@ class Builder
 
         $profile = [
             'profile' => [
-                'options' => [
+                'options'    => [
                     'route' => 'user_profile',
-                    'label' => 'menu.label.profile'
+                    'label' => 'menu.label.profile',
                 ],
-                'attributes' => ['icon' => 'fa fa-cog']
-            ]
+                'attributes' => ['icon' => 'fa fa-cog'],
+            ],
         ];
 
         $menu = $this->factory->createItem('root');
@@ -275,7 +275,6 @@ class Builder
 
         // profile
         $menu->addChild($this->createItem($profile));
-
 
 
 //        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
@@ -525,7 +524,7 @@ class Builder
                 ],
                 'attributes' => [
                     'dropdown' => true,
-//                    'icon'     => 'fa fa-diamond',
+                    //                    'icon'     => 'fa fa-diamond',
                     'icon'     => 'fa fa fa-arrows-h',
                 ],
             ],
@@ -687,14 +686,14 @@ class Builder
 
         $siteSettings = [
             'site_settings' => [
-                'options' => [
+                'options'    => [
                     'route' => '_welcome',
                     'label' => 'Site Settings',
                 ],
                 'attributes' => [
                     'icon' => 'fa fa-cog',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $onlinePolls = [
@@ -709,12 +708,12 @@ class Builder
 
         $paymentSystem = [
             'payment_systems' => [
-                'options' => [
+                'options'    => [
                     'route' => 'client_payment_systems',
-                    'label' => 'menu.label.payment_systems'
+                    'label' => 'menu.label.payment_systems',
                 ],
-                'attributes' => ['icon' => 'fa fa-paperclip']
-            ]
+                'attributes' => ['icon' => 'fa fa-paperclip'],
+            ],
         ];
 
         $parent = $this->createItem($webSite);
@@ -722,8 +721,8 @@ class Builder
         return $parent->setChildren(
             $this->getItemsInArray([
 //                $siteSettings,
-                $onlinePolls,
-                $paymentSystem,
+$onlinePolls,
+$paymentSystem,
             ])
         );
     }
@@ -1193,6 +1192,14 @@ class Builder
         }
 
         $parentAttr = ['dropdown' => true, 'icon' => 'fa fa-bell'] + $porterBadges;
+        $parentOptions = ['route' => '_welcome', 'label' => 'menu.label.portie',];
+
+        $porterLink = [
+            'porter_links' => [
+                'options'    => $parentOptions,
+                'attributes' => $parentAttr,
+            ],
+        ];
 
         $reportRoomType = [
             'report_room_types' => [
@@ -1211,16 +1218,6 @@ class Builder
                     'label' => 'menu.label.portie.arrdep',
                 ],
                 'attributes' => ['icon' => 'fa fa-exchange'],
-            ],
-        ];
-
-        $porterLink = [
-            'porter_links' => [
-                'options'    => [
-                    'route' => '_welcome',
-                    'label' => 'menu.label.portie',
-                ],
-                'attributes' => $parentAttr,
             ],
         ];
 
