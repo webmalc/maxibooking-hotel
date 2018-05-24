@@ -142,17 +142,7 @@ class FillingReportGenerator
 
         $columnCount = count($rangeDateList);
 
-        if (in_array('withoutStatus', $statusOptions)) {
-            $includeWithoutStatuses = true;
-            $statuses = array_diff($statusOptions, ['withoutStatus']);
-        } else {
-            $includeWithoutStatuses = false;
-            $statuses = empty($statusOptions) ? null : $statusOptions;
-        }
 
-        $numberOfRoomsByRoomTypeIds = $dm
-            ->getRepository('MBHHotelBundle:Room')
-            ->getNumberOfRoomsByRoomTypeIds($statuses, $includeWithoutStatuses, $isOnlyEnabledRooms);
 
         foreach($roomTypes as $roomType) {
             $roomTypeID = $roomType->getId();
@@ -161,9 +151,7 @@ class FillingReportGenerator
                 'totals' => [],
             ];
 
-            $roomTypeRooms = isset($numberOfRoomsByRoomTypeIds[$roomTypeID])
-                ? $numberOfRoomsByRoomTypeIds[$roomTypeID]
-                : 0;
+            $roomTypeRooms = count($roomType->getRooms());
 
             /** @var array $rows packages info by day, keys is dates (format d.m.Y) */
             $rows = [];
