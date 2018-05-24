@@ -6,7 +6,10 @@ namespace Tests\Bundle\SearchBundle\Services\Calc;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\RoomTypeCategoryData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
@@ -35,51 +38,58 @@ class PriceCachesMergerTest extends WebTestCase
         $end = new \DateTime("midnight +{$data['endOffset']} days");
         $dm = $this->dm;
         $hotel = $dm->getRepository(Hotel::class)->findOneBy([]);
+
         //** Категории как прикрутить ? */
         $roomTypes = $hotel->getRoomTypes()->toArray();
+        $searchRoomType = $this->getDocumentFromArrayByFullTitle($roomTypes, $data['searchRoomTypeName']);
 
-        $documentName = $data['searchRoomTypeName'];
-        $filter = function ($document) use (&$documentName) {
-            return $document->getName() === $documentName;
-        };
-        $roomTypeFiltered = array_filter($roomTypes, $filter);
-        $searchRoomType = reset($roomTypeFiltered);
+        $hotelTariffs = $hotel->getTariffs()->toArray();
+        $searchTariff = $this->getDocumentFromArrayByFullTitle($hotelTariffs, $data['searchTariffName']);
 
-        $documentName = $data['searchTariffName'];
-        $allTariffs = $hotel->getTariffs()->toArray();
-        $searchTariffFiltered = array_filter($allTariffs, $filter);
-        $searchTariff = reset($searchTariffFiltered);
+        foreach ([false, true] as $isCategory) {
+            $calcQuery = new CalcQuery();
+            $calcQuery
+                ->setTariff($searchTariff)
+                ->setRoomType($searchRoomType)
+                ->setSearchBegin($begin)
+                ->setSearchEnd($end)
+                ->setIsUseCategory($isCategory);
 
-        $calcQuery = new CalcQuery();
-        $calcQuery
-            ->setTariff($searchTariff)
-            ->setRoomType($searchRoomType)
-            ->setSearchBegin($begin)
-            ->setSearchEnd($end)
-            ->setIsUseCategory($data['isUseCategory']);
-
-        if ($data['expectException']) {
-            $this->expectException(PriceCachesMergerException::class);
-        }
-        $actual = $this->service->getMergedPriceCaches($calcQuery);
-        $duration = $data['endOffset'] - $data['beginOffset'];
-        $this->assertCount($duration, $actual);
-        $matched = 0;
-        //** TODO: Добавить дополнительно проверки дат и попробовать  */
-        foreach ($actual as $cache) {
-            $cacheDate = $cache['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-            $cacheOffset = (int)$cacheDate->diff(new \DateTime('midnight'))->format('%d');
-            foreach ($data['expectedPriceCaches'] as $expectedPriceCache) {
-                if ($expectedPriceCache['offset'] === $cacheOffset) {
-                    $matched++;
-                    $cacheTariffid = (string)$cache['tariff']['$id'];
-                    /** @var Tariff $expectedTariff */
-                    $expectedTariff = $this->getDocument(Tariff::class, $cacheTariffid);
-                    $this->assertEquals($expectedPriceCache['priceCacheTariffName'], $expectedTariff->getName());
+            if ($data['expectException']) {
+                $this->expectException(PriceCachesMergerException::class);
+            }
+            $actual = $this->service->getMergedPriceCaches($calcQuery);
+            $duration = $data['endOffset'] - $data['beginOffset'];
+            $this->assertCount($duration, $actual);
+            $matched = 0;
+            //** TODO: Добавить дополнительно проверки дат и попробовать  */
+            foreach ($actual as $cache) {
+                $cacheDate = $cache['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+                $cacheOffset = (int)$cacheDate->diff(new \DateTime('midnight'))->format('%d');
+                foreach ($data['expectedPriceCaches'] as $expectedPriceCache) {
+                    if ($expectedPriceCache['offset'] === $cacheOffset) {
+                        $matched++;
+                        $cacheTariffid = (string)$cache['tariff']['$id'];
+                        /** @var Tariff $expectedTariff */
+                        $expectedTariff = $this->getDocument(Tariff::class, $cacheTariffid);
+                        $this->assertEquals($expectedPriceCache['priceCacheTariffName'], $expectedTariff->getName());
+                    }
                 }
             }
+            $this->assertEquals($matched, $duration, 'There is no all matched roomCaches');
         }
-        $this->assertEquals($matched, $duration, 'There is no all matched roomCaches');
+
+
+    }
+
+    private function getDocumentFromArrayByFullTitle(array $documents, string $documentFullTitle)
+    {
+        $filter = function ($document) use ($documentFullTitle) {
+            return $document->getFullTitle() === $documentFullTitle;
+        };
+        $documentFiltered = array_filter($documents, $filter);
+
+        return reset($documentFiltered);
     }
 
     private function getDocument(string $documentRepoName, string $documentId)
@@ -95,38 +105,36 @@ class PriceCachesMergerTest extends WebTestCase
                 'beginOffset' => '8',
                 'endOffset' => '15',
                 'searchHotelName' => 'nameOfHotel',
-                'searchRoomTypeName' => 'ThreeAndThreeAndIndividualPriceRoomType',
-                'searchTariffName' => 'UpTariff',
-                'isUseCategory' => false,
+                'searchRoomTypeName' => AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
                 'expectedPriceCaches' => [
                     [
                         'offset' => 8,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 9,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 10,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 11,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 12,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 13,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 14,
-                        'priceCacheTariffName' => 'UpTariff'
-                    ],
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME],
                 ]
             ]
         ];
@@ -137,33 +145,32 @@ class PriceCachesMergerTest extends WebTestCase
                 'beginOffset' => '5',
                 'endOffset' => '11',
                 'searchHotelName' => 'nameOfHotel',
-                'searchRoomTypeName' => 'ThreeAndThreeAndIndividualPriceRoomType',
-                'searchTariffName' => 'UpTariff',
-                'isUseCategory' => false,
+                'searchRoomTypeName' => AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
                 'expectedPriceCaches' => [
                     [
                         'offset' => 5,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 6,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 7,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 8,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 9,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 10,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ]
                 ]
             ]
@@ -176,9 +183,8 @@ class PriceCachesMergerTest extends WebTestCase
                 'beginOffset' => '0',
                 'endOffset' => '10',
                 'searchHotelName' => 'nameOfHotel',
-                'searchRoomTypeName' => 'ThreeAndThreeAndIndividualPriceRoomType',
-                'searchTariffName' => 'UpTariff',
-                'isUseCategory' => false,
+                'searchRoomTypeName' => AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
                 'expectedPriceCaches' => [
                     [
                         'offset' => 0,
@@ -198,31 +204,31 @@ class PriceCachesMergerTest extends WebTestCase
                     ],
                     [
                         'offset' => 4,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 5,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 6,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 7,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 8,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 9,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 10,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                 ]
             ]
@@ -235,21 +241,20 @@ class PriceCachesMergerTest extends WebTestCase
                 'beginOffset' => '24',
                 'endOffset' => '28',
                 'searchHotelName' => 'nameOfHotel',
-                'searchRoomTypeName' => 'ThreeAndThreeAndIndividualPriceRoomType',
-                'searchTariffName' => 'UpTariff',
-                'isUseCategory' => false,
+                'searchRoomTypeName' => AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
                 'expectedPriceCaches' => [
                     [
                         'offset' => 24,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 25,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 26,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 27,
@@ -266,25 +271,24 @@ class PriceCachesMergerTest extends WebTestCase
                 'beginOffset' => '4',
                 'endOffset' => '8',
                 'searchHotelName' => 'nameOfHotel',
-                'searchRoomTypeName' => 'ThreeAndThreeAndIndividualPriceRoomType',
-                'searchTariffName' => 'DownTariff',
-                'isUseCategory' => false,
+                'searchRoomTypeName' => AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
                 'expectedPriceCaches' => [
                     [
                         'offset' => 4,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 5,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 6,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 7,
-                        'priceCacheTariffName' => 'DownTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ]
                 ]
             ]
@@ -296,21 +300,20 @@ class PriceCachesMergerTest extends WebTestCase
                 'beginOffset' => '24',
                 'endOffset' => '28',
                 'searchHotelName' => 'nameOfHotel',
-                'searchRoomTypeName' => 'ThreeAndThreeAndIndividualPriceRoomType',
-                'searchTariffName' => 'UpTariff',
-                'isUseCategory' => false,
+                'searchRoomTypeName' => AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
                 'expectedPriceCaches' => [
                     [
                         'offset' => 24,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 25,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 26,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 27,
@@ -326,21 +329,20 @@ class PriceCachesMergerTest extends WebTestCase
                 'beginOffset' => '24',
                 'endOffset' => '28',
                 'searchHotelName' => 'nameOfHotel',
-                'searchRoomTypeName' => 'ThreeAndThreeAndIndividualPriceRoomType',
-                'searchTariffName' => 'ChildUpTariff',
-                'isUseCategory' => false,
+                'searchRoomTypeName' => AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
                 'expectedPriceCaches' => [
                     [
                         'offset' => 24,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 25,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 26,
-                        'priceCacheTariffName' => 'UpTariff'
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 27,
@@ -356,9 +358,8 @@ class PriceCachesMergerTest extends WebTestCase
                 'beginOffset' => '28',
                 'endOffset' => '33',
                 'searchHotelName' => 'nameOfHotel',
-                'searchRoomTypeName' => 'ThreeAndThreeAndIndividualPriceRoomType',
+                'searchRoomTypeName' => AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'],
                 'searchTariffName' => 'Основной тариф',
-                'isUseCategory' => false,
             ]
         ];
 
@@ -368,12 +369,10 @@ class PriceCachesMergerTest extends WebTestCase
                 'beginOffset' => '0',
                 'endOffset' => '5',
                 'searchHotelName' => 'nameOfHotel',
-                'searchRoomTypeName' => 'ThreeAndThreeAndIndividualPriceRoomType',
-                'searchTariffName' => 'UpTariff',
-                'isUseCategory' => false,
+                'searchRoomTypeName' => AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
             ]
         ];
-
 
 
     }

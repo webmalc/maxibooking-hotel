@@ -6,7 +6,6 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -28,7 +27,8 @@ class LimitsDashboardSource extends AbstractDashboardSource
         Helper $helper,
         ClientManager $clientManager,
         Router $router
-    ) {
+    )
+    {
         parent::__construct($documentManager, $validator, $translator, $helper);
         $this->clientManager = $clientManager;
         $this->router = $router;

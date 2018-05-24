@@ -16,78 +16,59 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  */
 class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureInterface
 {
-    public const TWO_ONLY_ROOM_TYPE = 'zero';
-    /**
-     * Get roomType data
-     *
-     * @return array
-     */
-    public function data()
-    {
-        return [
-            'zero' => [
-                'title' => 'TwoOnlyRoomType',
-                'places' => 1,
-                'additionalPlaces' => 0,
-                'color' => '#008000',
-                'isHostel' => false,
-                'isChildPrice' => false,
-                'isIndividualAddPrice' => false,
-                'category' => 'categoryTwo'
-            ],
-            'one' => [
-                'title' => 'OneAndOneRoomType',
-                'places' => 1,
-                'additionalPlaces' => 1,
-                'color' => '#008000',
-                'isHostel' => false,
-                'isChildPrice' => false,
-                'isIndividualAddPrice' => false,
-                'category' => 'categoryTwo'
+    public const ONE_PLACE_ROOM_TYPE = [
+        'fullTitle' => 'OnePlace',
+        'places' => 1,
+        'additionalPlaces' => 0,
+        'color' => '#008000',
+        'isHostel' => false,
+        'isChildPrice' => false,
+        'isIndividualAddPrice' => false,
+        'category' => RoomTypeCategoryData::NO_ADDITIONAL_PLACES_CATEGORY['fullTitle']
+    ];
 
-            ],
-            'two' => [
-                'title' => 'TwoAndOneAndChildPriceRoomType',
-                'places' => 2,
-                'additionalPlaces' => 1,
-                'color' => '#b50e2c',
-                'isHostel' => false,
-                'isChildPrice' => true,
-                'isIndividualAddPrice' => false,
-                'category' => 'categoryThree'
-            ],
-            'three' => [
-                'title' => 'ThreeAndThreeAndIndividualPriceRoomType',
-                'places' => 3,
-                'additionalPlaces' => 3,
-                'color' => '#008000',
-                'isHostel' => false,
-                'isChildPrice' => false,
-                'isIndividualAddPrice' => true,
-                'category' => 'categoryThree'
-            ],
-            'four' => [
-                'title' => 'TwoAndOneAndChildPriceAndIndividualPriceRoomType',
-                'places' => 2,
-                'additionalPlaces' => 1,
-                'color' => '#b50e2c',
-                'isHostel' => false,
-                'isChildPrice' => true,
-                'isIndividualAddPrice' => true,
-                'category' => 'categoryThree'
-            ],
-            'hostel' => [
-                'title' => 'ThreeAndTwoHostel',
-                'places' => 3,
-                'additionalPlaces' => 2,
-                'color' => '#008000',
-                'isHostel' => true,
-                'isChildPrice' => false,
-                'isIndividualAddPrice' => false,
-                'category' => 'categoryOne'
-            ]
-        ];
-    }
+    public const THREE_PLACE_ROOM_TYPE = [
+        'fullTitle' => 'ThreePlace',
+        'places' => 3,
+        'additionalPlaces' => 0,
+        'color' => '#008000',
+        'isHostel' => false,
+        'isChildPrice' => false,
+        'isIndividualAddPrice' => false,
+        'category' => RoomTypeCategoryData::NO_ADDITIONAL_PLACES_CATEGORY['fullTitle']
+    ];
+
+    public const TWO_PLUS_TWO_PLACE_ROOM_TYPE = [
+        'fullTitle' => 'TwoPlusTwoPlace',
+        'places' => 2,
+        'additionalPlaces' => 2,
+        'color' => '#008000',
+        'isHostel' => false,
+        'isChildPrice' => true,
+        'isIndividualAddPrice' => true,
+        'category' => RoomTypeCategoryData::ADDITIONAL_PLACES_CATEGORY['fullTitle']
+    ];
+    public const THREE_PLUS_TWO_PLACE_ROOM_TYPE = [
+        'fullTitle' => 'ThreePlusTwoPlace',
+        'places' => 3,
+        'additionalPlaces' => 2,
+        'color' => '#008000',
+        'isHostel' => false,
+        'isChildPrice' => false,
+        'isIndividualAddPrice' => false,
+        'category' => RoomTypeCategoryData::ADDITIONAL_PLACES_CATEGORY['fullTitle']
+    ];
+
+    public const ROOM_TYPES = [
+        self::ONE_PLACE_ROOM_TYPE,
+        self::THREE_PLACE_ROOM_TYPE,
+        self::TWO_PLUS_TWO_PLACE_ROOM_TYPE,
+        self::THREE_PLUS_TWO_PLACE_ROOM_TYPE
+    ];
+
+
+
+
 
     use ContainerAwareTrait;
 
@@ -99,28 +80,28 @@ class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureIn
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
         foreach ($hotels as $hotelNumber => $hotel) {
-            foreach ($this->data() as $key => $data) {
+            foreach (self::ROOM_TYPES as $roomTypeData) {
                 $roomType = new RoomType();
                 $roomType
                     ->setHotel($hotel)
-                    ->setFullTitle($data['title'])
-                    ->setPlaces($data['places'])
-                    ->setAdditionalPlaces($data['additionalPlaces'])
+                    ->setFullTitle($roomTypeData['fullTitle'])
+                    ->setPlaces($roomTypeData['places'])
+                    ->setAdditionalPlaces($roomTypeData['additionalPlaces'])
                 ;
-                if (false === $data['isHostel']) {
+                if (false === $roomTypeData['isHostel']) {
                     $roomType
                         ->setIsHostel(false)
-                        ->setIsChildPrices($data['isChildPrice'])
-                        ->setIsIndividualAdditionalPrices($data['isIndividualAddPrice'])
+                        ->setIsChildPrices($roomTypeData['isChildPrice'])
+                        ->setIsIndividualAdditionalPrices($roomTypeData['isIndividualAddPrice'])
                     ;
                 } else {
                     $roomType->setIsHostel(true);
                 }
 
-                $categoryName = $data['category'] ?? null;
+                $categoryName = $roomTypeData['category'] ?? null;
                 if ($categoryName) {
                     /** @var RoomTypeCategory $category */
-                    $category = $this->getReference($data['category'] . '/' . $hotelNumber);
+                    $category = $this->getReference($roomTypeData['category'] . '/' . $hotelNumber);
                     $roomType->setCategory($category);
                 }
 
@@ -139,7 +120,7 @@ class AdditionalRoomTypeData extends AbstractFixture implements OrderedFixtureIn
                 }
                 $manager->flush();
 
-                $roomTypeReference = $key . '/' . $hotelNumber;
+                $roomTypeReference = $roomTypeData['fullTitle'] . '/' . $hotelNumber;
                 $this->setReference($roomTypeReference, $roomType);
             }
         }

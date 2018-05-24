@@ -104,11 +104,12 @@ class Calculation
             $addsAdults = $sortedTourists['addsAdults'];
             $all = $sortedTourists['all'];
 
-            $mainAdultPrice = $this->getMainAdultsPrice($rawPriceCache, $calcQuery, $mainAdults, $all);
             $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $calcQuery, $mainChildren, $promotion);
+            $mainAdultPrice = $this->getMainAdultsPrice($rawPriceCache, $calcQuery, $mainAdults, $all);
             $multiPrices = ($addsAdults + $addsChildren) > 1;
-            $additionalAdultPrice = $this->getAdditionalAdultsPrice($rawPriceCache, $addsAdults, $multiPrices);
-            $additionalChildrenPrice = $this->getAdditionalChildrenPrice($rawPriceCache, $addsChildren, $multiPrices, $addsAdults, $promotion);
+            $isIndividualPrices = $calcQuery->isIndividualAdditionalPrices();
+            $additionalAdultPrice = $this->getAdditionalAdultsPrice($rawPriceCache, $addsAdults, $multiPrices, $isIndividualPrices);
+            $additionalChildrenPrice = $this->getAdditionalChildrenPrice($rawPriceCache, $addsChildren, $multiPrices, $addsAdults, $isIndividualPrices, $promotion);
 
             $dayPrice = $mainAdultPrice + $mainChildrenPrice + $additionalAdultPrice + $additionalChildrenPrice;
 
@@ -141,7 +142,7 @@ class Calculation
         if ($all === 1 && null !== $rawPriceCache['singlePrice'] && !$calcQuery->getRoomType()->getIsHostel()) {
             $price = $rawPriceCache['singlePrice'];
         }
-        if ($rawPriceCache['isPersonPrice']) {
+        if ($all !== 1 && $rawPriceCache['isPersonPrice']) {
             $price =  $mainAdults * $adultPrice;
         }
 
@@ -178,23 +179,23 @@ class Calculation
      * @return float|int
      * @throws CalculationAdditionalPriceException
      */
-    private function getAdditionalAdultsPrice(array $rawPriceCache, int $addsAdults, bool $multiPrices)
+    private function getAdditionalAdultsPrice(array $rawPriceCache, int $addsAdults, bool $multiPrices, bool $isIndividualPrices)
     {
         if ($addsAdults && $rawPriceCache['additionalPrice'] === null) {
             throw new CalculationAdditionalPriceException('There is additional adult, but no additional price');
         }
         $addsAdultsPrices = 0;
-        if (!$multiPrices && $addsAdults) {
+        if ((!$multiPrices && $addsAdults) || ($multiPrices && !$isIndividualPrices)) {
             $addsAdultsPrices = $addsAdults * $rawPriceCache['additionalPrice'];
         }
-        if ($multiPrices) {
+        if ($multiPrices && $isIndividualPrices) {
             $addsAdultsPrices += $this->multiAdditionalPricesCalc($addsAdults, $rawPriceCache['additionalPrices'], $rawPriceCache['additionalPrice']);
         }
 
         return $addsAdultsPrices;
     }
 
-    private function getAdditionalChildrenPrice(array $rawPriceCache, int $addsChildren, bool $multiPrices, int $addsAdults, Promotion $promotion = null): int
+    private function getAdditionalChildrenPrice(array $rawPriceCache, int $addsChildren, bool $multiPrices, int $addsAdults, bool $isIndividualPrices, Promotion $promotion = null): int
     {
         $additionalChildrenPrice = $rawPriceCache['additionalChildrenPrice'] ?? null;
 
@@ -203,10 +204,10 @@ class Calculation
         }
 
         $addsChildrenPrices = 0;
-        if (!$multiPrices && $addsChildren ) {
+        if ((!$multiPrices && $addsChildren) || ($multiPrices && !$isIndividualPrices) ) {
             $addsChildrenPrices = $addsChildren * $rawPriceCache['additionalChildrenPrice'];
         }
-        if ($multiPrices) {
+        if ($multiPrices && $isIndividualPrices) {
             $addsChildrenPrices += $this->multiAdditionalPricesCalc($addsChildren, $rawPriceCache['additionalChildrenPrices'], $rawPriceCache['additionalChildrenPrice'], $addsAdults);
         }
 
@@ -217,14 +218,14 @@ class Calculation
         return $addsChildrenPrices;
     }
 
-    private function multiAdditionalPricesCalc($num, $prices, $price, $offset = 0): int
+    private function multiAdditionalPricesCalc($num, $additionalPrices, $additionalPrice, $offset = 0): int
     {
         $result = 0;
         for ($i = 0; $i < $num; $i++) {
-            if (isset($prices[$i + $offset]) && $prices[$i + $offset] !== null) {
-                $result += $prices[$i + $offset];
+            if (isset($additionalPrices[$i + $offset]) && $additionalPrices[$i + $offset] !== null) {
+                $result += $additionalPrices[$i + $offset];
             } else {
-                $result += $price;
+                $result += $additionalPrice;
             }
         }
 

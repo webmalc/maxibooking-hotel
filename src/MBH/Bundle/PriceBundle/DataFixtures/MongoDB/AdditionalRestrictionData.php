@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\Restriction;
@@ -15,7 +16,7 @@ use MBH\Bundle\PriceBundle\Document\Restriction;
 class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtureInterface
 {
     public const DATA = [
-        'zero' => [
+        AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'] => [
             'main-tariff' => [
                 'minStayArrival' => [
                     [
@@ -91,7 +92,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
                 ],
 
             ],
-            'downTariff-tariff' =>[
+            AdditionalTariffData::DOWN_TARIFF_NAME.'-tariff' =>[
                 'minStayArrival' => [
                     [
                         'offsets' => [3, 4, 5, 6, 7],
@@ -166,7 +167,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
                 ],
 
             ],
-            'upTariff-tariff' => [
+            AdditionalTariffData::UP_TARIFF_NAME.'-tariff' => [
                 'minStayArrival' => [
                     [
                         'offsets' => [3, 4, 5, 6, 7],
@@ -242,7 +243,8 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
 
             ],
         ],
-        'one' => [
+
+        AdditionalRoomTypeData::THREE_PLACE_ROOM_TYPE['fullTitle'] => [
             'main-tariff' => [
                 'minStayArrival' => [
                     [
@@ -318,7 +320,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
                 ],
 
             ],
-            'downTariff-tariff' =>[
+            AdditionalTariffData::DOWN_TARIFF_NAME.'-tariff' =>[
                 'minStayArrival' => [
                     [
                         'offsets' => [3, 4, 5, 6, 7],
@@ -393,7 +395,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
                 ],
 
             ],
-            'upTariff-tariff' => [
+            AdditionalTariffData::UP_TARIFF_NAME.'-tariff' => [
                 'minStayArrival' => [
                     [
                         'offsets' => [3, 4, 5, 6, 7],
@@ -469,7 +471,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
 
             ],
         ],
-        'two' => [
+        AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'] => [
             'main-tariff' => [
                 'minStayArrival' => [
                     [
@@ -545,7 +547,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
                 ],
 
             ],
-            'downTariff-tariff' =>[
+            AdditionalTariffData::DOWN_TARIFF_NAME.'-tariff' =>[
                 'minStayArrival' => [
                     [
                         'offsets' => [3, 4, 5, 6, 7],
@@ -620,7 +622,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
                 ],
 
             ],
-            'upTariff-tariff' => [
+            AdditionalTariffData::UP_TARIFF_NAME.'-tariff' => [
                 'minStayArrival' => [
                     [
                         'offsets' => [3, 4, 5, 6, 7],
@@ -696,7 +698,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
 
             ],
         ],
-        'three' => [
+        AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'] => [
             'main-tariff' => [
                 'minStayArrival' => [
                     [
@@ -772,7 +774,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
                 ],
 
             ],
-            'downTariff-tariff' =>[
+            AdditionalTariffData::DOWN_TARIFF_NAME.'-tariff' =>[
                 'minStayArrival' => [
                     [
                         'offsets' => [3, 4, 5, 6, 7],
@@ -847,234 +849,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
                 ],
 
             ],
-            'upTariff-tariff' => [
-                'minStayArrival' => [
-                    [
-                        'offsets' => [3, 4, 5, 6, 7],
-                        'value' => 5
-                    ],
-                    [
-                        'offsets' => [8],
-                        'value' => 7
-                    ]
-
-                ],
-                'maxStayArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-
-                ],
-                'minStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'minBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ],
-                ],
-                'minGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnDeparture' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closed' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-
-            ],
-        ],
-        'four' => [
-            'main-tariff' => [
-                'minStayArrival' => [
-                    [
-                        'offsets' => [3, 4, 5, 6, 7],
-                        'value' => 5
-                    ],
-                    [
-                        'offsets' => [8],
-                        'value' => 7
-                    ]
-
-                ],
-                'maxStayArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-
-                ],
-                'minStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'minBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ],
-                ],
-                'minGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnDeparture' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closed' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-
-            ],
-            'downTariff-tariff' =>[
-                'minStayArrival' => [
-                    [
-                        'offsets' => [3, 4, 5, 6, 7],
-                        'value' => 5
-                    ],
-                    [
-                        'offsets' => [8],
-                        'value' => 7
-                    ]
-
-                ],
-                'maxStayArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-
-                ],
-                'minStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'minBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ],
-                ],
-                'minGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnDeparture' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closed' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-
-            ],
-            'upTariff-tariff' => [
+            AdditionalTariffData::DOWN_TARIFF_NAME.'-tariff' => [
                 'minStayArrival' => [
                     [
                         'offsets' => [3, 4, 5, 6, 7],
@@ -1150,233 +925,7 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
 
             ],
         ],
-        'hostel' => [
-            'main-tariff' => [
-                'minStayArrival' => [
-                    [
-                        'offsets' => [3, 4, 5, 6, 7],
-                        'value' => 5
-                    ],
-                    [
-                        'offsets' => [8],
-                        'value' => 7
-                    ]
 
-                ],
-                'maxStayArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-
-                ],
-                'minStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'minBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ],
-                ],
-                'minGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnDeparture' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closed' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-
-            ],
-            'downTariff-tariff' =>[
-                'minStayArrival' => [
-                    [
-                        'offsets' => [3, 4, 5, 6, 7],
-                        'value' => 5
-                    ],
-                    [
-                        'offsets' => [8],
-                        'value' => 7
-                    ]
-
-                ],
-                'maxStayArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-
-                ],
-                'minStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'minBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ],
-                ],
-                'minGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnDeparture' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closed' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-
-            ],
-            'upTariff-tariff' => [
-                'minStayArrival' => [
-                    [
-                        'offsets' => [3, 4, 5, 6, 7],
-                        'value' => 5
-                    ],
-                    [
-                        'offsets' => [8],
-                        'value' => 7
-                    ]
-
-                ],
-                'maxStayArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-
-                ],
-                'minStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxStay' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'minBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxBeforeArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ],
-                ],
-                'minGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'maxGuest' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnArrival' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closedOnDeparture' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-                'closed' => [
-                    [
-                        'offsets' => [],
-                        'value' => null
-                    ]
-                ],
-
-            ],
-        ],
     ];
 
     /**
@@ -1407,9 +956,9 @@ class AdditionalRestrictionData extends AbstractFixture implements OrderedFixtur
                         foreach ($restrictionData as $restrictionName => $restrictionValues) {
                             $actualBeginOffset = (int)$day->diff($begin)->format('%d');
 
-                            foreach ($restrictionValues as $resValue) {
-                                $daysOffsets = $resValue['offsets'];
-                                $value = $resValue['value'];
+                            foreach ($restrictionValues as $restrictionValue) {
+                                $daysOffsets = $restrictionValue['offsets'];
+                                $value = $restrictionValue['value'];
                                 if (\in_array($actualBeginOffset, $daysOffsets, true)) {
                                     $accessor->setValue($restriction, $restrictionName, $value);
                                 }

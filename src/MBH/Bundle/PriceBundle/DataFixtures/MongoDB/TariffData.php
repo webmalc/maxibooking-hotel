@@ -12,6 +12,8 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
  */
 class TariffData extends AbstractFixture implements OrderedFixtureInterface
 {
+
+
     /**
      * {@inheritDoc}
      */

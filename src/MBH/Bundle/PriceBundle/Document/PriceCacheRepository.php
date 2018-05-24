@@ -12,31 +12,33 @@ class PriceCacheRepository extends DocumentRepository
      * @param int $period
      * @return array
      */
-    public function findForDashboard(int $period): array
+    public function findForDashboard(int $period, string $roomTypeKey = 'roomType'): array
     {
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . $period . ' days');
         $result = [];
         $tariffs = $this->getDocumentManager()->getRepository('MBHPriceBundle:Tariff')
             ->getBaseTariffsIds();
-        $caches =  $this->createQueryBuilder()
-            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'price')
+        $caches = $this->createQueryBuilder()
+            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'price', 'roomTypeCategory.id')
             ->field('date')->gte($begin)->lte($end)
             ->field('tariff.id')->in($tariffs)
             ->sort('date')->sort('hotel.id')->sort('roomType.id')
+            ->field($roomTypeKey)->exists(true)
             ->hydrate(false)
-            ->getQuery()
-            ->execute()->toArray();
+            ->getQuery()->execute()->toArray();
+
 
         foreach ($caches as $cache) {
-            $cache['id'] = (string) $cache['_id'];
+            $cache['id'] = (string)$cache['_id'];
             $cache['date'] = $cache['date']->toDateTime();
             $cache['date']->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-            $cache['hotel'] = (string) $cache['hotel']['$id'];
-            $cache['roomType'] = (string) $cache['roomType']['$id'];
-            $cache['tariff'] = (string) $cache['tariff']['$id'];
+            $cache['hotel'] = (string)$cache['hotel']['$id'];
+            $cache[$roomTypeKey] = (string)$cache[$roomTypeKey]['$id'];
+
+            $cache['tariff'] = (string)$cache['tariff']['$id'];
             unset($cache['_id']);
-            $result[$cache['hotel']][$cache['roomType']][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
+            $result[$cache['hotel']][$cache[$roomTypeKey]][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
         }
 
         return $result;
@@ -58,8 +60,9 @@ class PriceCacheRepository extends DocumentRepository
         array $roomTypes = [],
         array $tariffs = [],
         $categories = false
-    ) {
-        $qb = $this->createQueryBuilder('q');
+    )
+    {
+        $qb = $this->createQueryBuilder();
 
         $field = $categories ? 'roomType' : 'roomTypeCategory';
         $qb->field($field)->equals(null);
@@ -123,7 +126,8 @@ class PriceCacheRepository extends DocumentRepository
         $grouped = false,
         $categories = false,
         Cache $memcached = null
-    ) {
+    )
+    {
         if ($memcached) {
             $cache = $memcached->get('price_caches_fetch', func_get_args());
             if ($cache !== false) {
@@ -175,7 +179,8 @@ class PriceCacheRepository extends DocumentRepository
         array $tariffs = [],
         $categories = false,
         \DateTime $displayedDate = null
-    ) {
+    )
+    {
         $cachesQB = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories);
         if (!is_null($displayedDate)) {
             $cachesQB->addAnd($cachesQB->expr()

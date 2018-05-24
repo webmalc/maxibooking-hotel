@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
@@ -20,76 +21,56 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
             'beginOffset' => 0,
             'endOffset' => 0,
         ],
-        'downTariff-tariff'=> [
+        AdditionalTariffData::DOWN_TARIFF_NAME.'-tariff'=> [
             'beginOffset' => 4,
             'endOffset' => 15,
         ],
-        'upTariff-tariff'=> [
+        AdditionalTariffData::UP_TARIFF_NAME.'-tariff'=> [
             'beginOffset' => 8,
             'endOffset' => 5,
         ]
 
     ];
     public const PRICE_DATA = [
-        'zero' => [
+        AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'] => [
             'price' => 1000,
-            'single' => null,
-            'additional' => null,
+            'singlePrice' => null,
+            'additionalPrice' => null,
             'isPersonPrice' => false,
             'childPrice' => null,
-            'additionalChildPrice' => null,
-            'individualAdultPrices' => [],
-            'individualChildrenPrices' => [],
+            'additionalChildrenPrice' => null,
+            'additionalPrices' => [],
+            'additionalChildrenPrices' => [],
         ],
-        'one' => [
+        AdditionalRoomTypeData::THREE_PLACE_ROOM_TYPE['fullTitle'] => [
             'price' => 1000,
-            'single' => 900,
-            'additional' => 850,
+            'singlePrice' => 900,
+            'additionalPrice' => null,
             'isPersonPrice' => false,
             'childPrice' => null,
-            'additionalChildPrice' => null,
-            'individualAdultPrices' => [],
-            'individualChildrenPrices' => [],
+            'additionalChildrenPrice' => null,
+            'additionalPrices' => [],
+            'additionalChildrenPrices' => [],
         ],
-        'two' => [
+        AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'] => [
             'price' => 2000,
-            'single' => 1900,
-            'additional' => 1500,
-            'isPersonPrice' => false,
-            'childPrice' => 1000,
-            'additionalChildPrice' => 900,
-            'individualAdultPrices' => [],
-            'individualChildrenPrices' => [],
+            'singlePrice' => 1900,
+            'additionalPrice' => 1500,
+            'isPersonPrice' => true,
+            'childPrice' => 1300,
+            'additionalChildrenPrice' => 700,
+            'additionalPrices' => [1500, 1450],
+            'additionalChildrenPrices' => [1300, 1250],
         ],
-        'three' => [
+        AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle']=> [
             'price' => 2000,
-            'single' => 1900,
-            'additional' => 1500,
+            'singlePrice' => 1900,
+            'additionalPrice' => 1500,
             'isPersonPrice' => false,
             'childPrice' => null,
-            'additionalChildPrice' => 700,
-            'individualAdultPrices' => [400, 300, 300],
-            'individualChildrenPrices' => [300, 200, 200],
-        ],
-        'four' => [
-            'price' => 2000,
-            'single' => 1900,
-            'additional' => 1500,
-            'isPersonPrice' => false,
-            'childPrice' => 800,
-            'additionalChildPrice' => 700,
-            'individualAdultPrices' => [400, 300],
-            'individualChildrenPrices' => [300, 150],
-        ],
-        'hostel' => [
-            'price' => 1000,
-            'single' => null,
-            'additional' => null,
-            'isPersonPrice' => false,
-            'childPrice' => null,
-            'additionalChildPrice' => null,
-            'individualAdultPrices' => [],
-            'individualChildrenPrices' => [],
+            'additionalChildrenPrice' => 700,
+            'additionalPrices' => [400, 300],
+            'additionalChildrenPrices' => [300, 150],
         ],
     ];
 
@@ -104,6 +85,7 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
         $end = new \DateTime('midnight +1 month');
         $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end);
         $priceDecrementStep = 10;
+        $accessor = $this->container->get('property_accessor');
         foreach ($hotels as $hotelNumber => $hotel) {
             $discount = 0;
             foreach (self::TARIFFS as $tariffKey => $offsets) {
@@ -124,24 +106,16 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
                             ->setRoomType($roomType)
                             ->setHotel($hotel)
                             ->setTariff($tariff)
-                            ->setDate($day);
+                            ->setDate($day)
+                        ;
                         if (!$roomType->getIsHostel()) {
-                            $priceData['price'] === null ?: $priceCache->setPrice($this->calcPrice($priceData['price'], $discount));
-                            $priceData['single'] === null ?: $priceCache->setSinglePrice($this->calcPrice($priceData['single'], $discount));
-                            $priceData['additional'] === null ?: $priceCache->setAdditionalPrice($this->calcPrice($priceData['additional'], $discount));
-                            $priceData['isPersonPrice'] === null ?: $priceCache->setIsPersonPrice($priceData['isPersonPrice']);
-                            $priceData['childPrice'] === null ?: $priceCache->setChildPrice($this->calcPrice($priceData['childPrice'], $discount));
-                            $priceData['additionalChildPrice'] === null ?: $priceCache->setAdditionalChildrenPrice($this->calcPrice($priceData['additionalChildPrice'], $discount));
-                            $priceData['individualAdultPrices'] === null ?: $priceCache->setAdditionalPrices(array_map(function ($price) use ($discount) {
-                                $price = $this->calcPrice($price, $discount);
-                                return $price > 0 ? $price: null;
-                            }, $priceData['individualAdultPrices']));
-                            $priceData['individualChildrenPrices'] === null ?: $priceCache->setAdditionalChildrenPrices(array_map(function ($price) use ($discount) {
-                                $price = $this->calcPrice($price, $discount);
-                                return $price > 0 ? $price: null;
-                            }, $priceData['individualChildrenPrices']));
-                        } else {
-                            $priceCache->setPrice($priceData['price'] - $discount);
+                            foreach (array_keys($priceData) as $priceValueKey) {
+                                $value = $priceData[$priceValueKey];
+                                if (\is_int($value) || \is_array($value)) {
+                                    $value = $this->calcPrice($value, $discount);
+                                }
+                                $accessor->setValue($priceCache, $priceValueKey, $value);
+                            }
                         }
                         $manager->persist($priceCache);
                     }
@@ -154,11 +128,20 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
         $manager->flush();
     }
 
-    private function calcPrice(int $price, int $discount): int
+    private function calcPrice($price, int $discount)
     {
-        $price -= $discount;
+        if (\is_int($price)) {
+            $price -= $discount;
 
-        return $price > 0 ? $price : 0;
+            return $price > 0 ? $price : 0;
+        }
+
+        if (\is_array($price)) {
+            return array_map(function ($price) use ($discount) {
+                $price = $this->calcPrice($price, $discount);
+                return $price > 0 ? $price : null;
+            }, $price);
+        }
     }
 
     public function getOrder()

@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -17,12 +18,10 @@ class AdditionalRoomCacheData extends AbstractFixture implements OrderedFixtureI
 {
 
     const DATA = [
-        'one' => 6,
-        'two' => 4,
-        'three' => 5,
-        'four' => 20,
-        'hostel' => 3,
-        'zero' => 6
+        AdditionalRoomTypeData::ONE_PLACE_ROOM_TYPE['fullTitle'] => 6,
+        AdditionalRoomTypeData::THREE_PLACE_ROOM_TYPE['fullTitle'] => 4,
+        AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'] => 5,
+        AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'] => 12
     ];
 
     /**

@@ -27,21 +27,21 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface
                 'places' => 1,
                 'additionalPlaces' => 1,
                 'color' => '#008000',
-                'category' => 'categoryOne'
+                'category' => RoomTypeCategoryData::CATEGORY_ONE['fullTitle']
             ],
             'roomtype-double' => [
                 'title' => 'mbhhotelbundle.roomTypeData.two.place',
                 'places' => 2,
                 'additionalPlaces' => 1,
                 'color' => '#b50e2c',
-                'category' => 'categoryOne'
+                'category' => RoomTypeCategoryData::CATEGORY_ONE['fullTitle']
             ],
             'hotel-triple' => [
                 'title' => 'mbhhotelbundle.roomTypeData.three.place',
                 'places' => 3,
                 'additionalPlaces' => 2,
                 'color' => '#008000',
-                'category' => 'categoryOne'
+                'category' => RoomTypeCategoryData::CATEGORY_ONE['fullTitle']
             ]
         ];
     }

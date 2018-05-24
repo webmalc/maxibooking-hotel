@@ -13,6 +13,11 @@ use MBH\Bundle\PriceBundle\Document\TariffChildOptions;
  */
 class AdditionalTariffData extends AbstractFixture implements OrderedFixtureInterface
 {
+
+    public const DOWN_TARIFF_NAME = 'DownTariff';
+    public const UP_TARIFF_NAME = 'UpTariff';
+    public const CHILD_UP_TARIFF_NAME = 'ChildUpTariff';
+
     /**
      * {@inheritDoc}
      */
@@ -25,18 +30,18 @@ class AdditionalTariffData extends AbstractFixture implements OrderedFixtureInte
             if ($this->getEnv() !== 'prod') {
 
                 $downTariff = new Tariff();
-                $downTariff->setFullTitle('DownTariff')
+                $downTariff->setFullTitle(self::DOWN_TARIFF_NAME)
                     ->setIsDefault(false)
                     ->setIsOnline(true)
                     ->setHotel($hotel);
                 $manager->persist($downTariff);
 
                 $manager->flush();
-                $this->setReference('downTariff-tariff/' . $hotelNumber, $downTariff);
+                $this->setReference(self::DOWN_TARIFF_NAME.'-tariff/' . $hotelNumber, $downTariff);
 
 
                 $upTariff = new Tariff();
-                $upTariff->setFullTitle('UpTariff')
+                $upTariff->setFullTitle(self::UP_TARIFF_NAME)
                 ->setIsDefault(false)
                 ->setIsOnline(true)
                 ->setMinPerPrepay(55)
@@ -45,12 +50,12 @@ class AdditionalTariffData extends AbstractFixture implements OrderedFixtureInte
                 $manager->persist($upTariff);
 
                 $manager->flush();
-                $this->setReference('upTariff-tariff/' . $hotelNumber, $upTariff);
+                $this->setReference(self::UP_TARIFF_NAME.'-tariff/' . $hotelNumber, $upTariff);
 
 
                 $childOptions = new TariffChildOptions();
                 $childUpTariff = new Tariff();
-                $childUpTariff->setFullTitle('ChildUpTariff')
+                $childUpTariff->setFullTitle(self::CHILD_UP_TARIFF_NAME)
                     ->setIsDefault(false)
                     ->setIsOnline(true)
                     ->setParent($upTariff)
@@ -59,7 +64,7 @@ class AdditionalTariffData extends AbstractFixture implements OrderedFixtureInte
                 $manager->persist($childUpTariff);
 
                 $manager->flush();
-                $this->setReference('childUpTariff-tariff/' . $hotelNumber, $upTariff);
+                $this->setReference(self::CHILD_UP_TARIFF_NAME.'-tariff/' . $hotelNumber, $upTariff);
             }
         }
     }

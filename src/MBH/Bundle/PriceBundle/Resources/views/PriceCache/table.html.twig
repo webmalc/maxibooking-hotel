@@ -49,7 +49,7 @@
 
                 {% if roomType.additionalPlaces > 1 and roomType.isIndividualAdditionalPrices %}
                     {% for num in 1..(roomType.additionalPlaces - 1) %}
-                        {% set categories = categories|merge({('additionalPrice' ~ num): 'mbhpricebundle.view.pricecache.table.price_for_adult_main_place'|trans ~ '#' ~ (num + 1), ('additionalChildrenPrice' ~ num): 'mbhpricebundle.view.pricecache.table.price_for_children_main_place'|trans ~ '#'  ~ (num + 1) }) %}
+                        {% set categories = categories|merge({('additionalPrice' ~ num): 'mbhpricebundle.view.pricecache.table.price_for_adult_main_place'|trans ~ '#' ~ (num + 1), ('additionalChildrenPrice' ~ num): 'mbhpricebundle.view.pricecache.table.price_for_children_additional_place'|trans ~ '#'  ~ (num + 1) }) %}
                     {% endfor %}
                 {% endif %}
 
