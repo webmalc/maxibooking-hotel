@@ -47,15 +47,18 @@
     <script>
         var mbh_property = {{ get_properties() }};
     </script>
-    {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/plugin/mbh_data.tinymce.plugin.js' %}
+    {% javascripts filter='uglifyjs2'
+        '@MBHClientBundle/Resources/public/js/tinymce/plugin/mbh_data.tinymce.plugin.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% if app.request.locale == 'ru' %}
-        {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/langs/ru.js' %}
+        {% javascripts filter='uglifyjs2'
+            '@MBHClientBundle/Resources/public/js/tinymce/langs/ru.js' %}
             {% set url_lang %}{{ asset_url }}{% endset %}
             <script src="{{ url_lang }}"></script>
         {% endjavascripts %}
-        {% javascripts '@MBHClientBundle/Resources/public/js/tinymce/plugin/langs/ru.js' %}
+        {% javascripts filter='uglifyjs2'
+            '@MBHClientBundle/Resources/public/js/tinymce/plugin/langs/ru.js' %}
             <script src="{{ asset_url }}"></script>
         {% endjavascripts %}
     {% else %}
