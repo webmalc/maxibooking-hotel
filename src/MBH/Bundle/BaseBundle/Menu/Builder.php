@@ -84,17 +84,7 @@ class Builder
             ],
         ];
 
-
-        $menu = $this->factory->createItem('root');
-
-        $menu
-            ->setChildrenAttributes([
-                'class' => 'sidebar-menu',
-                'id'    => 'main-menu',
-            ]);
-
-        // header
-        $menu->addChild($this->getHeaderItem('menu.header.navigation'));
+        $menu = $this->createRootItemWithCollapse('main-menu', 'menu.header.navigation', true);
 
         // chessboard
         $menu->addChild($this->createItem($this->getChessboardData()));
@@ -119,6 +109,100 @@ class Builder
 
         // financial analytics
         $menu->addChild($this->itemsFinancialAnalytics());
+
+        return $this->filter($menu, $options);
+    }
+
+    /**
+     * User menu
+     * @param \Knp\Menu\FactoryInterface $factory
+     * @param array $options
+     * @return \Knp\Menu\MenuItem
+     */
+    public function managementMenu(array $options)
+    {
+        $onlineForm = [
+            'online_form' => [
+                'options'    => [
+                    'route' => 'online_form',
+                    'label' => 'menu.communication.label.onlineform',
+                ],
+                'attributes' => ['icon' => 'fa fa-globe'],
+            ],
+        ];
+
+        $parameters = [
+            'config' => [
+                'options'    => [
+                    'route' => 'client_config',
+                    'label' => 'menu.configs.parameters',
+                ],
+                'attributes' => ['icon' => 'fa fa-cog'],
+            ],
+        ];
+
+        $profile = [
+            'profile' => [
+                'options'    => [
+                    'route' => 'user_profile',
+                    'label' => 'menu.label.profile',
+                ],
+                'attributes' => ['icon' => 'fa fa-cog'],
+            ],
+        ];
+
+        $menu = $this->createRootItemWithCollapse('management-menu', 'menu.settings.label.header');
+
+        // Hotel links
+        $menu->addChild($this->itemsHotelLinks());
+
+        // Prices links
+        $menu->addChild($this->itemsPricesLinks());
+
+        // channel manager
+        $menu->addChild($this->itemsChannelManager());
+
+        // web site
+        $menu->addChild($this->itemsWebSite());
+
+        // online form
+        $menu->addChild($this->createItem($onlineForm));
+
+        // analytics
+        $menu->addChild($this->itemsAnalytics());
+
+        // hotel services management
+        $menu->addChild($this->itemsHotelServicesManagement());
+
+        // users and roles
+        $menu->addChild($this->itemsUsersAndRoles());
+
+        // parameters
+        $menu->addChild($this->createItem($parameters));
+
+        // profile
+        $menu->addChild($this->createItem($profile));
+
+
+//        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
+//            ->setAttributes(['icon' => 'fa fa-star']);
+
+        return $this->filter($menu, $options);
+    }
+
+    /**
+     * Create hotel menu
+     * @param \Knp\Menu\FactoryInterface $factory
+     * @param array $options
+     * @return \Knp\Menu\MenuItem
+     */
+    public function createHotelMenu(array $options)
+    {
+
+        $menu = $this->createRootItem('create-hotel-menu','menu.header.navigation');
+
+        $menu->addChild('create_hotel', ['route' => 'hotel_new', 'label' => 'menu.hotel_new.label'])
+            ->setAttribute('icon', 'fa fa-plus');
 
         return $this->filter($menu, $options);
     }
@@ -197,113 +281,45 @@ class Builder
     }
 
     /**
-     * User menu
-     * @param \Knp\Menu\FactoryInterface $factory
-     * @param array $options
-     * @return \Knp\Menu\MenuItem
+     * @param string $id    css id
+     * @param string $label
+     * @param bool $isOpen
+     * @return ItemInterface
      */
-    public function managementMenu(array $options)
+    private function createRootItemWithCollapse(string $id, string $label, bool $isOpen = false): ItemInterface
     {
-        $onlineForm = [
-            'online_form' => [
-                'options'    => [
-                    'route' => 'online_form',
-                    'label' => 'menu.communication.label.onlineform',
-                ],
-                'attributes' => ['icon' => 'fa fa-globe'],
-            ],
-        ];
-
-        $parameters = [
-            'config' => [
-                'options'    => [
-                    'route' => 'client_config',
-                    'label' => 'menu.configs.parameters',
-                ],
-                'attributes' => ['icon' => 'fa fa-cog'],
-            ],
-        ];
-
-        $profile = [
-            'profile' => [
-                'options'    => [
-                    'route' => 'user_profile',
-                    'label' => 'menu.label.profile',
-                ],
-                'attributes' => ['icon' => 'fa fa-cog'],
-            ],
-        ];
-
-        $menu = $this->factory->createItem('root');
-
-        $menu->setChildrenAttributes(
-            [
-                'class' => 'sidebar-menu',
-                'id'    => 'management-menu',
-            ]
-        );
-
-        // header
-        $menu->addChild($this->getHeaderItem('menu.settings.label.header'));
-
-        // Hotel links
-        $menu->addChild($this->itemsHotelLinks());
-
-        // Prices links
-        $menu->addChild($this->itemsPricesLinks());
-
-        // channel manager
-        $menu->addChild($this->itemsChannelManager());
-
-        // web site
-        $menu->addChild($this->itemsWebSite());
-
-        // online form
-        $menu->addChild($this->createItem($onlineForm));
-
-        // analytics
-        $menu->addChild($this->itemsAnalytics());
-
-        // hotel services management
-        $menu->addChild($this->itemsHotelServicesManagement());
-
-        // users and roles
-        $menu->addChild($this->itemsUsersAndRoles());
-
-        // parameters
-        $menu->addChild($this->createItem($parameters));
-
-        // profile
-        $menu->addChild($this->createItem($profile));
-
-
-//        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
-//            ->setAttributes(['icon' => 'fa fa-star']);
-
-        return $this->filter($menu, $options);
+        return $this->createRootItem($id, $label, true, $isOpen);
     }
 
     /**
-     * Create hotel menu
-     * @param \Knp\Menu\FactoryInterface $factory
-     * @param array $options
-     * @return \Knp\Menu\MenuItem
+     * @param string $id     css id
+     * @param string $label
+     * @param bool $collapse
+     * @param bool $isOpen
+     * @return ItemInterface
      */
-    public function createHotelMenu(array $options)
+    private function createRootItem(string $id, string $label, bool $collapse = false, bool $isOpen = false): ItemInterface
     {
         $menu = $this->factory->createItem('root');
 
-        $menu->setChildrenAttributes([
-            'class' => 'sidebar-menu',
-            'id'    => 'create-hotel-menu',
-        ]);
+        $cssClass = [];
+        $cssClass[] = 'sidebar-menu';
+        if ($collapse) {
+            $cssClass[] = 'collapse';
+            if ($isOpen) {
+                $cssClass[] = 'in';
+            }
+        }
 
-        $menu->addChild('header', [])->setAttributes(['header' => 'menu.header.navigation']);
+        $menu->setChildrenAttributes(
+            [
+                'class' => implode(' ', $cssClass),
+                'id'    => $id,
+            ]
+        );
+        $menu->setLabel($label);
 
-        $menu->addChild('create_hotel', ['route' => 'hotel_new', 'label' => 'menu.hotel_new.label'])
-            ->setAttribute('icon', 'fa fa-plus');
-
-        return $this->filter($menu, $options);
+        return $menu;
     }
 
     /**
@@ -1191,8 +1207,8 @@ $paymentSystem,
             ];
         }
 
-        $parentAttr = ['dropdown' => true, 'icon' => 'fa fa-bell'] + $porterBadges;
         $parentOptions = ['route' => '_welcome', 'label' => 'menu.label.portie',];
+        $parentAttr = ['dropdown' => true, 'icon' => 'fa fa-bell'] + $porterBadges;
 
         $porterLink = [
             'porter_links' => [

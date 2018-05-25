@@ -7,10 +7,12 @@
             {% set menu = knp_menu_get('base_createHotelMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
             {{ knp_menu_render(menu) }}
         {% else %}
-            {% set menu = knp_menu_get('base_mainMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
-            {{ knp_menu_render(menu) }}
-            {% set menu = knp_menu_get('base_managementMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
-            {{ knp_menu_render(menu) }}
+            <div class="sidebar-accordion">
+                {% set menu = knp_menu_get('base_mainMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
+                {{ knp_menu_render(menu) }}
+                {% set menu = knp_menu_get('base_managementMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
+                {{ knp_menu_render(menu) }}
+            </div>
         {% endif %}
         {#<!-- /.sidebar-menu -->#}
     </section>

@@ -10,6 +10,25 @@
 
 {% import _self as macros %}
 
+{% block list %}
+
+    {% if item.hasChildren and options.depth is not same as(0) and item.displayChildren %}
+        {% import _self as knp_menu %}
+        {% set isRootItem = item.name == 'root' %}
+
+        {% if isRootItem %}
+            <div class="header{{ not ('collapse in' in item.childrenAttributes['class']) ? ' collapsed' : '' }}"
+                 data-toggle="collapse"
+                 data-target="#{{ item.childrenAttributes['id'] }}">
+            <span class="header-title">{{ item.label|trans }}</span>
+            <span class="icon-toggle"></span>
+            </div>
+        {% endif %}
+        <ul{{ knp_menu.attributes(listAttributes)}}>
+            {{ block('children') }}
+        </ul>
+    {% endif %}
+{% endblock %}
 
 {% block item %}
 {% wrapinline %}
