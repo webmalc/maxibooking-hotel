@@ -30,7 +30,9 @@ class Hotel extends Common
      */
     public function getPhoneNumber(): string
     {
-        return $this->entity->getContactInformation() ?? $this->entity->getContactInformation()->getPhoneNumber() ?? '';
+        return $this->entity->getContactInformation() !== null
+            ? $this->entity->getContactInformation()->getPhoneNumber() ?? ''
+            : '';
     }
 
     /**

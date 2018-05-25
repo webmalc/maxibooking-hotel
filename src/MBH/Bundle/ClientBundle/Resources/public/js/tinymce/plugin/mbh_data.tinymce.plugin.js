@@ -318,10 +318,10 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
   });
 
   function typeOfPayer() {
-    var html = '<div>{% if payer is instanceof Mortal %}';
+    var html = '<div>{% if payer is instanceofMortal %}';
     html += '{# data for payer is a Mortal #}<div></div>';
     html += '{# end data Mortal#}<br>';
-    html += '{% elseif payer is instanceof Organization %}';
+    html += '{% elseif payer is instanceofOrganization %}';
     html += '{# data for payer is a Organization #}<div></div>';
     html += '{# end data Organization#}';
     html += '{% endif %}</div>';
