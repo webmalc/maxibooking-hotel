@@ -5,6 +5,7 @@ namespace MBH\Bundle\BaseBundle\Menu;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -102,25 +103,28 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);
 
 
-        //Tasks links
-        $queryCriteria = new TaskQueryCriteria();
-        $queryCriteria->userGroups = $user->getGroups();
-        $queryCriteria->performer = $user;
-        $queryCriteria->onlyOwned = true;
-        $queryCriteria->status = 'open';
-        $queryCriteria->hotel = $hotel;
-
-        $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
-
         $taskAttributes = ['icon' => 'fa fa-tasks'];
+        if ($user instanceof User) {
+            //Tasks links
+            $queryCriteria = new TaskQueryCriteria();
+            $queryCriteria->userGroups = $user->getGroups();
+            $queryCriteria->performer = $user;
+            $queryCriteria->onlyOwned = true;
+            $queryCriteria->status = 'open';
+            $queryCriteria->hotel = $hotel;
 
-        if ($openTaskCount > 0) {
-            $taskAttributes += [
-                'badge' => true,
-                'badge_class' => 'bg-red',
-                'badge_id' => 'task-counter',
-                'badge_value' => $openTaskCount
-            ];
+            $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
+
+            $taskAttributes = ['icon' => 'fa fa-tasks'];
+
+            if ($openTaskCount > 0) {
+                $taskAttributes += [
+                    'badge' => true,
+                    'badge_class' => 'bg-red',
+                    'badge_id' => 'task-counter',
+                    'badge_value' => $openTaskCount
+                ];
+            }
         }
 
         $menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])->setAttributes($taskAttributes);
