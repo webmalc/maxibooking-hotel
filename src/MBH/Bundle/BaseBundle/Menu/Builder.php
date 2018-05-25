@@ -147,7 +147,7 @@ class Builder
                     'route' => 'user_profile',
                     'label' => 'menu.label.profile',
                 ],
-                'attributes' => ['icon' => 'fa fa-cog'],
+                'attributes' => ['icon' => 'fa fa-user-circle-o'],
             ],
         ];
 
