@@ -103,31 +103,6 @@
                                 </td>
                             </tr>
                         {% endif %}
-
-
-                        {% if package.pricesByDate is not empty and package.prices is empty %}
-                            <tr>
-                                <td class="col-md-3">
-                                    <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
-                                </td>
-                                <td>
-                                    {% if package.pricesByDate|length > 5 %}
-                                        <p>
-                                            <small>
-                                                <a href="javascript: toggler('price-by-days')">{{ 'package.edit.show_display'|trans}}</a>
-                                            </small>
-                                        </p>
-                                    {% endif %}
-                                    <div id="price-by-days"
-                                         {% if package.pricesByDate|length > 5 %}style="display: none;"{% endif %}>
-                                        {% for date, price in package.pricesByDate %}
-                                            <small>{{ date|replace({'_': '.'}) }} -
-                                                <strong>{{ price|number_format(2) }}</strong></small><br>
-                                        {% endfor %}
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endif %}
                     </tbody>
                 </table>
             </div>

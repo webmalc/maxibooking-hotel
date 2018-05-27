@@ -2,14 +2,16 @@
 
 namespace MBH\Bundle\PackageBundle\Lib;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use MBH\Bundle\OnlineBundle\Services\ApiHandler;
+use MBH\Bundle\PackageBundle\Document\CalculatedPackagePrices;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MBH\Bundle\PackageBundle\Document\PackagePricesForCombination;
+use MBH\Bundle\PackageBundle\Document\PackagePriceForCombination;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -103,6 +105,12 @@ class SearchResult
      * @var string
      */
     protected $queryId;
+
+    /**
+     * @ODM\ReferenceOne(targetDocument="CalculatedPackagePrice")
+     * @var CalculatedPackagePrices
+     */
+    protected $packagePrices;
 
     /**
      * @return \DateTime
@@ -216,33 +224,12 @@ class SearchResult
     }
 
     /**
-     * @param mixed $price
-     * @param mixed $adults
-     * @param mixed $children
+     * @param CalculatedPackagePrices $calculatedPackagePrice
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
      */
-    public function addPrice($price, $adults = null, $children = null)
+    public function setPackagePrices(CalculatedPackagePrices $calculatedPackagePrice)
     {
-        if ($adults !== null && $children !== null) {
-
-            if ($this->getAdults() !== 0 || $this->getChildren() !== 0) {
-                if(($adults != $this->getAdults()) || ($children != $this->getChildren())) {
-                    return $this;
-                }
-            }
-        }
-
-        if($price === null) {
-            if(isset($this->prices[$adults . '_' . $children])) {
-                unset($this->prices[$adults . '_' . $children]);
-            }
-            return $this;
-        }
-
-        if (!isset($this->prices[$adults . '_' . $children])) {
-            $this->prices[$adults . '_' . $children] = 0;
-        }
-        $this->prices[$adults . '_' . $children] += (float) $price;
+        $this->packagePrices = $calculatedPackagePrice;
 
         return $this;
     }
@@ -305,39 +292,6 @@ class SearchResult
     public function getPrices()
     {
         return $this->prices;
-    }
-
-    /**
-     * @param array $prices
-     * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
-     */
-    public function setPrices(array $prices)
-    {
-        $this->prices = $prices;
-
-        return $this;
-    }
-
-    /**
-     * @param $adults
-     * @param $children
-     * @return null|array
-     */
-    public function getPricesByDateForCombination($adults, $children)
-    {
-        /** @var PackagePricesForCombination $packagePricesForCombination */
-        foreach ($this->getPackagePrices() as $packagePricesForCombination) {
-            if ($packagePricesForCombination->getAdults() === $adults && $packagePricesForCombination->getChildren() === $children) {
-                $pricesByDate = [];
-                foreach ($packagePricesForCombination->getPackagePrices() as $packagePrice) {
-                    $pricesByDate[$packagePrice->getDate()->format('d.m.Y')] = $packagePrice->getPrice();
-                }
-
-                return $pricesByDate;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -411,7 +365,7 @@ class SearchResult
     }
 
     /**
-     * @return PackagePricesForCombination[]
+     * @return PackagePriceForCombination[]
      */
     public function getPackagePrices()
     {

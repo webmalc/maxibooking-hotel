@@ -5,8 +5,19 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-class PackagePricesForCombination
+/**
+ * @ODM\EmbeddedDocument()
+ * Class PackagePriceForCombination
+ * @package MBH\Bundle\PackageBundle\Document
+ */
+class PackagePriceForCombination
 {
+    /**
+     * @var float
+     * @ODM\Field(type="float")
+     */
+    private $total;
+
     /**
      * @var PackagePrice[]
      * @ODM\EmbedMany(targetDocument="PackagePrice")
@@ -30,6 +41,25 @@ class PackagePricesForCombination
     }
 
     /**
+     * @return float
+     */
+    public function getTotal(): ?float
+    {
+        return $this->total;
+    }
+
+    /**
+     * @param float $total
+     * @return PackagePriceForCombination
+     */
+    public function setTotal(float $total): PackagePriceForCombination
+    {
+        $this->total = $total;
+
+        return $this;
+    }
+
+    /**
      * @return PackagePrice[]
      */
     public function getPackagePrices()
@@ -39,9 +69,9 @@ class PackagePricesForCombination
 
     /**
      * @param PackagePrice[] $packagePrices
-     * @return PackagePricesForCombination
+     * @return PackagePriceForCombination
      */
-    public function setPackagePrices($packagePrices): PackagePricesForCombination
+    public function setPackagePrices($packagePrices): PackagePriceForCombination
     {
         $this->packagePrices = $packagePrices;
 
@@ -50,7 +80,7 @@ class PackagePricesForCombination
 
     /**
      * @param PackagePrice $packagePrice
-     * @return PackagePricesForCombination
+     * @return PackagePriceForCombination
      */
     public function addPackagePrice(PackagePrice $packagePrice)
     {
@@ -69,9 +99,9 @@ class PackagePricesForCombination
 
     /**
      * @param int $adults
-     * @return PackagePricesForCombination
+     * @return PackagePriceForCombination
      */
-    public function setAdults(int $adults): PackagePricesForCombination
+    public function setAdults(int $adults): PackagePriceForCombination
     {
         $this->adults = $adults;
 
@@ -88,9 +118,9 @@ class PackagePricesForCombination
 
     /**
      * @param int $children
-     * @return PackagePricesForCombination
+     * @return PackagePriceForCombination
      */
-    public function setChildren(int $children): PackagePricesForCombination
+    public function setChildren(int $children): PackagePriceForCombination
     {
         $this->children = $children;
 

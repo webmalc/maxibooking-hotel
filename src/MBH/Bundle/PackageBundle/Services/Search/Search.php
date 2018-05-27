@@ -430,7 +430,7 @@ class Search implements SearchInterface
                     continue;
                 }
                 foreach ($prices as $price) {
-                    $result->addPrice($price['total'], $price['adults'], $price['children'])
+                    $result->addPriceForCombination($price['total'], $price['adults'], $price['children'])
 //                        ->setPricesByDate($price['prices'], $price['adults'], $price['children'])
                         ->setPackagePricesForCombination($price['packagePrices'], $price['adults'], $price['children'])
                     ;

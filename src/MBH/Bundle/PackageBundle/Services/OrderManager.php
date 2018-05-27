@@ -141,7 +141,6 @@ class OrderManager implements Searchable
             );
 
             $new->setPrice($results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren()))
-                ->setPricesByDate($results[0]->getPricesByDateForCombination($results[0]->getAdults(), $results[0]->getChildren()))
                 ->setPrices($results[0]->getPackagePricesForCombination($results[0]->getAdults(), $results[0]->getChildren()))
                 ->setVirtualRoom($results[0]->getVirtualRoom())
             ;
@@ -537,7 +536,6 @@ class OrderManager implements Searchable
                     $results[0]->getChildren()
                 )
             )
-            ->setPricesByDate($results[0]->getPricesByDateForCombination($results[0]->getAdults(), $results[0]->getChildren()))
             ->setPrices($results[0]->getPackagePricesForCombination($results[0]->getAdults(), $results[0]->getChildren()))
             ->setIsForceBooking($results[0]->getForceBooking());
 
@@ -710,12 +708,10 @@ class OrderManager implements Searchable
     public function updatePricesByDate(Package $package, ?Tariff $tariff)
     {
         $newDailyPrice = $package->getPackagePrice() / $package->getNights();
-        $newPricesByDate = [];
         $begin = clone $package->getBegin();
         $end = clone $package->getEnd();
         /** @var \DateTime $day */
         foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
-            $newPricesByDate[$day->format('d_m_Y')] = $newDailyPrice;
             $packagePrice = $package->getPackagePriceByDate($day);
             if (is_null($packagePrice)) {
                 $prices =  $package->getPrices()->toArray();
@@ -733,7 +729,6 @@ class OrderManager implements Searchable
                 $packagePrice->setTariff($tariff);
             }
         }
-        $package->setPricesByDate($newPricesByDate);
     }
 
     /**

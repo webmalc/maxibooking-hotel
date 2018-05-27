@@ -716,11 +716,10 @@ class MyAllocator extends Base
             }
 
             //prices
-            $pricesByDate = [];
+            $packagePrices = [];
             foreach ($room['DayRates'] as $day) {
 
                 $date = $helper->getDateFromString($day['Date'], 'Y-m-d');
-                $pricesByDate[$date->format('d_m_Y')] = $this->currencyConvertToRub($config, (float)$day['Rate']);
                 $packagePrices[] = new PackagePrice(
                     $date, $this->currencyConvertToRub($config, (float)$day['Rate']), $tariffs['base']['doc']
                 );
@@ -763,7 +762,6 @@ class MyAllocator extends Base
                 ->setAdults(isset($room['Occupancy']) ? (int)$room['Occupancy']: 1)
                 ->setChildren(0)
                 ->setIsSmoking(!empty($room['OccupantSmoker']) ? true : false)
-                ->setPricesByDate($pricesByDate)
                 ->setPrices($packagePrices)
                 ->setPrice($packageTotal)
                 ->setOriginalPrice($packageTotal)

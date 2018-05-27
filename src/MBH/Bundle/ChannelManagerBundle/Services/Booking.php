@@ -690,7 +690,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
             //prices
             $total = 0;
             $tariff = $rateId = null;
-            $pricesByDate = $packagePrices = [];
+            $packagePrices = [];
             foreach ($room->price as $price) {
                 if (!$rateId) {
                     $rateId = (string)$price['rate_id'];
@@ -709,7 +709,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 }
                 $total += (float)$price;
                 $date = $helper->getDateFromString((string)$price['date'], 'Y-m-d');
-                $pricesByDate[$date->format('d_m_Y')] = $this->currencyConvertToRub($config, (float)$price);
                 $packagePrices[] = new PackagePrice($date, $this->currencyConvertToRub($config, (float)$price), $tariff);
             }
 
@@ -730,7 +729,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ->setAdults((int)$room->numberofguests)
                 ->setChildren(0)
                 ->setIsSmoking((int)$room->smoking ? true : false)
-                ->setPricesByDate($pricesByDate)
                 ->setPrices($packagePrices)
                 ->setPrice($packageTotal)
                 ->setOriginalPrice((float)$total)

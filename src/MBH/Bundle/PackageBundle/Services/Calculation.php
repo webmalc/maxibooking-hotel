@@ -9,9 +9,11 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\PackageBundle\Document\CalculatedPackagePrices;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PackageBundle\Document\PackagePriceForCombination;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -154,6 +156,7 @@ class Calculation
         $useDuration = true
     )
     {
+        $calculatedPackagePrice = new CalculatedPackagePrices();
         $originTariff = $tariff;
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
@@ -399,13 +402,12 @@ class Calculation
                 $total -= PromotionConditionFactory::calcDiscount($promotion, $total, false);
             }
 
-            $prices[$combination['adults'] . '_' . $combination['children']] = [
-                'adults' => $combination['adults'],
-                'children' => $combination['children'],
-                'total' => $this->getTotalPrice($total),
-                'prices' => $dayPrices,
-                'packagePrices' => $packagePrices,
-            ];
+            $prices[$combination['adults'] . '_' . $combination['children']] = (new PackagePriceForCombination)
+                ->setAdults($combination['adults'])
+                ->setChildren($combination['children'])
+                ->setTotal($this->getTotalPrice($total))
+                ->setPackagePrices($packagePrices)
+            ;
         }
 
         return $prices;

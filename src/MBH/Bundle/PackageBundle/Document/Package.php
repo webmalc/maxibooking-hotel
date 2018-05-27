@@ -1152,29 +1152,6 @@ class Package extends Base implements \JsonSerializable
         return $this->isCheckIn;
     }
 
-    /**
-     * Returns the average price per night.
-     * @param \DateTime|string|null $day Date format d.m.Y
-     * @return float
-     */
-    public function getOneDayPrice($day = null)
-    {
-        $date = null;
-
-        if ($day instanceof \DateTime) {
-            $date = $day > format('d_m_Y');
-        }
-        if (preg_match('/^\d{2}\.\d{2}.\d{4}$/ui', (string)$day)) {
-            $date = str_replace('.', '_', $day);
-        }
-
-        if (!$date || empty($this->pricesByDate[$date])) {
-            return round($this->getPackagePrice() / $this->getNights(), 2);
-        } else {
-            return (float)$this->pricesByDate[$date];
-        }
-    }
-
     public function isEarlyCheckIn()
     {
         foreach ($this->getServices() as $service) {
@@ -1198,58 +1175,29 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * Set pricesByDate
-     *
-     * @param array $pricesByDate
-     * @return self
-     * @deprecated
-     */
-    public function setPricesByDate($pricesByDate)
-    {
-        $this->pricesByDate = $pricesByDate;
-        return $this;
-    }
-
-    /**
-     * Get pricesByDate
-     *
-     * @return array $pricesByDate
-     * @deprecated
-     */
-    public function getPricesByDate()
-    {
-        return $this->pricesByDate;
-    }
-
-    /**
      * @param \DateTime|null $date
      * @return float
      */
     public function getPriceByDate(\DateTime $date = null): float
     {
-        if (!is_null($date)) {
-            if ($this->getPrices()->count() > 0 && $this->getPackagePriceByDate($date)) {
-                return $this->getPackagePriceByDate($date)->getPrice();
-            }
-
-            $firstDateString = $date->format('d.m.Y');
-            if (!empty($this->pricesByDate) && isset($this->pricesByDate[$firstDateString])) {
-                return $this->pricesByDate[$firstDateString];
-            }
+        if (!is_null($date) && $this->getPrices()->count() > 0 && $this->getPackagePriceByDate($date)) {
+            return $this->getPackagePriceByDate($date)->getPrice();
         }
 
-        return $this->getPackagePrice(true) / $this->getNights();
+        return round($this->getPackagePrice() / $this->getNights(), 2);
     }
-
 
     /**
      * @return array
      */
     public function getPricesByDateByPrice()
     {
-        $data = $this->getPricesByDate();
-        $dates = array_keys($data);
-        $prices = array_values($data);
+        $dates = array_map(function(PackagePrice $price) {
+            return $price->getDate()->format('d_m_Y');
+        }, $this->getPrices()->toArray());
+        $prices = array_map(function(PackagePrice $price) {
+            return $price->getPrice();
+        }, $this->getPrices()->toArray());
         $result = [];
         $begin = null;
         $nights = 1;
@@ -1574,19 +1522,6 @@ class Package extends Base implements \JsonSerializable
     public function getPrices()
     {
         return $this->prices;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPricesByDateWithDiscount()
-    {
-        $prices = [];
-        foreach ($this->pricesByDate as $dateString => $price) {
-            $prices[$dateString] = $price - ($this->getDiscountMoney() / $this->getNights());
-        }
-
-        return $prices;
     }
 
     /**
