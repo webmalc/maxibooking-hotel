@@ -13,6 +13,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -236,9 +237,15 @@ class Calculation
 
             if (isset($priceCaches[$roomTypeId][$tariffId][$cacheDayStr])) {
                 $caches[$cacheDayStr] = $priceCaches[$roomTypeId][$tariffId][$cacheDayStr];
-            } elseif ($tariff->getMergingTariff()
-                && isset($mergingTariffsPrices[$roomTypeId][$tariff->getMergingTariff()->getId()][$cacheDayStr])) {
-                $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$tariff->getMergingTariff()->getId()][$cacheDayStr];
+            } elseif ($tariff->getMergingTariff()) {
+                if ($tariff->getMergingTariff()->getParent() && $tariff->getMergingTariff()->getChildOptions()->isInheritPrices()) {
+                    $mergingTariffIdForPrices = $tariff->getMergingTariff()->getParent()->getId();
+                } else {
+                    $mergingTariffIdForPrices = $tariff->getMergingTariff()->getId();
+                }
+                if (isset($mergingTariffsPrices[$roomTypeId][$mergingTariffIdForPrices][$cacheDayStr])) {
+                    $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$mergingTariffIdForPrices][$cacheDayStr];
+                }
             }
 
             if (empty($caches[$cacheDayStr]) && isset($defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr])) {
@@ -260,7 +267,9 @@ class Calculation
         foreach ($combinations as $combination) {
             $total = 0;
             $dayPrices = $packagePrices = [];
+            /** @var PriceCache $cache */
             foreach ($caches as $day => $cache) {
+                $promotion = $promotion ?? $cache->getTariff()->getDefaultPromotion();
                 $promoConditions = PromotionConditionFactory::checkConditions(
                     $promotion,
                     $duration,
@@ -269,7 +278,7 @@ class Calculation
                 );
 
                 if ($cache->getTariff()->getId() != $tariff->getId()) {
-                    $promoConditions = false;
+//                    $promoConditions = false;
                 }
 
                 $totalChildren = $combination['children'];
