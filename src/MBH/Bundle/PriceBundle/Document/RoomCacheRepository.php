@@ -14,15 +14,16 @@ class RoomCacheRepository extends DocumentRepository
      * @param int $period
      * @return array
      */
-    public function findForDashboard(int $period): array
+    public function findForDashboard(int $period, string $roomTypeKey = 'roomType'): array
     {
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . $period . ' days');
         $result = [];
         $caches =  $this->createQueryBuilder()
-            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'totalRooms')
+            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'totalRooms', 'roomTypeCategory.id')
             ->field('date')->gte($begin)->lte($end)
             ->sort('date')->sort('hotel.id')->sort('roomType.id')
+            ->field($roomTypeKey)->exists(true)
             ->hydrate(false)
             ->getQuery()
             ->execute()->toArray();
@@ -35,7 +36,7 @@ class RoomCacheRepository extends DocumentRepository
             $cache['roomType'] = (string) $cache['roomType']['$id'];
             $cache['tariff'] = isset($cache['tariff']) ? (string) $cache['tariff']['$id'] : 0;
             unset($cache['_id']);
-            $result[$cache['hotel']][$cache['roomType']][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
+            $result[$cache['hotel']][$cache[$roomTypeKey]][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
         }
 
         return $result;

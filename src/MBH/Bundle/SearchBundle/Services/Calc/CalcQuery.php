@@ -330,6 +330,35 @@ class CalcQuery
         return $this->roomType->getIsIndividualAdditionalPrices();
     }
 
+    public function getCombinations(): array
+    {
+        $result = [];
+        $adults = $this->getActualAdults();
+        $children = $this->getActualChildren();
+        if ($adults === 0 && $children === 0) {
+            $this->isUseCategory ? $isChildPrices = $this->roomType->getCategory()->getIsChildPrices() : $isChildPrices = $this->roomType->getIsChildPrices();
+            $total = $this->roomType->getTotalPlaces();
+
+            $isChildPrices ? $additional = $this->roomType->getTotalPlaces() : $additional = $this->roomType->getAdditionalPlaces();
+            $isChildPrices ? $places = 1 : $places = $this->roomType->getPlaces();
+
+            for ($i = 1; $i <= $total; $i++) {
+                $result[] = ['adults' => $i, 'children' => 0];
+            }
+            for ($i = $places; $i <= $total; $i++) {
+                for ($k = 1; $k <= $additional; $k++) {
+                    if (($k + $i) && ($k + $i) <= $total) {
+                        $result[] = ['adults' => $i, 'children' => $k];
+                    }
+                }
+            }
+        } else {
+            $result = [0 => ['adults' => $adults, 'children' => $children]];
+        }
+
+        return $result;
+    }
+
 
 
 

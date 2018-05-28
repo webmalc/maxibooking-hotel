@@ -61,4 +61,5 @@ interface RoomTypeInterface
      * @return string
      */
     public function getId();
+
 }

@@ -67,7 +67,9 @@ class SearchResultComposer
             ->setChildren($actualChildren)
             ->setUseCategories($isUseCategories)
             ->setInfants($infants)
-            ->setRooms($accommodationRooms);
+            ->setRooms($accommodationRooms)
+            ->setQueryId($searchQuery->getSearchConditions()->getId())
+        ;
         $this->pricePopulate($searchResult, $prices);
 
         return $searchResult;
@@ -93,8 +95,8 @@ class SearchResultComposer
 
     private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $actualAdults, int $actualChildren): array
     {
-        $helper = new CalcQuery();
-        $helper
+        $calcQuery = new CalcQuery();
+        $calcQuery
             ->setSearchBegin($searchQuery->getBegin())
             ->setSearchEnd($searchQuery->getEnd())
             ->setRoomType($roomType)
@@ -103,7 +105,7 @@ class SearchResultComposer
             ->setActualChildren($actualChildren)
             ->setIsUseCategory($this->roomManager->useCategories);
 
-        $prices = $this->calculation->calcPrices($helper);
+        $prices = $this->calculation->calcPrices($calcQuery);
         if (!\count($prices)) {
             throw new SearchResultComposerException('No prices returned from calculation');
         }

@@ -79,11 +79,12 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         }
         // roomTypes
         if (!empty($categoryIds) && \is_array($categoryIds)) {
-            $qb->field('types.$id')->in($categoryIds);
+            $qb->field('category.id')->in($categoryIds);
         }
         $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
+        $result = $qb->hydrate(false)->getQuery()->toArray();
 
-        return $qb->hydrate(false)->getQuery()->toArray();
+        return $result;
     }
 
     /**
@@ -132,5 +133,22 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
             ->getQuery()
             ->execute()
             ->toArray();
+    }
+
+    public function getByHotelsIdsAndFullTitle(array $hotelsIds, array $fullTitles)
+    {
+        $qb = $this->createQueryBuilder();
+        if (\count($hotelsIds)) {
+            $qb->field('hotel.id')->in($hotelsIds);
+        }
+
+        if (\count($fullTitles)) {
+            $qb->field('fullTitle')->in($fullTitles);
+        }
+        return $qb
+            ->getQuery()
+            ->execute()
+            ->toArray()
+            ;
     }
 }

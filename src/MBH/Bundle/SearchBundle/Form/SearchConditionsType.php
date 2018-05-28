@@ -5,8 +5,10 @@ namespace MBH\Bundle\SearchBundle\Form;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use Symfony\Component\Form\AbstractType;
@@ -21,6 +23,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SearchConditionsType extends AbstractType
 {
+    /** @var bool */
+    private $isUseCategory;
+
+    public function __construct(ClientConfigRepository $configRepository)
+    {
+        $this->isUseCategory = $configRepository->fetchConfig()->getUseRoomTypeCategory();
+    }
+
 
     /**
      * @param FormBuilderInterface $builder
@@ -29,7 +39,7 @@ class SearchConditionsType extends AbstractType
      * @throws \Symfony\Component\Validator\Exception\InvalidOptionsException
      * @throws \Symfony\Component\Validator\Exception\ConstraintDefinitionException
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add(
@@ -54,7 +64,7 @@ class SearchConditionsType extends AbstractType
                 'roomTypes',
                 DocumentType::class,
                 [
-                    'class' => RoomType::class,
+                    'class' => $options['room_type_key'],
                     'required' => false,
                     'multiple' => true,
 
@@ -131,6 +141,7 @@ class SearchConditionsType extends AbstractType
                 [
                     'data_class' => SearchConditions::class,
                     'csrf_protection' => false,
+                    'room_type_key' => $this->isUseCategory ? RoomTypeCategory::class : RoomType::class
                 ]
             );
     }

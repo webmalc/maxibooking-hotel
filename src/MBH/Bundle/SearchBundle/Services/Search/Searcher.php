@@ -80,8 +80,9 @@ class Searcher
         $this->checkTariffConditions($currentTariff, $searchQuery);
         $this->checkRoomTypePopulationLimit($currentRoomType, $searchQuery);
         $roomCaches = $this->checkRoomCacheLimitAndReturnActual($searchQuery, $currentRoomType, $currentTariff);
+        $result = $this->searchResultCompose($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
 
-        return $this->searchResultCompose($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
+        return $result;
     }
 
     private function getCurrentTariff(string $tariffId): Tariff
@@ -112,15 +113,14 @@ class Searcher
     private function preFilter(SearchQuery $searchQuery): void
     {
         $accessor = PropertyAccess::createPropertyAccessor();
-        $needFields = [
+        $mustFields = [
             'begin',
             'end',
             'tariffId',
-            'roomTypeId',
-            'adults'
+            'roomTypeId'
         ];
-        foreach ($needFields as $needField) {
-            if (!$accessor->getValue($searchQuery, $needField)) {
+        foreach ($mustFields as $mustField) {
+            if (!$accessor->getValue($searchQuery, $mustField)) {
                 throw new SearchException('Terminate Search cause error in search query');
             }
         }
@@ -132,7 +132,7 @@ class Searcher
      */
     private function checkRestrictions(SearchQuery $searchQuery): void
     {
-        $this->restrictionChecker->setConditions($searchQuery->getSearchCondition());
+        $this->restrictionChecker->setConditions($searchQuery->getSearchConditions());
         $checked = $this->restrictionChecker->check($searchQuery);
         if (!$checked) {
             throw new SearchException('Error when check restriction.');

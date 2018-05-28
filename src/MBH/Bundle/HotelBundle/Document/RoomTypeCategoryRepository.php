@@ -41,5 +41,22 @@ class RoomTypeCategoryRepository extends DocumentRepository implements RoomTypeR
         return $this->fetchQueryBuilder($hotel, $roomTypesCats)->getQuery()->execute();
     }
 
+    public function getByHotelsIdsAndFullTitle(array $hotelsIds, array $fullTitles)
+    {
+        $qb = $this->createQueryBuilder();
+        if (\count($hotelsIds)) {
+            $qb->field('hotel.id')->in($hotelsIds);
+        }
+
+        if (\count($fullTitles)) {
+            $qb->field('fullTitle')->in($fullTitles);
+        }
+        return $qb
+            ->getQuery()
+            ->execute()
+            ->toArray()
+            ;
+    }
+
 
 }

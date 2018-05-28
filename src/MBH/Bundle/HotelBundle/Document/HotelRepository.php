@@ -41,4 +41,15 @@ class HotelRepository extends DocumentRepository
 
         return $qb->getQuery()->execute();
     }
+
+    public function getByFullTitle(array $fullTitles)
+
+    {
+        $qb = $this->createQueryBuilder();
+        return $qb
+            ->field('fullTitle')
+            ->in($fullTitles)
+            ->getQuery()
+            ->execute();
+    }
 }

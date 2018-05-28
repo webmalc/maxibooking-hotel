@@ -94,7 +94,7 @@ class ExpectedResult
     /**
      * @return string
      */
-    public function getErrorMessage(): string
+    public function getErrorMessage(): ?string
     {
         return $this->errorMessage;
     }

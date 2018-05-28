@@ -57,7 +57,7 @@ class SearchQuery
     private $infantAge;
 
     /** @var SearchConditions */
-    private $searchCondition;
+    private $searchConditions;
 
     /**
      * @var bool
@@ -216,18 +216,18 @@ class SearchQuery
     /**
      * @return SearchConditions
      */
-    public function getSearchCondition(): SearchConditions
+    public function getSearchConditions(): SearchConditions
     {
-        return $this->searchCondition;
+        return $this->searchConditions;
     }
 
     /**
-     * @param SearchConditions $searchCondition
+     * @param SearchConditions $searchConditions
      * @return SearchQuery
      */
-    public function setSearchCondition(SearchConditions $searchCondition): SearchQuery
+    public function setSearchConditions(SearchConditions $searchConditions): SearchQuery
     {
-        $this->searchCondition = $searchCondition;
+        $this->searchConditions = $searchConditions;
 
         return $this;
     }
@@ -360,7 +360,7 @@ public static function createInstance(SearchQueryHelper $queryHelper, SearchCond
             ->setRoomTypeId($queryHelper->getRoomTypeId())
             ->setChildAge($queryHelper->getChildAge())
             ->setInfantAge($queryHelper->getInfantAge())
-            ->setSearchCondition($conditions)
+            ->setSearchConditions($conditions)
             ->setIgnoreRestrictions($conditions->isIgnoreRestrictoins())
             ->setChildren($conditions->getChildren())
             ->setAdults($conditions->getAdults())

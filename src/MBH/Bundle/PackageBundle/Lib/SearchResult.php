@@ -541,9 +541,11 @@ class SearchResult
      * @param mixed $queryId
      * @return SearchResult
      */
-    public function setQueryId(string $queryId)
+    public function setQueryId(string $queryId = null): SearchResult
     {
-        $this->queryId = $queryId;
+        if (null !== $queryId) {
+            $this->queryId = $queryId;
+        }
 
         return $this;
     }

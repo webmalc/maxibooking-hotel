@@ -58,9 +58,9 @@ class AdditionalPriceCacheCategoryData extends AbstractFixture implements Ordere
             'additionalPrice' => 900,
             'isPersonPrice' => false,
             'childPrice' => null,
-            'additionalChildrenPrice' => null,
-            'additionalPrices' => [],
-            'additionalChildrenPrices' => [],
+            'additionalChildrenPrice' => 850,
+            'additionalPrices' => [900, 800],
+            'additionalChildrenPrices' => [850, 750],
         ],
     ];
 

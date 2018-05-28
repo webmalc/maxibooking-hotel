@@ -2,12 +2,12 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
-use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\ExpectedResult;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class SearchController
@@ -26,9 +26,10 @@ class SearchController extends Controller
      *      condition="request.headers.get('Content-Type') matches '/application\\/json/i'"
      *     )
      * @param Request $request
-     * @return JsonResponse
+     * @return Response
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
      */
-    public function searchRequestAction(Request $request): JsonResponse
+    public function searchRequestAction(Request $request): Response
     {
         $stopwatch = $this->get('debug.stopwatch');
         $stopwatch->start('searchTime');
@@ -38,26 +39,26 @@ class SearchController extends Controller
 
         $searchRequestReceiver = $this->get('mbh_search.search_request_receiver');
         $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
-        $restrictionChecker = $this->get('mbh_search.restrictions_checker_service');
 
         $conditions = $searchRequestReceiver->handleData($data);
-        $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
-        $restrictionChecker->setConditions($conditions);
 
-        if (self::PRE_RESTRICTION_CHECK) {
-            $searchQueries = array_filter($searchQueries, [$restrictionChecker, 'check']);
+        try {
+            $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
+            $search = $this->get('mbh_search.search');
+            $finded = $search->search($searchQueries, $conditions, false);
+            $result
+                ->setStatus('ok')
+                ->setQueryHash($search->getSearchHash())
+                ->setExpectedResults($search->getSearchCount())
+            ;
+        } catch (SearchQueryGeneratorException $e) {
+            $result
+                ->setStatus('error')
+                ->setErrorMessage($e->getMessage())
+                ->setExpectedResults(0)
+            ;
         }
 
-
-        $searcher = $this->get('mbh_search.searcher');
-        foreach ($searchQueries as $searchQuery) {
-            try {
-                $results[] = $searcher->search($searchQuery);
-            } catch (SearchException $e) {
-                $errors[] = $e->getMessage();
-            }
-
-        }
         $searchDone = $stopwatch->stop('searchTime');
         $time = $searchDone->getDuration();
 
@@ -90,8 +91,12 @@ class SearchController extends Controller
 //                ->setQueryHash(
 //                    $searchQueryGenerator->getSearchQueryHash()
 //                );
-
-        return new JsonResponse([$time, count($results)]);
+        $serializer = $this->get('serializer');
+        return new Response(
+            $serializer->serialize($result, 'json'),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/json']
+        );
     }
 
     /**

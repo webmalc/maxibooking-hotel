@@ -69,8 +69,8 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
             'isPersonPrice' => false,
             'childPrice' => null,
             'additionalChildrenPrice' => 700,
-            'additionalPrices' => [400, 300],
-            'additionalChildrenPrices' => [300, 150],
+            'additionalPrices' => [1500, 300],
+            'additionalChildrenPrices' => [700, 150],
         ],
     ];
 

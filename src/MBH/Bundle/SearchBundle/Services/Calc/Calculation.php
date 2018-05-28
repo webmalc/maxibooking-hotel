@@ -4,10 +4,8 @@
 namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -42,9 +40,8 @@ class Calculation
     public function calcPrices(CalcQuery $calcQuery): array
     {
         $caches = $this->getPriceCaches($calcQuery);
-        $combinations = $this->getCombinations($calcQuery->getRoomType(), $calcQuery->getActualAdults(), $calcQuery->getActualChildren(), $calcQuery->isUseCategory());
 
-        return $this->getPrices($caches, $combinations, $calcQuery);
+        return $this->getPrices($caches, $calcQuery);
     }
 
     private function getPriceCaches(CalcQuery $calcQuery): array
@@ -52,12 +49,12 @@ class Calculation
         return $this->priceCacheMerger->getMergedPriceCaches($calcQuery);
     }
 
-    private function getPrices(array $priceCaches, array $combinations, CalcQuery $calcHelper): array
+    private function getPrices(array $priceCaches, CalcQuery $calcQuery): array
     {
         $prices = [];
-        foreach ($combinations as $combination) {
+        foreach ($calcQuery->getCombinations() as $combination) {
             try {
-                $combinationPrices = $this->getPriceForCombination($combination, $priceCaches, $calcHelper);
+                $combinationPrices = $this->getPriceForCombination($combination, $priceCaches, $calcQuery);
                 $prices[$combination['adults'] . '_' . $combination['children']] = [
                     'adults' => $combination['adults'],
                     'children' => $combination['children'],
@@ -154,7 +151,7 @@ class Calculation
     {
         $price = 0;
         $childPrice = $rawPriceCache['price'];
-        if ($calcQuery->getRoomType()->getIsChildPrices()) {
+        if ($calcQuery->isChildPrices()) {
             $childPrice = $rawPriceCache['childPrice'];
             if (null === $childPrice) {
                 throw new CalculationException('No required child price found!');
@@ -181,15 +178,22 @@ class Calculation
      */
     private function getAdditionalAdultsPrice(array $rawPriceCache, int $addsAdults, bool $multiPrices, bool $isIndividualPrices)
     {
-        if ($addsAdults && $rawPriceCache['additionalPrice'] === null) {
+        $addsAdultsPrices = 0;
+        if (!$addsAdults) {
+            return $addsAdults;
+        }
+
+        $additionalPrice = $rawPriceCache['additionalPrice'] ?? null;
+
+        if ($addsAdults && $additionalPrice === null) {
             throw new CalculationAdditionalPriceException('There is additional adult, but no additional price');
         }
-        $addsAdultsPrices = 0;
+
         if ((!$multiPrices && $addsAdults) || ($multiPrices && !$isIndividualPrices)) {
-            $addsAdultsPrices = $addsAdults * $rawPriceCache['additionalPrice'];
+            $addsAdultsPrices = $addsAdults * $additionalPrice;
         }
         if ($multiPrices && $isIndividualPrices) {
-            $addsAdultsPrices += $this->multiAdditionalPricesCalc($addsAdults, $rawPriceCache['additionalPrices'], $rawPriceCache['additionalPrice']);
+            $addsAdultsPrices += $this->multiAdditionalPricesCalc($addsAdults, $rawPriceCache['additionalPrices'], $additionalPrice);
         }
 
         return $addsAdultsPrices;
@@ -197,25 +201,29 @@ class Calculation
 
     private function getAdditionalChildrenPrice(array $rawPriceCache, int $addsChildren, bool $multiPrices, int $addsAdults, bool $isIndividualPrices, Promotion $promotion = null): int
     {
+        $addsChildrenPrice = 0;
+        if (!$addsChildren) {
+            return $addsChildrenPrice;
+        }
         $additionalChildrenPrice = $rawPriceCache['additionalChildrenPrice'] ?? null;
 
         if ($addsChildren && null === $additionalChildrenPrice) {
             throw new CalculationAdditionalPriceException('There is additional additional child, but no additional price for children');
         }
 
-        $addsChildrenPrices = 0;
+
         if ((!$multiPrices && $addsChildren) || ($multiPrices && !$isIndividualPrices) ) {
-            $addsChildrenPrices = $addsChildren * $rawPriceCache['additionalChildrenPrice'];
+            $addsChildrenPrice = $addsChildren * $rawPriceCache['additionalChildrenPrice'];
         }
         if ($multiPrices && $isIndividualPrices) {
-            $addsChildrenPrices += $this->multiAdditionalPricesCalc($addsChildren, $rawPriceCache['additionalChildrenPrices'], $rawPriceCache['additionalChildrenPrice'], $addsAdults);
+            $addsChildrenPrice += $this->multiAdditionalPricesCalc($addsChildren, $rawPriceCache['additionalChildrenPrices'], $rawPriceCache['additionalChildrenPrice'], $addsAdults);
         }
 
         if ($promotion && $promotion->getChildrenDiscount()) {
-            $addsChildrenPrices = $addsChildrenPrices * (100 - $promotion->getChildrenDiscount()) / 100;
+            $addsChildrenPrice = $addsChildrenPrice * (100 - $promotion->getChildrenDiscount()) / 100;
         }
 
-        return $addsChildrenPrices;
+        return $addsChildrenPrice;
     }
 
     private function multiAdditionalPricesCalc($num, $additionalPrices, $additionalPrice, $offset = 0): int
@@ -317,19 +325,6 @@ class Calculation
         // */
         return $promoConditions && ($priceCache->getTariff()->getId() !== $calcHelper->getPriceTariffId());
     }
-
-    private function getCombinations(RoomType $roomType, int $adults, int $children, bool $isUseCategory): array
-
-    {
-        if ($adults === 0 && $children === 0) {
-            $combinations = $roomType->getAdultsChildrenCombinations($isUseCategory);
-        } else {
-            $combinations = [0 => ['adults' => $adults, 'children' => $children]];
-        }
-
-        return $combinations;
-    }
-
 
 
 }

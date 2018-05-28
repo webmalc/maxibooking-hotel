@@ -4,15 +4,12 @@
 namespace Tests\Bundle\SearchBundle\Services\Calc;
 
 
-use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
-use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery as Helper;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 
@@ -30,11 +27,14 @@ class CalculationTest extends WebTestCase
         $this->service = $this->getContainer()->get('mbh_search.calculation');
         $this->oldService = $this->getContainer()->get('mbh.calculation');
         parent::setUp();
+//        self::baseFixtures();
     }
 
 
-
-    /** @dataProvider dataProviderRoomType */
+    /** @dataProvider dataProviderRoomType
+     * @param bool $isUseCategory
+     * @param array $data
+     */
     public function testCalcPrices(bool $isUseCategory, array $data): void
     {
 
@@ -243,7 +243,7 @@ class CalculationTest extends WebTestCase
             false,
             [
                 'searchRoomTypeName' => AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
-                'searchTariffName' => 'UpTariff',
+                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
                 'hotelName' => 'Отель Волга',
                 'beginOffset' => 24,
                 'endOffset' => 32,
@@ -253,6 +253,104 @@ class CalculationTest extends WebTestCase
                     [
                         'adults' => 3,
                         'children' => 2,
+                    ],
+                ],
+
+            ]
+        ];
+        yield [
+            true,
+            [
+                'searchRoomTypeName' => AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => 'Основной тариф',
+                'hotelName' => 'Отель Волга',
+                'beginOffset' => 8,
+                'endOffset' => 13,
+                'variants' => [
+                    [
+                        'adults' => 1,
+                        'children' => 0,
+                        'total' => 2400 * 5,
+                        'priceByDay' => [2400, 2400, 2400, 2400, 2400],
+                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                    ],
+                    [
+                        'adults' => 3,
+                        'children' => 0,
+                        'total' => 2450 * 5,
+                        'priceByDay' => [2450, 2450, 2450, 2450, 2450],
+                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                    ],
+                    [
+                        'adults' => 3,
+                        'children' => 2,
+                        'total' => 2450 * 5 + (850 + 750) * 5,
+                        'priceByDay' => [4050, 4050, 4050, 4050, 4050],
+                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                    ],
+                    [
+                        'adults' => 5,
+                        'children' => 0,
+                        'total' => 2450 * 5 + (900 + 800) * 5,
+                        'priceByDay' => [4150, 4150, 4150, 4150, 4150],
+                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                    ]
+                ],
+
+            ]
+        ];
+        yield [
+            true,
+            [
+                'searchRoomTypeName' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                'hotelName' => 'Отель Волга',
+                'beginOffset' => 2,
+                'endOffset' => 9,
+                'variants' => [
+                    [
+                        'adults' => 1,
+                        'children' => 0,
+                        'total' => 2400 * 2 + 2390 * 4 + 2380,
+                        'priceByDay' => [2400,2400,2390,2390,2390,2390,2380],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::UP_TARIFF_NAME],
+                    ],
+                    [
+                        'adults' => 3,
+                        'children' => 1,
+                        'total' => 28520,
+                        'priceByDay' => [4100, 4100, 4070, 4070, 4070, 4070, 4040],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::UP_TARIFF_NAME
+                        ],
+                    ],
+                    [
+                        'adults' => 1,
+                        'children' => 3,
+                        'total' => 28170,
+                        'priceByDay' => [4050, 4050, 4020, 4020, 4020, 4020, 3990],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::UP_TARIFF_NAME
+                        ],
                     ],
                 ],
 

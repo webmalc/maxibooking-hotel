@@ -107,9 +107,15 @@ services:
         arguments:
             - MBH\Bundle\PriceBundle\Document\Tariff
 
+    mbh_search.client_config_repository:
+        class: MBH\Bundle\ClientBundle\Document\ClientConfigRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\ClientBundle\Document\ClientConfig
+
     mbh_search.room_type_fetcher:
         class: MBH\Bundle\SearchBundle\Services\RoomTypeFetcher
-        arguments: ['@doctrine.odm.mongodb.document_manager','@mbh_search.room_type_repository']
+        arguments: ['@doctrine.odm.mongodb.document_manager','@mbh_search.room_type_repository', '@mbh_search.client_config_repository']
 
 # Для теста - калькуляции - брал текущую.
 #    mbh_search.result_composer:
@@ -131,3 +137,13 @@ services:
     mbh_search.hotel_content_holder:
         class: MBH\Bundle\SearchBundle\Lib\HotelContentHolder
         arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository']
+
+    mbh_search.search_conditions_type:
+        class: MBH\Bundle\SearchBundle\Form\SearchConditionsType
+        arguments: ['@mbh_search.client_config_repository']
+        tags:
+            - { name: form.type, alias: MBH\Bundle\SearchBundle\Form\SearchConditionsType }
+
+    mbh_search.search:
+        class: MBH\Bundle\SearchBundle\Services\Search\Search
+        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.searcher', '@doctrine.odm.mongodb.document_manager', '@mbh_search.client_config_repository']

@@ -5,21 +5,37 @@ namespace MBH\Bundle\SearchBundle\Document;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Validator\Constraints\Range;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 
 /**
  * Class SearchConditions
  * @package MBH\Bundle\SearchBundle\Document
  * @Range()
  * @ChildrenAgesSameAsChildren()
+ * @ODM\Document(collection="SearchConditions")
+ * @Gedmo\Loggable()
  */
-class SearchConditions
+class SearchConditions extends Base
 {
+
+    use TimestampableDocument;
+
+    use SoftDeleteableDocument;
+
+    use BlameableDocument;
+
     /**
      * @var \DateTime
      * @Assert\DateTime()
@@ -38,7 +54,7 @@ class SearchConditions
      * @var int
      * @Assert\NotNull(message="form.searchType.adults_amount_not_filled")
      * @Assert\Range(
-     *     min = 1,
+     *     min = 0,
      *     max = 12,
      *     minMessage = "form.searchType.adults_amount_less_zero"
      * )

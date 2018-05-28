@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -46,6 +47,7 @@ class SearchQueryGenerator
      */
     public function generateSearchQueries(SearchConditions $conditions): array
     {
+
         $queryHelpers = $this->prepareConditionsForSearchQueries($conditions);
         $searchQueries = [];
         foreach ($queryHelpers as $queryHelper) {
