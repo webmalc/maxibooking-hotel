@@ -67,4 +67,12 @@ class OrganizationRepository extends DocumentRepository
             ->toArray()
         ;
     }
+
+    /**
+     * @return Organization|null|object
+     */
+    public function getForFmsExport()
+    {
+        return $this->findOneBy(['type' => 'my']);
+    }
 }

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ns1:form5 xmlns:ns1="http://umms.fms.gov.ru/replication/hotel/form5" schemaVersion="1.0"
+           xmlns="http://umms.fms.gov.ru/replication/core" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           xmlns:ns2="http://umms.fms.gov.ru/replication/foreign-citizen-core"
+           xmlns:ns3="http://umms.fms.gov.ru/replication/migration"
+           xmlns:ns4="http://umms.fms.gov.ru/replication/payment" xmlns:ns5="http://umms.fms.gov.ru/replication/hotel"
+           xmlns:ns6="http://umms.fms.gov.ru/replication/migration/staying/unreg"
+           xmlns:ns7="http://umms.fms.gov.ru/replication/migration/staying"
+           xmlns:ns8="http://umms.fms.gov.ru/replication/invitation-application">
+    <subdivision>
+        <type>officialOrgan</type>
+        <element>{{ tourist.documentRelation.authorityOrganId }}</element>
+    </subdivision>
+
+    <date>{{ date()|date('Y-m-d\\TH:i:s') }}</date>
+
+    <ns1:personDataDocument>
+        <person>
+            <lastName>{{ tourist.lastName }}</lastName>
+            <firstName>{{ tourist.firstName }}</firstName>
+            <middleName>{{ tourist.patronymic }}</middleName>
+            <gender>
+                <type>Gender</type>
+                <element>{{ tourist.sex == 'female' ? 'F' : 'M' }}</element>
+            </gender>
+            {% if tourist.birthday %}
+                <birthDate>{{ tourist.birthday|date('Y-m-d') }}</birthDate>
+            {% endif %}
+            {% if tourist.citizenshipTld %}
+                <citizenship>
+                    <type>Citizenship</type>
+                    <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
+                </citizenship>
+            {% endif %}
+            {% if tourist.birthplace %}
+                <birthPlace>
+                    {% if tourist.birthplace.countryTld %}
+                        <country>
+                            <type>Country</type>
+                            <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
+                        </country>
+                    {% endif %}
+                    <place>{{ tourist.birthplace.mainRegion }}</place>
+                    <place2>{{ tourist.birthplace.district }}</place2>
+                    <place3>{{ tourist.birthplace.city }}</place3>
+                    <place4>{{ tourist.birthplace.settlement }}</place4>
+                </birthPlace>
+            {% endif %}
+        </person>
+
+        {% if tourist.documentRelation %}
+            <document>
+                <type>
+                    <type>DocumentType</type>
+                    <element>{{ tourist.documentRelation.type }}</element>
+                </type>
+                <series>{{ tourist.documentRelation.series }}</series>
+                <number>{{ tourist.documentRelation.number }}</number>
+                {% set passportType = 103008 %}
+                {% if tourist.documentRelation.type == passportType %}
+                    <authorityOrgan>
+                        <type>officialOrgan</type>
+                        <element>{{ tourist.documentRelation.authorityOrganId }}</element>
+                    </authorityOrgan>
+                {% else %}
+                    <authority>{{ tourist.documentRelation.authorityOrganText }}</authority>
+                {% endif %}
+                {% if tourist.documentRelation.issued %}
+                    <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
+                {% endif %}
+                {% if tourist.documentRelation.expiry %}
+                    <validFrom>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validFrom>
+                    <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
+                {% endif %}
+            </document>
+        {% endif %}
+        <entered>{{ package.arrivalTime ? 'true' : 'false' }}</entered>
+    </ns1:personDataDocument>
+
+    {% if tourist.addressObjectDecomposed %}
+        <ns1:livingAddress>
+            {% if tourist.citizenshipTld == 'ru' %}
+                <russianAddress>
+                    {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
+                    <addressObjectString>{{ get_region(tourist.addressObjectDecomposed.regionId).name|replace({'область' : 'обл'}) }}
+                        $${{ tourist.addressObjectDecomposed.city }}
+                        г$$${{ tourist.addressObjectDecomposed.street|capitalize }} ул
+                    </addressObjectString>
+                    <housing>
+                        <type>
+                            <type>addressObjectType</type>
+                            <element>1202</element>
+                        </type>
+                        <value>{{ tourist.addressObjectDecomposed.house }}</value>
+                    </housing>
+                    <housing>
+                        <type>
+                            <type>addressObjectType</type>
+                            <element>1304</element>
+                        </type>
+                        <value>{{ tourist.addressObjectDecomposed.flat }}</value>
+                    </housing>
+                    <housing>
+                        <type>
+                            <type>addressObjectType</type>
+                            <element>1203</element>
+                        </type>
+                        <value>{{ tourist.addressObjectDecomposed.corpus }}</value>
+                    </housing>
+                    <housing>
+                        <type>
+                            <type>addressObjectType</type>
+                            <element>1204</element>
+                        </type>
+                        <value>{{ tourist.addressObjectDecomposed.structure }}</value>
+                    </housing>
+                </russianAddress>
+            {% else %}
+                <ns1:foreignAddress>
+                    <country>
+                        <type>Country</type>
+                        <element>{{ get_country(tourist.addressObjectDecomposed.countryTld).code3 }}</element>
+                    </country>
+                </ns1:foreignAddress>
+            {% endif %}
+        </ns1:livingAddress>
+    {% endif %}
+
+    <ns1:stayPeriod>
+        <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
+        <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>
+    </ns1:stayPeriod>
+
+    {% if package.arrivalTime %}
+        <ns1:registrationDate>{{ package.arrivalTime|date('Y-m-d') }}</ns1:registrationDate>
+    {% endif %}
+
+    <ns1:hotelInfo>
+        <ns1:organization>
+            <inn>{{ organization.inn }}</inn>
+            <name>{{ organization.name }}</name>
+        </ns1:organization>
+    </ns1:hotelInfo>
+
+</ns1:form5>
