@@ -48,7 +48,9 @@
         var mbh_property = {{ get_properties() }};
     </script>
     {% javascripts filter='uglifyjs2'
-        '@MBHClientBundle/Resources/public/js/tinymce/plugin/mbh_data.tinymce.plugin.js' %}
+        '@MBHClientBundle/Resources/public/js/tinymce/plugin/mbh_data.tinymce.plugin.js'
+        '@MBHClientBundle/Resources/public/js/tinymce/plugin/code.tinymce.plugin.js'
+    %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% if app.request.locale == 'ru' %}
@@ -81,7 +83,7 @@
                 height: 300,
                 fullpage_default_title: 'PDF',
                 fullpage_default_encoding: '{{ injection|replace({"\n": "", "  ": ""})|raw }}',
-                plugins: '{{ plugins|join(' ') }} mbh_data',
+                plugins: '{{ plugins|join(' ') }} mbh_data codemirror',
                 toolbar: '{{ toolbar|join(' | ') }} | mbh_toggle_border mbh_rotate',
                 menu: {
                         file   : {title : 'File'  , items : 'newdocument'},
@@ -92,7 +94,12 @@
                         table  : {title : 'Table' , items : 'inserttable tableprops deletetable | cell row column'},
                         tools  : {title : 'Tools' , items : 'code'}
                     },
-                contextmenu: 'mbh_table_add statement_mbh mbh_table_property | mbh_all_data mbh_table_entity | link image | inserttable tableprops | cell row column deletetable'
+                contextmenu: 'mbh_table_add statement_mbh mbh_table_property | mbh_all_data mbh_table_entity | link image | inserttable tableprops | cell row column deletetable',
+                codemirror: {
+                    path: '/assets/vendor/codemirror/',
+                    pathSource: 'tinymce_codemirror',
+                    saveCursorPosition: false
+                }
             });
         }
     </script>
