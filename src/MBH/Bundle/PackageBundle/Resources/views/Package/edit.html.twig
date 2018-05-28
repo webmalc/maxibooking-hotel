@@ -81,18 +81,24 @@
                                                 {{ price.date|date('d.m.Y') }} -
                                                 <strong>{{ price.price|number_format(2) }}</strong> -
                                                 <a data-toggle="tooltip" title="{{ 'package.edit.tariff'|trans }}"
-                                                   href="{{ path('tariff_edit', {id: price.tariff.id}) }}">
+                                                    {% if is_granted('ROLE_TARIFF_EDIT') %}
+                                                        href="{{ path('tariff_edit', {id: price.tariff.id}) }}">
+                                                    {% endif %}
                                                     <i class="fa fa-sliders"></i> {{ price.tariff }}
                                                 </a>
                                                 {% if price.promotion %}
                                                     - <a data-toggle="tooltip" title="{{ 'package.edit.promotions'|trans }}"
+                                                     {% if is_granted('ROLE_PROMOTION_EDIT') %}
                                                          href="{{ path('promotion_edit', {id: price.promotion.id}) }}">
+                                                    {% endif %}
                                                     <i class="fa fa-bookmark"></i> {{ price.promotion }}
                                                 </a>
                                                 {% endif %}
                                                 {% if price.special %}
                                                     - <a data-toggle="tooltip" title="{{ 'package.edit.promotions'|trans }}"
+                                                     {% if is_granted('ROLE_SPECIAL_EDIT') %}
                                                          href="{{ path('special_edit', {id: price.special.id}) }}">
+                                                    {% endif %}
                                                     <i class="fa fa-star"></i> {{ price.special }}
                                                 </a>
                                                 {% endif %}

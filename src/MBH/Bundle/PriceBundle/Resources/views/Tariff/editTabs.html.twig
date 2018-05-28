@@ -1,6 +1,6 @@
 <ul class="nav nav-tabs" role="tablist">
     <li {{ active == 1 ? 'class="active"' : '' }}>
-        <a href="{{ path('tariff_edit', {'id': entity.id}) }}">
+        <a {% if is_granted('ROLE_TARIFF_EDIT') %} href="{{ path('tariff_edit', {'id': entity.id}) }}" {% endif %}>
             <i class="fa fa-info-circle"></i> {{ 'pricebundle.resources.views.public_info'|trans }}
         </a>
     </li>
