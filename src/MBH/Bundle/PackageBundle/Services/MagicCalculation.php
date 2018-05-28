@@ -76,12 +76,13 @@ class MagicCalculation extends Calculation
 
 
         $mergingTariffsPrices = [];
-        foreach ($this->mergingTariffs as $mergingTariff) {
-            if ($mergingTariff->getParent() && $mergingTariff->getChildOptions()->isInheritPrices()) {
-                $ids = [$mergingTariff->getParent()->getId()];
+        if ($tariff->getMergingTariff()) {
+            if ($tariff->getMergingTariff()->getParent() && $tariff->getMergingTariff()->getChildOptions()->isInheritPrices()) {
+                $ids = [$tariff->getMergingTariff()->getParent()->getId()];
             } else {
-                $ids = [$mergingTariff->getId()];
+                $ids = [$tariff->getMergingTariff()->getId()];
             }
+
             $mergingTariffCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached, $ids) {
                 return $this->dm->getRepository('MBHPriceBundle:PriceCache')
                     ->fetch(
@@ -96,7 +97,6 @@ class MagicCalculation extends Calculation
                     );
             };
             $mergingTariff = $this->helper->getFilteredResult($this->dm, $mergingTariffCallback);
-
 
             if ($mergingTariff) {
                 $mergingTariffsPrices += $mergingTariff;
@@ -113,20 +113,18 @@ class MagicCalculation extends Calculation
 
             if (isset($priceCaches[$roomTypeId][$tariffId][$cacheDayStr])) {
                 $caches[$cacheDayStr] = $priceCaches[$roomTypeId][$tariffId][$cacheDayStr];
-            } else {
-                foreach ($this->mergingTariffs as $mergingTariff) {
-                    if (isset($mergingTariffsPrices[$roomTypeId][$mergingTariff->getId()][$cacheDayStr])) {
-                        $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$mergingTariff->getId(
-                        )][$cacheDayStr];
-                        break;
-                    }
+            } elseif ($tariff->getMergingTariff()) {
+                if ($tariff->getMergingTariff()->getParent() && $tariff->getMergingTariff()->getChildOptions()->isInheritPrices()) {
+                    $mergingTariffIdForPrices = $tariff->getMergingTariff()->getParent()->getId();
+                } else {
+                    $mergingTariffIdForPrices = $tariff->getMergingTariff()->getId();
+                }
+                if (isset($mergingTariffsPrices[$roomTypeId][$mergingTariffIdForPrices][$cacheDayStr])) {
+                    $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$mergingTariffIdForPrices][$cacheDayStr];
                 }
             }
 
-            if (empty($caches[$cacheDayStr]) && isset(
-                    $defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr]
-                )
-            ) {
+            if (empty($caches[$cacheDayStr]) && isset($defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr])) {
                 $caches[$cacheDayStr] = $defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr];
             }
         }
@@ -170,6 +168,7 @@ class MagicCalculation extends Calculation
              * @var PriceCache $cache
              */
             foreach ($caches as $day => $cache) {
+                $promotion = $promotion ?? $cache->getTariff()->getDefaultPromotion();
                 $dayPrice = 0;
                 $bulkPrice = $cache->getPrice();
                 $discountPercent = null;
