@@ -36,6 +36,7 @@
                 <citizenship>
                     <type>Citizenship</type>
                     <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
+                    <value>{{ get_country(tourist.citizenshipTld).name }}</value>
                 </citizenship>
             {% endif %}
             {% if tourist.birthplace %}
@@ -44,6 +45,7 @@
                         <country>
                             <type>Country</type>
                             <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
+                            <value>{{ get_country(tourist.birthplace.countryTld).name }}</value>
                         </country>
                     {% endif %}
                     <place>{{ tourist.birthplace.mainRegion }}</place>
@@ -128,6 +130,7 @@
                         <country>
                             <type>Country</type>
                             <element>{{ get_country(hotel.countryTld).code3 }}</element>
+                            <value>{{ get_country(hotel.countryTld).name }}</value>
                         </country>
                     </foreignAddress>
                 {% endif %}
@@ -196,6 +199,7 @@
                                 <country>
                                     <type>Country</type>
                                     <element>{{ get_country(hotel.countryTld).code3 }}</element>
+                                    <value>{{ get_country(hotel.countryTld).name }}</value>
                                 </country>
                             </foreignAddress>
                         {% endif %}
