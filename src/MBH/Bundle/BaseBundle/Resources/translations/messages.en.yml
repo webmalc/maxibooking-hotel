@@ -415,8 +415,8 @@ security.two_factor.code: 'Login password'
 mailer.recipient.empty.email: 'Recipient email is empty %guest%'
 exception.relation_delete.message.task: 'Cannot be deleted. This type contains existing tasks (%total%)'
 cancel: Cancel
-portrait: Landscape
-landscape: Portrait
+portrait: Portrait
+landscape: Landscape
 age.full: year|year|years
 children: child|child|children
 days: day|day|days
