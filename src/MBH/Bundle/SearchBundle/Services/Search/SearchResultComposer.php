@@ -69,6 +69,7 @@ class SearchResultComposer
             ->setInfants($infants)
             ->setRooms($accommodationRooms)
             ->setQueryId($searchQuery->getSearchConditions()->getId())
+            ->setForceBooking($searchQuery->isForceBooking())
         ;
         $this->pricePopulate($searchResult, $prices);
 
@@ -127,7 +128,6 @@ class SearchResultComposer
 
         $repo = $this->dm->getRepository(Room::class);
 
-        //** TODO: Здесь не очень понятен момент с размещением ибо при множественном может быть коллизия */
         return $repo->fetchRawAccommodationRooms($begin, $end, $roomType->getId());
     }
 

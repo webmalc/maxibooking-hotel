@@ -66,6 +66,9 @@ class SearchQuery
 
     private $isIgnoreRestrictions = false;
 
+    /** @var bool */
+    private $isForceBooking;
+
     /**
      * @return mixed
      */
@@ -297,6 +300,27 @@ class SearchQuery
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isForceBooking(): bool
+    {
+        return $this->isForceBooking;
+    }
+
+    /**
+     * @param bool $isForceBooking
+     * @return SearchQuery
+     */
+    public function setIsForceBooking(bool $isForceBooking): SearchQuery
+    {
+        $this->isForceBooking = $isForceBooking;
+
+        return $this;
+    }
+
+
+
     public function getSearchTotalPlaces(): int
     {
         $actualAdults = $this->getActualAdults();
@@ -365,6 +389,7 @@ public static function createInstance(SearchQueryHelper $queryHelper, SearchCond
             ->setChildren($conditions->getChildren())
             ->setAdults($conditions->getAdults())
             ->setChildrenAges($conditions->getChildrenAges())
+            ->setIsForceBooking($conditions->isForceBooking())
         ;
 
         return $searchQuery;

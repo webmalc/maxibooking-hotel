@@ -27,7 +27,7 @@ class CalculationTest extends WebTestCase
         $this->service = $this->getContainer()->get('mbh_search.calculation');
         $this->oldService = $this->getContainer()->get('mbh.calculation');
         parent::setUp();
-//        self::baseFixtures();
+        self::baseFixtures();
     }
 
 

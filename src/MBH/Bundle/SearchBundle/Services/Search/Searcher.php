@@ -80,7 +80,8 @@ class Searcher
         $this->checkTariffConditions($currentTariff, $searchQuery);
         $this->checkRoomTypePopulationLimit($currentRoomType, $searchQuery);
         $roomCaches = $this->checkRoomCacheLimitAndReturnActual($searchQuery, $currentRoomType, $currentTariff);
-        $result = $this->searchResultCompose($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
+        $result = $this->composeResult($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
+        $this->checkWindows($result);
 
         return $result;
     }
@@ -154,6 +155,11 @@ class Searcher
         $this->searchLimitChecker->checkRoomTypePopulationLimit($roomType, $searchQuery);
     }
 
+    private function checkWindows(SearchResult $searchResult): void
+    {
+        $this->searchLimitChecker->checkWindows($searchResult);
+    }
+
     /**
      * @param SearchQuery $searchQuery
      * @param RoomType $currentRoomType
@@ -167,7 +173,7 @@ class Searcher
         return $this->roomCacheSearchProvider->fetchAndCheck($searchQuery->getBegin(), $searchQuery->getEnd(), $currentRoomType, $currentTariff);
     }
 
-    private function searchResultCompose(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, array $roomCaches): SearchResult
+    private function composeResult(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, array $roomCaches): SearchResult
     {
         $searchResult = new SearchResult();
 

@@ -72,19 +72,7 @@ class PackageRepository extends DocumentRepository
             }
         }
 
-        $qb = $this->createQueryBuilder()
-            ->field('begin')->lte($end)
-            ->field('end')->gte($begin)
-            ->field('virtualRoom')->notEqual(null)
-            ->field('deletedAt')->equals(null);
-
-        if ($roomType) {
-            $qb->field('roomType.id')->equals($roomType->getId());
-        }
-
-        if ($exclude) {
-            $qb->field('id')->notEqual($exclude->getId());
-        }
+        $qb = $this->fetchWithVirtualRoomsQB($begin, $end, $roomType, $exclude);
 
         $packages = $qb->getQuery()->execute();
 
@@ -108,6 +96,37 @@ class PackageRepository extends DocumentRepository
         }
 
         return $packages;
+    }
+
+    public function fetchWithVirtualRoomsRaw(
+        \DateTime $begin,
+        \DateTime $end,
+        RoomType $roomType = null,
+        bool $group = false,
+        Package $exclude = null
+    )
+    {
+        $qb = $this->fetchWithVirtualRoomsQB($begin, $end, $roomType, $exclude);
+
+        return $qb->select(['virtualRoom', 'begin', 'end'])->hydrate(false)->getQuery()->execute()->toArray();
+    }
+
+    private function fetchWithVirtualRoomsQB(\DateTime $begin, \DateTime $end, RoomType $roomType = null, Package $exclude = null){
+        $qb = $this->createQueryBuilder()
+            ->field('begin')->lte($end)
+            ->field('end')->gte($begin)
+            ->field('virtualRoom')->notEqual(null)
+            ->field('deletedAt')->equals(null);
+
+        if ($roomType) {
+            $qb->field('roomType.id')->equals($roomType->getId());
+        }
+
+        if ($exclude) {
+            $qb->field('id')->notEqual($exclude->getId());
+        }
+
+        return $qb;
     }
 
     /**

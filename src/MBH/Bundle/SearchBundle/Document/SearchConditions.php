@@ -121,6 +121,9 @@ class SearchConditions extends Base
      */
     private $isIgnoreRestrictions = false;
 
+    /** @var bool  */
+    private $isForceBooking = false;
+
     /**
      * SearchConditions constructor.
      */
@@ -378,6 +381,27 @@ class SearchConditions extends Base
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isForceBooking(): bool
+    {
+        return $this->isForceBooking;
+    }
+
+    /**
+     * @param bool $isForceBooking
+     * @return SearchConditions
+     */
+    public function setIsForceBooking(bool $isForceBooking): SearchConditions
+    {
+        $this->isForceBooking = $isForceBooking;
+
+        return $this;
+    }
+
+
 
 
 }

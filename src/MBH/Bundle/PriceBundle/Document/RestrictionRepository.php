@@ -127,11 +127,7 @@ class RestrictionRepository extends DocumentRepository
             }
         }
 
-        $qb = $this->createQueryBuilder('q');
-        $qb
-            ->field('date')->equals($date)
-            ->field('tariff.id')->equals($tariff->getId())
-            ->field('roomType.id')->equals($roomType->getId());
+        $qb = $this->findOneByDateQB($date, $roomType, $tariff);
 
         $result = $qb->getQuery()->getSingleResult();
 
@@ -141,6 +137,25 @@ class RestrictionRepository extends DocumentRepository
 
         return $result;
     }
+
+    public function findOneByDateRaw(\DateTime $date, RoomType $roomType, Tariff $tariff)
+    {
+        $qb = $this->findOneByDateQB($date, $roomType, $tariff);
+        $qb->select('minStayArrival');
+        return $qb->hydrate(false)->getQuery()->getSingleResult();
+    }
+
+    private function findOneByDateQB(\DateTime $date, RoomType $roomType, Tariff $tariff)
+    {
+        $qb = $this->createQueryBuilder();
+        $qb
+            ->field('date')->equals($date)
+            ->field('tariff.id')->equals($tariff->getId())
+            ->field('roomType.id')->equals($roomType->getId());
+
+        return $qb;
+    }
+
 
     /**
      * @param \DateTime $begin

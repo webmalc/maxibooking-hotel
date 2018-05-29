@@ -58,6 +58,27 @@ class RoomCacheRepository extends DocumentRepository
             }
         }
 
+
+        $qb = $this->getMinTotalQB($begin, $end, $roomType, $tariff);
+        $roomCache = $qb->getQuery()->getSingleResult();
+        $result = $roomCache ? $roomCache->getTotalRooms() : 0;
+        if ($memcached) {
+            $memcached->set($result, 'room_cache_min_total', func_get_args());
+        }
+
+        return $result;
+    }
+
+    public function getMinTotalRaw(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null)
+    {
+        $qb = $this->getMinTotalQB($begin, $end, $roomType, $tariff);
+        $roomCache = $qb->select('totalRooms')->hydrate(false)->getQuery()->getSingleResult();
+
+        return $roomCache ? $roomCache['totalRooms'] : 0;
+    }
+
+    private function getMinTotalQB(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null)
+    {
         $qb = $this->createQueryBuilder()
             ->field('date')->gte($begin)->lte($end)
             ->field('roomType.id')->equals($roomType->getId())
@@ -69,13 +90,7 @@ class RoomCacheRepository extends DocumentRepository
             $qb->field('tariff')->equals(null);
         }
 
-        $roomCache = $qb->getQuery()->getSingleResult();
-        $result = $roomCache ? $roomCache->getTotalRooms() : 0;
-        if ($memcached) {
-            $memcached->set($result, 'room_cache_min_total', func_get_args());
-        }
-
-        return $result;
+        return $qb;
     }
 
     /**

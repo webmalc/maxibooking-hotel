@@ -336,6 +336,22 @@ class RoomRepository extends AbstractBaseRepository
         return $result;
     }
 
+    public function fetchRaw(
+        Hotel $hotel = null,
+        $roomTypes = null,
+        $housing = null,
+        $floor = null,
+        $skip = null,
+        $limit = null,
+        $isEnabled = null,
+        array $sort = null
+    )
+    {
+        $qb = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit, $isEnabled, $sort);
+
+        return $qb->hydrate(false)->getQuery()->execute()->toArray();
+    }
+
     /**
      * @param Hotel|null $hotel
      * @param null $roomTypes

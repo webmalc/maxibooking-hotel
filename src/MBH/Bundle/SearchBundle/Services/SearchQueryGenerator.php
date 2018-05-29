@@ -83,7 +83,7 @@ class SearchQueryGenerator
             );
         $tariffRoomTypeCombined = $this->combineTariffWithRoomType($roomTypeIds, $tariffs);
 
-        $queryHelpers = $this->combineDataForSearchQuery($dates, $tariffRoomTypeCombined);
+        $queryHelpers = $this->createQueryHelpers($dates, $tariffRoomTypeCombined);
         if (empty($queryHelpers)) {
             throw new SearchQueryGeneratorException('No combinations for search');
         }
@@ -167,7 +167,7 @@ class SearchQueryGenerator
      * @param array $tariffRoomTypeCombined
      * @return SearchQueryHelper[]
      */
-    private function combineDataForSearchQuery(array $dates, array $tariffRoomTypeCombined): array
+    private function createQueryHelpers(array $dates, array $tariffRoomTypeCombined): array
     {
         $result = [];
         foreach ($dates as $date) {
@@ -194,9 +194,9 @@ class SearchQueryGenerator
      */
     private function combineTariffWithRoomType(array $rawRoomTypeIds, array $rawTariffs): array
     {
-        $roomTypeHotelKeys = array_keys($rawRoomTypeIds);
-        $tariffHotelKeys = array_keys($rawTariffs);
-        $sharedHotelKeys = array_intersect($roomTypeHotelKeys, $tariffHotelKeys);
+        $roomTypeHotelIdsKeys = array_keys($rawRoomTypeIds);
+        $tariffHotelIdsKeys = array_keys($rawTariffs);
+        $sharedHotelKeys = array_intersect($roomTypeHotelIdsKeys, $tariffHotelIdsKeys);
         if (empty($sharedHotelKeys)) {
             throw new SearchQueryGeneratorException('There is an error in combine Tariff with RoomType');
         }
@@ -234,7 +234,6 @@ class SearchQueryGenerator
                     'tariffId' => $tariff['id'],
                     'tariff' => $tariff['rawTariff'],
                     'restrictionTariffId' => $this->determineRestrictionTariffId($tariff['rawTariff'])
-
                 ];
             }
         }

@@ -6,6 +6,7 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\ExpectedResult;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -61,42 +62,13 @@ class SearchController extends Controller
 
         $searchDone = $stopwatch->stop('searchTime');
         $time = $searchDone->getDuration();
-
-//        foreach ($results as $result) {
-//            /** @var SearchResult $result */
-//            $grouped[$result->getRoomType()->getName()][] = $result;
-//        }
-//        foreach($results as $result) {
-//            /** @var SearchResult $result */
-//            $roomType = $result->getRoomType();
-//
-//            if ($result->isUseCategories()) {
-//                $roomType = $roomType->getCategory();
-//            }
-//
-//            if (!isset($groupedResult[$roomType->getId()])) {
-//                $groupedResult[$roomType->getId()] = [
-//                    'roomType' => $roomType,
-//                    'results' => []
-//                ];
-//            }
-//
-//            $groupedResult[$roomType->getId()]['results'][] = $result;
-//        }
-
-        $a = 'b';
-//            $result
-//                ->setOkStatus()
-//                ->setExpectedResults($searchQueryGenerator->getQueuesNum())
-//                ->setQueryHash(
-//                    $searchQueryGenerator->getSearchQueryHash()
-//                );
-        $serializer = $this->get('serializer');
-        return new Response(
-            $serializer->serialize($result, 'json'),
-            Response::HTTP_OK,
-            ['Content-Type' => 'application/json']
-        );
+        return new JsonResponse($time);
+//        $serializer = $this->get('serializer');
+//        return new Response(
+//            $serializer->serialize($result, 'json'),
+//            Response::HTTP_OK,
+//            ['Content-Type' => 'application/json']
+//        );
     }
 
     /**

@@ -54,6 +54,7 @@ class RestrictionsCheckerService
     //** TODO -  */
     public function check(SearchQuery $searchQuery): bool
     {
+        $this->errors = [];
         if ($searchQuery->isIgnoreRestrictions()) {
             return true;
         }
