@@ -15,14 +15,24 @@ class Builder
     protected $config;
 
     /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
      * @var FactoryInterface
      */
     private $factory;
 
     /**
-     * @var ContainerInterface
+     * @var string|null
      */
-    protected $container;
+    private $titleUrl = null;
+
+    /**
+     * @var bool
+     */
+    private $isCurrent = false;
 
     public function __construct(FactoryInterface $factory, ContainerInterface $container)
     {
@@ -48,6 +58,7 @@ class Builder
     public function mainMenu(array $options)
     {
         $this->setConfig();
+        $this->parseOptions($options);
 
         /** @var UserInterface $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
@@ -110,17 +121,18 @@ class Builder
         // financial analytics
         $menu->addChild($this->itemsFinancialAnalytics());
 
-        return $this->filter($menu, $options);
+        return $this->filter($menu);
     }
 
     /**
      * User menu
      * @param \Knp\Menu\FactoryInterface $factory
-     * @param array $options
      * @return \Knp\Menu\MenuItem
      */
     public function managementMenu(array $options)
     {
+        $this->parseOptions($options);
+
         $onlineForm = [
             'online_form' => [
                 'options'    => [
@@ -187,7 +199,7 @@ class Builder
 //        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
 //            ->setAttributes(['icon' => 'fa fa-star']);
 
-        return $this->filter($menu, $options);
+        return $this->filter($menu);
     }
 
     /**
@@ -198,45 +210,51 @@ class Builder
      */
     public function createHotelMenu(array $options)
     {
+        $this->parseOptions($options);
 
         $menu = $this->createRootItem('create-hotel-menu','menu.header.navigation');
 
         $menu->addChild('create_hotel', ['route' => 'hotel_new', 'label' => 'menu.hotel_new.label'])
             ->setAttribute('icon', 'fa fa-plus');
 
-        return $this->filter($menu, $options);
+        return $this->filter($menu);
     }
 
     /**
      * @param ItemInterface $menu
      * @param FactoryInterface $factory
-     * @param array $options
      * @return ItemInterface
      */
-    public function filter(ItemInterface $menu, array $options)
+    public function filter(ItemInterface $menu)
     {
         $this->counter = 0;
-        $menu = $this->filterMenu($menu, $options);
+        $menu = $this->filterMenu($menu);
+        if ($this->getTitleUrl() !== null && $this->isCurrent) {
+            $attr = $menu->getChildrenAttributes();
+            if (isset($attr['class']) && strpos($attr['class'], 'collapse') !== false) {
+                $attr['class'] .= ' in';
+                $menu->setChildrenAttributes($attr);
+            }
+            $this->isCurrent = false;
+        }
 
         return empty($this->counter) ? $this->factory->createItem('root') : $menu;
     }
 
     /**
      * @param ItemInterface $menu
-     * @param array $options
      * @return ItemInterface
      */
-    public function filterMenu(ItemInterface $menu, array $options)
+    public function filterMenu(ItemInterface $menu)
     {
         $router = $this->container->get('router');
         $router->getContext()->setMethod('GET');
         $security = $this->container->get('security.authorization_checker');
         $this->setConfig();
 
-        !empty($options['title_url']) ? $title_url = $options['title_url'] : $title_url = null;
-
-        if ($menu->getUri() == $title_url) {
+        if ($menu->getUri() == $this->getTitleUrl()) {
             $menu->setCurrent(true);
+            $this->isCurrent = true;
         }
 
         foreach ($menu->getChildren() as $child) {
@@ -245,7 +263,7 @@ class Builder
             }
             $metadata = false;
 
-            if ($child->getUri() == $title_url) {
+            if ($child->getUri() == $this->getTitleUrl()) {
                 $menu->setCurrent(true);
             }
 
@@ -274,10 +292,36 @@ class Builder
                 $this->counter += 1;
             }
 
-            $this->filterMenu($child, $options);
+            $this->filterMenu($child);
         }
 
         return $menu;
+    }
+
+    /**
+     * @param array $options
+     */
+    private function parseOptions(array $options): void
+    {
+        if (!empty($options['title_url'])) {
+            $this->setTitleUrl($options['title_url']);
+        }
+    }
+
+    /**
+     * @param $url
+     */
+    private function setTitleUrl($url): void
+    {
+        $this->titleUrl = $url;
+    }
+
+    /**
+     * @return null|string
+     */
+    private function getTitleUrl(): ?string
+    {
+        return $this->titleUrl;
     }
 
     /**
@@ -306,7 +350,7 @@ class Builder
         $cssClass[] = 'sidebar-menu';
         if ($collapse) {
             $cssClass[] = 'collapse';
-            if ($isOpen) {
+            if ($this->getTitleUrl() === null && $isOpen) {
                 $cssClass[] = 'in';
             }
         }
