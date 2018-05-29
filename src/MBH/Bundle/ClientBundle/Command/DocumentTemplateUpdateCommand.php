@@ -18,7 +18,7 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
 {
     public const COMMAND_NAME = 'mbh:document_template:update';
 
-    public const FILE_PATH = '/../var/logs/document_template_update.log';
+    public const FILE_LOG_NAME = 'document_template_update.log';
 
     public const MSG_OK_ALL_UPDATE = 'OK. Update all templates.';
 
@@ -140,19 +140,12 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
     }
 
     /**
-     * Логирование (в файл)
-     *
      * @param string $msg
      */
     private function logger(string $msg)
     {
-//        $this->getContainer()->get('logger')->addInfo($msg);
-        $client = $this->getContainer()->get('kernel')->getClient();
-        $date = new \DateTime();
-        $str = $date->format($date::ISO8601) . " {$client} \"{$msg}\"" . PHP_EOL;
-        $fileName = $this->getRootDir() . self::FILE_PATH;
-
-        file_put_contents($fileName, $str, FILE_APPEND);
+        $this->getContainer()->get('mbh.document_template_update.logger')
+            ->addInfo($msg);
     }
 
     /**

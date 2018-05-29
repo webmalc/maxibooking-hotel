@@ -103,7 +103,9 @@ class DocumentTemplateUpdateCommandTest extends KernelTestCase
 
         $commandTester->execute($input);
 
-        $fileName = static::$kernel->getRootDir() . DocumentTemplateUpdateCommand::FILE_PATH;
+        $fileName = static::$kernel->getRootDir() . '/../var/clients/';
+        $fileName .= static::$kernel->getEnvironment() . '/logs/';
+        $fileName .= static::$kernel->getEnvironment() . '.' . DocumentTemplateUpdateCommand::FILE_LOG_NAME;
         $fileArr = explode(PHP_EOL, trim(file_get_contents($fileName)));
 
         return end($fileArr);
