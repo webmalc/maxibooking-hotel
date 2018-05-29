@@ -69,7 +69,7 @@ class ChannelManagerController extends Controller
             'content' => str_replace(
                 PHP_EOL,
                 '<br><br>',
-                htmlentities(implode("\n", array_reverse(explode("\n", $content))))
+                htmlentities(implode("\n", array_reverse(explode("\n", $content))), ENT_SUBSTITUTE, "UTF-8")
             )
         ];
     }

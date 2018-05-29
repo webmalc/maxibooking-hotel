@@ -125,7 +125,7 @@ class TariffType extends AbstractType
                 'label' => 'form.tariffType.minPrepay',
                 'group' => 'form.tariffType.conditions_and_restrictions',
                 'required' => false,
-                'attr' => ['placeholder' => 'form.tariffType.minPerPrepay'],
+                'attr' => ['placeholder' => 'form.tariffType.minPerPrepay', 'class' => 'spinner'],
                 'help' => 'form.tariffType.help'
             ]);
         $builder

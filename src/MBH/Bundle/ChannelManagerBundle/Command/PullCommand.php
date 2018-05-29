@@ -28,7 +28,7 @@ class PullCommand extends ContainerAwareCommand
             'ChannelManager Pull command started'
         );
 
-        $oldPackageStatus = is_null($input->getOption('old'))
+        $oldPackageStatus = $input->getOption('old') === false
             ? ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS
             : ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS;
         $this->getContainer()->get('mbh.channelmanager')->pullOrders(
