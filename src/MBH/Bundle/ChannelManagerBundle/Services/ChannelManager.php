@@ -152,7 +152,6 @@ class ChannelManager
     {
         $command = 'mbh:channelmanager:update';
         $this->addCommandToQueue($command, [], $begin, $end);
-
     }
 
     /**
