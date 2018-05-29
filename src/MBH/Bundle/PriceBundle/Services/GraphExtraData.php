@@ -93,7 +93,7 @@ class GraphExtraData
      * @param Hotel $hotel
      * @return GraphExtraData|null
      */
-    public function get(Request $request, RoomCacheGraphGenerator $generator, Hotel $hotel): self
+    public function get(Request $request, RoomCacheGraphGenerator $generator, Hotel $hotel): ?self
     {
         $this->hotel = $hotel;
         $this->generation = $generator;
