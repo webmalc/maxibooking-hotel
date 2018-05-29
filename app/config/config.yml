@@ -70,7 +70,7 @@ twig:
           6: 'online.online-calendar.sat_abbr_min'
           7: 'online.online-calendar.sun_abbr_min'
         environment: "%mbh.environment%"
-        version: "%assetic_version%"
+        version: "%mbh.version%"
 
 # Assetic Configuration
 assetic:
