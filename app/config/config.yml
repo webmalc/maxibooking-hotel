@@ -11,7 +11,7 @@ imports:
 
 framework:
     assets:
-        version: "v%mbh.version%" 
+        version: "v%assetic_version%"
     serializer:
         enabled: true
     #esi:             ~
@@ -70,7 +70,7 @@ twig:
           6: 'online.online-calendar.sat_abbr_min'
           7: 'online.online-calendar.sun_abbr_min'
         environment: "%mbh.environment%"
-        version: "%mbh.version%"
+        version: "%assetic_version%"
 
 # Assetic Configuration
 assetic:
