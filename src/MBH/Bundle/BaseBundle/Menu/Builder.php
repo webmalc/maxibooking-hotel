@@ -9,6 +9,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class Builder
 {
+    const ROOT_MENU_ITEM_CREATE_HOTEL_MENU = 'create-hotel-menu';
+
+    const ROOT_MENU_ITEM_MANAGEMENT_MENU = 'management-menu';
+
+    const ROOT_MENU_ITEM_MAIN_MENU = 'main-menu';
+
     /**
      * @var \MBH\Bundle\ClientBundle\Document\ClientConfig
      */
@@ -95,7 +101,7 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItemWithCollapse('main-menu', 'menu.header.navigation', true);
+        $menu = $this->createRootItemWithCollapse(self::ROOT_MENU_ITEM_MAIN_MENU, 'menu.header.navigation', true);
 
         // chessboard
         $menu->addChild($this->createItem($this->getChessboardData()));
@@ -163,7 +169,7 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItemWithCollapse('management-menu', 'menu.settings.label.header');
+        $menu = $this->createRootItemWithCollapse(self::ROOT_MENU_ITEM_MANAGEMENT_MENU, 'menu.settings.label.header');
 
         // Hotel links
         $menu->addChild($this->itemsHotelLinks());
@@ -212,7 +218,7 @@ class Builder
     {
         $this->parseOptions($options);
 
-        $menu = $this->createRootItem('create-hotel-menu','menu.header.navigation');
+        $menu = $this->createRootItem(self::ROOT_MENU_ITEM_CREATE_HOTEL_MENU,'menu.header.navigation');
 
         $menu->addChild('create_hotel', ['route' => 'hotel_new', 'label' => 'menu.hotel_new.label'])
             ->setAttribute('icon', 'fa fa-plus');
