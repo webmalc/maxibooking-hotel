@@ -426,16 +426,12 @@ class Search implements SearchInterface
                     $query->getSpecial()
                 );
 
-                if (!$prices || (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
+                if (!$prices || (($query->adults + $query->children) != 0 && is_null($prices->getPackagePriceForCombination($tourists['adults'], $tourists['children'])))) {
                     continue;
                 }
-                foreach ($prices as $price) {
-                    $result->addPriceForCombination($price['total'], $price['adults'], $price['children'])
-//                        ->setPricesByDate($price['prices'], $price['adults'], $price['children'])
-                        ->setPackagePricesForCombination($price['packagePrices'], $price['adults'], $price['children'])
-                    ;
-                }
-                if (empty($result->getPrices())) {
+
+                $result->setPackagePrices($prices);
+                if (empty($result->getPackagePrices())) {
                     continue;
                 }
 

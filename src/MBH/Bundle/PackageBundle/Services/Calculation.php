@@ -141,7 +141,7 @@ class Calculation
      * @param bool $useCategories
      * @param bool $useDuration
      * @param Special|null $special
-     * @return array|bool
+     * @return CalculatedPackagePrices|bool
      */
     public function calcPrices(
         RoomType $roomType,
@@ -156,9 +156,19 @@ class Calculation
         $useDuration = true
     )
     {
-        $calculatedPackagePrice = new CalculatedPackagePrices();
-        $originTariff = $tariff;
-        $prices = [];
+        $calculatedPackagePrices = (new CalculatedPackagePrices())
+            ->setRoomType($roomType)
+            ->setTariff($tariff)
+            ->setBegin($begin)
+            ->setEnd($end)
+            ->setPromotion($promotion)
+            ->setUseCategories($useCategories)
+            ->setSpecial($special);
+        $cachedCalcPrices = $this->container->get('mbh.calculation_cache')->find($calculatedPackagePrices);
+        if (!is_null($cachedCalcPrices)) {
+            return $cachedCalcPrices;
+        }
+
         $memcached = $this->container->get('mbh.cache');
         $places = $roomType->getPlaces();
         $hotel = $roomType->getHotel();
@@ -402,15 +412,18 @@ class Calculation
                 $total -= PromotionConditionFactory::calcDiscount($promotion, $total, false);
             }
 
-            $prices[$combination['adults'] . '_' . $combination['children']] = (new PackagePriceForCombination)
+            $calculatedPackagePrices->addPackagePrice((new PackagePriceForCombination)
                 ->setAdults($combination['adults'])
                 ->setChildren($combination['children'])
                 ->setTotal($this->getTotalPrice($total))
                 ->setPackagePrices($packagePrices)
-            ;
+            );
         }
 
-        return $prices;
+        $this->dm->persist($calculatedPackagePrices);
+        $this->dm->flush();
+
+        return $calculatedPackagePrices;
     }
 
     /**

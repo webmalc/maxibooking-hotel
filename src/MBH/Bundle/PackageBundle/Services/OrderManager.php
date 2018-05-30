@@ -141,7 +141,7 @@ class OrderManager implements Searchable
             );
 
             $new->setPrice($results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren()))
-                ->setPrices($results[0]->getPackagePricesForCombination($results[0]->getAdults(), $results[0]->getChildren()))
+                ->setPrices($results[0]->getPackagePricesForCombination($results[0]->getAdults(), $results[0]->getChildren())->getPackagePrices())
                 ->setVirtualRoom($results[0]->getVirtualRoom())
             ;
 
@@ -536,7 +536,7 @@ class OrderManager implements Searchable
                     $results[0]->getChildren()
                 )
             )
-            ->setPrices($results[0]->getPackagePricesForCombination($results[0]->getAdults(), $results[0]->getChildren()))
+            ->setPrices($results[0]->getPackagePricesForCombination($results[0]->getAdults(), $results[0]->getChildren())->getPackagePrices())
             ->setIsForceBooking($results[0]->getForceBooking());
 
 

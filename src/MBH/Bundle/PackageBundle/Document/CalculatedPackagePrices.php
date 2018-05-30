@@ -17,6 +17,12 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 class CalculatedPackagePrices
 {
     /**
+     * @var string
+     * @ODM\Id
+     */
+    protected $id;
+
+    /**
      * @var \DateTime
      * @ODM\Field(type="date")
      */
@@ -30,13 +36,13 @@ class CalculatedPackagePrices
 
     /**
      * @var RoomType
-     * @ODM\ReferenceOne(targetDocument="RoomType")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
     private $roomType;
 
     /**
      * @var Tariff
-     * @ODM\ReferenceOne(targetDocument="Tariff")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      */
     private $tariff;
 
@@ -48,7 +54,7 @@ class CalculatedPackagePrices
 
     /**
      * @var Promotion
-     * @ODM\ReferenceOne(targetDocument="Promotion")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Promotion")
      */
     private $promotion;
 
@@ -60,13 +66,76 @@ class CalculatedPackagePrices
 
     /**
      * @var Special
-     * @ODM\ReferenceOne(targetDocument="Special")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Special")
      */
     private $special;
 
     public function __construct()
     {
         $this->packagePrices = new ArrayCollection();
+    }
+
+    /**
+     * @param PackagePriceForCombination $priceForCombination
+     * @return CalculatedPackagePrices
+     */
+    public function addPackagePrice(PackagePriceForCombination $priceForCombination)
+    {
+        $this->packagePrices->add($priceForCombination);
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection|PackagePriceForCombination[]
+     */
+    public function getPackagePrices()
+    {
+        $sortedPackagePrices = iterator_to_array($this->packagePrices);
+        usort($sortedPackagePrices, function(PackagePrice $packagePrice1, PackagePrice $packagePrice2) {
+            return $packagePrice1->getDate() > $packagePrice2->getDate() ? 1 : -1;
+        });
+
+        return $sortedPackagePrices;
+    }
+
+    /**
+     * @param int $adults
+     * @param int $children
+     * @return PackagePriceForCombination|mixed|null
+     */
+    public function getPackagePriceForCombination(int $adults, int $children = 0)
+    {
+        foreach ($this->getPackagePrices() as $packagePrice) {
+            if ($packagePrice->getAdults() === $adults && $packagePrice->getChildren() === $children) {
+                return $packagePrice;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get id
+     *
+     * @return string $id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $adults
+     * @param int $children
+     * @param int $defaultValue
+     * @return int|PackagePriceForCombination|mixed|null
+     */
+    public function getTotalPriceForCombinationOrDefaultValue(int $adults, int $children = 0, $defaultValue = null)
+    {
+        $packagePriceForCombination = $this->getPackagePriceForCombination($adults, $children);
+
+        return $packagePriceForCombination ?? $defaultValue;
     }
 
     /**
@@ -157,30 +226,11 @@ class CalculatedPackagePrices
      * @param Promotion $promotion
      * @return CalculatedPackagePrices
      */
-    public function setPromotion(Promotion $promotion): CalculatedPackagePrices
+    public function setPromotion(?Promotion $promotion): CalculatedPackagePrices
     {
         $this->promotion = $promotion;
 
         return $this;
-    }
-
-    /**
-     * @param PackagePriceForCombination $priceForCombination
-     * @return CalculatedPackagePrices
-     */
-    public function addPackagePrice(PackagePriceForCombination $priceForCombination)
-    {
-        $this->packagePrices->add($priceForCombination);
-
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection|PackagePriceForCombination[]
-     */
-    public function getPackagePrices()
-    {
-        return $this->packagePrices;
     }
 
     /**
@@ -214,7 +264,7 @@ class CalculatedPackagePrices
      * @param Special $special
      * @return CalculatedPackagePrices
      */
-    public function setSpecial(Special $special): CalculatedPackagePrices
+    public function setSpecial(?Special $special): CalculatedPackagePrices
     {
         $this->special = $special;
 

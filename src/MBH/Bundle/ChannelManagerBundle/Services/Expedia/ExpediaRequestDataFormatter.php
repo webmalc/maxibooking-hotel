@@ -98,10 +98,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $roomTypeElement->addAttribute('id', $roomTypeId);
 
                     $hasPriceList = false;
-                    $priceList = [];
                     if (!is_null($priceCache)) {
                         $priceList = $priceCalculator->calcPrices($priceCache->getRoomType(), $priceCache->getTariff(), $periodBegin, $periodBegin);
-                        $hasPriceList = is_array($priceList) && count($priceList) > 0;
+                        $hasPriceList = $priceList && count($priceList->getPackagePrices()) > 0;
                     }
 
                     $ratePlanElement = $roomTypeElement->addChild('RatePlan');
@@ -111,11 +110,11 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $rateElement = $ratePlanElement->addChild('Rate');
                     $rateElement->addAttribute('currency', strtoupper($localCurrency));
                     if ($hasPriceList) {
-                        foreach ($priceList as $price) {
-                            if (!isset($price['children']) || $price['children'] == 0) {
+                        foreach ($priceList->getPackagePrices() as $price) {
+                            if ($price->getChildren() == 0) {
                                 $perOccupancyElement = $rateElement->addChild('PerOccupancy');
-                                $perOccupancyElement->addAttribute('rate', $price['total']);
-                                $perOccupancyElement->addAttribute('occupancy', $price['adults']);
+                                $perOccupancyElement->addAttribute('rate', $price->getTotal());
+                                $perOccupancyElement->addAttribute('occupancy', $price->getAdults());
                             }
                         }
                     }

@@ -291,7 +291,23 @@ class SearchResult
      */
     public function getPrices()
     {
-        return $this->prices;
+        $prices = [];
+
+        foreach ($this->getPackagePrices()->getPackagePrices() as $packagePrice) {
+            $prices[$packagePrice->getAdults() . '_' . $packagePrice->getChildren()] = $packagePrice->getTotal();
+        }
+
+        return $prices;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getPriceForSearchedCombination()
+    {
+        $packagePrice = $this->getPackagePrices()->getPackagePriceForCombination($this->getAdults(), $this->getChildren());
+
+        return is_null($packagePrice) ? null : $packagePrice->getTotal();
     }
 
     /**
@@ -365,7 +381,7 @@ class SearchResult
     }
 
     /**
-     * @return PackagePriceForCombination[]
+     * @return CalculatedPackagePrices
      */
     public function getPackagePrices()
     {
@@ -375,15 +391,11 @@ class SearchResult
     /**
      * @param $adults
      * @param $children
-     * @return null|array
+     * @return null|PackagePriceForCombination
      */
     public function getPackagePricesForCombination($adults, $children)
     {
-        if (isset($this->packagePrices[$adults . '_' . $children])) {
-            return $this->packagePrices[$adults . '_' . $children];
-        }
-
-        return null;
+        return $this->packagePrices->getPackagePriceForCombination($adults, $children);
     }
 
     /**
@@ -395,17 +407,6 @@ class SearchResult
     public function setPackagePricesForCombination(array $packagePrices, $adults, $children)
     {
         $this->packagePrices[$adults . '_' . $children] = $packagePrices;
-
-        return $this;
-    }
-
-    /**
-     * @param $packagePrices
-     * @return SearchResult
-     */
-    public function setPackagePrices($packagePrices)
-    {
-        $this->packagePrices = $packagePrices;
 
         return $this;
     }
@@ -471,12 +472,11 @@ class SearchResult
     {
         $tariffs = new \SplObjectStorage();
 
-        if (!count($this->packagePrices)) {
+        if (!count($this->getPackagePrices()->getPackagePrices())) {
             return $tariffs;
         }
 
-        /** @var PackagePrice $packagePrice */
-        foreach (array_values($this->packagePrices)[0] as $packagePrice) {
+        foreach ($this->getPackagePrices()->getPackagePrices()[0]->getPackagePrices() as $packagePrice) {
             $tariffs->attach($packagePrice->getTariff());
         }
 
@@ -528,7 +528,7 @@ class SearchResult
         $packagePrices = [];
         $originalPrice = 0;
         /** @var PackagePrice $packagePrice */
-        foreach ($this->getPackagePricesForCombination($this->getAdults(), $this->getChildren()) as $packagePrice) {
+        foreach ($this->getPackagePricesForCombination($this->getAdults(), $this->getChildren())->getPackagePrices() as $packagePrice) {
             $packagePrices[] = $packagePrice->getJsonSerialized();
             $originalPrice += $packagePrice->getPriceWithoutPromotionDiscount();
         }
@@ -542,7 +542,6 @@ class SearchResult
             'tariff' => $this->getTariff()->getId(),
             'price' => $this->getPrice($this->getAdults(), $this->getChildren()),
             'priceWithoutPromotionDiscount' => round($originalPrice, 2),
-            'prices' => $this->prices,
             'packagePrices' => $packagePrices,
             'roomsCount' => $this->getRoomsCount(),
             'nights' => (int)$this->getNights()

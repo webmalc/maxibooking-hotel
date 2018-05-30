@@ -31,7 +31,6 @@ class SearchCache
         'infants',
         'range'
     ];
-    const DATE_FORMAT = 'd.m.Y';
 
     private $dm;
     private $fieldsManager;

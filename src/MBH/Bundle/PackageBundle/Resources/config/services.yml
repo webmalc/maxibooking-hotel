@@ -268,3 +268,10 @@ services:
             - '@mbh.helper'
             - '@mbh.package.search'
             - '@mbh.hotel.room_type_manager'
+
+    mbh.calculation_cache:
+        class: MBH\Bundle\PackageBundle\Services\CalculationCache
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.document_fields_manager'
+            - '@mbh.calculation'

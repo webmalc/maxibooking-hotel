@@ -13,9 +13,9 @@
                         <closed>1</closed>
                         {% endif %}
 
-                        {% if dateInfo.prices is defined %}
+                        {% if dateInfo.prices is defined and dateInfo.prices %}
                             <prices>
-                            {% for priceInfo in dateInfo.prices %}
+                            {% for priceInfo in dateInfo.prices.getPackagePrices() %}
                                 {% if priceInfo.children == 0 %}
                                     <price_{{ priceInfo.adults }}>{{ priceInfo.total }}</price_{{ priceInfo.adults }}>
                                 {% endif %}

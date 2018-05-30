@@ -90,6 +90,21 @@ class PackagePriceForCombination
     }
 
     /**
+     * @param \DateTime $date
+     * @return PackagePrice|null
+     */
+    public function getPackagePriceOnDate(\DateTime $date)
+    {
+        foreach ($this->getPackagePrices() as $packagePrice) {
+            if ($packagePrice->getDate() === $date) {
+                return $packagePrice;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @return int
      */
     public function getAdults(): ?int

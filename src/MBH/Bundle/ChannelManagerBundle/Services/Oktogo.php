@@ -233,10 +233,13 @@ class Oktogo extends Base
 
                                 $countPersons = $serviceTariffs[$roomTypeInfo['syncId']][$tariff['syncId']]['persons'];
                                 $priceFinal = $calc->calcPrices($info->getRoomType(), $tariff['doc'], $day, $day);
+                                $currentDatePrice = $priceFinal
+                                    ? $priceFinal->getTotalPriceForCombinationOrDefaultValue($countPersons)
+                                    : null;
 
                                 $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                     'id_tariff' => $tariff['syncId'],
-                                    'price' => isset($priceFinal[$countPersons . '_0']['total']) ? $priceFinal[$countPersons . '_0']['total'] : null,
+                                    'price' => $currentDatePrice,
                                     'persons' => $info->getRoomType()->getPlaces(),
                                 ];
 

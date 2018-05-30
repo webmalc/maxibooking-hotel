@@ -245,17 +245,16 @@ class Ostrovok extends Base
                                 }
                                 $adults = $occupancies[$occupancyId]['capacity'];
                                 $children = 0;
-                                $price = $this->calculation->calcPrices(
+                                $calculatedPrice = $this->calculation->calcPrices(
                                     $roomType,
                                     $tariff,
                                     $day,
-                                    $day,
-                                    $adults,
-                                    $children,
-                                    null,
-                                    false
+                                    $day
                                 );
-                                $price = $price[$adults.'_'.$children]['total']??null;
+
+                                $price = $calculatedPrice
+                                    ? $calculatedPrice->getTotalPriceForCombinationOrDefaultValue($adults, $children)
+                                    : null;
                                 if (!$price) {
                                     $message = $this->container->get('translator')->trans('services.ostrovok.error_getting_price_for_number', [
                                         '%roomTypeName%' => $roomType->getFullTitle(),

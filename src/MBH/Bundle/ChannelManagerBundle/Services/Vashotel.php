@@ -954,7 +954,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                             ];
                         } else {
                             $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
-                                'prices' => []
+                                'prices' => null
                             ];
                         }
                     }
