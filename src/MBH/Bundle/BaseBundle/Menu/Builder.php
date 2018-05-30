@@ -40,10 +40,26 @@ class Builder
      */
     private $isCurrent = false;
 
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\Routing\Router
+     */
+    private $currentRoute;
+
+    /**
+     * @var \Symfony\Component\Security\Core\Authorization\AuthorizationChecker
+     */
+    private $security;
+
     public function __construct(FactoryInterface $factory, ContainerInterface $container)
     {
         $this->factory = $factory;
         $this->container = $container;
+
+        $this->currentRoute = $this->container->get('router');
+        $this->currentRoute->getContext()->setMethod('GET');
+        $this->security = $this->container->get('security.authorization_checker');
+        
+        $this->setConfig();
     }
 
     protected function setConfig()
@@ -235,14 +251,7 @@ class Builder
     {
         $this->counter = 0;
         $menu = $this->filterMenu($menu);
-        if ($this->getTitleUrl() !== null && $this->isCurrent) {
-            $attr = $menu->getChildrenAttributes();
-            if (isset($attr['class']) && strpos($attr['class'], 'collapse') !== false) {
-                $attr['class'] .= ' in';
-                $menu->setChildrenAttributes($attr);
-            }
-            $this->isCurrent = false;
-        }
+        $menu = $this->openRootMenu($menu);
 
         return empty($this->counter) ? $this->factory->createItem('root') : $menu;
     }
@@ -253,11 +262,6 @@ class Builder
      */
     public function filterMenu(ItemInterface $menu)
     {
-        $router = $this->container->get('router');
-        $router->getContext()->setMethod('GET');
-        $security = $this->container->get('security.authorization_checker');
-        $this->setConfig();
-
         if ($menu->getUri() == $this->getTitleUrl()) {
             $menu->setCurrent(true);
             $this->isCurrent = true;
@@ -276,7 +280,7 @@ class Builder
             try {
                 $url = str_replace('app_dev.php/', '', parse_url($child->getUri()))['path'];
 
-                $controllerInfo = explode('::', $router->match($url)['_controller']);
+                $controllerInfo = explode('::', $this->currentRoute->match($url)['_controller']);
 
                 $rMethod = new \ReflectionMethod($controllerInfo[0], $controllerInfo[1]);
 
@@ -292,13 +296,31 @@ class Builder
                 continue;
             }
 
-            if (!$security->isGranted($roles[1])) {
+            if (!$this->security->isGranted($roles[1])) {
                 $menu->removeChild($child);
             } elseif (empty($child->getAttribute('dropdown'))) {
                 $this->counter += 1;
             }
 
             $this->filterMenu($child);
+        }
+
+        return $menu;
+    }
+
+    /**
+     * @param ItemInterface $menu
+     * @return ItemInterface
+     */
+    private function openRootMenu(ItemInterface $menu): ItemInterface
+    {
+        if ($this->getTitleUrl() !== null && $this->isCurrent) {
+            $attr = $menu->getChildrenAttributes();
+            if (isset($attr['class']) && strpos($attr['class'], 'collapse') !== false) {
+                $attr['class'] .= ' in';
+                $menu->setChildrenAttributes($attr);
+            }
+            $this->isCurrent = false;
         }
 
         return $menu;
