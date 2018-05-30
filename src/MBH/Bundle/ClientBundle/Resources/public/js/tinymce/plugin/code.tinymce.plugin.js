@@ -14,8 +14,6 @@
 
 tinymce.PluginManager.add('codemirror', function(editor, url) {
 
-  console.log(editor.settings.codemirror.pathSource);
-
   function showSourceEditor() {
 
     editor.focus();

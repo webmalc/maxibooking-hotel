@@ -69,7 +69,7 @@ class DocumentTemplateController extends BaseController
     }
 
     /**
-     * @Route("/edit/tinymce_codemirror", name="document_templates_tinymce_codemirror")
+     * @Route("/tinymce_codemirror", name="document_templates_tinymce_codemirror")
      * @return Response
      */
     public function tinymceCodemirrorAction()
