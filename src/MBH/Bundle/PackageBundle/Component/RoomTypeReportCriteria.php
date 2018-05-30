@@ -22,7 +22,11 @@ class RoomTypeReportCriteria extends AbstractQueryCriteria
             $this->housing = $request->get('housing');
             $this->floor = $request->get('floor');
             $this->status = $request->get('status');
-            $this->date = \DateTime::createFromFormat('d.m.Y',$request->get('date'));
+
+            $date = \DateTime::createFromFormat('d.m.Y',$request->get('date'));
+            if ($date !== false) {
+                $this->date = $date;
+            }
         }
     }
 
