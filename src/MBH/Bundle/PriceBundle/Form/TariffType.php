@@ -205,7 +205,8 @@ class TariffType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff'
+            'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff',
+            'hotel' => null
         ));
     }
 
