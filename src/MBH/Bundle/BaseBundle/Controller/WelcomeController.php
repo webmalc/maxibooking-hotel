@@ -15,7 +15,7 @@ class WelcomeController extends BaseController
      */
     public function indexAction()
     {
-        if ($this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW')) {
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_ACCOMMODATION_REPORT')) {
             return $this->redirectToRoute('chess_board_home');
         }
         if ($this->get('security.authorization_checker')->isGranted('ROLE_STAFF')) {

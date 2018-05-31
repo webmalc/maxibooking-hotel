@@ -15,6 +15,8 @@ class Builder
 
     const ROOT_MENU_ITEM_MAIN_MENU = 'main-menu';
 
+    const PORTER_LINKS = 'porter_links';
+
     /**
      * @var \MBH\Bundle\ClientBundle\Document\ClientConfig
      */
@@ -217,7 +219,6 @@ class Builder
         // profile
         $menu->addChild($this->createItem($profile));
 
-
 //        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
 //            ->setAttributes(['icon' => 'fa fa-star']);
 
@@ -251,7 +252,7 @@ class Builder
     {
         $this->counter = 0;
         $menu = $this->filterMenu($menu);
-        $menu = $this->openRootMenu($menu);
+        $menu = $this->checkAndOpenRootMenu($menu);
 
         return empty($this->counter) ? $this->factory->createItem('root') : $menu;
     }
@@ -312,7 +313,7 @@ class Builder
      * @param ItemInterface $menu
      * @return ItemInterface
      */
-    private function openRootMenu(ItemInterface $menu): ItemInterface
+    private function checkAndOpenRootMenu(ItemInterface $menu): ItemInterface
     {
         if ($this->getTitleUrl() !== null && $this->isCurrent) {
             $attr = $menu->getChildrenAttributes();
@@ -436,26 +437,10 @@ class Builder
     {
         $items = [];
         foreach ($data as $item) {
-            $items[] = $this->createItem($item);
+            $items[array_keys($item)[0]] = $this->createItem($item);
         }
 
         return $items;
-    }
-
-    /**
-     * @param string $attrHeader
-     * @return ItemInterface
-     */
-    private function getHeaderItem(string $attrHeader): ItemInterface
-    {
-        $headers = [
-            'header' => [
-                'options'    => [],
-                'attributes' => ['header' => $attrHeader],
-            ],
-        ];
-
-        return $this->createItem($headers);
     }
 
     /**
@@ -1283,7 +1268,7 @@ $paymentSystem,
         $parentAttr = ['dropdown' => true, 'icon' => 'fa fa-bell'] + $porterBadges;
 
         $porterLink = [
-            'porter_links' => [
+            self::PORTER_LINKS => [
                 'options'    => $parentOptions,
                 'attributes' => $parentAttr,
             ],
