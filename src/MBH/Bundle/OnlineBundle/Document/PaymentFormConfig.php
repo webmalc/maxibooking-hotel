@@ -30,6 +30,8 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     use DecorationTrait;
     use DecorationDataTrait;
 
+    const WRAPPER_ID = 'mbh-payment-form-wrapper';
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -55,36 +57,14 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     protected $hotels;
 
     /**
-     * @var boolean
+     * @var bool
      * @Gedmo\Versioned
      * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
      */
-    protected $enabled = true;
-
-    /**
-     * Set enabled
-     *
-     * @param boolean $enabled
-     * @return self
-     */
-    public function setEnabled($enabled)
-    {
-        $this->enabled = $enabled;
-        return $this;
-    }
-
-    /**
-     * Get enabled
-     *
-     * @return boolean $enabled
-     */
-    public function getEnabled()
-    {
-        return $this->enabled;
-    }
+    private $fieldUserNameIsVisible = false;
 
     /**
      * @return array|ArrayCollection|Hotel[]
@@ -103,5 +83,22 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
         $this->hotels = $hotels;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isFieldUserNameIsVisible(): bool
+    {
+        return $this->fieldUserNameIsVisible;
+    }
+
+    /**
+     * @param bool $fieldUserNameIsVisible
+     */
+    public function setFieldUserNameIsVisible(bool $fieldUserNameIsVisible): void
+    {
+        $this->fieldUserNameIsVisible = $fieldUserNameIsVisible;
+    }
+
 
 }

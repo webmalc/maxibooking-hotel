@@ -8,7 +8,7 @@
         'title': '<i class="fa fa-code"></i> '~'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle')
     }
 ] %}
-
+{% spaceless %}
 <ul class="nav nav-tabs" role="tablist">
     {% for item in menu %}
         <li {% if loop.index == active %}class="active"{% endif %}>
@@ -19,3 +19,4 @@
         </li>
     {% endfor %}
 </ul>
+{% endspaceless %}

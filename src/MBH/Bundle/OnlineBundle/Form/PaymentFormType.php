@@ -35,7 +35,7 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
                 ]
             )
             ->add(
-                'enabled',
+                'isEnabled',
                 CheckboxType::class,
                 [
                     'label'    => 'form.formType.is_turned_on',
@@ -43,6 +43,17 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
                     'value'    => true,
                     'required' => false,
                     'help'     => 'form.formType.use_online_form',
+                ]
+            )
+            ->add(
+                'fieldUserNameIsVisible',
+                CheckboxType::class,
+                [
+                    'label'    => 'form.payment.formType.fieldUserNameIsVisible',
+                    'group'    => 'form.formType.parameters',
+//                    'value'    => false,
+                    'required' => false,
+                    'help'     => 'form.payment.formType.fieldUserNameIsVisible.help',
                 ]
             );
 

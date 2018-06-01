@@ -1,0 +1,34 @@
+var mbhPaymentFunc = {
+  frameUrl: '{{ url('online_payment_form_iframe', {formId: config.id})|raw }}',
+  frameWidth: "{{ config.fullWidth ? '100%' : config.frameWidth | raw }}",
+  frameHeight: "{{ config.frameHeight }}",
+  rendeIframe: function(config) {
+    {#this.configParser(config);#}
+    this.render();
+  },
+  {#configParser: function(config) {#}
+    {#if (config.frameUrl !== undefined) {#}
+      {#this.frameUrl = config.frameUrl;#}
+    {#}#}
+    {#if (config.frameWidth !== undefined) {#}
+      {#this.frameWidth = config.frameWidth;#}
+    {#}#}
+    {#if (config.frameHeight !== undefined) {#}
+      {#this.frameHeight = config.frameHeight#}
+    {#}#}
+  {#},#}
+  render: function() {
+    var formWrapper = document.querySelector('#{{ wrapperId|raw }}');
+    formWrapper.innerHTML = '';
+    var iframe = document.createElement('iframe');
+    iframe.id = "{{ wrapperId|raw }}-iframe";
+    iframe.src = this.frameUrl;
+    iframe.scrolling = 'no';
+    iframe.frameBorder = 0;
+    iframe.width = this.frameWidth;
+    iframe.height = this.frameHeight;
+    formWrapper.appendChild(iframe);
+  }
+};
+
+mbhPaymentFunc.rendeIframe();
