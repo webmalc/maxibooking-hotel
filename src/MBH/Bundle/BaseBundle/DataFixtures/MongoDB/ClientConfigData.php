@@ -10,7 +10,7 @@ use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 
 class ClientConfigData extends AbstractFixture implements OrderedFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         $isRussianLocale = $this->container->getParameter('locale') === 'ru';
         $clientConfig = $manager->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();

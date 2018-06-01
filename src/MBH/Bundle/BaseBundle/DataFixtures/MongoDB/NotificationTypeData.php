@@ -11,7 +11,7 @@ use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 
 class NotificationTypeData extends AbstractFixture implements OrderedFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         $data = [
             NotificationType::OWNER_ALL => $this->getAllOwnerTypes(),

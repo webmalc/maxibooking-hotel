@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\ExpectedResult;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -19,6 +20,69 @@ class SearchController extends Controller
 {
 
     public const PRE_RESTRICTION_CHECK = true;
+
+    /**
+     * @Route("/")
+     */
+    public function searchTestAction()
+    {
+        $stopwatch = $this->get('debug.stopwatch');
+        $stopwatch->start('searchTime');
+
+        $result = new ExpectedResult();
+        $data = array (
+            'begin' => '13.08.2018',
+            'end' => '20.08.2018',
+            'adults' => 1,
+            'children' => 0,
+            'additionalBegin' => 0,
+        );
+
+        //** Todo: Must Rename requestReceiver to searchConditions creator */
+        $searchRequestReceiver = $this->get('mbh_search.search_request_receiver');
+        $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
+        $conditions = $searchRequestReceiver->handleData($data);
+
+        try {
+            //** Todo: Move this logic to search service */
+            $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
+            $search = $this->get('mbh_search.search');
+            $finded = $search->searchSync($searchQueries, $conditions);
+            $result
+                ->setStatus('ok')
+                ->setQueryHash($search->getSearchHash())
+                ->setExpectedResults($search->getSearchCount())
+            ;
+        } catch (SearchQueryGeneratorException $e) {
+            $result
+                ->setStatus('error')
+                ->setErrorMessage($e->getMessage())
+                ->setExpectedResults(0)
+            ;
+        }
+
+        $searchDone = $stopwatch->stop('searchTime');
+        $time = $searchDone->getDuration();
+
+
+        $filtered = [];
+        foreach ($finded as $find) {
+            if ($find['status'] === 'ok') {
+                /** @var SearchResult $searchResult */
+                $searchResult = $find['result'];
+                $filtered[$searchResult->getRoomType()->getName()][] = $searchResult;
+            }
+        }
+
+
+        return $this->render('@MBHSearch/Search/index.html.twig', ['finded' => $finded, 'time' => $time]);
+//        $serializer = $this->get('serializer');
+//        return new Response(
+//            $serializer->serialize($result, 'json'),
+//            Response::HTTP_OK,
+//            ['Content-Type' => 'application/json']
+//        );
+    }
 
     /**
      * @Route(
@@ -46,7 +110,7 @@ class SearchController extends Controller
         try {
             $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
             $search = $this->get('mbh_search.search');
-            $finded = $search->search($searchQueries, $conditions, false);
+            $finded = $search->searchSync($searchQueries, $conditions);
             $result
                 ->setStatus('ok')
                 ->setQueryHash($search->getSearchHash())

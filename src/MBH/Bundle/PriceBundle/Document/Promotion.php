@@ -83,7 +83,7 @@ class Promotion extends Base implements ConditionsInterface
      * @var bool
      * @Assert\Type(type="boolean")
      */
-    protected $isPercentDiscount;
+    protected $isPercentDiscount = true;
 
     /**
      * @ODM\Field(type="boolean")
@@ -136,6 +136,8 @@ class Promotion extends Base implements ConditionsInterface
     public function setFullTitle($fullTitle)
     {
         $this->fullTitle = $fullTitle;
+
+        return $this;
     }
 
     /**
@@ -152,6 +154,8 @@ class Promotion extends Base implements ConditionsInterface
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -168,6 +172,8 @@ class Promotion extends Base implements ConditionsInterface
     public function setDiscount($discount)
     {
         $this->discount = $discount;
+
+        return $this;
     }
 
     /**
@@ -184,6 +190,8 @@ class Promotion extends Base implements ConditionsInterface
     public function setIsPercentDiscount($isPercentDiscount)
     {
         $this->isPercentDiscount = $isPercentDiscount;
+
+        return $this;
     }
 
     /**
@@ -200,6 +208,8 @@ class Promotion extends Base implements ConditionsInterface
     public function setIsIndividual($isIndividual)
     {
         $this->isIndividual = $isIndividual;
+
+        return $this;
     }
 
     /**
@@ -216,6 +226,8 @@ class Promotion extends Base implements ConditionsInterface
     public function setComment($comment)
     {
         $this->comment = $comment;
+
+        return $this;
     }
 
     /**
@@ -232,6 +244,8 @@ class Promotion extends Base implements ConditionsInterface
     public function setFreeChildrenQuantity($freeChildrenQuantity)
     {
         $this->freeChildrenQuantity = $freeChildrenQuantity;
+
+        return $this;
     }
 
     /**
@@ -248,6 +262,8 @@ class Promotion extends Base implements ConditionsInterface
     public function setFreeAdultsQuantity($freeAdultsQuantity)
     {
         $this->freeAdultsQuantity = $freeAdultsQuantity;
+
+        return $this;
     }
 
 
@@ -266,6 +282,7 @@ class Promotion extends Base implements ConditionsInterface
     public function setChildrenDiscount($childrenDiscount)
     {
         $this->childrenDiscount = $childrenDiscount;
+
         return $this;
     }
 

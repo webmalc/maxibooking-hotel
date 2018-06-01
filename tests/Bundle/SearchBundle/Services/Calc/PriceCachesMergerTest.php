@@ -6,6 +6,7 @@ namespace Tests\Bundle\SearchBundle\Services\Calc;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\RoomTypeCategoryData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -39,7 +40,6 @@ class PriceCachesMergerTest extends WebTestCase
         $dm = $this->dm;
         $hotel = $dm->getRepository(Hotel::class)->findOneBy([]);
 
-        //** Категории как прикрутить ? */
         $roomTypes = $hotel->getRoomTypes()->toArray();
         $searchRoomType = $this->getDocumentFromArrayByFullTitle($roomTypes, $data['searchRoomTypeName']);
 
@@ -63,16 +63,21 @@ class PriceCachesMergerTest extends WebTestCase
             $this->assertCount($duration, $actual);
             $matched = 0;
             //** TODO: Добавить дополнительно проверки дат и попробовать  */
-            foreach ($actual as $cache) {
-                $cacheDate = $cache['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-                $cacheOffset = (int)$cacheDate->diff(new \DateTime('midnight'))->format('%d');
+            foreach ($actual as $value) {
+                $cache = $value['data'];
+                $actualSearchCacheTariffId = $value['searchTariffId'];
+                $cacheDate = Helper::convertMongoDateToDate($cache['date']);
+                $cacheOffset = (int)$cacheDate->diff(new \DateTime('midnight'))->format('%a');
                 foreach ($data['expectedPriceCaches'] as $expectedPriceCache) {
                     if ($expectedPriceCache['offset'] === $cacheOffset) {
                         $matched++;
                         $cacheTariffid = (string)$cache['tariff']['$id'];
-                        /** @var Tariff $expectedTariff */
-                        $expectedTariff = $this->getDocument(Tariff::class, $cacheTariffid);
-                        $this->assertEquals($expectedPriceCache['priceCacheTariffName'], $expectedTariff->getName());
+                        /** @var Tariff $actualCacheTariff */
+                        $actualCacheTariff = $this->getDocument(Tariff::class, $cacheTariffid);
+                        //* $actualSearchCacheTariff тариф прайс кэша по которому производился поиск, на случай если тариф дочерний *//
+                        $actualSearchCacheTariff = $this->dm->find(Tariff::class, $actualSearchCacheTariffId);
+                        $this->assertEquals($expectedPriceCache['searchPriceCacheTariffName'], $actualSearchCacheTariff->getFullTitle());
+                        $this->assertEquals($expectedPriceCache['priceCacheTariffName'], $actualCacheTariff->getName());
                     }
                 }
             }
@@ -110,31 +115,39 @@ class PriceCachesMergerTest extends WebTestCase
                 'expectedPriceCaches' => [
                     [
                         'offset' => 8,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 9,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 10,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 11,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 12,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 13,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 14,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME],
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                    ],
                 ]
             ]
         ];
@@ -150,27 +163,33 @@ class PriceCachesMergerTest extends WebTestCase
                 'expectedPriceCaches' => [
                     [
                         'offset' => 5,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 6,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 7,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 8,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 9,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 10,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ]
                 ]
             ]
@@ -188,47 +207,58 @@ class PriceCachesMergerTest extends WebTestCase
                 'expectedPriceCaches' => [
                     [
                         'offset' => 0,
-                        'priceCacheTariffName' => 'Основной тариф'
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ],
                     [
                         'offset' => 1,
-                        'priceCacheTariffName' => 'Основной тариф'
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ],
                     [
                         'offset' => 2,
-                        'priceCacheTariffName' => 'Основной тариф'
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ],
                     [
                         'offset' => 3,
-                        'priceCacheTariffName' => 'Основной тариф'
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ],
                     [
                         'offset' => 4,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 5,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 6,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 7,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 8,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 9,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 10,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                 ]
             ]
@@ -246,19 +276,23 @@ class PriceCachesMergerTest extends WebTestCase
                 'expectedPriceCaches' => [
                     [
                         'offset' => 24,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 25,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 26,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ],
                     [
                         'offset' => 27,
-                        'priceCacheTariffName' => 'Основной тариф'
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ]
                 ]
             ]
@@ -276,19 +310,23 @@ class PriceCachesMergerTest extends WebTestCase
                 'expectedPriceCaches' => [
                     [
                         'offset' => 4,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 5,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 6,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ],
                     [
                         'offset' => 7,
-                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::DOWN_TARIFF_NAME
                     ]
                 ]
             ]
@@ -305,19 +343,23 @@ class PriceCachesMergerTest extends WebTestCase
                 'expectedPriceCaches' => [
                     [
                         'offset' => 24,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 25,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 26,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ],
                     [
                         'offset' => 27,
-                        'priceCacheTariffName' => 'Основной тариф'
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ]
                 ]
             ]
@@ -334,19 +376,23 @@ class PriceCachesMergerTest extends WebTestCase
                 'expectedPriceCaches' => [
                     [
                         'offset' => 24,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::CHILD_UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 25,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                        'searchPriceCacheTariffName' => AdditionalTariffData::CHILD_UP_TARIFF_NAME
                     ],
                     [
                         'offset' => 26,
-                        'priceCacheTariffName' => AdditionalTariffData::UP_TARIFF_NAME
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ],
                     [
                         'offset' => 27,
-                        'priceCacheTariffName' => 'Основной тариф'
+                        'priceCacheTariffName' => 'Основной тариф',
+                        'searchPriceCacheTariffName' => 'Основной тариф'
                     ]
                 ]
             ]

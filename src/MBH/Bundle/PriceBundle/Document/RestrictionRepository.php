@@ -151,7 +151,9 @@ class RestrictionRepository extends DocumentRepository
         $qb
             ->field('date')->equals($date)
             ->field('tariff.id')->equals($tariff->getId())
-            ->field('roomType.id')->equals($roomType->getId());
+            ->field('roomType.id')->equals($roomType->getId())
+            ->field('isEnabled')->equals(true)
+        ;
 
         return $qb;
     }

@@ -21,7 +21,7 @@ class AdditionalTariffData extends AbstractFixture implements OrderedFixtureInte
     /**
      * {@inheritDoc}
      */
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 

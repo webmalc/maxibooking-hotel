@@ -94,6 +94,7 @@ trait ConditionsTrait
     public function setAdditionalCondition($additionalCondition)
     {
         $this->additionalCondition = $additionalCondition;
+
         return $this;
     }
 
@@ -112,6 +113,7 @@ trait ConditionsTrait
     public function setAdditionalConditionQuantity($additionalConditionQuantity)
     {
         $this->additionalConditionQuantity = $additionalConditionQuantity;
+
         return $this;
     }
 

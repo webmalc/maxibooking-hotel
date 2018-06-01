@@ -4,9 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
@@ -111,8 +109,8 @@ class SearchLimitChecker
             $roomType = $result->getRoomType();
             $begin = clone $result->getBegin();
             $end = clone $result->getEnd();
-            $tariff = $result->getTariff();
-
+            /** @var Tariff $tariff */
+            $tariff = $this->dm->getRepository(Tariff::class)->fetchBaseTariff($result->getTariff()->getHotel());
             /** @var RestrictionRepository $restrictionRepo */
             $restrictionRepo = $this->dm->getRepository(Restriction::class);
             /** @var Restriction $beginRestriction */
@@ -158,11 +156,12 @@ class SearchLimitChecker
                     ['roomType.id' => 'asc', 'fullTitle' => 'desc']
                 );
 
-            $preferredRooms = new ArrayCollection();
-            $emptyRooms =  new ArrayCollection();
+            $preferredRooms = new \SplObjectStorage();
+            $emptyRooms =  new \SplObjectStorage();
 
             foreach ($rooms as $room) {
                 $roomId = (string)$room['_id'];
+                $roomObject = (object)$room;
                 if (isset($groupedPackages[$roomId])) {
                     $roomPackages = [];
                     foreach ($groupedPackages[$roomId] as $i => $pairs) {
@@ -182,16 +181,16 @@ class SearchLimitChecker
                     foreach ($roomPackages as $roomPackage) {
 
                         if ($roomPackage[0] == $result->getEnd() || $roomPackage[1] == $result->getBegin()) {
-                            $preferredRooms->add($room);
+                            $preferredRooms->attach($roomObject);
                         } elseif ($roomPackage[0] == $end || $roomPackage[1] == $begin) {
-                            $preferredRooms->add($room);
+                            $preferredRooms->attach($roomObject);
                         } else {
-                            $preferredRooms->removeElement($room);
+                            $preferredRooms->detach($roomObject);
                             break;
                         }
                     }
                 } else {
-                    $emptyRooms->add($room);
+                    $emptyRooms->attach($roomObject);
                 }
 
             }
@@ -212,9 +211,10 @@ class SearchLimitChecker
 //                $collection->rewind();
 //                $room = $collection->current();
 //            }
-            $firstRawRoom = $collection->first();
+            $collection->rewind();
+            $firstRawRoom = $collection->current();
             $room = new Room();
-            $this->dm->getHydratorFactory()->hydrate($room, $firstRawRoom);
+            $this->dm->getHydratorFactory()->hydrate($room, (array)$firstRawRoom);
             $result->setVirtualRoom($room);
         }
     }

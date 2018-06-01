@@ -33,7 +33,7 @@ class Search
     /** @var bool */
     private $isSaveQueryStat;
 
-    public function __construct(RestrictionsCheckerService $restrictionsChecker, Searcher $searcher, DocumentManager $documentManager, ClientConfigRepository  $configRepository)
+    public function __construct(RestrictionsCheckerService $restrictionsChecker, Searcher $searcher, DocumentManager $documentManager, ClientConfigRepository $configRepository)
     {
         $this->restrictionChecker = $restrictionsChecker;
         $this->searcher = $searcher;
@@ -42,8 +42,9 @@ class Search
     }
 
 
-    public function search(array $searchQueries, SearchConditions $conditions, bool $isAsync = false): array
+    public function searchSync(array $searchQueries, SearchConditions $conditions): array
     {
+        //** TODO: Перенести сюда логику создания searchQueries */
         /** @var SearchQuery $searchQuery */
         if ($this->isSaveQueryStat) {
             $this->saveQueryStat($conditions);
@@ -59,21 +60,33 @@ class Search
         $this->searchHash = uniqid(gethostname(), true);
         $this->searchQueriesCount = \count($searchQueries);
 
-        if (!$isAsync) {
-            foreach ($searchQueries as $searchQuery) {
-                try {
-                    $results[$this->searchHash][] = $this->searcher->search($searchQuery);
-                } catch (SearchException $e) {
-                    $results[$this->searchHash][] = $e->getMessage();
-                }
+        foreach ($searchQueries as $searchQuery) {
+            try {
+                $results[] = [
+                    'status' => 'ok',
+                    'result' => $this->searcher->search($searchQuery)
+                ];
+            } catch (SearchException $e) {
+                $results[] = [
+                    'status' => 'error',
+                    'result' => $e->getMessage()
+                ];
             }
-        } else {
-            //** TODO: Тут должен жить продюсер */
-            null;
         }
 
         return $results;
     }
+
+    public function searchAsync(SearchConditions $conditions)
+    {
+
+    }
+
+    private function prepareQueries()
+    {
+
+    }
+
 
     private function saveQueryStat(SearchConditions $conditions): void
     {
@@ -89,6 +102,11 @@ class Search
     public function getSearchCount(): int
     {
         return $this->searchQueriesCount;
+    }
+
+    private function finalHandle(array $results)
+    {
+        return $results;
     }
 
 }

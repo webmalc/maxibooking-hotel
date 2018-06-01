@@ -408,6 +408,7 @@ class Search implements SearchInterface
 
                 //promotion
                 $promotion = $query->getPromotion();
+                /** @var Tariff $tariff */
                 if ($promotion === null && $tariff->getDefaultPromotion()) {
                     $promotion = $tariff->getDefaultPromotion();
                 }

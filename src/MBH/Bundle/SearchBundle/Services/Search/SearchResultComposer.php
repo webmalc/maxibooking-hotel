@@ -54,7 +54,6 @@ class SearchResultComposer
         $infants = $searchQuery->getInfants();
         $accommodationRooms = $this->getAccommodationRooms($searchQuery, $roomType);
         $this->checkTariffConditions($tariff, $searchQuery->getDuration(), $actualAdults, $actualChildren);
-        //* TODO: check windows */
         $prices = $this->getPrices($searchQuery, $roomType, $tariff, $actualAdults, $actualChildren);
 
         $searchResult
@@ -104,7 +103,10 @@ class SearchResultComposer
             ->setTariff($tariff)
             ->setActualAdults($actualAdults)
             ->setActualChildren($actualChildren)
-            ->setIsUseCategory($this->roomManager->useCategories);
+            ->setIsUseCategory($this->roomManager->useCategories)
+            //** TODO: Уточнить по поводу Promotion */
+            /*->setPromotion()*/
+        ;
 
         $prices = $this->calculation->calcPrices($calcQuery);
         if (!\count($prices)) {

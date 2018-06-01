@@ -79,15 +79,22 @@ class Calculation
      * @return array
      * @throws CalculationAdditionalPriceException
      * @throws CalculationException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException
      */
     private function getPriceForCombination(array $combination, array $priceCaches, CalcQuery $calcQuery): array
     {
         $total = 0;
         $packagePrices = $dayPrices = [];
-        foreach ($priceCaches as $rawPriceCache) {
-//            $promoConditions = $this->checkPromoConditions($priceCache, $calcHelper, $combination['adults'], $combination['children']);
 
-            $promotion = $calcQuery->getPromotion();
+        $rawPromotion = $calcQuery->getPromotion();
+        if (null === $rawPromotion) {
+            $rawPromotion = $calcQuery->getTariff()->getDefaultPromotion();
+        }
+        $isPromoCanApply = $this->checkPromoConditions($rawPromotion, $calcQuery->getDuration(), $combination['adults'], $combination['children']);
+        $promotion = $isPromoCanApply ? $rawPromotion : null;
+
+        foreach ($priceCaches as $cacheData) {
+            $rawPriceCache = $cacheData['data'];
             $sortedTourists = $this->getSortedTourists(
                 $combination['adults'],
                 $combination['children'],
@@ -101,7 +108,7 @@ class Calculation
             $addsAdults = $sortedTourists['addsAdults'];
             $all = $sortedTourists['all'];
 
-            $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $calcQuery, $mainChildren, $promotion);
+            $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $calcQuery, $mainChildren);
             $mainAdultPrice = $this->getMainAdultsPrice($rawPriceCache, $calcQuery, $mainAdults, $all);
             $multiPrices = ($addsAdults + $addsChildren) > 1;
             $isIndividualPrices = $calcQuery->isIndividualAdditionalPrices();
@@ -109,14 +116,11 @@ class Calculation
             $additionalChildrenPrice = $this->getAdditionalChildrenPrice($rawPriceCache, $addsChildren, $multiPrices, $addsAdults, $isIndividualPrices, $promotion);
 
             $dayPrice = $mainAdultPrice + $mainChildrenPrice + $additionalAdultPrice + $additionalChildrenPrice;
-
-            if ($promotion) {
-                $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
-            }
+            $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
 
             $rawPriceDate = Helper::convertMongoDateToDate($rawPriceCache['date']);
             /** @var Tariff $tariff */
-            $tariff = $this->hotelContentHolder->getFetchedTariff((string)$rawPriceCache['tariff']['$id']);
+            $tariff = $this->hotelContentHolder->getFetchedTariff($cacheData['searchTariffId']);
             $packagePrice = $this->getPackagePrice($dayPrice, $rawPriceDate, $tariff, $calcQuery->getRoomType(), $calcQuery->getSpecial());
             $dayPrices[$rawPriceDate->format('d_m_Y')] = $dayPrice;
             $packagePrices[] = $packagePrice;
@@ -312,18 +316,18 @@ class Calculation
         ];
     }
 
-    private function checkPromoConditions(PriceCache $priceCache, CalcQuery $calcHelper, int $adultsCombination, int $childrenCombination): bool
+    private function checkPromoConditions(Promotion $promotion = null, int $duration, int $adultsCombination, int $childrenCombination): bool
     {
         $promoConditions = (bool)PromotionConditionFactory::checkConditions(
-            $calcHelper->getPromotion(),
-            $calcHelper->getDuration(),
+            $promotion,
+            $duration,
             $adultsCombination,
             $childrenCombination
         );
         //* TODO: Тут уточнить какой id надо брать тарифа из калкхелпера, родительский или текущий
         // или вообще не нужна эта проверка т.к. у нас тут priceCache берется именно для этого тарифа
         // */
-        return $promoConditions && ($priceCache->getTariff()->getId() !== $calcHelper->getPriceTariffId());
+        return $promoConditions/* && ($priceCache->getTariff()->getId() !== $calcHelper->getPriceTariffId())*/;
     }
 
 

@@ -10,7 +10,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 abstract class AbstractFixture extends Base implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
- 
+
+    abstract public function doLoad(ObjectManager $manager);
     /**
      * return environment
      *

@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
@@ -27,7 +28,7 @@ class CalculationTest extends WebTestCase
         $this->service = $this->getContainer()->get('mbh_search.calculation');
         $this->oldService = $this->getContainer()->get('mbh.calculation');
         parent::setUp();
-        self::baseFixtures();
+//        self::baseFixtures();
     }
 
 
@@ -53,6 +54,8 @@ class CalculationTest extends WebTestCase
 
         $variants = $data['variants'];
         foreach ($variants as $variant) {
+            $fakePromotion = new Promotion();
+            $fakePromotion->setDiscount(0);
             $calcQuery = new CalcQuery();
             $calcQuery
                 ->setTariff($searchTariff)
@@ -61,7 +64,9 @@ class CalculationTest extends WebTestCase
                 ->setSearchEnd($end)
                 ->setIsUseCategory($isUseCategory)
                 ->setActualAdults($variant['adults'])
-                ->setActualChildren($variant['children']);
+                ->setActualChildren($variant['children'])
+                ->setPromotion($fakePromotion)
+            ;
 
             if ($data['isExpectException'] ?? null) {
                 $this->expectException($data['expectedException']);

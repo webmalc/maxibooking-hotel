@@ -15,7 +15,7 @@ use MBH\Bundle\PriceBundle\Document\PriceCache;
  */
 class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixtureInterface
 {
-
+    /**TODO: begin offset - offset from begin, end offset offset from end (one month default)*/
     public const TARIFFS = [
         'main-tariff' => [
             'beginOffset' => 0,
@@ -95,29 +95,35 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
                     /** @var RoomType $roomType */
                     $roomType = $this->getReference($roomTypeKey . '/' . $hotelNumber);
                     foreach ($period as $day) {
-                        $actualBeginOffset = (int)$day->diff($begin)->format('%d');
-                        $actualEndOffset = (int)$day->diff($end)->format('%d');
+                        $actualBeginOffset = (int)$day->diff($begin)->format('%a');
+                        $actualEndOffset = (int)$day->diff($end)->format('%a');
                         if ($actualBeginOffset < $offsets['beginOffset'] || $actualEndOffset < $offsets['endOffset']) {
                             continue;
                         }
 
-                        $priceCache = new PriceCache();
-                        $priceCache
-                            ->setRoomType($roomType)
-                            ->setHotel($hotel)
-                            ->setTariff($tariff)
-                            ->setDate($day)
-                        ;
-                        if (!$roomType->getIsHostel()) {
-                            foreach (array_keys($priceData) as $priceValueKey) {
-                                $value = $priceData[$priceValueKey];
-                                if (\is_int($value) || \is_array($value)) {
-                                    $value = $this->calcPrice($value, $discount);
+                        /** disabled price cached must be for tests */
+                        foreach ([true, false] as $isEnabled) {
+                            $priceCache = new PriceCache();
+                            $priceCache
+                                ->setRoomType($roomType)
+                                ->setHotel($hotel)
+                                ->setTariff($tariff)
+                                ->setDate($day)
+                                ->setIsEnabled($isEnabled)
+
+                            ;
+                            if (!$roomType->getIsHostel()) {
+                                foreach (array_keys($priceData) as $priceValueKey) {
+                                    $value = $priceData[$priceValueKey];
+                                    if (\is_int($value) || \is_array($value)) {
+                                        $value = $this->calcPrice($value, $discount);
+                                    }
+                                    $accessor->setValue($priceCache, $priceValueKey, $value);
                                 }
-                                $accessor->setValue($priceCache, $priceValueKey, $value);
                             }
+                            $manager->persist($priceCache);
                         }
-                        $manager->persist($priceCache);
+
                     }
 
                 }

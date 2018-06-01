@@ -4,6 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\PriceCacheRepository;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
@@ -28,7 +29,8 @@ class PriceCachesMerger
 
     public function getMergedPriceCaches(CalcQuery $calcQuery): array
     {
-        $priceTariffCaches = $this->getPriceTariffPriceCaches($calcQuery);
+        $rawPriceTariffCaches = $this->getPriceTariffPriceCaches($calcQuery);
+        $priceTariffCaches = $this->refactorCacheArray($rawPriceTariffCaches);
         if (!\count($priceTariffCaches)) {
             throw new PriceCachesMergerException('No one priceCache for tariff ' . $calcQuery->getTariff()->getName());
         }
@@ -36,13 +38,15 @@ class PriceCachesMerger
             return $priceTariffCaches;
         }
 
-        $mergingPriceCaches = $this->getMergingTariffPriceCaches($calcQuery);
+        $rawMergingPriceCaches = $this->getMergingTariffPriceCaches($calcQuery);
+        $mergingPriceCaches = $this->refactorCacheArray($rawMergingPriceCaches);
         $mergedPriceCaches = $this->mergePriceCaches($priceTariffCaches, $mergingPriceCaches);
         if ($this->checkCachesCount($mergedPriceCaches, $calcQuery->getDuration())) {
             return $mergedPriceCaches;
         }
 
-        $baseTariffPriceCaches = $this->getBaseTariffPriceCaches($calcQuery);
+        $rawBaseTariffPriceCaches = $this->getBaseTariffPriceCaches($calcQuery);
+        $baseTariffPriceCaches = $this->refactorCacheArray($rawBaseTariffPriceCaches);
         $lastMergedPriceCaches = $this->mergePriceCaches($mergedPriceCaches, $baseTariffPriceCaches);
         if ($this->checkCachesCount($lastMergedPriceCaches, $calcQuery->getDuration())) {
             return $lastMergedPriceCaches;
@@ -51,29 +55,35 @@ class PriceCachesMerger
         throw new PriceCachesMergerException('There is not enough price caches even after merging.');
     }
 
-    private function checkCachesCount(array $roomCaches, int $duration): bool
+    private function checkCachesCount(array $priceCaches, int $duration): bool
     {
-        return \count($roomCaches) === $duration;
+        if (\count($priceCaches) > $duration) {
+            throw new PriceCachesMergerException('PriceCaches merging problem. Num of RoomCaches more than duration!');
+        }
+
+        return \count($priceCaches) === $duration;
     }
 
     private function mergePriceCaches(array $mainCaches, array $auxiliaryCaches): array
     {
-        $main = $this->keyWithDate($mainCaches);
-        $auxiliary = $this->keyWithDate($auxiliaryCaches);
-        $merged = $main + $auxiliary;
+        $merged = $mainCaches + $auxiliaryCaches;
         uasort($merged, function ($cache1, $cache2) {
-            return $cache1['date'] <=> $cache2['date'];
+            return $cache1['data']['date'] <=> $cache2['data']['date'];
         });
 
         return $merged;
     }
 
-    private function keyWithDate(array $caches): array
+    private function refactorCacheArray(array $rawCaches): array
     {
         $result = [];
+        $caches = $rawCaches['caches'] ?? [];
         foreach ($caches as $cache) {
-            $key = $cache['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format('d_m_Y');
-            $result[$key] = $cache;
+            $key = Helper::convertMongoDateToDate($cache['date'])->format('d_m_Y');
+            $result[$key] = [
+                'searchTariffId' => $rawCaches['searchTariffId'],
+                'data' => $cache
+            ];
         }
 
         return $result;
@@ -87,7 +97,9 @@ class PriceCachesMerger
             $rawBaseTariffArray = $this->tariffRepository->fetchRawBaseTariffId($hotelId);
             $baseTariffId = (string)reset($rawBaseTariffArray)['_id'];
             if ($baseTariffId) {
-                return $this->getRawPriceCaches($calcQuery, $baseTariffId);
+                $priceCaches = $this->getRawPriceCaches($calcQuery, $baseTariffId);
+
+                return $this->preparePriceCacheReturn($priceCaches, $baseTariffId);
             }
         }
 
@@ -98,7 +110,9 @@ class PriceCachesMerger
     private function getMergingTariffPriceCaches(CalcQuery $calcQuery): array
     {
         if ($mergingTariffId = $calcQuery->getMergingTariffId()) {
-            return $this->getRawPriceCaches($calcQuery, $mergingTariffId);
+            $priceCaches = $this->getRawPriceCaches($calcQuery, $mergingTariffId);
+
+            return $this->preparePriceCacheReturn($priceCaches, $mergingTariffId);
         }
 
         return [];
@@ -106,7 +120,9 @@ class PriceCachesMerger
 
     private function getPriceTariffPriceCaches(CalcQuery $calcQuery): array
     {
-        return $this->getRawPriceCaches($calcQuery, $calcQuery->getPriceTariffId());
+        $priceCaches = $this->getRawPriceCaches($calcQuery, $calcQuery->getPriceTariffId());
+
+        return $this->preparePriceCacheReturn($priceCaches, $calcQuery->getTariff()->getId());
     }
 
     private function getRawPriceCaches(CalcQuery $calcQuery, string $searchingTariffId): array
@@ -119,5 +135,13 @@ class PriceCachesMerger
                 $searchingTariffId,
                 $calcQuery->isUseCategory()
             );
+    }
+
+    private function preparePriceCacheReturn(array $caches, string $tariffId): array
+    {
+        return [
+            'searchTariffId' => $tariffId,
+            'caches' => $caches
+        ];
     }
 }
