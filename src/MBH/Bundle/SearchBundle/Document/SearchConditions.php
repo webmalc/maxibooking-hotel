@@ -124,6 +124,9 @@ class SearchConditions extends Base
     /** @var bool  */
     private $isForceBooking = false;
 
+    /** @var string */
+    private $searchHash = '';
+
     /**
      * SearchConditions constructor.
      */
@@ -400,6 +403,27 @@ class SearchConditions extends Base
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getSearchHash(): string
+    {
+        return $this->searchHash;
+    }
+
+    /**
+     * @param string $searchHash
+     * @return SearchConditions
+     */
+    public function setSearchHash(string $searchHash): SearchConditions
+    {
+        $this->searchHash = $searchHash;
+
+        return $this;
+    }
+
+
 
 
 

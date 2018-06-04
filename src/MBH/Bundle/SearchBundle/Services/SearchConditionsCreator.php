@@ -11,7 +11,7 @@ use Symfony\Component\Form\Exception\AlreadySubmittedException;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 
-class SearchRequestReceiver
+class SearchConditionsCreator
 {
     /** @var FormFactory */
     private $formFactory;
@@ -30,7 +30,7 @@ class SearchRequestReceiver
      * @return SearchConditions
      * @throws SearchConditionException
      */
-    public function handleData(array $data): SearchConditions
+    public function createSearchConditions(array $data): SearchConditions
     {
         try {
             $conditionForm = $this->formFactory->create(SearchConditionsType::class);

@@ -2,32 +2,47 @@
 
 namespace Tests\Bundle\SearchBundle\Lib\Restrictions;
 
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\MaxStay;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class MaxStayTest extends RestrictionWebTestCase
 {
-    /** @dataProvider dataProvider */
-    public function testNoMinstay(SearchQuery $searchQuery, array $restriction): void
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
+    public function testNoMaxStay(SearchQuery $searchQuery, array $restriction): void
     {
         $maxStay = new MaxStay();
-        $this->assertNull($maxStay->check($searchQuery, $restriction));
+        $maxStay->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
-    /** @dataProvider dataProvider */
-    public function testMinstayViolation(SearchQuery $searchQuery, array $restriction)
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
+    public function testMaxStayViolation(SearchQuery $searchQuery, array $restriction):void
     {
         $maxStay = new MaxStay();
         $restriction[1]['maxStay'] = 1;
-        $this->expectExceptionMessage('Room maxStay at '. $restriction[1]['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format('d-m-Y'));
+        $this->expectExceptionMessage('Room maxStay at '. Helper::convertMongoDateToDate($restriction[1]['date'])->format('d-m-Y'));
         $maxStay->check($searchQuery, $restriction);
     }
 
-    /** @dataProvider dataProvider */
-    public function testMinstayNoViolation(SearchQuery $searchQuery, array $restriction)
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
+    public function testMaxStayNoViolation(SearchQuery $searchQuery, array $restriction): void
     {
         $maxStay = new MaxStay();
         $restriction[1]['maxStay'] = 5;
-        $this->assertNull($maxStay->check($searchQuery, $restriction));
+        $maxStay->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 }

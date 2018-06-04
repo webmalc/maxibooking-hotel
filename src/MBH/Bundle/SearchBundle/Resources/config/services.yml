@@ -1,10 +1,10 @@
 services:
     mbh_search.search_query_generator:
         class: MBH\Bundle\SearchBundle\Services\SearchQueryGenerator
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh_search.additional_days_generator', '@mbh_search.room_type_fetcher', '@mbh_search.hotel_content_holder']
+        arguments: ['@mbh_search.additional_days_generator' , '@mbh_search.data_holder']
 
-    mbh_search.search_request_receiver:
-        class: MBH\Bundle\SearchBundle\Services\SearchRequestReceiver
+    mbh_search.search_condition_creator:
+        class: MBH\Bundle\SearchBundle\Services\SearchConditionsCreator
         arguments: ["@form.factory"]
 
     mbh_search.additional_days_generator:
@@ -25,7 +25,7 @@ services:
             - [addChecker, ['@mbh_search.restrictions.on_min_stay']]
             - [addChecker, ['@mbh_search.restrictions.on_min_stay_arrival']]
 
-        arguments: ['@doctrine.odm.mongodb.document_manager']
+        arguments: ['@mbh_search.data_holder']
 
     mbh_search.restrictions.on_close:
         public: false
@@ -74,7 +74,7 @@ services:
     #search
     mbh_search.searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\Searcher
-        arguments: ["@doctrine_mongodb.odm.default_document_manager", '@mbh_search.restrictions_checker_service', '@mbh_search.search_limit_checker', '@mbh_search.room_cache_search_provider', '@mbh_search.result_composer', '@validator', '@mbh_search.hotel_content_holder']
+        arguments: ["@doctrine_mongodb.odm.default_document_manager", '@mbh_search.restrictions_checker_service', '@mbh_search.search_limit_checker', '@mbh_search.room_cache_search_provider', '@mbh_search.result_composer', '@validator', '@mbh_search.data_holder']
 
     mbh_search.room_cache_search_provider:
         class: MBH\Bundle\SearchBundle\Services\Search\RoomCacheSearchProvider
@@ -114,9 +114,11 @@ services:
         arguments:
             - MBH\Bundle\ClientBundle\Document\ClientConfig
 
-    mbh_search.room_type_fetcher:
-        class: MBH\Bundle\SearchBundle\Services\RoomTypeFetcher
-        arguments: ['@doctrine.odm.mongodb.document_manager','@mbh_search.room_type_repository', '@mbh_search.client_config_repository']
+    mbh_search.restriction_repository:
+        class: MBH\Bundle\PriceBundle\Document\RestrictionRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\PriceBundle\Document\Restriction
 
 # Для теста - калькуляции - брал текущую.
 #    mbh_search.result_composer:
@@ -129,15 +131,15 @@ services:
 
     mbh_search.calculation:
         class: MBH\Bundle\SearchBundle\Services\Calc\Calculation
-        arguments: ['@mbh_search.price_caches_merger', '@mbh_search.hotel_content_holder']
+        arguments: ['@mbh_search.price_caches_merger', '@mbh_search.data_holder']
 
     mbh_search.price_caches_merger:
         class: MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger
         arguments: ['@mbh_search.price_cache_repository', '@mbh_search.tariff_repository']
 
-    mbh_search.hotel_content_holder:
-        class: MBH\Bundle\SearchBundle\Lib\HotelContentHolder
-        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository']
+    mbh_search.data_holder:
+        class: MBH\Bundle\SearchBundle\Lib\DataHolder
+        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.restriction_repository', '@mbh_search.client_config_repository']
 
     mbh_search.search_conditions_type:
         class: MBH\Bundle\SearchBundle\Form\SearchConditionsType
@@ -147,4 +149,4 @@ services:
 
     mbh_search.search:
         class: MBH\Bundle\SearchBundle\Services\Search\Search
-        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.searcher', '@doctrine.odm.mongodb.document_manager', '@mbh_search.client_config_repository']
+        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.searcher', '@doctrine.odm.mongodb.document_manager', '@mbh_search.client_config_repository', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator']

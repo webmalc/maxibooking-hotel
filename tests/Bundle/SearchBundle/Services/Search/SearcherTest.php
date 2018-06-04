@@ -43,7 +43,6 @@ class SearcherTest extends WebTestCase
                 $errors[] = $e->getMessage();
             }
         }
-        $a = 'b';
     }
 
     /**

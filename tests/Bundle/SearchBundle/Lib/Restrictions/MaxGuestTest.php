@@ -10,17 +10,25 @@ class MaxGuestTest extends RestrictionWebTestCase
 {
     /**
      * @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
      */
-    public function testNoMaxGuest(SearchQuery $searchQuery, array $restriction)
+    public function testNoMaxGuest(SearchQuery $searchQuery, array $restriction): void
     {
         $maxGuest = new MaxGuest();
-        $this->assertNull($maxGuest->check($searchQuery, $restriction));
+        $maxGuest->check($searchQuery, $restriction);
+        $this->assertTrue(true);
+
     }
 
     /**
      * @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
      */
-    public function testMaxGuestViolation(SearchQuery $searchQuery, array $restriction)
+    public function testMaxGuestViolation(SearchQuery $searchQuery, array $restriction): void
     {
         $maxGuest = new MaxGuest();
         $restriction[1]['maxGuest'] = 2;
@@ -30,11 +38,15 @@ class MaxGuestTest extends RestrictionWebTestCase
 
     /**
      * @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
      */
-    public function testMaxGuestNoViolation(SearchQuery $searchQuery, array $restriction)
+    public function testMaxGuestNoViolation(SearchQuery $searchQuery, array $restriction): void
     {
         $maxGuest = new MaxGuest();
         $restriction[1]['maxGuest'] = 4;
-        $this->assertNull($maxGuest->check($searchQuery, $restriction));
+        $maxGuest->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 }

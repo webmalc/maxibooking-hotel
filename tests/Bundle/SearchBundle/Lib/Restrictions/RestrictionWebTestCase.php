@@ -11,8 +11,9 @@ abstract class RestrictionWebTestCase extends WebTestCase
 
     public function dataProvider(): iterable
     {
-        $begin = new \DateTime('01-06-2018 midnight');
-        $end = new \DateTime('03-06-2018 midnight');
+        $now = new \DateTime('midnight');
+        $begin = clone $now;
+        $end = (clone $begin)->modify('+2 days');
         $searchQuery =
             (new SearchQuery())
                 ->setBegin(clone $begin)
@@ -30,7 +31,7 @@ abstract class RestrictionWebTestCase extends WebTestCase
                      \DateInterval::createFromDateString('1 day'),
                      (clone $end)->modify('+ 1 day')
                  ) as $day) {
-            /** @var \DateTime $dat */
+
             $restrictions[] = [
                 'date' => new \MongoDate(strtotime($day->format('Y-m-d'))),
             ];

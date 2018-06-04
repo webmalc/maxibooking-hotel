@@ -14,10 +14,10 @@ class AdditionalDatesGenerator
         \DateTime $begin,
         \DateTime $end,
         ?int $additionalBegin = null,
-        ?int $additionslEnd = null
+        ?int $additionalEnd = null
     ): array {
         $begins = $this->dateGenerate($begin, $additionalBegin);
-        $ends = $this->dateGenerate($end, $additionslEnd);
+        $ends = $this->dateGenerate($end, $additionalEnd);
 
         return $this->combineDates($begins, $ends);
     }

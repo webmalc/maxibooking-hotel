@@ -8,22 +8,30 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 class ClosedTest extends RestrictionWebTestCase
 {
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testNoCloseCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closed = new Closed();
-        $this->assertNull($closed->check($searchQuery, $restriction));
-
+        $closed->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testCloseCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closed = new Closed();
         $restriction[2]['closed'] = true;
-        $this->expectExceptionMessage('Room closed in 03-06-2018');
+        $end = $searchQuery->getEnd()->format('d-m-Y');
+        $this->expectExceptionMessage('Room closed in '.$end);
         $closed->check($searchQuery, $restriction);
-
     }
 
 }

@@ -2,37 +2,50 @@
 
 namespace Tests\Bundle\SearchBundle\Lib\Restrictions;
 
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\MaxBeforeArrival;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class MaxBeforeArrivalTest extends RestrictionWebTestCase
 {
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testNoCloseOnMaxBeforeArrivalCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $maxBeforeArrival = new MaxBeforeArrival();
-        $this->assertNull($maxBeforeArrival->check($searchQuery, $restriction));
-
+        $maxBeforeArrival->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testOnMaxBeforeArrivalTriggeredCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $maxBeforeArrival = new MaxBeforeArrival();
         $restriction[0]['maxBeforeArrival'] = 4;
-        $this->expectExceptionMessage('Room maxBeforeArrival at '. $restriction[0]['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format('d-m-Y'));
+        $this->expectExceptionMessage('Room maxBeforeArrival at ' . Helper::convertMongoDateToDate($restriction[0]['date'])->format('d-m-Y'));
         $maxBeforeArrival->check($searchQuery, $restriction);
 
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testOnMaxBeforeArrivalNotTriggeredCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $maxBeforeArrival = new MaxBeforeArrival();
         $restriction[0]['maxBeforeArrival'] = 6;
-        $this->assertNull($maxBeforeArrival->check($searchQuery, $restriction));
-
+        $maxBeforeArrival->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
     public function dataProvider(): iterable

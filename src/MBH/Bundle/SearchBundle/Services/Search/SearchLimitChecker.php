@@ -105,7 +105,12 @@ class SearchLimitChecker
 
     public function checkWindows(SearchResult $result)
     {
-        if (($this->clientConfig->getSearchWindows() && !$result->getForceBooking()) || $result->getBegin() > new \DateTime('midnight')) {
+        if ($this->clientConfig->getSearchWindows()) {
+            //** TODO: Уточнить если форс */
+            if($result->getForceBooking() || $result->getBegin() > new \DateTime('midnight')) {
+                return;
+            }
+
             $roomType = $result->getRoomType();
             $begin = clone $result->getBegin();
             $end = clone $result->getEnd();
@@ -118,10 +123,10 @@ class SearchLimitChecker
             /** @var Restriction $endRestriction */
             $endRestriction = $restrictionRepo->findOneByDateRaw($end, $roomType, $tariff);
 
-            if ($beginRestriction && $beginRestriction['minStayArrival'] ?? false) {
+            if ($beginRestriction && ($beginRestriction['minStayArrival'] ?? false)) {
                 $begin->modify('-' . $beginRestriction['minStayArrival'] . ' days');
             }
-            if ($endRestriction && $endRestriction['minStayArrival'] ?? false) {
+            if ($endRestriction && ($endRestriction['minStayArrival'] ?? false)) {
                 $end->modify('+' . $endRestriction['minStayArrival'] . ' days');
             }
 

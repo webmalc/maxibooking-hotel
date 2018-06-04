@@ -7,14 +7,13 @@ namespace MBH\Bundle\SearchBundle\Services\Calc;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationAdditionalPriceException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
-use MBH\Bundle\SearchBundle\Lib\HotelContentHolder;
+use MBH\Bundle\SearchBundle\Lib\DataHolder;
 
 class Calculation
 {
@@ -22,15 +21,15 @@ class Calculation
     /** @var PriceCachesMerger */
     private $priceCacheMerger;
 
-    /** @var HotelContentHolder */
+    /** @var DataHolder */
     private $hotelContentHolder;
 
     /**
      * Calculation constructor.
      * @param PriceCachesMerger $merger
-     * @param HotelContentHolder $contentHolder
+     * @param DataHolder $contentHolder
      */
-    public function __construct(PriceCachesMerger $merger, HotelContentHolder $contentHolder)
+    public function __construct(PriceCachesMerger $merger, DataHolder $contentHolder)
     {
         $this->priceCacheMerger = $merger;
         $this->hotelContentHolder = $contentHolder;
@@ -86,6 +85,8 @@ class Calculation
         $total = 0;
         $packagePrices = $dayPrices = [];
 
+        $tariff = $calcQuery->getTariff();
+
         $rawPromotion = $calcQuery->getPromotion();
         if (null === $rawPromotion) {
             $rawPromotion = $calcQuery->getTariff()->getDefaultPromotion();
@@ -121,7 +122,7 @@ class Calculation
             $rawPriceDate = Helper::convertMongoDateToDate($rawPriceCache['date']);
             /** @var Tariff $tariff */
             $tariff = $this->hotelContentHolder->getFetchedTariff($cacheData['searchTariffId']);
-            $packagePrice = $this->getPackagePrice($dayPrice, $rawPriceDate, $tariff, $calcQuery->getRoomType(), $calcQuery->getSpecial());
+            $packagePrice = $this->getPackagePrice($dayPrice, $rawPriceDate, $tariff, $calcQuery->getRoomType(), $promotion, $calcQuery->getSpecial());
             $dayPrices[$rawPriceDate->format('d_m_Y')] = $dayPrice;
             $packagePrices[] = $packagePrice;
             $total += $dayPrice;
@@ -140,7 +141,7 @@ class Calculation
         $adultPrice = $rawPriceCache['price'];
         $price = $adultPrice;
 
-        if ($all === 1 && null !== $rawPriceCache['singlePrice'] && !$calcQuery->getRoomType()->getIsHostel()) {
+        if ($all === 1 && null !== ($rawPriceCache['singlePrice'] ?? null) && !$calcQuery->getRoomType()->getIsHostel()) {
             $price = $rawPriceCache['singlePrice'];
         }
         if ($all !== 1 && $rawPriceCache['isPersonPrice']) {
@@ -253,7 +254,7 @@ class Calculation
      * @param Special|null $special
      * @return PackagePrice
      */
-    private function getPackagePrice($price, \DateTime $date, Tariff $tariff, RoomType $roomType, Special $special = null): PackagePrice
+    private function getPackagePrice($price, \DateTime $date, Tariff $tariff, RoomType $roomType, Promotion $promotion = null, Special $special = null): PackagePrice
     {
         $packagePrice = new PackagePrice($date, $price > 0 ? $price : 0, $tariff);
         if ($special &&
@@ -262,6 +263,9 @@ class Calculation
         ) {
             $price = $special->isIsPercent() ? $price - $price * $special->getDiscount() / 100 : $price - $special->getDiscount();
             $packagePrice->setPrice($price)->setSpecial($special);
+        }
+        if ($promotion) {
+            $packagePrice->setPromotion($promotion);
         }
 
         return $packagePrice;

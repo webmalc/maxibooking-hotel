@@ -16,28 +16,20 @@ use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQueryHelper;
-use MBH\Bundle\SearchBundle\Lib\HotelContentHolder;
+use MBH\Bundle\SearchBundle\Lib\DataHolder;
 
 class SearchQueryGenerator
 {
-    /** @var DocumentManager */
-    private $dm;
-
     /** @var AdditionalDatesGenerator */
     private $addDatesGenerator;
 
-    /** @var RoomTypeFetcher */
-    private $roomTypeFetcher;
+    /** @var DataHolder */
+    private $dataHolder;
 
-    /** @var HotelContentHolder */
-    private $hotelContentHolder;
-
-    public function __construct(DocumentManager $dm, AdditionalDatesGenerator $generator, RoomTypeFetcher $roomTypeFetcher, HotelContentHolder $contentHolder)
+    public function __construct(AdditionalDatesGenerator $generator, DataHolder $contentHolder)
     {
-        $this->dm = $dm;
         $this->addDatesGenerator = $generator;
-        $this->roomTypeFetcher = $roomTypeFetcher;
-        $this->hotelContentHolder = $contentHolder;
+        $this->dataHolder = $contentHolder;
     }
 
     /**
@@ -66,7 +58,6 @@ class SearchQueryGenerator
     private function prepareConditionsForSearchQueries(SearchConditions $conditions): array
     {
         $hotelIds = $this->getEntryIds($conditions->getHotels());
-
         $rawTariffIds = $this->getEntryIds($conditions->getTariffs()->toArray());
         $tariffs = $this->getTariffs($rawTariffIds, $hotelIds, $conditions->isOnline());
         $rawRoomTypeIds = $this->getEntryIds($conditions->getRoomTypes());
@@ -77,9 +68,7 @@ class SearchQueryGenerator
                 $conditions->getBegin(),
                 $conditions->getEnd(),
                 $conditions->getAdditionalBegin(),
-                $conditions->getAdditionalEnd(),
-                $tariffs,
-                $roomTypeIds
+                $conditions->getAdditionalEnd()
             );
         $tariffRoomTypeCombined = $this->combineTariffWithRoomType($roomTypeIds, $tariffs);
 
@@ -93,26 +82,21 @@ class SearchQueryGenerator
 
 
     /**
-     * @param ArrayCollection|Tariff[] $tariffIds
+     * @param ArrayCollection|Tariff[] $rawTariffIds
      * @param array $hotelIds
      * @param bool $isOnline
      * @return array
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
      */
-    private function getTariffs(array $tariffIds, array $hotelIds, bool $isOnline): array
+    private function getTariffs(array $rawTariffIds, array $hotelIds, bool $isOnline): array
     {
         $tariffs = [];
         /** Priority to Tariff even if hotels exists */
-        if (\count($tariffIds)) {
+        if (\count($rawTariffIds)) {
             $hotelIds = [];
         }
         try {
-            $tariffsRaw = $this->dm->getRepository(Tariff::class)->fetchRaw(
-                $hotelIds,
-                $tariffIds,
-                true,
-                $isOnline
-            );
+            $tariffsRaw = $this->dataHolder->getTariffsRaw($hotelIds, $rawTariffIds, true, $isOnline);
         } catch (MongoDBException $e) {
             throw new SearchQueryGeneratorException('Error in fetchRaw repo method. '.$e->getMessage());
         }
@@ -147,7 +131,7 @@ class SearchQueryGenerator
             $hotelIds = [];
         }
 
-        $roomTypesRaw = $this->roomTypeFetcher->fetch($rawRoomTypeIds, $hotelIds);
+        $roomTypesRaw = $this->dataHolder->getRoomTypesRaw($rawRoomTypeIds, $hotelIds);
         if (empty($roomTypesRaw)) {
             throw new SearchQueryGeneratorException(
                 'Empty Result in RoomType query, cannot create SearchQuery without any RoomType'
@@ -243,7 +227,7 @@ class SearchQueryGenerator
 
     private function determineRestrictionTariffId(array $rawTariff): string
     {
-        $tariff = $this->hotelContentHolder->getFetchedTariff((string)$rawTariff['_id']);
+        $tariff = $this->dataHolder->getFetchedTariff((string)$rawTariff['_id']);
         if ($tariff) {
             if ($tariff->getParent() && $tariff->getChildOptions() && $tariff->getChildOptions()->isInheritRestrictions()) {
                 $restrictionTariffId = $tariff->getParent()->getId();

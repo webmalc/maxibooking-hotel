@@ -5,18 +5,17 @@ namespace Tests\Bundle\SearchBundle\Services\Calc;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
-use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\RoomTypeCategoryData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger;
+use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class PriceCachesMergerTest extends WebTestCase
+class PriceCachesMergerTest extends SearchWebTestCase
 {
 
     /** @var PriceCachesMerger */
@@ -25,15 +24,20 @@ class PriceCachesMergerTest extends WebTestCase
     /** @var DocumentManager */
     protected $dm;
 
+
     public function setUp()
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
         $this->service = $this->getContainer()->get('mbh_search.price_caches_merger');
         parent::setUp();
+        parent::baseFixtures();
     }
 
-    /** @dataProvider dataProvider */
-    public function testGetMergedPriceCaches($data)
+    /** @dataProvider dataProvider
+     * @param $data
+     * @throws PriceCachesMergerException
+     */
+    public function testGetMergedPriceCaches($data): void
     {
         $begin = new \DateTime("midnight +{$data['beginOffset']} days");
         $end = new \DateTime("midnight +{$data['endOffset']} days");
@@ -71,9 +75,9 @@ class PriceCachesMergerTest extends WebTestCase
                 foreach ($data['expectedPriceCaches'] as $expectedPriceCache) {
                     if ($expectedPriceCache['offset'] === $cacheOffset) {
                         $matched++;
-                        $cacheTariffid = (string)$cache['tariff']['$id'];
+                        $cacheTariffId = (string)$cache['tariff']['$id'];
                         /** @var Tariff $actualCacheTariff */
-                        $actualCacheTariff = $this->getDocument(Tariff::class, $cacheTariffid);
+                        $actualCacheTariff = $this->getDocument(Tariff::class, $cacheTariffId);
                         //* $actualSearchCacheTariff тариф прайс кэша по которому производился поиск, на случай если тариф дочерний *//
                         $actualSearchCacheTariff = $this->dm->find(Tariff::class, $actualSearchCacheTariffId);
                         $this->assertEquals($expectedPriceCache['searchPriceCacheTariffName'], $actualSearchCacheTariff->getFullTitle());
@@ -87,21 +91,19 @@ class PriceCachesMergerTest extends WebTestCase
 
     }
 
-    private function getDocumentFromArrayByFullTitle(array $documents, string $documentFullTitle)
-    {
-        $filter = function ($document) use ($documentFullTitle) {
-            return $document->getFullTitle() === $documentFullTitle;
-        };
-        $documentFiltered = array_filter($documents, $filter);
-
-        return reset($documentFiltered);
-    }
-
+    /**
+     * @param string $documentRepoName
+     * @param string $documentId
+     * @return object
+     */
     private function getDocument(string $documentRepoName, string $documentId)
     {
         return $this->dm->find($documentRepoName, $documentId);
     }
 
+    /**
+     * @return iterable
+     */
     public function dataProvider(): iterable
     {
         yield [

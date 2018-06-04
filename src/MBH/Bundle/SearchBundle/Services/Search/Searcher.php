@@ -10,7 +10,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
-use MBH\Bundle\SearchBundle\Lib\HotelContentHolder;
+use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -37,8 +37,8 @@ class Searcher
     /** @var ValidatorInterface  */
     private $validator;
 
-    /** @var HotelContentHolder */
-    private $hotelContentHolder;
+    /** @var DataHolder */
+    private $dataHolder;
 
     public function __construct(
         DocumentManager $dm,
@@ -47,7 +47,7 @@ class Searcher
         RoomCacheSearchProvider $roomCacheSearchProvider,
         SearchResultComposer $resultComposer,
         ValidatorInterface $validator,
-        HotelContentHolder $contentHolder
+        DataHolder $dataHolder
 )
     {
         $this->restrictionChecker = $restrictionsChecker;
@@ -55,7 +55,7 @@ class Searcher
         $this->roomCacheSearchProvider = $roomCacheSearchProvider;
         $this->resultComposer = $resultComposer;
         $this->validator = $validator;
-        $this->hotelContentHolder = $contentHolder;
+        $this->dataHolder = $dataHolder;
     }
 
 
@@ -68,9 +68,10 @@ class Searcher
      */
     public function search(SearchQuery $searchQuery): SearchResult
     {
+
         $errors = $this->validator->validate($searchQuery);
         if (\count($errors)) {
-            throw new SearcherException('There is a problem in SearchQuery. '. $errors);
+            throw new SearcherException('There is a problem in SearchQuery. '. (string)$errors);
         }
         $currentTariff = $this->getCurrentTariff($searchQuery->getTariffId());
         $currentRoomType = $this->getCurrentRoomType($searchQuery->getRoomTypeId());
@@ -80,15 +81,15 @@ class Searcher
         $this->checkTariffConditions($currentTariff, $searchQuery);
         $this->checkRoomTypePopulationLimit($currentRoomType, $searchQuery);
         $roomCaches = $this->checkRoomCacheLimitAndReturnActual($searchQuery, $currentRoomType, $currentTariff);
-        $result = $this->composeResult($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
-        $this->checkWindows($result);
+        /*$result = $this->composeResult($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
+        $this->checkWindows($result);*/
 
         return $result;
     }
 
     private function getCurrentTariff(string $tariffId): Tariff
     {
-        $tariff = $this->hotelContentHolder->getFetchedTariff($tariffId);
+        $tariff = $this->dataHolder->getFetchedTariff($tariffId);
         if (!$tariff) {
             $tariff = $this->dm->find(Tariff::class, $tariffId);
         }
@@ -98,7 +99,7 @@ class Searcher
 
     private function getCurrentRoomType(string $roomTypeId): RoomType
     {
-        $roomType = $this->hotelContentHolder->getFetchedRoomType($roomTypeId);
+        $roomType = $this->dataHolder->getFetchedRoomType($roomTypeId);
         if (!$roomType) {
             $roomType = $this->dm->find(RoomType::class, $roomTypeId);
         }

@@ -4,32 +4,47 @@ namespace Tests\Bundle\SearchBundle\Lib\Restrictions;
 
 
 
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\MinStay;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class MinStayTest extends RestrictionWebTestCase
 {
-    /** @dataProvider dataProvider */
-    public function testNoMinstay(SearchQuery $searchQuery, array $restriction): void
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
+    public function testNoMinStay(SearchQuery $searchQuery, array $restriction): void
     {
         $maxSta = new MinStay();
-        $this->assertNull($maxSta->check($searchQuery, $restriction));
+        $maxSta->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
-    /** @dataProvider dataProvider */
-    public function testMinstayViolation(SearchQuery $searchQuery, array $restriction)
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
+    public function testMinStayViolation(SearchQuery $searchQuery, array $restriction): void
     {
         $minStay = new MinStay();
         $restriction[1]['minStay'] = 5;
-        $this->expectExceptionMessage('Room minStay at '. $restriction[1]['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format('d-m-Y'));
+        $this->expectExceptionMessage('Room minStay at '. Helper::convertMongoDateToDate($restriction[1]['date'])->format('d-m-Y'));
         $minStay->check($searchQuery, $restriction);
     }
 
-    /** @dataProvider dataProvider */
-    public function testMinstayNoViolation(SearchQuery $searchQuery, array $restriction)
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
+    public function testMinStayNoViolation(SearchQuery $searchQuery, array $restriction): void
     {
         $minStay = new MinStay();
         $restriction[1]['minStay'] = 2;
-        $this->assertNull($minStay->check($searchQuery, $restriction));
+        $minStay->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 }

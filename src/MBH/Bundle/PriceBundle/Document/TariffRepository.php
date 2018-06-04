@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\PriceBundle\Lib\TariffFilter;
@@ -33,7 +34,7 @@ class TariffRepository extends DocumentRepository
      * @param bool $isEnabled
      * @param bool $isOnline
      * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws MongoDBException
      */
     public function fetchRaw(array $hotelIds = [], ?array $tariffsIds = [], bool $isEnabled = true, bool $isOnline = false): array
     {
@@ -51,7 +52,7 @@ class TariffRepository extends DocumentRepository
         if ($isEnabled) {
             $qb->field('isEnabled')->equals(true);
         }
-        //enabled
+        //online
         if ($isOnline) {
             $qb->field('isOnline')->equals(true);
         }

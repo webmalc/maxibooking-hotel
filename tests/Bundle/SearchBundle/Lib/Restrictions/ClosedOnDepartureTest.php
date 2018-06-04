@@ -8,48 +8,68 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 class ClosedOnDepartureTest extends RestrictionWebTestCase
 {
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testNoCloseOnDepartureCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnDeparture = new ClosedOnDeparture();
-        $this->assertNull($closedOnDeparture->check($searchQuery, $restriction));
-
+        $closedOnDeparture->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testCloseOnDepartureMiddleCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnDeparture = new ClosedOnDeparture();
         $restriction[1]['closedOnDeparture'] = true;
-        $this->assertNull($closedOnDeparture->check($searchQuery, $restriction));
-
+        $closedOnDeparture->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testCloseOnDepartureBeginCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnDeparture = new ClosedOnDeparture();
         $restriction[0]['closedOnDeparture'] = true;
-        $this->assertNull($closedOnDeparture->check($searchQuery, $restriction));
-
+        $closedOnDeparture->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testCloseOnDepartureEndCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnDeparture = new ClosedOnDeparture();
         $restriction[2]['closedOnDeparture'] = true;
-        $this->expectExceptionMessage('Room closedOnDeparture at 03-06-2018');
-        $this->assertNull($closedOnDeparture->check($searchQuery, $restriction));
-
+        $end = $searchQuery->getEnd()->format('d-m-Y');
+        $this->expectExceptionMessage('Room closedOnDeparture at '.$end);
+        $closedOnDeparture->check($searchQuery, $restriction);
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testCloseOnDepartureEndCheckNoViolation(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnDeparture = new ClosedOnDeparture();
         $restriction[2]['closedOnDeparture'] = false;
-        $this->assertNull($closedOnDeparture->check($searchQuery, $restriction));
-
+        $closedOnDeparture->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 }

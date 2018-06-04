@@ -3,6 +3,7 @@
 namespace MBH\Bundle\SearchBundle\Controller;
 
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\ExpectedResult;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -31,29 +32,23 @@ class SearchController extends Controller
 
         $result = new ExpectedResult();
         $data = array (
-            'begin' => '13.08.2018',
-            'end' => '20.08.2018',
+            'begin' => '06.06.2018',
+            'end' => '15.06.2018',
             'adults' => 1,
             'children' => 0,
-            'additionalBegin' => 0,
+            'additionalBegin' => 0/*,
+            'roomTypes' => ['5b150c2fb90cdc0119184928']*/
         );
 
-        //** Todo: Must Rename requestReceiver to searchConditions creator */
-        $searchRequestReceiver = $this->get('mbh_search.search_request_receiver');
-        $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
-        $conditions = $searchRequestReceiver->handleData($data);
-
         try {
-            //** Todo: Move this logic to search service */
-            $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);
             $search = $this->get('mbh_search.search');
-            $finded = $search->searchSync($searchQueries, $conditions);
+            $finded = $search->searchSync($data);
             $result
                 ->setStatus('ok')
                 ->setQueryHash($search->getSearchHash())
                 ->setExpectedResults($search->getSearchCount())
             ;
-        } catch (SearchQueryGeneratorException $e) {
+        } catch (SearchQueryGeneratorException|SearchConditionException $e) {
             $result
                 ->setStatus('error')
                 ->setErrorMessage($e->getMessage())
@@ -70,7 +65,7 @@ class SearchController extends Controller
             if ($find['status'] === 'ok') {
                 /** @var SearchResult $searchResult */
                 $searchResult = $find['result'];
-                $filtered[$searchResult->getRoomType()->getName()][] = $searchResult;
+                $filtered[$searchResult->getRoomType()->getHotel()->getName() . '_' . $searchResult->getRoomType()->getName()][] = $searchResult;
             }
         }
 
@@ -105,7 +100,7 @@ class SearchController extends Controller
         $searchRequestReceiver = $this->get('mbh_search.search_request_receiver');
         $searchQueryGenerator = $this->get('mbh_search.search_query_generator');
 
-        $conditions = $searchRequestReceiver->handleData($data);
+        $conditions = $searchRequestReceiver->createSearchConditions($data);
 
         try {
             $searchQueries = $searchQueryGenerator->generateSearchQueries($conditions);

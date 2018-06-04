@@ -50,24 +50,28 @@ class SearchQuery
      */
     private $childrenAges = [];
 
-    /** @var int  */
+    /** @var int */
     private $childAge;
 
-    /** @var int  */
+    /** @var int */
     private $infantAge;
 
     /** @var SearchConditions */
     private $searchConditions;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $isRestrictionsWhereChecked = false;
 
+    /** @var bool  */
     private $isIgnoreRestrictions = false;
 
     /** @var bool */
     private $isForceBooking;
+
+    /** @var string */
+    private $searchHash;
+
+
 
     /**
      * @return mixed
@@ -156,7 +160,6 @@ class SearchQuery
 
         return $this;
     }
-
 
 
     /**
@@ -319,6 +322,26 @@ class SearchQuery
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getSearchHash(): string
+    {
+        return $this->searchHash;
+    }
+
+    /**
+     * @param string $searchHash
+     * @return SearchQuery
+     */
+    public function setSearchHash(string $searchHash): SearchQuery
+    {
+        $this->searchHash = $searchHash;
+
+        return $this;
+    }
+
+
 
 
     public function getSearchTotalPlaces(): int
@@ -331,7 +354,7 @@ class SearchQuery
 
     public function getActualAdults(): int
     {
-        $actualAdultAges =  array_filter(
+        $actualAdultAges = array_filter(
             $this->childrenAges,
             function ($age) {
                 return $age > $this->childAge;
@@ -343,7 +366,7 @@ class SearchQuery
 
     public function getActualChildren(): int
     {
-        $actualChildrenAges =  array_filter(
+        $actualChildrenAges = array_filter(
             $this->childrenAges,
             function ($age) {
                 return $age >= $this->infantAge && $age <= $this->childAge;
@@ -355,7 +378,7 @@ class SearchQuery
 
     public function getInfants(): int
     {
-        $infants =  array_filter(
+        $infants = array_filter(
             $this->childrenAges,
             function ($age) {
                 return $age <= $this->infantAge;
@@ -371,11 +394,9 @@ class SearchQuery
     }
 
 
-public static function createInstance(SearchQueryHelper $queryHelper, SearchConditions $conditions): SearchQuery
+    public static function createInstance(SearchQueryHelper $queryHelper, SearchConditions $conditions): SearchQuery
     {
         $searchQuery = new static();
-
-
         $searchQuery
             ->setBegin($queryHelper->getBegin())
             ->setEnd($queryHelper->getEnd())
@@ -390,6 +411,7 @@ public static function createInstance(SearchQueryHelper $queryHelper, SearchCond
             ->setAdults($conditions->getAdults())
             ->setChildrenAges($conditions->getChildrenAges())
             ->setIsForceBooking($conditions->isForceBooking())
+            ->setSearchHash($conditions->getSearchHash())
         ;
 
         return $searchQuery;

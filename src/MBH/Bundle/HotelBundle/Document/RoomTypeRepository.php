@@ -68,6 +68,11 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         return $qb->hydrate(false)->getQuery()->toArray();
     }
 
+    /**
+     * @param array $categoryIds
+     * @param array $hotelIds
+     * @return array
+     */
     public function fetchRawWithCategory(array $categoryIds, array $hotelIds): array
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
@@ -82,9 +87,9 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
             $qb->field('category.id')->in($categoryIds);
         }
         $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
-        $result = $qb->hydrate(false)->getQuery()->toArray();
 
-        return $result;
+        return  $qb->hydrate(false)->getQuery()->toArray();
+
     }
 
     /**

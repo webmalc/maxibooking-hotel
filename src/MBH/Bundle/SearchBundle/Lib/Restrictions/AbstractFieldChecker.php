@@ -4,6 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Lib\Restrictions;
 
 
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -16,7 +17,7 @@ abstract class AbstractFieldChecker implements RestrictionsCheckerInterface
         $accessor = PropertyAccess::createPropertyAccessor();
         $key = "[{$this->getCheckingFieldName()}]";
         foreach ($restrictions as $restriction) {
-            $date = $restriction['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+            $date = Helper::convertMongoDateToDate($restriction['date']);
             if (null !== $value = $accessor->getValue($restriction, $key)) {
                 $this->doCheck($date, $value, $searchQuery);
             }

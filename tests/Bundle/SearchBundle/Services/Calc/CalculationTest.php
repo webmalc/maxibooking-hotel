@@ -4,7 +4,6 @@
 namespace Tests\Bundle\SearchBundle\Services\Calc;
 
 
-use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -13,8 +12,9 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
+use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class CalculationTest extends WebTestCase
+class CalculationTest extends SearchWebTestCase
 {
 
     /** @var Calculation */
@@ -54,8 +54,12 @@ class CalculationTest extends WebTestCase
 
         $variants = $data['variants'];
         foreach ($variants as $variant) {
+            //** TODO: Promotion Test add to data provider */
             $fakePromotion = new Promotion();
-            $fakePromotion->setDiscount(0);
+            $fakePromotion
+                ->setDiscount(0)
+                ->setFullTitle('fakePromotion')
+            ;
             $calcQuery = new CalcQuery();
             $calcQuery
                 ->setTariff($searchTariff)
@@ -83,22 +87,16 @@ class CalculationTest extends WebTestCase
                 $day = (clone $begin)->modify("+ $index days")->format('d_m_Y') . ' offset' . $index;
                 $this->assertEquals($variant['priceByDay'][$index], $packagePrice->getPrice(), "Error in $key $day");
                 $this->assertEquals($variant['tariffByDay'][$index], $packagePrice->getTariff()->getName(), "Error in $key $day");
+                $this->assertEquals($fakePromotion->getFullTitle(), $packagePrice->getPromotion()->getFullTitle());
             }
         }
 
 
     }
 
-    private function getDocumentFromArrayByFullTitle(array $documents, string $documentFullTitle)
-    {
-        $filter = function ($document) use ($documentFullTitle) {
-            return $document->getFullTitle() === $documentFullTitle;
-        };
-        $documentFiltered = array_filter($documents, $filter);
-
-        return reset($documentFiltered);
-    }
-
+    /**
+     * @return iterable
+     */
     public function dataProviderRoomType(): iterable
     {
         yield [

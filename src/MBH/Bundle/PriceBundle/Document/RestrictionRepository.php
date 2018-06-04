@@ -247,4 +247,3 @@ class RestrictionRepository extends DocumentRepository
     }
 }
 
-;

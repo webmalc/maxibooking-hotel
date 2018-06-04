@@ -8,49 +8,72 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 class ClosedOnArrivalTest extends RestrictionWebTestCase
 {
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testNoCloseOnArrivalCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnArrival = new ClosedOnArrival();
-        $this->assertNull($closedOnArrival->check($searchQuery, $restriction));
+        $closedOnArrival->check($searchQuery, $restriction);
+        $this->assertTrue(true);
 
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testCloseOnArrivalMiddleCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnArrival = new ClosedOnArrival();
         $restriction[1]['closedOnArrival'] = true;
-        $this->assertNull($closedOnArrival->check($searchQuery, $restriction));
+        $closedOnArrival->check($searchQuery, $restriction);
+        $this->assertTrue(true);
 
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testCloseOnArrivalBeginCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnArrival = new ClosedOnArrival();
         $restriction[0]['closedOnArrival'] = true;
-        $this->expectExceptionMessage('Room closedOnArrival at 01-06-2018');
-        $this->assertNull($closedOnArrival->check($searchQuery, $restriction));
+        $begin = $searchQuery->getBegin()->format('d-m-Y');
+        $this->expectExceptionMessage('Room closedOnArrival at '.$begin);
+        $closedOnArrival->check($searchQuery, $restriction);
 
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testCloseOnArrivalEndCheck(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnArrival = new ClosedOnArrival();
         $restriction[2]['closedOnArrival'] = true;
-        $this->assertNull($closedOnArrival->check($searchQuery, $restriction));
-
+        $closedOnArrival->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param SearchQuery $searchQuery
+     * @param array $restriction
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException
+     */
     public function testCloseOnArrivalBeginCheckNoViolation(SearchQuery $searchQuery, array $restriction): void
     {
         $closedOnArrival = new ClosedOnArrival();
         $restriction[0]['closedOnArrival'] = false;
-        $this->assertNull($closedOnArrival->check($searchQuery, $restriction));
-
+        $closedOnArrival->check($searchQuery, $restriction);
+        $this->assertTrue(true);
     }
 
 
