@@ -141,19 +141,4 @@ class PaymentFormController extends Controller
     {
         return $this->deleteEntity($id, 'MBHOnlineBundle:PaymentFormConfig', 'online_payment_form');
     }
-
-    /**
-     * @Route("/load.{_format}/{configId}", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
-     * @Template()
-     */
-    public function loadAction($configId)
-    {
-        $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-            ->findOneById($configId);
-
-        return [
-            'config' => $config,
-            'wrapperId' => PaymentFormConfig::WRAPPER_ID,
-        ];
-    }
 }

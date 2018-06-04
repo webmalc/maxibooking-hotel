@@ -17,7 +17,7 @@
         </thead>
         <tbody>
         {% for paymentForm in paymentForms %}
-            <tr {{ not paymentForm.enabled ? 'class="danger"' }}>
+            <tr {{ not paymentForm.isEnabled ? 'class="danger"' }}>
                 <td class="text-center table-icon"><i class="fa fa-globe"></i></td>
                 <td>
                     {% if paymentForm.hotels|length %}
@@ -27,7 +27,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if not paymentForm.enabled %}
+                    {% if not paymentForm.isEnabled %}
                         <span class="label label-danger">{{ 'onlinebundle.resources.net'|trans }}</span>
                     {% else %}
                         <span class="label label-success">{{ 'onlinebundle.resources.da'|trans }}</span>

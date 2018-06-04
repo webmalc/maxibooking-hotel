@@ -27,6 +27,22 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ApiPaymentFormController extends Controller
 {
+
+    /**
+     * @Route("/load.{_format}/{configId}", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
+     * @Template()
+     */
+    public function loadAction($configId)
+    {
+        $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
+            ->findOneById($configId);
+
+        return [
+            'config' => $config,
+            'wrapperId' => PaymentFormConfig::WRAPPER_ID,
+        ];
+    }
+
     /**
      * @Route("/form/iframe/{formId}", name="online_payment_form_iframe", defaults={"formId"=null})
      * @Method("GET")
