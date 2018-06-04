@@ -11,7 +11,7 @@ imports:
 
 framework:
     assets:
-        version: "v%mbh.version%" 
+        version: "v%assetic_version%"
     serializer:
         enabled: true
     #esi:             ~
