@@ -520,7 +520,7 @@ class BillingApi
         }
 
         $decodedResponse = json_decode($response->getBody(), true);
-        if ($decodedResponse['next'] && !$endpointSettings['returnArray']) {
+        if (!$endpointSettings['returnArray'] && $decodedResponse['next']) {
             $entities = array_merge($this->getEntitiesByUrl($decodedResponse['next'], $endpointSettings['model']));
         }
 
