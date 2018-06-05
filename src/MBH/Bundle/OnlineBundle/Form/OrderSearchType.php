@@ -9,6 +9,7 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -24,21 +25,29 @@ class OrderSearchType extends AbstractType
             $userNameVisible = true;
         }
 
+        $commonInputAttr = ['class' => 'form-control input-sm'];
+        $commonLabelAttr = ['class' => 'col-form-label col-form-label-sm'];
+        $commonGroup = 'form.online.order_search';
+
         $builder
             ->add(
                 'numberOrder',
                 TextType::class,
                 [
-                    'label' => 'form.online.order_search.numberOrder',
-                    'group' => 'form.online.order_search'
+                    'label'      => 'form.online.order_search.numberOrder',
+                    'label_attr' => $commonLabelAttr,
+                    'group'      => $commonGroup,
+                    'attr'       => $commonInputAttr,
                 ]
             )
             ->add(
                 'phoneOrEmail',
                 TextType::class,
                 [
-                    'label' => 'form.online.order_search.phoneOrEmail',
-                    'group' => 'form.online.order_search'
+                    'label'      => 'form.online.order_search.phoneOrEmail',
+                    'label_attr' => $commonLabelAttr,
+                    'group'      => $commonGroup,
+                    'attr'       => $commonInputAttr,
                 ]
             )
             ->add(
@@ -50,11 +59,23 @@ class OrderSearchType extends AbstractType
                 'userName',
                 TextType::class,
                 [
-                    'label' => 'form.online.order_search.userName',
-                    'group' => 'form.online.order_search'
+                    'label'      => 'form.online.order_search.userName',
+                    'label_attr' => $commonLabelAttr,
+                    'group'      => $commonGroup,
+                    'attr'       => $commonInputAttr,
                 ]
             );
         }
+
+        $builder
+            ->add(
+                'findOrder',
+                SubmitType::class,
+                [
+                    'label' => 'form.online.order_search.button_search',
+                    'attr'  => ['class' => 'btn btn-primary btn-sm'],
+                ]
+            );
     }
 
     public function getBlockPrefix()

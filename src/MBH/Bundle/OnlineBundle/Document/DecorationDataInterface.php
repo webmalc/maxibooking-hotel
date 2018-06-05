@@ -9,7 +9,6 @@ namespace MBH\Bundle\OnlineBundle\Document;
 
 interface DecorationDataInterface
 {
-    /* TODO перенести в параметры? */
     const THEMES = [
         "cerulean"  => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css",
         "cosmo"     => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css",

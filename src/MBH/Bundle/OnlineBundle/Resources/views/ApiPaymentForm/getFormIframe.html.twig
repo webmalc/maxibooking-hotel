@@ -8,6 +8,11 @@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"/>
         {% if entity and entity.theme %}
             <link rel="stylesheet" href="{{ entity.theme }}">
+        {% else %}
+            <link rel="stylesheet"
+                  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+                  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+                  crossorigin="anonymous">
         {% endif %}
         {% if entity and entity.cssLibraries is defined and entity.cssLibraries is iterable %}
             {% for link in entity.cssLibraries %}
@@ -39,16 +44,17 @@
     {% endif %}
     <body style="background-color: transparent;">
 
-    {{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'form-horizontal', 'id': formId}}) }}
+    {% form_theme form '@MBHOnline/ApiPaymentForm/Form/block.html.twig' %}
+    {{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'form-horizontal well', 'id': formId}}) }}
     {{ form_widget(form) }}
     {% if app.getEnvironment == 'prod' and entity.enabledReCaptcha %}
         <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
         <script src='https://www.google.com/recaptcha/api.js'></script>
     {% endif %}
-    <div class="mbh-form-row" id="mbh-form-submit-wrapper">
-        <button type="submit" class="btn btn-primary btn-sm"
-                id="mbh-form-submit">{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}</button>
-    </div>
+    {#<div class="form-group" id="">#}
+        {#<button type="submit" class="btn btn-primary btn-sm"#}
+                {#id="mbh-form-submit">{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}</button>#}
+    {#</div>#}
     {{ form_end(form) }}
     <div id="search-result"></div>
 
@@ -86,11 +92,11 @@
         });
       };
     </script>
-    <div id="mbh-form-wrapper" style="overflow: hidden; height: auto">
-        <a href="https://maxi-booking.ru/"
-           style="background-color: white; padding: 10px;"
-           target="_blank">{{ 'views.api.get_form_iframe.online_booking_system'|trans }}</a>
-    </div>
+    {#<div id="mbh-form-wrapper" style="overflow: hidden; height: auto">#}
+        {#<a href="https://maxi-booking.ru/"#}
+           {#style="background-color: white; padding: 10px;"#}
+           {#target="_blank">{{ 'views.api.get_form_iframe.online_booking_system'|trans }}</a>#}
+    {#</div>#}
     {#<script type="text/javascript" src="{{ url('online_form_get', {id: formId, locale: app.request.locale}) }}"></script>#}
     </body>
 
