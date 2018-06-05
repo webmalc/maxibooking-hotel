@@ -4,7 +4,7 @@
 {% if multiHotel %}
     <div class="row text-center">
     {% for hotel in hotels %}
-        <div class="col-sm-6"><a data-hotelid={{ hotel.id }} title="Спецпредложения {{ hotel.name }}" href="#" class="azvcl hotel-switcher"><img style="height: 80px;" src="http://azovsky.ru/common/logos/{{ hotel.id }}.png" alt=""></a>
+        <div class="col-sm-6"><a data-hotelid={{ hotel.id }} title="Спецпредложения {{ hotel.name }}" href="#" class="azvcl hotel-switcher"><img style="height: 80px;" src="https://azovsky.ru/common/logos/{{ hotel.id }}.png" alt=""></a>
             <p class="text-center"><a data-hotelid="{{ hotel.id }}" title="Спецпредложения {{ hotel.name }}" href="#" class="azvcl hotel-switcher">{{ hotel.name }}</a></p>
         </div>
     {% endfor %}
@@ -37,7 +37,7 @@
             <p class="special-strip"> - {{ special.discount }}{{ (special.isPercent)?'%':'руб' }}</p>
         </div>
         <div class="hotel-thumb">
-            <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt="">  <a href="http://azovsky.ru{{ special.eat.url|default('/') }}" title="Шведский стол">{{ special.eat.number|default(3) }}-раз. питание шведский стол</a></p>
+            <p class="food"><img src="https://azovsky.ru/images/specnew/spoon.png" alt="">  <a href="https://azovsky.ru{{ special.eat.url|default('/') }}" title="Шведский стол">{{ special.eat.number|default(3) }}-раз. питание шведский стол</a></p>
         </div>
     </div>
 
@@ -54,7 +54,7 @@
             <p class="room">{{ special.roomTypeName }}</p>
         {% endif %}
 
-        <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt=""> <a href="http://azovsky.ru{{ special.eat.url|default('/') }}" title="Шведский стол">{{ special.eat.number|default(3) }}-раз. питание шведский стол</a></p>
+        <p class="food"><img src="https://azovsky.ru/images/specnew/spoon.png" alt=""> <a href="https://azovsky.ru{{ special.eat.url|default('/') }}" title="Шведский стол">{{ special.eat.number|default(3) }}-раз. питание шведский стол</a></p>
     </div>
     <div class="spec-date">
         <p
