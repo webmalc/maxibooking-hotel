@@ -60,7 +60,7 @@ mbhbasebundle.view.partials.datepickerperiodselect.zavtra: Завтра
 mbhbasebundle.view.partials.datepickerperiodselect.nedelya: Неделя
 mbhbasebundle.view.partials.datepickerperiodselect.mesyats: Месяц
 mbhbasebundle.view.navbar.svernutʹmenyu: 'Свернуть меню'
-mbhbasebundle.view.navbar.kassa: Касса
+mbhbasebundle.view.navbar.kassa: Расчеты
 mbhbasebundle.view.navbar.dokument: 'Документ '
 mbhbasebundle.view.navbar.nepodtverzhden: 'Не подтвержден'
 mbhbasebundle.view.navbar.smena: 'Смена '
@@ -93,8 +93,8 @@ twig.extension.september: сент
 twig.extension.october: окт
 twig.extension.november: нояб
 twig.extension.december: дек
-landscape: книжная
-portrait: альбомная
+landscape: альбомная
+portrait: книжная
 controller.baseController.delete_record_success: 'Запись успешно удалена'
 controller.baseController.document_is_deleted: 'Документ уже удален!'
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Нельзя удалить запись с существующими бронями'
@@ -314,33 +314,40 @@ per_l: л.
 per_ml: мл.
 menu.header.navigation: Навигация
 menu.header.settings: Настройки
-menu.label.broni: Брони
-menu.label.podbor: Подбор
-menu.label.portie: Портье
+menu.label.hotel_services: 'Службы отеля'
+menu.label.web_site: 'Интернет сайт'
+menu.label.analytics: Аналитика
+menu.label.users_and_roles: 'Пользователи и права'
+menu.label.profile: 'Личный кабинет'
+menu.label.payment_systems: 'Платежные системы'
+menu.label.broni: 'Список броней'
+menu.label.podbor: 'Создать бронь'
+menu.label.portie: 'Прием и размещение'
 menu.label.portie.nomfond: 'Номерной фонд'
 menu.label.portie.shah: Шахматка
 menu.label.portie.arrdep: Заезд/Выезд
-menu.label.nomandprice: 'Номера и цены'
+menu.label.nomandprice: 'Цены и предложения'
 menu.label.nomandprice.tariff: Тарифы
-menu.label.nomandprice.overview: Обзор
+menu.label.nomandprice.overview: 'Проверочный отчет'
 menu.label.nomandprice.roomsell: 'Номера в продаже'
 menu.label.nomandprice.prices: Цены
 menu.label.nomandprice.restriction: 'Условия и ограничения'
-menu.label.nomandprice.services: Услуги
+menu.label.nomandprice.services: 'Дополнительные услуги'
 menu.label.nomandprice.promotions: Акции
 menu.label.task: Задачи
 menu.label.cash: Касса
 menu.label.warehouse: Склад
 menu.label.restaurant: Ресторан
+menu.label.financial_analytics: 'Финансовая аналитика'
 menu.label.reports: Отчеты
-menu.label.reports.services: Услуги
+menu.label.reports.services: 'Дополнительные услуги'
 menu.label.reports.clients: Гости
 menu.label.reports.organizations: Организация
 menu.label.reports.filling: Заполняемость
-menu.label.reports.managers: Менеджеры
+menu.label.reports.managers: 'Отчеты по менеджерам'
 menu.label.reports.invite: 'Визовые приглашения'
-menu.label.reports.analystics: Аналитика
-menu.label.reports.polls: Оценки
+menu.label.reports.analystics: 'Графика продаж'
+menu.label.reports.polls: 'Отзывы гостей'
 menu.label.reports.dynamic_sales: 'Динамика продаж'
 menu.label.reports.daily_report: 'Денежные средства'
 menu.label.reports.windows: Окна
@@ -352,18 +359,18 @@ menu.settings.label.housing: Корпуса
 menu.settings.label.room_types: 'Номерной фонд'
 menu.room_type_category: 'Группы номеров'
 menu.settings.label.restaurant: Ресторан
-menu.settings.label.restaurant.ingredients: Ингредиенты
-menu.settings.label.restaurant.dishmenu: 'Меню блюд'
-menu.settings.label.restaurant.tables: 'Управление столиками'
+menu.settings.label.restaurant.ingredients: 'Ресторан - Ингредиенты'
+menu.settings.label.restaurant.dishmenu: 'Ресторан - Меню блюд'
+menu.settings.label.restaurant.tables: 'Ресторан - Cтолики'
 menu.configs.config: Настройки
 menu.configs.users: Пользователи
 menu.configs.groups: Группы
-menu.configs.sources: Источники
+menu.configs.sources: 'Источники продаж'
 menu.configs.delete_reasons: 'Причины удаления'
 menu.configs.templates: 'Шаблоны документов'
 menu.configs.parameters: Параметры
 menu.configs.tasktype: 'Типы задач'
-menu.configs.warehouse: Склад
+menu.configs.warehouse: 'Номенклатура склада'
 menu.communication.label: Взаимодействие
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.your_hotel: ВашОтель
@@ -519,6 +526,8 @@ notifier.config.label.online_payment_confirm: 'Онлайн оплата'
 notifier.config.label.confirm_order: Подтверждение
 notifier.config.label.unpaid: Неоплата
 notifier.config.label.task: Задачи
+notifier.config.label.error: Ошибки
+notifier.config.title.error: 'Уведомление об ошибках'
 notifier.config.title.cash_confirm: 'Уведомление о подтверждении документа оплаты'
 notifier.config.title.arrival: 'Уведомление о прибытии'
 notifier.config.title.feedback: 'Письмо с просьбой об оценке'

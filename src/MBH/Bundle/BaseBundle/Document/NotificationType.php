@@ -29,6 +29,7 @@ class NotificationType extends Base
     public const CONFIRM_ORDER_TYPE = 'confirm_order';
     public const TASK_TYPE = 'task';
     public const EMAIL_RESETTING_TYPE = 'email_resetting';
+    public const ERROR = 'error';
 
     public const AUTH_TYPE = 'auth';
 
@@ -123,7 +124,8 @@ class NotificationType extends Base
             self::UNPAID_TYPE,
             self::CONFIRM_ORDER_TYPE,
             self::TASK_TYPE,
-            self::EMAIL_RESETTING_TYPE
+            self::EMAIL_RESETTING_TYPE,
+            self::ERROR
         ];
     }
 

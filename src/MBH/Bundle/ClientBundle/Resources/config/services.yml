@@ -72,3 +72,9 @@ services:
     mbh.fms_dictionaries:
         class: MBH\Bundle\ClientBundle\Lib\FMSDictionaries
         arguments: ['@mbh.csv_reader']
+
+    MBH\Bundle\ClientBundle\Service\DocumentSerialize\:
+        resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/DocumentSerialize/*'
+        arguments:
+             - '@service_container'
+             - '@mbh.billing.api'
