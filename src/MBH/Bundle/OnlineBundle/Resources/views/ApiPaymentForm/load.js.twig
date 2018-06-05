@@ -1,34 +1,73 @@
 var mbhPaymentFunc = {
-  frameUrl: '{{ url('online_payment_form_iframe', {formId: config.id})|raw }}',
-  frameWidth: "{{ config.fullWidth ? '100%' : config.frameWidth | raw }}",
-  frameHeight: "{{ config.frameHeight }}",
-  rendeIframe: function(config) {
-    {#this.configParser(config);#}
-    this.render();
-  },
-  {#configParser: function(config) {#}
-    {#if (config.frameUrl !== undefined) {#}
-      {#this.frameUrl = config.frameUrl;#}
-    {#}#}
-    {#if (config.frameWidth !== undefined) {#}
-      {#this.frameWidth = config.frameWidth;#}
-    {#}#}
-    {#if (config.frameHeight !== undefined) {#}
-      {#this.frameHeight = config.frameHeight#}
-    {#}#}
-  {#},#}
-  render: function() {
+  frameUrl       : '{{ url('online_payment_form_iframe', {formId: config.id})|raw }}',
+  frameWidth     : "{{ config.fullWidth ? '100%' : config.frameWidth | raw }}",
+  frameHeight    : "{{ config.frameHeight }}",
+  frameId        : "{{ wrapperId|raw }}-iframe",
+  iframe         : null,
+  typePostMessage: 'mbh-payment-form',
+  urlPostMessage : 'http://localhost:9090',
+  getForm        : function() {
     var formWrapper = document.querySelector('#{{ wrapperId|raw }}');
     formWrapper.innerHTML = '';
+    formWrapper.appendChild(this.getRbk());
+    formWrapper.appendChild(this.getIframe());
+
+    this.initIframe();
+    this.addListener();
+  },
+  getRbk         : function() {
+    var script = document.createElement('script');
+    script.src = 'https://checkout.rbk.money/checkout.js';
+
+    return script;
+  },
+  getIframe      : function() {
     var iframe = document.createElement('iframe');
-    iframe.id = "{{ wrapperId|raw }}-iframe";
+    iframe.id = this.frameId;
+    iframe.name = this.frameId;
     iframe.src = this.frameUrl;
     iframe.scrolling = 'no';
     iframe.frameBorder = 0;
     iframe.width = this.frameWidth;
     iframe.height = this.frameHeight;
-    formWrapper.appendChild(iframe);
+
+    return iframe;
+  },
+  addListener    : function() {
+    var self = this;
+    window.addEventListener("message", function(e) {
+      if (event.origin != self.urlPostMessage) {
+        // что-то прислали с неизвестного домена - проигнорируем..
+        return;
+      }
+      if (e.data.type !== self.typePostMessage) {
+        return;
+      }
+      console.log("получено from parent obj: " + e.data.data);
+    })
+  },
+  sendMsg        : function(msg) {
+    this.iframe.postMessage({type: this.typePostMessage, data: msg}, this.urlPostMessage);
+  },
+  initIframe     : function() {
+    if (this.iframe === null) {
+      this.iframe = window.frames[this.frameId];
+    }
   }
 };
 
-mbhPaymentFunc.rendeIframe();
+window.onload = function(ev) {
+  mbhPaymentFunc.getForm();
+
+  send.addEventListener('click', function() {
+    mbhPaymentFunc.sendMsg('click');
+  })
+}
+
+
+{#if (window == top) {#}
+{#console.info( 'Этот скрипт является окном верхнего уровня в браузере' );#}
+{#} else {#}
+{#console.info( 'Этот скрипт исполняется во фрейме!' );#}
+{#}#}
+

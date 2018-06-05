@@ -1,0 +1,88 @@
+var mbhIframe = {
+  idFormPayment  : 'go-form',
+  initEvent      : false,
+  typePostMessage: 'mbh-payment-form',
+  urlPostMessage : 'http://localhost:9099',
+  addFormPayment : function(data) {
+    var html = '<form id="' + this.idFormPayment + '">' +
+        '<div class="form-group form-group-sm"> ' +
+        '<label for="total" class="col-form-label col-form-label-sm">Cумма к оплате</label>' +
+        '<input type="number" class="form-control input-sm" name="total" value="' + data.total + '">' +
+        '</div>' +
+        '<input type="hidden" name="id" value="' + data.orderId + '">' +
+        '<div class="form-group">' +
+        '<input type="submit" value="Оплатить" class="btn btn-success btn-sm">' +
+        '</div>'
+    ;
+    // html += '<input type="number" class="input-sm" name="total" value="' + data.total + '">';
+    // html += '<input type="hidden" name="id" value="' + data.orderId + '">';
+    // html += '<input type="submit" value="Оплатить">';
+    html += '</form>';
+
+    return html;
+  },
+  addListener    : function() {
+    var self = this;
+    window.addEventListener("message", function(e) {
+      if (e.origin != self.urlPostMessage) {
+          {#// что-то прислали с неизвестного домена - проигнорируем..#}
+        return;
+      }
+      if (e.data.type !== self.typePostMessage) {
+        return;
+      }
+
+      console.info("получено on frame: " + e.data.data);
+    });
+  },
+  sendMsg        : function(form) {
+      {#var f = new FormData(form);#}
+      {#form.querySelectorAll('input').forEach(function(input) {#}
+      {#console.log(input.value);#}
+      {#})#}
+
+    window.parent.postMessage({type: this.typePostMessage, data: 'from iframe'}, this.urlPostMessage);
+  },
+  addEventForForm: function() {
+    if (this.initEvent === false) {
+      var self = this;
+      formPayment = document.getElementById(this.idFormPayment);
+      formPayment.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        self.sendMsg(this);
+      })
+    }
+  }
+};
+
+
+window.onload = function(e) {
+
+  if (typeof $ === 'undefined') {
+    console.error('no jquery');
+    return;
+  }
+
+  mbhIframe.addListener();
+
+  $('#{{ formId|raw }}').submit(function(e) {
+    e.preventDefault();
+    $.post(this.action, $(this).serialize()).done(function(data) {
+      var divResult = $('#search-result');
+      divResult.removeClass();
+      if (typeof data.error !== 'undefined') {
+        divResult.addClass('panel panel-danger').find('.panel-body').html(data.error);
+      } else {
+        if (data.needIsPaid) {
+          divResult.addClass('panel panel-info').find('.panel-body').html(mbhIframe.addFormPayment(data.answer));
+          mbhIframe.addEventForForm();
+        } else {
+          divResult.addClass('panel panel-success').find('.panel-body').html(data.answer);
+        }
+      }
+    }).error(function(error) {
+      console.log(error);
+    });
+  });
+};
