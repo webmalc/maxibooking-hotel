@@ -829,6 +829,7 @@ class OrderManager implements Searchable
         //List user package only
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW_ALL')) {
             $data['createdBy'] = $user->getUsername();
+            $data['showWithoutUser'] = $this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW_NO_USER');
         }
 
         /** @var PackageRepository $packageRepository */

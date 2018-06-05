@@ -682,8 +682,9 @@ class PackageRepository extends DocumentRepository
         }
 
         if (isset($data['createdBy']) && $data['createdBy'] != null) {
-//            $qb->field('createdBy')->equals($data['createdBy']);
             $qb->addOr($qb->expr()->field('createdBy')->equals($data['createdBy']));
+        }
+        if (isset($data['showWithoutUser']) && $data['showWithoutUser']) {
             $qb->addOr($qb->expr()->field('createdBy')->equals(null));
         }
 

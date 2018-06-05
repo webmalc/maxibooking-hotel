@@ -281,6 +281,8 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @Method("GET")
      * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template()
+     * @param Request $request
+     * @return array
      */
     public function generatorAction(Request $request)
     {
@@ -307,7 +309,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     }
 
     /**
-     * @Route("/generator/save", name="price_cache_generator_save")
+     * @Route("/generator", name="price_cache_generator_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template("MBHPriceBundle:PriceCache:generator.html.twig")

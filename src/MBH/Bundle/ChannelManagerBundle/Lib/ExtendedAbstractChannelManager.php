@@ -45,16 +45,14 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $requestInfoArray = $this->requestFormatter->formatUpdatePricesRequest($pricesData);
             foreach ($requestInfoArray as $requestInfo) {
                 $this->log('begin update prices');
-                $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $isResponseSuccessful = $this->checkResponse($sendResult);
+                $this->log('response for update prices request:');
+                $this->log($sendResult);
                 if (!$isResponseSuccessful) {
                     $result = $isResponseSuccessful;
-                    $this->log('response for update prices request:');
-                    $this->log($sendResult);
+                    $this->log($requestInfo->getRequestData());
                 }
-                //prevent concurrent connections
-                sleep(2);
             }
         }
 
@@ -78,16 +76,14 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $requestInfoArray = $this->requestFormatter->formatUpdateRoomsRequest($roomsData);
             foreach ($requestInfoArray as $requestInfo) {
                 $this->log('begin update rooms');
-                $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $isResponseSuccessful = $this->checkResponse($sendResult);
+                $this->log('response for update rooms request:');
+                $this->log($sendResult);
                 if (!$isResponseSuccessful) {
                     $result = $isResponseSuccessful;
-                    $this->log('response for update rooms request:');
-                    $this->log($sendResult);
+                    $this->log($requestInfo->getRequestData());
                 }
-                //prevent concurrent connections
-                sleep(2);
             }
         }
 
@@ -113,16 +109,14 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $requestInfoArray = $this->requestFormatter->formatUpdateRestrictionsRequest($restrictionsData);
             foreach ($requestInfoArray as $requestInfo) {
                 $this->log('begin update restrictions');
-                $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $isResponseSuccessful = $this->checkResponse($sendResult);
+                $this->log('response for update restrictions request:');
+                $this->log($sendResult);
                 if (!$isResponseSuccessful) {
                     $result = $isResponseSuccessful;
-                    $this->log('response for update restrictions request:');
-                    $this->log($sendResult);
+                    $this->log($requestInfo->getRequestData());
                 }
-                //prevent concurrent connections
-                sleep(2);
             }
         }
 
