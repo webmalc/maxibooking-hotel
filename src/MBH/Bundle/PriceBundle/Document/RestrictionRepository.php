@@ -213,7 +213,7 @@ class RestrictionRepository extends DocumentRepository
      * @param SearchConditions $conditions
      * @return array
      */
-    public function getWithConditions(SearchConditions $conditions): array
+    public function getAllSearchPeriod(SearchConditions $conditions): array
     {
         $qb = $this->createQueryBuilder();
         $restrictionTariffs = $conditions->getRestrictionTariffs();
@@ -236,12 +236,9 @@ class RestrictionRepository extends DocumentRepository
             $qb->field('hotel.id')->in($hotelIds);
         }
 
-        $begin = (clone $conditions->getBegin())->modify("- {$conditions->getAdditionalBegin()} days");
-        $end = (clone $conditions->getEnd())->modify("+ {$conditions->getAdditionalEnd()} days");
-
         $qb
-            ->field('date')->gte($begin)
-            ->field('date')->lte($end);
+            ->field('date')->gte($conditions->getMaxBegin())
+            ->field('date')->lte($conditions->getMaxEnd());
 
         return $qb->hydrate(false)->getQuery()->toArray();
     }

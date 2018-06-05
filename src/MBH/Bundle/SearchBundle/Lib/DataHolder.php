@@ -10,9 +10,9 @@ use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
+use MBH\Bundle\PriceBundle\Document\RoomCacheRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class DataHolder
@@ -32,11 +32,17 @@ class DataHolder
     /** @var RoomTypeRepository */
     private $roomTypeRepository;
 
+    /** @var RoomCacheRepository */
+    private $roomCacheRepository;
+
     /** @var bool */
     private $isUseCategory;
 
     /** @var array */
     private $restrictions;
+
+    /** @var array */
+    private $roomCaches;
 
     /**
      * TariffHolder constructor.
@@ -44,7 +50,7 @@ class DataHolder
      * @param RoomTypeRepository $roomTypeRepository
      * @param ClientConfigRepository $configRepository
      */
-    public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository, RestrictionRepository $restrictionRepository, ClientConfigRepository $configRepository)
+    public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository, RestrictionRepository $restrictionRepository, ClientConfigRepository $configRepository, RoomCacheRepository $roomCacheRepository)
     {
         $this->tariffRepository = $tariffRepository;
         $this->roomTypeRepository = $roomTypeRepository;
@@ -52,6 +58,7 @@ class DataHolder
         $this->roomTypes = $roomTypeRepository->findAll();
         $this->restrictionRepository = $restrictionRepository;
         $this->isUseCategory = $configRepository->fetchConfig()->getUseRoomTypeCategory();
+        $this->roomCacheRepository = $roomCacheRepository;
     }
 
 
@@ -116,16 +123,15 @@ class DataHolder
     }
 
 
-    public function getCheckNecessaryRestrictions(SearchQuery $searchQuery, SearchConditions $conditions): array
+    public function getCheckNecessaryRestrictions(SearchQuery $searchQuery): array
     {
-        $hash = $searchQuery->getSearchHash();
-        $restrictions = $this->getRestrictions($hash, $searchQuery);
-
+        $restrictions = $this->getRestrictions($searchQuery);
         if (null === $restrictions) {
-            $rawRestrictions = $this->restrictionRepository->getWithConditions($conditions);
-            $this->setRestrictions($rawRestrictions, $hash);
+            $conditions = $searchQuery->getSearchConditions();
+            $rawRestrictions = $this->restrictionRepository->getAllSearchPeriod($conditions);
+            $this->setRestrictions($rawRestrictions, $searchQuery);
 
-            return $this->getRestrictions($hash, $searchQuery);
+            return $this->getRestrictions($searchQuery);
         }
 
         return $restrictions;
@@ -133,27 +139,10 @@ class DataHolder
     }
 
     //** TODO: REDIS MIDDLE CACHE? */
-
-
-    private function setRestrictions(array $rawRestrictions, string $hash): void
+    private function getRestrictions(SearchQuery $searchQuery): ?array
     {
         $restrictions = [];
-        foreach ($rawRestrictions as $rawRestriction) {
-            $key = $this->generateRestrictionKey(
-                $rawRestriction['date'],
-                $rawRestriction['tariff'],
-                $rawRestriction['roomType']
-            );
-            $restrictions[$key] = $rawRestriction;
-
-        }
-        $this->restrictions[$hash] = $restrictions;
-    }
-    //** TODO: REDIS MIDDLE CACHE? */
-
-    private function getRestrictions(string $hash, SearchQuery $searchQuery): ?array
-    {
-        $restrictions = [];
+        $hash = $searchQuery->getSearchHash();
         $hashedRestrictions = $this->restrictions[$hash] ?? null;
         if (null === $hashedRestrictions) {
             return null;
@@ -176,6 +165,22 @@ class DataHolder
 
         return $restrictions;
 
+    }
+
+    private function setRestrictions(array $rawRestrictions, SearchQuery $searchQuery): void
+    {
+        $restrictions = [];
+        foreach ($rawRestrictions as $rawRestriction) {
+            $key = $this->generateRestrictionKey(
+                $rawRestriction['date'],
+                $rawRestriction['tariff'],
+                $rawRestriction['roomType']
+            );
+            $restrictions[$key] = $rawRestriction;
+
+        }
+        $hash = $searchQuery->getSearchHash();
+        $this->restrictions[$hash] = $restrictions;
     }
 
     /**
@@ -201,6 +206,66 @@ class DataHolder
     private function getAccessRestrictionKey(\DateTime $date, string $tariffId, string $roomTypeId): string
     {
         return "[{$date->format('d-m-Y')}_{$tariffId}_{$roomTypeId}]";
+    }
+
+
+    public function getNecessaryRoomCaches(SearchQuery $searchQuery): ?array
+    {
+        $roomCaches = $this->getRoomCaches($searchQuery);
+        if (null === $roomCaches) {
+            $conditions = $searchQuery->getSearchConditions();
+            $rawRoomCaches = $this->roomCacheRepository->fetchRaw($conditions->getMaxBegin(), $conditions->getMaxEnd());
+            $this->setRoomCaches($rawRoomCaches, $searchQuery);
+
+            return $this->getRoomCaches($searchQuery);
+        }
+
+        return $roomCaches;
+
+    }
+
+    private function getRoomCaches(SearchQuery $searchQuery): ?array
+    {
+        $roomCaches = [];
+        $hash = $searchQuery->getSearchHash();
+        $hashedRoomCaches = $this->roomCaches[$hash] ?? null;
+        if (null === $hashedRoomCaches) {
+            return null;
+        }
+
+        if (!empty($hashedRoomCaches)) {
+            $groupedByDayRoomCaches = $hashedRoomCaches[$searchQuery->getRoomTypeId()];
+            if (!\count($groupedByDayRoomCaches)) {
+                return [];
+            }
+            $begin = $searchQuery->getBegin();
+            $end = $searchQuery->getEnd();
+            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                /** @var \DateTime $day */
+                $roomCache = $groupedByDayRoomCaches[$day->format('d-m-Y')] ?? null;
+                if (null !== $roomCache) {
+                    $roomCaches[] = $roomCache;
+                }
+            }
+        }
+
+        return $roomCaches;
+    }
+
+    /**
+     * @param array $rawRoomCaches
+     * @param SearchQuery $searchQuery
+     */
+    private function setRoomCaches(array $rawRoomCaches, SearchQuery $searchQuery): void
+    {
+        $roomCaches = [];
+        foreach ($rawRoomCaches as $rawRoomCache) {
+            $roomTypeIdKey = (string)$rawRoomCache['roomType']['$id'];
+            $dateKey = Helper::convertMongoDateToDate($rawRoomCache['date'])->format('d-m-Y');
+            $roomCaches[$roomTypeIdKey][$dateKey] = $rawRoomCache;
+        }
+        $hash = $searchQuery->getSearchHash();
+        $this->roomCaches[$hash] = $roomCaches;
     }
 
 

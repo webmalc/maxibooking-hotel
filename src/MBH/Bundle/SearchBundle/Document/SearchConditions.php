@@ -423,6 +423,16 @@ class SearchConditions extends Base
         return $this;
     }
 
+    public function getMaxBegin(): \DateTime
+    {
+        return (clone $this->getBegin())->modify("-{$this->getAdditionalBegin()} days");
+    }
+
+    public function getMaxEnd(): \DateTime
+    {
+        return (clone $this->getEnd())->modify("+{$this->getAdditionalEnd()} days");
+    }
+
 
 
 

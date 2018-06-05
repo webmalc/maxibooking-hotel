@@ -23,11 +23,6 @@ class RestrictionsCheckerService
      */
     private $checkers;
 
-    /**
-     * @var SearchConditions
-     */
-    private $conditions;
-
     /** @var DataHolder */
     private $dataHolder;
 
@@ -56,10 +51,7 @@ class RestrictionsCheckerService
         }
 
         if (!$searchQuery->isRestrictionsWhereChecked()) {
-            if (!$this->conditions) {
-                throw new RestrictionsCheckerServiceException('There is no conditions in checker service!');
-            }
-            $restrictions = $this->dataHolder->getCheckNecessaryRestrictions($searchQuery, $this->conditions);
+            $restrictions = $this->dataHolder->getCheckNecessaryRestrictions($searchQuery);
             if (!empty($restrictions)) {
                 foreach ($this->checkers as $checker) {
                     try {
@@ -74,13 +66,5 @@ class RestrictionsCheckerService
 
         return !(bool)\count($this->errors);
     }
-
-    public function setConditions(SearchConditions $conditions): RestrictionsCheckerService
-    {
-        $this->conditions = $conditions;
-
-        return $this;
-    }
-
 
 }

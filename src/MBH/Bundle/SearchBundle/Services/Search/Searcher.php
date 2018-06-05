@@ -28,9 +28,6 @@ class Searcher
     /** @var  SearchLimitChecker*/
     private $searchLimitChecker;
 
-    /** @var RoomCacheSearchProvider */
-    private $roomCacheSearchProvider;
-
     /** @var SearchResultComposer */
     private $resultComposer;
 
@@ -44,7 +41,6 @@ class Searcher
         DocumentManager $dm,
         RestrictionsCheckerService $restrictionsChecker,
         SearchLimitChecker $limitChecker,
-        RoomCacheSearchProvider $roomCacheSearchProvider,
         SearchResultComposer $resultComposer,
         ValidatorInterface $validator,
         DataHolder $dataHolder
@@ -52,7 +48,6 @@ class Searcher
     {
         $this->restrictionChecker = $restrictionsChecker;
         $this->searchLimitChecker = $limitChecker;
-        $this->roomCacheSearchProvider = $roomCacheSearchProvider;
         $this->resultComposer = $resultComposer;
         $this->validator = $validator;
         $this->dataHolder = $dataHolder;
@@ -61,10 +56,10 @@ class Searcher
 
     /**
      * @param SearchQuery $searchQuery
-     * @return SearchResult|null
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RoomCacheLimitException
+     * @return SearchResult
      * @throws SearchException
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws SearcherException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException
      */
     public function search(SearchQuery $searchQuery): SearchResult
     {
@@ -80,9 +75,10 @@ class Searcher
         $this->checkTariffDates($currentTariff);
         $this->checkTariffConditions($currentTariff, $searchQuery);
         $this->checkRoomTypePopulationLimit($currentRoomType, $searchQuery);
-        $roomCaches = $this->checkRoomCacheLimitAndReturnActual($searchQuery, $currentRoomType, $currentTariff);
-        /*$result = $this->composeResult($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
-        $this->checkWindows($result);*/
+        $roomCaches = $this->getRoomCaches($searchQuery);
+        $this->checkRoomCacheLimit($roomCaches, $searchQuery);
+        $result = $this->composeResult($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
+        $this->checkWindows($result);
 
         return $result;
     }
@@ -131,13 +127,13 @@ class Searcher
     /**
      * @param SearchQuery $searchQuery
      * @throws SearchException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException
      */
     private function checkRestrictions(SearchQuery $searchQuery): void
     {
-        $this->restrictionChecker->setConditions($searchQuery->getSearchConditions());
         $checked = $this->restrictionChecker->check($searchQuery);
         if (!$checked) {
-            throw new SearchException('Error when check restriction.');
+            throw new SearchException('Violation in restriction.');
         }
     }
 
@@ -161,17 +157,14 @@ class Searcher
         $this->searchLimitChecker->checkWindows($searchResult);
     }
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @param RoomType $currentRoomType
-     * @param Tariff $currentTariff
-     * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RoomCacheLimitException
-     */
-    private function checkRoomCacheLimitAndReturnActual(SearchQuery $searchQuery, RoomType $currentRoomType, Tariff $currentTariff): array
+
+    private function checkRoomCacheLimit(array $rawRoomCaches, SearchQuery $searchQuery): void
     {
-        return $this->roomCacheSearchProvider->fetchAndCheck($searchQuery->getBegin(), $searchQuery->getEnd(), $currentRoomType, $currentTariff);
+        $tariff = $this->dataHolder->getFetchedTariff($searchQuery->getTariffId());
+        if (!$tariff) {
+            throw new SearcherException('Can not get hydrated tariff in checkRoomCacheLimit method');
+        }
+        $this->searchLimitChecker->checkRoomCacheLimit($rawRoomCaches, $tariff, $searchQuery->getDuration());
     }
 
     private function composeResult(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, array $roomCaches): SearchResult
@@ -179,5 +172,10 @@ class Searcher
         $searchResult = new SearchResult();
 
         return $this->resultComposer->composeResult($searchResult, $searchQuery, $roomType, $tariff, $roomCaches);
+    }
+
+    private function getRoomCaches(SearchQuery $searchQuery): array
+    {
+        return $this->dataHolder->getNecessaryRoomCaches($searchQuery);
     }
 }

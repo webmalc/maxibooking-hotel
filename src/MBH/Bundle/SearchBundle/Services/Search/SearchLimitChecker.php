@@ -49,7 +49,7 @@ class SearchLimitChecker
     {
         $tariffBegin = $tariff->getBegin();
         $tariffEnd = $tariff->getEnd();
-        $now = new \DateTime("now midnight");
+        $now = new \DateTime('now midnight');
         $isTariffNotYetStarted = $isTariffAlreadyEnded = false;
         if (null !== $tariffBegin) {
             $isTariffNotYetStarted = $tariffBegin > $now;
@@ -60,7 +60,7 @@ class SearchLimitChecker
         }
 
         if ($isTariffNotYetStarted || $isTariffAlreadyEnded) {
-            throw new SearchLimitCheckerException('Tariff time limit violated');
+            throw new SearchLimitCheckerException('Tariff time limit violated.');
         }
     }
 
@@ -72,7 +72,7 @@ class SearchLimitChecker
     public function checkTariffConditions(Tariff $tariff, SearchQuery $searchQuery): void
     {
         //** TODO: Уточнить у сергея, тут должны быть приведенные значения взрослых-детей или из запроса ибо в поиске из запрсоа. */
-        $duration = $searchQuery->getEnd()->diff($searchQuery->getBegin())->format('%a');
+        $duration = $searchQuery->getDuration();
         $checkResult = PromotionConditionFactory::checkConditions(
             $tariff,
             $duration,
@@ -99,7 +99,7 @@ class SearchLimitChecker
         $roomTypeMaxInfants = $roomType->getMaxInfants();
 
         if ($searchTotalPlaces > $roomTypeTotalPlaces || $searchInfants > $roomTypeMaxInfants) {
-            throw new SearchLimitCheckerException('RoomType total place less than need in query');
+            throw new SearchLimitCheckerException('RoomType total place less than need in query.');
         }
     }
 
@@ -222,5 +222,36 @@ class SearchLimitChecker
             $this->dm->getHydratorFactory()->hydrate($room, (array)$firstRawRoom);
             $result->setVirtualRoom($room);
         }
+    }
+
+
+
+    public function checkRoomCacheLimit(array $roomCaches, Tariff $currentTariff, int $duration): array
+    {
+        $roomCachesWithNoQuotas = array_filter(
+            $roomCaches,
+            function ($roomCache) {
+                $isMainRoomCache = !array_key_exists('tariff', $roomCache) || null === $roomCache['tariff'];
+
+                return $isMainRoomCache && $roomCache['leftRooms'] >= 0;
+            }
+        );
+
+        if (\count($roomCachesWithNoQuotas) !== $duration) {
+            throw new SearchLimitCheckerException('There are no free rooms left');
+        }
+
+        $roomCacheWithQuotasNoLeftRooms = array_filter($roomCaches,
+            function ($roomCache) use ($currentTariff) {
+                $isQuotedCache = array_key_exists('tariff', $roomCache) && (string)$roomCache['tariff']['$id'] === $currentTariff->getId();
+
+                return $isQuotedCache && $roomCache['leftRooms'] <= 0;
+            });
+
+        if (\count($roomCacheWithQuotasNoLeftRooms)) {
+            throw new SearchLimitCheckerException('There are no free rooms left because a quotes');
+        }
+
+        return $roomCachesWithNoQuotas;
     }
 }

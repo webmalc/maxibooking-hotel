@@ -74,6 +74,7 @@ class Search
      * @param bool $isAsync
      * @return array|null
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
      */
@@ -90,6 +91,7 @@ class Search
      * @param array $data
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
      */
@@ -148,7 +150,6 @@ class Search
         }
 
         if (self::PRE_RESTRICTION_CHECK) {
-            $this->restrictionChecker->setConditions($conditions);
             $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
         }
         $this->searchQueriesCount = \count($searchQueries);

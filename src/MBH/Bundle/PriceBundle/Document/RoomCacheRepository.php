@@ -234,9 +234,10 @@ class RoomCacheRepository extends DocumentRepository
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetchRaw(\DateTime $begin, \DateTime $end, string $roomTypeId): array
+    public function fetchRaw(\DateTime $begin, \DateTime $end, string $roomTypeId = null): array
     {
-        $qb = $this->fetchQueryBuilder($begin, $end, null, [$roomTypeId], false);
+        $rawRoomTypeId = $roomTypeId ? [$roomTypeId] : [];
+        $qb = $this->fetchQueryBuilder($begin, $end, null, $rawRoomTypeId, false);
 
         return $qb->hydrate(false)->getQuery()->execute()->toArray();
     }
