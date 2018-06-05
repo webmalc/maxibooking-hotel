@@ -10,6 +10,7 @@ namespace MBH\Bundle\OnlineBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class PaymentFormType extends AbstractType implements DecorationTypeInterface
@@ -55,6 +56,17 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
                     'required' => false,
                     'help'     => 'form.payment.formType.fieldUserNameIsVisible.help',
                 ]
+            )
+            ->add(
+                'enabledReCaptcha',
+                CheckboxType::class,
+                [
+                    'label'    => 'form.payment.formType.enabledReCaptcha',
+                    'group'    => 'form.formType.parameters',
+//                    'value'    => false,
+                    'required' => false,
+                    'help'     => 'form.payment.formType.enabledReCaptcha.help',
+                ]
             );
 
         $builder
@@ -65,6 +77,16 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
             ->add($this->isHorizontal($builder))
             ->add($this->cssLibraries($builder))
             ->add($this->theme($builder));
+
+        $builder
+            ->add('js',
+            TextareaType::class,
+            [
+                'group' => 'form.formType.js_group',
+                'label' => 'form.formType.js_label',
+                'required' => false,
+                'attr' => ['rows' => 10]
+            ]);
     }
 
     public function getBlockPrefix()

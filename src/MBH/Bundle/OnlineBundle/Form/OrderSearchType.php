@@ -8,6 +8,7 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -17,6 +18,12 @@ class OrderSearchType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $userNameVisible = false;
+
+        if (!empty($options['data']) && $options['data']->isUserNameVisible()) {
+            $userNameVisible = true;
+        }
+
         $builder
             ->add(
                 'numberOrder',
@@ -33,8 +40,12 @@ class OrderSearchType extends AbstractType
                     'label' => 'form.online.order_search.phoneOrEmail',
                     'group' => 'form.online.order_search'
                 ]
+            )
+            ->add(
+                'configId',
+                HiddenType::class
             );
-        if (!empty($options['data']) && $options['data']->isUserNameVisible() ) {
+        if ($userNameVisible) {
             $builder->add(
                 'userName',
                 TextType::class,

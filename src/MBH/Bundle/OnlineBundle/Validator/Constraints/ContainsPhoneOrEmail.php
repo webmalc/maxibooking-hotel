@@ -15,5 +15,5 @@ use Symfony\Component\Validator\Constraint;
  */
 class ContainsPhoneOrEmail extends Constraint
 {
-    public $message = 'The string "%string%" no phone or email';
+    public $message = 'The string "%string%" not phone or email';
 }

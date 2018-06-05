@@ -81,10 +81,6 @@ class PaymentFormController extends Controller
      */
     public function editAction(Request $request, PaymentFormConfig $entity)
     {
-        $oldConfigWidth = $entity->getFrameWidth();
-        $oldConfigHeight = $entity->getFrameHeight();
-        $onFullWidth = $entity->isFullWidth();
-
         $form = $this->createForm(PaymentFormType::class, $entity, [
 //            'user' => $this->getUser()->getUserName()
         ]);
@@ -97,12 +93,6 @@ class PaymentFormController extends Controller
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.formController.settings_saved_success');
-
-            if ($entity->getFrameHeight() != $oldConfigHeight
-                || $entity->getFrameWidth() !== $oldConfigWidth
-                || $onFullWidth != $entity->isFullWidth()) {
-                $this->addFlash('warning', 'controller.formController.frame_sizes_changed');
-            }
 
             return $this->afterSaveRedirect('online_payment_form', $entity->getId());
         }

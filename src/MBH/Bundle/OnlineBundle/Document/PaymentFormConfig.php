@@ -62,9 +62,24 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
      * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
-     * @ODM\Index()
+     */
+    private $enabledReCaptcha = true;
+
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Field(type="boolean")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
      */
     private $fieldUserNameIsVisible = false;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="string")
+     */
+    private $js;
 
     /**
      * @return array|ArrayCollection|Hotel[]
@@ -100,5 +115,35 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
         $this->fieldUserNameIsVisible = $fieldUserNameIsVisible;
     }
 
+    /**
+     * @return bool
+     */
+    public function isEnabledReCaptcha(): bool
+    {
+        return $this->enabledReCaptcha;
+    }
 
+    /**
+     * @param bool $enabledReCaptcha
+     */
+    public function setEnabledReCaptcha(bool $enabledReCaptcha): void
+    {
+        $this->enabledReCaptcha = $enabledReCaptcha;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJs(): ?string
+    {
+        return $this->js;
+    }
+
+    /**
+     * @param string $js
+     */
+    public function setJs(string $js = null): void
+    {
+        $this->js = $js;
+    }
 }

@@ -11,12 +11,12 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Form\OrderSearchType;
 use MBH\Bundle\OnlineBundle\Lib\SearchForm;
+use ReCaptcha\ReCaptcha;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -49,7 +49,7 @@ class ApiPaymentFormController extends Controller
      * @Cache(expires="tomorrow", public=true)
      * @Template()
      */
-    public function getFormIframeAction($formId = null)
+    public function getFormIframeAction($formId)
     {
 //        $this->setLocaleByRequest();
         /** @var PaymentFormConfig $entity */
@@ -60,8 +60,8 @@ class ApiPaymentFormController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $search = new SearchForm();
-        $search->setUserNameVisible($entity->isFieldUserNameIsVisible());
+        $search = $this->container->get('mbh.online.search_order');
+        $search->setConfigId($formId);
 
         $form = $this->createForm(OrderSearchType::class, $search);
 
@@ -80,19 +80,30 @@ class ApiPaymentFormController extends Controller
      */
     public function searchAction(Request $request)
     {
-        $searchForm = new SearchForm();
+        $searchForm = $this->container->get('mbh.online.search_order');
+        $d = $request->get(OrderSearchType::PREFIX)['configId'];
+        $searchForm->setConfigId($request->get(OrderSearchType::PREFIX)['configId']);
 
-        $form = $this->createForm(OrderSearchType::class,$searchForm);
+        $form = $this->createForm(OrderSearchType::class, $searchForm);
 
         $form->handleRequest($request);
 
+        if (!$this->reCaptcha($searchForm, $request)) {
+            return new Response('Captcha is invalid', 401);
+        };
+
         if ($form->isValid()) {
-            $searchForm;
+            $result = $searchForm->search();
+            if ($result !== false) {
+                return $this->json($result);
+            };
+
+            return $this->json(['error' => 'not found order']);
         }
 
+        $e = $form->getErrors();
 
-//        return new JsonResponse(['test']);
-        return $this->json(['test']);
+        return $this->json(['error' => 'not valid']);
     }
 
     /**
@@ -153,5 +164,24 @@ class ApiPaymentFormController extends Controller
             'text' => $text,
             'isDisplayChildAges' => $formConfig->isIsDisplayChildrenAges(),
         ];
+    }
+
+    /**
+     * @param Request $request
+     * @return bool
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     */
+    private function reCaptcha(SearchForm $searchForm,Request $request): bool
+    {
+        if ($this->get('kernel')->getEnvironment() === 'prod') {
+            if ($searchForm->reCaptchaIsEnabled()) {
+                $reCaptcha = new ReCaptcha($this->getParameter('mbh.recaptcha')['secret']);
+
+                return $reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess();
+            }
+        }
+
+        return true;
     }
 }

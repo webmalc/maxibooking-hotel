@@ -1,71 +1,98 @@
 {% spaceless %}
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Maxibooking</title>
-    {#<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />#}
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
-    {% if entity and entity.theme %}
-        <link rel="stylesheet" href="{{ entity.theme }}">
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Maxibooking</title>
+        {#<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />#}
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"/>
+        {% if entity and entity.theme %}
+            <link rel="stylesheet" href="{{ entity.theme }}">
+        {% endif %}
+        {% if entity and entity.cssLibraries is defined and entity.cssLibraries is iterable %}
+            {% for link in entity.cssLibraries %}
+                <link rel="stylesheet" href="{{ link }}">
+            {% endfor %}
+        {% endif %}
+        <script src="//code.jquery.com/jquery-2.2.4.min.js"
+                integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+                crossorigin="anonymous"></script>
+        <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"
+                integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc="
+                crossorigin="anonymous"></script>
+    </head>
+    {% if entity %}
+        {% if entity.css %}
+            <style>
+                {{ entity.css|raw }}
+            </style>
+        {% endif %}
+        {% if entity.js %}
+            <script>
+                document.onreadystatechange = function () {
+                  if (document.readyState == "complete") {
+                      {{ entity.js|raw }}
+                  }
+                };
+            </script>
+        {% endif %}
     {% endif %}
-    {% if entity and entity.cssLibraries is defined and entity.cssLibraries is iterable %}
-        {% for link in entity.cssLibraries %}
-            <link rel="stylesheet" href="{{ link }}">
-        {% endfor %}
-    {% endif %}
-    <script src="//code.jquery.com/jquery-2.2.4.min.js"
-            integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-            crossorigin="anonymous"></script>
-    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"
-            integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc="
-            crossorigin="anonymous"></script>
-</head>
-{% if entity %}
-    {% if entity.css %}
-        <style>
-            {{ entity.css|raw }}
-        </style>
-    {% endif %}
-    {#{% if entity.js %}#}
-    {#<script>#}
-    {#window.onload = function () {#}
-    {#{{ entity.js|raw }}#}
-    {#};#}
-    {#</script>#}
-    {#{% endif %}#}
-{% endif %}
-<body style="background-color: transparent;">
-<div id="mbh-form-wrapper" style="overflow: hidden; height: auto">
-    <a href="https://maxi-booking.ru/" style="background-color: white; padding: 10px;">{{ 'views.api.get_form_iframe.online_booking_system'|trans}}</a>
-</div>
-{{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'form-horizontal', 'id': formId}}) }}
-{{ form_widget(form) }}
-<div class="mbh-form-row" id="mbh-form-submit-wrapper">
-    <button type="submit" class="btn btn-primary btn-sm" id="mbh-form-submit">{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}</button>
-</div>
-{{ form_end(form) }}
+    <body style="background-color: transparent;">
 
-<script>
-    window.onload = function(ev) {
-      console.log(typeof fetch());
-      if (typeof $ === 'undefined') {
-        console.error('no jquery');
-        return;
+    {{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'form-horizontal', 'id': formId}}) }}
+    {{ form_widget(form) }}
+    {% if app.getEnvironment == 'prod' and entity.enabledReCaptcha %}
+        <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+    {% endif %}
+    <div class="mbh-form-row" id="mbh-form-submit-wrapper">
+        <button type="submit" class="btn btn-primary btn-sm"
+                id="mbh-form-submit">{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}</button>
+    </div>
+    {{ form_end(form) }}
+    <div id="search-result"></div>
+
+    <script>
+      function formPayment(data) {
+        var html = '<form><div> сумма к оплате ' + data.total + '</div>';
+        html += '<input type="hidden" name="total" value="' + data.total + '">';
+        html += '<input type="hidden" name="id" value="' + data.orderId + '">';
+        html += '<input type="submit" value="Оплатить">';
+        html += '</form>';
+
+        return html;
       }
-      $('#{{ formId|raw }}').submit(function(e) {
-        e.preventDefault();
-        $.post(this.action).done(function(data) {
-          console.log(data);
+
+      window.onload = function(ev) {
+        if (typeof $ === 'undefined') {
+          console.error('no jquery');
+          return;
+        }
+        $('#{{ formId|raw }}').submit(function(e) {
+          e.preventDefault();
+          $.post(this.action, $(this).serialize()).done(function(data) {
+            if (typeof data.error !== 'undefined') {
+              $('#search-result').html(data.error);
+            } else {
+              if (data.needIsPaid) {
+                $('#search-result').html(formPayment(data.answer));
+              } else {
+                $('#search-result').html(data.answer);
+              }
+            }
+          }).error(function(error) {
+            console.log(error);
+          });
         });
-        // console.log(this);
-      });
-      // var form = document.querySelector();
-    }
-</script>
+      };
+    </script>
+    <div id="mbh-form-wrapper" style="overflow: hidden; height: auto">
+        <a href="https://maxi-booking.ru/"
+           style="background-color: white; padding: 10px;"
+           target="_blank">{{ 'views.api.get_form_iframe.online_booking_system'|trans }}</a>
+    </div>
+    {#<script type="text/javascript" src="{{ url('online_form_get', {id: formId, locale: app.request.locale}) }}"></script>#}
+    </body>
 
-{#<script type="text/javascript" src="{{ url('online_form_get', {id: formId, locale: app.request.locale}) }}"></script>#}
-</body>
-
-</html>
+    </html>
 {% endspaceless %}
