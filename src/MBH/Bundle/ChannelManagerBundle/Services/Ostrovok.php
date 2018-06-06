@@ -527,7 +527,7 @@ class Ostrovok extends Base
     }
 
 
-    private function createPackage(array $reservation, ChannelManagerConfigInterface $config, Order $order = null)
+    public function createPackage(array $reservation, ChannelManagerConfigInterface $config, Order $order = null)
     {
         $roomTypes = $this->getRoomTypes($config, true);
         $tariffs = $this->getTariffs($config, true);
