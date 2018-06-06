@@ -10,7 +10,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -20,7 +20,14 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class NewRbk implements PaymentSystemInterface
 {
-    const NAME_TYPE_API_KEY = 'newRbkApiKey';
+    private const LIFETIME_INVOICE = 1;
+
+    /**
+     * @var int
+     * @ODM\Field(type="integer")
+     * @Assert\GreaterThanOrEqual(1)
+     */
+    protected $lifetimeInvoice = self::LIFETIME_INVOICE;
 
     /**
      * @var string
@@ -29,15 +36,26 @@ class NewRbk implements PaymentSystemInterface
     protected $apiKey;
 
     /**
-     * @param FormInterface $form
-     * @return NewRbk
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Range(min="1", max="40")
      */
-    public static function instance(FormInterface $form): self
-    {
-        $entity = new self();
-        $entity->setApiKey($form->get(self::NAME_TYPE_API_KEY)->getData());
+    protected $shopId;
 
-        return $entity;
+    /**
+     * @return string
+     */
+    public function getShopId(): ?string
+    {
+        return $this->shopId;
+    }
+
+    /**
+     * @param string $shopId
+     */
+    public function setShopId(string $shopId): void
+    {
+        $this->shopId = $shopId;
     }
 
     /**
@@ -55,6 +73,23 @@ class NewRbk implements PaymentSystemInterface
     {
         $this->apiKey = $apiKey;
     }
+
+    /**
+     * @return int
+     */
+    public function getLifetimeInvoice(): int
+    {
+        return $this->lifetimeInvoice;
+    }
+
+    /**
+     * @param int $lifetimeInvoice
+     */
+    public function setLifetimeInvoice(int $lifetimeInvoice): void
+    {
+        $this->lifetimeInvoice = $lifetimeInvoice;
+    }
+
 
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {

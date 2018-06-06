@@ -6,16 +6,19 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
-use MBH\Bundle\ClientBundle\Document\NewRbk;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ClientPaymentSystemType extends AbstractType
 {
+    const COMMON_ATTR_CLASS = 'payment-system-params';
+    const COMMON_GROUP = 'form.clientPaymentSystemType.payment_system_group';
+
+
     private $paymentSystems;
     private $paymentSystemsChange;
     private $paymentSystemsDefault;
@@ -42,7 +45,6 @@ class ClientPaymentSystemType extends AbstractType
         $paypalLogin = null;
         $invoiceDocument = null;
         $stripePubToken = null;
-        $newRbkApiKey = null;
 
         $paymentSystemName = $options['paymentSystemName'] ?? $this->paymentSystemsDefault;
         $paymentSystemsChoices = array_filter($this->paymentSystems, function ($paymentSystemName) use ($clientConfig, $options) {
@@ -71,7 +73,6 @@ class ClientPaymentSystemType extends AbstractType
             $stripePubToken = $clientConfig->getStripe() ? $clientConfig->getStripe()->getPublishableToken() : null;
             $stripeSecretKey = $clientConfig->getStripe() ? $clientConfig->getStripe()->getSecretKey() : null;
             $stripeCommission = $clientConfig->getStripe() ? $clientConfig->getStripe()->getCommissionInPercents() : null;
-            $newRbkApiKey = $clientConfig->getNewRbk() ? $clientConfig->getNewRbk()->getApiKey() : null;
         }
 
         $isPaymentSystemChanged = isset($options['paymentSystemName']);
@@ -82,7 +83,7 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.payment_system',
                     'choices' => $paymentSystemsChoices,
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'group' => self::COMMON_GROUP,
                     'placeholder' => '',
                     'data' => $paymentSystemName,
                     'required' => true,
@@ -95,10 +96,10 @@ class ClientPaymentSystemType extends AbstractType
             ->add('isUnitellerWithFiscalization', CheckboxType::class, [
                 'mapped' => false,
                 'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
-                'group' => 'form.clientPaymentSystemType.payment_system_group',
+                'group' => self::COMMON_GROUP,
                 'data' => $unitellerIsWithFiscalization,
                 'required' => false,
-                'attr' => ['class' => 'payment-system-params uniteller'],
+                'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller'],
             ])
             ->add(
                 'robokassaMerchantLogin',
@@ -106,8 +107,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.shop_login',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params robokassa'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' robokassa'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $robokassaMerchantLogin
                 ]
@@ -118,8 +119,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.password_one',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params robokassa'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' robokassa'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $robokassaMerchantPass1
                 ]
@@ -130,8 +131,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.password_two',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params robokassa'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' robokassa'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $robokassaMerchantPass2
                 ]
@@ -142,8 +143,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.extended_account_number',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params payanyway'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' payanyway'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $payanywayMntId
                 ]
@@ -154,8 +155,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.data_integrity_code',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params payanyway'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' payanyway'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $payanywayKey
                 ]
@@ -166,8 +167,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.moneymail_shop_id',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params moneymail'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' moneymail'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $moneymailShopIDP
                 ]
@@ -178,8 +179,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.moneymail_key',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params moneymail'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' moneymail'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $moneymailKey
                 ]
@@ -190,8 +191,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.uniteller_shop_id',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params uniteller'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $unitellerShopIDP
                 ]
@@ -202,8 +203,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.uniteller_password',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params uniteller', 'type' => 'password'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller', 'type' => 'password'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $unitellerPassword
                 ]
@@ -214,8 +215,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.uniteller_shop_id',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params rnkb'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' rnkb'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $rnkbShopIDP
                 ]
@@ -226,8 +227,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.key.label',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params rnkb', 'type' => 'password'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' rnkb', 'type' => 'password'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $rnkbKey
                 ]
@@ -240,8 +241,8 @@ class ClientPaymentSystemType extends AbstractType
                     'choices' => $this->taxationRateCodes['rate_codes'],
                     'mapped' => false,
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params uniteller'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller'],
+                    'group' => self::COMMON_GROUP,
                     'data' => $taxationRateCode
                 ]
             )
@@ -253,8 +254,8 @@ class ClientPaymentSystemType extends AbstractType
                     'choices' => $this->taxationRateCodes['system_codes'],
                     'mapped' => false,
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params uniteller'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller'],
+                    'group' => self::COMMON_GROUP,
                     'data' => $taxationSystemCode
                 ]
             )
@@ -264,8 +265,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.rbk_eshop_id',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params rbk'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' rbk'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $rbkEshopId
                 ]
@@ -276,8 +277,8 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.rbk_secret_key',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params rbk'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' rbk'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $rbkSecretKey
                 ]
@@ -288,24 +289,24 @@ class ClientPaymentSystemType extends AbstractType
                 'mapped' => false,
                 'data' => $invoiceDocument,
                 'required' => false,
-                'attr' => ['class' => 'payment-system-params invoice'],
-                'group' => 'form.clientPaymentSystemType.payment_system_group',
+                'attr' => ['class' => self::COMMON_ATTR_CLASS . ' invoice'],
+                'group' => self::COMMON_GROUP,
             ])
             ->add('stripePubToken', TextType::class, [
                 'label' => 'form.clientPaymentSystemType.stripe_pub_token.label',
                 'mapped' => false,
                 'data' => $stripePubToken,
                 'required' => false,
-                'attr' => ['class' => 'payment-system-params stripe'],
-                'group' => 'form.clientPaymentSystemType.payment_system_group',
+                'attr' => ['class' => self::COMMON_ATTR_CLASS . ' stripe'],
+                'group' => self::COMMON_GROUP,
             ])
             ->add('stripeSecretKey', TextType::class, [
                 'label' => 'form.clientPaymentSystemType.stripe_secret_key.label',
                 'mapped' => false,
                 'data' => $stripeSecretKey,
                 'required' => false,
-                'attr' => ['class' => 'payment-system-params stripe'],
-                'group' => 'form.clientPaymentSystemType.payment_system_group',
+                'attr' => ['class' => self::COMMON_ATTR_CLASS . ' stripe'],
+                'group' => self::COMMON_GROUP,
             ])
             ->add('commission', TextType::class, [
                 'label' => 'form.clientPaymentSystemType.stripe_commission.label',
@@ -313,12 +314,12 @@ class ClientPaymentSystemType extends AbstractType
                 'data' => $stripeCommission,
                 'required' => false,
                 'attr' => [
-                    'class' => 'payment-system-params stripe mbh-spinner',
+                    'class' => self::COMMON_ATTR_CLASS . ' stripe mbh-spinner',
                     'spinner-max' => 100,
                     'step' => 0.05,
                     'decimals' => 2
                 ],
-                'group' => 'form.clientPaymentSystemType.payment_system_group',
+                'group' => self::COMMON_GROUP,
             ])
             ->add(
                 'paypalLogin',
@@ -326,24 +327,14 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.payment_system_paypal_login',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params paypal'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' paypal'],
+                    'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $paypalLogin
                 ]
-            )
-            ->add(
-                NewRbk::NAME_TYPE_API_KEY,
-                TextareaType::class,
-                [
-                    'label'    => 'form.clientPaymentSystemType.payment_system_newRbk_apiKey',
-                    'required' => false,
-                    'attr'     => ['class' => 'payment-system-params newRbk'],
-                    'group'    => 'form.clientPaymentSystemType.payment_system_group',
-                    'mapped'   => false,
-                    'data'     => $newRbkApiKey,
-                ]
             );
+
+        NewRbkHelper::addFields($builder, $clientConfig);
     }
 
     public function configureOptions(OptionsResolver $resolver)

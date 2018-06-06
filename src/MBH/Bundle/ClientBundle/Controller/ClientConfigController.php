@@ -10,7 +10,6 @@ use MBH\Bundle\ClientBundle\Document\ColorsConfig;
 use MBH\Bundle\ClientBundle\Document\Invoice;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
-use MBH\Bundle\ClientBundle\Document\NewRbk;
 use MBH\Bundle\ClientBundle\Document\Paypal;
 use MBH\Bundle\ClientBundle\Document\Rbk;
 use MBH\Bundle\ClientBundle\Document\RNKB;
@@ -21,6 +20,7 @@ use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
 use MBH\Bundle\ClientBundle\Service\Notice;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -259,7 +259,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $config->setStripe($stripe);
                     break;
                 case 'newRbk':
-                    $config->setNewRbk(NewRbk::instance($form));
+                    $config->setNewRbk(NewRbkHelper::instance($form));
                     break;
                 default:
                     throw new Exception('Incorrect name of payment system!');
