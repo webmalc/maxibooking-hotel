@@ -10,6 +10,7 @@ use MBH\Bundle\ClientBundle\Document\ColorsConfig;
 use MBH\Bundle\ClientBundle\Document\Invoice;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
+use MBH\Bundle\ClientBundle\Document\NewRbk;
 use MBH\Bundle\ClientBundle\Document\Paypal;
 use MBH\Bundle\ClientBundle\Document\Rbk;
 use MBH\Bundle\ClientBundle\Document\RNKB;
@@ -256,6 +257,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                         ->setPublishableToken($form->get('stripePubToken')->getData())
                         ->setSecretKey($form->get('stripeSecretKey')->getData());
                     $config->setStripe($stripe);
+                    break;
+                case 'newRbk':
+                    $config->setNewRbk(NewRbk::instance($form));
                     break;
                 default:
                     throw new Exception('Incorrect name of payment system!');

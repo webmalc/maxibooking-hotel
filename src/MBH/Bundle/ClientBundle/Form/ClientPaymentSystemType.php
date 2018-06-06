@@ -6,8 +6,10 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
+use MBH\Bundle\ClientBundle\Document\NewRbk;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -40,6 +42,7 @@ class ClientPaymentSystemType extends AbstractType
         $paypalLogin = null;
         $invoiceDocument = null;
         $stripePubToken = null;
+        $newRbkApiKey = null;
 
         $paymentSystemName = $options['paymentSystemName'] ?? $this->paymentSystemsDefault;
         $paymentSystemsChoices = array_filter($this->paymentSystems, function ($paymentSystemName) use ($clientConfig, $options) {
@@ -68,6 +71,7 @@ class ClientPaymentSystemType extends AbstractType
             $stripePubToken = $clientConfig->getStripe() ? $clientConfig->getStripe()->getPublishableToken() : null;
             $stripeSecretKey = $clientConfig->getStripe() ? $clientConfig->getStripe()->getSecretKey() : null;
             $stripeCommission = $clientConfig->getStripe() ? $clientConfig->getStripe()->getCommissionInPercents() : null;
+            $newRbkApiKey = $clientConfig->getNewRbk() ? $clientConfig->getNewRbk()->getApiKey() : null;
         }
 
         $isPaymentSystemChanged = isset($options['paymentSystemName']);
@@ -326,6 +330,18 @@ class ClientPaymentSystemType extends AbstractType
                     'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $paypalLogin
+                ]
+            )
+            ->add(
+                NewRbk::NAME_TYPE_API_KEY,
+                TextareaType::class,
+                [
+                    'label'    => 'form.clientPaymentSystemType.payment_system_newRbk_apiKey',
+                    'required' => false,
+                    'attr'     => ['class' => 'payment-system-params newRbk'],
+                    'group'    => 'form.clientPaymentSystemType.payment_system_group',
+                    'mapped'   => false,
+                    'data'     => $newRbkApiKey,
                 ]
             );
     }

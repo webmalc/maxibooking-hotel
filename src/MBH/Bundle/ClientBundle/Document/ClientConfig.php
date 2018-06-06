@@ -165,6 +165,12 @@ class ClientConfig extends Base
     protected $stripe;
 
     /**
+     * @var NewRbk
+     * @ODM\EmbedOne(targetDocument="NewRbk")
+     */
+    protected $newRbk;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
@@ -303,6 +309,22 @@ class ClientConfig extends Base
         $this->isCacheValid = $isCacheValid;
 
         return $this;
+    }
+
+    /**
+     * @return NewRbk
+     */
+    public function getNewRbk(): ?NewRbk
+    {
+        return $this->newRbk;
+    }
+
+    /**
+     * @param NewRbk $newRbk
+     */
+    public function setNewRbk(NewRbk $newRbk): void
+    {
+        $this->newRbk = $newRbk;
     }
 
     /**
