@@ -73,7 +73,7 @@ class CashDocumentData extends AbstractFixture implements OrderedFixtureInterfac
      */
     public function getOrder()
     {
-        return 400;
+        return 520;
     }
 
     /**

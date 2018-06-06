@@ -70,14 +70,17 @@ class Searcher
         }
         $currentTariff = $this->getCurrentTariff($searchQuery->getTariffId());
         $currentRoomType = $this->getCurrentRoomType($searchQuery->getRoomTypeId());
+
+        $roomCaches = $this->getRoomCaches($searchQuery);
+        $roomCaches = $this->checkRoomCacheLimit($roomCaches, $searchQuery);
+
         $this->preFilter($searchQuery);
         $this->checkRestrictions($searchQuery);
         $this->checkTariffDates($currentTariff);
         $this->checkTariffConditions($currentTariff, $searchQuery);
         $this->checkRoomTypePopulationLimit($currentRoomType, $searchQuery);
-        $roomCaches = $this->getRoomCaches($searchQuery);
-        $this->checkRoomCacheLimit($roomCaches, $searchQuery);
-        $result = $this->composeResult($searchQuery, $currentRoomType, $currentTariff, $roomCaches);
+
+        $result = $this->composeResult($searchQuery, $roomCaches);
         $this->checkWindows($result);
 
         return $result;
@@ -158,20 +161,20 @@ class Searcher
     }
 
 
-    private function checkRoomCacheLimit(array $rawRoomCaches, SearchQuery $searchQuery): void
+    private function checkRoomCacheLimit(array $rawRoomCaches, SearchQuery $searchQuery): array
     {
         $tariff = $this->dataHolder->getFetchedTariff($searchQuery->getTariffId());
         if (!$tariff) {
             throw new SearcherException('Can not get hydrated tariff in checkRoomCacheLimit method');
         }
-        $this->searchLimitChecker->checkRoomCacheLimit($rawRoomCaches, $tariff, $searchQuery->getDuration());
+        return $this->searchLimitChecker->checkRoomCacheLimit($rawRoomCaches, $tariff, $searchQuery->getDuration());
     }
 
-    private function composeResult(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, array $roomCaches): SearchResult
+    private function composeResult(SearchQuery $searchQuery, array $roomCaches): SearchResult
     {
         $searchResult = new SearchResult();
 
-        return $this->resultComposer->composeResult($searchResult, $searchQuery, $roomType, $tariff, $roomCaches);
+        return $this->resultComposer->composeResult($searchResult, $searchQuery, $roomCaches);
     }
 
     private function getRoomCaches(SearchQuery $searchQuery): array

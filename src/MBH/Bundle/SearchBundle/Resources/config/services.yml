@@ -116,6 +116,12 @@ services:
         arguments:
             - MBH\Bundle\PriceBundle\Document\Restriction
 
+    mbh_search.room_repository:
+        class: MBH\Bundle\HotelBundle\Document\RoomRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\HotelBundle\Document\Room
+
 # Для теста - калькуляции - брал текущую.
 #    mbh_search.result_composer:
 #        class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
@@ -123,7 +129,7 @@ services:
 
     mbh_search.result_composer:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager', '@mbh_search.calculation']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager', '@mbh_search.calculation', '@mbh_search.data_holder', '@mbh_search.search_limit_checker']
 
     mbh_search.calculation:
         class: MBH\Bundle\SearchBundle\Services\Calc\Calculation
@@ -135,7 +141,7 @@ services:
 
     mbh_search.data_holder:
         class: MBH\Bundle\SearchBundle\Lib\DataHolder
-        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.restriction_repository', '@mbh_search.client_config_repository', '@mbh_search.room_cache_repository']
+        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.restriction_repository', '@mbh_search.client_config_repository', '@mbh_search.room_cache_repository', '@mbh_search.room_repository']
 
     mbh_search.search_conditions_type:
         class: MBH\Bundle\SearchBundle\Form\SearchConditionsType

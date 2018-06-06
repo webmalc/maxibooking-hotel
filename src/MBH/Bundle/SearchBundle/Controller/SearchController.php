@@ -2,7 +2,9 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\ExpectedResult;
@@ -27,6 +29,9 @@ class SearchController extends Controller
      */
     public function searchTestAction()
     {
+        $dm = $this->container->get('doctrine_mongodb.odm.default_document_manager');
+        $roomType = $dm->getRepository(RoomType::class)->findOneBy(['fullTitle' => 'Стандартный двухместный']);
+        $tariff = $dm->getRepository(Tariff::class)->findOneBy(['fullTitle' => 'Основной тариф']);
         $stopwatch = $this->get('debug.stopwatch');
         $stopwatch->start('searchTime');
 
@@ -34,10 +39,11 @@ class SearchController extends Controller
         $data = array (
             'begin' => '06.06.2018',
             'end' => '15.06.2018',
-            'adults' => 1,
+            'adults' => 2,
             'children' => 0,
-            'additionalBegin' => 0/*,
-            'roomTypes' => ['5b150c2fb90cdc0119184928']*/
+            'additionalBegin' => 0,
+            'roomTypes' => [$roomType->getId()],
+            'tariffs' => [$tariff->getId()]
         );
 
         try {

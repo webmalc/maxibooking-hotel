@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Lib;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
+use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
@@ -35,6 +36,9 @@ class DataHolder
     /** @var RoomCacheRepository */
     private $roomCacheRepository;
 
+    /** @var RoomRepository */
+    private $roomRepository;
+
     /** @var bool */
     private $isUseCategory;
 
@@ -48,9 +52,12 @@ class DataHolder
      * TariffHolder constructor.
      * @param TariffRepository $tariffRepository
      * @param RoomTypeRepository $roomTypeRepository
+     * @param RestrictionRepository $restrictionRepository
      * @param ClientConfigRepository $configRepository
+     * @param RoomCacheRepository $roomCacheRepository
+     * @param RoomRepository $roomRepository
      */
-    public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository, RestrictionRepository $restrictionRepository, ClientConfigRepository $configRepository, RoomCacheRepository $roomCacheRepository)
+    public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository, RestrictionRepository $restrictionRepository, ClientConfigRepository $configRepository, RoomCacheRepository $roomCacheRepository, RoomRepository $roomRepository)
     {
         $this->tariffRepository = $tariffRepository;
         $this->roomTypeRepository = $roomTypeRepository;
@@ -59,6 +66,7 @@ class DataHolder
         $this->restrictionRepository = $restrictionRepository;
         $this->isUseCategory = $configRepository->fetchConfig()->getUseRoomTypeCategory();
         $this->roomCacheRepository = $roomCacheRepository;
+        $this->roomRepository = $roomRepository;
     }
 
 
@@ -237,7 +245,7 @@ class DataHolder
             $groupedByDayRoomCaches = $hashedRoomCaches[$searchQuery->getRoomTypeId()];
             if (!\count($groupedByDayRoomCaches)) {
                 return [];
-            }
+        }
             $begin = $searchQuery->getBegin();
             $end = $searchQuery->getEnd();
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
@@ -266,6 +274,16 @@ class DataHolder
         }
         $hash = $searchQuery->getSearchHash();
         $this->roomCaches[$hash] = $roomCaches;
+    }
+
+    public function getAccommodationRooms(SearchQuery $searchQuery): array
+    {
+        $begin = $searchQuery->getBegin();
+        $end = $searchQuery->getEnd();
+        $roomTypeId = $searchQuery->getRoomTypeId();
+        $hash = $searchQuery->getSearchHash();
+
+        return $this->roomRepository->fetchRawAccommodationRooms($begin, $end, $roomTypeId);
     }
 
 

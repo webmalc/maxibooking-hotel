@@ -153,11 +153,11 @@ class RoomRepository extends AbstractBaseRepository
             ->toArray()
         ;
 
-        $existedAccommodations = $this->getDocumentManager()
+        $existedPackageAccommodations = $this->getDocumentManager()
             ->getRepository('MBHPackageBundle:PackageAccommodation')
             ->getWithAccommodationQB(
-                $newBegin,
-                $newEnd,
+                $newBegin->modify('+1 day'),
+                $newEnd->modify("-1 day"),
                 array_keys($rooms),
                 null)
             ->select(['accommodation.id'])
@@ -166,8 +166,11 @@ class RoomRepository extends AbstractBaseRepository
             ->execute()
             ->toArray();
 
+        $existedAccommodationIds = array_map(function ($packageAccommodation) {
+            return (string)$packageAccommodation['accommodation']['$id'];
+        }, $existedPackageAccommodations);
         /** Надо проверять с размещением */
-        $roomsToAccommodationKeys = array_diff(array_keys($rooms), $existedAccommodations);
+        $roomsToAccommodationKeys = array_diff(array_keys($rooms), array_values($existedAccommodationIds));
 
         return array_filter($rooms, function ($room) use ($roomsToAccommodationKeys){
             return \in_array((string)$room['_id'], $roomsToAccommodationKeys, true);

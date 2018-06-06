@@ -8,8 +8,9 @@ use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
 use MBH\Bundle\SearchBundle\Services\Search\SearchLimitChecker;
+use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class SearchLimitCheckerTest extends WebTestCase
+class SearchLimitCheckerTest extends SearchWebTestCase
 {
     /** TODO: Рефакторить тест и зафигачить все красиво. */
     public function testCheckTariffConditions()

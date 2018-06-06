@@ -5,9 +5,11 @@ namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
@@ -25,7 +27,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 2001,
             'regDayAgo' => 1,
             'beginAfter' => 0,
-            'length' => 3
+            'length' => 3,
+            'accommodation' => 10
         ],
         [
             'number' => '2',
@@ -35,7 +38,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 10,
             'regDayAgo' => 1,
             'beginAfter' => 2,
-            'length' => 2
+            'length' => 2,
+            'accommodation' => 9
         ],
         [
             'number' => '3',
@@ -45,7 +49,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 1000,
             'regDayAgo' => 2,
             'beginAfter' => 1,
-            'length' => 5
+            'length' => 5,
+            'accommodation' => 8
         ],
         [
             'number' => '4',
@@ -55,7 +60,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 276,
             'regDayAgo' => 2,
             'beginAfter' => 10,
-            'length' => 6
+            'length' => 6,
+            'accommodation' => 7
         ],
         [
             'number' => '5',
@@ -76,7 +82,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 0,
             'regDayAgo' => 5,
             'beginAfter' => 0,
-            'length' => 3
+            'length' => 3,
+            'accommodation' => 6
         ],
         [
             'number' => '16',
@@ -87,7 +94,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 5,
             'beginAfter' => 0,
             'length' => 3,
-            'cancelledAgo' => 6
+            'cancelledAgo' => 6,
+            'accommodation' => 5
         ],
         [
             'number' => '17',
@@ -98,6 +106,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 5,
             'beginAfter' => 0,
             'length' => 3,
+            'accommodation' => 4
         ],
         [
             'number' => '7',
@@ -107,7 +116,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 560,
             'regDayAgo' => 6,
             'beginAfter' => 0,
-            'length' => 3
+            'length' => 3,
+            'accommodation' => 3
         ],
         [
             'number' => '8',
@@ -117,7 +127,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 750,
             'regDayAgo' => 6,
             'beginAfter' => 0,
-            'length' => 3
+            'length' => 3,
+            'accommodation' => 2
         ],
         [
             'number' => '9',
@@ -127,7 +138,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 50,
             'regDayAgo' => 6,
             'beginAfter' => 0,
-            'length' => 6
+            'length' => 6,
+            'accommodation' => 1
         ],
         [
             'number' => '10',
@@ -237,7 +249,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         $tariff = $this->getReference('main-tariff/0');
         /** @var RoomType $roomType */
         $roomType = $this->getReference('roomtype-double/0');
-
+        $roomAccommodations = $roomType->getRooms()->toArray();
         foreach (self::DATA as $packageData) {
             $order = $this->persistOrder($manager, $packageData);
             $beginDate = new \DateTime('midnight +' . $packageData['beginAfter'] . 'days');
@@ -273,6 +285,28 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             }
             $package->setPrices($prices);
 
+            if ($roomNumber = $packageData['accommodation'] ?? null) {
+                foreach ($roomAccommodations as $room) {
+                    /** @var Room $room */
+                    if ($room->getFullTitle() === (string)$roomNumber) {
+                        $roomAccommodation = $room;
+                        break;
+                    }
+                }
+                if ($roomAccommodation ?? null) {
+                    $packageAccommodation = new PackageAccommodation();
+                    $packageAccommodation
+                        ->setRoom($roomAccommodation)
+                        ->setBegin($beginDate)
+                        ->setEnd($endDate)
+                    ;
+                    $package->addAccommodation($packageAccommodation);
+                    unset($roomAccommodation);
+                }
+            }
+
+
+
             $manager->persist($package);
             $manager->flush();
         }
@@ -285,7 +319,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
      */
     public function getOrder()
     {
-        return 300;
+        return 510;
     }
 
     /**

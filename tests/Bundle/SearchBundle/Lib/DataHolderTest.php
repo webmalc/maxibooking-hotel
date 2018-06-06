@@ -5,6 +5,7 @@ namespace Tests\Bundle\SearchBundle\Lib;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
@@ -21,29 +22,39 @@ class DataHolderTest extends SearchWebTestCase
     /** @var DataHolder */
     private $dataHolder;
 
-    /** @var DocumentManager */
-    private $dm;
-
     public function setUp()
     {
         parent::setUp();
-//        self::baseFixtures();
         $this->dataHolder = $this->getContainer()->get('mbh_search.data_holder');
-        $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+
     }
 
-    /** @dataProvider roomCacheDataProvider */
+    /** @dataProvider roomCacheDataProvider
+     * @param $data
+     */
     public function testGetNecessaryRoomCaches($data): void
     {
         $searchQuery = $this->createSearchQuery($data);
         $actual = $this->dataHolder->getNecessaryRoomCaches($searchQuery);
         $expectedData = $data['expected'];
+        $actualWithDate = [];
+        foreach ($actual as $roomCache) {
+            $actualWithDate[Helper::convertMongoDateToDate($roomCache['date'])->format('d-m-Y')] = $roomCache;
+        }
 
+        $this->assertCount(\count(array_filter($expectedData, '\strlen')), $actual);
 
-
+        foreach ($expectedData as $roomCacheOffset => $roomCacheValue) {
+            if (null !== $roomCacheValue) {
+                $currentDateKey = (new \DateTime('midnight'))->modify("+{$roomCacheOffset} days")->format('d-m-Y');
+                $this->assertEquals($roomCacheValue, $actualWithDate[$currentDateKey]['leftRooms']);
+            }
+        }
     }
 
-    /** @dataProvider restrictionDataProvider */
+    /** @dataProvider restrictionDataProvider
+     * @param $data
+     */
     public function testGetCheckNecessaryRestrictions($data): void
     {
         $searchQuery = $this->createSearchQuery($data);
@@ -61,47 +72,24 @@ class DataHolderTest extends SearchWebTestCase
 
     }
 
-    private function createSearchQuery(array $data): SearchQuery
+    /**
+     * @param $data
+     * @dataProvider accommodationDataProvider
+     */
+    public function testGetAccommodationRooms($data)
     {
-
-        /** @var Hotel $hotel */
-        $hotel = $this->dm->getRepository(Hotel::class)->findOneBy(['fullTitle' => $data['hotelFullTitle']]);
-        $roomTypes = $hotel->getRoomTypes()->toArray();
-        $searchRoomType = $this->getDocumentFromArrayByFullTitle($roomTypes, $data['roomTypeFullTitle']);
-        $hotelTariffs = $hotel->getTariffs()->toArray();
-        $searchTariff = $this->getDocumentFromArrayByFullTitle($hotelTariffs, $data['tariffFullTitle']);
-        $begin = new \DateTime("midnight +{$data['beginOffset']} days");
-        $end = new \DateTime("midnight +{$data['endOffset']} days");
-
-        $searchHash = uniqid(gethostname(), true);
-        $conditions = new SearchConditions();
-        $conditions
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setAdditionalBegin(0)
-            ->setAdditionalEnd(0)
-            ->setSearchHash($searchHash)
-            ->addTariff($searchTariff);
-
-        /** @var Tariff $searchTariff */
-        if ($searchTariff->getParent() && $searchTariff->getChildOptions() && $searchTariff->getChildOptions()->isInheritRestrictions()) {
-            $restrictionTariffId = $searchTariff->getParent()->getId();
-        } else {
-            $restrictionTariffId = $searchTariff->getId();
+        $searchQuery = $this->createSearchQuery($data);
+        $actual = $this->dataHolder->getAccommodationRooms($searchQuery);
+        $expected = $data['expected'];
+        $noRoomNames = $expected['noRoomNames'];
+        $actualRoomNames = array_column($actual, 'fullTitle');
+        if (empty($noRoomNames)) {
+            $this->assertCount(10, $actualRoomNames);
         }
-
-
-        $searchQuery = new SearchQuery();
-        $searchQuery
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setSearchHash($searchHash)
-            ->setRoomTypeId($searchRoomType->getId())
-            ->setRestrictionTariffId($restrictionTariffId);
-
-        $searchQuery->setSearchConditions($conditions);
-
-        return $searchQuery;
+        $this->assertCount(10 - \count($noRoomNames), $actual);
+        foreach ($noRoomNames as $noRoomName) {
+            $this->assertNotContains((string)$noRoomName, $actualRoomNames);
+        }
     }
 
     public function roomCacheDataProvider(): iterable
@@ -119,6 +107,23 @@ class DataHolderTest extends SearchWebTestCase
                     2 => 5,
                     3 => 5,
                     4 => 5
+                ],
+            ]
+        ];
+
+        yield [
+            [
+                'beginOffset' => 0,
+                'endOffset' => 5,
+                'tariffFullTitle' => 'Основной тариф',
+                'roomTypeFullTitle' => 'Стандартный двухместный',
+                'hotelFullTitle' => 'Отель Волга',
+                'expected' => [
+                    0 => 2,
+                    1 => 1,
+                    2 => 0,
+                    3 => 6,
+                    4 => 5,
                 ],
             ]
         ];
@@ -174,5 +179,33 @@ class DataHolderTest extends SearchWebTestCase
             ]
         ];
 
+    }
+
+    public function accommodationDataProvider(): iterable
+    {
+        yield [
+            [
+                'beginOffset' => 9,
+                'endOffset' => 12,
+                'tariffFullTitle' => 'Основной тариф',
+                'roomTypeFullTitle' => 'Стандартный двухместный',
+                'hotelFullTitle' => 'Отель Волга',
+                'expected' => [
+                    'noRoomNames' => [7]
+                ]
+            ]
+        ];
+        yield [
+            [
+                'beginOffset' => 3,
+                'endOffset' => 9,
+                'tariffFullTitle' => 'Основной тариф',
+                'roomTypeFullTitle' => 'Стандартный двухместный',
+                'hotelFullTitle' => 'Отель Волга',
+                'expected' => [
+                    'noRoomNames' => [5,6,7,8,9,10]
+                ]
+            ]
+        ];
     }
 }

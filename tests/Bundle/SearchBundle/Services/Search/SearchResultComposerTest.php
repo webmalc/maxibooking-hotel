@@ -5,56 +5,73 @@ namespace Tests\Bundle\SearchBundle\Services\Search;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer;
+use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class SearchResultComposerTest extends WebTestCase
+class SearchResultComposerTest extends SearchWebTestCase
 {
     /** @var SearchResultComposer */
     private $searchComposer;
 
     public function setUp()
     {
+        parent::setUp();
         $this->searchComposer = $this->getContainer()->get('mbh_search.result_composer');
     }
 
-    public function testComposeResult(): void
+    /** @dataProvider dataProvider */
+    public function testComposeResult($data): void
     {
-        $conditions = new SearchConditions();
-        $begin = new \DateTime("midnight + 1 day");
-        $end = new \DateTime("midnight + 8 day");
-
-        $conditions
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setAdults(1)
-            ->setChildren(3)
-            ->setChildrenAges([1,5,8])
-
-        ;
-
-        $searchQueries = $this
-            ->getContainer()
-            ->get('mbh_search.search_query_generator')
-            ->generateSearchQueries($conditions)
-        ;
-        /** @var SearchQuery $searchQuery */
-        $searchQuery = reset($searchQueries);
-        $searchResult = new SearchResult();
-        $dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-        $roomType = $dm->find(RoomType::class, $searchQuery->getRoomTypeId());
-        $tariff = $dm->find(Tariff::class, $searchQuery->getTariffId());
-        $roomCaches = $this->getContainer()->get('mbh_search.room_cache_search_provider')->fetchAndCheck($searchQuery->getBegin(), $searchQuery->getEnd(), $roomType, $tariff);
-        $duration = (int)$searchQuery->getEnd()->diff($searchQuery->getBegin())->format('%a');
+        $searchQuery = $this->createSearchQuery($data);
+        $dataHolder = $this->getContainer()->get('mbh_search.data_holder');
+        $roomCaches = $dataHolder->getNecessaryRoomCaches($searchQuery);
+        $actual = $this->searchComposer->composeResult(new SearchResult(), $searchQuery, $roomCaches);
+        $expected = $data['expected'];
+        /** TODO: Добавить всякой фигни */
         /** @var SearchResult $actual */
-        $actual = $this->searchComposer->composeResult($searchResult, $searchQuery, $roomType, $tariff, $roomCaches);
+        $this->assertEquals($expected['minCache'], $actual->getRoomsCount());
 
-        $this->assertCount($duration, $actual->getPackagePrices($searchQuery->getActualAdults(), $searchQuery->getActualChildren()));
-        $this->assertTrue(true);
+
+    }
+
+    public function dataProvider(): iterable
+    {
+//        yield [
+//            [
+//                'beginOffset' => 10,
+//                'endOffset' => 16,
+//                'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
+//                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+//                'hotelFullTitle' => 'Отель Волга',
+//                'adults' => 1,
+//                'expected' => [
+//                    'prices' => ['1_0' => 11280],
+//
+//                ],
+//            ]
+//        ];
+
+        yield [
+            [
+                'beginOffset' => 3,
+                'endOffset' => 8,
+                'tariffFullTitle' => 'Основной тариф',
+                'roomTypeFullTitle' => 'Стандартный двухместный',
+                'hotelFullTitle' => 'Отель Волга',
+                'adults' => 1,
+                'expected' => [
+                    'prices' => ['1_0' => 11280],
+                    'minCache' => 5
+                ],
+            ]
+        ];
 
     }
 

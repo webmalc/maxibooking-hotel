@@ -11,6 +11,7 @@ use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
+use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
@@ -29,31 +30,43 @@ class SearchResultComposer
     /** @var Calculation */
     private $calculation;
 
+    private $dataHolder;
+
+    private $limitChecker;
+
     /**
      * SearchResultComposer constructor.
      * @param DocumentManager $dm
      * @param RoomTypeManager $roomManager
      * @param Calculation $calculation
      */
-    public function __construct(DocumentManager $dm, RoomTypeManager $roomManager, Calculation $calculation)
+    public function __construct(DocumentManager $dm, RoomTypeManager $roomManager, Calculation $calculation, DataHolder $dataHolder, SearchLimitChecker $limitChecker)
     {
         $this->dm = $dm;
         $this->roomManager = $roomManager;
         $this->calculation = $calculation;
+        $this->dataHolder = $dataHolder;
+        $this->limitChecker = $limitChecker;
 
     }
 
 
-    public function composeResult(SearchResult $searchResult, SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, array $roomCaches): SearchResult
+    public function composeResult(SearchResult $searchResult, SearchQuery $searchQuery, array $roomCaches): SearchResult
     {
-
+        $roomType = $this->dataHolder->getFetchedRoomType($searchQuery->getRoomTypeId());
+        $tariff = $this->dataHolder->getFetchedTariff($searchQuery->getTariffId());
+        if (!$roomType || !$tariff) {
+            throw new SearchResultComposerException('Can not get Tariff or RoomType');
+        }
+        $this->limitChecker->checkTariffConditions($tariff, $searchQuery);
         $minCache = $this->getMinCacheValue($searchQuery, $roomCaches);
         $isUseCategories = $this->roomManager->useCategories;
         $actualAdults = $searchQuery->getActualAdults();
         $actualChildren = $searchQuery->getActualChildren();
         $infants = $searchQuery->getInfants();
-        $accommodationRooms = $this->getAccommodationRooms($searchQuery, $roomType);
-        $this->checkTariffConditions($tariff, $searchQuery->getDuration(), $actualAdults, $actualChildren);
+
+        $accommodationRooms = $this->getAccommodationRooms($searchQuery);
+
         $prices = $this->getPrices($searchQuery, $roomType, $tariff, $actualAdults, $actualChildren);
 
         $searchResult
@@ -75,13 +88,6 @@ class SearchResultComposer
         return $searchResult;
     }
 
-    private function checkTariffConditions(Tariff $tariff, int $duration, int $actualAdults, int $actualChildren)
-    {
-        $check = PromotionConditionFactory::checkConditions($tariff, $duration, $actualAdults, $actualChildren);
-        if (!$check) {
-            throw new SearchResultComposerException('There is fail when check tariff condition');
-        }
-    }
 
     private function pricePopulate(SearchResult $searchResult, array $prices): void
 
@@ -123,14 +129,9 @@ class SearchResultComposer
      * @return array
      * TODO: Наборосок, нужно внимательно разобраться с темой подбора комнаты для размещения.
      */
-    private function getAccommodationRooms(SearchQuery $searchQuery, RoomType $roomType): array
+    private function getAccommodationRooms(SearchQuery $searchQuery): array
     {
-        $begin = $searchQuery->getBegin();
-        $end = $searchQuery->getEnd();
-
-        $repo = $this->dm->getRepository(Room::class);
-
-        return $repo->fetchRawAccommodationRooms($begin, $end, $roomType->getId());
+        return $this->dataHolder->getAccommodationRooms($searchQuery);
     }
 
     private function getMinCacheValue(SearchQuery $searchQuery, array $roomCaches): int

@@ -233,7 +233,7 @@ class SearchLimitChecker
             function ($roomCache) {
                 $isMainRoomCache = !array_key_exists('tariff', $roomCache) || null === $roomCache['tariff'];
 
-                return $isMainRoomCache && $roomCache['leftRooms'] >= 0;
+                return $isMainRoomCache && $roomCache['leftRooms'] > 0;
             }
         );
 
