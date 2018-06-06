@@ -14,7 +14,6 @@ class Message extends Base implements \JsonSerializable
     /**
      * @var string
      * @ODM\Field(type="string")
-     * @ODM\Index()
      */
     protected $text;
 

@@ -149,6 +149,10 @@ class BillingPayerFormHandler extends FormDataHandler
      */
     private function getMandatoryFields($payerData)
     {
+        if ($this->isRussianPayer && $this->payerType === self::NATURAL_ENTITY_ID) {
+            return [];
+        }
+
         $fieldsByCategories = array_keys($this->getBillingFieldsByFormFields());
 
         if ($this->IsRussianLegalPayerWithProxyBase($payerData)) {
