@@ -2,13 +2,12 @@
 namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Service\Address;
-use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal;
+use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Organization;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
-use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -342,6 +341,11 @@ class Extension extends \Twig_Extension
         return $address->getImperialStreetStr($obj);
     }
 
+    public function getMethodsForTemplate(): string
+    {
+        return json_encode($this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper')->methodsOfEntity());
+    }
+
     /**
      * @return array
      */
@@ -366,7 +370,8 @@ class Extension extends \Twig_Extension
             'get_imperial_city'       => new \Twig_SimpleFunction('get_imperial_city', [$this, 'getImperialAddressCity'], ['is_safe' => ['html']]),
             'get_imperial_street'     => new \Twig_SimpleFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], ['is_safe' => ['html']]),
             'get_twig_data'           => new \Twig_SimpleFunction('get_twig_data', [$this, 'getTwigData'], ['is_safe' => ['html']]),
-            'get_field_name'          => new \Twig_SimpleFunction('get_field_name', [$this, 'getFieldTitleByName'], ['is_safe' => ['html']])
+            'get_field_name'          => new \Twig_SimpleFunction('get_field_name', [$this, 'getFieldTitleByName'], ['is_safe' => ['html']]),
+            'get_properties'          => new \Twig_SimpleFunction('get_properties', [$this, 'getMethodsForTemplate'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -393,5 +398,29 @@ class Extension extends \Twig_Extension
         return [
             'wrapinline' => new TwigWrapInLineTokenParser(),
         ];
+    }
+
+    public function getTests()
+    {
+        return [
+            'instanceofMortal'       => new \Twig_SimpleTest('instanceofMortal', [$this, 'isInstanceofMortal']),
+            'instanceofOrganization' => new \Twig_SimpleTest('instanceofOrganization', [$this, 'isInstanceofOrganization']),
+        ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInstanceofMortal($obj): bool
+    {
+        return $obj instanceof Mortal;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInstanceofOrganization($obj): bool
+    {
+        return $obj instanceof Organization;
     }
 }

@@ -8,10 +8,9 @@
 
 namespace MBH\Bundle\RestaurantBundle\DataFixtures\MongoDB;
 
-
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use MBH\Bundle\RestaurantBundle\Document\IngredientCategory;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -20,7 +19,7 @@ class IngredientsCategoryData extends AbstractFixture implements OrderedFixtureI
 {
     use ContainerAwareTrait;
 
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
@@ -57,5 +56,13 @@ class IngredientsCategoryData extends AbstractFixture implements OrderedFixtureI
     public function getOrder()
     {
         return 9994;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getEnvs(): array
+    {
+        return ['test', 'dev', 'sandbox'];
     }
 }

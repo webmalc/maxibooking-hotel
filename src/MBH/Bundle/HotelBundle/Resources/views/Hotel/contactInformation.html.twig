@@ -38,7 +38,7 @@
                     <h3>{{ 'views.hotel.extended.yandex_maps'|trans({}, 'MBHHotelBundle') }}</h3>
                     <ol>
                         <li>
-                            {{ 'views.hotel.extended.go_to_site'|trans({}, 'MBHHotelBundle') }} <a href="http://maps.yandex.ru/{{ entity.cityId is null ? '' : '?text=' ~ get_city(entity.cityId).name|url_encode }}" target="_blank">http://maps.yandex.ru</a>
+                            {{ 'views.hotel.extended.go_to_site'|trans({}, 'MBHHotelBundle') }} <a href="//maps.yandex.ru/{{ entity.cityId is null ? '' : '?text=' ~ get_city(entity.cityId).name|url_encode }}" target="_blank">http://maps.yandex.ru</a>
                         </li>
                         <li>{{ 'views.hotel.extended.find_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
                         <li>{{ 'views.hotel.extended.right_click_on_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
@@ -51,7 +51,7 @@
             </div>
         </div>
     </div>
-
+    {% include '@MBHBase/modalWithForm.html.twig' with {modalTitle: 'modal_with_form.add_region.title'|trans} %}
 {% endblock %}
 
 

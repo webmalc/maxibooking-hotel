@@ -410,9 +410,64 @@ class OrderManager implements Searchable
     /**
      * @param array $data
      * @param Order $order
+     * @return Order
+     * @throws Exception
+     */
+    public function createServices(array $data, Order $order)
+    {
+        foreach ($data as $info) {
+            if (empty($info['id']) || empty($info['amount'])) {
+                throw new Exception('Create services error: $data["id"] || $data["amount"] is empty.');
+            }
+
+            $service = $this->dm->getRepository('MBHPriceBundle:Service')->find($info['id']);
+
+            if (!$service) {
+                throw new Exception('Create services error: service not found.');
+            }
+
+            //find package
+            foreach ($order->getPackages() as $package) {
+                if ($package->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
+                    /** @var Package $package */
+                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($package->getId());
+
+                    if ($service->getCalcType() == 'day_percent') {
+                        $date = null;
+                        if ($service->getCode() === 'Early check-in') {
+                            $date = $package->getBegin();
+                        } elseif ($service->getCode() === 'Late check-out') {
+                            $date = (clone $package->getEnd())->modify('-1 day');
+                        }
+
+                        $price = $package->getPriceByDate($date) * $service->getPrice() / 100;
+                    } else {
+                        $price = $service->getPrice();
+                    }
+
+                    $packageService = new PackageService();
+                    $packageService->setPackage($package)
+                        ->setService($service)
+                        ->setAmount((int)$info['amount'])
+                        ->setPrice($price);
+
+                    $this->dm->persist($packageService);
+                    $this->dm->flush();
+
+                    break 1;
+                }
+            }
+        }
+
+        return $order;
+    }
+
+    /**
+     * @param array $data
+     * @param Order $order
      * @param null $user
      * @return Package
-     * @throws Exception
+     * @throws PackageCreationException
      */
     public function createPackage(array $data, Order $order, $user = null)
     {
@@ -652,61 +707,6 @@ class OrderManager implements Searchable
         return $package;
     }
 
-    /**
-     * @param array $data
-     * @param Order $order
-     * @return Order
-     * @throws Exception
-     */
-    public function createServices(array $data, Order $order)
-    {
-        foreach ($data as $info) {
-            if (empty($info['id']) || empty($info['amount'])) {
-                throw new Exception('Create services error: $data["id"] || $data["amount"] is empty.');
-            }
-
-            $service = $this->dm->getRepository('MBHPriceBundle:Service')->find($info['id']);
-
-            if (!$service) {
-                throw new Exception('Create services error: service not found.');
-            }
-
-            //find package
-            foreach ($order->getPackages() as $package) {
-                if ($package->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
-                    /** @var Package $package */
-                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($package->getId());
-
-                    if ($service->getCalcType() == 'day_percent') {
-                        $date = null;
-                        if ($service->getCode() === 'Early check-in') {
-                            $date = $package->getBegin();
-                        } elseif ($service->getCode() === 'Late check-out') {
-                            $date = (clone $package->getEnd())->modify('-1 day');
-                        }
-
-                        $price = $package->getPriceByDate($date) * $service->getPrice() / 100;
-                    } else {
-                        $price = $service->getPrice();
-                    }
-
-                    $packageService = new PackageService();
-                    $packageService->setPackage($package)
-                        ->setService($service)
-                        ->setAmount((int)$info['amount'])
-                        ->setPrice($price);
-
-                    $this->dm->persist($packageService);
-                    $this->dm->flush();
-
-                    break 1;
-                }
-            }
-        }
-
-        return $order;
-    }
-
     public function updatePricesByDate(Package $package, ?Tariff $tariff)
     {
         $newDailyPrice = $package->getPackagePrice() / $package->getNights();
@@ -883,13 +883,13 @@ class OrderManager implements Searchable
             if(isset($rawPackageData['totalOverwrite'])) {
                 $price = $rawPackageData['totalOverwrite'];
             } else {
-                $price = $rawPackageData['price'];
+                $price = $packagePrice = isset($rawPackageData['price']) ? $rawPackageData['price'] : 0;
                 if (isset($rawPackageData['servicesPrice'])) {
                     $price += $rawPackageData['servicesPrice'];
                 }
                 if (isset($rawPackageData['discount'])) {
                     $discount = isset($rawPackageData['isPercentDiscount']) && $rawPackageData['isPercentDiscount']
-                        ? $rawPackageData['price'] * $rawPackageData['discount']/100
+                        ? $packagePrice * $rawPackageData['discount']/100
                         : $rawPackageData['discount'];
                     $price -= $discount;
                 }

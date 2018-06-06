@@ -77,10 +77,7 @@ class DocumentsRelationships
                 //new Relationship(PriceCache::class, 'hotel', 'exception.hotel_relation_delete.message.priceCache'),
                 //new Relationship(Restriction::class, 'hotel', 'exception.hotel_relation_delete.message.restriction'),
                 //new Relationship(RoomCache::class, 'hotel', 'exception.hotel_relation_delete.message.roomCache'),
-                new Relationship(ServiceCategory::class, 'hotel', 'exception.hotel_relation_delete.message.serviceCategory'),
-                new Relationship(DishMenuCategory::class, 'hotel', 'exception.hotel_relation_delete.message.dishMenuCategory'),
                 new Relationship(DishOrderItem::class, 'hotel', 'exception.hotel_relation_delete.message.dishOrderItem'),
-                new Relationship(IngredientCategory::class, 'hotel', 'exception.hotel_relation_delete.message.ingredientCategory'),
                 new Relationship(Table::class, 'hotel', 'exception.hotel_relation_delete.message.table'),
                 new Relationship(Invoice::class, 'hotel', 'exception.hotel_relation_delete.message.invoice'),
                 new Relationship(Record::class, 'hotel', 'exception.hotel_relation_delete.message.record'),
@@ -122,6 +119,7 @@ class DocumentsRelationships
                 //new Relationship(Restriction::class, 'tariff', 'exception.tariff_relation_delete.message.restriction'),
                 //new Relationship(RoomCache::class, 'tariff', 'exception.tariff_relation_delete.message.roomCache'),
                 new Relationship(Tariff::class, 'parent', 'exception.tariff_relation_delete.message.parentTariff'),
+                new Relationship(Tariff::class, 'mergingTariff', 'exception.tariff_relation_delete.message.mergingTariff'),
                 new Relationship(Package::class, 'tariff', 'exception.tariff_relation_delete.message.package')
             ],
             ServiceCategory::class => [

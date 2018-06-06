@@ -271,7 +271,7 @@ csv.form.dateEnd: To
 csv.form.guests: Payer
 csv.form.adults: Adults
 csv.form.children: Children
-csv.form.price: Cost
+csv.form.package_price: 'Accommodation cost'
 csv.form.createdAt: 'Added on'
 csv.form.createdBy: 'Added by'
 csv.form.modal_title: 'Document generation'
@@ -1276,3 +1276,32 @@ package.index.filter.package_source.placeholder: 'Sales source'
 package.index.filter.package_source.title: 'Sales source'
 mbhpackagebundle.view.documents.pdftemplates.MM: Stamp
 controller.chessboard.package_remove.success: 'Reservation successfully deleted'
+views.report.reservation_report.period.title: Period
+sales_channels_report.title: 'Sales Channels'
+sales_channels_report_compiler.total: Total
+sales_channels_report_compiler.date: Date
+sales_channels_report.data_types: 'Data type'
+sales_channels_report.room_type.title: 'Room type'
+sales_channels_report.sort_by.source: 'By source'
+sales_channels_report.dates.title: Dates
+reservation_report.date: Date
+reservation_report.title: Reservation
+reservation_report.total_row: Total
+views.report.reservation_report.report_date.title: Date
+views.report.reservation_report.title: 'Rooms reservation Report'
+views.report.reservation_report.room_types.title: 'Room type'
+reservation_report.number_of_packages_common: 'Number of booked rooms'
+reservation_report.number_of_packages: 'Number of booked rooms as of %date%'
+reservation_report.previous_number_of_packages: 'Number of booked rooms as of %previousDate%'
+reservation_report.delta_number_of_packages: 'Booked rooms delta'
+reservation_report.delta_numb_of_packages_in_percent: 'Booked rooms %'
+reservation_report.packages_price: 'Price as of %date%'
+reservation_report.previous_packages_price: 'Price as of %previousDate%'
+sales_channels_report.sort_by.title: 'Sorting type'
+sales_channels_report.sort_by.status: 'By reservation type'
+sales_channels_report.package_source.title: 'Sales source'
+sales_channels_report.data_types.count: 'Number of reservations'
+sales_channels_report.data_types.sum: 'Cost of reservations'
+sales_channels_report.data_types.man-day: Person/days
+sales_channels_report.in_percents.title: 'In percents?'
+sales_channels_report_compiler.without_source: 'No source'

@@ -17,7 +17,7 @@
         <env name="MONGODB_LOGIN" value="test"/>
         <env name="MONGODB_PASSWORD" value="testpwd"/>
         <env name="MONGODB_OPTIONS" value=""/>
-        <env name="MONGODB_HOST" value="localhost"/>
+        <env name="MONGODB_HOST" value="mbh-mongo"/>
         <env name="MONGODB_PORT" value="27017"/>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
     </php>

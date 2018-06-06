@@ -558,6 +558,16 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         }
         $series = $totalValues = $allValues = [];
         $i = 0;
+        if ($categoryGetMethod === 'getRoomTypes') {
+            $roomTypes = $this->$categoryGetMethod()->toArray();
+            $numberOfRoomsByHotels = [];
+            /** @var RoomType $roomType */
+            foreach ($roomTypes as $roomType) {
+                isset($numberOfRoomsByHotels[$roomType->getHotel()->getId()])
+                    ? $numberOfRoomsByHotels[$roomType->getHotel()->getId()]+= $roomType->getRooms()->count()
+                    : $numberOfRoomsByHotels[$roomType->getHotel()->getId()] =  $roomType->getRooms()->count();
+            }
+        }
         foreach ($this->$categoryGetMethod() as $category) {
             if ($this->isDisplayedCategory($category, $requestedRoomTypes, $categoryGetMethod)) {
                 $series[$i]['name'] = $this->getCategoryName($category);
@@ -592,9 +602,14 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
                 }
                 if ($categoryGetMethod == 'getRoomTypes') {
                     $hotelTotalValueTitle = 'total_' . $category->getHotel()->getId();
-                    $totalValues[$hotelTotalValueTitle][$dayId] = isset($totalValues[$hotelTotalValueTitle][$dayId])
-                        ? $totalValues[$hotelTotalValueTitle][$dayId] + $value
+                    $addition = $this->getRequest()->query->get('type') === 'hotel_occupancy'
+                        ? ($category->getRooms()->count() !== 0
+                            ? ($value * $category->getRooms()->count()  / $numberOfRoomsByHotels[$category->getHotel()->getId()])
+                            : 0)
                         : $value;
+                    $totalValues[$hotelTotalValueTitle][$dayId] = isset($totalValues[$hotelTotalValueTitle][$dayId])
+                        ? $totalValues[$hotelTotalValueTitle][$dayId] + $addition
+                        : $addition;
                 }
 
                 $totalValues['byAll'][$dayId] = $totalValues['byAll'][$dayId] + $value;

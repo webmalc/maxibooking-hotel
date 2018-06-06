@@ -69,9 +69,9 @@ class InteractiveLoginListener
 
         if ($event->getAuthenticationToken() instanceof UsernamePasswordToken) {
             if ($this->kernel->getEnvironment() == 'prod'){
-                if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
-                    throw new BadCredentialsException('Captcha is invalid');
-                }
+//                if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
+//                    throw new BadCredentialsException('Captcha is invalid');
+//                }
             }
 
             if (!$this->clientManager->isDefaultClient()) {

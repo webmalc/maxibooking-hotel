@@ -10,6 +10,7 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class ClientManager
@@ -94,13 +95,15 @@ class ClientManager
     {
         $totalNumbersOfRoomsByDates = [];
         foreach ($rawNewRoomCachesData as $rawRoomCache) {
-            /** @var \MongoDate $date */
-            $date = $rawRoomCache['date'];
-            $dateString = $date->toDateTime()->format('d.m.Y');
-            if (isset($totalNumbersOfRoomsByDates[$dateString])) {
-                $totalNumbersOfRoomsByDates[$dateString] += $rawRoomCache['totalRooms'];
-            } else {
-                $totalNumbersOfRoomsByDates[$dateString] = $rawRoomCache['totalRooms'];
+            if (!isset($rawRoomCache['tariff'])) {
+                /** @var \MongoDate $date */
+                $date = $rawRoomCache['date'];
+                $dateString = $date->toDateTime()->format('d.m.Y');
+                if (isset($totalNumbersOfRoomsByDates[$dateString])) {
+                    $totalNumbersOfRoomsByDates[$dateString] += $rawRoomCache['totalRooms'];
+                } else {
+                    $totalNumbersOfRoomsByDates[$dateString] = $rawRoomCache['totalRooms'];
+                }
             }
         }
 
@@ -198,8 +201,7 @@ class ClientManager
         $currentDateTime = new \DateTime();
         $config = $this->clientConfigManager->fetchConfig();
 
-        if (is_null($dataReceiptTime)
-            || !$config->isCacheValid()
+        if (is_null($dataReceiptTime)|| !$config->isCacheValid()
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
             try {
@@ -210,9 +212,8 @@ class ClientManager
                 $client = $this->session->get(self::SESSION_CLIENT_FIELD);
                 $this->logger->err($exception->getMessage());
             } finally {
-                $client = $this->getDefaultClientData();
-                if (!isset($client)) {
-                    throw new \Exception('Error while receiving client from billing');
+                if (!isset($client) || !$client instanceof Client) {
+                    throw new NotFoundHttpException('Can not get client with login "' . $this->client . '"');
                 }
                 $this->updateSessionClientData($client, $currentDateTime);
             }

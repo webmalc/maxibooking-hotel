@@ -266,6 +266,56 @@ class FormConfig extends Base
     private $isHorizontal = false;
 
     /**
+     * @var GoogleAnalyticConfig
+     * @ODM\EmbedOne(targetDocument="GoogleAnalyticConfig")
+     */
+    private $googleAnalyticConfig;
+
+    /**
+     * @var YandexAnalyticConfig
+     * @ODM\EmbedOne(targetDocument="YandexAnalyticConfig")
+     */
+    private $yandexAnalyticConfig;
+
+    /**
+     * @return GoogleAnalyticConfig
+     */
+    public function getGoogleAnalyticConfig(): ?GoogleAnalyticConfig
+    {
+        return $this->googleAnalyticConfig;
+    }
+
+    /**
+     * @param GoogleAnalyticConfig $googleAnalyticConfig
+     * @return FormConfig
+     */
+    public function setGoogleAnalyticConfig(GoogleAnalyticConfig $googleAnalyticConfig): FormConfig
+    {
+        $this->googleAnalyticConfig = $googleAnalyticConfig;
+
+        return $this;
+    }
+
+    /**
+     * @return YandexAnalyticConfig
+     */
+    public function getYandexAnalyticConfig(): ?YandexAnalyticConfig
+    {
+        return $this->yandexAnalyticConfig;
+    }
+
+    /**
+     * @param YandexAnalyticConfig $yandexAnalyticConfig
+     * @return FormConfig
+     */
+    public function setYandexAnalyticConfig(YandexAnalyticConfig $yandexAnalyticConfig): FormConfig
+    {
+        $this->yandexAnalyticConfig = $yandexAnalyticConfig;
+
+        return $this;
+    }
+
+    /**
      * @ODM\Field(type="boolean")
      * @var bool
      */
@@ -446,6 +496,8 @@ class FormConfig extends Base
     {
         $this->roomTypeChoices = new ArrayCollection();
         $this->hotels = new ArrayCollection();
+        $this->googleAnalyticConfig = new GoogleAnalyticConfig();
+        $this->yandexAnalyticConfig = new YandexAnalyticConfig();
     }
 
     /**

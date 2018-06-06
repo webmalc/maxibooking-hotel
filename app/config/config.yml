@@ -79,14 +79,14 @@ assetic:
     filters:
         cssrewrite: ~
         uglifycss:
-            bin: /usr/local/lib/node_modules/uglifycss/uglifycss
-            node: /usr/local/bin/node
+            bin: /usr/bin/uglifycss
+            node: /usr/bin/node
         uglifyjs2:
-            bin: /usr/local/lib/node_modules/uglify-js/bin/uglifyjs
-            node: /usr/local/bin/node
+            bin: /usr/bin/uglifyjs
+            node: /usr/bin/node
         less:
-            node: /usr/local/bin/node
-            node_paths: [/usr/local/lib/node_modules/]
+            node: /usr/bin/node
+            node_paths: [/usr/lib/node_modules/]
             apply_to: ".less$"
         scssphp:
             formatter: 'Leafo\ScssPhp\Formatter\Compressed'
@@ -199,7 +199,11 @@ knp_snappy:
     pdf:
         enabled:    true
         binary:     "%wkhtmltopdf_path%"
-        options:    []
+        options:
+            margin-left : 0
+            margin-top : 0
+            margin-bottom : 0
+            margin-right : 0
     image:
         enabled:    true
         binary:     /usr/local/bin/h

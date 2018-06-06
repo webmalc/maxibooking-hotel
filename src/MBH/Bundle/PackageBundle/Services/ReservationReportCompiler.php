@@ -133,8 +133,11 @@ class ReservationReportCompiler
                 }
             }
         }
-        $totalRowTitle = $this->translator->trans('reservation_report.total_row');
-        $this->generateTableRows($totalRowTitle, $numberOfDays, $reportPeriod, $totalData, $dataHandlers, $cellsCallbacks, $rowsCallbacks);
+
+        if (count($roomTypes) > 1) {
+            $totalRowTitle = $this->translator->trans('reservation_report.total_row');
+            $this->generateTableRows($totalRowTitle, $numberOfDays, $reportPeriod, $totalData, $dataHandlers, $cellsCallbacks, $rowsCallbacks);
+        }
 
         return $this->report;
     }

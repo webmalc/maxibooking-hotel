@@ -12,19 +12,25 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class HotelContactInformationType extends AbstractType
 {
     /** @var  DocumentManager $dm */
     private $dm;
+    private $translator;
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, TranslatorInterface $translator)
     {
         $this->dm = $dm;
+        $this->translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $cityHelp = $this->translator->trans('form.organization_type.city.help',
+            ['%plusButtonHtml%' => '<a class="add-billing-entity-button" data-entity-type="cities"><i class="fa fa-plus"></i></a>']);
+
         $builder
             ->add('cityId', TextType::class, [
                 'label' => 'form.hotelExtendedType.city',
@@ -32,9 +38,10 @@ class HotelContactInformationType extends AbstractType
                 'required' => true,
                 'mapped' => false,
                 'attr' => [
-                    'class' => 'citySelect',
+                    'class' => 'citySelect  billing-city',
                     'placeholder' => 'form.hotelExtendedType.city',
-                ]
+                ],
+                'help' => $cityHelp
             ])
             ->add('settlement', MultiLanguagesType::class, [
                 'group' => 'form.hotelExtendedType.address',

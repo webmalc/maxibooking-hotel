@@ -49,4 +49,30 @@ class OrganizationRepository extends DocumentRepository
 
         return $this->fetchOne($ids);
     }
+
+    /**
+     * @param string $query
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getContragentsIdsByQueryString(string $query)
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('type')->equals('contragents')
+            ->field('name')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray()
+        ;
+    }
+
+    /**
+     * @return Organization|null|object
+     */
+    public function getForFmsExport()
+    {
+        return $this->findOneBy(['type' => 'my']);
+    }
 }

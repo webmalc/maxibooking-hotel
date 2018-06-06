@@ -4,7 +4,8 @@
     {{ parent() }}
 
     {% javascripts filter='uglifyjs2'
-    '@MBHClientBundle/Resources/public/js/*'
+    '@MBHClientBundle/Resources/public/js/002-client_main.js'
+    '@MBHClientBundle/Resources/public/js/003-color_settings.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}

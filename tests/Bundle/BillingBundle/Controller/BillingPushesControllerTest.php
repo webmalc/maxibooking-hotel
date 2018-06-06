@@ -30,7 +30,8 @@ class BillingPushesControllerTest extends WebTestCase
         $clientConfig = $clientConfigRepo->fetchConfig();
         $clientConfig->setIsCacheValid(true);
 
-        $this->client->request('POST', $url, ['token' => $this->getContainer()->getParameter('billing_front_token')]);
+        $content = json_encode(['token' => $this->getContainer()->getParameter('billing_front_token')]);
+        $this->client->request('POST', $url, [], [], ['HTTP_CONTENT_TYPE' => 'application/json'], $content);
         $this->assertStatusCode(200, $this->client);
         $dm->refresh($clientConfig);
         $this->assertFalse($clientConfig->isCacheValid());
