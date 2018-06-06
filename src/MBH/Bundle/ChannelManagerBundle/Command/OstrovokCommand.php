@@ -61,7 +61,7 @@ class OstrovokCommand extends ContainerAwareCommand
         $ostrovokApi = $this->getContainer()->get('ostrovok_api_service');
         $orders = [];
         foreach ($uuIds as $uuid) {
-            $orders[] = $ostrovokApi->getBookings([
+            $orders = $ostrovokApi->getBookings([
                 'hotel' => $hotelId,
                 'uuid' => $uuid
             ]);
