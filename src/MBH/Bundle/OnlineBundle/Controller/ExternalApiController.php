@@ -44,6 +44,7 @@ class ExternalApiController extends BaseController
      */
     public function getRoomTypesAction(Request $request)
     {
+        $this->addAccessControlAllowOriginHeaders(['http://localhost:4200']);
         $requestHandler = $this->get('mbh.api_handler');
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $queryData = $request->query;
@@ -210,7 +211,11 @@ class ExternalApiController extends BaseController
             ) {
 //                $hotel->setLocale($locale);
 //                $this->dm->refresh($hotel);
-                $responseData[] = $hotel->getJsonSerialized($isFull);
+                $hotelData = $hotel->getJsonSerialized($isFull);
+                if ($isFull && $hotel->getCityId()) {
+                    $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
+                }
+                $responseData[] = $hotelData;
             }
         }
         $responseCompiler->setData($responseData);
@@ -389,6 +394,57 @@ class ExternalApiController extends BaseController
         }
 
         $responseCompiler->setData($responseData);
+
+        return $responseCompiler->getResponse();
+    }
+
+    /**
+     * @Route("/minPrices")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function minPricesForRoomTypesAction(Request $request)
+    {
+        $this->addAccessControlAllowOriginHeaders(['http://localhost:4200']);
+        $responseCompiler = $this->get('mbh.api_response_compiler');
+        $requestHandler = $this->get('mbh.api_handler');
+        $queryData = $request->query;
+
+        $responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['hotelId'], $responseCompiler);
+        if (!$responseCompiler->isSuccessful()) {
+            return $responseCompiler->getResponse();
+        }
+
+        $hotel = $this->dm->find('MBHHotelBundle:Hotel', $queryData->get('hotelId'));
+        $onlineTariffs = $this->dm
+            ->getRepository('MBHPriceBundle:Tariff')
+            ->fetch($hotel, null, true, true);
+        $onlineTariffsIds = $this->helper->toIds($onlineTariffs);
+
+        $minPrices = [];
+        foreach ($hotel->getRoomTypes() as $roomType) {
+            $begin = new \DateTime('midnight');
+            $end = new \DateTime('midnight +' . $requestHandler::MIN_PRICES_PERIOD_IN_DAYS . 'days');
+            $priceCacheWithMinPrice = $this->dm
+                ->getRepository('MBHPriceBundle:PriceCache')
+                ->getWithMinPrice($roomType, $begin, $end, $onlineTariffsIds);
+
+            if (is_null($priceCacheWithMinPrice)) {
+                $minPrices[$roomType->getId()] = ['hasPrices' => false];
+            } else {
+                $minPriceDate = $priceCacheWithMinPrice->getDate();
+                $priceForSingle = $this->get('mbh.calculation')
+                    ->calcPrices($roomType, $priceCacheWithMinPrice->getTariff(), $minPriceDate, $minPriceDate, 1);
+                if (!$priceForSingle || !isset($priceForSingle['1_0'])) {
+                    $minPrices[$roomType->getId()] = ['hasPrices' => false];
+                } else {
+                    $minPrices[$roomType->getId()] = ['hasPrices' => true, 'price' => $priceForSingle['1_0']['total']];
+                }
+            }
+        }
+
+        $responseCompiler->setData($minPrices);
 
         return $responseCompiler->getResponse();
     }

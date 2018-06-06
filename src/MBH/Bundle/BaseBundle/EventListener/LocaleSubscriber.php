@@ -19,6 +19,7 @@ class LocaleSubscriber implements EventSubscriberInterface
      * LocaleListener constructor.
      * @param string $defaultLocale
      * @param TranslatableListener $translatableListener
+     * @param TranslatorInterface $translator
      */
     public function __construct($defaultLocale = 'ru', TranslatableListener $translatableListener, TranslatorInterface $translator)
     {

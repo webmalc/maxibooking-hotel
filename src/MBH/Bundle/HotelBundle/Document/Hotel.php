@@ -1859,6 +1859,34 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
             if (!is_null($this->longitude)) {
                 $comprehensiveData['longitude'] = $this->longitude;
             }
+            if (!empty($this->street)) {
+                $comprehensiveData['street'] = $this->street;
+            }
+            if (!empty($this->house)) {
+                $comprehensiveData['house'] = $this->house;
+            }
+            if (!empty($this->corpus)) {
+                $comprehensiveData['corpus'] = $this->corpus;
+            }
+            if (!empty($this->flat)) {
+                $comprehensiveData['flat'] = $this->flat;
+            }
+            if (!empty($this->zipCode)) {
+                $comprehensiveData['zipCode'] = $this->zipCode;
+            }
+            if (!empty($this->getContactInformation())) {
+                $contactsInfo = $this->getContactInformation();
+                $contactsInfoArray = [];
+                if (!empty($contactsInfo->getEmail())) {
+                    $contactsInfoArray['email'] = $contactsInfo->getEmail();
+                }
+                if (!empty($contactsInfo->getPhoneNumber())) {
+                    $contactsInfoArray['phone'] = $contactsInfo->getPhoneNumber();
+                }
+                if (!empty($contactsInfoArray)) {
+                    $comprehensiveData['contacts'] = $contactsInfoArray;
+                }
+            }
 
             $data = array_merge($data, $comprehensiveData);
         }

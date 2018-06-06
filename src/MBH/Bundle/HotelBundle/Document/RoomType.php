@@ -52,6 +52,11 @@ class RoomType extends Base implements RoomTypeInterface
     use LocalizableTrait;
 
     /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
+
+    /**
      * @var Hotel
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
      * @Assert\NotNull(message="validator.document.roomType.hotel_in_not_select")

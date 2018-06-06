@@ -56,7 +56,7 @@ class RoomTypeType extends AbstractType
                     'fields_options' => [
                         'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus'],
                         'label' => 'form.roomTypeType.name',
-                        'required' => true
+                        'required' => false
                     ],
                     'field_type' => TextType::class,
                     'group' => 'form.roomTypeType.general_info',

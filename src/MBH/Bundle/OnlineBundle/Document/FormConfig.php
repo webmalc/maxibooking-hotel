@@ -11,6 +11,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -696,13 +697,14 @@ class FormConfig extends Base
         $this->theme = $theme;
         return $this;
     }
-    
+
     /**
+     * @param bool $forSite
      * @return string
      */
-    public function getResultsUrl(): ?string
+    public function getResultsUrl($forSite = false): ?string
     {
-        return $this->resultsUrl;
+        return $forSite ? $this->resultsUrl . SiteManager::DEFAULT_RESULTS_PAGE : $this->resultsUrl;
     }
 
     /**
@@ -712,6 +714,7 @@ class FormConfig extends Base
     public function setResultsUrl(string $resultsUrl = null)
     {
         $this->resultsUrl = $resultsUrl;
+
         return $this;
     }
 
