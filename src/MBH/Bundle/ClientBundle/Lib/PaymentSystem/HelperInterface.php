@@ -22,12 +22,23 @@ interface HelperInterface
      */
     public static function instance(FormInterface $form): PaymentSystemInterface;
 
+
     /**
      * Добавляет поля в настройки платежных систем
      * (\MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType::buildForm)
      *
      * @param FormBuilderInterface $builder
-     * @param ClientConfig|null $config
+     * @param ClientConfig $config
+     * @param array $extraData
+     *
+     * extraData содержит в себе данные из конструктора
+     * mbh.client_payment_system_type:
+     * class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
+     * arguments:
+     *   - '%mbh.payment_systems%'
+     *   - '%mbh.payment_systems.change%'
+     *   - '%mbh.payment_systems.default%'
+     *   - '%mbh.taxation%'
      */
-    public static function addFields(FormBuilderInterface $builder, ClientConfig $config = null): void ;
+    public static function addFields(FormBuilderInterface $builder, ClientConfig $config, array $extraData): void ;
 }

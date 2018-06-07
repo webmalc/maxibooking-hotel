@@ -43,6 +43,12 @@ class NewRbk implements PaymentSystemInterface
     protected $shopId;
 
     /**
+     * @var float
+     * @ODM\Field(type="float")
+     */
+    protected $taxationRateCode = 18;
+
+    /**
      * @return string
      */
     public function getShopId(): ?string
@@ -77,7 +83,7 @@ class NewRbk implements PaymentSystemInterface
     /**
      * @return int
      */
-    public function getLifetimeInvoice(): int
+    public function getLifetimeInvoice(): ?int
     {
         return $this->lifetimeInvoice;
     }
@@ -90,6 +96,21 @@ class NewRbk implements PaymentSystemInterface
         $this->lifetimeInvoice = $lifetimeInvoice;
     }
 
+    /**
+     * @return float
+     */
+    public function getTaxationRateCode(): ?float
+    {
+        return $this->taxationRateCode;
+    }
+
+    /**
+     * @param float $taxationRateCode
+     */
+    public function setTaxationRateCode(?float $taxationRateCode = 18): void
+    {
+        $this->taxationRateCode = $taxationRateCode;
+    }
 
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {

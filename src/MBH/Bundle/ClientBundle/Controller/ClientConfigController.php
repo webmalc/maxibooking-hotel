@@ -21,6 +21,7 @@ use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use MBH\Bundle\ClientBundle\Service\Notice;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -222,14 +223,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $config->setMoneymail($moneymail);
                     break;
                 case 'uniteller':
-                    $uniteller = new Uniteller();
-                    $uniteller
-                        ->setUnitellerShopIDP($form->get('unitellerShopIDP')->getData())
-                        ->setUnitellerPassword($form->get('unitellerPassword')->getData())
-                        ->setIsWithFiscalization($form->get('isUnitellerWithFiscalization')->getData())
-                        ->setTaxationRateCode($form->get('taxationRateCode')->getData())
-                        ->setTaxationSystemCode($form->get('taxationSystemCode')->getData());
-                    $config->setUniteller($uniteller);
+                    $config->setUniteller(UnitellerHelper::instance($form));
                     break;
                 case 'rbk':
                     $rbk = new Rbk();

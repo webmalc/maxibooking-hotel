@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,12 +25,24 @@ class ClientPaymentSystemType extends AbstractType
     private $paymentSystemsDefault;
     private $taxationRateCodes;
 
+    /**
+     * @var array
+     */
+    private $extraData;
+
     public function __construct($paymentSystems, $paymentSystemsChange, $paymentSystemsDefault, $taxationRateCodes)
     {
         $this->paymentSystems = $paymentSystems;
         $this->paymentSystemsChange = $paymentSystemsChange;
         $this->paymentSystemsDefault = $paymentSystemsDefault;
         $this->taxationRateCodes = $taxationRateCodes;
+
+        $this->extraData = compact(
+            'paymentSystems',
+            'paymentSystemsChange',
+            'paymentSystemsDefault',
+            'taxationRateCodes'
+        );
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -39,7 +52,6 @@ class ClientPaymentSystemType extends AbstractType
         $robokassaMerchantLogin = $robokassaMerchantPass1 = $robokassaMerchantPass2 = null;
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
-        $unitellerIsWithFiscalization = $unitellerShopIDP = $unitellerPassword = $taxationSystemCode = $taxationRateCode = null;
         $rnkbKey = $rnkbShopIDP = null;
         $rbkEshopId = $rbkSecretKey = null;
         $paypalLogin = null;
@@ -59,11 +71,6 @@ class ClientPaymentSystemType extends AbstractType
             $payanywayKey = $clientConfig->getPayanyway() ? $clientConfig->getPayanyway()->getPayanywayKey() : '';
             $moneymailShopIDP = $clientConfig->getMoneymail() ? $clientConfig->getMoneymail()->getMoneymailShopIDP() : '';
             $moneymailKey = $clientConfig->getMoneymail() ? $clientConfig->getMoneymail()->getMoneymailKey() : '';
-            $unitellerShopIDP = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerShopIDP() : '';
-            $unitellerPassword = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getUnitellerPassword() : '';
-            $unitellerIsWithFiscalization = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->isWithFiscalization() : true;
-            $taxationRateCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationRateCode() : '';
-            $taxationSystemCode = $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationSystemCode() : '';
             $rbkEshopId = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkEshopId() : '';
             $rbkSecretKey = $clientConfig->getRbk() ? $clientConfig->getRbk()->getRbkSecretKey() : '';
             $paypalLogin = $clientConfig->getPaypal() ? $clientConfig->getPaypal()->getPaypalLogin() : '';
@@ -92,15 +99,10 @@ class ClientPaymentSystemType extends AbstractType
                 ]
             );
 
+        UnitellerHelper::addFields($builder, $clientConfig, $this->extraData);
+        NewRbkHelper::addFields($builder, $clientConfig, $this->extraData);
+
         $builder
-            ->add('isUnitellerWithFiscalization', CheckboxType::class, [
-                'mapped' => false,
-                'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
-                'group' => self::COMMON_GROUP,
-                'data' => $unitellerIsWithFiscalization,
-                'required' => false,
-                'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller'],
-            ])
             ->add(
                 'robokassaMerchantLogin',
                 TextType::class,
@@ -186,30 +188,6 @@ class ClientPaymentSystemType extends AbstractType
                 ]
             )
             ->add(
-                'unitellerShopIDP',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.uniteller_shop_id',
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller'],
-                    'group' => self::COMMON_GROUP,
-                    'mapped' => false,
-                    'data' => $unitellerShopIDP
-                ]
-            )
-            ->add(
-                'unitellerPassword',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.uniteller_password',
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller', 'type' => 'password'],
-                    'group' => self::COMMON_GROUP,
-                    'mapped' => false,
-                    'data' => $unitellerPassword
-                ]
-            )
-            ->add(
                 'rnkbShopIDP',
                 TextType::class,
                 [
@@ -231,32 +209,6 @@ class ClientPaymentSystemType extends AbstractType
                     'group' => self::COMMON_GROUP,
                     'mapped' => false,
                     'data' => $rnkbKey
-                ]
-            )
-            ->add(
-                'taxationRateCode',
-                InvertChoiceType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
-                    'choices' => $this->taxationRateCodes['rate_codes'],
-                    'mapped' => false,
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller'],
-                    'group' => self::COMMON_GROUP,
-                    'data' => $taxationRateCode
-                ]
-            )
-            ->add(
-                'taxationSystemCode',
-                InvertChoiceType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.uniteller.taxation_system_code',
-                    'choices' => $this->taxationRateCodes['system_codes'],
-                    'mapped' => false,
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' uniteller'],
-                    'group' => self::COMMON_GROUP,
-                    'data' => $taxationSystemCode
                 ]
             )
             ->add(
@@ -333,8 +285,6 @@ class ClientPaymentSystemType extends AbstractType
                     'data' => $paypalLogin
                 ]
             );
-
-        NewRbkHelper::addFields($builder, $clientConfig);
     }
 
     public function configureOptions(OptionsResolver $resolver)
