@@ -205,7 +205,7 @@ class ExpediaController extends Controller
     {
         $config = $this->hotel->getExpediaConfig();
         if ($config) {
-            $this->get('mbh.channelmanager')->pullOrdersInBackground('booking', true);
+            $this->get('mbh.channelmanager')->pullOrdersInBackground('expedia', true);
             $this->addFlash('warning', 'controller.expediaController.old_ordes_sync_start');
         }
 
