@@ -9,6 +9,11 @@ interface ChannelManagerConfigInterface
     public function getIsEnabled();
 
     /**
+     * @return bool
+     */
+    public function isReadyToSync(): bool;
+
+    /**
      * @return Hotel
      */
     public function getHotel();

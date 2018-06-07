@@ -15,7 +15,6 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class HundredOneHotelsController
@@ -68,8 +67,7 @@ class HundredOneHotelsController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $errorMessage = $this->get('mbh.channelmanager.hundred_one_hotels')->sendTestRequestAndGetErrorMessage($config);
             if (isset($errorMessage)) {
-                $this->addFlash('danger',
-                    $this->get('translator')->trans($errorMessage));
+                $this->addFlash('danger', $errorMessage);
             } else {
                 /* @var $dm DocumentManager; */
                 $dm = $this->get('doctrine_mongodb')->getManager();
@@ -82,6 +80,7 @@ class HundredOneHotelsController extends Controller
                     $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
             }
         }
+
         return $this->redirectToRoute('hundred_one_hotels');
     }
 
