@@ -137,9 +137,6 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function analyticsAction(FormConfig $config, Request $request)
     {
-        $config->getGoogleAnalyticConfig() ?: $config->setGoogleAnalyticConfig(new GoogleAnalyticConfig());
-        $config->getYandexAnalyticConfig() ?: $config->setYandexAnalyticConfig(new YandexAnalyticConfig());
-
         $form = $this->createForm(AnalyticsForm::class, $config);
         $form->handleRequest($request);
 

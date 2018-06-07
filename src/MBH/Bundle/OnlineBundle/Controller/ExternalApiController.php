@@ -44,7 +44,6 @@ class ExternalApiController extends BaseController
      */
     public function getRoomTypesAction(Request $request)
     {
-        $this->addAccessControlAllowOriginHeaders(['http://localhost:4200']);
         $requestHandler = $this->get('mbh.api_handler');
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $queryData = $request->query;
@@ -53,7 +52,7 @@ class ExternalApiController extends BaseController
         /** @var FormConfig $formConfig */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
         if (!is_null($formConfig)) {
-            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl(false)]);
         }
 
         $responseCompiler = $requestHandler->checkIsArrayFields($queryData, ['roomTypeIds', 'hotelIds'], $responseCompiler);
@@ -140,7 +139,7 @@ class ExternalApiController extends BaseController
         $onlineFormId = $queryData->get('onlineFormId');
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
         if (!is_null($formConfig)) {
-            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl(false)]);
         }
 
         $hotelIds = $queryData->get('hotelIds');
@@ -186,7 +185,6 @@ class ExternalApiController extends BaseController
      */
     public function getHotelsAction(Request $request)
     {
-        $this->addAccessControlAllowOriginHeaders(['http://localhost:4200']);
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
         $isEnabled = !empty($queryData->get('isEnabled')) ? $queryData->get('isEnabled') === 'true' : true;
@@ -206,7 +204,7 @@ class ExternalApiController extends BaseController
         /** @var FormConfig $formConfig */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
         if (!is_null($formConfig)) {
-            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl(false)]);
         }
 
         if (!$responseCompiler->isSuccessful()) {
@@ -222,7 +220,7 @@ class ExternalApiController extends BaseController
             ) {
 //                $hotel->setLocale($locale);
 //                $this->dm->refresh($hotel);
-                $hotelData = $hotel->getJsonSerialized($isFull);
+                $hotelData = $hotel->getJsonSerialized($isFull, $this->get('translator'));
                 if ($isFull && $hotel->getCityId()) {
                     $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
                 }
@@ -258,7 +256,7 @@ class ExternalApiController extends BaseController
         /** @var FormConfig $formConfig */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
         if (!is_null($formConfig)) {
-            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl(false)]);
         }
 
         $requestHandler->checkMandatoryFields($queryData, ['tariffId'], $responseCompiler);
@@ -356,7 +354,7 @@ class ExternalApiController extends BaseController
         /** @var FormConfig $formConfigData */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
         if (!is_null($formConfig)) {
-            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl(false)]);
         }
 
         $hotelIds = $queryData->get('hotelIds');
@@ -429,14 +427,20 @@ class ExternalApiController extends BaseController
      */
     public function minPricesForRoomTypesAction(Request $request)
     {
-        $this->addAccessControlAllowOriginHeaders(['http://localhost:4200']);
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
 
-        $responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['hotelId'], $responseCompiler);
+        $responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['hotelId', 'onlineFormId'], $responseCompiler);
         if (!$responseCompiler->isSuccessful()) {
             return $responseCompiler->getResponse();
+        }
+
+        $onlineFormId = $queryData->get('onlineFormId');
+        /** @var FormConfig $formConfig */
+        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
+        if (!is_null($formConfig)) {
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl(false)]);
         }
 
         $hotel = $this->dm->find('MBHHotelBundle:Hotel', $queryData->get('hotelId'));

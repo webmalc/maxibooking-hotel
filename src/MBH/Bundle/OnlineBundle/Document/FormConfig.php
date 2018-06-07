@@ -282,7 +282,7 @@ class FormConfig extends Base
      */
     public function getGoogleAnalyticConfig(): ?GoogleAnalyticConfig
     {
-        return $this->googleAnalyticConfig;
+        return $this->googleAnalyticConfig ?? new GoogleAnalyticConfig();
     }
 
     /**
@@ -301,7 +301,7 @@ class FormConfig extends Base
      */
     public function getYandexAnalyticConfig(): ?YandexAnalyticConfig
     {
-        return $this->yandexAnalyticConfig;
+        return $this->yandexAnalyticConfig ?? new YandexAnalyticConfig();
     }
 
     /**
@@ -751,12 +751,13 @@ class FormConfig extends Base
     }
 
     /**
-     * @param bool $forSite
+     * If form config is used for api, results url contains only domain address
+     * @param bool $forResultsPage
      * @return string
      */
-    public function getResultsUrl($forSite = false): ?string
+    public function getResultsUrl($forResultsPage = true): ?string
     {
-        return $forSite ? $this->resultsUrl . SiteManager::DEFAULT_RESULTS_PAGE : $this->resultsUrl;
+        return $forResultsPage ? $this->resultsUrl . SiteManager::DEFAULT_RESULTS_PAGE : $this->resultsUrl;
     }
 
     /**

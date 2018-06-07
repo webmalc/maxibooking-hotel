@@ -24,6 +24,7 @@ use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -1836,9 +1837,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     /**
      * @param bool $isFull
+     * @param TranslatorInterface|null $translator
      * @return array
      */
-    public function getJsonSerialized($isFull = false)
+    public function getJsonSerialized($isFull = false, TranslatorInterface $translator = null)
     {
         $data = [
             'id' => $this->getId(),
@@ -1850,9 +1852,15 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                 'isEnabled' => $this->getIsEnabled(),
                 'isDefault' => $this->getIsDefault(),
                 'isHostel' => $this->getIsHostel(),
-                'facilities' => $this->getFacilities(),
                 'description' => $this->getDescription()
             ];
+            if (!is_null($translator)) {
+                $facilities = [];
+                foreach ($this->getFacilities() as $facility) {
+                    $facilities[] = ['id' => $facility, 'title' => $translator->trans('facilities.' . $facility)];
+                }
+                $comprehensiveData['facilities'] = $facilities;
+            }
             if (!is_null($this->latitude)) {
                 $comprehensiveData['latitude'] = $this->latitude;
             }

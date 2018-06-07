@@ -19,7 +19,7 @@ function addLoadEvent(func) {
     }
 }
 
-function onLoad() {
+function onLoadFormLoad() {
     var getCoords = function (elem) {
         var box = elem.getBoundingClientRect();
 
@@ -187,5 +187,5 @@ function onLoad() {
     }
 }
 
-addLoadEvent(onLoad);
+addLoadEvent(onLoadFormLoad);
 
