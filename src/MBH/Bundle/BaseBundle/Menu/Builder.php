@@ -703,8 +703,8 @@ class Builder
         $siteSettings = [
             'site_settings' => [
                 'options'    => [
-                    'route' => '_welcome',
-                    'label' => 'Site Settings',
+                    'route' => 'site_settings',
+                    'label' => 'menu.communication.label.site_settings',
                 ],
                 'attributes' => [
                     'icon' => 'fa fa-cog',
@@ -736,9 +736,9 @@ class Builder
 
         return $parent->setChildren(
             $this->getItemsInArray([
-//                $siteSettings,
-$onlinePolls,
-$paymentSystem,
+                $siteSettings,
+                $onlinePolls,
+                $paymentSystem,
             ])
         );
     }

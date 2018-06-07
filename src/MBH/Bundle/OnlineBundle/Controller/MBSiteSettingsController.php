@@ -19,14 +19,25 @@ class MBSiteSettingsController extends BaseController
      */
     public function getMainSettingsAction()
     {
+        //TODO: Здест будет указан адрес из настроек
         header('Access-Control-Allow-Origin: ' . 'http://localhost:4200');
-        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+
         //TODO: Решить как получать конфиг, либо убрать необходимость его указывать в апи запросах
-        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
+        $formConfig = $this->dm
+            ->getRepository('MBHOnlineBundle:FormConfig')
+            ->getForMBSite();
+
+        $siteConfig = $this->dm
+            ->getRepository('MBHOnlineBundle:SiteConfig')
+            ->findOneBy([]);
 
         return new JsonResponse([
-            'hotelsIds' => $this->helper->toIds($hotels),
-            'formConfigId' => $formConfig->getId()
+            //TODO: Может быть еще фильтровать по тому насколько заполнены данные в отелях
+            'hotelsIds' => $this->helper->toIds($siteConfig->getHotels()),
+            'formConfigId' => $formConfig->getId(),
+            'keyWords' => $siteConfig->getKeyWords(),
+            'personalDataPolicies' => $siteConfig->getPersonalDataPolicies(),
+            'contract' => $siteConfig->getContract()
         ]);
     }
 }
