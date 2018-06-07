@@ -300,6 +300,10 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
                         ->setBegin($beginDate)
                         ->setEnd($endDate)
                     ;
+
+                    $manager->persist($packageAccommodation);
+                    $manager->flush();
+
                     $package->addAccommodation($packageAccommodation);
                     unset($roomAccommodation);
                 }

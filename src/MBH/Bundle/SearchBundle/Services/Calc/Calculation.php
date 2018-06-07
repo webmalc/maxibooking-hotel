@@ -11,6 +11,7 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationAdditionalPriceException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
@@ -22,17 +23,18 @@ class Calculation
     private $priceCacheMerger;
 
     /** @var DataHolder */
-    private $hotelContentHolder;
+    private $dataHolder;
+
 
     /**
      * Calculation constructor.
      * @param PriceCachesMerger $merger
-     * @param DataHolder $contentHolder
+     * @param DataHolder $dataHolder
      */
-    public function __construct(PriceCachesMerger $merger, DataHolder $contentHolder)
+    public function __construct(PriceCachesMerger $merger, DataHolder $dataHolder)
     {
         $this->priceCacheMerger = $merger;
-        $this->hotelContentHolder = $contentHolder;
+        $this->dataHolder = $dataHolder;
     }
 
 
@@ -84,9 +86,6 @@ class Calculation
     {
         $total = 0;
         $packagePrices = $dayPrices = [];
-
-        $tariff = $calcQuery->getTariff();
-
         $rawPromotion = $calcQuery->getPromotion();
         if (null === $rawPromotion) {
             $rawPromotion = $calcQuery->getTariff()->getDefaultPromotion();
@@ -94,21 +93,23 @@ class Calculation
         $isPromoCanApply = $this->checkPromoConditions($rawPromotion, $calcQuery->getDuration(), $combination['adults'], $combination['children']);
         $promotion = $isPromoCanApply ? $rawPromotion : null;
 
+
+        $sortedTourists = $this->getSortedTourists(
+            $combination['adults'],
+            $combination['children'],
+            $calcQuery->getRoomType()->getPlaces(),
+            $promotion
+        );
+
+        $mainChildren = $sortedTourists['mainChildren'];
+        $mainAdults = $sortedTourists['mainAdults'];
+        $addsChildren = $sortedTourists['addsChildren'];
+        $addsAdults = $sortedTourists['addsAdults'];
+        $all = $sortedTourists['all'];
+
+
         foreach ($priceCaches as $cacheData) {
             $rawPriceCache = $cacheData['data'];
-            $sortedTourists = $this->getSortedTourists(
-                $combination['adults'],
-                $combination['children'],
-                $calcQuery->getRoomType()->getPlaces(),
-                $promotion
-            );
-
-            $mainChildren = $sortedTourists['mainChildren'];
-            $mainAdults = $sortedTourists['mainAdults'];
-            $addsChildren = $sortedTourists['addsChildren'];
-            $addsAdults = $sortedTourists['addsAdults'];
-            $all = $sortedTourists['all'];
-
             $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $calcQuery, $mainChildren);
             $mainAdultPrice = $this->getMainAdultsPrice($rawPriceCache, $calcQuery, $mainAdults, $all);
             $multiPrices = ($addsAdults + $addsChildren) > 1;
@@ -117,11 +118,13 @@ class Calculation
             $additionalChildrenPrice = $this->getAdditionalChildrenPrice($rawPriceCache, $addsChildren, $multiPrices, $addsAdults, $isIndividualPrices, $promotion);
 
             $dayPrice = $mainAdultPrice + $mainChildrenPrice + $additionalAdultPrice + $additionalChildrenPrice;
+
+            /** TODO: В итоге откуда брать Promotion? Из PriceCache на каждый день? */
             $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
 
             $rawPriceDate = Helper::convertMongoDateToDate($rawPriceCache['date']);
             /** @var Tariff $tariff */
-            $tariff = $this->hotelContentHolder->getFetchedTariff($cacheData['searchTariffId']);
+            $tariff = $this->dataHolder->getFetchedTariff($cacheData['searchTariffId']);
             $packagePrice = $this->getPackagePrice($dayPrice, $rawPriceDate, $tariff, $calcQuery->getRoomType(), $promotion, $calcQuery->getSpecial());
             $dayPrices[$rawPriceDate->format('d_m_Y')] = $dayPrice;
             $packagePrices[] = $packagePrice;

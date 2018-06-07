@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by Zavalyuk Alexandr (Zalex).
- * email: zalex@zalex.com.ua
- * Date: 16.12.16
- * Time: 12:09
- */
+
 
 namespace MBH\Bundle\PackageBundle\Document;
 
@@ -15,19 +10,28 @@ class PackageAccommodationRepository extends DocumentRepository
 {
     public function getAccommodationByPeriod(\DateTime $begin = null, \DateTime $end = null)
     {
+        $qb = $this->getAccommodationByPeriodQB($begin, $end);
+
+        return $qb->getQuery()->execute();
+    }
+
+    private function getAccommodationByPeriodQB(\DateTime $begin = null, \DateTime $end = null)
+    {
         if (!$begin) {
-            $begin = new \DateTime("now");
+            $begin = new \DateTime('now');
         }
 
         if (!$end) {
-            $end = new \DateTime("now");
+            $end = new \DateTime('now');
         }
 
         $qb = $this->createQueryBuilder()
             ->field('begin')->gte($begin)
-            ->field('end')->lte($end);
+            ->field('end')->lte($end)
+            ->field('isEnabled')->equals(true)
+        ;
 
-        return $qb->getQuery()->execute();
+        return $qb;
     }
 
     public function getWithAccommodationQB(
@@ -86,8 +90,20 @@ class PackageAccommodationRepository extends DocumentRepository
         return $accQb->getQuery()->execute();
     }
 
-    public function getAccommodationByDate(\DateTime $dateTime)
+    public function getAccommodationByDate(\DateTime $date)
     {
-        return $this->getAccommodationByPeriod($dateTime, $dateTime);
+        return $this->getAccommodationByPeriod($date, $date);
+    }
+
+    public function getRawAccommodationByPeriod(\DateTime $searchBegin, \DateTime $searchEnd)
+    {
+        $result = $this->createQueryBuilder()
+            ->field('begin')->lt($searchEnd)
+            ->field('end')->gt($searchBegin)
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+        return $result;
     }
 }

@@ -5,25 +5,23 @@ namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\PriceBundle\Document\PriceCacheRepository;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 
 class PriceCachesMerger
 {
-
-    /** @var PriceCacheRepository */
-    private $priceCacheRepository;
-
     /** @var TariffRepository */
     private $tariffRepository;
 
+    /** @var DataHolder */
+    private $dataHolder;
 
-    public function __construct(PriceCacheRepository $repository, TariffRepository $tariffRepository)
+
+    public function __construct(TariffRepository $tariffRepository, DataHolder $dataHolder)
     {
-
-        $this->priceCacheRepository = $repository;
         $this->tariffRepository = $tariffRepository;
+        $this->dataHolder = $dataHolder;
     }
 
 
@@ -90,6 +88,25 @@ class PriceCachesMerger
     }
 
 
+    private function getPriceTariffPriceCaches(CalcQuery $calcQuery): array
+    {
+        $priceCaches = $this->getRawPriceCaches($calcQuery, $calcQuery->getPriceTariffId());
+
+        return $this->preparePriceCacheReturn($priceCaches, $calcQuery->getTariff()->getId());
+    }
+
+
+    private function getMergingTariffPriceCaches(CalcQuery $calcQuery): array
+    {
+        if ($mergingTariffId = $calcQuery->getMergingTariffId()) {
+            $priceCaches = $this->getRawPriceCaches($calcQuery, $mergingTariffId);
+
+            return $this->preparePriceCacheReturn($priceCaches, $mergingTariffId);
+        }
+
+        return [];
+    }
+
     private function getBaseTariffPriceCaches(CalcQuery $calcQuery): array
     {
         if (!$calcQuery->getTariff()->getIsDefault()) {
@@ -106,35 +123,9 @@ class PriceCachesMerger
         return [];
     }
 
-
-    private function getMergingTariffPriceCaches(CalcQuery $calcQuery): array
-    {
-        if ($mergingTariffId = $calcQuery->getMergingTariffId()) {
-            $priceCaches = $this->getRawPriceCaches($calcQuery, $mergingTariffId);
-
-            return $this->preparePriceCacheReturn($priceCaches, $mergingTariffId);
-        }
-
-        return [];
-    }
-
-    private function getPriceTariffPriceCaches(CalcQuery $calcQuery): array
-    {
-        $priceCaches = $this->getRawPriceCaches($calcQuery, $calcQuery->getPriceTariffId());
-
-        return $this->preparePriceCacheReturn($priceCaches, $calcQuery->getTariff()->getId());
-    }
-
     private function getRawPriceCaches(CalcQuery $calcQuery, string $searchingTariffId): array
     {
-        return $this->priceCacheRepository
-            ->fetchRaw(
-                $calcQuery->getSearchBegin(),
-                $calcQuery->getPriceCacheEnd(),
-                $calcQuery->getPriceRoomTypeId(),
-                $searchingTariffId,
-                $calcQuery->isUseCategory()
-            );
+        return $this->dataHolder->getNecessaryPriceCaches($calcQuery, $searchingTariffId);
     }
 
     private function preparePriceCacheReturn(array $caches, string $tariffId): array

@@ -4,6 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -25,6 +26,21 @@ class CalcQuery
      * @Assert\Date()
      */
     private $searchEnd;
+
+    /** @var \DateTime */
+    private $conditionMaxBegin;
+
+    /** @var \DateTime */
+    private $conditionMaxEnd;
+
+    /** @var ArrayCollection|Tariff[] */
+    private $conditionTariffs;
+
+    /** @var ArrayCollection|RoomType[] */
+    private $conditionRoomTypes;
+
+    /** @var string */
+    private $conditionHash;
 
     /**
      * @var RoomType
@@ -108,6 +124,103 @@ class CalcQuery
 
         return $this;
     }
+
+    /**
+     * @return \DateTime
+     */
+    public function getConditionMaxBegin(): ?\DateTime
+    {
+        return $this->conditionMaxBegin;
+    }
+
+    /**
+     * @param \DateTime $conditionMaxBegin
+     * @return CalcQuery
+     */
+    public function setConditionMaxBegin(\DateTime $conditionMaxBegin): CalcQuery
+    {
+        $this->conditionMaxBegin = $conditionMaxBegin;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getConditionMaxEnd(): ?\DateTime
+    {
+        return $this->conditionMaxEnd;
+    }
+
+    /**
+     * @param \DateTime $conditionMaxEnd
+     * @return CalcQuery
+     */
+    public function setConditionMaxEnd(\DateTime $conditionMaxEnd): CalcQuery
+    {
+        $this->conditionMaxEnd = $conditionMaxEnd;
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection|Tariff[]
+     */
+    public function getConditionTariffs(): ?ArrayCollection
+    {
+        return $this->conditionTariffs;
+    }
+
+    /**
+     * @param ArrayCollection|Tariff[] $conditionTariffs
+     * @return CalcQuery
+     */
+    public function setConditionTariffs(ArrayCollection $conditionTariffs)
+    {
+        $this->conditionTariffs = $conditionTariffs;
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection|RoomType[]
+     */
+    public function getConditionRoomTypes(): ?ArrayCollection
+    {
+        return $this->conditionRoomTypes;
+    }
+
+    /**
+     * @param ArrayCollection|RoomType[] $conditionRoomTypes
+     * @return CalcQuery
+     */
+    public function setConditionRoomTypes(ArrayCollection $conditionRoomTypes)
+    {
+        $this->conditionRoomTypes = $conditionRoomTypes;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConditionHash(): ?string
+    {
+        return $this->conditionHash;
+    }
+
+    /**
+     * @param string $conditionHash
+     * @return CalcQuery
+     */
+    public function setConditionHash(string $conditionHash): CalcQuery
+    {
+        $this->conditionHash = $conditionHash;
+
+        return $this;
+    }
+
+
 
     /**
      * @return RoomType

@@ -10,10 +10,14 @@ use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodationRepository;
+use MBH\Bundle\PriceBundle\Document\PriceCacheRepository;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCacheRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
+use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class DataHolder
@@ -39,6 +43,13 @@ class DataHolder
     /** @var RoomRepository */
     private $roomRepository;
 
+    /** @var PriceCacheRepository */
+    private $priceCacheRepository;
+
+    /** @var PackageAccommodationRepository */
+    private $packageAccommodationRepository;
+
+
     /** @var bool */
     private $isUseCategory;
 
@@ -46,7 +57,16 @@ class DataHolder
     private $restrictions;
 
     /** @var array */
+    private $packageAccommodations;
+
+    /** @var array */
+    private $roomsByRoomType;
+
+    /** @var array */
     private $roomCaches;
+
+    /** @var array */
+    private $priceCaches;
 
     /**
      * TariffHolder constructor.
@@ -56,8 +76,19 @@ class DataHolder
      * @param ClientConfigRepository $configRepository
      * @param RoomCacheRepository $roomCacheRepository
      * @param RoomRepository $roomRepository
+     * @param PackageAccommodationRepository $accommodationRepository
+     * @param PriceCacheRepository $priceCacheRepository
      */
-    public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository, RestrictionRepository $restrictionRepository, ClientConfigRepository $configRepository, RoomCacheRepository $roomCacheRepository, RoomRepository $roomRepository)
+    public function __construct(
+        TariffRepository $tariffRepository,
+        RoomTypeRepository $roomTypeRepository,
+        RestrictionRepository $restrictionRepository,
+        ClientConfigRepository $configRepository,
+        RoomCacheRepository $roomCacheRepository,
+        RoomRepository $roomRepository,
+        PackageAccommodationRepository $accommodationRepository,
+        PriceCacheRepository $priceCacheRepository
+    )
     {
         $this->tariffRepository = $tariffRepository;
         $this->roomTypeRepository = $roomTypeRepository;
@@ -67,6 +98,8 @@ class DataHolder
         $this->isUseCategory = $configRepository->fetchConfig()->getUseRoomTypeCategory();
         $this->roomCacheRepository = $roomCacheRepository;
         $this->roomRepository = $roomRepository;
+        $this->packageAccommodationRepository = $accommodationRepository;
+        $this->priceCacheRepository = $priceCacheRepository;
     }
 
 
@@ -85,6 +118,10 @@ class DataHolder
         return null;
     }
 
+    /**
+     * @param string $roomTypeId
+     * @return RoomType|null
+     */
     public function getFetchedRoomType(string $roomTypeId): ?RoomType
     {
         foreach ($this->roomTypes as $roomType) {
@@ -109,7 +146,7 @@ class DataHolder
         return $this->tariffRepository->fetchRaw(
             $hotelIds,
             $tariffIds,
-            true,
+            $isEnabled,
             $isOnline
         );
     }
@@ -131,6 +168,11 @@ class DataHolder
     }
 
 
+    /***************************************
+     * Restriction Block
+     * @param SearchQuery $searchQuery
+     * @return array
+     */
     public function getCheckNecessaryRestrictions(SearchQuery $searchQuery): array
     {
         $restrictions = $this->getRestrictions($searchQuery);
@@ -146,7 +188,6 @@ class DataHolder
 
     }
 
-    //** TODO: REDIS MIDDLE CACHE? */
     private function getRestrictions(SearchQuery $searchQuery): ?array
     {
         $restrictions = [];
@@ -217,6 +258,12 @@ class DataHolder
     }
 
 
+    /***********************************
+     * RoomCachesBlock
+     * @param SearchQuery $searchQuery
+     * @return array|null
+     * @throws MongoDBException
+     */
     public function getNecessaryRoomCaches(SearchQuery $searchQuery): ?array
     {
         $roomCaches = $this->getRoomCaches($searchQuery);
@@ -245,7 +292,7 @@ class DataHolder
             $groupedByDayRoomCaches = $hashedRoomCaches[$searchQuery->getRoomTypeId()];
             if (!\count($groupedByDayRoomCaches)) {
                 return [];
-        }
+            }
             $begin = $searchQuery->getBegin();
             $end = $searchQuery->getEnd();
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
@@ -276,16 +323,220 @@ class DataHolder
         $this->roomCaches[$hash] = $roomCaches;
     }
 
-    public function getAccommodationRooms(SearchQuery $searchQuery): array
-    {
-        $begin = $searchQuery->getBegin();
-        $end = $searchQuery->getEnd();
-        $roomTypeId = $searchQuery->getRoomTypeId();
-        $hash = $searchQuery->getSearchHash();
 
-        return $this->roomRepository->fetchRawAccommodationRooms($begin, $end, $roomTypeId);
+    /*************************************
+     * Accommodation block.
+     * @param SearchQuery $searchQuery
+     * @return array
+     */
+    public function getNecessaryAccommodationRooms(SearchQuery $searchQuery): array
+    {
+        $accommodations = $this->getAccommodationRooms($searchQuery);
+        if (null === $accommodations) {
+            $hash = $searchQuery->getSearchHash();
+            $conditions = $searchQuery->getSearchConditions();
+            if (!$this->roomsByRoomType[$hash] ?? null) {
+                $this->roomsByRoomType[$hash] = $this->getAllRoomsByRoomType($conditions->getRoomTypes());
+            }
+            $packageAccommodations = $this->packageAccommodationRepository->getRawAccommodationByPeriod($conditions->getMaxBegin(), $conditions->getMaxEnd());
+            $this->setAccommodationsRooms($packageAccommodations, $searchQuery);
+
+            return $this->getAccommodationRooms($searchQuery);
+        }
+
+        return $accommodations;
     }
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return array|null
+     */
+    private function getAccommodationRooms(SearchQuery $searchQuery): ?array
+    {
+        $hash = $searchQuery->getSearchHash();
+        $hashedPackageAccommodations = $this->packageAccommodations[$hash] ?? null;
+        if (null === $hashedPackageAccommodations) {
+            return null;
+        }
+        $roomTypeId = $searchQuery->getRoomTypeId();
+        $packageAccommodations = $hashedPackageAccommodations[$roomTypeId];
+        $searchBegin = $searchQuery->getBegin();
+        $searchEnd = $searchQuery->getEnd();
+        $forExcludeRoomsIds = $this->findIntersectWithDates($searchBegin, $searchEnd, $packageAccommodations);
+        $allRooms = $this->roomsByRoomType[$hash][$roomTypeId];
+        $allRoomsIds = array_map('\strval', array_column($allRooms, '_id'));
+
+        $accommodationRoomsIds = array_diff($allRoomsIds, $forExcludeRoomsIds);
+        $accommodationRooms = array_filter($allRooms, function ($room) use ($accommodationRoomsIds) {
+            return \in_array((string)$room['_id'], $accommodationRoomsIds, true);
+        });
+
+        return $accommodationRooms;
+
+    }
+
+    private function setAccommodationsRooms(array $packageAccommodations, SearchQuery $searchQuery): void
+    {
+        $hash = $searchQuery->getSearchHash();
+        $accommodations = [];
+        foreach ($packageAccommodations as $accommodation) {
+            $roomId = (string)$accommodation['accommodation']['$id'];
+            $roomTypeId = $this->getRoomTypeIdByRoom($roomId, $hash);
+            $accommodationDateKey = $this->getAccommodationDateKey($accommodation['begin'], $accommodation['end']);
+            $accommodations[$roomTypeId][$accommodationDateKey][] = $accommodation;
+        }
+
+        $this->packageAccommodations[$hash] = $accommodations;
+    }
+
+    private function getAllRoomsByRoomType(iterable $roomTypes = []): array
+    {
+        $roomTypeIds = [];
+        if (\count($roomTypes)) {
+            foreach ($roomTypes as $roomType) {
+                /** @var RoomType $roomType */
+                $roomTypeIds[] = $roomType->getId();
+            }
+        }
+
+        return $this->roomRepository->fetchRawAllRomsByRoomType($roomTypeIds, true);
+    }
+
+    private function getRoomTypeIdByRoom(string $roomId, string $hash)
+    {
+        $groupedRooms = $this->roomsByRoomType[$hash];
+        if (!$groupedRooms) {
+            throw new DataHolderException('There is no sure grouped Rooms dadta!');
+        }
+        foreach ($groupedRooms as $roomTypeId => $rooms) {
+            $roomsIds = array_map('\strval', array_column($rooms, '_id'));
+            if (\in_array($roomId, $roomsIds, true)) {
+                break;
+            }
+        }
+        if (!isset($roomTypeId)) {
+            throw new DataHolderException('There is error in determite roomType of room');
+        }
+
+        return $roomTypeId;
+    }
+
+    private function getAccommodationDateKey(\MongoDate $begin, \MongoDate $end): string
+    {
+        $key = Helper::convertMongoDateToDate($begin)->format('d-m-Y');
+        $key .= '_';
+        $key .= Helper::convertMongoDateToDate($end)->format('d-m-Y');
+
+        return $key;
+    }
+
+    private function findIntersectWithDates(\DateTime $searchBegin, \DateTime $searchEnd, array $packageAccommodations): array
+    {
+        $intersected = [];
+        foreach ($packageAccommodations as $dateKey => $accommodations) {
+            [$beginKey, $endKey] = explode('_', $dateKey);
+            $accommodationBegin = new \DateTime($beginKey);
+            $accommodationEnd = new \DateTime($endKey);
+            if ($accommodationBegin < $searchEnd && $accommodationEnd > $searchBegin) {
+                $rooms = array_column($accommodations, 'accommodation');
+                $roomsIds = array_map('\strval', array_column($rooms, '$id'));
+                $intersected[] = $roomsIds;
+            }
+        }
+
+        return array_merge(...$intersected);
+    }
+
+    /****************************
+     *  PriceCaches Block
+     * @param CalcQuery $calcQuery
+     * @param string $searchingTariffId
+     * @return
+     */
+    public function getNecessaryPriceCaches(CalcQuery $calcQuery, string $searchingTariffId): array
+    {
+        $hash = $calcQuery->getConditionHash();
+        if (!$hash) {
+            return $this->getRawPriceCachesWithNoCondition($calcQuery, $searchingTariffId);
+        }
+        $priceCaches = $this->getPriceCaches($calcQuery, $searchingTariffId);
+        if (null === $priceCaches) {
+            $allRawPriceCaches = $this->getAllPeriodPriceCaches($calcQuery);
+            $this->setPriceCaches($allRawPriceCaches, $calcQuery);
+            $priceCaches = $this->getPriceCaches($calcQuery, $searchingTariffId);
+        }
+
+        return $priceCaches;
+
+    }
+
+    private function getPriceCaches(CalcQuery $calcQuery, string $searchingTariffId): ?array
+    {
+        $hash = $calcQuery->getConditionHash();
+        $priceCaches = $this->priceCaches[$hash] ?? null;
+        if (null === $priceCaches) {
+            return null;
+        }
+
+        $priceCacheBegin = $calcQuery->getSearchBegin();
+        $priceCacheEnd = $calcQuery->getPriceCacheEnd();
+        $roomTypeId = $calcQuery->getPriceRoomTypeId();
+        $groupedPriceCaches = $priceCaches[$roomTypeId . '_' . $searchingTariffId] ?? [];
+        $priceCaches = [];
+        if (\count($groupedPriceCaches)) {
+            foreach (new \DatePeriod($priceCacheBegin, \DateInterval::createFromDateString('1 day'), (clone $priceCacheEnd)->modify('+1 days')) as $day) {
+                /** @var \DateTime $day */
+                $dateKey = $day->format('d-m-Y');
+                $priceCache = $groupedPriceCaches[$dateKey] ?? null;
+                if ($priceCache) {
+                    $priceCaches[] = $priceCache;
+                }
+            }
+
+        }
+
+        return $priceCaches;
+    }
+
+    private function setPriceCaches(array $rawPriceCaches, CalcQuery $calcQuery): void
+    {
+        $hash = $calcQuery->getConditionHash();
+        $priceCaches = [];
+        foreach ($rawPriceCaches as $priceCache) {
+            $key = (string)$priceCache['roomType']['$id'] . '_' . (string)$priceCache['tariff']['$id'];
+            $dateTimeKey = Helper::convertMongoDateToDate($priceCache['date'])->format('d-m-Y');
+            $priceCaches[$key][$dateTimeKey] = $priceCache;
+        }
+        $this->priceCaches[$hash] = $priceCaches;
+    }
+
+    private function getRawPriceCachesWithNoCondition(CalcQuery $calcQuery, string $searchingTariffId)
+    {
+        $begin = $calcQuery->getSearchBegin();
+        $end = $calcQuery->getPriceCacheEnd();
+        $roomTypeId = $calcQuery->getPriceRoomTypeId();
+        $isUseCategory = $calcQuery->isUseCategory();
+        return $this->priceCacheRepository
+            ->fetchRaw(
+                $begin,
+                $end,
+                $roomTypeId,
+                $searchingTariffId,
+                $isUseCategory
+            );
+    }
+
+    private function getAllPeriodPriceCaches(CalcQuery $calcQuery): array
+    {
+        $begin = $calcQuery->getConditionMaxBegin();
+        $end = $calcQuery->getConditionMaxEnd();
+        if (!$begin || !$end) {
+            throw new DataHolderException('Error in CalcQuery Condition Max Begin for period search');
+        }
+        $isUseCategory = $calcQuery->isUseCategory();
+
+        return $this->priceCacheRepository->fetchRawPeriod($begin, $end, $isUseCategory);
+    }
 
 
 }

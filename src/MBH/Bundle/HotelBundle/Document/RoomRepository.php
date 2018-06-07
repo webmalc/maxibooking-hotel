@@ -8,10 +8,10 @@ use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 
 /**
  * Class RoomRepository
-
  */
 class RoomRepository extends AbstractBaseRepository
 {
@@ -30,8 +30,7 @@ class RoomRepository extends AbstractBaseRepository
             $packages = $this
                 ->getDocumentManager()
                 ->getRepository('MBHPackageBundle:Package')
-                ->fetchWithVirtualRooms($begin, $end, $package->getRoomType())
-            ;
+                ->fetchWithVirtualRooms($begin, $end, $package->getRoomType());
 
             $rooms = array_map(function ($p) use ($virtualRoom, $begin, $end) {
                 $id = $p->getVirtualRoom()->getId();
@@ -50,8 +49,7 @@ class RoomRepository extends AbstractBaseRepository
 
             $qb->field('roomType')->references($package->getRoomType())
                 ->field('id')->notIn($rooms)
-                ->sort(['fullTitle', 'title'])
-            ;
+                ->sort(['fullTitle', 'title']);
         }
 
         return $qb;
@@ -105,10 +103,9 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         // rooms
-        $qb = $this->createQueryBuilder('r')
-            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
-        ;
-        if($hotelRoomTypes) {
+        $qb = $this->createQueryBuilder()
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
+        if ($hotelRoomTypes) {
             $qb->inToArray('roomType.id', $hotelRoomTypes);
         }
 
@@ -124,69 +121,31 @@ class RoomRepository extends AbstractBaseRepository
         return $groupedRooms;
     }
 
-//    public function fetchAccommodationRoomsForPackage(Package $package, Hotel $hotel)
-//    {
-//        $begin = $package->getLastEndAccommodation();
-//        $end = $package->getEnd();
-//        $interval = $end->diff($begin, true);
-//        if (!$interval->format('%d')) {
-//            return [];
-//        }
-//        $excludePackages = $package->getId();
-//
-//        return $this->fetchAccommodationRooms($begin, $end, $hotel, null, null, $excludePackages, true);
-//    }
-
-
-    public function fetchRawAccommodationRooms(\DateTime  $begin, \DateTime $end, string $roomTypeId)
+    public function fetchRawAllRomsByRoomType(array $roomTypeIds = [], bool $grouped = false)
     {
-        $newBegin = clone $begin;
-        $newEnd = clone $end;
-
-        $rooms =  $this->createQueryBuilder()
+        $qb = $this->createQueryBuilder();
+        if (\count($roomTypeIds)) {
+            $qb->field('roomType.id')->in($roomTypeIds);
+        }
+        $rawRooms = $qb
             ->field('isEnabled')->equals(true)
-            ->field('roomType.id')->equals($roomTypeId)
-            ->select(['id', 'fullTitle'])
-            ->hydrate(false)
-            ->getQuery()
-            ->execute()
-            ->toArray()
-        ;
-
-        $existedPackageAccommodations = $this->getDocumentManager()
-            ->getRepository('MBHPackageBundle:PackageAccommodation')
-            ->getWithAccommodationQB(
-                $newBegin->modify('+1 day'),
-                $newEnd->modify("-1 day"),
-                array_keys($rooms),
-                null)
-            ->select(['accommodation.id'])
+            ->select(['id', 'fullTitle', 'roomType'])
             ->hydrate(false)
             ->getQuery()
             ->execute()
             ->toArray();
 
-        $existedAccommodationIds = array_map(function ($packageAccommodation) {
-            return (string)$packageAccommodation['accommodation']['$id'];
-        }, $existedPackageAccommodations);
-        /** Надо проверять с размещением */
-        $roomsToAccommodationKeys = array_diff(array_keys($rooms), array_values($existedAccommodationIds));
+        if ($grouped) {
+            foreach ($rawRooms as $rawRoom) {
+                $groupedRooms[(string)$rawRoom['roomType']['$id']][] = $rawRoom;
+            }
+            return $groupedRooms;
+        }
 
-        return array_filter($rooms, function ($room) use ($roomsToAccommodationKeys){
-            return \in_array((string)$room['_id'], $roomsToAccommodationKeys, true);
-        });
-
-
+        return $rawRooms;
     }
 
 
-    //** TODO: Здесь получается условность,
-    // т.е. мы отсекаем все номера на которые есть размещения на период времени,
-    // однако же у нас множественное размещение и если предположим у нас бронь
-    // на период размещена в трех номерах, и номеров всего три
-    // значит поиск не выдаст список номеров для размещения, так ?
-    // Но мы по идее можем разместить потом по периодам ?
-    // */
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -247,18 +206,17 @@ class RoomRepository extends AbstractBaseRepository
             ->toArray();
 
 
-        foreach ($existedAccommodations as  $accommodation) {
+        foreach ($existedAccommodations as $accommodation) {
             /** @var PackageAccommodation $accommodation */
             $fullRoomsIds[] = $accommodation['accommodation']['$id'];
         }
 
         // rooms
         $qb = $this->createQueryBuilder()->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
-             ->field('isEnabled')->equals(true)
-             ->inToArray('roomType.id', $hotelRoomTypes)
-             ->notInNotEmpty('id', $fullRoomsIds)
-             ->inNotEmpty('id', $rooms)
-        ;
+            ->field('isEnabled')->equals(true)
+            ->inToArray('roomType.id', $hotelRoomTypes)
+            ->notInNotEmpty('id', $fullRoomsIds)
+            ->inNotEmpty('id', $rooms);
 
         $roomDocs = $qb->getQuery()->execute();
 
@@ -375,7 +333,8 @@ class RoomRepository extends AbstractBaseRepository
         $limit = null,
         $isEnabled = null,
         array $sort = null
-    ) {
+    )
+    {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder();
 
@@ -405,7 +364,7 @@ class RoomRepository extends AbstractBaseRepository
             is_array($floor) ? $floor : $floor = [$floor];
             $qb->field('floor')->in($floor);
         }
-        
+
         //Is enabled
         if ($isEnabled !== null) {
             $qb->field('isEnabled')->equals($isEnabled);
@@ -476,7 +435,7 @@ class RoomRepository extends AbstractBaseRepository
         if (!is_null($statusIds)) {
             $qb->addOr($qb->expr()->field('status.id')->in($statusIds));
         }
-        
+
         $roomsQuantityByRoomTypeIds = $qb
             ->map('function() {
                 var roomTypeId = this.roomType.$id;

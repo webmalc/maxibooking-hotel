@@ -30,7 +30,6 @@ class PriceCachesMergerTest extends SearchWebTestCase
         $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
         $this->service = $this->getContainer()->get('mbh_search.price_caches_merger');
         parent::setUp();
-        parent::baseFixtures();
     }
 
     /** @dataProvider dataProvider
@@ -57,7 +56,11 @@ class PriceCachesMergerTest extends SearchWebTestCase
                 ->setRoomType($searchRoomType)
                 ->setSearchBegin($begin)
                 ->setSearchEnd($end)
-                ->setIsUseCategory($isCategory);
+                ->setIsUseCategory($isCategory)
+                ->setConditionHash('hashhashhash')
+                ->setConditionMaxBegin($calcQuery->getSearchBegin())
+                ->setConditionMaxEnd($calcQuery->getSearchEnd())
+            ;
 
             if ($data['expectException']) {
                 $this->expectException(PriceCachesMergerException::class);

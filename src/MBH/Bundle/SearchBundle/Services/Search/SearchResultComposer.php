@@ -4,13 +4,10 @@
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
@@ -20,10 +17,6 @@ use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 
 class SearchResultComposer
 {
-
-    /** @var DocumentManager */
-    private $dm;
-
     /** @var RoomTypeManager */
     private $roomManager;
 
@@ -36,13 +29,13 @@ class SearchResultComposer
 
     /**
      * SearchResultComposer constructor.
-     * @param DocumentManager $dm
      * @param RoomTypeManager $roomManager
      * @param Calculation $calculation
+     * @param DataHolder $dataHolder
+     * @param SearchLimitChecker $limitChecker
      */
-    public function __construct(DocumentManager $dm, RoomTypeManager $roomManager, Calculation $calculation, DataHolder $dataHolder, SearchLimitChecker $limitChecker)
+    public function __construct(RoomTypeManager $roomManager, Calculation $calculation, DataHolder $dataHolder, SearchLimitChecker $limitChecker)
     {
-        $this->dm = $dm;
         $this->roomManager = $roomManager;
         $this->calculation = $calculation;
         $this->dataHolder = $dataHolder;
@@ -89,18 +82,9 @@ class SearchResultComposer
     }
 
 
-    private function pricePopulate(SearchResult $searchResult, array $prices): void
-
-    {
-        foreach ($prices as $price) {
-            $searchResult->addPrice($price['total'], $price['adults'], $price['children'])
-                /*->setPricesByDate($price['prices'], $price['adults'], $price['children'])*/
-                ->setPackagePrices($price['packagePrices'], $price['adults'], $price['children']);
-        }
-    }
-
     private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $actualAdults, int $actualChildren): array
     {
+        $conditions = $searchQuery->getSearchConditions();
         $calcQuery = new CalcQuery();
         $calcQuery
             ->setSearchBegin($searchQuery->getBegin())
@@ -112,6 +96,12 @@ class SearchResultComposer
             ->setIsUseCategory($this->roomManager->useCategories)
             //** TODO: Уточнить по поводу Promotion */
             /*->setPromotion()*/
+            /** TODO: Это все необязательные поля, нужны исключительно для dataHolder чтоб получить все данные сразу */
+            ->setConditionTariffs($conditions->getTariffs())
+            ->setConditionRoomTypes($conditions->getRoomTypes())
+            ->setConditionMaxBegin($conditions->getMaxBegin())
+            ->setConditionMaxEnd($conditions->getMaxEnd())
+            ->setConditionHash($conditions->getSearchHash())
         ;
 
         $prices = $this->calculation->calcPrices($calcQuery);
@@ -120,6 +110,16 @@ class SearchResultComposer
         }
 
         return $prices;
+    }
+
+    private function pricePopulate(SearchResult $searchResult, array $prices): void
+
+    {
+        foreach ($prices as $price) {
+            $searchResult->addPrice($price['total'], $price['adults'], $price['children'])
+                /*->setPricesByDate($price['prices'], $price['adults'], $price['children'])*/
+                ->setPackagePrices($price['packagePrices'], $price['adults'], $price['children']);
+        }
     }
 
 
@@ -131,7 +131,7 @@ class SearchResultComposer
      */
     private function getAccommodationRooms(SearchQuery $searchQuery): array
     {
-        return $this->dataHolder->getAccommodationRooms($searchQuery);
+        return $this->dataHolder->getNecessaryAccommodationRooms($searchQuery);
     }
 
     private function getMinCacheValue(SearchQuery $searchQuery, array $roomCaches): int
