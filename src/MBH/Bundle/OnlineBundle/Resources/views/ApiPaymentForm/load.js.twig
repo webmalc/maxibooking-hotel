@@ -37,14 +37,20 @@ var mbhPaymentFunc = {
     var self = this;
     window.addEventListener("message", function(e) {
       if (event.origin != self.urlPostMessage) {
-        // что-то прислали с неизвестного домена - проигнорируем..
+        {#// что-то прислали с неизвестного домена - проигнорируем..#}
         return;
       }
       if (e.data.type !== self.typePostMessage) {
         return;
       }
       console.log("получено from parent obj: " + e.data.data);
+      self.openCheckout(e.data.data);
     })
+  },
+  openCheckout: function(data) {
+    var checkout = RbkmoneyCheckout.configure(data);
+    checkout.open()
+
   },
   sendMsg        : function(msg) {
     this.iframe.postMessage({type: this.typePostMessage, data: msg}, this.urlPostMessage);

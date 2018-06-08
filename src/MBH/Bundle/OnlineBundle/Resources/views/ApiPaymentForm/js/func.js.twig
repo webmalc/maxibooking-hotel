@@ -4,19 +4,16 @@ var mbhIframe = {
   typePostMessage: 'mbh-payment-form',
   urlPostMessage : 'http://localhost:9099',
   addFormPayment : function(data) {
-    var html = '<form id="' + this.idFormPayment + '">' +
+    var html = '<form id="' + this.idFormPayment + '" method="post" action="{{ url('online_payment_form_generate_invoice') }}">' +
         '<div class="form-group form-group-sm"> ' +
         '<label for="total" class="col-form-label col-form-label-sm">Cумма к оплате</label>' +
         '<input type="number" class="form-control input-sm" name="total" value="' + data.total + '">' +
         '</div>' +
-        '<input type="hidden" name="id" value="' + data.orderId + '">' +
+        '<input type="hidden" name="packageId" value="' + data.packageId + '">' +
         '<div class="form-group">' +
         '<input type="submit" value="Оплатить" class="btn btn-success btn-sm">' +
         '</div>'
     ;
-    // html += '<input type="number" class="input-sm" name="total" value="' + data.total + '">';
-    // html += '<input type="hidden" name="id" value="' + data.orderId + '">';
-    // html += '<input type="submit" value="Оплатить">';
     html += '</form>';
 
     return html;
@@ -36,12 +33,19 @@ var mbhIframe = {
     });
   },
   sendMsg        : function(form) {
-      {#var f = new FormData(form);#}
-      {#form.querySelectorAll('input').forEach(function(input) {#}
-      {#console.log(input.value);#}
-      {#})#}
+      var self = this;
+      $.post(form.action,$(form).serialize())
+        .done(function(data) {
+          if (data.status == true) {
+            window.parent.postMessage({type: self.typePostMessage, data: data.data }, self.urlPostMessage);
+          }
+          {% if app.environment == 'dev' %}
+            if (data.status == false) {
+              console.error(data.data);
+            }
+          {% endif %}
+      })
 
-    window.parent.postMessage({type: this.typePostMessage, data: 'from iframe'}, this.urlPostMessage);
   },
   addEventForForm: function() {
     if (this.initEvent === false) {
