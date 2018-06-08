@@ -251,9 +251,9 @@ class ApiController extends Controller
             $logger->info('FAIL. '.$logText.' .Not found config');
             throw $this->createNotFoundException();
         }
-        $response = $clientConfig->checkRequest($request, $paymentSystemName);
+        $holder = $clientConfig->checkRequest($request, $paymentSystemName);
 
-        if (!$response) {
+        if (!$holder->isSuccess()) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
             throw $this->createNotFoundException();
         }
@@ -264,7 +264,7 @@ class ApiController extends Controller
             $charge = Charge::create([
                 "amount" => $request->request->get('amount') * 100,
                 "currency" => $request->request->get('currency'),
-                "description" => "Charge for order #" . $response['doc'] ,
+                "description" => "Charge for order #" . $holder->getDoc() ,
                 "source" => $request->get('stripeToken'),
             ]);
             if ($charge->status !== 'succeeded') {
@@ -273,18 +273,17 @@ class ApiController extends Controller
         }
 
         //save cashDocument
-        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
+        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($holder->getDoc());
 
         if ($cashDocument && !$cashDocument->getIsPaid()) {
             $cashDocument->setIsPaid(true);
             $dm->persist($cashDocument);
             $dm->flush();
-
             //save commission
-            if (isset($response['commission']) && is_numeric($response['commission'])) {
+            if ($holder->getCommission() !== null && is_numeric($holder->getCommission())) {
                 $commission = clone $cashDocument;
-                $commissionTotal = (float)$response['commission'];
-                if (isset($response['commissionPercent']) && $response['commissionPercent']) {
+                $commissionTotal = (float)$holder->getCommission();
+                if ($holder->getCommissionPercent()) {
                     $commissionTotal = $commissionTotal * $cashDocument->getTotal();
                 }
                 $commission->setTotal($commissionTotal)
@@ -348,7 +347,7 @@ class ApiController extends Controller
 
         $logger->info('OK. '.$logText);
 
-        return $paymentSystemName === Stripe::NAME ? $this->redirectToRoute('successful_payment') : new Response($response['text']);
+        return $paymentSystemName === Stripe::NAME ? $this->redirectToRoute('successful_payment') : new Response($holder->getText());
     }
 
     /**
