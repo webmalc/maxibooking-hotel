@@ -49,6 +49,28 @@ class NewRbk implements PaymentSystemInterface
     protected $taxationRateCode = 18;
 
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $webhookKey;
+
+    /**
+     * @return string
+     */
+    public function getWebhookKey(): ?string
+    {
+        return $this->webhookKey;
+    }
+
+    /**
+     * @param string $webhookKey
+     */
+    public function setWebhookKey(string $webhookKey): void
+    {
+        $this->webhookKey = $webhookKey;
+    }
+
+    /**
      * @return string
      */
     public function getShopId(): ?string

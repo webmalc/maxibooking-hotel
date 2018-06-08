@@ -26,7 +26,8 @@ class NewRbkHelper implements HelperInterface
     const NAME_TYPE_API_KEY = self::PREFIX . 'ApiKey';
     const NAME_TYPE_SHOP_ID = self::PREFIX . 'ShopId';
     const NAME_TYPE_LIFETIME_INVOICE = self::PREFIX . 'LifetimeInvoice';
-    const NAME_TAXATION_RATE_CODE = self::PREFIX . 'TaxationRateCode';
+    const NAME_TYPE_TAXATION_RATE_CODE = self::PREFIX . 'TaxationRateCode';
+    const NAME_TYPE_WEBHOOK_KEY = self::PREFIX . 'WebhookApi';
 
     /**
      * @param FormInterface $form
@@ -38,7 +39,8 @@ class NewRbkHelper implements HelperInterface
         $entity->setApiKey($form->get(self::NAME_TYPE_API_KEY)->getData());
         $entity->setShopId($form->get(self::NAME_TYPE_SHOP_ID)->getData());
         $entity->setLifetimeInvoice($form->get(self::NAME_TYPE_LIFETIME_INVOICE)->getData());
-        $entity->setTaxationRateCode($form->get(self::NAME_TAXATION_RATE_CODE)->getData());
+        $entity->setTaxationRateCode($form->get(self::NAME_TYPE_TAXATION_RATE_CODE)->getData());
+        $entity->setWebhookKey($form->get(self::NAME_TYPE_WEBHOOK_KEY)->getData());
 
         return $entity;
     }
@@ -66,7 +68,7 @@ class NewRbkHelper implements HelperInterface
                 TextareaType::class,
                 [
                     'label'    => self::PREFIX_LABEL . self::NAME_TYPE_API_KEY,
-                    'required' => false,
+                    'required' => true,
                     'attr'     => $commonAttr,
                     'group'    => $commonGroup,
                     'mapped'   => false,
@@ -74,11 +76,23 @@ class NewRbkHelper implements HelperInterface
                 ]
             )
             ->add(
+                self::NAME_TYPE_WEBHOOK_KEY,
+                TextareaType::class,
+                [
+                    'label'    => self::PREFIX_LABEL . self::NAME_TYPE_WEBHOOK_KEY,
+                    'required' => true,
+                    'attr'     => $commonAttr,
+                    'group'    => $commonGroup,
+                    'mapped'   => false,
+                    'data'     => $newRbk->getWebhookKey(),
+                ]
+            )
+            ->add(
                 self::NAME_TYPE_SHOP_ID,
                 TextType::class,
                 [
                     'label'    => self::PREFIX_LABEL . self::NAME_TYPE_SHOP_ID,
-                    'required' => false,
+                    'required' => true,
                     'attr'     => $commonAttr,
                     'group'    => $commonGroup,
                     'mapped'   => false,
@@ -98,7 +112,7 @@ class NewRbkHelper implements HelperInterface
                 ]
             )
             ->add(
-                self::NAME_TAXATION_RATE_CODE,
+                self::NAME_TYPE_TAXATION_RATE_CODE,
                 InvertChoiceType::class,
                 [
                     'label'    => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
