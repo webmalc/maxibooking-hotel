@@ -88,6 +88,7 @@ view.myallocator.index.enter_login_and_pass: 'Введите свой логин
 view.myallocator.room.need_fill_main_settings: 'Необходимо сначала заполнить основные настройки.'
 view.myallocator.room.need_bind_to_mb: 'Channel manager должен быть прикреплен к MaxiBooking на вкладке «Общие настройки»'
 controller.expediaController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.channel_manager.pull_rooms.error: 'Ошибка при получении данных Channel Manager-а'
 controller.expediaController.old_ordes_sync_start: 'Синхронизация броней успешно запущена. Уведомления о бронях придет на email.'
 services.expedia.invalid_tariff_id: 'Тариф для данной брони не синхронизирован с тарифом Maxibooking'
 services.expedia.nor_one_tariff: 'Не найдено ни одного тарифа для данного отеля'
