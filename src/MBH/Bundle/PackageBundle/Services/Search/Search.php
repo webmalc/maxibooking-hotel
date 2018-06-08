@@ -11,6 +11,7 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
+use MBH\Bundle\PackageBundle\Lib\SearchCalculateEvent;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
@@ -417,41 +418,38 @@ class Search implements SearchInterface
                     $promotion = null;
                 }
 
-                //prices
-                //TODO: Убирать отседа
-                //Achtung!!Achtung!! Меня заставили!
-                $hardCodeTariffId= ['5717836174eb539c308b456d', '571760bd74eb536f1b8b4605'];
-                /** @var Tariff $tariff */
-                if (in_array($tariff->getId(),$hardCodeTariffId)) {
+                $dispatcher = $this->container->get('event_dispatcher');
+                $event = new SearchCalculateEvent();
+                $eventData = [
+                    'roomType' => $roomType,
+                    'tariff' => $tariff,
+                    'begin' => $query->begin,
+                    'end' => $end,
+                    'adults' => $tourists['adults'],
+                    'children' => $tourists['children'],
+                    'promotion' => $promotion,
+                    'isUseCategory' => $this->manager->useCategories,
+                    'special' => $query->getSpecial(),
+                    'childrenAges' => $query->childrenAges
+                ];
+                $event->setEventData($eventData);
+                $dispatcher->dispatch(SearchCalculateEvent::SEARCH_CALCULATION_NAME, $event);
+                $prices = $event->getPrices();
 
-                    /*Не выдаем цену если нет детей в запросе или один от 7 */
-                    $isOneJuniorChild = $query->children == 1 && count($query->childrenAges) == 1 && 6 < $query->childrenAges[0];
-
-                    $isNoChildren = (bool)!count($query->childrenAges);
-                    if ((($query->adults == 1 || $query->adults == 2)&& $isOneJuniorChild) || $isNoChildren) {
-                        continue;
-                    }
-
-
-                    $mcalc = $this->container->get('mbh.magic.calculation');
-                    $prices = $mcalc->calcPrices(
-                        $roomType, $tariff, $query->begin, $end,
-                        $tourists['adults'], $tourists['children'], $promotion,
-                        $this->manager->useCategories, $query->getSpecial(), true, $query->childrenAges
-                    );
-                } else { //TODO: Убирать доседа
+                if (null === $prices) {
                     $prices = $calc->calcPrices(
-                    $roomType,
-                    $tariff,
-                    $query->begin,
-                    $end,
-                    $tourists['adults'],
-                    $tourists['children'],
-                    $promotion,
+                        $roomType,
+                        $tariff,
+                        $query->begin,
+                        $end,
+                        $tourists['adults'],
+                        $tourists['children'],
+                        $promotion,
                         $this->manager->useCategories,
-                    $query->getSpecial()
+                        $query->getSpecial()
                     );
                 }
+
 
                 if (!$prices || (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
                     continue;

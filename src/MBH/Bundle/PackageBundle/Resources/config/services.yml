@@ -64,6 +64,12 @@ services:
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+    mbh.package.subsciber.search:
+            class: MBH\Bundle\PackageBundle\EventListener\SearchSubscriber
+            arguments: ['@service_container']
+            tags:
+                - { name: kernel.event_subscriber, event: search.calculation }
+
     mbh.package.validator:
             class: MBH\Bundle\PackageBundle\Validator\Constraints\PackageValidator
             arguments: ['@service_container']
