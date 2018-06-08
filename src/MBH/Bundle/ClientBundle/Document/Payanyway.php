@@ -82,7 +82,7 @@ class Payanyway implements PaymentSystemInterface
         return '';
     }
 
-    public function checkRequest(Request $request): CheckResultHolder
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         return new CheckResultHolder();
     }

@@ -31,6 +31,11 @@ class CheckResultHolder
      */
     private $text;
 
+    /**
+     * @var \Exception|null
+     */
+    private $individualResponse;
+
     public function parseData(array $data): self
     {
         foreach ($data as $key => $value){
@@ -41,6 +46,26 @@ class CheckResultHolder
         }
 
         return $this;
+    }
+
+    /**
+     * @return \Exception|null
+     */
+    public function getIndividualResponse(): ?\Exception
+    {
+        if ($this->individualResponse !== null) {
+            return $this->individualResponse;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \Exception $individualResponse
+     */
+    public function setIndividualResponse(\Exception $individualResponse): void
+    {
+        $this->individualResponse = $individualResponse;
     }
 
     /**
@@ -112,6 +137,16 @@ class CheckResultHolder
      */
     public function isSuccess(): bool
     {
-        return $this->doc !== null;
+        $r = true;
+
+        if ($this->doc === null) {
+            $r = false;
+        }
+
+        if ($this->individualResponse !== null) {
+            $r = false;
+        }
+
+        return $r;
     }
 }

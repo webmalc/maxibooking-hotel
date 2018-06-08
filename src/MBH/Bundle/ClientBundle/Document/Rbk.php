@@ -123,7 +123,7 @@ class Rbk implements PaymentSystemInterface
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request): CheckResultHolder
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $eshopId = $request->get('eshopId');
         $orderId = $request->get('orderId');

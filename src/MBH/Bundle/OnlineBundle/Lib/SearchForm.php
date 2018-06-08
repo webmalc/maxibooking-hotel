@@ -153,7 +153,7 @@ class SearchForm
         /** @var Package $package */
         $package = $this->dm->getRepository('MBHPackageBundle:Package')
             ->findOneBy([
-               'numberWithPrefix' =>  $this->getNumberOrder(),
+                'numberWithPrefix' => $this->getNumberOrder(),
             ]);
 
         if ($package === null) {
@@ -169,16 +169,16 @@ class SearchForm
         if ($order->getIsPaid()) {
             return [
                 'needIsPaid' => false,
-                'answer' => 'order has been paid',
+                'data'       => 'order has been paid',
 
             ];
         }
 
         return [
             'needIsPaid' => true,
-            'answer' => [
-                'total' => $package->getPrice() - $order->getPaid(),
-                'packageId' => $package->getId()
+            'data'       => [
+                'total'     => $package->getPrice() - $order->getPaid(),
+                'packageId' => $package->getId(),
             ],
         ];
 

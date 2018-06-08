@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Lib;
 
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -26,7 +27,8 @@ interface PaymentSystemInterface
 
     /**
      * @param Request $request
+     * @param ClientConfig $config
      * @return CheckResultHolder
      */
-    public function checkRequest(Request $request): CheckResultHolder;
+    public function checkRequest(Request $request, ClientConfig $config): CheckResultHolder;
 }

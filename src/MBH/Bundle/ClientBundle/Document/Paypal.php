@@ -59,7 +59,7 @@ class Paypal implements PaymentSystemInterface
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request): CheckResultHolder
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $cashDocumentId = $request->get('item_name');
         $total = $request->get('mc_gross');

@@ -251,25 +251,14 @@ class ApiController extends Controller
             $logger->info('FAIL. '.$logText.' .Not found config');
             throw $this->createNotFoundException();
         }
-        $holder = $clientConfig->checkRequest($request, $paymentSystemName);
+        $holder = $clientConfig->checkRequest($request, $paymentSystemName, $clientConfig);
 
         if (!$holder->isSuccess()) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
-            throw $this->createNotFoundException();
-        }
-
-        if ($paymentSystemName === 'stripe') {
-            \Stripe\Stripe::setApiKey($clientConfig->getStripe()->getSecretKey());
-
-            $charge = Charge::create([
-                "amount" => $request->request->get('amount') * 100,
-                "currency" => $request->request->get('currency'),
-                "description" => "Charge for order #" . $holder->getDoc() ,
-                "source" => $request->get('stripeToken'),
-            ]);
-            if ($charge->status !== 'succeeded') {
-                throw new BadRequestHttpException('Stripe charge is not successful');
+            if ($holder->getIndividualResponse() !== null) {
+                throw $holder->getIndividualResponse();
             }
+            throw $this->createNotFoundException();
         }
 
         //save cashDocument

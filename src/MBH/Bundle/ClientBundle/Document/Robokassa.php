@@ -138,7 +138,7 @@ class Robokassa implements PaymentSystemInterface
         );
     }
 
-    public function checkRequest(Request $request): CheckResultHolder
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $cashDocumentId = $request->get('Shp_id');
         $invId = $request->get('InvId');

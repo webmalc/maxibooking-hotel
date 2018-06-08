@@ -141,7 +141,7 @@ class RNKB implements PaymentSystemInterface
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request): CheckResultHolder
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $cashDocumentId = $request->get('Order_IDP');
         $status = $request->get('Status');
