@@ -167,7 +167,7 @@ class Ostrovok extends Base
                 true
             );
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
                         /** @var RoomCache $info */
                         $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
@@ -228,7 +228,7 @@ class Ostrovok extends Base
                 $roomType = $roomTypeInfo['doc'];
                 /** @var RoomType $roomType */
                 $roomTypeId = $roomType->getId();
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     foreach ($ostrovokTariffs as $ostrovokTariffId => $tariffInfo) {
                         /** @var Tariff $tariff */
                         if ($serviceTariffs[$ostrovokTariffId]['is_child_rate']) {
@@ -367,7 +367,7 @@ class Ostrovok extends Base
 //                    $accordingOstrovokTariffId = $this->getAccordingTariff($ostrovokRoomTypeId, $tariffId, $config, true);
                     if (isset($roomTypeRestrictions[$roomTypeId][$tariffId])) {
                         $arrRestrictons = $roomTypeRestrictions[$roomTypeId][$tariffId];
-                        foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                        foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                             if (in_array($day->format('d.m.Y'), array_keys($arrRestrictons))) {
                                 /** @var Restriction $restriction */
                                 $restriction = $arrRestrictons[$day->format('d.m.Y')];
