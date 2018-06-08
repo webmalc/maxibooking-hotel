@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -137,7 +138,7 @@ class Stripe implements PaymentSystemInterface
      * @param Request $request
      * @return array|bool
      */
-    public function checkRequest(Request $request)
+    public function checkRequest(Request $request): CheckResultHolder
     {
         $requestSignature = $request->get('signature');
 
