@@ -26,7 +26,10 @@ class SearcherTest extends WebTestCase
             ->setAdults(1)
             ->setChildren(1)
             ->setChildrenAges([5])
-            ->setAdditionalBegin(0);
+            ->setAdditionalBegin(0)
+            ->setSearchHash(uniqid(gethostname(), true))
+        ;
+
 
         $searchQueries = $this
             ->getContainer()

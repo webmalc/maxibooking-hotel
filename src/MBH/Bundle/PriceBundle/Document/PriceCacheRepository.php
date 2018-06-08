@@ -106,9 +106,9 @@ class PriceCacheRepository extends DocumentRepository
         return $qb->field('isEnabled')->equals(true)->hydrate(false)->sort(['date' => 'asc'])->getQuery()->execute()->toArray();
     }
 
-    public function fetchRawPeriod(\DateTime $begin, \DateTime $end, bool $isUseCategory)
+    public function fetchRawPeriod(\DateTime $begin, \DateTime $end, array $roomTypeIds = [], array $tariffIds = [], bool $isUseCategory)
     {
-        $qb = $this->fetchQueryBuilder($begin, $end, null, [], [], $isUseCategory);
+        $qb = $this->fetchQueryBuilder($begin, $end, null, $roomTypeIds, $tariffIds, $isUseCategory);
 
         return $qb->field('isEnabled')->equals(true)->hydrate(false)->sort(['date' => 'asc'])->getQuery()->execute()->toArray();
     }

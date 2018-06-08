@@ -17,6 +17,7 @@ use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
+use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
@@ -26,6 +27,9 @@ class SearchLimitChecker
     /** @var ClientConfig */
     private $clientConfig;
 
+    /** @var DataHolder */
+    private $dataHolder;
+
     /** @var DocumentManager */
     private $dm;
 
@@ -33,11 +37,13 @@ class SearchLimitChecker
      * SearchLimitChecker constructor.
      * @param ClientConfigRepository $configRepository
      * @param DocumentManager $documentManager
+     * @param DataHolder $dataHolder
      */
-    public function __construct(ClientConfigRepository $configRepository, DocumentManager $documentManager)
+    public function __construct(ClientConfigRepository $configRepository, DocumentManager $documentManager, DataHolder $dataHolder)
     {
         $this->clientConfig = $configRepository->fetchConfig();
         $this->dm = $documentManager;
+        $this->dataHolder = $dataHolder;
     }
 
 
@@ -107,7 +113,7 @@ class SearchLimitChecker
     {
         if ($this->clientConfig->getSearchWindows()) {
             //** TODO: Уточнить если форс */
-            if($result->getForceBooking() || $result->getBegin() > new \DateTime('midnight')) {
+            if($result->getForceBooking() || $result->getBegin() <= new \DateTime('midnight')) {
                 return;
             }
 

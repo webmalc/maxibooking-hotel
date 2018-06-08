@@ -57,7 +57,7 @@ class PriceCachesMergerTest extends SearchWebTestCase
                 ->setSearchBegin($begin)
                 ->setSearchEnd($end)
                 ->setIsUseCategory($isCategory)
-                ->setConditionHash('hashhashhash')
+                ->setConditionHash(uniqid('prefix', true))
                 ->setConditionMaxBegin($calcQuery->getSearchBegin())
                 ->setConditionMaxEnd($calcQuery->getSearchEnd())
             ;

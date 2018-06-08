@@ -280,7 +280,7 @@ class SearchQuery extends Base
     /**
      * @return Promotion
      */
-    public function      getPromotion()
+    public function getPromotion()
     {
         return $this->promotion;
     }

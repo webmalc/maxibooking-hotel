@@ -4,16 +4,15 @@
 namespace Tests\Bundle\SearchBundle\Lib;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
-use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\RoomTypeCategoryData;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
-use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
@@ -96,8 +95,8 @@ class DataHolderTest extends SearchWebTestCase
 
     /**
      * @param $data
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException
      * @dataProvider priceCachesDataProvider
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException
      */
     public function testGetNecessaryPriceCaches($data): void
     {
@@ -106,26 +105,66 @@ class DataHolderTest extends SearchWebTestCase
         $calcQuery = new CalcQuery();
         $tariff = $this->dm->find(Tariff::class, $searchQuery->getTariffId());
         $roomType = $this->dm->find(RoomType::class, $searchQuery->getRoomTypeId());
+        $isCategory = $data['isCategory'];
+        $conditionRoomType = new ArrayCollection();
+        $isCategory ? $conditionRoomType->add($roomType->getCategory()) : $conditionRoomType->add($roomType);
+        $conditionTariff = new ArrayCollection();
+        $conditionTariff->add($tariff);
         $calcQuery
             ->setSearchBegin($searchQuery->getBegin())
             ->setSearchEnd($searchQuery->getEnd())
             ->setActualAdults($searchQuery->getActualAdults())
             ->setActualChildren($searchQuery->getActualChildren())
-            ->setIsUseCategory(false)
+            ->setIsUseCategory($isCategory)
             ->setTariff($tariff)
             ->setRoomType($roomType)
             //** TODO: Уточнить по поводу Promotion */
             /*->setPromotion()*/
             /** TODO: Это все необязательные поля, нужны исключительно для dataHolder чтоб получить все данные сразу */
-            ->setConditionTariffs($conditions->getTariffs())
-            ->setConditionRoomTypes($conditions->getRoomTypes())
+            ->setConditionTariffs($conditionTariff)
+            ->setConditionRoomTypes($conditionRoomType)
             ->setConditionMaxBegin($conditions->getMaxBegin())
             ->setConditionMaxEnd($conditions->getMaxEnd())
             ->setConditionHash($conditions->getSearchHash());
 
         $actual = $this->dataHolder->getNecessaryPriceCaches($calcQuery, $calcQuery->getPriceTariffId());
-        $a = 'b';
 
+        $expected = $data['expected'];
+        $expectedCount = $expected['count'];
+        $expectedRoomTypeName = $expected['RoomType'];
+        $expectedTariffName = $expected['TariffName'];
+        $expectedCategoryName = $expected['RoomTypeCategory'];
+
+        if (null !== $expectedRoomTypeName) {
+            $roomTypeId = $this->dm->getRepository(RoomType::class)->findOneBy(['fullTitle' => $expectedRoomTypeName])->getId();
+        } else {
+            $roomTypeId = null;
+        }
+
+        if (null !== $expectedCategoryName) {
+            $categoryId = $this->dm->getRepository(RoomTypeCategory::class)->findOneBy(['fullTitle' => $expectedCategoryName])->getId();
+        } else {
+            $categoryId = null;
+        }
+
+        $this->assertCount($expectedCount, $actual);
+
+        if ($roomTypeId) {
+            $actualRoomTypeArray = array_map('\strval', array_column(array_column($actual, 'roomType'), '$id'));
+            $diff = array_diff([$roomTypeId], $actualRoomTypeArray);
+            $this->assertCount(0, $diff);
+        }
+
+        if ($categoryId) {
+            $actualCategoryArray = array_map('\strval', array_column(array_column($actual, 'roomTypeCategory'), '$id'));
+            $diff = array_diff([$categoryId], $actualCategoryArray);
+            $this->assertCount(0, $diff);
+        }
+
+        $tariffId = $this->dm->getRepository(Tariff::class)->findOneBy(['fullTitle' => $expectedTariffName])->getId();
+        $actualTariffArray = array_map('\strval', array_column(array_column($actual, 'tariff'), '$id'));
+        $diff = array_diff([$tariffId], $actualTariffArray);
+        $this->assertCount(0, $diff);
 
     }
 
@@ -222,7 +261,7 @@ class DataHolderTest extends SearchWebTestCase
 
     public function accommodationDataProvider(): iterable
     {
-        yield [
+ /*       yield [
             [
                 'beginOffset' => 0,
                 'endOffset' => 25,
@@ -271,6 +310,19 @@ class DataHolderTest extends SearchWebTestCase
                     'noRoomNames' => [7]
                 ]
             ]
+        ];*/
+
+        yield [
+            [
+                'beginOffset' => 0,
+                'endOffset' => 25,
+                'tariffFullTitle' => 'Основной тариф',
+                'roomTypeFullTitle' => 'ThreePlace',
+                'hotelFullTitle' => 'Отель Волга',
+                'expected' => [
+                    'noRoomNames' => []
+                ]
+            ]
         ];
 
 
@@ -281,12 +333,34 @@ class DataHolderTest extends SearchWebTestCase
     {
         yield [
             [
+                'isCategory' => false,
                 'beginOffset' => 0,
-                'endOffset' => 25,
+                'endOffset' => 26,
                 'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
                 'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'hotelFullTitle' => 'Отель Волга',
-                'expected' => []
+                'expected' => [
+                    'count' => 18,
+                    'TariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                    'RoomType' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                    'RoomTypeCategory' => null
+                ]
+            ]
+        ];
+        yield [
+            [
+                'isCategory' => true,
+                'beginOffset' => 0,
+                'endOffset' => 26,
+                'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'hotelFullTitle' => 'Отель Волга',
+                'expected' => [
+                    'count' => 18,
+                    'TariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                    'RoomType' => null,
+                    'RoomTypeCategory' => RoomTypeCategoryData::ADDITIONAL_PLACES_CATEGORY['fullTitle']
+                ]
             ]
         ];
     }

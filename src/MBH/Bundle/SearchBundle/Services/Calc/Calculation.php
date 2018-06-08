@@ -11,7 +11,6 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationAdditionalPriceException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;

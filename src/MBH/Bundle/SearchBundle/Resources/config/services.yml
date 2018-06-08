@@ -78,7 +78,7 @@ services:
 
     mbh_search.search_limit_checker:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchLimitChecker
-        arguments: ['@mbh_search.client_config_repository', '@doctrine.odm.mongodb.document_manager']
+        arguments: ['@mbh_search.client_config_repository', '@doctrine.odm.mongodb.document_manager', '@mbh_search.data_holder']
 
     mbh_search.room_type_repository:
         class: MBH\Bundle\HotelBundle\Document\RoomTypeRepository

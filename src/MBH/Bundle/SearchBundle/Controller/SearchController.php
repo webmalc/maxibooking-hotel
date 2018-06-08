@@ -30,20 +30,20 @@ class SearchController extends Controller
     public function searchTestAction()
     {
         $dm = $this->container->get('doctrine_mongodb.odm.default_document_manager');
-        $roomType = $dm->getRepository(RoomType::class)->findOneBy(['fullTitle' => 'Стандартный двухместный']);
+        $roomType = $dm->getRepository(RoomType::class)->findOneBy(['fullTitle' => 'Номера комфорт в домиках 3-х местные']);
         $tariff = $dm->getRepository(Tariff::class)->findOneBy(['fullTitle' => 'Основной тариф']);
         $stopwatch = $this->get('debug.stopwatch');
         $stopwatch->start('searchTime');
 
         $result = new ExpectedResult();
         $data = array (
-            'begin' => '06.06.2018',
-            'end' => '15.06.2018',
+            'begin' => '13.08.2018',
+            'end' => '3.09.2018',
             'adults' => 2,
             'children' => 0,
             'additionalBegin' => 0,
-            'roomTypes' => [$roomType->getId()],
-            'tariffs' => [$tariff->getId()]
+            'roomTypes' => [],
+            'tariffs' => []
         );
 
         try {
@@ -76,7 +76,7 @@ class SearchController extends Controller
         }
 
 
-        return $this->render('@MBHSearch/Search/index.html.twig', ['finded' => $finded, 'time' => $time]);
+        return $this->render('@MBHSearch/Search/index.html.twig', ['finded' => $finded, 'time' => $time, 'filtered' => $filtered]);
 //        $serializer = $this->get('serializer');
 //        return new Response(
 //            $serializer->serialize($result, 'json'),

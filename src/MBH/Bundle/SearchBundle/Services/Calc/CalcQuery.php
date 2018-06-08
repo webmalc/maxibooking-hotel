@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -86,6 +87,12 @@ class CalcQuery
      */
     private $isUseCategory;
 
+    public function __construct()
+    {
+        $this->conditionTariffs = new ArrayCollection();
+        $this->conditionRoomTypes = new ArrayCollection();
+    }
+
 
     /**
      * @return \DateTime
@@ -164,18 +171,27 @@ class CalcQuery
     }
 
     /**
-     * @return ArrayCollection|Tariff[]
+     * @return
      */
-    public function getConditionTariffs(): ?ArrayCollection
+    public function getConditionPricedTariffs(): array
     {
-        return $this->conditionTariffs;
+        $result = [];
+        foreach ($this->conditionTariffs as $tariff) {
+            if ($tariff->getParent() && $tariff->getChildOptions()->isInheritPrices()) {
+                $result[] =$tariff->getParent()->getId();
+            } else {
+                $result[] = $tariff->getId();
+            }
+        }
+
+        return array_unique($result);
     }
 
     /**
      * @param ArrayCollection|Tariff[] $conditionTariffs
      * @return CalcQuery
      */
-    public function setConditionTariffs(ArrayCollection $conditionTariffs)
+    public function setConditionTariffs(ArrayCollection $conditionTariffs): CalcQuery
     {
         $this->conditionTariffs = $conditionTariffs;
 
@@ -183,7 +199,7 @@ class CalcQuery
     }
 
     /**
-     * @return ArrayCollection|RoomType[]
+     * @return ArrayCollection|RoomType[]|RoomTypeCategory[]
      */
     public function getConditionRoomTypes(): ?ArrayCollection
     {
@@ -191,7 +207,7 @@ class CalcQuery
     }
 
     /**
-     * @param ArrayCollection|RoomType[] $conditionRoomTypes
+     * @param ArrayCollection|RoomType[]|RoomTypeCategory[] $conditionRoomTypes
      * @return CalcQuery
      */
     public function setConditionRoomTypes(ArrayCollection $conditionRoomTypes)

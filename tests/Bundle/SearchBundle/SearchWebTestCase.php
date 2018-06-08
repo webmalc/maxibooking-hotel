@@ -81,25 +81,7 @@ abstract class SearchWebTestCase extends WebTestCase
             $conditions->setChildren($data['children']);
             $conditions->setChildrenAges($data['childrenAges']);
         }
-//
-//        /** @var Tariff $searchTariff */
-//        if ($searchTariff->getParent() && $searchTariff->getChildOptions() && $searchTariff->getChildOptions()->isInheritRestrictions()) {
-//            $restrictionTariffId = $searchTariff->getParent()->getId();
-//        } else {
-//            $restrictionTariffId = $searchTariff->getId();
-//        }
-//
-//
-//        $searchQuery = new SearchQuery();
-//        $searchQuery
-//            ->setBegin($begin)
-//            ->setEnd($end)
-//            ->setSearchHash($searchHash)
-//            ->setRoomTypeId($searchRoomType->getId())
-//            ->setRestrictionTariffId($restrictionTariffId)
-//        ;
-//
-//        $searchQuery->setSearchConditions($conditions);
+
         $searchQueries = $this->getContainer()->get('mbh_search.search_query_generator')->generateSearchQueries($conditions);
 
         return $searchQueries;

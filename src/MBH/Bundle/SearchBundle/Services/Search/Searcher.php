@@ -89,7 +89,7 @@ class Searcher
     private function getCurrentTariff(string $tariffId): Tariff
     {
         $tariff = $this->dataHolder->getFetchedTariff($tariffId);
-        if (!$tariff) {
+        if (null ===$tariff) {
             $tariff = $this->dm->find(Tariff::class, $tariffId);
         }
 
@@ -99,7 +99,7 @@ class Searcher
     private function getCurrentRoomType(string $roomTypeId): RoomType
     {
         $roomType = $this->dataHolder->getFetchedRoomType($roomTypeId);
-        if (!$roomType) {
+        if (null === $roomType) {
             $roomType = $this->dm->find(RoomType::class, $roomTypeId);
         }
 
