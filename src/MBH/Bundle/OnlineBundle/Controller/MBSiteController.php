@@ -8,7 +8,9 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
+use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,6 +26,7 @@ class MBSiteController extends BaseController
      * @Route("/", name="site_settings")
      * @param Request $request
      * @return array
+     * @throws \Exception
      */
     public function siteSettingsAction(Request $request)
     {
@@ -39,12 +42,30 @@ class MBSiteController extends BaseController
                 $config = $form->getData();
                 $this->dm->persist($config);
 
-                $formConfig
-                    ->setHotels(new ArrayCollection($config->getHotels()->toArray()))
-                    ->setPaymentTypes($request->get($form->getName())['paymentTypes']);
+                $client = $this->get('mbh.client_manager')->getClient();
+                $isSuccess = true;
+//                if ($config->getSiteDomain() !== $client->getWebsiteUrl()
+//                    || $config->getIsEnabled() !== $client->getIsWebSiteEnabled()) {
+//                    $client
+//                        ->setIsWebSiteEnabled($config->getIsEnabled())
+//                        ->setWebsiteUrl($config->getSiteDomain());
+//                    $updateResult = $this->get('mbh.billing.api')->updateClient($client);
+//                    if (!$updateResult->isSuccessful()) {
+//                        if (isset($updateResult->getErrors()['website']['url'])) {
+//                            foreach ($updateResult->getErrors()['website']['url'] as $error) {
+//                                $form->get('siteDomain')->addError(new FormError($error));
+//                            }
+//                        } else {
+//                            throw new \UnexpectedValueException();
+//                        }
+//                    }
+//                }
 
-                $this->dm->flush();
-                $this->addFlash('success', 'mb_site_controller.site_config_saved');
+                if ($isSuccess) {
+                    $siteManager->updateSiteFormConfig($config, $formConfig, $request->get($form->getName())['paymentTypes']);
+                    $this->dm->flush();
+                    $this->addFlash('success', 'mb_site_controller.site_config_saved');
+                }
             }
         } else {
             $form->get('paymentTypes')->setData($formConfig->getPaymentTypes());

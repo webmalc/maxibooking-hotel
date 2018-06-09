@@ -44,6 +44,7 @@ class SiteForm extends AbstractType
             $siteConfig->addHotel(current($hotels));
         }
 
+        //TODO: ФОРМА ОТРИСОВЫВАЕТСЯ В ШАБЛОНЕ ВРУЧНУЮ
         $builder
             ->add('isEnabled', CheckboxType::class, [
                 'label' => 'site_form.is_enabled.label',
@@ -51,7 +52,10 @@ class SiteForm extends AbstractType
                 'attr' => [
                     'class' => 'box-full-visibility-checkbox'
                 ],
-                'group' => 'sdfasdfa'
+            ])
+            ->add('siteDomain', TextType::class, [
+                'label' => 'Адрес',
+                'required' => true,
             ])
             ->add('keyWords', CollectionType::class, [
                 'label' => 'site_form.key_words.label',

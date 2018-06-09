@@ -138,7 +138,8 @@ class BillingApi
     {
         $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT_SETTINGS['endpoint'], $client->getLogin());
         $clientData = $this->serializer->normalize($client);
-
+unset($clientData['websiteUrl']);
+        unset($clientData['isWebSiteEnabled']);
         return $this->updateEntity($url, $clientData, Client::class);
     }
 

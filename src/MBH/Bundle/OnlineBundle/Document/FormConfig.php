@@ -755,7 +755,7 @@ class FormConfig extends Base
      * @param bool $forResultsPage
      * @return string
      */
-    public function getResultsUrl($forResultsPage = true): ?string
+    public function getResultsUrl($forResultsPage = false): ?string
     {
         return $forResultsPage ? $this->resultsUrl . SiteManager::DEFAULT_RESULTS_PAGE : $this->resultsUrl;
     }

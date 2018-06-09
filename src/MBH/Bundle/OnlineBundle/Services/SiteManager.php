@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\OnlineBundle\Services;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
@@ -11,11 +12,13 @@ use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class SiteManager
 {
     const DEFAULT_RESULTS_PAGE = '/results';
+    const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies';
     const DEFAULT_BOOTSTRAP_THEME = 'cerulean';
     const MANDATORY_FIELDS_BY_ROUTE_NAMES = [
         Hotel::class => [
@@ -165,5 +168,36 @@ class SiteManager
 
             return $result;
         });
+    }
+
+    /**
+     * @param SiteConfig $config
+     * @param FormConfig $formConfig
+     * @param array $paymentTypes
+     */
+    public function updateSiteFormConfig(SiteConfig $config, FormConfig $formConfig, array $paymentTypes)
+    {
+        $siteAddress = $this->getSiteAddress($config->getSiteDomain());
+
+        $roomTypes = [];
+        foreach ($config->getHotels() as $hotel) {
+            $roomTypes = array_merge($roomTypes, $hotel->getRoomTypes()->toArray());
+        }
+
+        $formConfig
+            ->setResultsUrl($siteAddress)
+            ->setHotels(new ArrayCollection($config->getHotels()->toArray()))
+            ->setRoomTypeChoices($roomTypes)
+            ->setPaymentTypes($paymentTypes);
+
+        if (!empty($config->getPersonalDataPolicies())) {
+            $formConfig->setPersonalDataPolicies($siteAddress . SiteManager::PERSONAL_DATA_POLICIES_PAGE);
+        }
+    }
+
+    public function getSiteAddress(string $siteDomain)
+    {
+        //TODO: Реализовать в зависимости от того как будет формироваться адрес
+        return 'http://localhost:4200';
     }
 }

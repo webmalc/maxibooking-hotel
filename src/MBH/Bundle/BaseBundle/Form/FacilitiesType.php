@@ -23,9 +23,9 @@ class FacilitiesType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'choices' => $this->container->get('mbh.facility_repository')->getAllByGroup(),
+            'choices' => $this->container->get('mbh.facility_repository')->getAllByGroupWithoutDescription(),
             'multiple' => true,
-            'choice_attr' => function($key, $label) {
+            'choice_attr' => function($key) {
                 return [
                     'data-icon' => 'mbf-'.$key
                 ];

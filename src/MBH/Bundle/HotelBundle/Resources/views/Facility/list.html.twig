@@ -1,0 +1,49 @@
+{% extends "MBHHotelBundle::layout.html.twig" %}
+
+{% set title = 'views.facility.list.title'|trans({}, 'MBHHotelBundle') %}
+{% set layout = "box" %}
+
+{% block content %}
+    <form method="post" role="form" class="form-inline" action="{{ path('save_list') }}">
+        <table class="table table-striped table-hover table-condensed table-icons table-actions">
+            <thead>
+            <tr>
+                <th class="td-xs"></th>
+                <th class="td-md">Удобство</th>
+                <th>Описание</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for facilityGroup, facilitiesByGroup in facilities %}
+                {% for facilityId, facilityData in facilitiesByGroup %}
+                    {% set facilityDoc = facilityDocs[facilityId] is defined ? facilityDocs[facilityId] %}
+                    <tr>
+                        <td class="text-center table-icon"><i class="fa  mbf-{{ facilityId }}"></i></td>
+                        <td>
+                            {{ facilityData['title']|trans }}
+                        </td>
+                        <td>
+                            {% set description = (facilityDoc ? facilityDoc.description : facilityData['description']) %}
+                            <input name="facilities[{{ facilityGroup }}][{{ facilityDoc ? facilityDoc.id : 'with-doc' }}][{{ facilityId }}]"
+                                   type="text" value="{{ description }}" style="width: 100%;">
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+        <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    {% if is_granted('ROLE_UPDATE_FACILITIES') %}
+                        <li>
+                            <button type="submit" class="btn btn-success navbar-btn"><i
+                                        class="fa fa-check-square-o"></i> Сохранить изменения
+                            </button>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </form>
+{% endblock %}

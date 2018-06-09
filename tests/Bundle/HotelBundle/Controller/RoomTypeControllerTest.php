@@ -624,7 +624,7 @@ class RoomTypeControllerTest extends WebTestCase
     private function setFacilities()
     {
         if (empty($this->facilities)){
-            $facilities = $this->getContainer()->get('mbh.facility_repository')->getAllByGroup();
+            $facilities = $this->getContainer()->get('mbh.facility_repository')->getAllByGroupWithoutDescription();
 
             $selectFacilities = [];
 

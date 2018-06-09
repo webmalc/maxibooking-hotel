@@ -8,23 +8,36 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class FacilityRepository
-
  */
 class FacilityRepository implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    public function getAllByGroup()
+    public function getAllByGroupWithoutDescription($isTranslated = false)
     {
-        return $this->container->getParameter('mbh.hotel')['facilities'];
+        $facilitiesByGroups = [];
+        foreach ($this->container->getParameter('mbh.hotel')['facilities'] as $group => $facilities) {
+            foreach ($facilities as $facilityId => $facility) {
+                if (!isset($facilitiesByGroups[$group])) {
+                    $facilitiesByGroups[$group] = [];
+                }
+                $facilityTitle = $isTranslated
+                    ? $this->container->get('translator')->trans($facility['title'])
+                    : $facility['title'];
+                $facilitiesByGroups[$group][$facilityId] = $facilityTitle;
+            }
+        }
+
+        return $facilitiesByGroups;
     }
 
     public function getAll()
     {
         $all = [];
-        foreach($this->getAllByGroup() as $group => $list) {
+        foreach ($this->getAllByGroupWithoutDescription() as $group => $list) {
             $all = array_merge($all, $list);
         }
+
         return $all;
     }
 
@@ -32,9 +45,10 @@ class FacilityRepository implements ContainerAwareInterface
     {
         $facilitiesList = array_keys($this->getAll());
 
-        usort($facilities, function($current, $next) use ($facilitiesList) {
+        usort($facilities, function ($current, $next) use ($facilitiesList) {
             return array_search($current, $facilitiesList) > array_search($next, $facilitiesList) ? 1 : -1;
         });
+
         return $facilities;
     }
 }

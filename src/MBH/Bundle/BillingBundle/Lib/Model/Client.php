@@ -46,6 +46,7 @@ class Client
     private $address;
     private $postal_code;
     private $trial_activated;
+    private $website;
 
     /** @var  string
      * @Assert\NotNull(groups={"installation"})
@@ -255,7 +256,7 @@ class Client
     /**
      * @return string
      */
-    public function getDisabledAt(): ?string
+    public function getDisabled_at(): ?string
     {
         return $this->disabled_at;
     }
@@ -563,6 +564,54 @@ class Client
     public function setTrial_activated($trial_activated)
     {
         $this->trial_activated = $trial_activated;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getWebsite()
+    {
+        return $this->website;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWebsiteUrl()
+    {
+        return isset($this->website['url']) ? $this->website['url'] : null;
+    }
+
+    /**
+     * @param string $websiteUrl
+     * @return Client
+     */
+    public function setWebsiteUrl($websiteUrl)
+    {
+        $this->website ?: $this->website = [];
+        $this->website['url'] = $websiteUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsWebSiteEnabled()
+    {
+        return isset($this->website['is_enabled']) && $this->website['is_enabled'];
+    }
+
+    /**
+     * @param $isEnabled
+     * @return Client
+     */
+    public function setIsWebSiteEnabled($isEnabled)
+    {
+        $this->website ?: $this->website = [];
+        $this->website['is_enabled'] = $isEnabled;
 
         return $this;
     }

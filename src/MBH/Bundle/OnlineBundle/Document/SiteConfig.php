@@ -5,7 +5,6 @@ namespace MBH\Bundle\OnlineBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
@@ -38,6 +37,12 @@ class SiteConfig extends Base
      * @var array|ArrayCollection|Hotel[]
      */
     private $hotels;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    private $siteDomain;
 
     public function __construct() {
         $this->hotels = new ArrayCollection();
@@ -126,6 +131,25 @@ class SiteConfig extends Base
     public function addHotel(Hotel $hotel)
     {
         $this->hotels->add($hotel);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSiteDomain(): ?string
+    {
+        return $this->siteDomain;
+    }
+
+    /**
+     * @param string $siteDomain
+     * @return SiteConfig
+     */
+    public function setSiteDomain(string $siteDomain): SiteConfig
+    {
+        $this->siteDomain = $siteDomain;
 
         return $this;
     }
