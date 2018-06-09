@@ -8,6 +8,10 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\CheckWebhook;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\Webhook;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\InvoiceFromWebhook;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -139,9 +143,34 @@ class NewRbk implements PaymentSystemInterface
         // TODO: Implement getFormData() method.
     }
 
-    public function checkRequest(Request $request)
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
-        // TODO: Implement checkRequest() method.
+        $check = new CheckWebhook($request,$clientConfig);
+
+        $holder = new CheckResultHolder();
+
+        if (!$check->verifySignature()) {
+            $holder->setIndividualResponse($check->getErrorResponse());
+            return $holder;
+        }
+
+        $webhook = Webhook::parseAndCreate($check->getContent());
+
+        if ($webhook->getEventType() !== Webhook::INVOICE_FULFILLED ||
+            $webhook->getInvoice() !== Webhook::INVOICES_TOPIC) {
+            return $holder;
+        }
+
+        $invoice = $webhook->getInvoice();
+
+        if ($invoice === null) {
+            return $holder;
+        }
+
+        $holder->setDoc($invoice->getCashDocumentId());
+        $holder->setText('Ok');
+
+        return $holder;
     }
 
     public function getSignature(CashDocument $cashDocument, $url = null)

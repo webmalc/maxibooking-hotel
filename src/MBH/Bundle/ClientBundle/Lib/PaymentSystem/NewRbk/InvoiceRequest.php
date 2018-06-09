@@ -45,7 +45,8 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
         $self->setDueDate($dueDate->format(DATE_ATOM)) ;
         $self->setProduct($cashDocument->getPayer()->getName() . ', ' . $package->getNumberWithPrefix());
         $self->setCurrency($config->getCurrency());
-        $self->setMetadata(['cashId' => $cashDocument->getId()]);
+        $self->setCashDocumentId($cashDocument);
+//        $self->setMetadata(['cashId' => $cashDocument->getId()]);
         $self->setDescription($package);
         $self->setAmount($cashDocument->getTotal());
 
@@ -53,6 +54,11 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
         $self->setCart($needCart, $documentManager, $package, $newRbk);
 
         return $self;
+    }
+
+    public function setCashDocumentId(CashDocument $cashDocument): void
+    {
+        $this->setMetadata(['cashId' => $cashDocument->getId()]);
     }
 
     /**
@@ -77,6 +83,14 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
         }
 
         return $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShopID()
+    {
+        return $this->shopID;
     }
 
     /**
@@ -210,7 +224,7 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
     /**
      * @param mixed $metadata
      */
-    public function setMetadata($metadata): void
+    private function setMetadata($metadata): void
     {
         $this->metadata = $metadata;
     }

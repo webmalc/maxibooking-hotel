@@ -786,7 +786,7 @@ class ClientConfig extends Base
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request, $paymentSystemName, ClientConfig $config = null)
+    public function checkRequest(Request $request, $paymentSystemName, ClientConfig $config)
     {
         $doc = $this->getPaymentSystemDocByName($paymentSystemName);
         if (!$doc) {

@@ -11,7 +11,7 @@ abstract class InvoiceCommon
     /**
      * Идентификатор магазина
      *
-     * @var string
+     * @var string|integer
      *  Required
      */
     protected $shopID;
@@ -75,14 +75,6 @@ abstract class InvoiceCommon
     /**
      * @return string
      */
-    public function getShopID(): string
-    {
-        return $this->shopID;
-    }
-
-    /**
-     * @return string
-     */
     public function getDueDate(): string
     {
         return $this->dueDate;
@@ -134,5 +126,13 @@ abstract class InvoiceCommon
     public function getMetadata()
     {
         return $this->metadata;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getCashDocumentId(): ?string
+    {
+        return $this->getMetadata() !== null ? $this->getMetadata()['cashId'] ?? null : null;
     }
 }

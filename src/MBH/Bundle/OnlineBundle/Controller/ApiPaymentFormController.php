@@ -50,9 +50,8 @@ class ApiPaymentFormController extends Controller
      * @Cache(expires="tomorrow", public=true)
      * @Template()
      */
-    public function getFormIframeAction($formId)
+    public function getFormIframeAction(Request $request, $formId)
     {
-//        $this->setLocaleByRequest();
         /** @var PaymentFormConfig $entity */
         $entity = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
             ->findOneById($formId);
@@ -66,11 +65,14 @@ class ApiPaymentFormController extends Controller
 
         $form = $this->createForm(OrderSearchType::class, $search);
 
+        $refer = preg_match('/(.*:\/\/.*?)\//', $request->headers->get('referer'), $match);
+
         return [
-            'form' => $form->createView(),
-            'formId' => OrderSearchType::PREFIX,
-            'entityId'     => $formId,
-            'entity' => $entity,
+            'form'     => $form->createView(),
+            'formId'   => OrderSearchType::PREFIX,
+            'entityId' => $formId,
+            'entity'   => $entity,
+            'referer'  => $match[1],
         ];
     }
 
@@ -108,7 +110,7 @@ class ApiPaymentFormController extends Controller
             $msg[] = $err->getMessage();
         }
 
-        return $this->json(['error' => $msg !== [] ? implode("<br>", $msg) : 'not valid']);
+        return $this->json(['error' => $msg !== [] ? implode("<br>", $msg) : 'not valid fields']);
     }
 
 //    /**
