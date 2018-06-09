@@ -93,7 +93,7 @@ class MagicCalculation extends Calculation
              *
              * @var PriceCache $cache
              */
-            foreach ($priceCaches as $day => $cache) {
+            foreach ($priceCaches as $cache) {
                 $promotion = $promotion ?? $cache->getTariff()->getDefaultPromotion();
                 $dayPrice = 0;
                 $bulkPrice = $cache->getPrice();
@@ -128,14 +128,14 @@ class MagicCalculation extends Calculation
 
                 $total += $dayPrice;
                 $packagePrices[] = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $roomType, $special);
-                $dayPrices[] = $dayPrice;
-
+                $dayPrices[$cache->getDate()->format('d_m_Y')] = $dayPrice;
             }
 
 
             $prices[$combination['adults'].'_'.$combination['children']] = [
                 'adults' => $combination['adults'],
                 'children' => $combination['children'],
+                'childrenAges' => $ages,
                 'total' => $this->getTotalPrice($total),
                 'prices' => $dayPrices,
                 'packagePrices' => $packagePrices,

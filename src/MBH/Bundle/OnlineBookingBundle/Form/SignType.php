@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -98,6 +99,11 @@ class SignType extends AbstractType
             ])
             ->add('adults', HiddenType::class, [])
             ->add('children', HiddenType::class, [])
+            ->add('childrenAges', CollectionType::class, [
+                'attr' => ['hidden' => true],
+                'allow_add' => true,
+                'allow_delete' => true,
+            ])
             ->add('begin', HiddenType::class, [
                 'constraints' => [
                     new NotBlank()
@@ -115,6 +121,10 @@ class SignType extends AbstractType
             ->add('promotion', HiddenType::class)
             ->add('special', HiddenType::class)
             ->add('savedQueryId', HiddenType::class)
+            ->add('infants', HiddenType::class, [
+                'mapped' => false
+            ])
+
         ;
         $builder->get('cash')->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event){
             $data = $event->getForm()->getParent()->getData();

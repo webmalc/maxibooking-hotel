@@ -215,6 +215,7 @@ class DefaultController extends BaseController
                     'children' => $formData['children'],
                     'roomType' => $formData['roomType'],
                     'tariff' => $formData['tariff'],
+                    'childrenAges' => $formData['childrenAges'],
                     'accommodation' => false,
                     'isOnline' => true,
                     'special' => $formData['special'],

@@ -149,7 +149,7 @@ class SearchSubscriber implements EventSubscriberInterface
     }
 
 
-    private function canApplyFreeChildTariff(int $adults, int $children, array $childrenAges): bool
+    private function canApplyFreeChildTariff(int $adults, int $children, array $childrenAges = []): bool
     {
         $isOneJuniorChild = $children === 1 && \count($childrenAges) === 1 && $childrenAges[0] > 6;
         $isNoChildren = !\count($childrenAges);
@@ -207,7 +207,7 @@ class SearchSubscriber implements EventSubscriberInterface
     {
         $prices = [];
         foreach ($mainPrices as $combination => $mainPrice) {
-            $additionalPrice = $additionalPrices[$combination];
+            $additionalPrice = reset($additionalPrices);
             $prices[$combination] = [
                 'adults' => $mainPrice['adults'],
                 'children' => $mainPrice['children'],
