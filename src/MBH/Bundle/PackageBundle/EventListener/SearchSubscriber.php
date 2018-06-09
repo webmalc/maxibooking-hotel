@@ -90,7 +90,7 @@ class SearchSubscriber implements EventSubscriberInterface
             $threshold = new \DateTime(self::DATE_THRESHOLD);
             $begin = $eventData['begin'];
             $actualEnd = $eventData['end'];
-            if ($begin < $threshold && $actualEnd > $threshold) {
+            if ($begin <= $threshold && $actualEnd > $threshold) {
                 $adults = $eventData['adults'];
                 $children = $eventData['children'];
                 $childrenAges = $eventData['childrenAges'];
