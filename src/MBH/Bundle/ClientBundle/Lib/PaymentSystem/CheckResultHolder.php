@@ -32,7 +32,7 @@ class CheckResultHolder
     private $text;
 
     /**
-     * @var \Exception|null
+     * @var \Closure|null
      */
     private $individualResponse;
 
@@ -49,21 +49,23 @@ class CheckResultHolder
     }
 
     /**
-     * @return \Exception|null
+     * @return \Closure|null
      */
-    public function getIndividualResponse(): ?\Exception
+    public function getIndividualResponse(): ?\Closure
     {
         if ($this->individualResponse !== null) {
-            return $this->individualResponse;
+            $func = $this->individualResponse;
+
+            return $func();
         }
 
         return null;
     }
 
     /**
-     * @param \Exception $individualResponse
+     * @param \Closure $individualResponse
      */
-    public function setIndividualResponse(\Exception $individualResponse): void
+    public function setIndividualResponse(\Closure $individualResponse): void
     {
         $this->individualResponse = $individualResponse;
     }

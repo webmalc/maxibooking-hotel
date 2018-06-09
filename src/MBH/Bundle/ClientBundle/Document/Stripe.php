@@ -175,7 +175,11 @@ class Stripe implements PaymentSystemInterface
             "source" => $request->get('stripeToken'),
         ]);
         if ($charge->status !== 'succeeded') {
-            $holder->setIndividualResponse(new BadRequestHttpException('Stripe charge is not successful'));
+            $holder->setIndividualResponse(
+                function () {
+                        throw new BadRequestHttpException('Stripe charge is not successful');
+                    }
+                );
 
             return $holder;
         }
