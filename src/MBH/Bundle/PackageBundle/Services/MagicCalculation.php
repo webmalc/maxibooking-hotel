@@ -51,7 +51,7 @@ class MagicCalculation extends Calculation
                 ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], false, $this->manager->useCategories, $memcached);
         };
 
-        $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback)->toArray();
+        $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
 
         if ($useDuration && (\count($priceCaches) !== $duration)) {
