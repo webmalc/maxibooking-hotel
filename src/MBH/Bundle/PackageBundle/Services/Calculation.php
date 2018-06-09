@@ -385,10 +385,10 @@ class Calculation
                 }
 
                 //Костыль из за того, что доктрина не воспринимает тариф PriceCache-а как отслеживаемый. Возможно проблема с вендорами на сервере
-                $cacheTariff = $cache->getTariff()->getId() === $originTariff
+                /*$cacheTariff = $cache->getTariff()->getId() === $originTariff
                     ? $originTariff
-                    : $this->dm->find('MBHPriceBundle:Tariff', $cache->getTariff()->getId());
-                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $cacheTariff, $roomType, $special);
+                    : $this->dm->find('MBHPriceBundle:Tariff', $cache->getTariff()->getId());*/
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $originTariff, $roomType, $special);
                 $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
 

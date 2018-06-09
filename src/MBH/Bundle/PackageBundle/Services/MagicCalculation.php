@@ -28,12 +28,7 @@ class MagicCalculation extends Calculation
     ) {
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
-        $places = $roomType->getPlaces();
         $hotel = $roomType->getHotel();
-        $useCategories ? $isChildPrices = $roomType->getCategory()->getIsChildPrices(
-        ) : $isChildPrices = $roomType->getIsChildPrices();
-        $useCategories ? $isIndividualAdditionalPrices = $roomType->getCategory()->getIsIndividualAdditionalPrices(
-        ) : $isIndividualAdditionalPrices = $roomType->getIsIndividualAdditionalPrices();
         $endPlus = clone $end;
         $endPlus->modify('+1 day');
 
@@ -53,83 +48,13 @@ class MagicCalculation extends Calculation
 
         $priceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $tariffId, $memcached) {
             return $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
+                ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], false, $this->manager->useCategories, $memcached);
         };
 
-        $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
-
-        if (!$tariff->getIsDefault()) {
-            $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
-            if (!$defaultTariff) {
-                return false;
-            }
-            $defaultPriceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                    ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories, $memcached);
-            };
-            $defaultPriceCaches = $this->helper->getFilteredResult($this->dm, $defaultPriceCachesCallback);
-
-        } else {
-            $defaultPriceCaches = $priceCaches;
-            $defaultTariff = $tariff;
-        }
+        $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback)->toArray();
 
 
-        $mergingTariffsPrices = [];
-        if ($tariff->getMergingTariff()) {
-            if ($tariff->getMergingTariff()->getParent() && $tariff->getMergingTariff()->getChildOptions()->isInheritPrices()) {
-                $ids = [$tariff->getMergingTariff()->getParent()->getId()];
-            } else {
-                $ids = [$tariff->getMergingTariff()->getId()];
-            }
-
-            $mergingTariffCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached, $ids) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                    ->fetch(
-                        $begin,
-                        $end,
-                        $hotel,
-                        [$roomTypeId],
-                        $ids,
-                        true,
-                        $this->manager->useCategories,
-                        $memcached
-                    );
-            };
-            $mergingTariff = $this->helper->getFilteredResult($this->dm, $mergingTariffCallback);
-
-            if ($mergingTariff) {
-                $mergingTariffsPrices += $mergingTariff;
-            }
-        }
-
-        if (!isset($priceCaches[$roomTypeId][$tariffId])) {
-            return false;
-        }
-
-        $caches = [];
-        foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $endPlus) as $cacheDay) {
-            $cacheDayStr = $cacheDay->format('d.m.Y');
-
-            if (isset($priceCaches[$roomTypeId][$tariffId][$cacheDayStr])) {
-                $caches[$cacheDayStr] = $priceCaches[$roomTypeId][$tariffId][$cacheDayStr];
-            } elseif ($tariff->getMergingTariff()) {
-                if ($tariff->getMergingTariff()->getParent() && $tariff->getMergingTariff()->getChildOptions()->isInheritPrices()) {
-                    $mergingTariffIdForPrices = $tariff->getMergingTariff()->getParent()->getId();
-                } else {
-                    $mergingTariffIdForPrices = $tariff->getMergingTariff()->getId();
-                }
-                if (isset($mergingTariffsPrices[$roomTypeId][$mergingTariffIdForPrices][$cacheDayStr])) {
-                    $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$mergingTariffIdForPrices][$cacheDayStr];
-                }
-            }
-
-            if (empty($caches[$cacheDayStr]) && isset($defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr])) {
-                $caches[$cacheDayStr] = $defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr];
-            }
-        }
-
-        if ($useDuration && (count($caches) != $duration)) {
+        if ($useDuration && (\count($priceCaches) !== $duration)) {
             return false;
         }
 
@@ -155,7 +80,7 @@ class MagicCalculation extends Calculation
                         }
                         return false;
                     });
-            $childAsAdult = $adults == 1 && 2 <= count($ages) && $asAdultAge;
+            $childAsAdult = $adults == 1 && count($ages) >= 2 && $asAdultAge;
             if ($childAsAdult) {
                 $adults ++;
                 $ages = array_diff_key($ages, $asAdultAge);
@@ -165,9 +90,10 @@ class MagicCalculation extends Calculation
             $ageGroups = $this->getAgeGroups($ages);
 
             /**
+             *
              * @var PriceCache $cache
              */
-            foreach ($caches as $day => $cache) {
+            foreach ($priceCaches as $day => $cache) {
                 $promotion = $promotion ?? $cache->getTariff()->getDefaultPromotion();
                 $dayPrice = 0;
                 $bulkPrice = $cache->getPrice();
@@ -202,139 +128,10 @@ class MagicCalculation extends Calculation
 
                 $total += $dayPrice;
                 $packagePrices[] = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $roomType, $special);
+                $dayPrices[] = $dayPrice;
 
-//                $promoConditions = PromotionConditionFactory::checkConditions(
-//                    $promotion, $duration, $combination['adults'], $combination['children']
-//                );
-//
-//                if ($cache->getTariff()->getId() != $tariff->getId()) {
-//                    $promoConditions = false;
-//                }
-//
-//                $totalChildren = $combination['children'];
-//                $totalAdults = $combination['adults'];
-//
-//                if ($promoConditions) {
-//                    $totalChildren -= (int)$promotion->getFreeChildrenQuantity();
-//                    $totalAdults -= (int)$promotion->getFreeAdultsQuantity();
-//                    $totalAdults = $totalAdults >= 1 ? $totalAdults : 1;
-//                    $totalChildren = $totalChildren >= 0 ? $totalChildren : 0;
-//                    $childrenDiscount = $promotion->getChildrenDiscount();
-//                }
-//
-//                $all = $totalAdults + $totalChildren;
-//                $adds = $all - $places;
-//
-//                if ($all > $places) {
-//
-//                    if ($totalAdults >= $places) {
-//                        $mainAdults = $places;
-//                        $mainChildren = 0;
-//                    } else {
-//                        $mainAdults = $totalAdults;
-//                        $mainChildren = $places - $totalAdults;
-//                    }
-//
-//                    if ($adds > $totalChildren) {
-//                        $addsChildren = $totalChildren;
-//                        $addsAdults = $adds - $addsChildren;
-//                    } else {
-//                        $addsChildren = $adds;
-//                        $addsAdults = 0;
-//                    }
-//                } else {
-//                    $mainAdults = $totalAdults;
-//                    $mainChildren = $totalChildren;
-//                    $addsAdults = 0;
-//                    $addsChildren = 0;
-//                }
-//
-//                $dayPrice = 0;
-//
-//                if ($cache->getSinglePrice() !== null &&
-//                    $all == 1 &&
-//                    !$cache->getCategoryOrRoomType($this->manager->useCategories)->getIsHostel()
-//                ) {
-//                    $dayPrice += $cache->getSinglePrice();
-//                } elseif ($cache->getIsPersonPrice()) {
-//                    if ($isChildPrices && $cache->getChildPrice() !== null) {
-//                        $childrenPrice = $mainChildren * $cache->getChildPrice();
-//                    } else {
-//                        $childrenPrice = $mainChildren * $cache->getPrice();
-//                    }
-//                    if ($promoConditions && $childrenDiscount) {
-//                        $childrenPrice = $childrenPrice * (100 - $childrenDiscount) / 100;
-//                    }
-//                    $dayPrice += $mainAdults * $cache->getPrice() + $childrenPrice;
-//                } else {
-//                    $dayPrice += $cache->getPrice();
-//                }
-//
-//                //calc adds
-//                if ($addsChildren && $cache->getAdditionalChildrenPrice() === null) {
-//                    continue 2;
-//                }
-//                if ($addsAdults && $cache->getAdditionalPrice() === null) {
-//                    continue 2;
-//                }
-//
-//                if ($isIndividualAdditionalPrices and ($addsChildren + $addsAdults) > 1) {
-//                    $addsPrice = 0;
-//                    $additionalCalc = function ($num, $prices, $price, $offset = 0) {
-//                        $result = 0;
-//                        for ($i = 0; $i < $num; $i++) {
-//                            if (isset($prices[$i + $offset]) && $prices[$i + $offset] !== null) {
-//                                $result += $prices[$i + $offset];
-//                            } else {
-//                                $result += $price;
-//                            }
-//                        }
-//
-//                        return $result;
-//                    };
-//
-//                    $addsPrice += $additionalCalc($addsAdults, $cache->getAdditionalPrices(), $cache->getAdditionalPrice());
-//                    $addsChildrenPrice = $additionalCalc($addsChildren, $cache->getAdditionalChildrenPrices(), $cache->getAdditionalChildrenPrice(), $addsAdults);
-//
-//                    if ($promoConditions && $childrenDiscount) {
-//                        $addsChildrenPrice = $addsChildrenPrice * (100 - $childrenDiscount) / 100;
-//                    }
-//                    $addsPrice += $addsChildrenPrice;
-//                } else {
-//                    $addsChildrenPrice = $addsChildren * $cache->getAdditionalChildrenPrice();
-//
-//                    if ($promoConditions && $childrenDiscount) {
-//                        $addsChildrenPrice = $addsChildrenPrice * (100 - $childrenDiscount) / 100;
-//                    }
-//
-//                    $addsPrice = $addsAdults * $cache->getAdditionalPrice() + $addsChildrenPrice;
-//                }
-//
-//                $dayPrice += $addsPrice;
-//
-//                // calc promotion discount
-//                if ($promoConditions) {
-//                    $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
-//                }
-//
-//                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $roomType, $special);
-//                $dayPrice = $packagePrice->getPrice();
-//                $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
-//
-//                if ($promoConditions) {
-//                    $packagePrice->setPromotion($promotion);
-//                }
-//                $packagePrices[] = $packagePrice;
-//                $total += $dayPrice;
             }
 
-//            $promoConditions = PromotionConditionFactory::checkConditions(
-//                $promotion, $duration, $combination['adults'], $combination['children']
-//            );
-//
-//            if ($promoConditions) {
-//                $total -= PromotionConditionFactory::calcDiscount($promotion, $total, false);
-//            }
 
             $prices[$combination['adults'].'_'.$combination['children']] = [
                 'adults' => $combination['adults'],

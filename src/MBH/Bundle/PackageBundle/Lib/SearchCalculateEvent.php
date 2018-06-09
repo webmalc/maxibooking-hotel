@@ -22,6 +22,8 @@ class SearchCalculateEvent extends Event
     public function setPrices($prices)
     {
         $this->prices = $prices;
+
+        return $this;
     }
 
     public function setEventData(array $data)
