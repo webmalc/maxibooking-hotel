@@ -36,20 +36,9 @@
         {% endif %}
         {% if entity.js %}
             <script>
-              window.onload = function(e) {
-                console.log(e);
-                console.log('onload');
-              };
-              document.onreadystatechange = function (e) {
-                console.log(e);
-                console.log("onreadystatechange");
-                if (document.readyState == "complete") {
-                  console.log(e);
-                  console.log("complete");
-
+                window.addEventListener('load', function(ev) {
                     {{ entity.js|raw }}
-                }
-              };
+                });
             </script>
         {% endif %}
     {% endif %}

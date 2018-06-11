@@ -1,29 +1,20 @@
 {#{% wrapinline %}#}
 {% autoescape false %}
+{% include 'MBHClientBundle:PaymentSystem/newRbk:for_parent.js.twig' %}
 var mbhPaymentFunc = {
-  frameUrl       : '{{ url('online_payment_search_form', {formId: config.id}) }}',
-  frameWidth     : "{{ config.fullWidth ? '100%' : config.frameWidth }}",
-  frameHeight    : "{{ config.frameHeight }}",
-  frameId        : "{{ wrapperId }}-iframe",
-  iframe         : null,
-  typePostMessage: 'mbh-payment-form',
-  urlPostMessage : '{{ app.request.getSchemeAndHttpHost() }}',
-  getForm        : function() {
+  frameUrl   : '{{ url('online_payment_search_form', {formId: config.id}) }}',
+  frameWidth : "{{ config.fullWidth ? '100%' : config.frameWidth }}",
+  frameHeight: "{{ config.frameHeight }}",
+  frameId    : "{{ wrapperId }}-iframe",
+  getForm    : function() {
     var formWrapper = document.querySelector('#{{ wrapperId }}');
     formWrapper.innerHTML = '';
-    formWrapper.appendChild(this.getRbk());
+    formWrapper.appendChild(mbhNewRbk.getScript());
     formWrapper.appendChild(this.getIframe());
 
     this.initIframe();
-    this.addListener();
   },
-  getRbk         : function() {
-    var script = document.createElement('script');
-    script.src = 'https://checkout.rbk.money/checkout.js';
-
-    return script;
-  },
-  getIframe      : function() {
+  getIframe: function() {
     var iframe = document.createElement('iframe');
     iframe.id = this.frameId;
     iframe.name = this.frameId;
@@ -34,53 +25,12 @@ var mbhPaymentFunc = {
     iframe.height = this.frameHeight;
 
     return iframe;
-  },
-  addListener    : function() {
-    var self = this;
-    window.addEventListener("message", function(e) {
-      if (event.origin != self.urlPostMessage) {
-        {#// что-то прислали с неизвестного домена - проигнорируем..#}
-        return;
-      }
-      if (e.data.type !== self.typePostMessage) {
-        return;
-      }
-      console.log("получено from parent obj: " + e.data.data);
-      self.openCheckout(e.data.data);
-    })
-  },
-  openCheckout: function(data) {
-    data.finished = function () {
-      console.log('Payment successful finished');
-    };
-    data.opened = function () {
-      console.log('Checkout opened');
-    };
-    data.closed =function () {
-      console.log('Checkout closed');
-    };
-
-    var checkout = RbkmoneyCheckout.configure(data);
-    checkout.open()
-
-  },
-  sendMsg        : function(msg) {
-    this.iframe.postMessage({type: this.typePostMessage, data: msg}, this.urlPostMessage);
-  },
-  initIframe     : function() {
-    if (this.iframe === null) {
-      this.iframe = window.frames[this.frameId];
-    }
   }
 };
 
-window.onload = function(ev) {
+window.addEventListener('load', function(ev) {
   mbhPaymentFunc.getForm();
-
-  send.addEventListener('click', function() {
-    mbhPaymentFunc.sendMsg('click');
-  })
-}
+});
 
 {% endautoescape %}
 {#{% endwrapinline %}#}

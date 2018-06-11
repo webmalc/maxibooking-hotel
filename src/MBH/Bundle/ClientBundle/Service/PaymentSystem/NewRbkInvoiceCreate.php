@@ -83,6 +83,11 @@ class NewRbkInvoiceCreate
         return $this->sendQuery();
     }
 
+    /**
+     * Создаём инвойс на платворме Rbk
+     *
+     * @return NewRbkCreateInvoiceResponse
+     */
     private function sendQuery(): NewRbkCreateInvoiceResponse
     {
         $apiKey = $this->entity->getApiKey();
@@ -132,34 +137,6 @@ class NewRbkInvoiceCreate
         return json_encode($invoice, JSON_UNESCAPED_UNICODE);
     }
 
-//    /**
-//     * @param $rawResponse
-//     * @return array|bool
-//     */
-//    private function getDataForPaymentForm($rawResponse)
-//    {
-//        $response = json_decode($rawResponse, true);
-//
-//        $r = InvoiceResponse::load($response);
-//
-//        if ($r->isSuccess()) {
-//            $data = [
-//                'invoiceID'          => $r->getId(),
-//                'invoiceAccessToken' => $r->getInvoiceAccessToken(),
-//                'name'               => $this->package->getHotel()->getFullTitle(),
-//                'email'              => $this->getEmail(),
-//                'obscureCardCvv'     => true,
-//                'requireCardHolder'  => true,
-//                'description'        => $r->getDescription(),
-//            ];
-//
-//            return $data;
-//        }
-//
-//        /** TODO в $r хранятся данные о ошибке */
-//        return false;
-//    }
-
     /**
      * @param Request $request
      */
@@ -173,7 +150,7 @@ class NewRbkInvoiceCreate
     }
 
     /**
-     * Проверяет наличие документа в случае отсутствие
+     * Проверяет наличие документа в случае отсутствия
      * (или если сумма из формы не равна сумме ордера)
      * формируется новый cashDocuments
      */
@@ -241,18 +218,4 @@ class NewRbkInvoiceCreate
     {
         return $this->total;
     }
-
-//    /**
-//     * @return string
-//     */
-//    private function getEmail(): string
-//    {
-//        $payer = $this->order->getMainTourist();
-//
-//        if ($payer === null) {
-//            $payer = $this->order->getOrganization();
-//        }
-//
-//        return $payer->getEmail() ?? '';
-//    }
 }

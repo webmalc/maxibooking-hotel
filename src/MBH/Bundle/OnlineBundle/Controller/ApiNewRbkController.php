@@ -8,6 +8,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -32,5 +33,14 @@ class ApiNewRbkController extends Controller
         $response = $invoice->getDataFromInvoice($request);
 
         return $this->json($response->arrayData());
+    }
+
+    /**
+     * @Route("/script.js", defaults={"_format" = "js"}, name="online_form_api_newrbk_script")
+     * @Template()
+     */
+    public function scriptAction()
+    {
+        return [];
     }
 }

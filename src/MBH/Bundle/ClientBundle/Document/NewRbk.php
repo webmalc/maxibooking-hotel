@@ -24,6 +24,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class NewRbk implements PaymentSystemInterface
 {
+    public const URL_FOR_CHECKOUT_JS = 'https://checkout.rbk.money/checkout.js';
+    public const TYPE_POST_MSG = 'mbh-payment-newRbk';
+
     private const LIFETIME_INVOICE = 1;
 
     /**
@@ -140,7 +143,10 @@ class NewRbk implements PaymentSystemInterface
 
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {
-        return [];
+        return [
+            'total'     => $cashDocument->getTotal(),
+            'packageId' => $cashDocument->getOrder()->getPackages()[0]->getId(),
+        ];
     }
 
     public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder

@@ -1,0 +1,6 @@
+{% include 'MBHClientBundle:PaymentSystem/newRbk:for_parent.js.twig' %}
+
+window.addEventListener('load', function(ev) {
+  var wrapper = document.getElementById('mbh-results-wrapper');
+  wrapper.appendChild(mbhNewRbk.getScript());
+});
