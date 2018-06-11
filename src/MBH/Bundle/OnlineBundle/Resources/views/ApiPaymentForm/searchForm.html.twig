@@ -1,3 +1,5 @@
+{% set idDivResultSearch = 'result-search' %}
+
 {% spaceless %}
     <!doctype html>
     <html lang="en">
@@ -60,19 +62,12 @@
         <script src='https://www.google.com/recaptcha/api.js'></script>
     {% endif %}
     {{ form_end(form) }}
-    <div id="search-result">
+    <div id="{{ idDivResultSearch | raw }}">
         <div class="panel-body"></div>
     </div>
-
     <script>
-      {% include '@MBHOnline/ApiPaymentForm/js/func.js.twig' %}
+      {% include '@MBHOnline/ApiPaymentForm/' ~ paymentSystem ~ '/func.js.twig' %}
     </script>
-    {#<div id="mbh-form-wrapper" style="overflow: hidden; height: auto">#}
-        {#<a href="https://maxi-booking.ru/"#}
-           {#style="background-color: white; padding: 10px;"#}
-           {#target="_blank">{{ 'views.api.get_form_iframe.online_booking_system'|trans }}</a>#}
-    {#</div>#}
-    {#<script type="text/javascript" src="{{ url('online_form_get', {id: formId, locale: app.request.locale}) }}"></script>#}
     </body>
 
     </html>

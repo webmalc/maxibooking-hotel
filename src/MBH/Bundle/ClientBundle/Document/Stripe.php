@@ -7,6 +7,7 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Stripe\Charge;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -160,11 +161,14 @@ class Stripe implements PaymentSystemInterface
         }
 
         $holder->parseData([
-            'doc' => $orderId,
-            'commission' => $this->getCommissionInPercents() ? $this->getCommissionInPercents() : null,
+            'doc'               => $orderId,
+            'commission'        => $this->getCommissionInPercents() ? $this->getCommissionInPercents() : null,
             'commissionPercent' => true,
-            'text' => 'OK'
         ]);
+
+        $holder->setIndividualSuccessResponse(function (Controller $controller) {
+            return $controller->redirectToRoute('successful_payment');
+        });
 
         \Stripe\Stripe::setApiKey($clientConfig->getStripe()->getSecretKey());
 
@@ -175,7 +179,7 @@ class Stripe implements PaymentSystemInterface
             "source" => $request->get('stripeToken'),
         ]);
         if ($charge->status !== 'succeeded') {
-            $holder->setIndividualResponse(
+            $holder->setIndividualErrorResponse(
                 function () {
                         throw new BadRequestHttpException('Stripe charge is not successful');
                     }

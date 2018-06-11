@@ -10,13 +10,12 @@ namespace MBH\Bundle\ClientBundle\Service\PaymentSystem;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\InvoiceRequest;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\InvoiceResponse;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class NewRbkInvoice
+class NewRbkInvoiceCreate
 {
     const URL_RBK_MONEY_V_1_PROCESSING_INVOICES = "https://api.rbk.money/v1/processing/invoices";
 

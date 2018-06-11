@@ -184,6 +184,12 @@ class SearchForm
 
     }
 
+    /**
+     * Проверка на существование плательщика
+     *
+     * @param Order $order
+     * @return bool
+     */
     private function isPayer(Order $order): bool
     {
         $criteria = [];

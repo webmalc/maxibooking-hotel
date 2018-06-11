@@ -21,6 +21,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Stripe\Charge;
+use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -255,9 +256,7 @@ class ApiController extends Controller
 
         if (!$holder->isSuccess()) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
-            if ($holder->getIndividualResponse() !== null) {
-                throw $holder->getIndividualResponse();
-            }
+            $holder->getIndividualErrorResponse();
             throw $this->createNotFoundException();
         }
 
@@ -336,7 +335,7 @@ class ApiController extends Controller
 
         $logger->info('OK. '.$logText);
 
-        return $paymentSystemName === Stripe::NAME ? $this->redirectToRoute('successful_payment') : new Response($holder->getText());
+        return $holder->getIndividualSuccessResponse($this) ?? new Response($holder->getText());
     }
 
     /**

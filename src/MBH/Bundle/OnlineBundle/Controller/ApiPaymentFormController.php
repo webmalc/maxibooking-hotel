@@ -28,29 +28,39 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ApiPaymentFormController extends Controller
 {
+    private function getPaymentSystem(): string
+    {
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        return $clientConfig->getPaymentSystems()[0];
+    }
+
 
     /**
      * @Route("/load.{_format}/{configId}", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
-     * @Template()
+     * Template()
      */
     public function loadAction($configId)
     {
         $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
             ->findOneById($configId);
 
-        return [
-            'config' => $config,
-            'wrapperId' => PaymentFormConfig::WRAPPER_ID,
-        ];
+        return $this->render(
+            'MBHOnlineBundle:ApiPaymentForm/' . $this->getPaymentSystem() . ':load.js.twig',
+            [
+                'config'    => $config,
+                'wrapperId' => PaymentFormConfig::WRAPPER_ID,
+            ]
+        );
     }
 
     /**
-     * @Route("/form/iframe/{formId}", name="online_payment_form_iframe", defaults={"formId"=null})
+     * @Route("/form/search/{formId}", name="online_payment_search_form", defaults={"formId"=null})
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
      * @Template()
      */
-    public function getFormIframeAction(Request $request, $formId)
+    public function searchFormAction(Request $request, $formId)
     {
         /** @var PaymentFormConfig $entity */
         $entity = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
@@ -68,11 +78,12 @@ class ApiPaymentFormController extends Controller
         $refer = preg_match('/(.*:\/\/.*?)\//', $request->headers->get('referer'), $match);
 
         return [
-            'form'     => $form->createView(),
-            'formId'   => OrderSearchType::PREFIX,
-            'entityId' => $formId,
-            'entity'   => $entity,
-            'referer'  => $match[1],
+            'form'          => $form->createView(),
+            'formId'        => OrderSearchType::PREFIX,
+            'entityId'      => $formId,
+            'entity'        => $entity,
+            'referer'       => $match[1],
+            'paymentSystem' => $this->getPaymentSystem(),
         ];
     }
 
@@ -112,82 +123,6 @@ class ApiPaymentFormController extends Controller
 
         return $this->json(['error' => $msg !== [] ? implode("<br>", $msg) : 'not valid fields']);
     }
-
-//    /**
-//     * Online form js
-//     * @Route("/form/{id}", name="online_payment_form_get", defaults={"_format"="js", "id"=null})
-//     * @Method("GET")
-//     * @Cache(expires="tomorrow", public=true)
-//     * @Template()
-//     */
-//    public function getFormAction($id = null)
-//    {
-//        $this->setLocaleByRequest();
-//
-//        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-//        $dm = $this->get('doctrine_mongodb')->getManager();
-//
-//        /** @var FormConfig $formConfig */
-//        $formConfig = $dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-//            ->findOneById($id);
-//
-//        if (!$formConfig || !$formConfig->getEnabled()) {
-//            throw $this->createNotFoundException();
-//        }
-//
-//        $hotelsQb = $dm->getRepository('MBHHotelBundle:Hotel')
-//            ->createQueryBuilder()
-//            ->sort('fullTitle', 'asc');
-//
-//        $configHotelsIds = $this->get('mbh.helper')->toIds($formConfig->getHotels());
-//
-//        $hotels = [];
-//        /** @var Hotel $hotel */
-//        foreach ($hotelsQb->getQuery()->execute() as $hotel) {
-//            if ($configHotelsIds && !in_array($hotel->getId(), $configHotelsIds)) {
-//                continue;
-//            }
-//
-//            foreach ($hotel->getTariffs() as $tariff) {
-//                if ($tariff->getIsOnline()) {
-//                    $hotels[] = $hotel;
-//                    break;
-//                }
-//            }
-//        }
-//
-//        $twig = $this->get('twig');
-//        $context = [
-//            'config' => $config,
-//            'formConfig' => $formConfig,
-//            'hotels' => $hotels,
-//        ];
-//        $text = $formConfig->getFormTemplate()
-//            ? $twig->createTemplate($formConfig->getFormTemplate())->render($context)
-//            : $twig->render('MBHOnlineBundle:Api:form.html.twig', $context);
-//
-//        return [
-//            'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:form.css.twig'),
-//            'text' => $text,
-//            'isDisplayChildAges' => $formConfig->isIsDisplayChildrenAges(),
-//        ];
-//    }
-
-    /**
-     * @param Request $request
-     * @Route("/generate_invoice", name="online_payment_form_generate_invoice")
-     * @Method("POST")
-     */
-    public function generateInvoiceAction(Request $request)
-    {
-        $invoice = $this->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\NewRbkInvoice');
-        $response = $invoice->getDataFromInvoice($request);
-
-//        $json = json_encode($response, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-
-        return $this->json($response->arrayData());
-    }
-
 
     /**
      * @param Request $request

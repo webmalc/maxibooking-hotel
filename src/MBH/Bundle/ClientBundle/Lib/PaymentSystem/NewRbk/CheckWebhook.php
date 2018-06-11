@@ -77,8 +77,8 @@ class CheckWebhook
 
         $verify = openssl_verify($data, $signature, $publicKeyId, OPENSSL_ALGO_SHA256);
 
-        return true;
-//        return ($verify == 1);
+//        return true;
+        return ($verify == 1);
     }
 
     /**

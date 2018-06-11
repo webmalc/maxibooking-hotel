@@ -140,7 +140,7 @@ class NewRbk implements PaymentSystemInterface
 
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {
-        // TODO: Implement getFormData() method.
+        return [];
     }
 
     public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
@@ -150,14 +150,18 @@ class NewRbk implements PaymentSystemInterface
         $holder = new CheckResultHolder();
 
         if (!$check->verifySignature()) {
-            $holder->setIndividualResponse($check->getErrorResponse());
+            $holder->setIndividualErrorResponse($check->getErrorResponse());
             return $holder;
         }
 
         $webhook = Webhook::parseAndCreate($check->getContent());
 
-        if ($webhook->getEventType() !== Webhook::INVOICE_FULFILLED ||
-            $webhook->getInvoice() !== Webhook::INVOICES_TOPIC) {
+        $a = $webhook->getEventType() != Webhook::PAYMENT_CAPTURED;
+        $b = $webhook->getTopic() != Webhook::INVOICES_TOPIC;
+
+
+        if ($webhook->getEventType() != Webhook::PAYMENT_CAPTURED ||
+            $webhook->getTopic() != Webhook::INVOICES_TOPIC) {
             return $holder;
         }
 

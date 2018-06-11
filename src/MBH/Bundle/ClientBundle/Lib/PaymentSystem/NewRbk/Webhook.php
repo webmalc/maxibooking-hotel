@@ -11,8 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Webhook
 {
-    const INVOICES_TOPIC = "InvoicesTopic";
-    const CUSTOMERS_TOPIC = "CustomersTopic";
+    const INVOICES_TOPIC = 'InvoicesTopic';
+    const CUSTOMERS_TOPIC = 'CustomersTopic';
 
     const INVOICE_CREATED = 'InvoiceCreated';
     const INVOICE_PAID = 'InvoicePaid';

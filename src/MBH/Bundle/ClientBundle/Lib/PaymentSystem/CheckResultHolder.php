@@ -34,7 +34,12 @@ class CheckResultHolder
     /**
      * @var \Closure|null
      */
-    private $individualResponse;
+    private $individualErrorResponse;
+
+    /**
+     * @var \Closure|null
+     */
+    private $individualSuccessResponse;
 
     public function parseData(array $data): self
     {
@@ -51,10 +56,33 @@ class CheckResultHolder
     /**
      * @return \Closure|null
      */
-    public function getIndividualResponse(): ?\Closure
+    public function getIndividualSuccessResponse($param = null): ?\Closure
     {
-        if ($this->individualResponse !== null) {
-            $func = $this->individualResponse;
+        if ($this->individualSuccessResponse !== null) {
+            $func = $this->individualSuccessResponse;
+
+            return $func($param);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \Closure|null $individualSuccessResponse
+     */
+    public function setIndividualSuccessResponse(?\Closure $individualSuccessResponse): void
+    {
+        $this->individualSuccessResponse = $individualSuccessResponse;
+    }
+
+
+    /**
+     * @return \Closure|null
+     */
+    public function getIndividualErrorResponse(): ?\Closure
+    {
+        if ($this->individualErrorResponse !== null) {
+            $func = $this->individualErrorResponse;
 
             return $func();
         }
@@ -65,9 +93,9 @@ class CheckResultHolder
     /**
      * @param \Closure $individualResponse
      */
-    public function setIndividualResponse(\Closure $individualResponse): void
+    public function setIndividualErrorResponse(\Closure $individualErrorResponse): void
     {
-        $this->individualResponse = $individualResponse;
+        $this->individualErrorResponse = $individualErrorResponse;
     }
 
     /**
@@ -145,7 +173,7 @@ class CheckResultHolder
             $r = false;
         }
 
-        if ($this->individualResponse !== null) {
+        if ($this->individualErrorResponse !== null) {
             $r = false;
         }
 

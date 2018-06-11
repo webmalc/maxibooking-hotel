@@ -1,13 +1,15 @@
+{#{% wrapinline %}#}
+{% autoescape false %}
 var mbhPaymentFunc = {
-  frameUrl       : '{{ url('online_payment_form_iframe', {formId: config.id})|raw }}',
-  frameWidth     : "{{ config.fullWidth ? '100%' : config.frameWidth | raw }}",
+  frameUrl       : '{{ url('online_payment_search_form', {formId: config.id}) }}',
+  frameWidth     : "{{ config.fullWidth ? '100%' : config.frameWidth }}",
   frameHeight    : "{{ config.frameHeight }}",
-  frameId        : "{{ wrapperId|raw }}-iframe",
+  frameId        : "{{ wrapperId }}-iframe",
   iframe         : null,
   typePostMessage: 'mbh-payment-form',
-  urlPostMessage : 'http://localhost:9090',
+  urlPostMessage : '{{ app.request.getSchemeAndHttpHost() }}',
   getForm        : function() {
-    var formWrapper = document.querySelector('#{{ wrapperId|raw }}');
+    var formWrapper = document.querySelector('#{{ wrapperId }}');
     formWrapper.innerHTML = '';
     formWrapper.appendChild(this.getRbk());
     formWrapper.appendChild(this.getIframe());
@@ -48,6 +50,16 @@ var mbhPaymentFunc = {
     })
   },
   openCheckout: function(data) {
+    data.finished = function () {
+      console.log('Payment successful finished');
+    };
+    data.opened = function () {
+      console.log('Checkout opened');
+    };
+    data.closed =function () {
+      console.log('Checkout closed');
+    };
+
     var checkout = RbkmoneyCheckout.configure(data);
     checkout.open()
 
@@ -70,10 +82,5 @@ window.onload = function(ev) {
   })
 }
 
-
-{#if (window == top) {#}
-{#console.info( 'Этот скрипт является окном верхнего уровня в браузере' );#}
-{#} else {#}
-{#console.info( 'Этот скрипт исполняется во фрейме!' );#}
-{#}#}
-
+{% endautoescape %}
+{#{% endwrapinline %}#}
