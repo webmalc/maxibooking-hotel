@@ -11,79 +11,45 @@ use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
+use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class SearcherTest extends WebTestCase
+class SearcherTest extends SearchWebTestCase
 {
-    public function testSearch()
+    /** @dataProvider dataProvider */
+    public function testSearch($data)
     {
-        $conditions = new SearchConditions();
-        $begin = new \DateTime("midnight + 1 day");
-        $end = new \DateTime("midnight + 8 day");
-
-        $conditions
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setAdults(1)
-            ->setChildren(1)
-            ->setChildrenAges([5])
-            ->setAdditionalBegin(0)
-            ->setSearchHash(uniqid(gethostname(), true))
-        ;
-
-
-        $searchQueries = $this
-            ->getContainer()
-            ->get('mbh_search.search_query_generator')
-            ->generateSearchQueries($conditions);
+        $searchQueries = $this->createSearchQueries($data);
 
         $searcher = $this->getContainer()->get('mbh_search.searcher');
 
         foreach ($searchQueries as $searchQuery) {
             try {
-                $actual = $searcher->search($searchQuery);
-                $this->assertInstanceOf(SearchResult::class, $actual);
+                $actual[] = $searcher->search($searchQuery);
             } catch (SearchException $e) {
-                $errors[] = $e->getMessage();
+                $errors['searchError'][] = $e->getMessage();
             }
         }
+
+        $this->assertTrue(true);
     }
 
-    /**
-     * TODO: Проверка перенесена в сервис, перенести туда тест
-     * @dataProvider populationDataProvider
-     */
-    public function testCheckRoomTypePopulationLimit(int $places, int $additionalPlaces, int $maxInfants, bool $expectedSuccess)
+    public function dataProvider(): iterable
     {
-        $roomType = new RoomType();
-        $roomType->setPlaces($places)->setAdditionalPlaces($additionalPlaces)->setMaxInfants($maxInfants);
-        $searchQuery = new SearchQuery();
-        $searchQuery
-            ->setChildAge(7)
-            ->setInfantAge(2)
-            ->setAdults(2)
-            ->setChildren(4)
-            ->setChildrenAges([1, 1, 6, 6]);
-        $reflector = new \ReflectionClass(Searcher::class);
-        $method = $reflector->getMethod('checkRoomTypePopulationLimit');
-        $method->setAccessible(true);
-        $searcher = $this->getContainer()->get('mbh_search.searcher');
-
-        if (!$expectedSuccess) {
-            $this->expectException(SearchException::class);
-        }
-
-        $this->assertNull($method->invoke($searcher, $roomType, $searchQuery));
-
-    }
-
-    public function populationDataProvider()
-    {
-        return [
-            [3, 1, 2, true],
-            [3, 0, 2, false ],
-            [6, 0, 1, false ]
+        yield [
+            [
+                'beginOffset' => 1,
+                'endOffset' => 8,
+                'tariffFullTitle' => '',
+                'roomTypeFullTitle' => '',
+                'hotelFullTitle' => 'Отель Волга',
+                'adults' => 1,
+                'children' => 1,
+                'childrenAges' => [5],
+            ]
         ];
     }
+
+
 
 
 }

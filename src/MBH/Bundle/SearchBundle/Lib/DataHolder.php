@@ -105,9 +105,10 @@ class DataHolder
 
     /**
      * @param string $tariffId
-     * @return Tariff|null
+     * @return Tariff
+     * @throws DataHolderException
      */
-    public function getFetchedTariff(string $tariffId): ?Tariff
+    public function getFetchedTariff(string $tariffId): Tariff
     {
         foreach ($this->tariffs as $tariff) {
             if ($tariffId === $tariff->getId()) {
@@ -115,14 +116,16 @@ class DataHolder
             }
         }
 
-        return null;
+        throw new DataHolderException('There is no Tariff in tariff holder!');
+
     }
 
     /**
      * @param string $roomTypeId
-     * @return RoomType|null
+     * @return RoomType
+     * @throws DataHolderException
      */
-    public function getFetchedRoomType(string $roomTypeId): ?RoomType
+    public function getFetchedRoomType(string $roomTypeId): RoomType
     {
         foreach ($this->roomTypes as $roomType) {
             if ($roomTypeId === $roomType->getId()) {
@@ -130,7 +133,7 @@ class DataHolder
             }
         }
 
-        return null;
+        throw new DataHolderException('There is no RoomType in RoomTypeHolder!');
     }
 
     /**

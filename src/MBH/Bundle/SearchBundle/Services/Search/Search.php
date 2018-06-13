@@ -5,9 +5,14 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
@@ -73,10 +78,10 @@ class Search
      * @param array $data
      * @param bool $isAsync
      * @return array|null
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
+     * @throws DataHolderException
+     * @throws MongoDBException
+     * @throws SearchConditionException
+     * @throws SearchQueryGeneratorException
      */
     public function search(array $data, bool $isAsync = false): ?array
     {
@@ -90,14 +95,14 @@ class Search
     /**
      * @param array $data
      * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
+     * @throws MongoDBException
+     * @throws DataHolderException
+     * @throws SearchConditionException
+     * @throws SearchQueryGeneratorException
      */
     public function searchSync(array $data): array
     {
-        $searchQueries = $this->prepareQueries($data);
+        $searchQueries = $this->createSearchQueries($data);
         $results = [];
         foreach ($searchQueries as $searchQuery) {
             try {
@@ -119,31 +124,33 @@ class Search
     /**
      * @param array $data
      * @return array
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
+     * @throws SearchConditionException
+     * @throws SearchQueryGeneratorException
      */
-    public function searchAsync(array $data): array
+    public function searchAsync(array $data): SearchResultHolder
     {
-        $searchQueries = $this->prepareQueries($data);
-        //** TODO: Create Queue */
-        return ['queue' => 'ok'];
+        $searchQueries = $this->createSearchQueries($data);
+        $holder = new SearchResultHolder();
+        $holder
+            ->setExpectedResults($this->getSearchCount())
+            ->setHash($this->getSearchHash())
+        ;
     }
+
 
     /**
      * @param array $data
      * @return array|SearchQuery[]
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
+     * @throws SearchConditionException
+     * @throws SearchQueryGeneratorException
      */
-    private function prepareQueries(array $data): array
+    private function createSearchQueries(array $data): array
     {
         $this->searchHash = uniqid(gethostname(), true);
         $conditions = $this->conditionsCreator->createSearchConditions($data);
         $conditions->setSearchHash($this->searchHash);
 
         $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
-
-
 
         if ($this->isSaveQueryStat) {
             $this->saveQueryStat($conditions);
@@ -153,7 +160,6 @@ class Search
             $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
         }
         $this->searchQueriesCount = \count($searchQueries);
-
 
         return $searchQueries;
     }
@@ -182,6 +188,11 @@ class Search
     public function getSearchCount(): int
     {
         return $this->searchQueriesCount;
+    }
+
+    public function getRestrictionsErrors(): ?array
+    {
+        return $this->restrictionChecker->getErrors();
     }
 
 }

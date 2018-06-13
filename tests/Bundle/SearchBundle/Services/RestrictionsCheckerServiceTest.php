@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\RestrictionsCheckerInterface;
@@ -17,11 +18,7 @@ use MongoDB\BSON\ObjectId;
 
 class RestrictionsCheckerServiceTest extends WebTestCase
 {
-    /**
-     * @var RestrictionsCheckerService
-     */
-    private $mockedService;
-
+    /** @var RestrictionsCheckerService */
     private $service;
 
     public function setUp()
@@ -31,257 +28,81 @@ class RestrictionsCheckerServiceTest extends WebTestCase
     }
 
 
-    public function testCheckSuccess(): void
+    public function testCheckSuccessOrFail(): void
     {
-        $service = $this->getDummyService();
-        $searchQuery = $this->getDummySearchQuery();
+        $dataHolder = $this->createMock(DataHolder::class);
+        $dataHolder->expects($this->once())->method('getCheckNecessaryRestrictions')->willReturn([1, 2, 4]);
 
         $checker = $this->createMock(RestrictionsCheckerInterface::class);
         $checker->expects($this->once())->method('check')->willReturn(true);
-        $service->addChecker($checker);
-        /** @var SearchQuery $searchQuery */
-        $actual = $service->check($searchQuery);
 
-        $this->assertArraySimilar([], $actual);
+        $service = new RestrictionsCheckerService($dataHolder);
+        $service->addChecker($checker);
+
+        $searchQuery = new SearchQuery();
+        $actual = $service->check($searchQuery);
+        $this->assertTrue($actual);
         $this->assertTrue($searchQuery->isRestrictionsWhereChecked());
 
     }
 
     public function testCheckFail(): void
     {
-        $service = $this->getDummyService();
-        $searchQuery = $this->getDummySearchQuery();
+        $dataHolder = $this->createMock(DataHolder::class);
+        $dataHolder->expects($this->once())->method('getCheckNecessaryRestrictions')->willReturn([1, 2, 4]);
 
         $checker = $this->createMock(RestrictionsCheckerInterface::class);
-        $checker->expects($this->once())->method('check')->willThrowException(new RestrictionsCheckerException('Check Failed'));
+        $message = 'Error when check';
+        $checker->expects($this->once())->method('check')->willThrowException(new RestrictionsCheckerException($message));
+
+        $service = new RestrictionsCheckerService($dataHolder);
         $service->addChecker($checker);
 
-        /** @var SearchQuery $searchQuery*/
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight +1 days');
+        $tariff = 'tariffId';
+        $roomType = 'roomTypeId';
+
+        $searchQuery = new SearchQuery();
+        $searchQuery
+            ->setBegin($begin)
+            ->setEnd($end)
+            ->setTariffId($tariff)
+            ->setRoomTypeId($roomType)
+        ;
+
         $actual = $service->check($searchQuery);
+        $this->assertFalse($actual);
+        $errors = $service->getErrors();
+        $this->assertCount(1, $errors);
+        $actualError = reset($errors);
+        $expectedError = [
+            'date' => $begin->format('d-m-Y') . '_' . $end->format('d-m-Y'),
+            'tariff' => $tariff,
+            'roomType' => $roomType,
+            'error' => $message
 
-        $this->assertArraySubset([0 => 'Check Failed'], $actual);
-        $this->assertTrue($searchQuery->isRestrictionsWhereChecked());
+        ];
+        $this->assertArraySimilar($expectedError, $actualError);
+
     }
 
-    /** Тест переделать! Там получается что исключение на все ошибки! */
-    public function testFailServiceWithNoCondition(): void
-    {
-        $dm = $this->createMock(DocumentManager::class);
-        $service = new RestrictionsCheckerService($dm);
-        $checker = $this->createMock(RestrictionsCheckerInterface::class);
-        $service->addChecker($checker);
-        $searchQuery = $this->getSearchQuery();
-        /** @var SearchQuery $searchQuery*/
-        $this->expectException(RestrictionsCheckerServiceException::class);
-        $service->check($searchQuery);
-    }
 
     public function testAlreadyChecked(): void
     {
-        $service = $this->service;
-        $searchQuery = new SearchQuery();
-        $searchQuery
-            ->setBegin(new \DateTime('01.05.2018'))
-            ->setEnd(new \DateTime('3.05.2018'))
-            ->setTariffId('5ad744393755eb001962adab')
-            ->setRoomTypeId('5ad744393755eb001962adc9')
-
-        ;
-        $conditions = new SearchConditions();
-        $conditions
-            ->setBegin(new \DateTime('01.05.2018'))
-            ->setEnd(new \DateTime('3.05.2018'))
-            ->setAdditionalBegin(5)
-        ;
-        $service->setConditions($conditions);
+        $dataHolder = $this->createMock(DataHolder::class);
+        $dataHolder->expects($this->never())->method('getCheckNecessaryRestrictions');
 
         $checker = $this->createMock(RestrictionsCheckerInterface::class);
         $checker->expects($this->never())->method('check');
+
+        $service = new RestrictionsCheckerService($dataHolder);
         $service->addChecker($checker);
 
-        /** @var SearchQuery $searchQuery */
+        $searchQuery = new SearchQuery();
         $searchQuery->setRestrictionsWhereChecked();
-        $service->check($searchQuery);
-    }
-
-    public function testGetRestrictions(): void
-    {
-        $dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-        $data = $this->getRestrictionRawData();
-
-        $mockDm = $this->createMock(DocumentManager::class);
-        $mockRepository = $this->createMock(RestrictionRepository::class);
-        $mockRepository->expects($this->once())->method('getWithConditions')->willReturn($data);
-        $mockDm->expects($this->any())->method('getRepository')->willReturn($mockRepository);
-
-        $tariff = $dm->getRepository(Tariff::class)->findOneBy([]);
-
-        $service = new RestrictionsCheckerService($mockDm);
-        $checker = $this->createMock(RestrictionsCheckerInterface::class);
-        $service->addChecker($checker);
-        $conditions = new SearchConditions();
-        $conditions
-            ->setBegin(new \DateTime('03-05-2018'))
-            ->setEnd(new \DateTime('06-05-2018'))
-            ->setAdults(2)
-            ->setChildren(1)
-            ->setChildrenAges([7])
-            ->setAdditionalBegin(2)
-            ->setAdditionalEnd(2)
-            ->addTariff($tariff);
-        $service->setConditions($conditions);
-
-        $method = $this->getPrivateMethod(RestrictionsCheckerService::class, 'getRestrictions');
-        $actual = $method->invoke($service);
-        $expected = [
-            '30-04-2018_5ad744393755eb001962adab_5ad744393755eb001962adc9',
-            '04-05-2018_5ad744393755eb001962adab_5ad744393755eb001962addf',
-        ];
-
-        $this->assertNotEmpty($actual);
-
-        $this->assertArraySimilar($expected, array_keys($actual));
-    }
-
-    public function testGetNecessaryRestrictions(): void
-    {
-        $restrictions = [
-            '01-05-2018_5ad744393755eb001962adab_5ad744393755eb001962adc9' => [],
-            '02-05-2018_5ad744393755eb001962adab_5ad744393755eb001962adc9' => [],
-            '03-05-2018_5ad744393755eb001962adab_5ad744393755eb001962adc9' => [],
-            '04-05-2018_5ad744393755eb001962adab_5ad744393755eb001962adc9' => [],
-        ];
-        $service = $this->service;
-        $reflection = new \ReflectionClass($service);
-        $property = $reflection->getProperty('restrictions');
-        $property->setAccessible(true);
-        $property->setValue($service, $restrictions);
-        $method = $this->getPrivateMethod(RestrictionsCheckerService::class, 'getNecessaryRestrictions');
-        $searchQuery = new SearchQuery();
-        $searchQuery
-            ->setBegin(new \DateTime('01.05.2018'))
-            ->setEnd(new \DateTime('3.05.2018'))
-            ->setTariffId('5ad744393755eb001962adab')
-            ->setRoomTypeId('5ad744393755eb001962adc9')
-
-        ;
-        $actual = $method->invoke($service, $searchQuery);
-        $this->assertCount(3, $actual);
-    }
-
-    private function getSearchQuery()
-    {
-        $methods = Helper::getAllMethodExept(SearchQuery::class, ['isRestrictionsWhereChecked', 'setRestrictionsWhereChecked']);
-        return $this->getMockBuilder(SearchQuery::class)->setMethods($methods)->getMock();
-    }
-
-    private function getPrivateMethod($className, $methodName)
-    {
-        $reflector = new \ReflectionClass($className);
-        $method = $reflector->getMethod($methodName);
-        $method->setAccessible(true);
-
-        return $method;
-    }
-
-    private function getRestrictionRawData(): array
-    {
-        $restrictions = [[
-            '_id' =>
-                \MongoId::__set_state(
-                    [
-                        'objectID' =>
-                            new ObjectId('5ad744443755eb001962c458'),
-                    ]
-                ),
-            'hotel' =>
-                [
-                    '$ref' => 'Hotels',
-                    '$id' =>'5ad744353755eb001962ac26',
-                    '$db' => 'template_db_for_test',
-                ],
-            'roomType' =>
-                [
-                    '$ref' => 'RoomTypes',
-                    '$id' => '5ad744393755eb001962adc9',
-                    '$db' => 'template_db_for_test',
-                ],
-            'tariff' =>
-                [
-                    '$ref' => 'Tariffs',
-                    '$id' =>'5ad744393755eb001962adab',
-                    '$db' => 'template_db_for_test',
-                ],
-            'date' =>
-                new \MongoDate(1525122000, 0),
-            'minStay' => 3,
-            'closedOnArrival' => false,
-            'closedOnDeparture' => false,
-            'closed' => false,
-            'isEnabled' => true,
-        ],
-        array (
-            '_id' =>
-                \MongoId::__set_state(array(
-                    'objectID' =>
-                        new ObjectId('5ad744443755eb001962c513'),
-                )),
-            'hotel' =>
-                array (
-                    '$ref' => 'Hotels',
-                    '$id' => '5ad744353755eb001962ac26',
-                    '$db' => 'template_db_for_test',
-                ),
-            'roomType' =>
-                array (
-                    '$ref' => 'RoomTypes',
-                    '$id' =>'5ad744393755eb001962addf',
-                    '$db' => 'template_db_for_test',
-                ),
-            'tariff' =>
-                array (
-                    '$ref' => 'Tariffs',
-                    '$id' => '5ad744393755eb001962adab',
-                    '$db' => 'template_db_for_test',
-                ),
-            'date' =>
-                new \MongoDate(1525467600, 0),
-            'minStay' => 2,
-            'closedOnArrival' => false,
-            'closedOnDeparture' => false,
-            'closed' => false,
-            'isEnabled' => true,
-        )]
-
-        ;
-
-        return $restrictions;
-    }
-
-    private function getDummyService()
-    {
-        $service = $this->service;
-        $conditions = new SearchConditions();
-        $conditions
-            ->setBegin(new \DateTime('now midnight'))
-            ->setEnd(new \DateTime('now midnight +4 days'))
-            ->setAdditionalBegin(5)
-        ;
-        $service->setConditions($conditions);
-
-        return $service;
-    }
-
-    private function getDummySearchQuery()
-    {
-        $searchQuery = new SearchQuery();
-        $searchQuery
-            ->setBegin(new \DateTime('now midnight'))
-            ->setEnd(new \DateTime('now midnight +4 days'))
-            ->setTariffId('5ad744393755eb001962adab')
-            ->setRoomTypeId('5ad744393755eb001962adc9')
-        ;
-
-        return $searchQuery;
+        $actual = $service->check($searchQuery);
+        $this->assertTrue($actual);
+        $this->assertTrue($searchQuery->isRestrictionsWhereChecked());
     }
 }

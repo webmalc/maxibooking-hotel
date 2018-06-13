@@ -261,7 +261,7 @@ class DataHolderTest extends SearchWebTestCase
 
     public function accommodationDataProvider(): iterable
     {
- /*       yield [
+        yield [
             [
                 'beginOffset' => 0,
                 'endOffset' => 25,
@@ -310,7 +310,7 @@ class DataHolderTest extends SearchWebTestCase
                     'noRoomNames' => [7]
                 ]
             ]
-        ];*/
+        ];
 
         yield [
             [

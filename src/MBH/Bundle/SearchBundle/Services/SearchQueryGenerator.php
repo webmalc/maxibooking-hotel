@@ -195,13 +195,8 @@ class SearchQueryGenerator
         }
 
         $result = [];
-        foreach ($combined as $values) {
-            /** @var array $values */
-            if (is_iterable($values)) {
-                foreach ($values as $value) {
-                    $result[] = $value;
-                }
-            }
+        if (\count($combined)) {
+            $result = array_merge(...$combined);
         }
 
         return $result;

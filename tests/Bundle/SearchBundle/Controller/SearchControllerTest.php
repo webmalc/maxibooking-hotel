@@ -83,7 +83,7 @@ class SearchControllerTest extends WebTestCase
                 'endOffset' => 10,
                 'useCategory' => true,
                 'hotels' => ['Отель Волга'],
-                'roomTypes' => ['AdditionalPlacesCategory'],
+                'roomTypes' => ['Люкс'],
                 'tariffs' => [],
                 'adults' => 0,
                 'children' => 0,

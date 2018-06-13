@@ -44,14 +44,18 @@ class SearchResultComposer
     }
 
 
-    public function composeResult(SearchResult $searchResult, SearchQuery $searchQuery, array $roomCaches): SearchResult
+    public function composeResult(SearchQuery $searchQuery, array $roomCaches): SearchResult
     {
+        //** TODO: Можно не передавать сюда roomCaches, а брать тут, но тогда
+        // но там сложность в лимитах по тарифам. Надо подумать как это реализовать тут, а не выше
+        //  */
+        $searchResult = new SearchResult();
         $roomType = $this->dataHolder->getFetchedRoomType($searchQuery->getRoomTypeId());
         $tariff = $this->dataHolder->getFetchedTariff($searchQuery->getTariffId());
         if (!$roomType || !$tariff) {
             throw new SearchResultComposerException('Can not get Tariff or RoomType');
         }
-        $this->limitChecker->checkTariffConditions($tariff, $searchQuery);
+        $this->limitChecker->checkTariffConditions($searchQuery);
         $minCache = $this->getMinCacheValue($searchQuery, $roomCaches);
         $isUseCategories = $this->roomManager->useCategories;
         $actualAdults = $searchQuery->getActualAdults();

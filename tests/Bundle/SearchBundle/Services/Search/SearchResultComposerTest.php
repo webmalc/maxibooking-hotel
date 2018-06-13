@@ -32,7 +32,7 @@ class SearchResultComposerTest extends SearchWebTestCase
         $searchQuery = $this->createSearchQuery($data);
         $dataHolder = $this->getContainer()->get('mbh_search.data_holder');
         $roomCaches = $dataHolder->getNecessaryRoomCaches($searchQuery);
-        $actual = $this->searchComposer->composeResult(new SearchResult(), $searchQuery, $roomCaches);
+        $actual = $this->searchComposer->composeResult($searchQuery, $roomCaches);
         $expected = $data['expected'];
         /** TODO: Добавить всякой фигни */
         /** @var SearchResult $actual */

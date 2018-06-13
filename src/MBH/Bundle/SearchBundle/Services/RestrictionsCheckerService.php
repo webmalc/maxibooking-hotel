@@ -45,11 +45,10 @@ class RestrictionsCheckerService
 
     public function check(SearchQuery $searchQuery): bool
     {
-        $this->errors = [];
         if ($searchQuery->isIgnoreRestrictions()) {
             return true;
         }
-
+        $isError = false;
         if (!$searchQuery->isRestrictionsWhereChecked()) {
             $restrictions = $this->dataHolder->getCheckNecessaryRestrictions($searchQuery);
             if (!empty($restrictions)) {
@@ -57,14 +56,32 @@ class RestrictionsCheckerService
                     try {
                         $checker->check($searchQuery, $restrictions);
                     } catch (RestrictionsCheckerException $e) {
-                        $this->errors[] = $e->getMessage();
+                        $isError = true;
+                        $this->addErrorInfo($searchQuery, $e);
                     }
                 }
             }
             $searchQuery->setRestrictionsWhereChecked();
         }
 
-        return !(bool)\count($this->errors);
+        return !$isError;
+    }
+
+    private function addErrorInfo(SearchQuery $searchQuery, RestrictionsCheckerException $e): void
+    {
+        $error = [
+            'date' => $searchQuery->getBegin()->format('d-m-Y') . '_' . $searchQuery->getEnd()->format('d-m-Y'),
+            'tariff' => $searchQuery->getTariffId(),
+            'roomType' => $searchQuery->getRoomTypeId(),
+            'error' => $e->getMessage(),
+
+        ];
+        $this->errors[] = $error;
+    }
+
+    public function getErrors(): ?array
+    {
+        return $this->errors;
     }
 
 }
