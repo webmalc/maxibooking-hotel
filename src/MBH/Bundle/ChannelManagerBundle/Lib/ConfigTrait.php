@@ -25,4 +25,11 @@ trait ConfigTrait
 
         return $result;
     }
+
+    /**
+     * @return bool
+     */
+    public function isReadyToSync(): bool {
+        return $this->getIsEnabled() && !$this->getTariffs()->isEmpty() && !$this->getRooms()->isEmpty();
+    }
 }

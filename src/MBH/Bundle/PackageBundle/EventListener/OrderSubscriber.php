@@ -92,8 +92,6 @@ class OrderSubscriber implements EventSubscriber
             }
 
             $this->_removeCache();
-
-            $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
         }
 
         //Calc paid

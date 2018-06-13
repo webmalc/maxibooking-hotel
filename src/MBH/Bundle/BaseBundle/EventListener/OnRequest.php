@@ -26,6 +26,12 @@ class OnRequest
         $clientManager = $this->container->get('mbh.client_manager');
         $session = $this->container->get('session');
 
+        //temp fix
+        if ($event->getRequest()->getPathInfo() === '/user/login_check' && $event->getRequest()->getMethod() === 'GET') {
+            $response = new RedirectResponse('/user/login');
+            $event->setResponse($response);
+        }
+
         if (!$this->container->get('kernel')->isDefaultClient()) {
             $client = $clientManager->getClient();
             if (!$client->getTrial_activated() && $this->isRequestedByAuthUser()) {

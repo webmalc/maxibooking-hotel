@@ -585,6 +585,24 @@ class Helper
         return substr($haystack, 0, strlen($needle)) === $needle;
     }
 
+    /**
+     * @param \DateTime[] $dates
+     * @return array
+     * @throws \InvalidArgumentException
+     */
+    public function getMinAndMaxDates(array $dates)
+    {
+        if (empty($dates)) {
+            throw new \InvalidArgumentException('Passed array of dates can not be empty!');
+        }
+
+        usort($dates, function(\DateTime $date1, \DateTime $date2) {
+            return $date1 > $date2 ? 1 : -1;
+        });
+
+        return [$dates[0], end($dates)];
+    }
+
     public static function returnNonHydrateIds($entry): string
     {
         return (string)$entry['_id'];

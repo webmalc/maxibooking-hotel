@@ -22,7 +22,7 @@ class ClientManager
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
     const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
     const INSTALLATION_PAGE_RU = 'https://demo.maxi-booking.ru/';
-    const INSTALLATION_PAGE_COM = 'https://demo.maxi-booking.com/';
+    const INSTALLATION_PAGE_COM = 'https://login.maxi-booking.com/';
 
     private $dm;
     private $session;
@@ -66,12 +66,16 @@ class ClientManager
         $roomCachesByDate = $roomCacheRepository
             ->fetch($date, $date, null, [], null)
             ->toArray();
-        $roomCachesByDate = array_unique(array_merge($modifiedRoomCaches, $roomCachesByDate), SORT_REGULAR);
+        $roomCachesByDate = array_merge($modifiedRoomCaches, $roomCachesByDate);
 
         $numberOfExistedRooms = 0;
+        $roomCachesIds = [];
         /** @var RoomCache $roomCache */
         foreach ($roomCachesByDate as $roomCache) {
-            $numberOfExistedRooms += $roomCache->getTotalRooms();
+            if (!in_array($roomCache->getId(), $roomCachesIds)) {
+                $roomCachesIds[] = $roomCache->getId();
+                $numberOfExistedRooms += $roomCache->getTotalRooms();
+            }
         }
 
         return $numberOfExistedRooms > $this->getAvailableNumberOfRooms();
