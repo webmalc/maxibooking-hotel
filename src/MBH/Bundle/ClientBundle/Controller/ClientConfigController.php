@@ -156,16 +156,14 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
     /**
      * Payment system configuration page
-     * @Route("/payment_system_form", name="client_payment_system_form")
+     * @Route("/payment_system_form/{paymentSystemName}", name="client_payment_system_form")
      * @Method("GET")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
      * @Template()
-     * @param Request $request
      * @return array
      */
-    public function paymentSystemFormAction(Request $request)
+    public function paymentSystemFormAction($paymentSystemName = null)
     {
-        $paymentSystemName = $request->query->get('paymentSystemName');
         $form = $this->createForm(ClientPaymentSystemType::class, $this->clientConfig, [
             'entity' => $this->clientConfig,
             'paymentSystemName' => $paymentSystemName

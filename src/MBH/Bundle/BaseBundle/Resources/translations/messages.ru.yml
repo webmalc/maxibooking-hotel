@@ -375,6 +375,7 @@ menu.communication.label: Взаимодействие
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.your_hotel: ВашОтель
 menu.communication.label.onlineform: 'Онлайн модуль'
+menu.communication.label.online_payment_form: 'Платежный модуль'
 menu.communication.label.polls: Оценки
 menu.communication.label.invite: 'Визовое приглашение'
 menu.communication.label.hundred_one_hotels: '101 Отель'

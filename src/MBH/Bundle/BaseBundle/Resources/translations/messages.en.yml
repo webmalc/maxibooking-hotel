@@ -192,6 +192,7 @@ menu.configs.warehouse: Stock
 menu.communication.label: Interactions
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.onlineform: 'Web module'
+menu.communication.label.online_payment_form: 'Payment module'
 menu.communication.label.polls: Ratings
 menu.communication.label.invite: 'Visa invitation'
 menu.communication.label.hundred_one_hotels: '101 Hotel'

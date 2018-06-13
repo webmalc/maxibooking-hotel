@@ -157,16 +157,6 @@ class Builder
     {
         $this->parseOptions($options);
 
-        $onlineForm = [
-            'online_form' => [
-                'options'    => [
-                    'route' => 'online_form',
-                    'label' => 'menu.communication.label.onlineform',
-                ],
-                'attributes' => ['icon' => 'fa fa-globe'],
-            ],
-        ];
-
         $parameters = [
             'config' => [
                 'options'    => [
@@ -200,9 +190,6 @@ class Builder
 
         // web site
         $menu->addChild($this->itemsWebSite());
-
-        // online form
-        $menu->addChild($this->createItem($onlineForm));
 
         // analytics
         $menu->addChild($this->itemsAnalytics());
@@ -769,6 +756,26 @@ class Builder
             ],
         ];
 
+        $onlineForm = [
+            'online_form' => [
+                'options'    => [
+                    'route' => 'online_form',
+                    'label' => 'menu.communication.label.onlineform',
+                ],
+                'attributes' => ['icon' => 'fa fa-globe'],
+            ],
+        ];
+
+        $paymentForm = [
+            'payment_form' => [
+                'options'    => [
+                    'route' => 'online_payment_form',
+                    'label' => 'menu.communication.label.online_payment_form',
+                ],
+                'attributes' => ['icon' => 'fa fa-money'],
+            ],
+        ];
+
         $onlinePolls = [
             'online_polls' => [
                 'options'    => [
@@ -794,8 +801,10 @@ class Builder
         return $parent->setChildren(
             $this->getItemsInArray([
 //                $siteSettings,
-$onlinePolls,
-$paymentSystem,
+                $onlinePolls,
+                $paymentSystem,
+                $onlineForm,
+                $paymentForm,
             ])
         );
     }
