@@ -158,31 +158,23 @@
 {% block label %}
     {% wrapinline %}
     <span>{{ item.label == '&nbsp;' ? '&nbsp;' : item.label|trans }}</span>
-    {% if item.attribute('badge_left') is defined %}
-        <div class="parent_badge">
-            <small {% if item.attribute('badge_title_left') is defined %}
-                    data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_left') }}"
+    {% if item.name is constant('MBH\\Bundle\\BaseBundle\\Menu\\Builder::PORTER_LINKS') %}
+        {% if item.attribute('badge_left') is not null or item.attribute('badge_right') is not null %}
+            <div class="parent_badge">
+                {% if item.attribute('badge_left') is defined %}
+                <small data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_left') }}"
+                       id="{{ item.attribute('badge_id_left') }}"
+                       class="label {{ item.attribute('badge_class_left') }}"
+                >{{ item.attribute('badge_value_left') }}</small>
                 {% endif %}
-                {% if item.attribute('badge_id_left') is defined %}
-                    id="{{ item.attribute('badge_id_left') }}"
+                {% if item.attribute('badge_right') is defined %}
+                <small data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_right') }}"
+                       id="{{ item.attribute('badge_id_right') }}"
+                       class="label {{ item.attribute('badge_class_right') }}"
+                >{{ item.attribute('badge_value_right') }}</small>
                 {% endif %}
-                class="label
-                {% if item.attribute('badge_class_left') is defined %}
-                    {{ item.attribute('badge_class_left') }}
-                {% endif %}">{{ item.attribute('badge_value_left') }}</small>
-            {% endif %}
-            {% if item.attribute('badge') is defined %}
-            <small {% if item.attribute('badge_title_right') is defined %}
-                    data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_right') }}"
-                {% endif %}
-                {% if item.attribute('badge_id_right') is defined %}
-                    id="{{ item.attribute('badge_id_right') }}"
-                {% endif %}
-                class="label
-                {% if item.attribute('badge_class_right') is defined %}
-                    {{ item.attribute('badge_class_right') }}
-                {% endif %}">{{ item.attribute('badge_value_right') }}</small>
-        </div>
+            </div>
+        {% endif %}
     {% endif %}
     {% endwrapinline %}
 {% endblock %}

@@ -9,10 +9,23 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class Builder
 {
+    const ROOT_MENU_ITEM_CREATE_HOTEL_MENU = 'create-hotel-menu';
+
+    const ROOT_MENU_ITEM_MANAGEMENT_MENU = 'management-menu';
+
+    const ROOT_MENU_ITEM_MAIN_MENU = 'main-menu';
+
+    const PORTER_LINKS = 'porter_links';
+
     /**
      * @var \MBH\Bundle\ClientBundle\Document\ClientConfig
      */
     protected $config;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * @var FactoryInterface
@@ -20,14 +33,35 @@ class Builder
     private $factory;
 
     /**
-     * @var ContainerInterface
+     * @var string|null
      */
-    protected $container;
+    private $titleUrl = null;
+
+    /**
+     * @var bool
+     */
+    private $isCurrent = false;
+
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\Routing\Router
+     */
+    private $currentRoute;
+
+    /**
+     * @var \Symfony\Component\Security\Core\Authorization\AuthorizationChecker
+     */
+    private $security;
 
     public function __construct(FactoryInterface $factory, ContainerInterface $container)
     {
         $this->factory = $factory;
         $this->container = $container;
+
+        $this->currentRoute = $this->container->get('router');
+        $this->currentRoute->getContext()->setMethod('GET');
+        $this->security = $this->container->get('security.authorization_checker');
+        
+        $this->setConfig();
     }
 
     protected function setConfig()
@@ -48,6 +82,7 @@ class Builder
     public function mainMenu(array $options)
     {
         $this->setConfig();
+        $this->parseOptions($options);
 
         /** @var UserInterface $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
@@ -84,7 +119,7 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItemWithCollapse('main-menu', 'menu.header.navigation', true);
+        $menu = $this->createRootItemWithCollapse(self::ROOT_MENU_ITEM_MAIN_MENU, 'menu.header.navigation', true);
 
         // chessboard
         $menu->addChild($this->createItem($this->getChessboardData()));
@@ -110,17 +145,18 @@ class Builder
         // financial analytics
         $menu->addChild($this->itemsFinancialAnalytics());
 
-        return $this->filter($menu, $options);
+        return $this->filter($menu);
     }
 
     /**
      * User menu
      * @param \Knp\Menu\FactoryInterface $factory
-     * @param array $options
      * @return \Knp\Menu\MenuItem
      */
     public function managementMenu(array $options)
     {
+        $this->parseOptions($options);
+
         $onlineForm = [
             'online_form' => [
                 'options'    => [
@@ -151,7 +187,7 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItemWithCollapse('management-menu', 'menu.settings.label.header');
+        $menu = $this->createRootItemWithCollapse(self::ROOT_MENU_ITEM_MANAGEMENT_MENU, 'menu.settings.label.header');
 
         // Hotel links
         $menu->addChild($this->itemsHotelLinks());
@@ -183,11 +219,10 @@ class Builder
         // profile
         $menu->addChild($this->createItem($profile));
 
-
 //        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
 //            ->setAttributes(['icon' => 'fa fa-star']);
 
-        return $this->filter($menu, $options);
+        return $this->filter($menu);
     }
 
     /**
@@ -198,45 +233,39 @@ class Builder
      */
     public function createHotelMenu(array $options)
     {
+        $this->parseOptions($options);
 
-        $menu = $this->createRootItem('create-hotel-menu','menu.header.navigation');
+        $menu = $this->createRootItem(self::ROOT_MENU_ITEM_CREATE_HOTEL_MENU,'menu.header.navigation');
 
         $menu->addChild('create_hotel', ['route' => 'hotel_new', 'label' => 'menu.hotel_new.label'])
             ->setAttribute('icon', 'fa fa-plus');
 
-        return $this->filter($menu, $options);
+        return $this->filter($menu);
     }
 
     /**
      * @param ItemInterface $menu
      * @param FactoryInterface $factory
-     * @param array $options
      * @return ItemInterface
      */
-    public function filter(ItemInterface $menu, array $options)
+    public function filter(ItemInterface $menu)
     {
         $this->counter = 0;
-        $menu = $this->filterMenu($menu, $options);
+        $menu = $this->filterMenu($menu);
+        $menu = $this->checkAndOpenRootMenu($menu);
 
         return empty($this->counter) ? $this->factory->createItem('root') : $menu;
     }
 
     /**
      * @param ItemInterface $menu
-     * @param array $options
      * @return ItemInterface
      */
-    public function filterMenu(ItemInterface $menu, array $options)
+    public function filterMenu(ItemInterface $menu)
     {
-        $router = $this->container->get('router');
-        $router->getContext()->setMethod('GET');
-        $security = $this->container->get('security.authorization_checker');
-        $this->setConfig();
-
-        !empty($options['title_url']) ? $title_url = $options['title_url'] : $title_url = null;
-
-        if ($menu->getUri() == $title_url) {
+        if ($menu->getUri() == $this->getTitleUrl()) {
             $menu->setCurrent(true);
+            $this->isCurrent = true;
         }
 
         foreach ($menu->getChildren() as $child) {
@@ -245,14 +274,14 @@ class Builder
             }
             $metadata = false;
 
-            if ($child->getUri() == $title_url) {
+            if ($child->getUri() == $this->getTitleUrl()) {
                 $menu->setCurrent(true);
             }
 
             try {
                 $url = str_replace('app_dev.php/', '', parse_url($child->getUri()))['path'];
 
-                $controllerInfo = explode('::', $router->match($url)['_controller']);
+                $controllerInfo = explode('::', $this->currentRoute->match($url)['_controller']);
 
                 $rMethod = new \ReflectionMethod($controllerInfo[0], $controllerInfo[1]);
 
@@ -268,16 +297,60 @@ class Builder
                 continue;
             }
 
-            if (!$security->isGranted($roles[1])) {
+            if (!$this->security->isGranted($roles[1])) {
                 $menu->removeChild($child);
             } elseif (empty($child->getAttribute('dropdown'))) {
                 $this->counter += 1;
             }
 
-            $this->filterMenu($child, $options);
+            $this->filterMenu($child);
         }
 
         return $menu;
+    }
+
+    /**
+     * @param ItemInterface $menu
+     * @return ItemInterface
+     */
+    private function checkAndOpenRootMenu(ItemInterface $menu): ItemInterface
+    {
+        if ($this->getTitleUrl() !== null && $this->isCurrent) {
+            $attr = $menu->getChildrenAttributes();
+            if (isset($attr['class']) && strpos($attr['class'], 'collapse') !== false) {
+                $attr['class'] .= ' in';
+                $menu->setChildrenAttributes($attr);
+            }
+            $this->isCurrent = false;
+        }
+
+        return $menu;
+    }
+
+    /**
+     * @param array $options
+     */
+    private function parseOptions(array $options): void
+    {
+        if (!empty($options['title_url'])) {
+            $this->setTitleUrl($options['title_url']);
+        }
+    }
+
+    /**
+     * @param $url
+     */
+    private function setTitleUrl($url): void
+    {
+        $this->titleUrl = $url;
+    }
+
+    /**
+     * @return null|string
+     */
+    private function getTitleUrl(): ?string
+    {
+        return $this->titleUrl;
     }
 
     /**
@@ -306,7 +379,7 @@ class Builder
         $cssClass[] = 'sidebar-menu';
         if ($collapse) {
             $cssClass[] = 'collapse';
-            if ($isOpen) {
+            if ($this->getTitleUrl() === null && $isOpen) {
                 $cssClass[] = 'in';
             }
         }
@@ -364,26 +437,10 @@ class Builder
     {
         $items = [];
         foreach ($data as $item) {
-            $items[] = $this->createItem($item);
+            $items[array_keys($item)[0]] = $this->createItem($item);
         }
 
         return $items;
-    }
-
-    /**
-     * @param string $attrHeader
-     * @return ItemInterface
-     */
-    private function getHeaderItem(string $attrHeader): ItemInterface
-    {
-        $headers = [
-            'header' => [
-                'options'    => [],
-                'attributes' => ['header' => $attrHeader],
-            ],
-        ];
-
-        return $this->createItem($headers);
     }
 
     /**
@@ -573,7 +630,7 @@ class Builder
                 'myallocator' => [
                     'options'    => [
                         'route' => 'channels',
-                        'label' => 'enu.communication.label.advanced',
+                        'label' => 'menu.communication.label.advanced',
                     ],
                     'attributes' => ['icon' => 'fa fa-cloud-download'],
                 ],
@@ -1211,7 +1268,7 @@ $paymentSystem,
         $parentAttr = ['dropdown' => true, 'icon' => 'fa fa-bell'] + $porterBadges;
 
         $porterLink = [
-            'porter_links' => [
+            self::PORTER_LINKS => [
                 'options'    => $parentOptions,
                 'attributes' => $parentAttr,
             ],

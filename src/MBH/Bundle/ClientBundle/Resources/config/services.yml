@@ -1,3 +1,6 @@
+parameters:
+    log_file.documents_template_update: !php/const:MBH\Bundle\ClientBundle\Command\DocumentTemplateUpdateCommand::FILE_LOG_NAME
+
 services:
     mbh.mbhs:
         class: MBH\Bundle\ClientBundle\Service\Mbhs
@@ -83,3 +86,14 @@ services:
         resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/PaymentSystem/*'
         arguments:
             - '@service_container'
+    mbh.document_template_update.logger:
+          class:     Symfony\Bridge\Monolog\Logger
+          arguments: [app]
+          calls:
+              - [pushHandler, ['@mbh.document_template_update.logger_handler']]
+
+    mbh.document_template_update.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments:
+            - "%kernel.logs_dir%/%kernel.environment%.%log_file.documents_template_update%"
+            - 200
