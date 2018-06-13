@@ -277,3 +277,7 @@ form.roomTypeCategory.desc_help: 'Описание группы номеров �
 views.hotel.roomType.editImages.edit.priority: 'Настройка приоритета показа'
 views.hotel.roomType.editImages.edit.priority.save: 'Сохранить приоритет'
 views.hotel.roomType.editImages.edit.priority.close: Закрыть
+facility_controller.facility_description.save_table.success: 'Изменения успешно сохранены'
+views.facility.list.facility_title: Удобство
+views.facility.list.description_title: Описание
+views.facility.list.save_changes_button.title: 'Сохранить изменения'

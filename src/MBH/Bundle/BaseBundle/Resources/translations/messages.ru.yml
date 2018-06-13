@@ -291,6 +291,7 @@ list: Список
 migration.card: 'Миграционная карта'
 visa: Виза
 form.facilitiesType.label: Удобства
+form.facilitiesType.help: 'Для изменения описания удобств перейдите по <a target="_blank" href="%href%">ссылке</a>'
 form.facilitiesType.placeholder: 'Выберите удобства'
 entry.actions.delete: 'Удалить запись'
 entry.actions.delete.confirmation: 'Вы действительно хотите удалить запись «%doc%»?'

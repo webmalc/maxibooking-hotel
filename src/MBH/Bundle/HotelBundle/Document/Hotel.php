@@ -1840,7 +1840,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param TranslatorInterface|null $translator
      * @return array
      */
-    public function getJsonSerialized($isFull = false, TranslatorInterface $translator = null)
+    public function getJsonSerialized($isFull = false)
     {
         $data = [
             'id' => $this->getId(),
@@ -1852,15 +1852,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                 'isEnabled' => $this->getIsEnabled(),
                 'isDefault' => $this->getIsDefault(),
                 'isHostel' => $this->getIsHostel(),
-                'description' => $this->getDescription()
+                'description' => $this->getDescription(),
+                'facilities' => $this->getFacilities()
             ];
-            if (!is_null($translator)) {
-                $facilities = [];
-                foreach ($this->getFacilities() as $facility) {
-                    $facilities[] = ['id' => $facility, 'title' => $translator->trans('facilities.' . $facility)];
-                }
-                $comprehensiveData['facilities'] = $facilities;
-            }
+
             if (!is_null($this->latitude)) {
                 $comprehensiveData['latitude'] = $this->latitude;
             }

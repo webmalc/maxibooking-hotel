@@ -69,7 +69,7 @@ parameters:
           parking: {title: 'facilities.parking', description: ''}
           fitness: {title: 'facilities.fitness', description: ''}
           swimming: {title: 'facilities.swimming', description: ''}
-          sauna: {title: 'facilities.sauna', description: ''}
+          sauna: {title: 'facilities.sauna', description: 'Описание сауны по умолчанию'}
           internet: {title: 'facilities.internet', description: ''}
           shopping: {title: 'facilities.shopping', description: ''}
           restaurant: {title: 'facilities.restaurant', description: ''}

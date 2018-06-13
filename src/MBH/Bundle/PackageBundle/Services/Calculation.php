@@ -822,7 +822,8 @@ class Calculation
                 $minPrices[$roomType->getId()] = ['hasPrices' => false];
             } else {
                 $minPriceDate = $priceCacheWithMinPrice->getDate();
-                $priceForSingle = $this->calcPrices($roomType, $priceCacheWithMinPrice->getTariff(), $minPriceDate, $minPriceDate, 1);
+                $tariff = $priceCacheWithMinPrice->getTariff();
+                $priceForSingle = $this->calcPrices($roomType, $tariff, $minPriceDate, $minPriceDate, 1, 0, $tariff->getDefaultPromotion());
                 if (!$priceForSingle || !isset($priceForSingle['1_0'])) {
                     $minPrices[$roomType->getId()] = ['hasPrices' => false];
                 } else {

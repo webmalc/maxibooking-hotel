@@ -4,6 +4,8 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ODM\Document()
@@ -12,6 +14,8 @@ use MBH\Bundle\BaseBundle\Document\Base;
  */
 class Facility extends Base
 {
+    use LocalizableTrait;
+
     /**
      * @var string
      * @ODM\Field(type="string")
@@ -21,6 +25,7 @@ class Facility extends Base
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Gedmo\Translatable
      */
     private $description;
 

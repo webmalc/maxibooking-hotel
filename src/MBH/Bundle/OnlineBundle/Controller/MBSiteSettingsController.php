@@ -23,7 +23,7 @@ class MBSiteSettingsController extends BaseController
             ->getRepository('MBHOnlineBundle:SiteConfig')
             ->findOneBy([]);
 
-        header('Access-Control-Allow-Origin: ' . 'http://localhost:4200');
+        header('Access-Control-Allow-Origin: ' . $siteConfig->getSiteDomain());
 
         $formConfig = $this->dm
             ->getRepository('MBHOnlineBundle:FormConfig')
@@ -36,7 +36,8 @@ class MBSiteSettingsController extends BaseController
             'keyWords' => $siteConfig->getKeyWords(),
             'personalDataPolicies' => $siteConfig->getPersonalDataPolicies(),
             'contract' => $siteConfig->getContract(),
-            'currency' => $this->clientConfig->getCurrency()
+            'currency' => $this->clientConfig->getCurrency(),
+            'languages' => $this->clientConfig->getLanguages()
         ]);
     }
 }

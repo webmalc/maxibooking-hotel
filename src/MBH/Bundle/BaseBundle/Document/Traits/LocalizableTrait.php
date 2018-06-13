@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Document\Traits;
 
+use Gedmo\Mapping\Annotation as Gedmo;
+
 trait LocalizableTrait
 {
     /**

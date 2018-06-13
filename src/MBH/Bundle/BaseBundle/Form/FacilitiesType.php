@@ -23,7 +23,7 @@ class FacilitiesType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'choices' => $this->container->get('mbh.facility_repository')->getAllByGroupWithoutDescription(),
+            'choices' => $this->container->get('mbh.facility_repository')->getAllGrouped(),
             'multiple' => true,
             'choice_attr' => function($key) {
                 return [
@@ -38,6 +38,10 @@ class FacilitiesType extends AbstractType
             'placeholder' => '',
             'label' => 'form.facilitiesType.label',
             'by_reference' => false,
+            'help' => $this->container->get('translator')
+                ->trans('form.facilitiesType.help',
+                    ['%href%' => $this->container->get('router')->generate('facilities_list')]
+                )
         ]);
     }
 

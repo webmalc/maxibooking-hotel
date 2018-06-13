@@ -20,16 +20,16 @@ class FacilityController extends BaseController
      * @Security("is_granted('ROLE_UPDATE_FACILITIES')")
      * @Route("/list", name="facilities_list")
      * @Template()
+     * @param Request $request
+     * @return array
      */
-    public function listAction()
+    public function listAction(Request $request)
     {
-        $facilityDocs = $this->dm
-            ->getRepository('MBHHotelBundle:Facility')
-            ->findBy(['hotel.id' => $this->hotel->getId()]);
+        $locale = $request->query->get('locale') ?? $this->getUser()->getLocale();
 
         return [
-            'facilities' => $this->getParameter('mbh.hotel')['facilities'],
-            'facilityDocs' => $this->helper->sortByValue($facilityDocs, false, 'getFacilityId')
+            'facilitiesData' => $this->get('mbh.facility_repository')->getActualFacilitiesData($this->hotel, $locale),
+            'facilitiesLocale' => $locale
         ];
     }
 
@@ -41,37 +41,31 @@ class FacilityController extends BaseController
      */
     public function saveAction(Request $request)
     {
-        $defaultFacilities = $this->getParameter('mbh.hotel')['facilities'];
-        $facilitiesData = $request->get('facilities');
-        foreach ($facilitiesData as $group => $facilitiesByGroup) {
-            $requestDefaultFacilities = isset($facilitiesByGroup['no-doc']) ? $facilitiesByGroup['no-doc'] : [];
-            foreach ($requestDefaultFacilities as $facilityId => $description) {
-                if ($defaultFacilities[$group][$facilityId]['description'] !== $description) {
-                    $newFacilityDoc = (new Facility())
-                        ->setFacilityId($facilityId)
-                        ->setDescription($description)
-                        ->setHotel($this->hotel);
-                    $this->dm->persist($newFacilityDoc);
-                }
-            }
+        $requestFacilitiesData = $request->get('facilities');
+        $facilitiesLocale = $request->get('facilitiesLocale');
 
-            $facilityDocs = $this->dm
-                ->getRepository('MBHHotelBundle:Facility')
-                ->findBy(['hotel.id' => $this->hotel->getId()]);
-            $facilityDocsByIds = $this->helper->sortByValue($facilityDocs, false, 'getFacilityId');
-            $requestFacilitiesDocs = isset($facilitiesByGroup['with-doc']) ? $facilitiesByGroup['with-doc'] : [];
-            foreach ($requestFacilitiesDocs as $facilityId => $description) {
-                /** @var Facility $facilityDoc */
-                $facilityDoc = $facilityDocsByIds[$facilityId];
-                if ($facilityDoc->getDescription() !== $description) {
-                    $facilityDoc->setDescription($description);
+        $facilityRepo = $this->get('mbh.facility_repository');
+        $facilityDocsByIds = $facilityRepo->getFacilityDocsByIds($this->hotel);
+        $facilitiesData = $facilityRepo->getActualFacilitiesData($this->hotel, $facilitiesLocale);
+
+        foreach ($requestFacilitiesData as $facilityId => $description) {
+            if ($facilitiesData[$facilityId]['description'] !== $description) {
+                if (isset($facilityDocsByIds[$facilityId])) {
+                    $facilityDoc = $facilityDocsByIds[$facilityId];
+                } else {
+                    $facilityDoc = (new Facility())
+                        ->setFacilityId($facilityId)
+                        ->setHotel($this->hotel);
+                    $this->dm->persist($facilityDoc);
                 }
+
+                $facilityDoc->setLocale($facilitiesLocale)->setDescription($description);
             }
         }
 
         $this->dm->flush();
-        $this->addFlash('success', 'Все ок!');
+        $this->addFlash('success', 'facility_controller.facility_description.save_table.success');
 
-        return $this->redirectToRoute('facilities_list');
+        return $this->redirectToRoute('facilities_list', ['locale' => $facilitiesLocale]);
     }
 }

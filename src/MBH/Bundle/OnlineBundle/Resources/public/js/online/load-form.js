@@ -89,8 +89,18 @@ function onLoadFormLoad() {
     if (!formWrapper) {
         return;
     }
+
     var urlIndex = window.location.href.indexOf('?');
-    var url = urlIndex !== -1 ? window.location.href.slice(urlIndex) : '?url=' + window.location.pathname;
+    var url;
+    if (urlIndex !== -1) {
+        url = window.location.href.slice(urlIndex);
+    } else {
+        url = '?url=' + window.location.pathname;
+    }
+    if (config.form_url.indexOf('?') > -1) {
+        url = url.replace('?', '&');
+    }
+
     var iframeWidth = typeof(frameWidth) !== 'undefined' ? frameWidth : 300;
     var iframeHeight = typeof(frameHeight) !== 'undefined' ? frameHeight : 400;
 

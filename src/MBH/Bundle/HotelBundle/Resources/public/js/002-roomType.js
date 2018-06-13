@@ -58,8 +58,10 @@ $(document).ready(function () {
 
     //roomType rooms datatables
     (function () {
-        var openedRoomTypeId = $('ul.nav-tabs li.active a').attr('href').substring(1);
-        initDataTable(openedRoomTypeId, true);
+        if ($('.rooms-table').length > 0) {
+            var openedRoomTypeId = $('ul.nav-tabs li.active a').attr('href').substring(1);
+            initDataTable(openedRoomTypeId, true);
+        }
     }());
 
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function () {
