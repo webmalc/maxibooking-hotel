@@ -21,13 +21,13 @@ use Symfony\Component\Form\FormInterface;
 class NewRbkHelper implements HelperInterface
 {
     private const PREFIX = 'newRbk';
-    private const PREFIX_LABEL = 'form.clientPaymentSystemType.payment_system_';
+    private const PREFIX_LABEL = 'form.clientPaymentSystemType.';
 
-    const NAME_TYPE_API_KEY = self::PREFIX . 'ApiKey';
-    const NAME_TYPE_SHOP_ID = self::PREFIX . 'ShopId';
-    const NAME_TYPE_LIFETIME_INVOICE = self::PREFIX . 'LifetimeInvoice';
-    const NAME_TYPE_TAXATION_RATE_CODE = self::PREFIX . 'TaxationRateCode';
-    const NAME_TYPE_WEBHOOK_KEY = self::PREFIX . 'WebhookApi';
+    const NAME_TYPE_API_KEY = self::PREFIX . '_ApiKey';
+    const NAME_TYPE_SHOP_ID = self::PREFIX . '_ShopId';
+    const NAME_TYPE_LIFETIME_INVOICE = self::PREFIX . '_LifetimeInvoice';
+    const NAME_TYPE_TAXATION_RATE_CODE = self::PREFIX . '_TaxationRateCode';
+    const NAME_TYPE_WEBHOOK_KEY = self::PREFIX . '_WebhookApi';
 
     /**
      * @param FormInterface $form

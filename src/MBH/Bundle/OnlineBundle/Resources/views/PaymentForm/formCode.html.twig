@@ -19,15 +19,6 @@
                     </div>
                 {% endspaceless %}
                 {% endset %}
-                {% set code2 %}
-                    <script>
-                        var mbhPaymentForm = {
-                            frameUrl: "{{ url('online_payment_form_iframe', {formId: config.id}) }}",
-                            frameWidth: "{{ config.fullWidth ? '100%' : config.frameWidth }}",
-                            frameHeight: "{{ config.frameHeight }}"
-                        };
-                    </script>
-                {% endset %}
                 {% set code3 %}
                     <script src="{{ url('online_payment_form_load_js', {configId: config.id}) }}"></script>
                 {% endset %}

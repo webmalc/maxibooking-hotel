@@ -76,7 +76,7 @@ window.onload = function(e) {
     mbhIframe.updateResultDiv(false);
   })
   
-  document.addEventListener('payment_finished', function() {
+  document.addEventListener('mbh_payment_finished', function() {
     mbhIframe.updateResultDiv('success', 'Оплачено!');
   })
 };

@@ -798,6 +798,24 @@ class ApiController extends Controller
     }
 
     /**
+     * @Route("/file/{configId}/load-result.js", name="online_form_load_result_file", defaults={"_format"="js"})
+     * @Template()
+     */
+    public function loadResultAction($configId)
+    {
+        $configForm = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
+            ->find($configId);
+
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        return [
+            'config'        => $configForm,
+            'paymentSystem' => $clientConfig->getPaymentSystems()[0],
+            'successUrl'    => $clientConfig->getSuccessUrl(),
+        ];
+    }
+
+    /**
      * Results js
      * @Route("/results/{id}", name="online_form_results", defaults={"_format"="js"})
      * @Method("GET")
