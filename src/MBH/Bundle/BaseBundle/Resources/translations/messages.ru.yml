@@ -346,7 +346,7 @@ menu.label.reports.organizations: Организация
 menu.label.reports.filling: Заполняемость
 menu.label.reports.managers: 'Отчеты по менеджерам'
 menu.label.reports.invite: 'Визовые приглашения'
-menu.label.reports.analystics: 'Графика продаж'
+menu.label.reports.analystics: 'Графики продаж'
 menu.label.reports.polls: 'Отзывы гостей'
 menu.label.reports.dynamic_sales: 'Динамика продаж'
 menu.label.reports.daily_report: 'Денежные средства'

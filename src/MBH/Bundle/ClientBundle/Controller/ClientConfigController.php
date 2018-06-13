@@ -101,6 +101,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     /**
      * @Route("/payment_systems", name="client_payment_systems", options={"expose"=true})
      * @Template()
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @return array
      */
     public function paymentSystemsAction()
