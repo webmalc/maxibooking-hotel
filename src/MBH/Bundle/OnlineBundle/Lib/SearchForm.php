@@ -148,7 +148,7 @@ class SearchForm
         return $config->isEnabledReCaptcha();
     }
 
-    public function search()
+    public function search(): SearchFormResult
     {
         /** @var Package $package */
         $package = $this->dm->getRepository('MBHPackageBundle:Package')
@@ -156,31 +156,28 @@ class SearchForm
                 'numberWithPrefix' => $this->getNumberOrder(),
             ]);
 
+        $result = new SearchFormResult();
+
         if ($package === null) {
-            return false;
+            return $result;
         }
 
         $order = $package->getOrder();
 
         if (!$this->isPayer($order)) {
-            return false;
+            return $result;
         }
+
+        $result->orderIsFound();
 
         if ($order->getIsPaid()) {
-            return [
-                'needIsPaid' => false,
-                'data'       => 'order has been paid',
-
-            ];
+            return $result;
         }
 
-        return [
-            'needIsPaid' => true,
-            'data'       => [
-                'total'     => $package->getPrice() - $order->getPaid(),
-                'packageId' => $package->getId(),
-            ],
-        ];
+        $result->setTotal($package->getPrice() - $order->getPaid());
+        $result->setPackageId($package->getId());
+
+        return $result;
 
     }
 
@@ -203,25 +200,21 @@ class SearchForm
         $payer = null;
 
         if ($order->getOrganization() !== null) {
-            if ($this->getUserName() !== null) {
-                $criteria['name'] = $this->getUserName();
-            }
+            $criteria = $this->addCriteriaNaming($criteria);
             $payer = $this->dm->getRepository('MBHPackageBundle:Organization')
                 ->findOneBy($criteria);
             if ($payer !== null) {
                 $hiIsOwner = $order->getOrganization() === $payer;
             }
         } else {
-            if ($this->getUserName() !== null) {
-                $criteria['lastName'] = $this->getUserName();
-            }
+            $criteria = $this->addCriteriaNaming($criteria, false);
             $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist');
             if ($this->isEmail()) {
                 $payer = $tourist->findOneBy($criteria);
             } else {
                 /** @var Builder $qb */
                 $qb = $tourist->createQueryBuilder();
-                if (!empty($criteria['name'])) {
+                if ($this->isNameNeed($criteria)) {
                     $qb->addAnd($qb->expr()->field('lastName')->equals($criteria['lastName']));
                 }
                 $qb->addOr($qb->expr()->field('mobilePhone')->equals($criteria['phone']));
@@ -240,6 +233,37 @@ class SearchForm
         return true;
     }
 
+    /**
+     * @param array $criteria
+     * @return bool
+     */
+    private function isNameNeed(array $criteria): bool
+    {
+        return !empty($criteria['lastName']);
+    }
+
+    /**
+     * @param $criteria
+     * @param bool $isOrganization
+     * @return array
+     */
+    private function addCriteriaNaming($criteria ,bool $isOrganization = true): array
+    {
+        if ($this->getUserName() !== null) {
+            $c = ['$regex' => $this->getUserName(), '$options' => 'i'];
+            if ($isOrganization) {
+                $criteria['name'] = $c;
+            } else {
+                $criteria['lastName'] = $c;
+            }
+        }
+
+        return $criteria;
+    }
+
+    /**
+     * @return bool
+     */
     private function isEmail(): bool
     {
         return strpos($this->getPhoneOrEmail(), '@') !== false;

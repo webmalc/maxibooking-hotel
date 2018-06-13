@@ -11,8 +11,6 @@ var mbhPaymentFunc = {
     formWrapper.innerHTML = '';
     formWrapper.appendChild(mbhNewRbk.getScript());
     formWrapper.appendChild(this.getIframe());
-
-    this.initIframe();
   },
   getIframe: function() {
     var iframe = document.createElement('iframe');

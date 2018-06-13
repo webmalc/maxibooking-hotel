@@ -107,12 +107,7 @@ class ApiPaymentFormController extends Controller
         };
 
         if ($form->isValid()) {
-            $result = $searchForm->search();
-            if ($result !== false) {
-                return $this->json($result);
-            };
-
-            return $this->json(['error' => 'not found order']);
+            return $this->json($searchForm->search());
         }
 
         $msg = [];
