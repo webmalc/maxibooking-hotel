@@ -52,7 +52,7 @@ class WelcomeControllerTest extends WebTestCase
     /**
      * @var string
      */
-    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER = 19;
+    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER = 20;
 
     public static function setUpBeforeClass()
     {
