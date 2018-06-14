@@ -573,7 +573,7 @@ class Builder
                 'myallocator' => [
                     'options'    => [
                         'route' => 'channels',
-                        'label' => 'enu.communication.label.advanced',
+                        'label' => 'menu.communication.label.advanced',
                     ],
                     'attributes' => ['icon' => 'fa fa-cloud-download'],
                 ],
