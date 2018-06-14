@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
+use MBH\Bundle\SearchBundle\Lib\ErrorSearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
@@ -17,6 +18,7 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
+use Symfony\Component\Serializer\Serializer;
 
 class Search
 {
@@ -29,17 +31,8 @@ class Search
     /** @var Searcher */
     private $searcher;
 
-    /** @var string */
-    private $searchHash;
-
-    /** @var int */
-    private $searchQueriesCount;
-
     /** @var DocumentManager */
     private $dm;
-
-    /** @var bool */
-    private $isSaveQueryStat;
 
     /** @var SearchConditionsCreator */
     private $conditionsCreator;
@@ -47,50 +40,35 @@ class Search
     /** @var SearchQueryGenerator */
     private $queryGenerator;
 
+    /** @var Serializer */
+    private $serializer;
+
     /**
      * Search constructor.
      * @param RestrictionsCheckerService $restrictionsChecker
      * @param Searcher $searcher
      * @param DocumentManager $documentManager
-     * @param ClientConfigRepository $configRepository
      * @param SearchConditionsCreator $conditionsCreator
      * @param SearchQueryGenerator $queryGenerator
+     * @param Serializer $serializer
      */
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
         Searcher $searcher,
         DocumentManager $documentManager,
-        ClientConfigRepository $configRepository,
         SearchConditionsCreator $conditionsCreator,
-        SearchQueryGenerator $queryGenerator)
+        SearchQueryGenerator $queryGenerator,
+        Serializer $serializer
+    )
     {
         $this->restrictionChecker = $restrictionsChecker;
         $this->searcher = $searcher;
         $this->dm = $documentManager;
-        $this->isSaveQueryStat = $configRepository->fetchConfig()->isQueryStat();
         $this->conditionsCreator = $conditionsCreator;
         $this->queryGenerator = $queryGenerator;
-
+        $this->serializer = $serializer;
     }
 
-
-    /**
-     * @param array $data
-     * @param bool $isAsync
-     * @return array|null
-     * @throws DataHolderException
-     * @throws MongoDBException
-     * @throws SearchConditionException
-     * @throws SearchQueryGeneratorException
-     */
-    public function search(array $data, bool $isAsync = false): ?array
-    {
-        if (!$isAsync) {
-            return $this->searchSync($data);
-        }
-
-        return $this->searchAsync($data);
-    }
 
     /**
      * @param array $data
@@ -102,64 +80,62 @@ class Search
      */
     public function searchSync(array $data): array
     {
-        $searchQueries = $this->createSearchQueries($data);
+        $conditions = $this->createSearchConditions($data);
+        $searchQueries = $this->createSearchQueries($conditions);
         $results = [];
         foreach ($searchQueries as $searchQuery) {
             try {
-                $results[] = [
-                    'status' => 'ok',
-                    'result' => $this->searcher->search($searchQuery)
-                ];
+                $results[] = $this->searcher->search($searchQuery);
             } catch (SearchException $e) {
-                $results[] = [
-                    'status' => 'error',
-                    'result' => $e->getMessage()
-                ];
+                $results[] = ErrorSearchResult::createErrorResult($e);
             }
         }
 
         return $results;
     }
 
-    /**
-     * @param array $data
-     * @return array
-     * @throws SearchConditionException
-     * @throws SearchQueryGeneratorException
-     */
-    public function searchAsync(array $data): SearchResultHolder
+
+    public function searchAsync(array $data): string
     {
-        $searchQueries = $this->createSearchQueries($data);
+        $conditions = $this->createSearchConditions($data);
+        $searchQueries = $this->createSearchQueries($conditions);
         $holder = new SearchResultHolder();
         $holder
-            ->setExpectedResults($this->getSearchCount())
-            ->setHash($this->getSearchHash())
+            ->setExpectedResultsCount(\count($searchQueries))
+            ->setSearchConditions($conditions)
         ;
+
+        $this->dm->persist($holder);
+        $this->dm->flush($holder);
+
+        foreach ($searchQueries as $searchQuery) {
+            $searchQuery->unsetConditions();
+            $serialized[] = $this->serializer->serialize($searchQuery, 'json');
+        }
+
+        return $holder->getId();
     }
 
 
-    /**
-     * @param array $data
-     * @return array|SearchQuery[]
-     * @throws SearchConditionException
-     * @throws SearchQueryGeneratorException
-     */
-    private function createSearchQueries(array $data): array
+    private function createSearchConditions(array $data): SearchConditions
     {
-        $this->searchHash = uniqid(gethostname(), true);
+        $hash = uniqid(gethostname(), true);
         $conditions = $this->conditionsCreator->createSearchConditions($data);
-        $conditions->setSearchHash($this->searchHash);
+        $conditions->setSearchHash($hash);
+        $this->saveQueryStat($conditions);
+
+        return $conditions;
+    }
+
+    private function createSearchQueries(SearchConditions $conditions): array
+    {
 
         $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
 
-        if ($this->isSaveQueryStat) {
-            $this->saveQueryStat($conditions);
-        }
 
         if (self::PRE_RESTRICTION_CHECK) {
             $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
         }
-        $this->searchQueriesCount = \count($searchQueries);
 
         return $searchQueries;
     }
@@ -172,22 +148,6 @@ class Search
     {
         $this->dm->persist($conditions);
         $this->dm->flush($conditions);
-    }
-
-    /**
-     * @return string
-     */
-    public function getSearchHash(): string
-    {
-        return $this->searchHash;
-    }
-
-    /**
-     * @return int
-     */
-    public function getSearchCount(): int
-    {
-        return $this->searchQueriesCount;
     }
 
     public function getRestrictionsErrors(): ?array

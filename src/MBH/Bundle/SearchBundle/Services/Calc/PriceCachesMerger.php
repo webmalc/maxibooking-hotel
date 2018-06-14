@@ -30,7 +30,7 @@ class PriceCachesMerger
         $rawPriceTariffCaches = $this->getPriceTariffPriceCaches($calcQuery);
         $priceTariffCaches = $this->refactorCacheArray($rawPriceTariffCaches);
         if (!\count($priceTariffCaches)) {
-            throw new PriceCachesMergerException('No one priceCache for tariff ' . $calcQuery->getTariff()->getName());
+            throw new PriceCachesMergerException('No one priceCache for tariff ' . $calcQuery->getTariff()->getName(). ' RoomType '. $calcQuery->getRoomType()->getFullTitle() );
         }
         if ($this->checkCachesCount($priceTariffCaches, $calcQuery->getDuration())) {
             return $priceTariffCaches;
@@ -50,7 +50,7 @@ class PriceCachesMerger
             return $lastMergedPriceCaches;
         }
 
-        throw new PriceCachesMergerException('There is not enough price caches even after merging.');
+        throw new PriceCachesMergerException('There is not enough price caches even after merging.'. $calcQuery->getTariff()->getName().' '.$calcQuery->getRoomType()->getFullTitle());
     }
 
     private function checkCachesCount(array $priceCaches, int $duration): bool
@@ -125,6 +125,7 @@ class PriceCachesMerger
 
     private function getRawPriceCaches(CalcQuery $calcQuery, string $searchingTariffId): array
     {
+        //** TODO тут проверить можно лимит на тариф, но! Взрослые дети ? Возможно стоит создавать несколько CalcQuery ? тогда не понять как делать проверку на restrictions */
         return $this->dataHolder->getNecessaryPriceCaches($calcQuery, $searchingTariffId);
     }
 

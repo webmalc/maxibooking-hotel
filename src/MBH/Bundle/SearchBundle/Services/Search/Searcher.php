@@ -4,8 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;

@@ -5,6 +5,7 @@ namespace Tests\Bundle\SearchBundle\Services\Search;
 
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
@@ -34,23 +35,25 @@ class SearchTest extends SearchWebTestCase
     public function testSearchSync(iterable $data): void
     {
         $conditionData = $this->createConditionData($data);
-        $this->search->searchSync($conditionData);
-        $actualResultsCount = $this->search->getSearchCount();
-        $actualHash = $this->search->getSearchHash();
-        $this->assertNotEmpty($actualHash);
-        $this->assertEquals($data['expected']['results'], $actualResultsCount);
+        $actual = $this->search->searchSync($conditionData);
         $this->assertCount(2, $this->search->getRestrictionsErrors());
+        $this->assertContainsOnlyInstancesOf(SearchResult::class, $actual);
 
     }
 
-    /** @dataProvider syncDataProvider */
+    /** @dataProvider syncDataProvider
+     * @param iterable $data
+     * @throws SearchConditionException
+     * @throws SearchQueryGeneratorException
+     */
     public function testSearchAsync(iterable $data): void
     {
         $conditionData = $this->createConditionData($data);
         /** @var SearchResultHolder $actual */
         $actual = $this->search->searchAsync($conditionData);
-        $this->assertEquals($this->search->getSearchCount(), $actual->getExpectedResults());
-        $this->assertEquals($this->search->getSearchHash(), $actual->getHash());
+        $holder = $this->dm->find(SearchResultHolder::class, $actual);
+        $this->assertInstanceOf(SearchResultHolder::class, $holder);
+        $this->assertSame(8, $holder->getExpectedResultsCount());
     }
 
     public function syncDataProvider()
@@ -68,7 +71,8 @@ class SearchTest extends SearchWebTestCase
                 'additionalBegin' => 0,
                 'additionalEnd' => 0,
                 'expected' => [
-                    'results' => 10-2
+                    'results' => 10-2,
+                    'successResults' => 2
                 ]
             ]
         ];

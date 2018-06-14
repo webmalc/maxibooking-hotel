@@ -128,6 +128,12 @@ services:
         arguments:
             - MBH\Bundle\PackageBundle\Document\PackageAccommodation
 
+    mbh_search.search_conditions_repository:
+        class: MBH\Bundle\SearchBundle\Document\SearchConditionsRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\SearchBundle\Document\SearchConditions
+
 # Для теста - калькуляции - брал текущую.
 #    mbh_search.result_composer:
 #        class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
@@ -147,7 +153,7 @@ services:
 
     mbh_search.data_holder:
         class: MBH\Bundle\SearchBundle\Lib\DataHolder
-        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.restriction_repository', '@mbh_search.client_config_repository', '@mbh_search.room_cache_repository', '@mbh_search.room_repository', '@mbh_search.package_accommodation_repository', '@mbh_search.price_cache_repository']
+        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.restriction_repository', '@mbh_search.client_config_repository', '@mbh_search.room_cache_repository', '@mbh_search.room_repository', '@mbh_search.package_accommodation_repository', '@mbh_search.price_cache_repository', '@mbh_search.search_conditions_repository']
 
     mbh_search.search_conditions_type:
         class: MBH\Bundle\SearchBundle\Form\SearchConditionsType
@@ -157,4 +163,4 @@ services:
 
     mbh_search.search:
         class: MBH\Bundle\SearchBundle\Services\Search\Search
-        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.searcher', '@doctrine.odm.mongodb.document_manager', '@mbh_search.client_config_repository', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator']
+        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.searcher', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@serializer']

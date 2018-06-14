@@ -14,6 +14,7 @@ framework:
         version: "v%assetic_version%"
     serializer:
         enabled: true
+        enable_annotations: true
     #esi:             ~
     translator:      { fallback: ["%locale%", ru, en] }
     secret:          "%secret%"
@@ -221,6 +222,7 @@ doctrine_cache:
         acl_apc_provider:
             namespace: "%mongodb_database%_"
             type: 'apc'
+
 
 
 

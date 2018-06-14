@@ -56,7 +56,9 @@ class SearchQuery
     /** @var int */
     private $infantAge;
 
-    /** @var SearchConditions */
+    /**
+     * @var SearchConditions
+     */
     private $searchConditions;
 
     /** @var bool */
@@ -222,7 +224,7 @@ class SearchQuery
     /**
      * @return SearchConditions
      */
-    public function getSearchConditions(): SearchConditions
+    public function getSearchConditions(): ?SearchConditions
     {
         return $this->searchConditions;
     }
@@ -341,7 +343,10 @@ class SearchQuery
         return $this;
     }
 
-
+    public function unsetConditions()
+    {
+        $this->searchConditions = null;
+    }
 
 
     public function getSearchTotalPlaces(): int
@@ -416,4 +421,5 @@ class SearchQuery
 
         return $searchQuery;
     }
+
 }

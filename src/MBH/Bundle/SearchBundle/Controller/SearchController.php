@@ -46,6 +46,8 @@ class SearchController extends Controller
             'tariffs' => []
         );
 
+        
+
         try {
             $search = $this->get('mbh_search.search');
             $finded = $search->searchSync($data);

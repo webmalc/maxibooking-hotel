@@ -6,8 +6,8 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
-use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
@@ -23,6 +23,7 @@ class SearchResultComposer
     /** @var Calculation */
     private $calculation;
 
+    /** @var DataHolder  */
     private $dataHolder;
 
     private $limitChecker;
@@ -89,6 +90,7 @@ class SearchResultComposer
     private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $actualAdults, int $actualChildren): array
     {
         $conditions = $searchQuery->getSearchConditions();
+//        $conditions = $this->dataHolder->getConditions($searchQuery->getSearchHash(), $conditionsId);
         $calcQuery = new CalcQuery();
         $calcQuery
             ->setSearchBegin($searchQuery->getBegin())
@@ -120,8 +122,8 @@ class SearchResultComposer
 
     {
         foreach ($prices as $price) {
-            $searchResult->addPrice($price['total'], $price['adults'], $price['children'])
-                /*->setPricesByDate($price['prices'], $price['adults'], $price['children'])*/
+            $searchResult
+                ->addPrice($price['total'], $price['adults'], $price['children'])
                 ->setPackagePrices($price['packagePrices'], $price['adults'], $price['children']);
         }
     }

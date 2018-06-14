@@ -16,6 +16,8 @@ use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCacheRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -49,6 +51,11 @@ class DataHolder
     /** @var PackageAccommodationRepository */
     private $packageAccommodationRepository;
 
+    /** @var SearchConditionsRepository */
+    private $searchConditionsRepository;
+
+    /** @var array */
+    private $searchConditions;
 
     /** @var bool */
     private $isUseCategory;
@@ -78,6 +85,7 @@ class DataHolder
      * @param RoomRepository $roomRepository
      * @param PackageAccommodationRepository $accommodationRepository
      * @param PriceCacheRepository $priceCacheRepository
+     * @param SearchConditionsRepository $conditionsRepository
      */
     public function __construct(
         TariffRepository $tariffRepository,
@@ -87,7 +95,8 @@ class DataHolder
         RoomCacheRepository $roomCacheRepository,
         RoomRepository $roomRepository,
         PackageAccommodationRepository $accommodationRepository,
-        PriceCacheRepository $priceCacheRepository
+        PriceCacheRepository $priceCacheRepository,
+        SearchConditionsRepository $conditionsRepository
     )
     {
         $this->tariffRepository = $tariffRepository;
@@ -100,6 +109,7 @@ class DataHolder
         $this->roomRepository = $roomRepository;
         $this->packageAccommodationRepository = $accommodationRepository;
         $this->priceCacheRepository = $priceCacheRepository;
+        $this->searchConditionsRepository = $configRepository;
     }
 
 
@@ -546,6 +556,22 @@ class DataHolder
         $isUseCategory = $calcQuery->isUseCategory();
 
         return $this->priceCacheRepository->fetchRawPeriod($begin, $end, $roomTypeIds ??  [], $tariffIds ?? [], $isUseCategory);
+    }
+
+    public function getConditions(string $hash, string $conditionsId): SearchConditions
+    {
+        /** @var SearchConditions $searchConditions */
+        if ($searchConditions = ($this->searchConditions[$hash] !== null)) {
+            return $searchConditions;
+        }
+        $searchConditions = $this->searchConditionsRepository->find($conditionsId);
+        if ($searchConditions) {
+            $this->searchConditions[$hash] = $searchConditions;
+
+            return $searchConditions;
+        }
+
+        throw new DataHolderException('Can not find SearchConditions by hash and Id');
     }
 
 

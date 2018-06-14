@@ -124,6 +124,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param boolean $categories
      * @param Cache $memcached
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function fetch(
         \DateTime $begin = null,

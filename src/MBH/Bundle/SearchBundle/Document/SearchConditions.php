@@ -24,7 +24,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @package MBH\Bundle\SearchBundle\Document
  * @Range()
  * @ChildrenAgesSameAsChildren()
- * @ODM\Document(collection="SearchConditions")
+ * @ODM\Document(collection="SearchConditions", repositoryClass="SearchConditionsRepository")
  * @Gedmo\Loggable()
  */
 class SearchConditions extends Base
