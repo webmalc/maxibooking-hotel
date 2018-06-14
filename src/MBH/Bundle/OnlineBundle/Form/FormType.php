@@ -21,6 +21,8 @@ class FormType extends AbstractType implements DecorationTypeInterface
 {
     use DecorationTypeTrait;
 
+    const PREFIX = 'mbh_bundle_onlinebundle_form_type';
+
     private $clientManager;
     private $paymentTypes;
 
@@ -224,6 +226,6 @@ class FormType extends AbstractType implements DecorationTypeInterface
 
     public function getBlockPrefix()
     {
-        return 'mbh_bundle_onlinebundle_form_type';
+        return self::PREFIX;
     }
 }

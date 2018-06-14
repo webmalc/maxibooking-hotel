@@ -30,6 +30,7 @@ trait DecorationTrait
      * @ODM\Field(type="int")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
+     * @Assert\GreaterThan(0)
      */
     private $frameWidth = 300;
 
@@ -39,6 +40,7 @@ trait DecorationTrait
      * @ODM\Field(type="int")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
+     * @Assert\GreaterThan(0)
      */
     private $frameHeight = 400;
 

@@ -421,19 +421,34 @@ abstract class WebTestCase extends Base
         $formClass = 'form[name="' . $formName . '"]';
 
         //send invalid form
+        $this->sendInvalidForm($crawler, $formClass, $errors);
+
+        //send valid form
+        $this->sendValidForm($crawler, $formClass, $formName, $values);
+
+        //check saved object
+        $this->checkSavedObject($title);
+    }
+
+    protected function checkSavedObject(string $title): void
+    {
+        $this->assertSame(1, $this->getListCrawler()->filter($this->getListContainer() . 'a:contains("' . $title . '")')->count());
+    }
+
+    protected function sendInvalidForm(Crawler $crawler, string $formClass, array $errors): void
+    {
         $form = $crawler->filter($formClass)->form();
         $crawler = $this->client->submit($form);
         $this->assertStatusCode(200, $this->client);
         $this->assertValidationErrors($errors, $this->client->getContainer());
+    }
 
-        //send valid form
+    protected function sendValidForm(Crawler $crawler, string $formClass, string $formName, array $values): void
+    {
         $form = $crawler->filter($formClass)->form();
         $form->setValues(self::prepareFormValues($formName, $values));
         $this->client->submit($form);
         $this->client->followRedirect();
-
-        //check saved object
-        $this->assertSame(1, $this->getListCrawler()->filter($this->getListContainer() . 'a:contains("' . $title . '")')->count());
     }
 
     /**

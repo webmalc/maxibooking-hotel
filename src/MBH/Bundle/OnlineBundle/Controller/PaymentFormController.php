@@ -60,7 +60,7 @@ class PaymentFormController extends Controller
 
             $this->addFlash('success', 'controller.formController.settings_saved_success');
 
-            return $this->afterSaveRedirect('online_form', $entity->getId());
+            return $this->afterSaveRedirect('online_payment_form', $entity->getId());
         }
 
         return [
