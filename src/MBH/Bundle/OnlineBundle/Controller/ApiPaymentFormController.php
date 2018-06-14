@@ -17,7 +17,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -37,7 +36,8 @@ class ApiPaymentFormController extends Controller
 
 
     /**
-     * @Route("/file/{configId}/load.{_format}", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
+     * @Route("/file/{configId}/load.js", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
+     * @Cache(expires="tomorrow", public=true)
      * Template()
      */
     public function loadAction($configId)
