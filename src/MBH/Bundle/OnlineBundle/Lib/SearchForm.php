@@ -13,6 +13,7 @@ use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Validator\Constraints as CustomAssert;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -200,14 +201,14 @@ class SearchForm
         $payer = null;
 
         if ($order->getOrganization() !== null) {
-            $criteria = $this->addCriteriaNaming($criteria);
+            $this->addCriteriaNaming($criteria);
             $payer = $this->dm->getRepository('MBHPackageBundle:Organization')
                 ->findOneBy($criteria);
             if ($payer !== null) {
                 $hiIsOwner = $order->getOrganization() === $payer;
             }
         } else {
-            $criteria = $this->addCriteriaNaming($criteria, false);
+            $this->addCriteriaNaming($criteria, false);
             $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist');
             if ($this->isEmail()) {
                 $payer = $tourist->findOneBy($criteria);
@@ -217,8 +218,9 @@ class SearchForm
                 if ($this->isNameNeed($criteria)) {
                     $qb->addAnd($qb->expr()->field('lastName')->equals($criteria['lastName']));
                 }
-                $qb->addOr($qb->expr()->field('mobilePhone')->equals($criteria['phone']));
-                $qb->addOr($qb->expr()->field('phone')->equals($criteria['phone']));
+                $phone = Tourist::cleanPhone($criteria['phone']);
+                $qb->addOr($qb->expr()->field('mobilePhone')->equals($phone));
+                $qb->addOr($qb->expr()->field('phone')->equals($phone));
                 $payer = $qb->getQuery()->getSingleResult();
             }
             if ($payer !== null) {
@@ -245,9 +247,8 @@ class SearchForm
     /**
      * @param $criteria
      * @param bool $isOrganization
-     * @return array
      */
-    private function addCriteriaNaming($criteria ,bool $isOrganization = true): array
+    private function addCriteriaNaming(&$criteria ,bool $isOrganization = true): void
     {
         if ($this->getUserName() !== null) {
             $c = ['$regex' => $this->getUserName(), '$options' => 'i'];
@@ -257,8 +258,6 @@ class SearchForm
                 $criteria['lastName'] = $c;
             }
         }
-
-        return $criteria;
     }
 
     /**
