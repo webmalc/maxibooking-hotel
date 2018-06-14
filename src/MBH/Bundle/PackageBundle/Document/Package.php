@@ -869,6 +869,20 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @param $tourists
+     * @return Package
+     */
+    public function setTourists($tourists)
+    {
+        $this->tourists = new ArrayCollection();
+        foreach ($tourists as $tourist) {
+            $this->tourists->add($tourist);
+        }
+
+        return $this;
+    }
+
+    /**
      * Get isPaid
      *
      * @return boolean $isPaid
