@@ -11,6 +11,7 @@ use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\NewRbk;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\TaxMode;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -52,6 +53,8 @@ class NewRbkHelper implements HelperInterface
     public static function addFields(FormBuilderInterface $builder, ClientConfig $config, array $extraData): void
     {
         extract($extraData, EXTR_OVERWRITE);
+
+        $codeTax = array_intersect_key($taxationRateCodes['rate_codes'], TaxMode::TAXATION_RATE_CODE);
 
         /** @var NewRbk $newRbk */
         $newRbk = $config !== null ? $config->getNewRbk() : null;
@@ -116,10 +119,10 @@ class NewRbkHelper implements HelperInterface
                 InvertChoiceType::class,
                 [
                     'label'    => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
-                    'choices'  => $taxationRateCodes['rate_codes'],
+                    'choices'  => $codeTax,
                     'mapped'   => false,
                     'required' => false,
-                    'attr'     => $commonAttr + ['disabled' => true],
+                    'attr'     => $commonAttr,
                     'group'    => $commonGroup,
                     'data'     => $newRbk->getTaxationRateCode() ?? '',
                 ]
