@@ -11,7 +11,7 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class ContainsPhoneOrEmailValidator extends ConstraintValidator
+class PhoneOrEmailValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {

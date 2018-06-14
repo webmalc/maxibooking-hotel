@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class ContainsPhoneOrEmail extends Constraint
+class PhoneOrEmail extends Constraint
 {
     public $message = 'The string "%string%" not phone or email';
 }

@@ -21,7 +21,7 @@ class SearchForm
 {
     /**
      * @var string
-     * @CustomAssert\ContainsPhoneOrEmail()
+     * @CustomAssert\PhoneOrEmail()
      */
     private $phoneOrEmail;
 
