@@ -131,11 +131,10 @@
                             data-payment_type="{{ tariffResult.tariff.paymentType }}"
                             {% block data_url %}
                             data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ onlineResult.query.adults }}&form[children]={{ onlineResult.query.children }}{% for childrenAge in onlineResult.query.childrenAges %}&form[childrenAges][]={{ childrenAge }}{% endfor %}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}&form[savedQueryId]={{ onlineResult.queryId }}"
-                            {#data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ tariffResult.adults }}&form[children]={{ tariffResult.children }}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}&form[savedQueryId]={{ onlineResult.queryId }}"#}
                             {% endblock %}
 
                     >
-                        <td>{% block tariffName %}{{ tariffResult.tariff.fullTitle }}{% endblock %}</td>
+                        <td>{% block tariffName %}{{ show_merged_tariff(tariffResult.packagePrices(tariffResult.adults, tariffResult.children)) }}{% endblock %}</td>
                         <td class="redtd">{% block discount %}{% endblock %}</td>
                         <td>{{ tariffResult.getPrice(tariffResult.adults, tariffResult.children)|round }}&#8381;</td>
                         <td><input name="booking-{{ tariffResult.roomType.id }}-{{ onlineResult.dates.begin|date("d_m_Y") ~ "_" ~ onlineResult.dates.end|date("d_m_Y") }}{% if special is defined and special is not empty %}-{{ special.id }}{% endif %}" type="radio" {% if loop.first %}checked="checked"{% endif %}></td>

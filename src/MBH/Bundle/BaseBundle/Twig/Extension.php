@@ -2,6 +2,7 @@
 namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -211,6 +212,7 @@ class Extension extends \Twig_Extension
             'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
             'get_current_hotel' => new \Twig_SimpleFunction('get_current_hotel', [$this, 'getCurrentHotel'], ['is_safe' => ['html']]),
+            'show_merged_tariff' => new \Twig_SimpleFunction('show_merged_tariff', [$this, 'showMergedTariff'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -238,5 +240,19 @@ class Extension extends \Twig_Extension
     public function getCurrentHotel()
     {
         return $this->container->get('mbh.hotel.selector')->getSelected();
+    }
+
+    public function showMergedtariff(?array $packagePrices = [])
+    {
+        $tariffs = [];
+        if (\count($packagePrices)) {
+            foreach ($packagePrices as $packagePrice) {
+                /** @var PackagePrice $packagePrice */
+                $tariffs[] = $packagePrice->getTariff()->getFullTitle();
+            }
+        }
+        $tariffNames = array_unique($tariffs);
+
+        return implode(' / ', $tariffNames);
     }
 }

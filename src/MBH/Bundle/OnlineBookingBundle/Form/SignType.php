@@ -101,6 +101,7 @@ class SignType extends AbstractType
             ->add('children', HiddenType::class, [])
             ->add('childrenAges', CollectionType::class, [
                 'attr' => ['hidden' => true],
+                'label' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
             ])
