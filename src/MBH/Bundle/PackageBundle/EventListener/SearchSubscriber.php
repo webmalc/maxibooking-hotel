@@ -50,7 +50,7 @@ class SearchSubscriber implements EventSubscriberInterface
         $end = $eventData['end'];
         $adults = (int)$eventData['adults'];
         $children = (int)$eventData['children'];
-        $childrenAges = $eventData['childrenAges'];
+        $childrenAges = $eventData['childrenAges'] ?? [];
         $promotion = $eventData['promotion'];
         $isUseCategory = $eventData['isUseCategory'];
         $special = $eventData['special'];
@@ -93,7 +93,7 @@ class SearchSubscriber implements EventSubscriberInterface
             if ($begin <= $threshold && $actualEnd > $threshold) {
                 $adults = $eventData['adults'];
                 $children = $eventData['children'];
-                $childrenAges = $eventData['childrenAges'];
+                $childrenAges = $eventData['childrenAges'] ?? [];
                 if (!$this->canApplyFreeChildTariff($adults, $children, $childrenAges)) {
                     return;
                 }
