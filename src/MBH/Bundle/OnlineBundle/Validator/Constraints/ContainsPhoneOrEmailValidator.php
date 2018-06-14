@@ -7,6 +7,7 @@
 namespace MBH\Bundle\OnlineBundle\Validator\Constraints;
 
 
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -14,9 +15,21 @@ class ContainsPhoneOrEmailValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
-        $email = strpos($value, '@') !== false;
-        $phone = (bool) preg_match('/^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/', $value, $match);
-        if (!$email && !$phone) {
+        $isValid = false;
+
+        $email = preg_match('/^.+\@\S+\.\S+$/', $value);
+
+        if ($email) {
+            $isValid = true;
+        }
+
+        if (!$isValid) {
+            if (!empty(Tourist::cleanPhone($value))) {
+                $isValid = true;
+            }
+        }
+
+        if (!$isValid) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('%string%', $value)
                 ->addViolation();
