@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 /**
  * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
@@ -1836,11 +1837,36 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @param bool $isFull
-     * @param TranslatorInterface|null $translator
+     * @param UploaderHelper $helper
+     * @param $domain
      * @return array
      */
-    public function getJsonSerialized($isFull = false)
+    public function getImagesData(UploaderHelper $helper, $domain)
+    {
+        $imagesData = [];
+        /** @var Image $image */
+        foreach ($this->getImages() as $image) {
+            $imageData = ['isMain' => $image->getIsDefault()];
+            $imageData['url'] = 'https://' . $domain . '/' . $helper->asset($image, 'imageFile');
+            if ($image->getWidth()) {
+                $imageData['width'] = (int)$image->getWidth();
+            }
+            if ($image->getHeight()) {
+                $imageData['height'] = (int)$image->getHeight();
+            }
+            $imagesData[] = $imageData;
+        }
+
+        return $imagesData;
+    }
+
+    /**
+     * @param bool $isFull
+     * @param UploaderHelper $uploaderHelper
+     * @param null $domain
+     * @return array
+     */
+    public function getJsonSerialized($isFull = false, UploaderHelper $uploaderHelper= null, $domain = null)
     {
         $data = [
             'id' => $this->getId(),
@@ -1855,6 +1881,14 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                 'description' => $this->getDescription(),
                 'facilities' => $this->getFacilities()
             ];
+            if (!is_null($uploaderHelper) && !is_null($domain)) {
+                $comprehensiveData['photos'] = $this->getImagesData($uploaderHelper, $domain);
+                if (!empty($this->getLogoImage())) {
+                    $comprehensiveData['logoUrl'] = 'https://' . $domain . '/' . $uploaderHelper->asset($this->getLogoImage(), 'imageFile');
+                }
+            } else {
+                throw new \InvalidArgumentException('It\'s required uploader helper and current domain for serialization of the full information about the hotel!');
+            }
 
             if (!is_null($this->latitude)) {
                 $comprehensiveData['latitude'] = $this->latitude;

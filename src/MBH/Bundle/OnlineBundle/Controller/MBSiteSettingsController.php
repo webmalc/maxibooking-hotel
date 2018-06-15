@@ -37,7 +37,7 @@ class MBSiteSettingsController extends BaseController
             'personalDataPolicies' => $siteConfig->getPersonalDataPolicies(),
             'contract' => $siteConfig->getContract(),
             'currency' => $this->clientConfig->getCurrency(),
-            'languages' => $this->clientConfig->getLanguages()
+            'languages' => $this->clientConfig->getLanguages(),
         ]);
     }
 }

@@ -817,7 +817,8 @@ class RoomType extends Base implements RoomTypeInterface
                 $comprehensiveData['roomSpace'] = $this->getRoomSpace();
             }
             if (!is_null($helper)) {
-                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($helper, $domain);
+                $comprehensiveData['
+                '] = $this->getRoomTypePhotoData($helper, $domain);
             }
             $data = array_merge($data, $comprehensiveData);
         }

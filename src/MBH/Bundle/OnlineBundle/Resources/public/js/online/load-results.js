@@ -78,8 +78,16 @@ function onLoadResultsLoad() {
     if (!resultsWrapper) {
         return;
     }
+
     var urlIndex = window.location.href.indexOf('?');
-    var url = urlIndex !== -1 ? window.location.href.slice(urlIndex) : '';
+    var url = '';
+    if (urlIndex !== -1) {
+        url = window.location.href.slice(urlIndex);
+    }
+    if (configResults.results_url.indexOf('?') > -1) {
+        url = url.replace('?', '&');
+    }
+
     resultsWrapper.innerHTML = '<iframe id="mbh-results-iframe" scrolling="no" frameborder="0" width="100%" height="300" src="' + configResults.results_url + url + '"></iframe>';
     var resultsIframe = document.getElementById('mbh-results-iframe');
     var resize = function () {
@@ -113,8 +121,10 @@ function onLoadResultsLoad() {
         window.attachEvent("onmessage", processMetricMessage);
     }
     window.onscroll = function () {
-        var frameTopOffset = resultsIframe.getBoundingClientRect().top;
-        resultsIframe.contentWindow.postMessage({type: 'onScroll', frameTopOffset: frameTopOffset}, '*')
+        if (resultsIframe.contentWindow) {
+            var frameTopOffset = resultsIframe.getBoundingClientRect().top;
+            resultsIframe.contentWindow.postMessage({type: 'onScroll', frameTopOffset: frameTopOffset}, '*')
+        }
     }
 }
 addLoadEvent(onLoadResultsLoad);

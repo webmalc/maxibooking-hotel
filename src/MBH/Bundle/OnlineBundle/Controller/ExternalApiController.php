@@ -207,7 +207,7 @@ class ExternalApiController extends BaseController
                 || in_array($hotel, $formConfig->getHotels()->toArray())
             ) {
                 $this->refreshDocumentByLocale($hotel, $queryData->get('locale'));
-                $hotelData = $hotel->getJsonSerialized($isFull);
+                $hotelData = $hotel->getJsonSerialized($isFull, $this->get('vich_uploader.templating.helper.uploader_helper'), $this->getParameter('domain'));
                 if ($isFull && $hotel->getCityId()) {
                     $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
                 }
