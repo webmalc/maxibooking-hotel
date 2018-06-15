@@ -277,14 +277,24 @@ class Builder
                 $menu->removeChild($child);
                 continue;
             }
-
-            preg_match('/\@Security\(\"is_granted\(\'(.*)\'\)\"\)/ixu', $metadata, $roles);
+            $reg = '/\@Security\(\"is_granted\(\'(ROLE\_ . +?)\'\)(?:\s((?:or|\|\|)|(?:and|\&\&))\sis_granted\(\'(ROLE\_ . +?)\'\))?\"\)/ixu';
+            preg_match($reg, $metadata, $roles);
 
             if (empty($metadata) || empty($roles[1])) {
                 continue;
             }
 
-            if (!$this->security->isGranted($roles[1])) {
+            $isAccessed = $this->security->isGranted($roles[1]);
+
+            if (!empty($roles[2])) {
+                $or = ['or','||'];
+                $and = ['and', '&&'];
+                if ((in_array($roles[2],$and) && $isAccessed) || (!$isAccessed && in_array($roles, $or))) {
+                    $isAccessed = $this->security->isGranted($roles[3]);
+                }
+            }
+
+            if (!$isAccessed) {
                 $menu->removeChild($child);
             } elseif (empty($child->getAttribute('dropdown'))) {
                 $this->counter += 1;

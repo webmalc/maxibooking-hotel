@@ -27,6 +27,10 @@ class WelcomeController extends BaseController
         if ($this->get('security.authorization_checker')->isGranted('ROLE_RESTAURANT_MANAGER')) {
             return $this->redirectToRoute('restaurant_dishorder');
         }
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_BASE_USER')) {
+            return $this->redirectToRoute('package');
+        }
+
         throw $this->createAccessDeniedException();
     }
 }
