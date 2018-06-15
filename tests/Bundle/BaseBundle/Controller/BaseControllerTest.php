@@ -25,6 +25,7 @@ class BaseControllerTest extends WebTestCase
         'user_payer',                       //500 billing
         'payments_list_json',               //500 billing
         '_welcome',
+        'hoh_packages_sync',                //redirect
         'work_shift_wait',                  //redirect, need fixture
         'work_shift_new',                   //redirect, need fixture
         'work_shift_lock',                  //redirect, need fixture
