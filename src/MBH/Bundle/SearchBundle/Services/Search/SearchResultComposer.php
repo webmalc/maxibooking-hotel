@@ -90,7 +90,6 @@ class SearchResultComposer
     private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $actualAdults, int $actualChildren): array
     {
         $conditions = $searchQuery->getSearchConditions();
-//        $conditions = $this->dataHolder->getConditions($searchQuery->getSearchHash(), $conditionsId);
         $calcQuery = new CalcQuery();
         $calcQuery
             ->setSearchBegin($searchQuery->getBegin())
@@ -103,12 +102,17 @@ class SearchResultComposer
             //** TODO: Уточнить по поводу Promotion */
             /*->setPromotion()*/
             /** TODO: Это все необязательные поля, нужны исключительно для dataHolder чтоб получить все данные сразу */
-            ->setConditionTariffs($conditions->getTariffs())
-            ->setConditionRoomTypes($conditions->getRoomTypes())
-            ->setConditionMaxBegin($conditions->getMaxBegin())
-            ->setConditionMaxEnd($conditions->getMaxEnd())
-            ->setConditionHash($conditions->getSearchHash())
-        ;
+            ;
+        if ($conditions) {
+            $calcQuery
+                ->setConditionTariffs($conditions->getTariffs())
+                ->setConditionRoomTypes($conditions->getRoomTypes())
+                ->setConditionMaxBegin($conditions->getMaxBegin())
+                ->setConditionMaxEnd($conditions->getMaxEnd())
+                ->setConditionHash($conditions->getSearchHash())
+            ;
+        }
+
 
         $prices = $this->calculation->calcPrices($calcQuery);
         if (!\count($prices)) {

@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Document;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
@@ -40,6 +41,7 @@ class SearchConditions extends Base
      * @var \DateTime
      * @Assert\DateTime()
      * @Assert\NotNull()
+     * @ODM\Field(type="date")
      */
     private $begin;
 
@@ -47,6 +49,7 @@ class SearchConditions extends Base
      * @var \DateTime
      * @Assert\DateTime()
      * @Assert\NotNull()
+     * @ODM\Field(type="date")
      */
     private $end;
 
@@ -58,6 +61,7 @@ class SearchConditions extends Base
      *     max = 12,
      *     minMessage = "form.searchType.adults_amount_less_zero"
      * )
+     * @ODM\Field(type="int")
      */
     private $adults;
 
@@ -68,6 +72,7 @@ class SearchConditions extends Base
      *     max = 6,
      *     minMessage = "form.searchType.children_amount_less_zero"
      * )
+     * @ODM\Field(type="int")
      */
     private $children;
 
@@ -77,6 +82,7 @@ class SearchConditions extends Base
      *     min=0,
      *     max=14
      * )
+     * @ODM\Field(type="int")
      */
     private $additionalBegin;
 
@@ -86,27 +92,33 @@ class SearchConditions extends Base
      *     min=0,
      *     max=14
      * )
+     * @ODM\Field(type="int")
      */
     private $additionalEnd;
 
     /**
      * @var array|int[]
+     * @Assert\Collection()
+     * @ODM\Field(type="collection")
      *
      */
     private $childrenAges = [];
 
     /**
      * @var ArrayCollection|Hotel[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
      */
     private $hotels;
 
     /**
      * @var  ArrayCollection|RoomType[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
     private $roomTypes;
 
     /**
      * @var ArrayCollection|Tariff[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      */
     private $tariffs;
 
@@ -221,7 +233,7 @@ class SearchConditions extends Base
         return $this;
     }
 
-    public function getHotels(): ArrayCollection
+    public function getHotels(): Collection
     {
         return $this->hotels;
     }
@@ -240,15 +252,18 @@ class SearchConditions extends Base
         return $this;
     }
 
-    public function getRoomTypes(): ArrayCollection
+    /**
+     * @return Collection
+     */
+    public function getRoomTypes(): Collection
     {
         return $this->roomTypes;
     }
 
     /**
-     * @return ArrayCollection|Tariff[]
+     * @return Collection|Tariff[]
      */
-    public function getTariffs(): ArrayCollection
+    public function getTariffs(): Collection
     {
         return $this->tariffs;
     }

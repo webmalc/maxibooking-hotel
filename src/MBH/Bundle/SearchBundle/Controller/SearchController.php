@@ -35,50 +35,43 @@ class SearchController extends Controller
         $stopwatch = $this->get('debug.stopwatch');
         $stopwatch->start('searchTime');
 
-        $result = new ExpectedResult();
         $data = array (
             'begin' => '13.08.2018',
             'end' => '3.09.2018',
             'adults' => 2,
             'children' => 0,
-            'additionalBegin' => 0,
+            'additionalBegin' => 1,
             'roomTypes' => [],
             'tariffs' => []
         );
 
-        
 
-        try {
-            $search = $this->get('mbh_search.search');
-            $finded = $search->searchSync($data);
-            $result
-                ->setStatus('ok')
-                ->setQueryHash($search->getSearchHash())
-                ->setExpectedResults($search->getSearchCount())
-            ;
-        } catch (SearchQueryGeneratorException|SearchConditionException $e) {
-            $result
-                ->setStatus('error')
-                ->setErrorMessage($e->getMessage())
-                ->setExpectedResults(0)
-            ;
-        }
-
-        $searchDone = $stopwatch->stop('searchTime');
-        $time = $searchDone->getDuration();
+        $search = $this->get('mbh_search.search');
+        $holderId = $search->searchAsync($data);
+//        $holderId = [];
+//        $finded = $search->searchSync($data);
+//        $prefiltered = array_filter($finded, function ($result) {
+//            return $result->getStatus() === 'ok';
+//        });
+//
+//        foreach ($prefiltered as $searchResult) {
+//            /** @var SearchResult $searchResult */
+//            $filtered[$searchResult->getRoomType()->getHotel()->getName() . '_' . $searchResult->getRoomType()->getName()][] = $searchResult;
+//        }
 
 
-        $filtered = [];
-        foreach ($finded as $find) {
-            if ($find['status'] === 'ok') {
-                /** @var SearchResult $searchResult */
-                $searchResult = $find['result'];
-                $filtered[$searchResult->getRoomType()->getHotel()->getName() . '_' . $searchResult->getRoomType()->getName()][] = $searchResult;
-            }
-        }
+//        $filtered = [];
+//        foreach ($finded as $find) {
+//            if ($find->getStatus() === 'ok') {
+//                /** @var SearchResult $searchResult */
+//                $searchResult = $find;
+//                $filtered[$searchResult->getRoomType()->getHotel()->getName() . '_' . $searchResult->getRoomType()->getName()][] = $searchResult;
+//            }
+//        }
 
-
-        return $this->render('@MBHSearch/Search/index.html.twig', ['finded' => $finded, 'time' => $time, 'filtered' => $filtered]);
+//        $event = $stopwatch->stop('searchTime');
+//        $time = $event->getDuration();
+        return $this->render('@MBHSearch/Search/index.html.twig', ['holderId' => $holderId]);
 //        $serializer = $this->get('serializer');
 //        return new Response(
 //            $serializer->serialize($result, 'json'),

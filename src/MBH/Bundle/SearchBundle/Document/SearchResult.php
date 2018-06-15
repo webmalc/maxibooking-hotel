@@ -4,98 +4,118 @@
 namespace MBH\Bundle\SearchBundle\Document;
 
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class SearchResult
+ * @package MBH\Bundle\SearchBundle\Document
+ * @Document(collection="SearchResults",repositoryClass="SearchResultRepository")
+ */
 class SearchResult extends Base
 {
+
+    use TimestampableDocument;
+
     /**
      * @var string
      * @Assert\Choice({"ok", "error"})
+     * @ODM\Field(type="string")
      */
     private $status = 'ok';
 
     /**
      * @var string
      * @Assert\Type(type="string")
+     * @ODM\Field(type="string")
      */
     private $error;
 
     /**
      * @var \DateTime
+     * @Assert\Date()
+     * @ODM\Field(type="date")
      */
     protected $begin;
 
     /**
      * @var \DateTime
+     * @Assert\Date()
+     * @ODM\Field(type="date")
      */
     protected $end;
 
     /**
      * @var int
+     * @Assert\Type(type="integer")
+     * @ODM\Field(type="int")
      */
     protected $adults;
 
     /**
      * @var int
+     * @Assert\Type(type="integer")
+     * @ODM\Field(type="int")
      */
     protected $children;
 
     /**
      * @var int
+     * @Assert\Type(type="integer")
+     * @ODM\Field(type="int")
      */
     protected $infants;
 
     /**
      * @var RoomType
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
     protected $roomType;
 
     /**
      * @var Room
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
     protected $virtualRoom;
 
     /**
      * @var Tariff
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      */
     protected $tariff;
 
     /**
      * mixed array of prices
-     *
+     * @Assert\Collection()
      * @var []
+     * @ODM\Field(type="hash")
      */
     protected $prices = [];
 
     /**
-     * mixed array of pricesByDate
-     *
-     * @var []
-     */
-    protected $pricesByDate = [];
-
-    /**
      * @var int
      * @Assert\Type(type="integer")
+     * @Assert\Range(min=0)
+     * @ODM\Field(type="integer")
      */
     protected $roomsCount = 0;
 
     /**
-     * @var int
-     */
-    protected $packagesCount = 0;
-
-    /**
+     * TODO: Тут прям комнаты ?
      * @var array
      */
     protected $rooms = [];
 
     /**
+     * TODO: Переделать PackagePrices (добавить как миинмум детей и взрослых в поля, а не в массив)
      * @var PackagePrice[]
      */
     protected $packagePrices = [];
@@ -110,7 +130,10 @@ class SearchResult extends Base
      */
     protected $forceBooking = false;
 
-    /** @var string */
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
     protected $queryId;
 
     /**
@@ -415,6 +438,17 @@ class SearchResult extends Base
         }
 
         return $this;
+    }
+
+    public static function createErrorResult(SearchException $exception): SearchResult
+    {
+        $result = new static();
+        $result
+            ->setStatus('error')
+            ->setError($exception->getMessage())
+        ;
+
+        return $result;
     }
 
 }

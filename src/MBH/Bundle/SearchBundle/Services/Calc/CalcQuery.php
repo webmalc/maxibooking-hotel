@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -34,10 +35,10 @@ class CalcQuery
     /** @var \DateTime */
     private $conditionMaxEnd;
 
-    /** @var ArrayCollection|Tariff[] */
+    /** @var Collection|Tariff[] */
     private $conditionTariffs;
 
-    /** @var ArrayCollection|RoomType[] */
+    /** @var Collection|RoomType[] */
     private $conditionRoomTypes;
 
     /** @var string */
@@ -188,10 +189,10 @@ class CalcQuery
     }
 
     /**
-     * @param ArrayCollection|Tariff[] $conditionTariffs
+     * @param Collection|Tariff[] $conditionTariffs
      * @return CalcQuery
      */
-    public function setConditionTariffs(ArrayCollection $conditionTariffs): CalcQuery
+    public function setConditionTariffs(Collection $conditionTariffs): CalcQuery
     {
         $this->conditionTariffs = $conditionTariffs;
 
@@ -199,18 +200,18 @@ class CalcQuery
     }
 
     /**
-     * @return ArrayCollection|RoomType[]|RoomTypeCategory[]
+     * @return Collection|RoomType[]|RoomTypeCategory[]
      */
-    public function getConditionRoomTypes(): ?ArrayCollection
+    public function getConditionRoomTypes(): ?Collection
     {
         return $this->conditionRoomTypes;
     }
 
     /**
-     * @param ArrayCollection|RoomType[]|RoomTypeCategory[] $conditionRoomTypes
+     * @param Collection|RoomType[]|RoomTypeCategory[] $conditionRoomTypes
      * @return CalcQuery
      */
-    public function setConditionRoomTypes(ArrayCollection $conditionRoomTypes)
+    public function setConditionRoomTypes(Collection $conditionRoomTypes)
     {
         $this->conditionRoomTypes = $conditionRoomTypes;
 

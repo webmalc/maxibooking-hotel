@@ -6,19 +6,17 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
-use MBH\Bundle\SearchBundle\Lib\ErrorSearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
-use Symfony\Component\Serializer\Serializer;
+use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
 class Search
 {
@@ -40,8 +38,8 @@ class Search
     /** @var SearchQueryGenerator */
     private $queryGenerator;
 
-    /** @var Serializer */
-    private $serializer;
+    /** @var ProducerInterface */
+    private $producer;
 
     /**
      * Search constructor.
@@ -50,7 +48,7 @@ class Search
      * @param DocumentManager $documentManager
      * @param SearchConditionsCreator $conditionsCreator
      * @param SearchQueryGenerator $queryGenerator
-     * @param Serializer $serializer
+     * @param ProducerInterface $producer
      */
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
@@ -58,7 +56,7 @@ class Search
         DocumentManager $documentManager,
         SearchConditionsCreator $conditionsCreator,
         SearchQueryGenerator $queryGenerator,
-        Serializer $serializer
+        ProducerInterface $producer
     )
     {
         $this->restrictionChecker = $restrictionsChecker;
@@ -66,7 +64,7 @@ class Search
         $this->dm = $documentManager;
         $this->conditionsCreator = $conditionsCreator;
         $this->queryGenerator = $queryGenerator;
-        $this->serializer = $serializer;
+        $this->producer = $producer;
     }
 
 
@@ -87,7 +85,7 @@ class Search
             try {
                 $results[] = $this->searcher->search($searchQuery);
             } catch (SearchException $e) {
-                $results[] = ErrorSearchResult::createErrorResult($e);
+                $results[] = SearchResult::createErrorResult($e);
             }
         }
 
@@ -97,20 +95,28 @@ class Search
 
     public function searchAsync(array $data): string
     {
+
         $conditions = $this->createSearchConditions($data);
         $searchQueries = $this->createSearchQueries($conditions);
         $holder = new SearchResultHolder();
         $holder
             ->setExpectedResultsCount(\count($searchQueries))
             ->setSearchConditions($conditions)
+            ->setType('async')
         ;
 
         $this->dm->persist($holder);
-        $this->dm->flush($holder);
+        $this->dm->flush();
 
         foreach ($searchQueries as $searchQuery) {
             $searchQuery->unsetConditions();
-            $serialized[] = $this->serializer->serialize($searchQuery, 'json');
+            $message = [
+                'holderId' => $holder->getId(),
+                'searchQuery' => serialize($searchQuery)
+            ];
+
+            $msgBody = json_encode($message);
+            $this->producer->publish($msgBody);
         }
 
         return $holder->getId();
@@ -131,7 +137,6 @@ class Search
     {
 
         $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
-
 
         if (self::PRE_RESTRICTION_CHECK) {
             $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);

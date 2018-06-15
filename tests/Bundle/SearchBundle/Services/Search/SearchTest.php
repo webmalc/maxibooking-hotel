@@ -5,24 +5,21 @@ namespace Tests\Bundle\SearchBundle\Services\Search;
 
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Services\Search\Search;
+use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class SearchTest extends SearchWebTestCase
 {
-
-    /** @var Search */
-    private $search;
-
     public function setUp()
     {
         parent::setUp();
-        $this->search = $this->getContainer()->get('mbh_search.search');
+
     }
 
     /** @dataProvider syncDataProvider
@@ -34,9 +31,10 @@ class SearchTest extends SearchWebTestCase
      */
     public function testSearchSync(iterable $data): void
     {
+        $search = $this->getContainer()->get('mbh_search.search');
         $conditionData = $this->createConditionData($data);
-        $actual = $this->search->searchSync($conditionData);
-        $this->assertCount(2, $this->search->getRestrictionsErrors());
+        $actual = $search->searchSync($conditionData);
+        $this->assertCount(2, $search->getRestrictionsErrors());
         $this->assertContainsOnlyInstancesOf(SearchResult::class, $actual);
 
     }
@@ -48,11 +46,20 @@ class SearchTest extends SearchWebTestCase
      */
     public function testSearchAsync(iterable $data): void
     {
+        $producer = $this->createMock(Producer::class);
+        $producer->expects($this->exactly(8))->method('publish');
+        $this->getContainer()->set('old_sound_rabbit_mq.async_search_producer', $producer);
         $conditionData = $this->createConditionData($data);
+        $search = $this->getContainer()->get('mbh_search.search');
         /** @var SearchResultHolder $actual */
-        $actual = $this->search->searchAsync($conditionData);
+        $actual = $search->searchAsync($conditionData);
+        $this->dm->clear();
         $holder = $this->dm->find(SearchResultHolder::class, $actual);
         $this->assertInstanceOf(SearchResultHolder::class, $holder);
+        $conditions = $holder->getSearchConditions();
+        $this->assertInstanceOf(SearchConditions::class, $conditions);
+        $this->assertNotNull($conditions->getSearchHash());
+        $this->assertEquals('async', $holder->getType());
         $this->assertSame(8, $holder->getExpectedResultsCount());
     }
 

@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class SearchResultHolder
  * @package MBH\Bundle\SearchBundle\Document
- * @ODM\Document(collection="SearchResultHolders")
+ * @ODM\Document(collection="SearchResultHolders", repositoryClass="SearchResultHolderRepository")
  */
 class SearchResultHolder extends Base
 {
@@ -21,6 +21,7 @@ class SearchResultHolder extends Base
      * @Assert\NotNull()
      * @Assert\Type(type="integer")
      * @Assert\Range(min=0)
+     * @ODM\Field(type="int")
      */
     private $expectedResultsCount;
 
@@ -28,21 +29,25 @@ class SearchResultHolder extends Base
      * @var string
      * @Assert\Choice({"sync", "async"})
      * @Assert\Type(type="string")
+     * @ODM\Field(type="string")
      */
     private $type;
 
     /**
      * @var ArrayCollection|SearchResult[]
+     * @ODM\ReferenceMany(targetDocument="SearchResult", cascade={"persist"})
      */
     private $searchResults;
 
     /**
      * @var ArrayCollection|SearchResult[]
+     * @ODM\ReferenceMany(targetDocument="SearchResult")
      */
     private $takenSearchResults;
 
     /**
      * @var SearchConditions
+     * @ODM\ReferenceOne(targetDocument="SearchConditions")
      */
     private $searchConditions;
 
