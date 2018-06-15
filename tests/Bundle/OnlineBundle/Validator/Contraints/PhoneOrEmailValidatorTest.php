@@ -1,44 +1,17 @@
 <?php
 
+use MBH\Bundle\BaseBundle\Lib\Test\ValidatorTestCase;
 use MBH\Bundle\OnlineBundle\Validator\Constraints\PhoneOrEmail;
 use MBH\Bundle\OnlineBundle\Validator\Constraints\PhoneOrEmailValidator;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\ConstraintValidatorInterface;
-use Symfony\Component\Validator\Context\ExecutionContext;
 
 /**
  * Created by PhpStorm.
  * Date: 14.06.18
  */
 
-class PhoneOrEmailValidatorTest extends TestCase
+class PhoneOrEmailValidatorTest extends ValidatorTestCase
 {
-    /**
-     * @var \Symfony\Component\Validator\ConstraintValidator
-     */
-    private $validator;
-
-    private $context;
-
-    /**
-     * @var string
-     */
-    protected $root = 'root';
-
-    protected $constraint;
-
-    public function setUp()
-    {
-        // Initialize the context with some constraint so that we can
-        // successfully build a violation.
-        $this->constraint = new NotNull();
-
-        $this->context = $this->createContext();
-        $this->validator = $this->createValidator();
-        $this->validator->initialize($this->context);
-    }
-
     /**
      * @dataProvider getValidString
      */
@@ -81,38 +54,8 @@ class PhoneOrEmailValidatorTest extends TestCase
         ];
     }
 
-    protected function assertNoViolation()
-    {
-        $this->assertViolation(0);
-    }
-
-    protected function assertYesViolation()
-    {
-        $this->assertViolation(1);
-    }
-
-    private function assertViolation(int $amountViolations)
-    {
-        $this->assertSame(
-            $amountViolations,
-            $violationsCount = count($this->context->getViolations()),
-            sprintf($amountViolations . ' violation expected. Got %u.', $violationsCount)
-        );
-    }
-
-    private function createValidator(): ConstraintValidatorInterface
+    protected function createValidator(): ConstraintValidatorInterface
     {
         return new PhoneOrEmailValidator();
-    }
-
-    private function createContext()
-    {
-        $translator = $this->getMockBuilder('Symfony\Component\Translation\TranslatorInterface')->getMock();
-        $validator = $this->getMockBuilder('Symfony\Component\Validator\Validator\ValidatorInterface')->getMock();
-
-        $context = new ExecutionContext($validator, $this->root, $translator);
-        $context->setConstraint($this->constraint);
-
-        return $context;
     }
 }
