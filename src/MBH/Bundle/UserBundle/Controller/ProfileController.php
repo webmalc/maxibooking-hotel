@@ -36,7 +36,6 @@ class ProfileController extends Controller
     public function profileAction()
     {
         if (!$this->isGranted('ROLE_PROFILE')) {
-//        if ($this->isGranted('DENYING_API_KEY')) {
             return $this->redirectToRoute('user_payment');
         }
 
