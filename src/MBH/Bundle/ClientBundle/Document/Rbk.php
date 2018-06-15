@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -122,7 +123,7 @@ class Rbk implements PaymentSystemInterface
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request)
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $eshopId = $request->get('eshopId');
         $orderId = $request->get('orderId');
@@ -139,8 +140,10 @@ class Rbk implements PaymentSystemInterface
 
         $requestSignature = $request->get('hash');
 
+        $holder = new CheckResultHolder();
+
         if (!$eshopId || !$paymentStatus || !$requestSignature || $paymentStatus != 5) {
-            return false;
+            return $holder;
         }
         $signature = $this->calcSignature([
             $eshopId,
@@ -159,14 +162,14 @@ class Rbk implements PaymentSystemInterface
         ]);
 
         if ($signature != $requestSignature) {
-            return false;
+            return $holder;
         }
 
-        return [
-            'doc' => $orderId,
-            'commission' => self::COMMISSION,
+        return $holder->parseData([
+            'doc'               => $orderId,
+            'commission'        => self::COMMISSION,
             'commissionPercent' => true,
-            'text' => 'OK'
-        ];
+            'text'              => 'OK',
+        ]);
     }
 }

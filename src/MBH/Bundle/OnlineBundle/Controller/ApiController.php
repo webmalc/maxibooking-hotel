@@ -21,6 +21,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Stripe\Charge;
+use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -251,40 +252,26 @@ class ApiController extends Controller
             $logger->info('FAIL. '.$logText.' .Not found config');
             throw $this->createNotFoundException();
         }
-        $response = $clientConfig->checkRequest($request, $paymentSystemName);
+        $holder = $clientConfig->checkRequest($request, $paymentSystemName, $clientConfig);
 
-        if (!$response) {
+        if (!$holder->isSuccess()) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
+            $holder->getIndividualErrorResponse();
             throw $this->createNotFoundException();
         }
 
-        if ($paymentSystemName === 'stripe') {
-            \Stripe\Stripe::setApiKey($clientConfig->getStripe()->getSecretKey());
-
-            $charge = Charge::create([
-                "amount" => $request->request->get('amount') * 100,
-                "currency" => $request->request->get('currency'),
-                "description" => "Charge for order #" . $response['doc'] ,
-                "source" => $request->get('stripeToken'),
-            ]);
-            if ($charge->status !== 'succeeded') {
-                throw new BadRequestHttpException('Stripe charge is not successful');
-            }
-        }
-
         //save cashDocument
-        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
+        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($holder->getDoc());
 
         if ($cashDocument && !$cashDocument->getIsPaid()) {
             $cashDocument->setIsPaid(true);
             $dm->persist($cashDocument);
             $dm->flush();
-
             //save commission
-            if (isset($response['commission']) && is_numeric($response['commission'])) {
+            if ($holder->getCommission() !== null && is_numeric($holder->getCommission())) {
                 $commission = clone $cashDocument;
-                $commissionTotal = (float)$response['commission'];
-                if (isset($response['commissionPercent']) && $response['commissionPercent']) {
+                $commissionTotal = (float)$holder->getCommission();
+                if ($holder->getCommissionPercent()) {
                     $commissionTotal = $commissionTotal * $cashDocument->getTotal();
                 }
                 $commission->setTotal($commissionTotal)
@@ -348,7 +335,7 @@ class ApiController extends Controller
 
         $logger->info('OK. '.$logText);
 
-        return $paymentSystemName === Stripe::NAME ? $this->redirectToRoute('successful_payment') : new Response($response['text']);
+        return $holder->getIndividualSuccessResponse($this) ?? new Response($holder->getText());
     }
 
     /**
@@ -808,6 +795,26 @@ class ApiController extends Controller
         }
 
         return $order;
+    }
+
+    /**
+     * @Route("/file/{configId}/load-result.js", name="online_form_load_result_file", defaults={"_format"="js"})
+     * @Cache(expires="tomorrow", public=true)
+     * @Template()
+     */
+    public function loadResultAction($configId)
+    {
+        $configForm = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
+            ->find($configId);
+
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+
+        return [
+            'config'         => $configForm,
+            'paymentSystems' => $clientConfig->getPaymentSystems(),
+            'successUrl'     => $clientConfig->getSuccessUrl(),
+        ];
     }
 
     /**

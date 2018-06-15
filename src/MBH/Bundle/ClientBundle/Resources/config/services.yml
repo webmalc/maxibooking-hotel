@@ -82,6 +82,10 @@ services:
              - '@service_container'
              - '@mbh.billing.api'
 
+    MBH\Bundle\ClientBundle\Service\PaymentSystem\:
+        resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/PaymentSystem/*'
+        arguments:
+            - '@service_container'
     mbh.document_template_update.logger:
           class:     Symfony\Bridge\Monolog\Logger
           arguments: [app]
