@@ -206,7 +206,7 @@ class ClientManager
         ) {
             /** @var Client $client */
             $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
-            $this->clientConfigManager->changeCacheValidity(false);
+            $this->clientConfigManager->changeCacheValidity(true);
             if (!isset($client) || !$client instanceof Client) {
                 throw new NotFoundHttpException('Can not get client with login "' . $this->client . '"');
             }

@@ -2,13 +2,11 @@
 
 namespace MBH\Bundle\OnlineBundle\Controller;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
-use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,7 +46,7 @@ class MBSiteController extends BaseController
                     || $config->getIsEnabled() !== $client->getIsWebSiteEnabled()) {
                     $client
                         ->setIsWebSiteEnabled($config->getIsEnabled())
-                        ->setWebsiteUrl($siteManager->getSiteAddress($config->getSiteDomain()));
+                        ->setWebsiteUrl($siteManager->compileSiteAddress($config->getSiteDomain()));
                     $updateResult = $this->get('mbh.billing.api')->updateClient($client);
                     if (!$updateResult->isSuccessful()) {
                         if (isset($updateResult->getErrors()['website']['url'])) {

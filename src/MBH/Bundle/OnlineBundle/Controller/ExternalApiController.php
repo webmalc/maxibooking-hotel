@@ -92,7 +92,6 @@ class ExternalApiController extends BaseController
                     || ($formConfig->getHotels()->contains($roomType->getHotel())
                         && (!$formConfig->getRoomTypes() || $formConfig->getRoomTypeChoices()->contains($roomType)))
                 ) {
-                    $this->refreshDocumentByLocale($roomType, $queryData->get('locale'));
                     $responseData[] = $roomType->getJsonSerialized($isFull,
                         $this->getParameter('router.request_context.host'),
                         $this->get('vich_uploader.templating.helper.uploader_helper'));
@@ -206,7 +205,6 @@ class ExternalApiController extends BaseController
                 || $formConfig->getHotels()->count() == 0
                 || in_array($hotel, $formConfig->getHotels()->toArray())
             ) {
-                $this->refreshDocumentByLocale($hotel, $queryData->get('locale'));
                 $hotelData = $hotel->getJsonSerialized($isFull, $this->get('vich_uploader.templating.helper.uploader_helper'), $this->getParameter('domain'));
                 if ($isFull && $hotel->getCityId()) {
                     $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
@@ -451,18 +449,6 @@ class ExternalApiController extends BaseController
         $responseCompiler->setData($facilitiesData);
 
         return $responseCompiler->getResponse();
-    }
-
-    /**
-     * @param $document
-     * @param null $locale
-     */
-    private function refreshDocumentByLocale($document, $locale = null)
-    {
-        if (!is_null($locale) && $this->getParameter('locale') !== $locale) {
-            $document->setLocale($locale);
-            $this->dm->refresh($document);
-        }
     }
 
     /**

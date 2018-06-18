@@ -160,7 +160,7 @@ class SiteManager
     {
         $fieldsCorrectnessByRoutes = $this->getDocumentFieldsCorrectnessTypesByRoutesNames($document);
 
-        return array_reduce($fieldsCorrectnessByRoutes['fieldsData'], function($result, $fieldsByCorrectnessType) {
+        return array_reduce($fieldsCorrectnessByRoutes['fieldsData'], function ($result, $fieldsByCorrectnessType) {
             foreach ($fieldsByCorrectnessType as $correctnessType => $fields) {
                 if ($correctnessType !== 'correct') {
                     $result += count($fields);
@@ -178,7 +178,7 @@ class SiteManager
      */
     public function updateSiteFormConfig(SiteConfig $config, FormConfig $formConfig, array $paymentTypes)
     {
-        $siteAddress = $this->getSiteAddress($config->getSiteDomain());
+        $siteAddress = $this->compileSiteAddress($config->getSiteDomain());
 
         $roomTypes = [];
         foreach ($config->getHotels() as $hotel) {
@@ -197,10 +197,20 @@ class SiteManager
     }
 
     /**
+     * @return string
+     */
+    public function getSiteAddress()
+    {
+        return $this->getSiteConfig() && $this->getSiteConfig()->getSiteDomain()
+            ? $this->compileSiteAddress($this->getSiteConfig()->getSiteDomain())
+            : null;
+    }
+
+    /**
      * @param string $siteDomain
      * @return string
      */
-    public function getSiteAddress(string $siteDomain)
+    public function compileSiteAddress(string $siteDomain)
     {
         return self::SITE_PROTOCOL . $siteDomain . self::SITE_DOMAIN;
     }

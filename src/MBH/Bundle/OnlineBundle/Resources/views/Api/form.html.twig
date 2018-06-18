@@ -41,7 +41,7 @@
         <label for="mbh-form-hotel">{{ 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
         <select name="hotel" class="form-control input-sm" id="mbh-form-hotel">
             <option></option>
-            {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.localeTitle(app.request.locale) }}</option>{% endfor %}
+            {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.getFullTitleOrTitle() }}</option>{% endfor %}
         </select>
     </div>
     {% endif %}

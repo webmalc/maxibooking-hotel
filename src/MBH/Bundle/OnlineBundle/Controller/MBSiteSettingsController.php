@@ -19,11 +19,11 @@ class MBSiteSettingsController extends BaseController
      */
     public function getMainSettingsAction()
     {
-        $siteConfig = $this->dm
-            ->getRepository('MBHOnlineBundle:SiteConfig')
-            ->findOneBy([]);
+        $siteManager = $this->get('mbh.site_manager');
+        $siteConfig = $siteManager->getSiteConfig();
 
-        header('Access-Control-Allow-Origin: ' . $siteConfig->getSiteDomain());
+//        header('Access-Control-Allow-Origin: ' . $siteManager->getSiteAddress());
+        header('Access-Control-Allow-Origin: ' . 'http://localhost:4200');
 
         $formConfig = $this->dm
             ->getRepository('MBHOnlineBundle:FormConfig')
@@ -38,6 +38,7 @@ class MBSiteSettingsController extends BaseController
             'contract' => $siteConfig->getContract(),
             'currency' => $this->clientConfig->getCurrency(),
             'languages' => $this->clientConfig->getLanguages(),
+            'defaultLang' => $this->getParameter('locale')
         ]);
     }
 }

@@ -30,9 +30,12 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
     public function indexAction()
     {
         $docs = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findAll();
+        $siteConfig = $this->get('mbh.site_manager')->getSiteConfig();
+        $hasEnabledMBSite = !is_null($siteConfig) && $siteConfig->getIsEnabled();
 
         return [
-            'docs' => $docs
+            'docs' => $docs,
+            'hasEnabledMBSite' => $hasEnabledMBSite
         ];
     }
 

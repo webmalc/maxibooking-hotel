@@ -79,6 +79,7 @@ onlinebundle.resources.views.hotels: Отели
 onlinebundle.resources.views.room_types: 'Типы номеров'
 onlinebundle.resources.views.guests: Гости
 onlinebundle.resources.views.on: Включена
+onlinebundle.resources.views.form.index.for_site: 'Для сайта'
 onlinebundle.resources.views.all_hotels: 'Все отели'
 onlinebundle.resources.da: Да
 onlinebundle.resources.net: Нет

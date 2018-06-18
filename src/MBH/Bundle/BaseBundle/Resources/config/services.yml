@@ -271,7 +271,7 @@ services:
 
     mbh.locale.subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\LocaleSubscriber
-        arguments: ['%kernel.default_locale%', '@gedmo.listener.translatable', '@translator']
+        arguments: ['%kernel.default_locale%',  '@translator', '%mbh.languages%']
         tags:
           - { name: kernel.event_subscriber }
 

@@ -577,6 +577,17 @@ class Client
     }
 
     /**
+     * @param $website
+     * @return Client
+     */
+    public function setWebsite($website)
+    {
+        $this->website = $website;
+
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     public function getWebsiteUrl()
