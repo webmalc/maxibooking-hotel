@@ -501,14 +501,20 @@ class Ostrovok extends Base
                 }
                 //If Cancelled
                 if ((string)$reservation['status'] === 'cancelled' && $order) {
-                    $order->setChannelManagerStatus('cancelled');
-                    $order->setChannelManagerEditDateTime($reservation['modified_at']);
-                    $this->dm->persist($order);
-                    $this->dm->flush();
-                    $this->notify($order, 'ostrovok', 'delete');
-                    $this->dm->remove($order);
-                    $this->dm->flush();
-                    $this->log('Order '.$order->getId().'was cancelled.');
+                    if ($order->getChannelManagerStatus() !== 'cancelled') {
+                        $order->setChannelManagerStatus('cancelled');
+                        $order->setChannelManagerEditDateTime($reservation['modified_at']);
+                        $this->dm->persist($order);
+                        $this->dm->flush();
+                        $this->notify($order, 'ostrovok', 'delete');
+                        $this->dm->remove($order);
+                        $this->dm->flush();
+                        $this->log('Order '.$order->getId().'was cancelled.');
+                    } else {
+                        $this->logger->addInfo('The order already deleted in Ostrovok '. $order->getChannelManagerId());
+                    }
+
+
                     $result = true;
                 }
 
