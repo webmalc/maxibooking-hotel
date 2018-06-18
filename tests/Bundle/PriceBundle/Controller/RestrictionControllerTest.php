@@ -9,6 +9,7 @@
 namespace Tests\Bundle\PriceBundle\Controller;
 
 
+use MBH\Bundle\BaseBundle\Lib\Test\Traits\HotelIdTestTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Restriction;
@@ -17,8 +18,9 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class RestrictionControllerTest extends WebTestCase
 {
+    use HotelIdTestTrait;
+
     private const BASE_URL = '/price/restriction/';
-    private const NAME_TEST_HOTEL = 'Отель Волга';
     private const SPECIAL_TARIFFS = 'Special tariff';
 
     private const FORM_NAME_NEW_RESTRICTION = 'newRestrictions';
@@ -32,11 +34,6 @@ class RestrictionControllerTest extends WebTestCase
     private const SUNDAY = 0;
     private const TUESDAY = 2;
     private const THURSDAY = 4;
-
-    /**
-     * @var string
-     */
-    private $hotelId;
 
     /**
      * @var RoomType[]
@@ -540,20 +537,6 @@ class RestrictionControllerTest extends WebTestCase
         }
 
         return $this->getListCrawler($url);
-    }
-
-    /**
-     * @return string
-     */
-    private function getHotelId(): string
-    {
-        if (empty($this->hotelId)) {
-            $dm = $this->getDocumentManager();
-            $this->hotelId = $dm->getRepository('MBHHotelBundle:Hotel')
-                ->findOneBy(['fullTitle' => self::NAME_TEST_HOTEL])
-                ->getId();
-        }
-        return $this->hotelId;
     }
 
     /**

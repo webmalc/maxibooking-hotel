@@ -351,7 +351,7 @@ menu.label.reports.organizations: Организация
 menu.label.reports.filling: Заполняемость
 menu.label.reports.managers: 'Отчеты по менеджерам'
 menu.label.reports.invite: 'Визовые приглашения'
-menu.label.reports.analystics: 'Графика продаж'
+menu.label.reports.analystics: 'Графики продаж'
 menu.label.reports.polls: 'Отзывы гостей'
 menu.label.reports.dynamic_sales: 'Динамика продаж'
 menu.label.reports.daily_report: 'Денежные средства'
@@ -380,6 +380,7 @@ menu.communication.label: Взаимодействие
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.your_hotel: ВашОтель
 menu.communication.label.onlineform: 'Онлайн модуль'
+menu.communication.label.online_payment_form: 'Платежный модуль'
 menu.communication.label.polls: Оценки
 menu.communication.label.site_settings: 'Настройки сайта'
 menu.communication.label.mb_site: Сайт

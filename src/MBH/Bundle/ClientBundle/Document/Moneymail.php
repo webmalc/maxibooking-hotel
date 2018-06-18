@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -108,7 +109,7 @@ class Moneymail implements PaymentSystemInterface
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request)
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $cashDocumentId = $request->get('Order_IDP');
         $shopId = $request->get('Shop_IDP');
@@ -117,20 +118,22 @@ class Moneymail implements PaymentSystemInterface
         $requestSignature = $request->get('Signature');
         $commission = $request->get('Comission');
 
+        $holder = new CheckResultHolder();
+
         if (!$cashDocumentId || !$shopId || !$status || !$requestSignature || $status != 'AS000') {
-            return false;
+            return $holder;
         }
         $signature = $cashDocumentId . $status . $shopId . $cyberSourceTransactionNumber . $commission . $this->getMoneymailKey();
         $signature = strtoupper(str_replace('-', '', md5($signature)));
 
         if ($signature != $requestSignature) {
-            return false;
+            return $holder;
         }
 
-        return [
-            'doc' => $cashDocumentId,
+        return $holder->parseData([
+            'doc'        => $cashDocumentId,
             'commission' => $commission,
-            'text' => 'OK'
-        ];
+            'text'       => 'OK',
+        ]);
     }
 }

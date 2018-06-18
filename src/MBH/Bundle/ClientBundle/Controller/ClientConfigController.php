@@ -19,6 +19,8 @@ use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -99,6 +101,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     /**
      * @Route("/payment_systems", name="client_payment_systems", options={"expose"=true})
      * @Template()
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @return array
      */
     public function paymentSystemsAction()
@@ -151,16 +154,14 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
     /**
      * Payment system configuration page
-     * @Route("/payment_system_form", name="client_payment_system_form")
+     * @Route("/payment_system_form/{paymentSystemName}", name="client_payment_system_form")
      * @Method("GET")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
      * @Template()
-     * @param Request $request
      * @return array
      */
-    public function paymentSystemFormAction(Request $request)
+    public function paymentSystemFormAction($paymentSystemName = null)
     {
-        $paymentSystemName = $request->query->get('paymentSystemName');
         $form = $this->createForm(ClientPaymentSystemType::class, $this->clientConfig, [
             'entity' => $this->clientConfig,
             'paymentSystemName' => $paymentSystemName
@@ -219,14 +220,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $config->setMoneymail($moneymail);
                     break;
                 case 'uniteller':
-                    $uniteller = new Uniteller();
-                    $uniteller
-                        ->setUnitellerShopIDP($form->get('unitellerShopIDP')->getData())
-                        ->setUnitellerPassword($form->get('unitellerPassword')->getData())
-                        ->setIsWithFiscalization($form->get('isUnitellerWithFiscalization')->getData())
-                        ->setTaxationRateCode($form->get('taxationRateCode')->getData())
-                        ->setTaxationSystemCode($form->get('taxationSystemCode')->getData());
-                    $config->setUniteller($uniteller);
+                    $config->setUniteller(UnitellerHelper::instance($form));
                     break;
                 case 'rbk':
                     $rbk = new Rbk();
@@ -254,6 +248,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                         ->setPublishableToken($form->get('stripePubToken')->getData())
                         ->setSecretKey($form->get('stripeSecretKey')->getData());
                     $config->setStripe($stripe);
+                    break;
+                case 'newRbk':
+                    $config->setNewRbk(NewRbkHelper::instance($form));
                     break;
                 default:
                     throw new Exception('Incorrect name of payment system!');

@@ -25,6 +25,10 @@ services:
         tags:
             {name: form.type}
 
+    mbh.online.search_order:
+        class: MBH\Bundle\OnlineBundle\Lib\SearchForm
+        arguments: ['@service_container']
+
     mbh.payment_types_type:
         class: MBH\Bundle\OnlineBundle\Form\PaymentTypesType
         arguments: ['%mbh.online.form%']

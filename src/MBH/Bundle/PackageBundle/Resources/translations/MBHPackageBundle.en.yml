@@ -466,3 +466,4 @@ dynamic.sales.day.sum-paid-to-clients-for-period-for-removed: 'Recervations canc
 dynamic.sales.show.title: 'Categories displayed'
 views.report.polls.select_button.title: Apply
 dynamic_sales.modal.close_button.text: Close
+package.edit.package_price: 'Accommodation price'

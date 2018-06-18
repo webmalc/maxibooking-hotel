@@ -19,8 +19,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class FormConfig extends Base
+class FormConfig extends Base implements DecorationInterface, DecorationDataInterface
 {
+    use DecorationTrait;
+    use DecorationDataTrait;
+
     const paymentTypesList = [
         "in_hotel",
         "in_office",
@@ -31,30 +34,6 @@ class FormConfig extends Base
         "by_receipt_full",
         "by_receipt_first_day",
         "by_receipt_half"
-    ];
-
-    const THEMES = [
-        "cerulean" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css",
-        "cosmo" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css",
-        "cyborg" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cyborg/bootstrap.min.css",
-        "darkly" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/darkly/bootstrap.min.css",
-        "flatly" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css",
-        "journal" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/journal/bootstrap.min.css",
-        "lumen" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/lumen/bootstrap.min.css",
-        "paper" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css",
-        "readable" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css",
-        "sandstone" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/sandstone/bootstrap.min.css",
-        "simplex" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/simplex/bootstrap.min.css",
-        "slate" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/slate/bootstrap.min.css",
-        "spacelab" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/spacelab/bootstrap.min.css",
-        "superhero" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/superhero/bootstrap.min.css",
-        "united" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/united/bootstrap.min.css",
-        "yeti" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css",
-        "bootstrap" => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
-    ];
-
-    const CSS_LIBRARIES = [
-        "font_awesome" => "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
     ];
 
     /**
@@ -141,13 +120,6 @@ class FormConfig extends Base
      * @Assert\Choice(callback = "getPaymentTypesList", multiple = true)
      */
     protected $paymentTypes = [];
-    
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     */
-    protected $css;
 
     /**
      * @var string
@@ -164,15 +136,7 @@ class FormConfig extends Base
      * @ODM\Field(type="string")
      */
     protected $resultsUrl;
-    
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     * @Assert\Choice(callback = "getThemes")
-     */
-    protected $theme;
-    
+
     /**
      * @var int
      * @Gedmo\Versioned
@@ -215,55 +179,6 @@ class FormConfig extends Base
      * @Assert\NotNull()
      */
     private $requestPatronymic = false;
-
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Field(type="int")
-     * @Assert\NotNull()
-     * @Assert\Type(type="numeric")
-     */
-    private $frameWidth = 300;
-
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Field(type="int")
-     * @Assert\NotNull()
-     * @Assert\Type(type="numeric")
-     */
-    private $frameHeight = 400;
-
-    /**
-     * @var bool
-     * @ODM\Field(type="bool")
-     * @Assert\Type(type="bool")
-     */
-    private $isFullWidth = false;
-
-    /**
-     * @var string
-     * @ODM\Field(type="string")
-     * @Assert\Type(type="string")
-     * @Assert\Length(
-     *     max=65536
-     * )
-     */
-    private $formTemplate;
-
-    /**
-     * @var array
-     * @Gedmo\Versioned
-     * @ODM\Collection
-          * @Assert\Choice(callback = "getCssLibrariesList", multiple = true)
-     */
-    private $cssLibraries;
-
-    /**
-     * @var bool
-     * @ODM\Field(type="boolean")
-     */
-    private $isHorizontal = false;
 
     /**
      * @var GoogleAnalyticConfig
@@ -398,25 +313,6 @@ class FormConfig extends Base
     }
 
     /**
-     * @return bool
-     */
-    public function isHorizontal(): ?bool
-    {
-        return $this->isHorizontal;
-    }
-
-    /**
-     * @param bool $isHorizontal
-     * @return FormConfig
-     */
-    public function setIsHorizontal(bool $isHorizontal): FormConfig
-    {
-        $this->isHorizontal = $isHorizontal;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getJs(): ?string
@@ -431,63 +327,6 @@ class FormConfig extends Base
     public function setJs(string $js = null): FormConfig
     {
         $this->js = $js;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isFullWidth(): bool
-    {
-        return $this->isFullWidth;
-    }
-
-    /**
-     * @param bool $isFullWidth
-     * @return FormConfig
-     */
-    public function setIsFullWidth(bool $isFullWidth): FormConfig
-    {
-        $this->isFullWidth = $isFullWidth;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getFrameWidth(): int
-    {
-        return $this->frameWidth;
-    }
-
-    /**
-     * @param int $frameWidth
-     * @return FormConfig
-     */
-    public function setFrameWidth(int $frameWidth): FormConfig
-    {
-        $this->frameWidth = $frameWidth;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getFrameHeight(): int
-    {
-        return $this->frameHeight;
-    }
-
-    /**
-     * @param int $frameHeight
-     * @return FormConfig
-     */
-    public function setFrameHeight(int $frameHeight): FormConfig
-    {
-        $this->frameHeight = $frameHeight;
 
         return $this;
     }
@@ -548,19 +387,6 @@ class FormConfig extends Base
     public static function getPaymentTypesList()
     {
         return self::paymentTypesList;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getThemes()
-    {
-        return self::THEMES;
-    }
-
-    public static function getCssLibrariesList()
-    {
-        return self::CSS_LIBRARIES;
     }
 
     /**
@@ -713,43 +539,8 @@ class FormConfig extends Base
         $this->roomTypeChoices = $roomTypeChoices;
         return $this;
     }
+
     
-    /**
-     * @return string
-     */
-    public function getCss(): ?string
-    {
-        return $this->css;
-    }
-
-    /**
-     * @param string $css
-     * @return FormConfig
-     */
-    public function setCss(string $css = null)
-    {
-        $this->css = $css;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTheme(): ?string
-    {
-        return $this->theme;
-    }
-
-    /**
-     * @param string $theme
-     * @return FormConfig
-     */
-    public function setTheme(string $theme = null)
-    {
-        $this->theme = $theme;
-        return $this;
-    }
-
     /**
      * If form config is used for api, results url contains only domain address
      * @param bool $forResultsPage
@@ -767,47 +558,9 @@ class FormConfig extends Base
     public function setResultsUrl(string $resultsUrl = null)
     {
         $this->resultsUrl = $resultsUrl;
-
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getFormTemplate(): ?string
-    {
-        return $this->formTemplate;
-    }
-
-    /**
-     * @param string $formTemplate
-     * @return FormConfig
-     */
-    public function setFormTemplate(string $formTemplate = null): FormConfig
-    {
-        $this->formTemplate = $formTemplate;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCssLibraries()
-    {
-        return $this->cssLibraries;
-    }
-
-    /**
-     * @param array $cssLibraries
-     * @return FormConfig
-     */
-    public function setCssLibraries(array $cssLibraries = null): FormConfig
-    {
-        $this->cssLibraries = $cssLibraries;
-
-        return $this;
-    }
 
     /**
      * @return bool

@@ -38,19 +38,21 @@
             <div class="panel-body">
                 <div id="mbh-date-error" class="hide"><i class="fa fa-exclamation-circle"></i> {{ 'views.form.period_is_not_filled'|trans({}, 'MBHOnlineBundle') }}</div>
                 {% set code1  = '<div id="mbh-results-wrapper"><a href="https://maxi-booking.com/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
-                {% set code2  = '<script>var mbhResults = {results_url: "' ~ url('online_form_results_iframe', {formId: config.id}) ~ '"};'
-                    ~ (useYaMetrtics ? ('var yaCounterId = "' ~ config.yandexAnalyticConfig.id))
-                    ~ (useGoogleAnalytic ? ('"; var googleCounterId = "' ~ config.googleAnalyticConfig.id))
-                    ~ '"</script>' %}
-                {% set code3  = '<script src="' ~ absolute_url('/bundles/mbhonline/js/online/load-results.js') ~'"></script>' %}
+                {% set code4 %}
+                    <script src="{{ url('online_form_load_result_file', {configId: config.id}) }}"></script>
+                {% endset %}
 
                 <div class="row spacer-bottom">
                     <div class="col-md-3"><small>{{ 'views.form.index.to_results_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
                     <div class="col-md-9"><span class="text-success">{{ code1 }}</span></div>
                 </div>
                 <div class="row spacer-bottom">
-                    <div class="col-md-3"><small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small></div>
-                    <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}</span></div>
+                    <div class="col-md-3">
+                        <small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small>
+                    </div>
+                    <div class="col-md-9">
+                        <span class="text-success">{{ code4|escape }}</span>
+                    </div>
                 </div>
             </div>
         </div>

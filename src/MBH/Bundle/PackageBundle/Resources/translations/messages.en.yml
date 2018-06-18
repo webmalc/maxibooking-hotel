@@ -1305,3 +1305,5 @@ sales_channels_report.data_types.sum: 'Cost of reservations'
 sales_channels_report.data_types.man-day: Person/days
 sales_channels_report.in_percents.title: 'In percents?'
 sales_channels_report_compiler.without_source: 'No source'
+csv.form.price: Cost
+csv.form.package_services_price: 'Services price'

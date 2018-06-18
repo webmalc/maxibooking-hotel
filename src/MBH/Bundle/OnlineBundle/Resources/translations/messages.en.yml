@@ -121,4 +121,27 @@ external_api_controller.online_form_config.not_enabled: 'This online form is una
 external_api_controller.field_must_be_type_of_array: '"%field%" must be an array data structure'
 external_api_controller.online_form_config.not_found: 'Online form with ID = "%formId%" does not exist'
 external_api_controller.missing_fields.error: 'Mondatory field "%field%" missing'
+form.payment.formType.enabledReCaptcha: 'Use reCaptcha?'
+form.payment.formType.fieldUserNameIsVisible: 'Use for search extra fields?'
+form.online.order_search.numberOrder: 'Number order'
+form.online.order_search.phoneOrEmail: 'Phone or Email'
+form.online.order_search.userName: 'Last Name'
+form.payment.formType.enabledReCaptcha.help: ''
+form.payment.formType.fieldUserNameIsVisible.help: ''
+form.online.order_search.button_search: 'Find order'
 site_manager.photos_tab: Photos
+analytics_form.is_enabled.label: 'Enabled?'
+site_form.hotels.hotel_data: 'Hotel description'
+site_form.hotels.label: Hotel
+site_form.contract.label: Contract
+site_form.key_words.label: Tags
+site_form.is_enabled.label: 'Enabled?'
+views.mb_site.index.main_settings: Settings
+views.mb_site.title: Website
+views.mb_site.hotel_settings.empty_fields_error: 'Required fields are not filled: %fields%'
+site_form.pers_data_policy.label: 'Privacy Policy'
+site_form.hotels.help: 'Hotels shown on the site'
+mb_site_controller.site_config_saved: 'Settings successfully saved!'
+site_manager.mandatory_field_empty.error: 'The field "%fieldTitle%"  must be filled, since it is used on the website'
+analytics_form.google_id.label: 'Tracking ID'
+analytics_form.yandex_id.label: 'Counter number'

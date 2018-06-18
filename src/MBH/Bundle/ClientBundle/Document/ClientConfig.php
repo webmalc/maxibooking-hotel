@@ -11,6 +11,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -163,6 +164,12 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="Stripe")
      */
     protected $stripe;
+
+    /**
+     * @var NewRbk
+     * @ODM\EmbedOne(targetDocument="NewRbk")
+     */
+    protected $newRbk;
 
     /**
      * @var string
@@ -328,6 +335,22 @@ class ClientConfig extends Base
         $this->isCacheValid = $isCacheValid;
 
         return $this;
+    }
+
+    /**
+     * @return NewRbk
+     */
+    public function getNewRbk(): ?NewRbk
+    {
+        return $this->newRbk;
+    }
+
+    /**
+     * @param NewRbk $newRbk
+     */
+    public function setNewRbk(NewRbk $newRbk): void
+    {
+        $this->newRbk = $newRbk;
     }
 
     /**
@@ -788,14 +811,14 @@ class ClientConfig extends Base
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request, $paymentSystemName)
+    public function checkRequest(Request $request, $paymentSystemName, ClientConfig $config)
     {
         $doc = $this->getPaymentSystemDocByName($paymentSystemName);
         if (!$doc) {
-            return false;
+            return new CheckResultHolder();
         }
 
-        return $doc->checkRequest($request);
+        return $doc->checkRequest($request, $config);
     }
 
     /**

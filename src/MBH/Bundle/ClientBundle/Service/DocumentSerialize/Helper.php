@@ -31,7 +31,7 @@ class Helper
         } elseif ($obj instanceof OrganizationBase) {
             return $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Organization')->newInstance($obj);
         } else {
-            throw new \LogicException('can not be');
+            return null;
         }
     }
 

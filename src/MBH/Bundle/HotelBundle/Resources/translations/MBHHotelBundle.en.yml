@@ -138,3 +138,4 @@ views.hotel.images.editing_number: 'Editing #'
 mbhhotelbundle.view.hotel.index.da: 'Yes'
 views.hotel.tabs.images: Photos
 views.hotel.tabs.contact_info: 'Contact info'
+views.facility.list.title: Amenities

@@ -145,3 +145,6 @@ view.myallocator.tariff.need_fill_main_settings: 'Please fill in main settings f
 package_info.expedia.promoName: '%dateString% on sale:'
 view.myallocator.index.remove_user: 'Delete the user'
 view.myallocator.layout.additional_channels: 'Extra channels'
+booking_rooms_type.room_type.label: 'Room type'
+booking_rooms_type.single_prices.label: 'Single accommodation'
+booking_rooms_type.single_prices.help: 'Upload the price for single accommodation?'

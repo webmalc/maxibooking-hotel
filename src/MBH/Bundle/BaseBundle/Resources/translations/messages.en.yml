@@ -178,9 +178,9 @@ menu.settings.label.hotels: Hotels
 menu.settings.label.housing: Wings
 menu.settings.label.room_types: Rooms
 menu.settings.label.restaurant: Restaurant
-menu.settings.label.restaurant.ingredients: 'Restaurant - Ingredients'
+menu.settings.label.restaurant.ingredients: Ingredients
 menu.settings.label.restaurant.dishmenu: 'Restaurant menu'
-menu.settings.label.restaurant.tables: 'Restaurant - Tables'
+menu.settings.label.restaurant.tables: Tables
 menu.configs.config: Settings
 menu.configs.users: Users
 menu.configs.groups: Groups
@@ -192,6 +192,7 @@ menu.configs.warehouse: Stock
 menu.communication.label: Interactions
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.onlineform: 'Web module'
+menu.communication.label.online_payment_form: 'Payment module'
 menu.communication.label.polls: Ratings
 menu.communication.label.invite: 'Visa invitation'
 menu.communication.label.hundred_one_hotels: '101 Hotel'
@@ -415,8 +416,8 @@ security.two_factor.code: 'Login password'
 mailer.recipient.empty.email: 'Recipient email is empty %guest%'
 exception.relation_delete.message.task: 'Cannot be deleted. This type contains existing tasks (%total%)'
 cancel: Cancel
-portrait: Portrait
-landscape: Landscape
+portrait: Landscape
+landscape: Portrait
 age.full: year|year|years
 children: child|child|children
 days: day|day|days
@@ -604,13 +605,13 @@ mbhbasebundle.views.mailer.rb: children
 mbh.hotel.themes.ecological: Eco
 mbh.hotel.themes.haute_cuisine: 'Exquisite cuisine'
 mbh.hotel.themes.spa: SPA/Wellness
-currency.rub.text: dollar
+currency.rub.text: RUR
 mbh.package.arrivals.work: Work
 mbh.package.arrivals.service: Official
 mbh.services.calcTypes.day_percent: 'Per service (% from 1 night price)'
-currency.rub.small: cent
+currency.rub.small: kop.
 mbh.package.arrivals.study: Study
-currency.uah.small: cent
+currency.uah.small: kop.
 mbh.cash.operations.out: Expense
 mbh.cash.operations.in: Receipt
 mbh.task.statuses.closed.title: Closed
@@ -622,7 +623,7 @@ mbh.package.arrivals.private: Private
 mbh.services.calcTypes.not_applicable: 'Per service'
 mbh.package.arrivals.business: Work
 mbh.package.arrivals.tourism: Tourism
-currency.uah.text: dollar
+currency.uah.text: UAH
 mbh.package.statuses.online.title: Online
 mbh.package.statuses.offline.title: Regular
 mbh.weekdays.fri: Friday
@@ -633,8 +634,8 @@ mbh.weekdays.wed: Wednesday
 mbh.weekdays.tue: Tuesday
 mbh.weekdays.mon: Monday
 mbh.weekdays.sun: Sunday
-currency.kzt.small: ¢
-currency.kzt.text: $
+currency.kzt.small: tiyin
+currency.kzt.text: KZT
 mbh.package.arrivals.humanitarian: Humanitarian
 mbh.mailer.subject.text: 'Messages from MaxiBooking'
 mbh.services.calcTypes.per_stay: 'For the whole stay'
@@ -711,3 +712,16 @@ support_modal.sandbox_button.text: Demo-version
 support_modal.phones: Contacts
 welcome_modal.password: password
 welcome_modal.login: login
+languages.de: German
+languages.fr: French
+currency.uzs.small: tiyin
+languages.tr: Turkish
+menu.communication.label.mb_site: Website
+currency.uzs.text: UZS
+languages.gr: Greek
+notifier.config.label.error: Errors
+exception.relation_delete.document_already_deleted: 'Document is already deleted!'
+exception.tariff_relation_delete.message.mergingTariff: 'You can not delete a rate as it is used as a combination rate (%total%).'
+form.facilitiesType.help: 'To change the description of amenities, go here <a target="_blank" href="%href%"> link </a>'
+menu.communication.label.site_settings: 'Website settings'
+notifier.config.title.error: 'Error notifications'
