@@ -204,19 +204,13 @@ class ClientManager
         if (is_null($dataReceiptTime)|| !$config->isCacheValid()
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
-            try {
-                /** @var Client $client */
-                $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
-                $this->clientConfigManager->changeCacheValidity(false);
-            } catch (\Exception $exception) {
-                $client = $this->session->get(self::SESSION_CLIENT_FIELD);
-                $this->logger->err($exception->getMessage());
-            } finally {
-                if (!isset($client) || !$client instanceof Client) {
-                    throw new NotFoundHttpException('Can not get client with login "' . $this->client . '"');
-                }
-                $this->updateSessionClientData($client, $currentDateTime);
+            /** @var Client $client */
+            $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
+            $this->clientConfigManager->changeCacheValidity(false);
+            if (!isset($client) || !$client instanceof Client) {
+                throw new NotFoundHttpException('Can not get client with login "' . $this->client . '"');
             }
+            $this->updateSessionClientData($client, $currentDateTime);
         } else {
             $client = $this->session->get(self::SESSION_CLIENT_FIELD);
         }

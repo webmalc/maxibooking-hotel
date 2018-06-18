@@ -44,22 +44,22 @@ class MBSiteController extends BaseController
 
                 $client = $this->get('mbh.client_manager')->getClient();
                 $isSuccess = true;
-//                if ($config->getSiteDomain() !== $client->getWebsiteUrl()
-//                    || $config->getIsEnabled() !== $client->getIsWebSiteEnabled()) {
-//                    $client
-//                        ->setIsWebSiteEnabled($config->getIsEnabled())
-//                        ->setWebsiteUrl($config->getSiteDomain());
-//                    $updateResult = $this->get('mbh.billing.api')->updateClient($client);
-//                    if (!$updateResult->isSuccessful()) {
-//                        if (isset($updateResult->getErrors()['website']['url'])) {
-//                            foreach ($updateResult->getErrors()['website']['url'] as $error) {
-//                                $form->get('siteDomain')->addError(new FormError($error));
-//                            }
-//                        } else {
-//                            throw new \UnexpectedValueException();
-//                        }
-//                    }
-//                }
+                if ($config->getSiteDomain() !== $client->getWebsiteUrl()
+                    || $config->getIsEnabled() !== $client->getIsWebSiteEnabled()) {
+                    $client
+                        ->setIsWebSiteEnabled($config->getIsEnabled())
+                        ->setWebsiteUrl($siteManager->getSiteAddress($config->getSiteDomain()));
+                    $updateResult = $this->get('mbh.billing.api')->updateClient($client);
+                    if (!$updateResult->isSuccessful()) {
+                        if (isset($updateResult->getErrors()['website']['url'])) {
+                            foreach ($updateResult->getErrors()['website']['url'] as $error) {
+                                $form->get('siteDomain')->addError(new FormError($error));
+                            }
+                        } else {
+                            throw new \UnexpectedValueException();
+                        }
+                    }
+                }
 
                 if ($isSuccess) {
                     $siteManager->updateSiteFormConfig($config, $formConfig, $request->get($form->getName())['paymentTypes']);

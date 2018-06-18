@@ -12,7 +12,6 @@ use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class SiteManager
@@ -197,9 +196,12 @@ class SiteManager
         }
     }
 
+    /**
+     * @param string $siteDomain
+     * @return string
+     */
     public function getSiteAddress(string $siteDomain)
     {
-        //TODO: Реализовать в зависимости от того как будет формироваться адрес
-        return 'http://localhost:4200';
+        return self::SITE_PROTOCOL . $siteDomain . self::SITE_DOMAIN;
     }
 }
