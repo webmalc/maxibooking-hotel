@@ -47,6 +47,7 @@ class SearchController extends Controller
 
 
         $search = $this->get('mbh_search.search');
+        $search->setAsyncQueriesChunk(200);
         $holderId = $search->searchAsync($data);
 //        $holderId = [];
 //        $finded = $search->searchSync($data);
@@ -86,9 +87,6 @@ class SearchController extends Controller
      *      name="search_start_json",
      *      condition="request.headers.get('Content-Type') matches '/application\\/json/i'"
      *     )
-     * @param Request $request
-     * @return Response
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
      */
     public function searchRequestAction(Request $request): Response
     {

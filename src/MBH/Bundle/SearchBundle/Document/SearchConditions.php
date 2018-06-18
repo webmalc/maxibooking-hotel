@@ -129,15 +129,31 @@ class SearchConditions extends Base
 
     /** @var bool
      * @Assert\Type(type="bool")
+     * @ODM\Field(type="bool")
      *
      */
     private $isIgnoreRestrictions = false;
 
-    /** @var bool  */
+    /**
+     * @var bool
+     * @Assert\Type(type="bool")
+     * @ODM\Field(type="bool")
+     */
     private $isForceBooking = false;
 
-    /** @var string */
+    /**
+     * @var string
+     * @Assert\Type(type="string")
+     * @ODM\Field(type="string")
+     */
     private $searchHash = '';
+
+    /**
+     * @var int
+     * @Assert\Type(type="int")
+     * @ODM\Field(type="int")
+     */
+    private $expectedResultsCount = 0;
 
     /**
      * SearchConditions constructor.
@@ -426,6 +442,27 @@ class SearchConditions extends Base
     {
         return $this->searchHash;
     }
+
+    /**
+     * @return int
+     */
+    public function getExpectedResultsCount(): int
+    {
+        return $this->expectedResultsCount;
+    }
+
+    /**
+     * @param int $expectedResultsCount
+     * @return SearchConditions
+     */
+    public function setExpectedResultsCount(int $expectedResultsCount): SearchConditions
+    {
+        $this->expectedResultsCount = $expectedResultsCount;
+
+        return $this;
+    }
+
+
 
     /**
      * @param string $searchHash

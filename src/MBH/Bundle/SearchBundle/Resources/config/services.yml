@@ -173,4 +173,4 @@ services:
 
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
-        arguments: ['@mbh_search.searcher', '@mbh_search.search_result_holder_repository']
+        arguments: ['@mbh_search.searcher', '@mbh_search.search_conditions_repository']

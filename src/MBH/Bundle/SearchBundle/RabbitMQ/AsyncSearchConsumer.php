@@ -4,9 +4,9 @@
 namespace MBH\Bundle\SearchBundle\RabbitMQ;
 
 
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
-use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
-use MBH\Bundle\SearchBundle\Document\SearchResultHolderRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncSearchConsumerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
@@ -20,42 +20,46 @@ class AsyncSearchConsumer implements ConsumerInterface
     /** @var Searcher */
     private $searcher;
 
-    /** @var SearchResultHolderRepository */
-    private $holderRepository;
+    /** @var SearchConditionsRepository */
+    private $conditionsRepository;
 
     /**
      * AsyncSearchConsumer constructor.
      * @param Searcher $searcher
-     * @param SearchResultHolderRepository $holderRepository
+     * @param SearchConditionsRepository $conditionsRepository
      */
-    public function __construct(Searcher $searcher, SearchResultHolderRepository $holderRepository)
+    public function __construct(Searcher $searcher, SearchConditionsRepository $conditionsRepository)
     {
         $this->searcher = $searcher;
-        $this->holderRepository = $holderRepository;
+        $this->conditionsRepository = $conditionsRepository;
     }
 
 
     public function execute(AMQPMessage $msg)
     {
         $body = json_decode($msg->getBody(), true);
-        $holderId = $body['holderId'];
-        $searchQuery = unserialize($body['searchQuery'], [SearchQuery::class => true]);
+        $conditionsId = $body['conditionsId'];
+        $searchQueries = unserialize($body['searchQueries'], [SearchQuery::class => true]);
 
-        /** @var SearchResultHolder $holder */
-        $holder = $this->holderRepository->find($holderId);
-        if (!$holder || ! $conditions = $holder->getSearchConditions()) {
-            throw new AsyncSearchConsumerException('Error! Can not find holder for search');
+        /** @var SearchConditions $conditions */
+        $conditions = $this->conditionsRepository->find($conditionsId);
+        if (!$conditions ) {
+            throw new AsyncSearchConsumerException('Error! Can not find SearchConditions for search');
         }
-        /** @var SearchQuery $searchQuery */
-        $searchQuery->setSearchConditions($conditions);
-        try {
-            $result = $this->searcher->search($searchQuery);
-        } catch (SearchException $exception) {
-            $result = SearchResult::createErrorResult($exception);
+        $dm = $this->conditionsRepository->getDocumentManager();
+        foreach ($searchQueries as $searchQuery) {
+            /** @var SearchQuery $searchQuery */
+            $searchQuery->setSearchConditions($conditions);
+            try {
+                $result = $this->searcher->search($searchQuery);
+            } catch (SearchException $exception) {
+                $result = SearchResult::createErrorResult($exception);
+            }
+
+            $dm->persist($result);
+            $dm->flush($result);
         }
 
-        $holder->addSearchResult($result);
-        $this->holderRepository->getDocumentManager()->flush();
     }
 
 }

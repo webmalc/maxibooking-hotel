@@ -11,6 +11,7 @@ use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
+use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
@@ -47,20 +48,22 @@ class SearchTest extends SearchWebTestCase
     public function testSearchAsync(iterable $data): void
     {
         $producer = $this->createMock(Producer::class);
-        $producer->expects($this->exactly(8))->method('publish');
+        $producer->expects($this->exactly(4))->method('publish')->willReturnCallback(function (string $message) {
+            $msg = json_decode($message, true);
+            $this->assertNotEmpty($msg['conditionsId']);
+            $this->assertContainsOnlyInstancesOf(SearchQuery::class, unserialize($msg['searchQueries']));
+        });
         $this->getContainer()->set('old_sound_rabbit_mq.async_search_producer', $producer);
         $conditionData = $this->createConditionData($data);
         $search = $this->getContainer()->get('mbh_search.search');
         /** @var SearchResultHolder $actual */
         $actual = $search->searchAsync($conditionData);
+
         $this->dm->clear();
-        $holder = $this->dm->find(SearchResultHolder::class, $actual);
-        $this->assertInstanceOf(SearchResultHolder::class, $holder);
-        $conditions = $holder->getSearchConditions();
+        $conditions = $this->dm->find(SearchConditions::class, $actual);
         $this->assertInstanceOf(SearchConditions::class, $conditions);
         $this->assertNotNull($conditions->getSearchHash());
-        $this->assertEquals('async', $holder->getType());
-        $this->assertSame(8, $holder->getExpectedResultsCount());
+        $this->assertSame(8, $conditions->getExpectedResultsCount());
     }
 
     public function syncDataProvider()
