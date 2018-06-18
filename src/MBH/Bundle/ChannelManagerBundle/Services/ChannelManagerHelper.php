@@ -98,6 +98,7 @@ class ChannelManagerHelper
      * @param array $comparePropertyMethods Массив имен методов, используемых для сравнения переданных сущностей
      * @param string $dateFormat
      * @return array
+     * @throws \Exception
      */
     public function getPeriodsFromDayEntities(
         \DateTime $begin,
@@ -109,7 +110,7 @@ class ChannelManagerHelper
         $periods = [];
         $currentPeriod = null;
 
-        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+1 day')) as $day) {
             /** @var \DateTime $day */
             $dayString = $day->format($dateFormat);
             $dateEntity = isset($entitiesByDates[$dayString]) ? $entitiesByDates[$dayString] : null;

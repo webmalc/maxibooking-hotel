@@ -270,7 +270,7 @@ class MyAllocator extends Base
             );
 
             foreach ($roomTypes as $roomTypeId => $roomType) {
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
                         $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
                         $allocations[] = [
@@ -337,7 +337,7 @@ class MyAllocator extends Base
 
                 $roomTypeId = $this->getRoomTypeArray($roomType['doc'])[0];
 
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                             $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
@@ -404,7 +404,7 @@ class MyAllocator extends Base
                 true
             );
             foreach ($roomTypes as $roomTypeId => $roomType) {
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
 
                         if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
