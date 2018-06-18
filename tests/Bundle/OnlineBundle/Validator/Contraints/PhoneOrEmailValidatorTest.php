@@ -47,6 +47,7 @@ class PhoneOrEmailValidatorTest extends ValidatorTestCase
     public function getInvalidString(): array
     {
         return [
+            [''],
             ['maxi@maxi'],
             ['@ya.ru'],
             ['exampleexample.co.uk'],
