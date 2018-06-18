@@ -69,11 +69,12 @@ class SiteForm extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
             ])
-            ->add('contract', TextareaType::class, [
-                'label' => 'site_form.contract.label',
-                'attr' => ['class' => 'tinymce'],
-                'required' => false
-            ])
+//            ->add('contract', TextareaType::class, [
+//                'label' => 'site_form.contract.label',
+//                'attr' => ['class' => 'tinymce'],
+//                'required' => false,
+//                'help' => 'sdfasdfasdf'
+//            ])
             ->add('personalDataPolicies', TextareaType::class, [
                 'label' => 'site_form.pers_data_policy.label',
                 'attr' => ['class' => 'tinymce'],
