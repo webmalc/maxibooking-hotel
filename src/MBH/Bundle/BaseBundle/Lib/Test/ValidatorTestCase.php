@@ -49,7 +49,7 @@ abstract class ValidatorTestCase extends TestCase
         $this->assertViolation(1);
     }
 
-    private function assertViolation(int $amountViolations)
+    protected function assertViolation(int $amountViolations)
     {
         $this->assertSame(
             $amountViolations,
