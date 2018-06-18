@@ -53,7 +53,7 @@ class AsyncSearchConsumer implements ConsumerInterface
             try {
                 $result = $this->searcher->search($searchQuery);
             } catch (SearchException $exception) {
-                $result = SearchResult::createErrorResult($exception);
+                $result = SearchResult::createErrorResult($exception)->setQueryId($conditions->getId());
             }
 
             $dm->persist($result);

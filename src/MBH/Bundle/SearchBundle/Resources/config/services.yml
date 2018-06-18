@@ -140,6 +140,12 @@ services:
         arguments:
             - MBH\Bundle\SearchBundle\Document\SearchResultHolder
 
+    mbh_search.search_result_repository:
+        class: MBH\Bundle\SearchBundle\Document\SearchResultRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\SearchBundle\Document\SearchResult
+
 # Для теста - калькуляции - брал текущую.
 #    mbh_search.result_composer:
 #        class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
@@ -174,3 +180,7 @@ services:
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
         arguments: ['@mbh_search.searcher', '@mbh_search.search_conditions_repository']
+
+    mbh__search.async_result_receiver:
+        class: MBH\Bundle\SearchBundle\Services\AsyncResultReceiver
+        arguments: ['@mbh_search.search_result_repository', '@mbh_search.search_result_holder_repository']

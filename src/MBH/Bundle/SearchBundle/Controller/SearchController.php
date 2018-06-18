@@ -2,12 +2,14 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
+use Doctrine\DBAL\Query\QueryBuilder;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchResult;
+use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
+use MBH\Bundle\SearchBundle\Document\SearchResultRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\ExpectedResult;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,11 +38,11 @@ class SearchController extends Controller
         $stopwatch->start('searchTime');
 
         $data = array (
-            'begin' => '13.08.2018',
-            'end' => '3.09.2018',
+            'begin' => '10.09.2018',
+            'end' => '24.09.2018',
             'adults' => 2,
             'children' => 0,
-            'additionalBegin' => 1,
+            'additionalBegin' => 0,
             'roomTypes' => [],
             'tariffs' => []
         );
@@ -108,14 +110,12 @@ class SearchController extends Controller
             $result
                 ->setStatus('ok')
                 ->setQueryHash($search->getSearchHash())
-                ->setExpectedResults($search->getSearchCount())
-            ;
+                ->setExpectedResults($search->getSearchCount());
         } catch (SearchQueryGeneratorException $e) {
             $result
                 ->setStatus('error')
                 ->setErrorMessage($e->getMessage())
-                ->setExpectedResults(0)
-            ;
+                ->setExpectedResults(0);
         }
 
         $searchDone = $stopwatch->stop('searchTime');
@@ -126,18 +126,20 @@ class SearchController extends Controller
 //            $serializer->serialize($result, 'json'),
 //            Response::HTTP_OK,
 //            ['Content-Type' => 'application/json']
-//        );
+//        );1
     }
+        /**
+         * @Route("/results/{id}" , name="search_results")
+         * @param SearchConditions $conditions
+         * @return JsonResponse
+         */
+    public function getAsyncResults(SearchConditions $conditions)
+    {
+        if (!$conditions) {
+            return new JsonResponse(['status' => 'error']);
+        }
 
-    /**
-     * @Route("/results/{hash}", name="search_get_results")
-     */
-    public
-    function searchResponseAction(
-        Request $request
-    ) {
-        $result = ['search_result' => 5];
 
-        return new JsonResponse($result);
+
     }
 }

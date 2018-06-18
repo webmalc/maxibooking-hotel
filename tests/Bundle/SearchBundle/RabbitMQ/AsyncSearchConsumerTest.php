@@ -58,14 +58,16 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
         $message->expects($this->once())->method('getBody')->willReturn(json_encode($body));
 
         $searchConditions = $this->createMock(SearchConditions::class);
+        $searchConditions->expects($this->any())->method('getId')->willReturn($body['conditionsId']);
 
         $dm = $this->createMock(DocumentManager::class);
         $exceptionMessage = 'Not found message';
-        $dm->expects($this->exactly(2))->method('persist')->willReturnCallback(function ($searchResult) use ($exceptionMessage) {
+        $dm->expects($this->exactly(2))->method('persist')->willReturnCallback(function ($searchResult) use ($exceptionMessage, $body) {
             /** @var SearchResult $searchResult */
             $this->assertInstanceOf(SearchResult::class, $searchResult);
             $this->assertEquals('error', $searchResult->getStatus());
             $this->assertEquals($exceptionMessage, $searchResult->getError());
+            $this->assertEquals($body['conditionsId'],$searchResult->getQueryId());
         } );
         $dm->expects($this->exactly(2))->method('flush')->willReturnCallback(function ($searchResult) {
             $this->assertInstanceOf(SearchResult::class, $searchResult);
@@ -79,9 +81,6 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
 
         $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository);
         $consumer->execute($message);
-
-
-
     }
 
     public function testExecuteException(): void

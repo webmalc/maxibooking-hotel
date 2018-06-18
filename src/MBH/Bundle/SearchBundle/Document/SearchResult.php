@@ -82,7 +82,7 @@ class SearchResult extends Base
 
     /**
      * @var Room
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room", cascade={"persist"})
      */
     protected $virtualRoom;
 

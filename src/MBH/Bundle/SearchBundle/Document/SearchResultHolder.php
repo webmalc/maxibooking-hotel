@@ -17,62 +17,41 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SearchResultHolder extends Base
 {
     /**
-     * @var int
+     * @var array
      * @Assert\NotNull()
-     * @Assert\Type(type="integer")
-     * @Assert\Range(min=0)
-     * @ODM\Field(type="int")
+     * @ODM\Field(type="collection")
      */
-    private $expectedResultsCount;
+    private $takenSearchResultIds = [];
 
     /**
      * @var string
-     * @Assert\Choice({"sync", "async"})
-     * @Assert\Type(type="string")
+     * @Assert\NotNull()
      * @ODM\Field(type="string")
      */
-    private $type;
+    private $searchConditionsId;
 
     /**
-     * @var ArrayCollection|SearchResult[]
-     * @ODM\ReferenceMany(targetDocument="SearchResult", cascade={"persist"})
+     * @return array
      */
-    private $searchResults;
-
-    /**
-     * @var ArrayCollection|SearchResult[]
-     * @ODM\ReferenceMany(targetDocument="SearchResult")
-     */
-    private $takenSearchResults;
-
-    /**
-     * @var SearchConditions
-     * @ODM\ReferenceOne(targetDocument="SearchConditions")
-     */
-    private $searchConditions;
-
-    public function __construct()
+    public function getTakenSearchResultIds(): array
     {
-        $this->searchResults = new ArrayCollection();
-        $this->takenSearchResults = new ArrayCollection();
-    }
-
-
-    /**
-     * @return int
-     */
-    public function getExpectedResultsCount(): int
-    {
-        return $this->expectedResultsCount;
+        return $this->takenSearchResultIds;
     }
 
     /**
-     * @param int $expectedResultsCount
+     * @param array $takenSearchResultIds
      * @return SearchResultHolder
      */
-    public function setExpectedResultsCount(int $expectedResultsCount): SearchResultHolder
+    public function setTakenSearchResultIds(array $takenSearchResultIds): SearchResultHolder
     {
-        $this->expectedResultsCount = $expectedResultsCount;
+        $this->takenSearchResultIds = $takenSearchResultIds;
+
+        return $this;
+    }
+
+    public function addTakenResultIds(array $takenSearchResultIds): SearchResultHolder
+    {
+        array_merge($this->takenSearchResultIds, $takenSearchResultIds);
 
         return $this;
     }
@@ -80,95 +59,42 @@ class SearchResultHolder extends Base
     /**
      * @return string
      */
-    public function getType(): string
+    public function getSearchConditionsId()
     {
-        return $this->type;
+        return $this->searchConditionsId;
     }
 
     /**
-     * @param string $type
+     * @param string $searchConditionsId
      * @return SearchResultHolder
      */
-    public function setType(string $type): SearchResultHolder
+    public function setSearchConditionsId(string $searchConditionsId): SearchResultHolder
     {
-        $this->type = $type;
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection|SearchResult[]
-     */
-    public function getSearchResults(): ArrayCollection
-    {
-        return $this->searchResults;
-    }
-
-    /**
-     * @param SearchResult $searchResult
-     * @return SearchResultHolder
-     */
-    public function addSearchResult(SearchResult $searchResult): SearchResultHolder
-    {
-        $this->searchResults->add($searchResult);
-
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection|SearchResult[]
-     */
-    public function getTakenSearchResults(): ArrayCollection
-    {
-        return $this->takenSearchResults;
-    }
-
-    /**
-     * @param SearchResult $takenSearchResult
-     * @return SearchResultHolder
-     */
-    public function addTakenSearchResults(SearchResult $takenSearchResult): SearchResultHolder
-    {
-        $this->takenSearchResults->add($takenSearchResult);
-
-        return $this;
-    }
-
-    /**
-     * @return SearchConditions
-     */
-    public function getSearchConditions(): ?SearchConditions
-    {
-        return $this->searchConditions;
-    }
-
-    /**
-     * @param SearchConditions $searchConditions
-     * @return SearchResultHolder
-     */
-    public function setSearchConditions(SearchConditions $searchConditions): SearchResultHolder
-    {
-        $this->searchConditions = $searchConditions;
+        $this->searchConditionsId = $searchConditionsId;
 
         return $this;
     }
 
 
 
-    public function getAsyncResults(): ?array
-    {
-        if ($this->takenSearchResults->count() === $this->expectedResultsCount) {
-            return null;
-        }
 
-        $results = array_diff($this->getSearchResults()->toArray(), $this->getTakenSearchResults()->toArray());
-        if (\count($results)) {
-            foreach ($results as $result) {
-                $this->addTakenSearchResults($result);
-            }
-        }
 
-        return $results;
-    }
+
+//    public function getAsyncResults(): ?array
+//    {
+//        if ($this->takenSearchResults->count() === $this->expectedResultsCount) {
+//            return null;
+//        }
+//
+//        $results = array_diff($this->getSearchResults()->toArray(), $this->getTakenSearchResults()->toArray());
+//        if (\count($results)) {
+//            foreach ($results as $result) {
+//                $this->addTakenSearchResults($result);
+//            }
+//        }
+//
+//        return $results;
+//    }
 
 
 }
