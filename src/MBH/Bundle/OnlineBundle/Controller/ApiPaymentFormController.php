@@ -82,7 +82,7 @@ class ApiPaymentFormController extends Controller
             'formId'        => OrderSearchType::PREFIX,
             'entityId'      => $formId,
             'entity'        => $entity,
-            'referer'       => $match[1],
+            'referer'       => $match[1] ?? '*',
             'paymentSystem' => $this->getPaymentSystem(),
         ];
     }
