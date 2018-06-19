@@ -1,4 +1,4 @@
-{#{% wrapinline %}#}
+{% wrapinline %}
 {% autoescape %}
 {% include 'MBHClientBundle:PaymentSystem/newRbk:for_iframe.js.twig' %}
 var mbhIframe = {
@@ -9,11 +9,12 @@ var mbhIframe = {
         '" method="post" action="{{ url('online_form_api_newrbk_generate_invoice') }}">' +
         '<div class="form-group form-group-sm"> ' +
         '<label for="total" class="col-form-label col-form-label-sm">Cумма к оплате</label>' +
+        '<div class="form-field">' +
         '<input type="number" class="form-control input-sm" name="total" value="' + data.total + '">' +
-        '</div>' +
+        '</div></div>' +
         '<input type="hidden" name="packageId" value="' + data.packageId + '">' +
         '<div class="form-group">' +
-        '<input type="submit" value="Оплатить" class="btn btn-success btn-sm">' +
+        '<input type="submit" value="Оплатить" class="btn btn-success btn-block">' +
         '</div>'
     ;
     html += '</form>';
@@ -74,11 +75,11 @@ window.onload = function(e) {
 
   $form.change(function(e) {
     mbhIframe.updateResultDiv(false);
-  })
+  });
   
   document.addEventListener('mbh_payment_finished', function() {
     mbhIframe.updateResultDiv('success', 'Оплачено!');
-  })
+  });
 };
 {% endautoescape %}
-{#{% endwrapinline %}#}
+{% endwrapinline %}
