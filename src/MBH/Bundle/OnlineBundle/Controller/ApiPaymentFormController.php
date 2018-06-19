@@ -36,7 +36,7 @@ class ApiPaymentFormController extends Controller
 
 
     /**
-     * @Route("/file/{configId}/load.js", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
+     * @Route("/file/{configId}/load", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
      * @Cache(expires="tomorrow", public=true)
      * Template()
      */
