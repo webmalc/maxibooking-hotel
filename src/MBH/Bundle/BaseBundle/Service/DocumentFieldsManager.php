@@ -102,9 +102,7 @@ class DocumentFieldsManager
         }
 
         if ($fieldData instanceof ContactInfo) {
-            return !($this->accessor->getValue($fieldData, 'fullName')
-                && $this->accessor->getValue($fieldData, 'email')
-                && $this->accessor->getValue($fieldData, 'phoneNumber'));
+            return !($this->accessor->getValue($fieldData, 'email') && $this->accessor->getValue($fieldData, 'phoneNumber'));
         }
 
         return empty($fieldData);
