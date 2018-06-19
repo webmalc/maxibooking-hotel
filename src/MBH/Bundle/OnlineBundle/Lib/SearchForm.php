@@ -157,7 +157,7 @@ class SearchForm
                 'numberWithPrefix' => $this->getNumberOrder(),
             ]);
 
-        $result = new SearchFormResult();
+        $result = new SearchFormResult($this->container);
 
         if ($package === null) {
             return $result;

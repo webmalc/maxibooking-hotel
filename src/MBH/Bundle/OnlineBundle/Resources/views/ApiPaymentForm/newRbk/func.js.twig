@@ -8,13 +8,13 @@ var mbhIframe = {
     var html = '<form id="' + this.idFormPayment +
         '" method="post" action="{{ url('online_form_api_newrbk_generate_invoice') }}">' +
         '<div class="form-group form-group-sm"> ' +
-        '<label for="total" class="col-form-label col-form-label-sm">Cумма к оплате</label>' +
+        '<label for="total" class="col-form-label col-form-label-sm">{{ 'api.payment_form.pay_order.total' | trans }}</label>' +
         '<div class="form-field">' +
-        '<input type="number" class="form-control input-sm" name="total" value="' + data.total + '">' +
+        '<input type="number" class="form-control input-sm" name="total" value="' + data.total + '" max="' + data.total + '">' +
         '</div></div>' +
         '<input type="hidden" name="packageId" value="' + data.packageId + '">' +
         '<div class="form-group">' +
-        '<input type="submit" value="Оплатить" class="btn btn-success btn-block">' +
+        '<input type="submit" value="{{ 'api.payment_form.pay_order.submit' | trans }}" class="btn btn-success btn-block">' +
         '</div>'
     ;
     html += '</form>';

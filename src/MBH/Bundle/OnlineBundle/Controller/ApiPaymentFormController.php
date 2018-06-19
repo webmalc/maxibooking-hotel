@@ -116,7 +116,13 @@ class ApiPaymentFormController extends Controller
             $msg[] = $err->getMessage();
         }
 
-        return $this->json(['error' => $msg !== [] ? implode("<br>", $msg) : 'not valid fields']);
+        return $this->json(
+            [
+                'error' => $msg !== []
+                    ? implode("<br>", $msg)
+                    : $this->container->get('translator')->trans('api.payment_form.search.not_valid_fields')
+            ]
+        );
     }
 
     /**
