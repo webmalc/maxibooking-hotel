@@ -99,6 +99,12 @@ class Search
     }
 
 
+    /**
+     * @param array $data
+     * @return string
+     * @throws SearchConditionException
+     * @throws SearchQueryGeneratorException
+     */
     public function searchAsync(array $data): string
     {
 
@@ -128,6 +134,11 @@ class Search
     }
 
 
+    /**
+     * @param array $data
+     * @return SearchConditions
+     * @throws SearchConditionException
+     */
     private function createSearchConditions(array $data): SearchConditions
     {
         $hash = uniqid(gethostname(), true);
@@ -138,6 +149,11 @@ class Search
         return $conditions;
     }
 
+    /**
+     * @param SearchConditions $conditions
+     * @return array
+     * @throws SearchQueryGeneratorException
+     */
     private function createSearchQueries(SearchConditions $conditions): array
     {
 

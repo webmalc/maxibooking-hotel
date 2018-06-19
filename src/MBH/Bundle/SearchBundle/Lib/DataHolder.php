@@ -348,7 +348,7 @@ class DataHolder
         if (null === $accommodations) {
             $hash = $searchQuery->getSearchHash();
             $conditions = $searchQuery->getSearchConditions();
-            if (!$this->roomsGroupedByRoomType[$hash] ?? null) {
+            if (!($this->roomsGroupedByRoomType[$hash] ?? null)) {
                 $this->roomsGroupedByRoomType[$hash] = $this->getAllRoomsByRoomType();
             }
             $allAccommodations = $this->packageAccommodationRepository->getRawAccommodationByPeriod($conditions->getMaxBegin(), $conditions->getMaxEnd());

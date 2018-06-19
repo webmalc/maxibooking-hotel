@@ -51,7 +51,7 @@ class SearchResultHolder extends Base
 
     public function addTakenResultIds(array $takenSearchResultIds): SearchResultHolder
     {
-        array_merge($this->takenSearchResultIds, $takenSearchResultIds);
+        $this->takenSearchResultIds = array_merge($this->takenSearchResultIds, $takenSearchResultIds);
 
         return $this;
     }

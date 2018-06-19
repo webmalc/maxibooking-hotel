@@ -4,11 +4,11 @@
 namespace MBH\Bundle\SearchBundle\Services;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
 use MBH\Bundle\SearchBundle\Document\SearchResultHolderRepository;
 use MBH\Bundle\SearchBundle\Document\SearchResultRepository;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 
 class AsyncResultReceiver
 {
@@ -19,79 +19,55 @@ class AsyncResultReceiver
     /** @var SearchResultHolderRepository */
     private $searchResultHolderRepository;
 
-    /** @var DocumentManager */
-    private $dm;
-
     /**
      * AsyncResultReceiver constructor.
      * @param SearchResultRepository $searchResultRepository
-     * @param SearchResultHolderRepository $searchResultHolder
+     * @param SearchResultHolderRepository $searchResultHolderRepository
      */
-    public function __construct(SearchResultRepository $searchResultRepository, SearchResultHolderRepository $searchResultHolder)
+    public function __construct(SearchResultRepository $searchResultRepository, SearchResultHolderRepository $searchResultHolderRepository)
     {
         $this->searchResultRepository = $searchResultRepository;
-        $this->searchResultHolderRepository = $searchResultHolder;
-        $this->dm = $searchResultRepository->getDocumentManager();
+        $this->searchResultHolderRepository = $searchResultHolderRepository;
     }
 
 
+    /**
+     * @param SearchConditions $conditions
+     * @return array
+     * @throws AsyncResultReceiverException
+     */
     public function receive(SearchConditions $conditions): array
     {
-        $result = [];
-        $searchHolder = $this->searchResultHolderRepository->findOneBy(['conditionsId' => $conditions->getId()]);
+        $conditionsId = $conditions->getId();
+        $searchHolder = $this->searchResultHolderRepository->findOneBy(['searchConditionsId' => $conditionsId]);
         if (!$searchHolder) {
             $searchHolder = new SearchResultHolder();
-            $searchHolder->setSearchConditionsId($conditions->getId());
+            $searchHolder->setSearchConditionsId($conditionsId);
         }
 
-        /** @var SearchResultRepository $searchResultRepo */
-        $resultIds = $this->searchResultRepository
-            ->createQueryBuilder()
-            ->field('status')
-            ->equals('ok')
-            ->field('queryId')
-            ->equals($conditions->getId())
-            ->distinct('_id')
-            ->getQuery()
-            ->execute()
-            ->toArray()
-        ;
+        $takenSearchResultIds = $searchHolder->getTakenSearchResultIds();
+        if (\count($takenSearchResultIds) === $conditions->getExpectedResultsCount()) {
+            throw new AsyncResultReceiverException('All results were taken.');
+        }
 
-        $noResultIds = $this->searchResultRepository
-            ->createQueryBuilder()
-            ->field('status')
-            ->equals('error')
-            ->field('queryId')
-            ->equals($conditions->getId())
-            ->distinct('_id')
-            ->getQuery()
-            ->execute()
-            ->toArray()
-        ;
+        if (\count($takenSearchResultIds) > $conditions->getExpectedResultsCount()) {
+            throw new AsyncResultReceiverException('Some error! Taken results more than Expected!');
+        }
 
-        $alreadyTaken = $searchHolder->getTakenSearchResultIds();
+        $resultsOkIds = $this->searchResultRepository->fetchOkResultIds($conditionsId);
+        $resultsErrorIds = $this->searchResultRepository->fetchErrorResultIds($conditionsId);
 
+        $toTakeResultsOkIds = array_diff($resultsOkIds, $takenSearchResultIds);
+        $toTakeResultsErrorIds = array_diff($resultsErrorIds, $takenSearchResultIds);
+        $searchHolder->addTakenResultIds($toTakeResultsOkIds);
+        $searchHolder->addTakenResultIds($toTakeResultsErrorIds);
 
-
-        $takenResults = array_unique(array_merge($resultIds, $noResultIds));
-
-        $searchHolder->addTakenResultIds($takenResults);
-        $dm = $this->dm;
+        $dm = $this->searchResultRepository->getDocumentManager();
         $dm->persist($searchHolder);
         $dm->flush($searchHolder);
 
-//        $resIds = array_diff($searchHolder->getTakenSearchResultIds(), $resultIds);
-//        $results = $dm->getRepository(SearchResult::class)->createQueryBuilder()->field('_id')->in($resIds)->getQuery()->execute()->toArray();
-
-        /** @var QueryBuilder $qb */
-        $a = 'b';
-        return $result;
+        return  $this->searchResultRepository->fetchResultsByIds($toTakeResultsOkIds);
     }
 
-    private function getResultsOk(string $conditionsId)
-    {
 
-    }
-
-    private function
 }
