@@ -19,7 +19,7 @@ class SiteManager
     const DEFAULT_RESULTS_PAGE = '/results';
     const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies';
     const DEFAULT_BOOTSTRAP_THEME = 'cerulean';
-    const SITE_DOMAIN = '.maaxi.com';
+    const SITE_DOMAIN = '.maaaxi.com';
     const SITE_PROTOCOL = 'https://';
     const MANDATORY_FIELDS_BY_ROUTE_NAMES = [
         Hotel::class => [
