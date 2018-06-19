@@ -23,15 +23,7 @@ class TariffValidator extends ConstraintValidator
         $end = $tariff->getEnd();
 
         if (!$begin instanceof \DateTimeInterface || !$end instanceof \DateTimeInterface) {
-            $this->context->buildViolation('Field %field% should be a valid date')
-                ->setParameter(
-                    '%field%',
-                    !$begin instanceof \DateTimeInterface
-                        ? 'begin'
-                        : 'end'
-                )
-                ->addViolation();
-            return false;
+            return;
         }
 
         if ($tariff->getBegin() > $tariff->getEnd()) {

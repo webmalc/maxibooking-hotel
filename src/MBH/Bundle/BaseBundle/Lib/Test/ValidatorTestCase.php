@@ -7,12 +7,12 @@
 namespace MBH\Bundle\BaseBundle\Lib\Test;
 
 
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\ConstraintValidatorInterface;
 use Symfony\Component\Validator\Context\ExecutionContext;
 
-abstract class ValidatorTestCase extends TestCase
+abstract class ValidatorTestCase extends KernelTestCase
 {
     /**
      * @var \Symfony\Component\Validator\ConstraintValidator

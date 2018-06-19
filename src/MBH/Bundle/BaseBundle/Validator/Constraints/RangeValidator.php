@@ -24,15 +24,7 @@ class RangeValidator extends ConstraintValidator
         $secondValue = $this->extractValue($entity, $constraint->secondProperty);
 
         if (!$firstValue instanceof \DateTimeInterface || !$secondValue instanceof \DateTimeInterface) {
-            $this->context->buildViolation('Field %field% should be a valid date')
-                ->setParameter(
-                    '%field%',
-                    !$firstValue instanceof \DateTimeInterface
-                        ? $constraint->firstProperty
-                        : $constraint->secondProperty
-                )
-                ->addViolation();
-            return false;
+            return;
         }
 
         if ($firstValue->getTimestamp() > $secondValue->getTimeStamp()) {

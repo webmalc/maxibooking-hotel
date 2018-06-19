@@ -14,24 +14,28 @@ class TariffValidatorTest extends \MBH\Bundle\BaseBundle\Lib\Test\ValidatorTestC
         return new \MBH\Bundle\PriceBundle\Validator\Constraints\TariffValidator();
     }
 
+    public function testNullIsValid()
+    {
+        $this->validator->validate(new \MBH\Bundle\PriceBundle\Document\Tariff(), new Tariff());
+
+        $this->assertNoViolation();
+    }
+
     public function getInvalidData(): array
     {
         $tariff_1 = new \MBH\Bundle\PriceBundle\Document\Tariff();
 
+        $tariff_1->setInfantAge(10);
+        $tariff_1->setChildAge(5);
+
         $tariff_2 = new \MBH\Bundle\PriceBundle\Document\Tariff();
 
-        $tariff_2->setInfantAge(10);
-        $tariff_2->setChildAge(5);
-
-        $tariff_3 = new \MBH\Bundle\PriceBundle\Document\Tariff();
-
-        $tariff_3->setBegin(new DateTime());
-        $tariff_3->setEnd(new DateTime('-10 days'));
+        $tariff_2->setBegin(new DateTime());
+        $tariff_2->setEnd(new DateTime('-10 days'));
 
         return [
-            [['tariff' => $tariff_1, 'amountViolation' => 1]],
-            [['tariff' => $tariff_2, 'amountViolation' => 2]],
-            [['tariff' => $tariff_3, 'amountViolation' => 1]],
+            [$tariff_1],
+            [$tariff_2],
         ];
     }
 
@@ -41,9 +45,9 @@ class TariffValidatorTest extends \MBH\Bundle\BaseBundle\Lib\Test\ValidatorTestC
      */
     public function testInvalidData($data)
     {
-        $this->validator->validate($data['tariff'], new Tariff());
+        $this->validator->validate($data, new Tariff());
 
-        $this->assertViolation($data['amountViolation']);
+        $this->assertYesViolation();
     }
 
 

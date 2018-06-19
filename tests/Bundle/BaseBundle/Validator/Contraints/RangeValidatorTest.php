@@ -28,46 +28,25 @@ class RangeValidatorTest extends ValidatorTestCase
         );
     }
 
-    public function getInvalidValue(): array
+    public function testNullIsValid()
     {
-        $package1 = $this->getMockBuilder(\MBH\Bundle\PackageBundle\Document\Package::class)
-            ->getMock();
+        $this->validator->validate(
+            new \MBH\Bundle\PackageBundle\Document\Package(),
+            new \MBH\Bundle\BaseBundle\Validator\Constraints\Range()
+        );
 
-        $package2 = $this->getMockBuilder(\MBH\Bundle\PackageBundle\Document\Package::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getBegin','getEnd'])
-            ->getMock();
-        $package2
-            ->expects($this->any())
-            ->method('getEnd')
-            ->will($this->returnValue(new DateTime()));
-
-        $package3 = $this->getMockBuilder(\MBH\Bundle\PackageBundle\Document\Package::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getBegin','getEnd'])
-            ->getMock();
-        $package3
-            ->expects($this->any())
-            ->method('getBegin')
-            ->will($this->returnValue(new DateTime('+10 days')));
-        $package3
-            ->expects($this->any())
-            ->method('getEnd')
-            ->will($this->returnValue(new DateTime('-10 days')));
-
-        return [
-            [$package1],
-            [$package2],
-            [$package3],
-        ];
+        $this->assertNoViolation();
     }
 
     /**
      * @param $package
-     * @dataProvider getInvalidValue
      */
-    public function testInvalidValue($package)
+    public function testInvalidValue()
     {
+        $package = new \MBH\Bundle\PackageBundle\Document\Package();
+        $package->setBegin(new DateTime('+10 days'));
+        $package->setEnd(new DateTime('-10 days'));
+
         $this->validator->validate(
             $package,
             new \MBH\Bundle\BaseBundle\Validator\Constraints\Range()
@@ -78,17 +57,9 @@ class RangeValidatorTest extends ValidatorTestCase
 
     public function testValidValue()
     {
-        $package = $this->getMockBuilder(\MBH\Bundle\PackageBundle\Document\Package::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getBegin','getEnd'])
-            ->getMock();
-
-        $package->expects($this->any())
-            ->method('getBegin')
-            ->will($this->returnValue(new DateTime('-10 days')));
-        $package->expects($this->any())
-            ->method('getEnd')
-            ->will($this->returnValue(new DateTime('+10 days')));
+        $package = new \MBH\Bundle\PackageBundle\Document\Package();
+        $package->setBegin(new DateTime('-10 days'));
+        $package->setEnd(new DateTime('+10 days'));
 
 
         $this->validator->validate(
