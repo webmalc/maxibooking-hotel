@@ -1,4 +1,4 @@
-{% wrapinline %}
+{#{% wrapinline %}#}
 {% autoescape %}
 {% include 'MBHClientBundle:PaymentSystem/newRbk:for_iframe.js.twig' %}
 var mbhIframe = {
@@ -38,9 +38,18 @@ var mbhIframe = {
     var $divResult = $('#' + this.idDivResultSearch);
     $divResult.removeClass();
     if (type == false) {
-        $divResult.find('.panel-body').html('');
+      $divResult.find('.panel-body')
+        .removeClass()
+        .addClass('panel-body')
+        .html('');
     } else {
-      $divResult.addClass('panel panel-' + type).find('.panel-body').html(data);
+      var $panelBody = $divResult.addClass('panel panel-' + type).find('.panel-body');
+
+      if (type !== 'info') {
+        $panelBody.addClass('bg-' + type);
+      }
+
+      $panelBody.html(data);
     }
   }
 };
@@ -82,4 +91,4 @@ window.onload = function(e) {
   });
 };
 {% endautoescape %}
-{% endwrapinline %}
+{#{% endwrapinline %}#}
