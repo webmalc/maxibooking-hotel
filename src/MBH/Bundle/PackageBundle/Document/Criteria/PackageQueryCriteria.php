@@ -105,9 +105,7 @@ class PackageQueryCriteria extends AbstractQueryCriteria
      * @var bool
      */
     public $deleted = false;
-
     private $accommodations = [];
-
     private $isWithoutAccommodation = false;
     private $sources;
 
@@ -131,9 +129,7 @@ class PackageQueryCriteria extends AbstractQueryCriteria
     {
         if ($accommodation instanceof PackageAccommodation) {
             $this->accommodations[] = $accommodation->getAccommodation()->getId();
-        } elseif ($accommodation instanceof Room) {
-            $this->accommodations[] = $accommodation->getId();
-        } elseif (is_string($accommodation)) {
+        } elseif (is_string($accommodation) || $accommodation instanceof \MongoId) {
             $this->accommodations[] = $accommodation;
         }
 

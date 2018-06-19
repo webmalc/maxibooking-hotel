@@ -966,7 +966,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'sources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
             'hotels' => $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll(),
             'packageSources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
-            'roomTypes' => $this->dm->getRepository('MBHHotelBundle:RoomType')->findAll(),
+            'roomTypesByHotels' => $this->get('mbh.hotel.room_type_manager')->getSortedByHotels(),
             'dataTypes' => SalesChannelsReportCompiler::DATA_TYPES
         ];
     }
