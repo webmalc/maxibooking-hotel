@@ -1,0 +1,8 @@
+{% extends '@MBHBase/meta.html.twig' %}
+{% block scripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/mbhsearch/js/search.js') }}"></script>
+    {#{% javascripts filter='uglifyjs2' '@MBHSearchBundle/Resources/public/js/search.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}#}
+{% endblock %}

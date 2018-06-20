@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class SearchController
@@ -21,11 +22,13 @@ class SearchController extends Controller
 
     public const PRE_RESTRICTION_CHECK = true;
 
+    //      condition="request.headers.get('Content-Type') matches '/application\\/json/i'"
+
     /**
      * @Route(
      *     "/json",
      *      name="search_start_json",
-     *      condition="request.headers.get('Content-Type') matches '/application\\/json/i'"
+     *      options={"expose"=true}
      *     )
      */
     public function asyncSearchAction(Request $request)
@@ -37,7 +40,11 @@ class SearchController extends Controller
         $search = $this->get('mbh_search.search');
         $search->setAsyncQueriesChunk(200);
 
+
         try {
+            if (!is_array($data)) {
+                throw new SearchConditionException('Bad received data');
+            }
             $conditionsId = $search->searchAsync($data);
             $answer = new JsonResponse(['conditionsId' => $conditionsId]);
         } catch (SearchConditionException|SearchQueryGeneratorException $e) {
@@ -48,7 +55,7 @@ class SearchController extends Controller
     }
 
     /**
-     * @Route("/results/{id}" , name="search_results")
+     * @Route("/results/{id}" , name="search_async_results",  options={"expose"=true})
      * @param SearchConditions $conditions
      * @return JsonResponse
      */
@@ -63,5 +70,13 @@ class SearchController extends Controller
         }
 
         return $answer;
+    }
+
+    /**
+     * @Route("/client", name="search_client")
+     */
+    public function clientAction(): Response
+    {
+        return $this->render('@MBHSearch/Search/client.html.twig');
     }
 }
