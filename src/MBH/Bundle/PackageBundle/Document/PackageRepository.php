@@ -1115,4 +1115,59 @@ class PackageRepository extends DocumentRepository
             ->execute()
             ->toArray();
     }
+
+
+    /**
+     * @param $dateFilterType
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array|null $roomTypesIds
+     * @param array|null $housingsIds
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getPackageIdsByFilter($dateFilterType, ?\DateTime $begin, ?\DateTime $end, ?array $roomTypesIds, ?array $housingsIds) {
+        $queryCriteria = new PackageQueryCriteria();
+
+        if (in_array($dateFilterType, ['begin', 'end'])) {
+            $queryCriteria->dateFilterBy = $dateFilterType;
+            $queryCriteria->begin = $begin;
+            $queryCriteria->end = $end;
+        } elseif ($dateFilterType === 'accommodation') {
+            $queryCriteria->filter = 'live_between';
+            $queryCriteria->liveBegin = $begin;
+            $queryCriteria->liveEnd = $end;
+        } else {
+            throw new \InvalidArgumentException('Incorrect date filter type:' . $dateFilterType);
+        }
+
+        if (!empty($roomTypesIds)) {
+            foreach ($roomTypesIds as $roomTypeId) {
+                $queryCriteria->addRoomTypeCriteria($roomTypeId);
+            }
+        }
+
+        if (!empty($housingsIds)) {
+            $roomsInHousings = $this->dm->getRepository('MBHHotelBundle:Room')->getRoomsIdsByHousingsIds($housingsIds);
+            if (empty($roomsInHousings)) {
+                return [];
+            }
+
+            $accIds = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')->getByRoomsIds($roomsInHousings, true);
+            if (empty($accIds)) {
+                return [];
+            }
+
+            foreach ($accIds as $accommodationId) {
+                $queryCriteria->addAccommodation($accommodationId);
+            }
+        }
+
+        return $this
+            ->queryCriteriaToBuilder($queryCriteria)
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
 }

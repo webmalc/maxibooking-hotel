@@ -125,12 +125,18 @@ class PackageQueryCriteria extends AbstractQueryCriteria
         return $this;
     }
 
+    /**
+     * @param $accommodation
+     * @return PackageQueryCriteria
+     */
     public function addAccommodation($accommodation)
     {
         if ($accommodation instanceof PackageAccommodation) {
             $this->accommodations[] = $accommodation->getAccommodation()->getId();
         } elseif (is_string($accommodation) || $accommodation instanceof \MongoId) {
             $this->accommodations[] = $accommodation;
+        } else {
+            throw new \InvalidArgumentException('Passed accommodation argument of invalid type');
         }
 
         return $this;

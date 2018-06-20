@@ -5,7 +5,6 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
-use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -15,8 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class ServiceController
  * @package MBH\Bundle\PackageBundle\Controller
- *
-
  */
 class ServiceController extends BaseController
 {
@@ -84,17 +81,8 @@ class ServiceController extends BaseController
                 ->findBy(['category.id' => $category, 'isEnabled' => true]);
 
             $services = $this->get('mbh.helper')->toIds($serviceDocs);
-
         } else if (!empty($service)) {
             $services = [$service];
-        }
-
-        if (!$begin) {
-            $begin = new \DateTime('midnight -7 days');
-        }
-
-        if (!$end) {
-            $end = new \DateTime('midnight +1 day');
         }
 
         /** @var DocumentRepository $repository */
@@ -102,17 +90,17 @@ class ServiceController extends BaseController
         $queryBuilder = $repository->createQueryBuilder();
 
         $packageFilterType = $request->get('package-filter-dates-type');
-        $packageIds = $this
+        $packageIds = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
             ->getPackageIdsByFilter($packageFilterType, $begin, $end, $roomTypesIds, $housingsIds);
         $queryBuilder->field('package.id')->in($packageIds);
 
-        $queryBuilder->addNor($queryBuilder->expr()
-            ->addOr($queryBuilder->expr()
-                ->field('begin')->gt($begin)->addAnd($queryBuilder->expr()->field('begin')->gt($end))
-            )->addOr($queryBuilder->expr()
-                ->field('end')->lt($begin)->addAnd($queryBuilder->expr()->field('end')->lt($end))
-            )
-        );
+        if (!is_null($end)) {
+            $queryBuilder->field('begin')->lte($end);
+        }
+        if (!is_null($begin)) {
+            $queryBuilder->field('end')->gte($begin);
+        }
 
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $tableParams->setSortColumnFields([
@@ -204,60 +192,5 @@ class ServiceController extends BaseController
             'totals' => json_encode($totals),
             'config' => $this->container->getParameter('mbh.services'),
         ];
-    }
-
-    /**
-     * @param $dateFilterType
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param array|null $roomTypesIds
-     * @param array|null $housingsIds
-     * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    private function getPackageIdsByFilter($dateFilterType, \DateTime $begin, \DateTime $end, ?array $roomTypesIds, ?array $housingsIds) {
-        $queryCriteria = new PackageQueryCriteria();
-
-        if (in_array($dateFilterType, ['begin', 'end'])) {
-            $queryCriteria->dateFilterBy = $dateFilterType;
-            $queryCriteria->begin = $begin;
-            $queryCriteria->end = $end;
-        } elseif ($dateFilterType === 'accommodation') {
-            $queryCriteria->filter = 'live_between';
-            $queryCriteria->liveBegin = $begin;
-            $queryCriteria->liveEnd = $end;
-        } else {
-            throw new \InvalidArgumentException('Incorrect date filter type:' . $dateFilterType);
-        }
-
-        if (!empty($roomTypesIds)) {
-            foreach ($roomTypesIds as $roomTypeId) {
-                $queryCriteria->addRoomTypeCriteria($roomTypeId);
-            }
-        }
-
-        if (!empty($housingsIds)) {
-            $roomsInHousings = $this->dm->getRepository('MBHHotelBundle:Room')->getRoomsIdsByHousingsIds($housingsIds);
-            if (empty($roomsInHousings)) {
-                return [];
-            }
-
-            $accIds = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')->getByRoomsIds($roomsInHousings, true);
-            if (empty($accIds)) {
-                return [];
-            }
-
-            foreach ($accIds as $accommodationId) {
-                $queryCriteria->addAccommodation($accommodationId);
-            }
-        }
-
-        return $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->queryCriteriaToBuilder($queryCriteria)
-            ->distinct('id')
-            ->getQuery()
-            ->execute()
-            ->toArray();
     }
 }
