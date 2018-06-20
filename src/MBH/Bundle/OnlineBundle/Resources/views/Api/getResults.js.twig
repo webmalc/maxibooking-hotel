@@ -259,7 +259,7 @@ jQuery(document).ready(function() {
                         totalServices = 0,
                         total = 0,
                         nextButton = jQuery('#mbh-results-next'),
-                        roomCount = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked'),
+                        roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked'),
                         servicesCount = jQuery('select.mbh-results-services-count');
                     nextButton.prop('disabled', true);
                     roomCount.each(function() {
@@ -277,7 +277,7 @@ jQuery(document).ready(function() {
                                 span = tr.find('span.mbh-results-services-prices');
                             if (span.length) {
                                 totalServices += parseInt(span.attr('data-value')) * jQuery(this).val();
-                            };
+                            }
                         }
                     });
 
