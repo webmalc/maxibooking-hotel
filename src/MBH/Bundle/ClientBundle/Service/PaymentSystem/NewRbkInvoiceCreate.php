@@ -158,15 +158,17 @@ class NewRbkInvoiceCreate
     {
         $cashDocument = null;
 
-        /** @var CashDocument $cd */
-        foreach ($this->order->getCashDocuments()->toArray() as $cd) {
-            if ($cd->getMethod() === CashDocument::METHOD_ELECTRONIC &&
-                !$cd->getIsPaid() &&
-                $cd->getTotal() == $this->getTotal() &&
-                $cd->getOperation() === CashDocument::OPERATION_IN &&
-                $cd->getDeletedAt() === null
-            ) {
-                $cashDocument = $cd;
+        if ($this->order->getCashDocuments() !== null) {
+            /** @var CashDocument $cd */
+            foreach ($this->order->getCashDocuments()->toArray() as $cd) {
+                if ($cd->getMethod() === CashDocument::METHOD_ELECTRONIC &&
+                    !$cd->getIsPaid() &&
+                    $cd->getTotal() == $this->getTotal() &&
+                    $cd->getOperation() === CashDocument::OPERATION_IN &&
+                    $cd->getDeletedAt() === null
+                ) {
+                    $cashDocument = $cd;
+                }
             }
         }
 
@@ -182,13 +184,16 @@ class NewRbkInvoiceCreate
      */
     private function generateCashDocuments(): CashDocument
     {
+        $maxSum = $this->order->getPrice() - $this->order->getPaid();
+        $total = $maxSum >= $this->getTotal() ? $this->getTotal() : $maxSum ;
+
         $cashDocument = new CashDocument();
         $cashDocument->setIsConfirmed(false)
             ->setIsPaid(false)
             ->setMethod(CashDocument::METHOD_ELECTRONIC)
             ->setOperation(CashDocument::OPERATION_IN)
             ->setOrder($this->order)
-            ->setTotal($this->getTotal());
+            ->setTotal($total);
 
         if ($this->order->getMainTourist() !== null) {
             $cashDocument->setTouristPayer($this->order->getMainTourist());
