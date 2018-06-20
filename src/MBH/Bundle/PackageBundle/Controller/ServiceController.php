@@ -238,7 +238,15 @@ class ServiceController extends BaseController
 
         if (!empty($housingsIds)) {
             $roomsInHousings = $this->dm->getRepository('MBHHotelBundle:Room')->getRoomsIdsByHousingsIds($housingsIds);
+            if (empty($roomsInHousings)) {
+                return [];
+            }
+
             $accIds = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')->getByRoomsIds($roomsInHousings, true);
+            if (empty($accIds)) {
+                return [];
+            }
+
             foreach ($accIds as $accommodationId) {
                 $queryCriteria->addAccommodation($accommodationId);
             }
