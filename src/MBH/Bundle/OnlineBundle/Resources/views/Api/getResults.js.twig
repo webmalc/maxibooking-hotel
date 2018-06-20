@@ -296,6 +296,8 @@ jQuery(document).ready(function() {
                 });
             }());
 
+            wrapper.trigger('results-load-event');
+
             // results next button
             (function() {
                 jQuery('#mbh-results-next').click(function() {
