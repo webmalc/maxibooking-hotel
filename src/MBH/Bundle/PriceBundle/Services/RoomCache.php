@@ -124,6 +124,7 @@ class RoomCache
 
         $num = 0;
         $numberOfInconsistencies = 0;
+        $inconsistentDates = [];
         $batchSize = 3;
 
         foreach ($caches as $cache) {
@@ -167,6 +168,7 @@ class RoomCache
             if ($oldLeftRoomsValue != $cache->getLeftRooms()) {
                 $logger->error($cacheLogMessage);
                 $numberOfInconsistencies++;
+                $inconsistentDates[] = $cache->getDate();
             } else {
                 $logger->info($cacheLogMessage);
             }
@@ -193,7 +195,7 @@ class RoomCache
             $logger->info('OK. Inconsistencies not found');
         }
 
-        return ['total' => $num, 'numberOfInconsistencies' => $numberOfInconsistencies];
+        return ['total' => $num, 'numberOfInconsistencies' => $numberOfInconsistencies, 'inconsistentDates' => $inconsistentDates];
     }
 
     /**
