@@ -22,8 +22,7 @@ class MBSiteSettingsController extends BaseController
         $siteManager = $this->get('mbh.site_manager');
         $siteConfig = $siteManager->getSiteConfig();
 
-//        header('Access-Control-Allow-Origin: ' . $siteManager->getSiteAddress());
-        header('Access-Control-Allow-Origin: ' . 'http://localhost:4200');
+        header('Access-Control-Allow-Origin: ' . $siteManager->getSiteAddress());
 
         $formConfig = $this->dm
             ->getRepository('MBHOnlineBundle:FormConfig')
