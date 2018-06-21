@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class Common
 {
     /**
+     * В наследуемых классах перечасляются методы которые доступны у классов источников
+     *
      * @var array
      */
     protected const METHOD = [];
