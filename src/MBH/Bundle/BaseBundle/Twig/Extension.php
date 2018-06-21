@@ -209,6 +209,17 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * Заменяет больше двух побелов одним
+     *
+     * @param string $str
+     * @return string
+     */
+    public function clearAdjacentWhitespace(string $str): string
+    {
+        return preg_replace('/\s{2,}/',' ', $str);
+    }
+
+    /**
      * @return array
      */
     public function getFilters()
@@ -222,7 +233,8 @@ class Extension extends \Twig_Extension
             'convertMongoDate' => new \Twig_SimpleFilter('convertMongoDate', [$this, 'convertMongoDate']),
             'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
-            'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate'])
+            'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate']),
+            'clear_adjacent_whitespace' => new \Twig_SimpleFilter('clear_adjacent_whitespace', [$this, 'clearAdjacentWhitespace']),
         ];
     }
 
