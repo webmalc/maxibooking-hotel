@@ -56,9 +56,22 @@ class OnlineSearchHelper
                 /** @var OnlineDataProviderWrapperInterface $dataProvider */
                 $dataResults = $dataProvider->getResults($formInstance);
                 if ($dataProvider->getType() === SpecialDataProvider::TYPE) {
+                    //** Костылище для ограничения лимита по выводу спец */
                     $limit = $this->options['show_special_restrict'];
                     if ($limit) {
                         $dataResults = \array_slice($dataResults, 0, $limit, true);
+                        //** Костылище для сортировки по просьбе Малеевой от 21.06.2018 */
+                        usort(
+                            $dataResults,
+                            function ($resA, $resB) {
+                                /** @var OnlineResultInstance $resA */
+                                /** @var OnlineResultInstance $resB */
+                                $priceA = $resA->getResults()->first()->getPrices();
+                                $priceB = $resB->getResults()->first()->getPrices();
+
+                                return reset($priceA) <=> reset($priceB);
+                            }
+                        );
                     }
                 }
                 $results[$dataProvider->getType()] = $dataResults;

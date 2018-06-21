@@ -11,7 +11,7 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
  * Class SpecialCreator
  * @package MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters
  */
-class SpecialCreator extends AbstractCreator implements OnlineCreatorInterface
+class SpecialCreator extends AbstractCreator
 {
 
     /** @var string */
