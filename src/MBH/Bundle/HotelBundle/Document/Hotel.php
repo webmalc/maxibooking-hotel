@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
@@ -1823,16 +1824,16 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     /**
      * @param UploaderHelper $helper
-     * @param $domain
+     * @param CacheManager $cacheManager
      * @return array
      */
-    public function getImagesData(UploaderHelper $helper, $domain)
+    public function getImagesData(UploaderHelper $helper, CacheManager $cacheManager)
     {
         $imagesData = [];
         /** @var Image $image */
         foreach ($this->getImages() as $image) {
             $imageData = ['isMain' => $image->getIsDefault()];
-            $imageData['url'] = 'https://' . $domain . '/' . $helper->asset($image, 'imageFile');
+            $imageData['url'] = $cacheManager->getBrowserPath($helper->asset($image, 'imageFile'), 'scaler');
             if ($image->getWidth()) {
                 $imageData['width'] = (int)$image->getWidth();
             }
@@ -1848,10 +1849,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @param bool $isFull
      * @param UploaderHelper $uploaderHelper
-     * @param null $domain
+     * @param CacheManager|null $cacheManager
      * @return array
      */
-    public function getJsonSerialized($isFull = false, UploaderHelper $uploaderHelper= null, $domain = null)
+    public function getJsonSerialized($isFull = false, UploaderHelper $uploaderHelper= null, CacheManager $cacheManager = null)
     {
         $data = [
             'id' => $this->getId(),
@@ -1866,10 +1867,10 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                 'description' => $this->getDescription(),
                 'facilities' => $this->getFacilities()
             ];
-            if (!is_null($uploaderHelper) && !is_null($domain)) {
-                $comprehensiveData['photos'] = $this->getImagesData($uploaderHelper, $domain);
+            if (!is_null($uploaderHelper) && !is_null($cacheManager)) {
+                $comprehensiveData['photos'] = $this->getImagesData($uploaderHelper, $cacheManager);
                 if (!empty($this->getLogoImage())) {
-                    $comprehensiveData['logoUrl'] = 'https://' . $domain . '/' . $uploaderHelper->asset($this->getLogoImage(), 'imageFile');
+                    $comprehensiveData['logoUrl'] = $cacheManager->getBrowserPath($uploaderHelper->asset($this->getLogoImage(), 'imageFile'), 'scaler');
                 }
             } else {
                 throw new \InvalidArgumentException('It\'s required uploader helper and current domain for serialization of the full information about the hotel!');

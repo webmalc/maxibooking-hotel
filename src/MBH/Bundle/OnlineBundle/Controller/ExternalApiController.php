@@ -93,8 +93,9 @@ class ExternalApiController extends BaseController
                         && (!$formConfig->getRoomTypes() || $formConfig->getRoomTypeChoices()->contains($roomType)))
                 ) {
                     $responseData[] = $roomType->getJsonSerialized($isFull,
-                        $this->getParameter('router.request_context.host'),
-                        $this->get('vich_uploader.templating.helper.uploader_helper'));
+                        $this->get('vich_uploader.templating.helper.uploader_helper'),
+                        $this->get('liip_imagine.cache.manager')
+                    );
                 }
             }
             $responseCompiler->setData($responseData);
@@ -205,7 +206,11 @@ class ExternalApiController extends BaseController
                 || $formConfig->getHotels()->count() == 0
                 || in_array($hotel, $formConfig->getHotels()->toArray())
             ) {
-                $hotelData = $hotel->getJsonSerialized($isFull, $this->get('vich_uploader.templating.helper.uploader_helper'), $this->getParameter('domain'));
+                $hotelData = $hotel->getJsonSerialized(
+                    $isFull,
+                    $this->get('vich_uploader.templating.helper.uploader_helper'),
+                    $this->get('liip_imagine.cache.manager')
+                );
                 if ($isFull && $hotel->getCityId()) {
                     $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
                 }

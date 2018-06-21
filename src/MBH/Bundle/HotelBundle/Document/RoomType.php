@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
@@ -765,16 +766,16 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @param UploaderHelper $helper
-     * @param $domain
+     * @param CacheManager $cacheManager
      * @return array
      */
-    public function getRoomTypePhotoData(UploaderHelper $helper, $domain)
+    public function getRoomTypePhotoData(UploaderHelper $helper, CacheManager $cacheManager)
     {
         $imagesData = [];
         /** @var Image $image */
         foreach ($this->getOnlineImages() as $image) {
             $roomTypeImageData = ['isMain' => $image->getIsDefault()];
-            $roomTypeImageData['url'] = 'https://' . $domain . '/' . $helper->asset($image, 'imageFile');
+            $roomTypeImageData['url'] = $cacheManager->getBrowserPath($helper->asset($image, 'imageFile'), 'scaler');
             if ($image->getWidth()) {
                 $roomTypeImageData['width'] = (int)$image->getWidth();
             }
@@ -789,11 +790,11 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @param bool $isFull
-     * @param null $domain
      * @param UploaderHelper|null $helper
+     * @param CacheManager $cacheManager
      * @return array
      */
-    public function getJsonSerialized($isFull = false, $domain = null, UploaderHelper $helper = null)
+    public function getJsonSerialized($isFull = false, UploaderHelper $helper = null, CacheManager $cacheManager = null)
     {
         $data = [
             'id' => $this->getId(),
@@ -818,7 +819,7 @@ class RoomType extends Base implements RoomTypeInterface
             }
             if (!is_null($helper)) {
                 $comprehensiveData['
-                '] = $this->getRoomTypePhotoData($helper, $domain);
+                '] = $this->getRoomTypePhotoData($helper, $cacheManager);
             }
             $data = array_merge($data, $comprehensiveData);
         }
