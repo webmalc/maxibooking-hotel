@@ -7,6 +7,8 @@
 namespace MBH\Bundle\OnlineBundle\Lib;
 
 
+use Psr\Container\ContainerInterface;
+
 class SearchFormResult implements \JsonSerializable
 {
     /**
@@ -23,6 +25,23 @@ class SearchFormResult implements \JsonSerializable
      * @var string
      */
     private $packageId;
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * @var \Symfony\Component\Translation\DataCollectorTranslator
+     */
+    private $translator;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+
+        $this->translator = $this->container->get('translator');
+    }
 
     /**
      * @param float $total
@@ -45,12 +64,11 @@ class SearchFormResult implements \JsonSerializable
         $this->orderFound = true;
     }
 
-
     public function jsonSerialize()
     {
         $result = [];
         if (!$this->orderFound) {
-            $result['error'] = 'not found order';
+            $result['error'] = $this->translate('api.payment_form.result_search.not_found_order');
         } else {
             $result['needIsPaid'] = $this->isNeedIsPaid();
             if ($this->isNeedIsPaid()) {
@@ -59,11 +77,16 @@ class SearchFormResult implements \JsonSerializable
                     'packageId' => $this->packageId,
                 ];
             } else {
-                $result['data'] = 'order has been paid';
+                $result['data'] = $this->translate('api.payment_form.result_search.order_has_been_paid');
             }
         }
 
         return $result;
+    }
+
+    private function translate(string $msg): string
+    {
+        return $this->translator->trans($msg);
     }
 
     /**
