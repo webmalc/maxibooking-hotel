@@ -29,7 +29,7 @@ class VersionedSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            Events::onFlush => 'onFlush'
+//            Events::onFlush => 'onFlush'
         ];
     }
 

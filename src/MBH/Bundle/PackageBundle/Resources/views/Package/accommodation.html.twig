@@ -22,7 +22,7 @@
                     , {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ package.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
                     {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
 
-                            {#<button data-toggle="modal" data-target="#package-relocation-modal"
+                            <button data-toggle="modal" data-target="#package-relocation-modal"
                                class="btn btn-primary btn-xs" title="{{ 'package.action.relocation'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
                                 <i class="fa fa-suitcase"></i>
                             </button>#}

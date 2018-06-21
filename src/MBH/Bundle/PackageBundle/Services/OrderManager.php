@@ -85,6 +85,7 @@ class OrderManager
             ->setServicesPrice(0)
             ->clearServices()
             ->setAccommodation(null)
+            ->setTourists($package->getTourists())
         ;
 
         $package->setEnd($date);
