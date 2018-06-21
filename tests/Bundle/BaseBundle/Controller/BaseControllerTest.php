@@ -75,6 +75,8 @@ class BaseControllerTest extends WebTestCase
         'price_cache_overview_save',
         'price_cache_generator',
         'price_cache_generator_save',
+        'cash',
+        'cash_json',
         'online_form',
         'online_form_new',
         'online_form_edit',

@@ -8,6 +8,7 @@ namespace MBH\Bundle\BaseBundle\Lib\Test;
 
 
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\DomCrawler\Form;
 
 abstract class CrudWebTestCase extends WebTestCase
 {
