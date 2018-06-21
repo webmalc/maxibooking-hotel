@@ -28,6 +28,22 @@ class Hotel extends Common
     /**
      * @return string
      */
+    public function getArrivalTime(): string
+    {
+        return $this->entity->getPackageArrivalTime() ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDepartureTime(): string
+    {
+        return $this->entity->getPackageDepartureTime() ?? '';
+    }
+
+    /**
+     * @return string
+     */
     public function getPhoneNumber(): string
     {
         return $this->entity->getContactInformation() !== null
