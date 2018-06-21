@@ -1,4 +1,5 @@
 class Receiver {
+    private readonly requestThreshold: number = 20;
     private $resultsContainer: JQuery;
     private $routeName: string = 'search_async_results';
     /** TODO: Можно взять Mustache шаблонизатор и фигачить результаты через него */
@@ -8,34 +9,47 @@ class Receiver {
     constructor(containerId: string) {
         this.$resultsContainer = $(`#${containerId}`);
     }
-    public receive(conditionsId: string): void {
+
+    public async receive(conditionsId: string): Promise<void> {
+        let count: number = 0;
+        let request;
+        let error: boolean = false;
         const route = Routing.generate(this.$routeName, {id: conditionsId});
-
-        let func = async (): Promise<number> => {
-            try {
-                let ajax = $.get(route);
-                let data = await ajax;
-                console.log(data);
-                return ajax.status;
-            } catch (e) {
-                console.error(e)
-            }
-        };
-        let n:number = 10;
-
+        this.startReceive();
         do {
-            let statusCode: number;
-            (async () => {
-                statusCode = await func();
-                console.log('statuscode');
-            })();
-            n--;
-            console.log('problem');
-        } while (n >= 0)
+            request = $.get(route);
+            try {
+                let data = await request;
+                this.writeResults(data.results);
+            } catch (err) {
+                error = true;
+                this.stopReceive(request);
+            }
+            count++;
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, 1000)
+            });
+        } while (!error && count < this.requestThreshold);
+
+        if (!error) {
+            console.log('stop receive by timeout');
+        }
 
     }
 
-    private writeResults(): void {
+    private startReceive(): void {
+        console.log('start receive');
+    }
 
+    private stopReceive(ajax): void {
+        console.log('receive stop with code');
+        console.log(ajax.status);
+    }
+
+    private writeResults(data: ResultInterface): void {
+        console.log('write the results');
+        console.log(data);
     }
 }

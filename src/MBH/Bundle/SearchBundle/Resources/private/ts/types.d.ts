@@ -12,3 +12,7 @@ interface SearchDataInterface {
 interface Routing {
     generate(name: string, {}?): string;
 }
+
+interface ResultInterface {
+
+}

@@ -29,6 +29,7 @@ class Searcher {
         (async () => {
             try {
                 const data = await this.sendSearchData();
+                console.log(data);
                 this.asyncReceiver.receive(data.conditionsId);
             } catch (e) {
                 console.log(e);
