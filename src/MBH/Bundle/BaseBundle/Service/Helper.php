@@ -727,7 +727,7 @@ class Helper
 
     /**
      * @param \DateTime[] $dates
-     * @return array
+     * @return array[$minDate, $maxDate]
      * @throws \InvalidArgumentException
      */
     public function getMinAndMaxDates(array $dates)
