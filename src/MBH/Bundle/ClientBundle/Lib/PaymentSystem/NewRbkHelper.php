@@ -50,11 +50,10 @@ class NewRbkHelper implements HelperInterface
      * @param FormBuilderInterface $builder
      * @param ClientConfig|null $config
      */
-    public static function addFields(FormBuilderInterface $builder, ClientConfig $config, array $extraData): void
+    public static function addFields(FormBuilderInterface $builder, ClientConfig $config, ExtraData $extraData): void
     {
-        extract($extraData, EXTR_OVERWRITE);
 
-        $codeTax = array_intersect_key($taxationRateCodes['rate_codes'], TaxMode::TAXATION_RATE_CODE);
+        $codeTax = array_intersect_key($extraData->getTaxationRateCodes()['rate_codes'], TaxMode::TAXATION_RATE_CODE);
 
         /** @var NewRbk $newRbk */
         $newRbk = $config !== null ? $config->getNewRbk() : null;
