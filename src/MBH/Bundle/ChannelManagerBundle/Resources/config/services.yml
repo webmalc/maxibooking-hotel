@@ -141,3 +141,6 @@ services:
         arguments: ['@mbh.helper']
         tags:
             - { name: form.type}
+
+    mbh.cm_wizard_manager:
+        class: MBH\Bundle\ChannelManagerBundle\Services\CMWizardManager

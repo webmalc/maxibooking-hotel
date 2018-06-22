@@ -34,7 +34,11 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     public function indexAction()
     {
         $config = $this->hotel->getBookingConfig();
-
+        
+        if (is_null($config)) {
+            
+        }
+        
         $form = $this->createForm(
             BookingType::class,
             $config

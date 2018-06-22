@@ -1,0 +1,12 @@
+{% extends 'MBHChannelManagerBundle:ChannelManager:layout.html.twig' %}
+
+{% block content %}
+    <div id="channel-manager-instruction">
+        {{ infoMessage|trans }}
+    </div>
+    {% if hasForm %}
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+    {% endif %}
+{% endblock %}

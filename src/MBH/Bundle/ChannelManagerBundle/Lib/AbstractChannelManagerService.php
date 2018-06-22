@@ -43,8 +43,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         "ostrovok",
         "oktogo",
         "101Hotels",
-        "homeaway",
-        "tripadvisor"
     ];
 
     /**

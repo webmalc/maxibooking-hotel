@@ -89,12 +89,35 @@ class ChannelManagerController extends Controller
         $cm->updateInBackground();
 
         if (!empty($request->get('url'))) {
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.channelManagerController.sync_end'));
+            $this->addFlash('success', 'controller.channelManagerController.sync_end');
 
             return $this->redirect($request->get('url'));
         }
 
         return new Response('OK');
+    }
+
+    /**
+     * @Route("/wizard_info/{channelManagerName}", name="wizard_info")
+     * @param string $channelManagerName
+     * @Template()
+     * @return array
+     */
+    public function wizardInfoAction(string $channelManagerName)
+    {
+        if (!in_array($channelManagerName, array_keys($this->getParameter('mbh.channelmanager.services')))) {
+            throw new \InvalidArgumentException("Incorrect name of channel manager: $channelManagerName");
+        }
+
+        $infoMessage = 'controller.channelManagerController.wizard_info_text.' . $channelManagerName;
+        $wizardManager = $this->get('mbh.cm_wizard_manager');
+        $hasForm = $wizardManager->hasIntroForm($channelManagerName);
+        $form = $hasForm ? $this->createForm($wizardManager->getIntroForm($channelManagerName))->createView() : null;
+
+        return [
+            'infoMessage' => $infoMessage,
+            'hasForm' => $hasForm,
+            'form' => $form
+        ];
     }
 }
