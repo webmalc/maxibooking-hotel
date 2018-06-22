@@ -10,7 +10,8 @@ var mbhIframe = {
         '<div class="form-group form-group-sm"> ' +
         '<label for="total" class="col-form-label col-form-label-sm">{{ 'api.payment_form.pay_order.total' | trans }}</label>' +
         '<div class="form-field">' +
-        '<input type="number" class="form-control input-sm" name="total" value="' + data.total + '" max="' + data.total + '">' +
+        '<input type="number" class="form-control input-sm" name="total" min="0.01" max="' + data.total + '" ' +
+        '{% if entity.isEnabledShowAmount %}value="' + data.total + '" {% endif %} required>' +
         '</div></div>' +
         '<input type="hidden" name="packageId" value="' + data.packageId + '">' +
         '<div class="form-group">' +
