@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @package MBH\Bundle\SearchBundle\Document
  * @Document(collection="SearchResults",repositoryClass="SearchResultRepository")
  */
-class SearchResult extends Base
+class SearchResult extends Base implements \JsonSerializable
 {
 
     use TimestampableDocument;
@@ -450,5 +450,16 @@ class SearchResult extends Base
 
         return $result;
     }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => static::getId(),
+            'prices' => $this->getPrices(),
+            'rooms' => $this->getRooms(),
+            'roomType' => $this->getRoomType()->getId(),
+        ];
+    }
+
 
 }

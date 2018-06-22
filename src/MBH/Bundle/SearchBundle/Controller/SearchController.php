@@ -3,6 +3,7 @@
 namespace MBH\Bundle\SearchBundle\Controller;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
@@ -26,8 +27,33 @@ class SearchController extends Controller
 
     /**
      * @Route(
-     *     "/json",
-     *      name="search_start_json",
+     *     "/sync/json",
+     *      name="search_sync_start_json",
+     *      options={"expose"=true}
+     *     )
+     */
+    public function syncSearchAction(Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+        $search = $this->get('mbh_search.search');
+        try {
+            if (!\is_array($data)) {
+                throw new SearchConditionException('Bad received data');
+            }
+            $results = $search->searchSync($data);
+            $json = json_encode(['results' => $results], JSON_NUMERIC_CHECK);
+            $answer = new JsonResponse($json, 200, [], true);
+        } catch (SearchConditionException|SearchQueryGeneratorException $e) {
+            $answer = new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+
+        return $answer;
+    }
+
+    /**
+     * @Route(
+     *     "/async/start",
+     *      name="search_start_async",
      *      options={"expose"=true}
      *     )
      */
@@ -42,8 +68,8 @@ class SearchController extends Controller
 
 
         try {
-            if (!is_array($data)) {
-                throw new SearchConditionException('Bad received data');
+            if (!\is_array($data)) {
+                throw new SearchConditionException('Received bad data');
             }
             $conditionsId = $search->searchAsync($data);
             $answer = new JsonResponse(['conditionsId' => $conditionsId]);
@@ -55,7 +81,7 @@ class SearchController extends Controller
     }
 
     /**
-     * @Route("/results/{id}" , name="search_async_results",  options={"expose"=true})
+     * @Route("/async/results/{id}" , name="search_async_results",  options={"expose"=true})
      * @param SearchConditions $conditions
      * @return JsonResponse
      */
@@ -77,6 +103,12 @@ class SearchController extends Controller
      */
     public function clientAction(): Response
     {
-        return $this->render('@MBHSearch/Search/client.html.twig');
+        $begin = new \DateTime('10.09.2018');
+        $end = new \DateTime('17.09.2018');
+        $adults = 2;
+        $conditions = new SearchConditions();
+        $conditions->setBegin($begin)->setEnd($end)->setAdults($adults);
+        $form = $this->createForm(SearchConditionsType::class, $conditions);
+        return $this->render('@MBHSearch/Search/client.html.twig', ['form' => $form->createView()]);
     }
 }

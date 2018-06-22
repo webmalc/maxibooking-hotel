@@ -5,7 +5,7 @@
     "sourceMap": true,
     "inlineSources": false,
     "inlineSourceMap": true,
-    "outFile": "../../public/js/search.js"
+    "outFile": "../../public/js/search.js",
     "lib": ["es2015", "es2015.iterable", "es2016", "dom"]
   },
   "exclude": [

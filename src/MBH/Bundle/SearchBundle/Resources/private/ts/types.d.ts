@@ -1,4 +1,4 @@
-interface SearchDataInterface {
+interface SearchDataType {
     begin: string,
     end: string,
     adults: number,
@@ -13,6 +13,19 @@ interface Routing {
     generate(name: string, {}?): string;
 }
 
-interface ResultInterface {
+interface SearchResultType {
+    id: string,
+    prices: {key: string}[],
+    rooms: Room[],
+    roomType: string
 
+}
+
+interface Room {
+    fullTitle: string,
+    _id: {$id: string}
+}
+
+interface DataReceiverInterface {
+    getSearchConditionsData(): SearchDataType;
 }

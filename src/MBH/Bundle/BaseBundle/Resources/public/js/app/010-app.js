@@ -394,9 +394,9 @@ var updateTaskCounter = function() {
 };
 
 var delay = 1000 * 60 * 5; //5 minutes
-setInterval(function() {
-    updateTaskCounter();
-}, delay);
+// setInterval(function() {
+//     updateTaskCounter();
+// }, delay);
 
 function initSupportModal() {
     var allowedGuides = mbh['allowed_guides'];

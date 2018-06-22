@@ -15,7 +15,7 @@ class SearchControllerTest extends SearchWebTestCase
 
         $this->client->request(
             'POST',
-            '/search/json',
+            '/async/start',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -53,7 +53,7 @@ class SearchControllerTest extends SearchWebTestCase
             ];
         $this->client->request(
             'POST',
-            '/search/json',
+            '/async/start',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -66,9 +66,10 @@ class SearchControllerTest extends SearchWebTestCase
 
         $count = 0;
         do {
+            sleep(1);
             $this->client->request(
                 'GET',
-                '/search/results/'.$conditionsId,
+                '/async/results/'.$conditionsId,
                 [],
                 [],
                 [],
@@ -76,11 +77,9 @@ class SearchControllerTest extends SearchWebTestCase
             );
             $response = $this->client->getResponse();
             $count++;
-        } while (204 !== $response->getStatusCode() && $count < 20);
+        } while (204 !== $response->getStatusCode() && $count < 5);
 
         $this->assertEquals(204, $response->getStatusCode());
-
-
     }
 
 
@@ -95,7 +94,6 @@ class SearchControllerTest extends SearchWebTestCase
                 'additionalBegin' => 0,
                 'roomTypes' => [],
                 'tariffs' => []
-
             ],
             true
         ];

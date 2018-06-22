@@ -33,10 +33,11 @@ class AsyncResultReceiver
 
     /**
      * @param SearchConditions $conditions
+     * @param bool $isHideRestrictedResults
      * @return array
      * @throws AsyncResultReceiverException
      */
-    public function receive(SearchConditions $conditions): array
+    public function receive(SearchConditions $conditions, bool $isHideRestrictedResults = true): array
     {
         $conditionsId = $conditions->getId();
         $searchHolder = $this->searchResultHolderRepository->findOneBy(['searchConditionsId' => $conditionsId]);
@@ -45,28 +46,30 @@ class AsyncResultReceiver
             $searchHolder->setSearchConditionsId($conditionsId);
         }
 
-        $takenSearchResultIds = $searchHolder->getTakenSearchResultIds();
-        if (\count($takenSearchResultIds) === $conditions->getExpectedResultsCount()) {
+        $alreadyTakenResultsIds = $searchHolder->getTakenSearchResultIds();
+        if (\count($alreadyTakenResultsIds) === $conditions->getExpectedResultsCount()) {
             throw new AsyncResultReceiverException('All results were taken.');
         }
 
-        if (\count($takenSearchResultIds) > $conditions->getExpectedResultsCount()) {
+        if (\count($alreadyTakenResultsIds) > $conditions->getExpectedResultsCount()) {
             throw new AsyncResultReceiverException('Some error! Taken results more than Expected!');
         }
 
-        $resultsOkIds = $this->searchResultRepository->fetchOkResultIds($conditionsId);
-        $resultsErrorIds = $this->searchResultRepository->fetchErrorResultIds($conditionsId);
+        $satisfyingResultsIds = $this->searchResultRepository->fetchOkResultIds($conditionsId);
+        $restrictedResultsIds = $this->searchResultRepository->fetchErrorResultIds($conditionsId);
 
-        $toTakeResultsOkIds = array_diff($resultsOkIds, $takenSearchResultIds);
-        $toTakeResultsErrorIds = array_diff($resultsErrorIds, $takenSearchResultIds);
-        $searchHolder->addTakenResultIds($toTakeResultsOkIds);
-        $searchHolder->addTakenResultIds($toTakeResultsErrorIds);
+        $toTakeSatisfyingResultsIds = array_diff($satisfyingResultsIds, $alreadyTakenResultsIds);
+        $toTakeRestrictedResultsIds = array_diff($restrictedResultsIds, $alreadyTakenResultsIds);
+        $searchHolder->addTakenResultIds($toTakeSatisfyingResultsIds);
+        $searchHolder->addTakenResultIds($toTakeRestrictedResultsIds);
 
         $dm = $this->searchResultRepository->getDocumentManager();
         $dm->persist($searchHolder);
         $dm->flush($searchHolder);
 
-        return  $this->searchResultRepository->fetchResultsByIds($toTakeResultsOkIds);
+        $resultsIdsToReturn = $isHideRestrictedResults ? $toTakeSatisfyingResultsIds : array_merge($toTakeSatisfyingResultsIds, $toTakeRestrictedResultsIds);
+
+        return  $this->searchResultRepository->fetchResultsByIds($resultsIdsToReturn);
     }
 
 

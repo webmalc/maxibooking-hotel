@@ -48,6 +48,9 @@ class SearchConditionsType extends AbstractType
                 [
                     'format' => 'dd.MM.yyyy',
                     'widget' => 'single_text',
+                    'attr' => [
+                        'class' => 'datepicker'
+                    ]
                 ]
             )
             ->add(
@@ -56,10 +59,13 @@ class SearchConditionsType extends AbstractType
                 [
                     'format' => 'dd.MM.yyyy',
                     'widget' => 'single_text',
+                    'attr' => [
+                        'class' => 'datepicker'
+                    ]
                 ]
             )
-            ->add('adults', NumberType::class)
-            ->add('children', NumberType::class)
+            ->add('adults', IntegerType::class)
+            ->add('children', IntegerType::class)
             ->add(
                 'roomTypes',
                 DocumentType::class,
@@ -145,5 +151,11 @@ class SearchConditionsType extends AbstractType
                 ]
             );
     }
+
+    public function getBlockPrefix()
+    {
+        return 'search_conditions';
+    }
+
 
 }

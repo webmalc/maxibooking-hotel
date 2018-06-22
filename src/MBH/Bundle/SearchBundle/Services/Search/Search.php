@@ -76,13 +76,14 @@ class Search
 
     /**
      * @param array $data
+     * @param bool $isHideRestrictedResults
      * @return array
-     * @throws MongoDBException
      * @throws DataHolderException
+     * @throws MongoDBException
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
      */
-    public function searchSync(array $data): array
+    public function searchSync(array $data, bool $isHideRestrictedResults = true): array
     {
         $conditions = $this->createSearchConditions($data);
         $searchQueries = $this->createSearchQueries($conditions);
@@ -91,7 +92,10 @@ class Search
             try {
                 $results[] = $this->searcher->search($searchQuery);
             } catch (SearchException $e) {
-                $results[] = SearchResult::createErrorResult($e);
+                $restrictedResult = SearchResult::createErrorResult($e);
+                if (!$isHideRestrictedResults) {
+                    $results[] = $restrictedResult;
+                }
             }
         }
 

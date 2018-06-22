@@ -1,59 +1,53 @@
 declare let Routing: Routing;
 
-class Searcher {
-    private route: string = Routing.generate('search_start_json');
+abstract class Searcher {
     private button: JQuery;
-    private asyncReceiver: Receiver;
+    private writer: Writer;
+    private searchDataReceiver: DataReceiverInterface;
 
-    constructor(buttonId: string) {
+    protected constructor(buttonId: string, writer: Writer, dataReceiver: DataReceiverInterface) {
         this.button = $(`#${buttonId}`);
-        this.asyncReceiver = new Receiver('results');
-        this.init();
-    }
-
-    private init(): void {
+        this.writer = writer;
+        this.searchDataReceiver = dataReceiver;
         this.bindHandlers();
     }
 
     private bindHandlers(): void {
         this.button.on('click', event => {
             event.preventDefault();
-            this.startSearch();
+            this.doSearch();
         })
     }
 
+    protected async abstract doSearch(): Promise<void>;
 
-
-
-    private startSearch(): void {
-        (async () => {
-            try {
-                const data = await this.sendSearchData();
-                console.log(data);
-                this.asyncReceiver.receive(data.conditionsId);
-            } catch (e) {
-                console.log(e);
-            }
-        })();
-    }
-    private async sendSearchData(): Promise<{conditionsId: string}> {
-        return $.ajax({
-            url: this.route,
-            type: "POST",
-            dataType: "json",
-            data: JSON.stringify(this.getData())
-        });
+    protected onStartSearch(): void {
+        this.writer.showStartSearch();
     }
 
-    private getData(): SearchDataInterface {
-        let data: SearchDataInterface;
-        data = {
-            begin: '05.08.2018',
-            end: '12.08.2018',
-            adults: 2
-        };
+    protected onStopSearch(requestResults: any): void {
+        console.log(requestResults);
+        this.writer.showStopSearch();
+    }
 
-        return data;
+    protected drawResults(data): void {
+        const searchResults: SearchResultType[] = data.results;
+        this.writer.drawResults(searchResults);
+    }
+
+    protected getSearchConditions() {
+        return  this.searchDataReceiver.getSearchConditionsData();
+
+
+        //
+        // let data: SearchDataType;
+        // data = {
+        //     begin: '05.09.2018',
+        //     end: '19.09.2018',
+        //     adults: 2
+        // };
+        //
+        // return data;
     }
 
 }
