@@ -338,7 +338,7 @@ SorterDate.prototype.init = function () {
         var $specs = $('#block_spec_container .oneblockspec');
         var $sorted = that.sort($specs);
         that.direction = !that.direction;
-        $('#block_spec_container').fadeOut().empty().append($sorted);
+        $('#block_spec_container').empty().append($sorted);
         that.initSpecialsFunction();
     });
 };
