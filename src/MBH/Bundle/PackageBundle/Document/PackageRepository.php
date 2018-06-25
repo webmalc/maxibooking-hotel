@@ -969,6 +969,9 @@ class PackageRepository extends DocumentRepository
             }
         }
 
+        $queryBuilder->addAnd(
+            $queryBuilder->expr()->field('deletedAt')->equals(null)
+        );
         return $queryBuilder->getQuery()->count();
     }
 
