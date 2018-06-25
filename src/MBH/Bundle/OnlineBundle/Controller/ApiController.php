@@ -174,23 +174,26 @@ class ApiController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $logger = $this->get('mbh.online.logger');
-        $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP' . $request->getClientIp() . '. Post data: ' . implode('; ',
-                $_POST) . ' . Keys: ' . implode('; ', array_keys($_POST));
-
+        $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP'.$request->getClientIp(
+            ).'. Post data: '.implode(
+                '; ',
+                $_POST
+            ).' . Keys: '.implode('; ', array_keys($_POST));
 
         if (!$clientConfig) {
-            $logger->info('FAIL. ' . $logText . ' .Not found config');
+            $logger->info('FAIL. '.$logText.' .Not found config');
             throw $this->createNotFoundException();
         }
-        $response = $clientConfig->checkRequest($request);
+        $holder = $clientConfig->checkRequest($request, $clientConfig);
 
-        if (!$response) {
-            $logger->info('FAIL. ' . $logText . ' .Bad signature');
+        if (!$holder->isSuccess()) {
+            $logger->info('FAIL. '.$logText.' .Bad signature');
+            $holder->getIndividualErrorResponse();
             throw $this->createNotFoundException();
         }
 
         //save cashDocument
-        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
+        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($holder->getDoc());
 
         if ($cashDocument && !$cashDocument->getIsPaid()) {
             $cashDocument->setIsPaid(true);
@@ -198,10 +201,10 @@ class ApiController extends Controller
             $dm->flush();
 
             //save commission
-            if (isset($response['commission']) && is_numeric($response['commission'])) {
+            if ($holder->getCommission() !== null && is_numeric($holder->getCommission())) {
                 $commission = clone $cashDocument;
-                $commissionTotal = (float)$response['commission'];
-                if (isset($response['commissionPercent']) && $response['commissionPercent']) {
+                $commissionTotal = (float)$holder->getCommission();
+                if ($holder->getCommissionPercent()) {
                     $commissionTotal = $commissionTotal * $cashDocument->getTotal();
                 }
                 $commission->setTotal($commissionTotal)
@@ -258,7 +261,7 @@ class ApiController extends Controller
 
         $logger->info('OK. ' . $logText);
 
-        return new Response($response['text']);
+        return $holder->getIndividualSuccessResponse($this) ?? new Response($holder->getText());
     }
 
     /**

@@ -8,3 +8,7 @@ services:
     mbh.online.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.online.log", 200]
+
+    mbh.online.search_order:
+        class: MBH\Bundle\OnlineBundle\Lib\SearchForm
+        arguments: ['@service_container']

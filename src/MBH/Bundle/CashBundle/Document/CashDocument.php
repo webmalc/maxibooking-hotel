@@ -30,6 +30,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class CashDocument extends Base
 {
+    const METHOD_ELECTRONIC = "electronic";
+    const METHOD_CASHLESS = "cashless";
+    const METHOD_CASH = "cash";
+
+    const OPERATION_IN = 'in';
+    const OPERATION_OUT = 'out';
+    const OPERATION_FINE = 'fine';
+    const OPERATION_FEE = 'fee';
 
     /**
      * Hook timestampable behavior

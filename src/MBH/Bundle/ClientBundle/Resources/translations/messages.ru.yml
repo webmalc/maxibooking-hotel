@@ -27,6 +27,11 @@ form.clientPaymentSystemType.rbk_secret_key: Ключ магазина (secretKe
 form.clientPaymentSystemType.shop_login: Логин магазина
 form.clientPaymentSystemType.password_one: Пароль 1
 form.clientPaymentSystemType.password_two: Пароль 2
+form.clientPaymentSystemType.newRbk_ApiKey: 'Ключ API'
+form.clientPaymentSystemType.newRbk_WebhookApi: 'Ключ Webhook'
+form.clientPaymentSystemType.newRbk_ShopId: 'ID магазина (Shop_ID)'
+form.clientPaymentSystemType.newRbk_LifetimeInvoice: 'Время жизни инвойса'
+form.clientPaymentSystemType.uniteller.taxation_rate_code: 'Код ставки налогообложения'
 form.clientPaymentSystemType.extended_account_number: Номер расширенного счета
 form.clientPaymentSystemType.data_integrity_code: Код проверки целостности данных
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'

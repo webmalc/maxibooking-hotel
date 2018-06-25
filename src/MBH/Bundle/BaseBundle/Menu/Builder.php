@@ -557,6 +557,16 @@ class Builder
             ],
         ];
 
+        $paymentForm = [
+            'payment_form' => [
+                'options'    => [
+                    'route' => 'online_payment_form',
+                    'label' => 'menu.communication.label.online_payment_form',
+                ],
+                'attributes' => ['icon' => 'fa fa-money'],
+            ],
+        ];
+
         $onlinePolls = [
             'online_polls' => [
                 'options'    => [
@@ -588,6 +598,7 @@ class Builder
             $expedia,
             $hundredOneHotel,
             $onlineForm,
+            $paymentForm,
             $onlinePolls,
             $invite
         ]));

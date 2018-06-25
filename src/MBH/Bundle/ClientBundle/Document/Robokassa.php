@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -137,28 +138,30 @@ class Robokassa  implements PaymentSystemInterface
         );
     }
 
-    public function checkRequest(Request $request)
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $cashDocumentId = $request->get('Shp_id');
         $invId = $request->get('InvId');
         $total = $request->get('OutSum');
         $requestSignature = $request->get('SignatureValue');
 
+        $holder = new CheckResultHolder();
+
         if (!$cashDocumentId) {
-            return false;
+            return $holder;
         }
         $signature = $total . ':' . $invId . ':' .  $this->getRobokassaMerchantPass2() . ':Shp_id=' . $cashDocumentId;
         $signature = strtoupper(md5($signature));
 
         if ($signature != $requestSignature) {
-            return false;
+            return $holder;
         }
 
-        return [
-            'doc' => $cashDocumentId,
+        return $holder->parseData([
+            'doc'  => $cashDocumentId,
             //'commission' => self::COMMISSION,
             //'commissionPercent' => true,
-            'text' => 'OK' . $invId
-        ];
+            'text' => 'OK' . $invId,
+        ]);
     }
 }

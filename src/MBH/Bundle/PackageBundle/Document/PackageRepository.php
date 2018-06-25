@@ -1024,6 +1024,9 @@ class PackageRepository extends DocumentRepository
                     ->field('end')->lte(new \DateTime('midnight'));
             }
         }
+        $queryBuilder->addAnd(
+          $queryBuilder->expr()->field('deletedAt')->equals(null)
+        );
         return $queryBuilder->getQuery()->count();
     }
 
