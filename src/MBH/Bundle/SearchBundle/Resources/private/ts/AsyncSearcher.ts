@@ -1,7 +1,7 @@
 ///<reference path="Searcher.ts"/>
 class AsyncSearcher extends Searcher {
 
-    private readonly requestThreshold: number = 2;
+    private readonly requestThreshold: number = 10;
 
     public constructor(buttonId: string, writer: Writer, dataReceiver: DataReceiverInterface) {
         super(buttonId, writer, dataReceiver);
@@ -24,9 +24,14 @@ class AsyncSearcher extends Searcher {
             let error: boolean = false;
             const resultRoute = Routing.generate('search_async_results', {id: conditionsResults.conditionsId});
             do {
-                requestResults = $.get(resultRoute);
                 try {
-                    const data = await requestResults;
+                    requestResults = ajax = $.ajax({
+                        url: resultRoute,
+                        type: "POST",
+                        dataType: "json",
+                        data: JSON.stringify([])
+                    });
+                    let data = await requestResults;
                     this.drawResults(data);
                 } catch (err) {
                     error = true;

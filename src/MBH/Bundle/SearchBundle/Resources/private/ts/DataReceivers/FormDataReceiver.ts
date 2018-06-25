@@ -12,11 +12,11 @@ class FormDataReceiver implements DataReceiverInterface {
         data = {
             begin: String(this.getFormField('begin')),
             end: String(this.getFormField('end')),
-            adults: Number(this.getFormField('adults'))/*,
-            children: this.getFormField('children'),
+            adults: Number(this.getFormField('adults')),
+            additionalBegin: Number(this.getFormField('additionalBegin')),
+            additionalEnd: Number(this.getFormField('additionalEnd')),
+            /*children: this.getFormField('children'),
             childrenAges: this.getFormField('childrenAges'),
-            additionalBegin: this.getFormField('additionalBegin'),
-            additionalEnd: this.getFormField('additionalEnd'),
             roomTypes: this.getFormField('roomTypes'),*/
         };
 

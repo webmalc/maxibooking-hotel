@@ -3,6 +3,7 @@
 class Writer {
     private $resultsContainer: JQuery;
     private template: string = "<p>{{roomType}}</p>";
+    private countTemplate: string = "<p>{{count}}</p>";
     constructor(resultId: string) {
         this.$resultsContainer = $(`#${resultId}`);
     }
@@ -17,10 +18,15 @@ class Writer {
 
     public drawResults(results: SearchResultType[]): void {
 
-        for (let result of results) {
-            let html = this.render(result);
-            this.$resultsContainer.append($(html));
-        }
+        let view = {
+            count: results.length
+        };
+        let html = Mustache.render(this.countTemplate, view);
+        this.$resultsContainer.append($(html));
+        // for (let result of results) {
+        //     let html = this.render(result);
+        //     this.$resultsContainer.append($(html));
+        // }
         // const drawData = this.sortByRoomType(results);
         // for (let result of drawData) {
         //     let html = this.render(result);

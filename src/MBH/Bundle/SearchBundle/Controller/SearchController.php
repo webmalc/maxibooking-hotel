@@ -64,7 +64,7 @@ class SearchController extends Controller
 
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
-        $search->setAsyncQueriesChunk(200);
+        $search->setAsyncQueriesChunk(400);
 
 
         try {
@@ -89,8 +89,9 @@ class SearchController extends Controller
     {
         $receiver = $this->get('mbh__search.async_result_receiver');
         try {
-            $results = $receiver->receive($conditions);
-            $answer = new JsonResponse(['results' => $results]);
+            $results = array_values($receiver->receive($conditions));
+            $json = json_encode(['results' => $results]);
+            $answer = new JsonResponse($json, 200, [], true);
         } catch (AsyncResultReceiverException $exception) {
             $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage()], 204);
         }
