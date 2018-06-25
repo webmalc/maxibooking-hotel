@@ -162,10 +162,6 @@ class NewRbk implements PaymentSystemInterface
 
         $webhook = Webhook::parseAndCreate($check->getContent());
 
-        $a = $webhook->getEventType() != Webhook::PAYMENT_CAPTURED;
-        $b = $webhook->getTopic() != Webhook::INVOICES_TOPIC;
-
-
         if ($webhook->getEventType() != Webhook::PAYMENT_CAPTURED ||
             $webhook->getTopic() != Webhook::INVOICES_TOPIC) {
             return $holder;
