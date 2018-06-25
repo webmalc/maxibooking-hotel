@@ -16,8 +16,8 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class SiteManager
 {
-    const DEFAULT_RESULTS_PAGE = '/results';
-    const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies?q';
+    const DEFAULT_RESULTS_PAGE = '/results/index.html';
+    const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies/index.html?q';
     const DEFAULT_BOOTSTRAP_THEME = 'cerulean';
     const SITE_DOMAIN = '.maaaxi.com';
     const SITE_PROTOCOL = 'https://';
