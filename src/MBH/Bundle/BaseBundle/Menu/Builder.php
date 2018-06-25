@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\BaseBundle\Menu;
 
+use Documents\User;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
+use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -14,8 +16,6 @@ class Builder
     const ROOT_MENU_ITEM_MANAGEMENT_MENU = 'management-menu';
 
     const ROOT_MENU_ITEM_MAIN_MENU = 'main-menu';
-
-    const PORTER_LINKS = 'porter_links';
 
     /**
      * @var \MBH\Bundle\ClientBundle\Document\ClientConfig
@@ -52,6 +52,11 @@ class Builder
      */
     private $security;
 
+    /**
+     * @var int
+     */
+    protected $counter = 0;
+
     public function __construct(FactoryInterface $factory, ContainerInterface $container)
     {
         $this->factory = $factory;
@@ -64,15 +69,6 @@ class Builder
         $this->setConfig();
     }
 
-    protected function setConfig()
-    {
-        if (!$this->config) {
-            $this->config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        }
-    }
-
-    protected $counter = 0;
-
     /**
      * Main menu
      * @param \Knp\Menu\FactoryInterface $factory
@@ -83,9 +79,6 @@ class Builder
     {
         $this->setConfig();
         $this->parseOptions($options);
-
-        /** @var UserInterface $user */
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
         $packages = [
             'package' => [
@@ -306,6 +299,13 @@ class Builder
         return $menu;
     }
 
+    protected function setConfig()
+    {
+        if (!$this->config) {
+            $this->config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        }
+    }
+
     /**
      * @param ItemInterface $menu
      * @return ItemInterface
@@ -383,8 +383,9 @@ class Builder
 
         $menu->setChildrenAttributes(
             [
-                'class' => implode(' ', $cssClass),
-                'id'    => $id,
+                'class'           => implode(' ', $cssClass),
+                'id'              => $id,
+                'enabledCollapse' => $collapse,
             ]
         );
         $menu->setLabel($label);
@@ -434,6 +435,9 @@ class Builder
     {
         $items = [];
         foreach ($data as $item) {
+            if ($item === []) {
+                continue;
+            }
             $items[array_keys($item)[0]] = $this->createItem($item);
         }
 
@@ -1231,25 +1235,57 @@ class Builder
             ],
         ];
 
+        $parent = $this->createItem($serviceHotel);
+
+        return $parent->setChildren(
+            $this->getItemsInArray([
+                $this->getTask(),
+                $warehouse,
+                $restaurant,
+            ])
+        );
+    }
+
+    private function getTask(): array
+    {
+        /** @var User $user */
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
+
+        $taskAttributes = ['icon' => 'fa fa-tasks'];
+
+        if ($user instanceof User) {
+            //Tasks links
+            $queryCriteria = new TaskQueryCriteria();
+            $queryCriteria->userGroups = $user->getGroups();
+            $queryCriteria->performer = $user;
+            $queryCriteria->onlyOwned = true;
+            $queryCriteria->status = 'open';
+            $queryCriteria->hotel = $hotel;
+
+            $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
+
+            if ($openTaskCount > 0) {
+                $taskAttributes += [
+                    'badge' => true,
+                    'badge_class' => 'bg-red',
+                    'badge_id' => 'task-counter',
+                    'badge_value' => $openTaskCount
+                ];
+            }
+        }
+
         $task = [
             'task' => [
                 'options'    => [
                     'route' => 'task',
                     'label' => 'menu.label.task',
                 ],
-                'attributes' => ['icon' => 'fa fa-tasks'],
+                'attributes' => $taskAttributes,
             ],
         ];
 
-        $parent = $this->createItem($serviceHotel);
-
-        return $parent->setChildren(
-            $this->getItemsInArray([
-                $task,
-                $warehouse,
-                $restaurant,
-            ])
-        );
+        return $task;
     }
 
     /**
@@ -1266,6 +1302,7 @@ class Builder
         $porterBadges = [];
         if ($arrivals) {
             $porterBadges += [
+                'badge' => true,
                 'badge_left'       => true,
                 'badge_class_left' => 'bg-red badge-sidebar-left badge-sidebar-margin',
                 'badge_id_left'    => 'arrivals',
@@ -1275,6 +1312,7 @@ class Builder
         }
         if ($out) {
             $porterBadges += [
+                'badge' => true,
                 'badge_right'       => true,
                 'badge_class_right' => 'bg-green badge-sidebar-right badge-sidebar-margin',
                 'badge_id_right'    => 'out',
