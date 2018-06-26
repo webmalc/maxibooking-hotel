@@ -102,7 +102,7 @@ class CheckWebhook
      */
     private function getSignatureFromHeader(): string
     {
-        $contentSignature = $_SERVER['HTTP_CONTENT_SIGNATURE'];
+        $contentSignature = $_SERVER['HTTP_CONTENT_SIGNATURE'] ?? '';
 
         $signatureFromHeader = preg_replace("/alg=(\S+);\sdigest=/", '', $contentSignature);
 
