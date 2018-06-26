@@ -1,3 +1,4 @@
+{% spaceless %}
 {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title =  'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
@@ -108,7 +109,7 @@
                                         {% endif %}
 
 
-                                        <!-- Confirmation: begin -->
+                                        {#<!-- Confirmation: begin -->#}
                                         {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_CASH_CONFIRM') %}
                                             <a data-action='cashDocumentConfirmation'
                                                data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}'
@@ -122,36 +123,37 @@
                                                 <i class='fa fa-check'></i>
                                             </a>
                                         {% endif %}
-                                        <!-- Confirmation: end -->
+                                        {#<!-- Confirmation: end -->#}
 
+                                        {# Для платежной системы newRbk, не реализована оплата здесь #}
 
-                                        {% if not cash.isPaid and is_granted('ROLE_CASH_EDIT') %}
-                                            {% if cash.operation == 'in' and cash.method == 'electronic' %}
-                                                {% if clientConfig and clientConfig.paymentSystem %}
-                                                    <div class="btn-group">
-                                                        <button type="button"
-                                                                class="btn btn-xs btn-info dropdown-toggle"
-                                                                data-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="false">
-                                                            <i class="fa fa-cc-visa"></i>&nbsp; <span
-                                                                    class="caret"></span>
-                                                        </button>
-                                                        <ul class="dropdown-menu dropdown-buttons">
-                                                            <li>
-                                                                {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': false})} %}
-                                                            </li>
-                                                            <!--{% if clientConfig.paymentSystem == 'uniteller' and entity.creditCard and entity.creditCard.cvc %}
-                                                        <li>
-                                                            <button onclick="location.href = '{{ path('cash_card_money', {'id': cash.id}) }}'" class="btn btn-warning btn-xs"><i class="{{ currency().icon }}"></i>&nbsp;списать</button>
-                                                        </li>
-                                                        {% endif %}-->
-                                                        </ul>
-                                                    </div>
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endif %}
+                                        {#{% if not cash.isPaid and is_granted('ROLE_CASH_EDIT') %}#}
+                                            {#{% if cash.operation == 'in' and cash.method == 'electronic' %}#}
+                                                {#{% if clientConfig and clientConfig.paymentSystem %}#}
+                                                    {#<div class="btn-group">#}
+                                                        {#<button type="button"#}
+                                                                {#class="btn btn-xs btn-info dropdown-toggle"#}
+                                                                {#data-toggle="dropdown" aria-haspopup="true"#}
+                                                                {#aria-expanded="false">#}
+                                                            {#<i class="fa fa-cc-visa"></i>&nbsp; <span#}
+                                                                    {#class="caret"></span>#}
+                                                        {#</button>#}
+                                                        {#<ul class="dropdown-menu dropdown-buttons">#}
+                                                            {#<li>#}
+                                                                {#{% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': false})} %}#}
+                                                            {#</li>#}
+                                                            {#<!--{% if clientConfig.paymentSystem == 'uniteller' and entity.creditCard and entity.creditCard.cvc %}#}
+                                                        {#<li>#}
+                                                            {#<button onclick="location.href = '{{ path('cash_card_money', {'id': cash.id}) }}'" class="btn btn-warning btn-xs"><i class="{{ currency().icon }}"></i>&nbsp;списать</button>#}
+                                                        {#</li>#}
+                                                        {#{% endif %}-->#}
+                                                        {#</ul>#}
+                                                    {#</div>#}
+                                                {#{% endif %}#}
+                                            {#{% endif %}#}
+                                        {#{% endif %}#}
 
-                                        <!-- Editing: begin -->
+                                        {#<!-- Editing: begin -->#}
                                         {% if is_granted('ROLE_CASH_EDIT') and (is_granted('ROLE_CASH_CONFIRM') or cash.isConfirmed is empty) %}
                                             <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}"
                                                class="btn btn-success btn-xs"
@@ -160,9 +162,9 @@
                                                 <i class="fa fa-pencil-square-o"></i>
                                             </a>
                                         {% endif %}
-                                        <!-- Editing: end -->
+                                        {#<!-- Editing: end -->#}
 
-                                        <!-- Deleting: begin -->
+                                        {#<!-- Deleting: begin -->#}
                                         {% if not cash.deletedAt and is_granted('ROLE_CASH_DELETE') and (is_granted('ROLE_CASH_CONFIRM') or not cash.isConfirmed) %}
                                             <a href="{{ path('package_order_cash_delete', { 'id': entity.id, 'cash': cash.id, 'packageId': package.id }) }}"
                                                class="btn btn-danger btn-xs delete-link "
@@ -171,7 +173,7 @@
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
                                         {% endif %}
-                                        <!-- Deleting: end -->
+                                        {#<!-- Deleting: end -->#}
 
 
                                     {% endif %}
@@ -205,4 +207,4 @@
     </div>
 
 {% endblock %}
-
+{% endspaceless %}
