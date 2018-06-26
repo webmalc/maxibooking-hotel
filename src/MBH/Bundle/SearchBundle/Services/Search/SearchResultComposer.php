@@ -41,14 +41,14 @@ class SearchResultComposer
         $this->calculation = $calculation;
         $this->dataHolder = $dataHolder;
         $this->limitChecker = $limitChecker;
-
     }
 
 
-    public function composeResult(SearchQuery $searchQuery, array $roomCaches): SearchResult
+    public function composeResult(SearchQuery $searchQuery): SearchResult
     {
+        $roomCaches = $this->dataHolder->getNecessaryRoomCaches($searchQuery);
         //** TODO: Можно не передавать сюда roomCaches, а брать тут, но тогда
-        // но там сложность в лимитах по тарифам. Надо подумать как это реализовать тут, а не выше
+        // там сложность в лимитах по тарифам. Надо подумать как это реализовать тут, а не выше
         //  */
         $searchResult = new SearchResult();
         $roomType = $this->dataHolder->getFetchedRoomType($searchQuery->getRoomTypeId());

@@ -47,12 +47,13 @@ class SearchLimitChecker
 
 
     /**
-     * @param string $tariffId
+     * @param SearchQuery $searchQuery
      * @throws SearchLimitCheckerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException
      */
-    public function checkDateLimit(string $tariffId): void
+    public function checkDateLimit(SearchQuery $searchQuery): void
     {
+        $tariffId = $searchQuery->getTariffId();
         $tariff = $this->dataHolder->getFetchedTariff($tariffId);
 
         $tariffBegin = $tariff->getBegin();
@@ -236,8 +237,11 @@ class SearchLimitChecker
 
 
 
-    public function checkRoomCacheLimit(array $roomCaches, string $currentTariffId, int $duration): array
+    public function checkRoomCacheLimit(SearchQuery $searchQuery): array
     {
+        $roomCaches = $this->dataHolder->getNecessaryRoomCaches($searchQuery);
+        $currentTariffId = $searchQuery->getTariffId();
+        $duration = $searchQuery->getDuration();
         $currentTariff = $this->dataHolder->getFetchedTariff($currentTariffId);
 
         $roomCachesWithNoQuotas = array_filter(

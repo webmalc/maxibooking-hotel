@@ -2,19 +2,12 @@
 
 namespace Tests\Bundle\SearchBundle\Services;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
-use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
-use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\RestrictionsCheckerInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
-use MongoDB\BSON\ObjectId;
 
 class RestrictionsCheckerServiceTest extends WebTestCase
 {

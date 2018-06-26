@@ -56,6 +56,7 @@ class SearchTest extends SearchWebTestCase
         $this->getContainer()->set('old_sound_rabbit_mq.async_search_producer', $producer);
         $conditionData = $this->createConditionData($data);
         $search = $this->getContainer()->get('mbh_search.search');
+        $search->setAsyncQueriesChunk(2);
         /** @var SearchResultHolder $actual */
         $actual = $search->searchAsync($conditionData);
 

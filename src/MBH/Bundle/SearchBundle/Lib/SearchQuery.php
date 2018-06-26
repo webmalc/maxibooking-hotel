@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Lib;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class SearchQuery
@@ -16,16 +17,19 @@ class SearchQuery
 {
     /**
      * @var \DateTime
+     * @Assert\NotNull()
      */
     private $begin;
 
     /**
      * @var \DateTime
+     * @Assert\NotNull()
      */
     private $end;
 
     /**
      * @var string
+     * @Assert\NotNull()
      */
     private $tariffId;
 
@@ -34,6 +38,7 @@ class SearchQuery
 
     /**
      * @var string
+     * @Assert\NotNull()
      */
     private $roomTypeId;
 

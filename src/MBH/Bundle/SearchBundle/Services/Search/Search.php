@@ -21,7 +21,7 @@ use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 class Search
 {
     /** @var int  */
-    public const QUERIES_CHUNK_NUM = 2;
+    public const QUERIES_CHUNK_NUM = 20;
 
     /** @var bool  */
     public const PRE_RESTRICTION_CHECK = true;

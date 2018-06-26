@@ -5,12 +5,8 @@ namespace MBH\Bundle\SearchBundle\Services;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
@@ -60,6 +56,7 @@ class SearchQueryGenerator
         $hotelIds = $this->getEntryIds($conditions->getHotels());
         $rawTariffIds = $this->getEntryIds($conditions->getTariffs()->toArray());
         $tariffs = $this->getTariffs($rawTariffIds, $hotelIds, $conditions->isOnline());
+
         $rawRoomTypeIds = $this->getEntryIds($conditions->getRoomTypes());
         $roomTypeIds = $this->getRoomTypeIds($rawRoomTypeIds, $hotelIds);
 
@@ -205,6 +202,13 @@ class SearchQueryGenerator
 
     private function mixRoomTypeTariff(array $roomTypes, array $tariffs): array
     {
+        //** TODO: Тут rawTariff передается чтоб забрать из него настройки возрастов в тарифе
+        // т.к. у нас появляются merged тарифы, настройки будем брать из них. значит это убирать
+        // так же остается вопрос с restrictionTariffId ибо нужно будет брать restrictions взависимости
+        // от того какой тарифф мы получаем потом в mergedPriceCache
+        //
+        // */
+
         $values = [];
         foreach ($roomTypes as $roomType) {
             foreach ($tariffs as $tariff) {

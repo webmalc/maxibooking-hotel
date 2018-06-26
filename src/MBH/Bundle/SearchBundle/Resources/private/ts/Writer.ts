@@ -20,7 +20,7 @@ class Writer {
 
         let view = {
             count: results.length
-        };
+        }
         let html = Mustache.render(this.countTemplate, view);
         this.$resultsContainer.append($(html));
         // for (let result of results) {

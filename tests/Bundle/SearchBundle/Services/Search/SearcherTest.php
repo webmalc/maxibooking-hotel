@@ -4,13 +4,8 @@
 namespace Tests\Bundle\SearchBundle\Services\Search;
 
 
-use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
-use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Search\Searcher;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class SearcherTest extends SearchWebTestCase
@@ -18,7 +13,7 @@ class SearcherTest extends SearchWebTestCase
     /** @dataProvider dataProvider */
     public function testSearch($data)
     {
-        $searchQueries = $this->createSearchQueries($data);
+        $searchQueries = $this->createSearchQueries($data['conditions']);
 
         $searcher = $this->getContainer()->get('mbh_search.searcher');
 
@@ -29,22 +24,34 @@ class SearcherTest extends SearchWebTestCase
                 $errors['searchError'][] = $e->getMessage();
             }
         }
-
-        $this->assertTrue(true);
+        $expected = $data['expected'];
+        /** @noinspection PhpUndefinedVariableInspection */
+        $this->assertCount($expected['resultsCount'], $actual);
+        /** @var SearchResult $actualSearchResult */
+        $actualSearchResult = reset($actual);
+        $this->assertEquals($expected['prices']['1_1'], $actualSearchResult->getPrices()['1_1']);
     }
 
     public function dataProvider(): iterable
     {
         yield [
             [
-                'beginOffset' => 1,
-                'endOffset' => 8,
-                'tariffFullTitle' => '',
-                'roomTypeFullTitle' => '',
-                'hotelFullTitle' => 'Отель Волга',
-                'adults' => 1,
-                'children' => 1,
-                'childrenAges' => [5],
+                'conditions' => [
+                    'beginOffset' => 2,
+                    'endOffset' => 4,
+                    'tariffFullTitle' => '',
+                    'roomTypeFullTitle' => 'Люкс',
+                    'hotelFullTitle' => 'Отель Волга',
+                    'adults' => 1,
+                    'children' => 1,
+                    'childrenAges' => [5],
+                ],
+                'expected' => [
+                    'resultsCount' => 1,
+                    'prices' => ['1_1' => 4400 ]
+
+                ]
+
             ]
         ];
     }

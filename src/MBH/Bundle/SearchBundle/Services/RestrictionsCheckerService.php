@@ -4,17 +4,10 @@
 namespace MBH\Bundle\SearchBundle\Services;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\PriceBundle\Document\Restriction;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerServiceException;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\RestrictionsCheckerInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class RestrictionsCheckerService
 {

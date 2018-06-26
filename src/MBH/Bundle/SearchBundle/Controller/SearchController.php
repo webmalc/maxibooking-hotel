@@ -21,8 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 class SearchController extends Controller
 {
 
-    public const PRE_RESTRICTION_CHECK = true;
-
     //      condition="request.headers.get('Content-Type') matches '/application\\/json/i'"
 
     /**
@@ -64,7 +62,7 @@ class SearchController extends Controller
 
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
-        $search->setAsyncQueriesChunk(400);
+        $search->setAsyncQueriesChunk(300);
 
 
         try {

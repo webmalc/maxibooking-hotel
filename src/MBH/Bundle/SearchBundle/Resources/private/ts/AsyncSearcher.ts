@@ -1,7 +1,7 @@
 ///<reference path="Searcher.ts"/>
 class AsyncSearcher extends Searcher {
 
-    private readonly requestThreshold: number = 10;
+    private readonly requestThreshold: number = 25;
 
     public constructor(buttonId: string, writer: Writer, dataReceiver: DataReceiverInterface) {
         super(buttonId, writer, dataReceiver);
