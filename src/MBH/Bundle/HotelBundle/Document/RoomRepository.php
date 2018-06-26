@@ -396,6 +396,7 @@ class RoomRepository extends AbstractBaseRepository
      * @param bool $includeWithoutStatuses
      * @param bool $isOnlyEnabled
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getNumberOfRoomsByRoomTypeIds($statusIds = null, $includeWithoutStatuses = true, $isOnlyEnabled = false)
     {
@@ -413,10 +414,10 @@ class RoomRepository extends AbstractBaseRepository
         $roomsQuantityByRoomTypeIds = $qb
             ->map('function() {
                 var roomTypeId = this.roomType.$id;
-                emit(roomTypeId.valueOf(), this);
+                emit(roomTypeId.valueOf(), 1);
             }')
             ->reduce('function(key, values) {
-                return values.length;
+                return Array.sum(values);
             }')
             ->getQuery()
             ->execute()

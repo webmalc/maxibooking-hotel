@@ -1,12 +1,60 @@
 {% extends 'MBHChannelManagerBundle:ChannelManager:layout.html.twig' %}
 
+{% set layout = 'tabs' %}
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle') %}
+{% if config is not defined %}
+    {% set config = null %}
+{% endif %}
+
+{% set isConnectionRequestSent = config and config.hotelId and config.id %}
+{% if config is not defined %}
+    {% set config = null %}
+{% endif %}
+
 {% block content %}
-    <div id="channel-manager-instruction">
-        {{ infoMessage|trans }}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 0, 'base': 'booking'} %}
+
+    <div class="tab-content">
+        <div id="channel-manager-instruction" class="well">
+            {{ infoMessage|trans }}
+        </div>
+
+        {% if hasForm %}
+        <div class="tab-pane active" id="home">
+            {% if config and config.hotelId and config.id %}
+                <div class="well" id="connection-request-sent-message">Заявка отправлена, ожидайте сообщения тех. поддержки</div>
+            {% else %}
+                {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+                {{ form_widget(form) }}
+                <div class="navbar">
+                    <div class="container-fluid">
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <button type="submit" name="save" class="btn btn-success navbar-btn"><i
+                                            class="fa fa-check-square-o"> </i> {{ 'Отправить заявку' }}
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            {% endif %}
+            {% endif %}
+
+            {% if is_mb_user() and (config is empty or config.hotelId) %}
+                {% embed '@MBHBase/Actions/base_list.html.twig' %}
+                    {% block left %}
+
+                        <li>
+                            <button id="confirm-config-button"
+                                    onclick="location.href = '{{ path('confirm_cm_config', {'channelManagerName': channelManagerName}) }}'"
+                                    class="btn btn-primary navbar-btn">
+                                <i class="fa fa-check"> </i> {{ 'views.actions.confirm'|trans({}, 'MBHBaseBundle') }}
+                            </button>
+                        </li>
+                    {% endblock %}
+                {% endembed %}
+            {% endif %}
+        </div>
     </div>
-    {% if hasForm %}
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        {{ form_end(form) }}
-    {% endif %}
 {% endblock %}

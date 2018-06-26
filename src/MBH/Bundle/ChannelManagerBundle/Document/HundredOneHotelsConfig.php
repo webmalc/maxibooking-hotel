@@ -73,6 +73,19 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
     protected $apiKey;
 
     /**
+     * @var array
+     * @ODM\EmbedMany(targetDocument="Tariff")
+     */
+    protected $tariffs;
+
+    public function __construct()
+    {
+        $this->rooms = new ArrayCollection();
+        $this->tariffs = new ArrayCollection();
+        $this->setReadinessConfirmed(false);
+    }
+
+    /**
      * @return string
      */
     public function getApiKey()
@@ -186,18 +199,6 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
         $this->tariffs->removeElement($tariff);
     }
 
-    /**
-     * @var array
-     * @ODM\EmbedMany(targetDocument="Tariff")
-     */
-    protected $tariffs;
-
-    public function __construct()
-    {
-        $this->rooms = new ArrayCollection();
-        $this->tariffs = new ArrayCollection();
-    }
-
     public function getHotelId()
     {
         return $this->hotelId;
@@ -206,6 +207,15 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
     public function setHotelId($hotelId)
     {
         $this->hotelId = $hotelId;
+
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMainSettingsFilled()
+    {
+        return $this->getIsEnabled() && !empty($this->getHotelId()) && $this->getApiKey();
     }
 }

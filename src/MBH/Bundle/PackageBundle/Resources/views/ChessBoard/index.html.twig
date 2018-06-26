@@ -21,24 +21,24 @@
 {% block scripts %}
     {{ parent() }}
     {% javascripts filter='uglifyjs2'
-    '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
-    'assets/vendor/admin-lte/plugins/bootstrap-slider/bootstrap-slider.js'
-    '@MBHPackageBundle/Resources/public/js/tourist.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
+        '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
+        'assets/vendor/admin-lte/plugins/bootstrap-slider/bootstrap-slider.js'
+        '@MBHPackageBundle/Resources/public/js/tourist.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
 
-    <script type="text/javascript" src="{{ asset_url }}"></script>
+        <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
 
 {% block styles %}
     {{ parent() }}
     {% stylesheets filter='cssrewrite, uglifycss'
-    '@MBHPackageBundle/Resources/public/css/*'
-    'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
+        '@MBHPackageBundle/Resources/public/css/*'
+        'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
     {% set halfMinuend = (minuend / 2)|round %}
     {% set quarterMinuend = (minuend / 4)|round %}
@@ -175,26 +175,32 @@
             background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['danger_add'] }} 5px, {{ colors['danger_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .danger.tile-coming {
             background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['danger_add'] }} 3px, {{ colors['danger_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .success.tile-coming-out {
             background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['success_add'] }} 5px, {{ colors['success_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .success.tile-coming {
             background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['success_add'] }} 3px, {{ colors['success_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .warning.tile-coming-out {
             background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['warning_add'] }} 5px, {{ colors['warning_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .warning.tile-coming {
             background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['warning_add'] }} 3px, {{ colors['warning_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .ui-resizable-w.early-checkin-block {
             border-right-color: #000 !important;
         }
@@ -609,13 +615,15 @@
                         <div class="input">
                             <strong>{{ 'modal.chessBoard.payer'|trans }}</strong>&nbsp;
                             {{ form_widget(searchForm.tourist) }}&nbsp;
-                            <small>
-                                <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
-                                   title='{{ 'form.searchType.payer_add'|trans() }}'
-                                   data-toggle='tooltip'>
-                                    <i class="fa fa-plus"></i>
-                                </a>
-                            </small>
+                            {% if is_granted('ROLE_TOURIST_NEW') %}
+                                <small>
+                                    <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
+                                       title='{{ 'form.searchType.payer_add'|trans() }}'
+                                       data-toggle='tooltip'>
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                </small>
+                            {% endif %}
                         </div>
                         <div id="package-new-results"></div>
                     </div>

@@ -326,6 +326,17 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @return bool
+     */
+    public function isMBUser()
+    {
+        /** @var User $user */
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        return $user instanceof User && $user->getUsername() === UserData::MB_USER_USERNAME;
+    }
+
+    /**
      * @return array
      */
     public function getFunctions()
@@ -349,6 +360,7 @@ class Extension extends \Twig_Extension
             'get_imperial_city'       => new \Twig_SimpleFunction('get_imperial_city', [$this, 'getImperialAddressCity'], ['is_safe' => ['html']]),
             'get_imperial_street'     => new \Twig_SimpleFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], ['is_safe' => ['html']]),
             'get_twig_data'           => new \Twig_SimpleFunction('get_twig_data', [$this, 'getTwigData'], ['is_safe' => ['html']]),
+            'is_mb_user'              => new \Twig_SimpleFunction('is_mb_user', [$this, 'isMBUser'], ['is_safe' => ['html']]),
         ];
     }
 

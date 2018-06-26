@@ -90,7 +90,7 @@ services:
 
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
-      arguments: ['@mbh.currency']
+      arguments: ['@mbh.currency', '@translator']
       tags:
               - { name: form.type }
 
@@ -144,3 +144,23 @@ services:
 
     mbh.cm_wizard_manager:
         class: MBH\Bundle\ChannelManagerBundle\Services\CMWizardManager
+        arguments:
+            - '@mbh.channelmanager'
+
+    mbh.channel_manager_config_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\ChannelManagerConfigType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}
+
+    mbh.hundred_one_hotels_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\HundredOneHotelType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}
+
+    mbh.vash_otel_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\VashotelType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}

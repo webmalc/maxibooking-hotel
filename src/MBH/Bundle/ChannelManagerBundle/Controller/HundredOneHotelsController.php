@@ -34,6 +34,11 @@ class HundredOneHotelsController extends Controller
     {
         $config = $this->hotel->getHundredOneHotelsConfig();
 
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'hundred_one_hotels');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+
         $form = $this->createForm(HundredOneHotelType::class, $config);
 
         return [

@@ -5,7 +5,7 @@
 
 {% block content %}
 
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 4, 'entity': doc, 'base': 'ostrovok'} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 4, 'entity': config, 'base': 'ostrovok'} %}
 
     <div class="tab-content">
 
@@ -18,7 +18,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for service in doc.services %}
+            {% for service in config.services %}
                 <tr>
                     <td>{{ service.service.name }} <a class="external" target="_blank"
                                                       href="{{ path('price_service_category_entry_edit', {'id': service.service.id}) }}"><i
@@ -31,8 +31,8 @@
         </table>
 
         <div class="tab-pane active" id="home">
-            {% if doc %}
-                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
             {% endif %}
         </div>
     </div>

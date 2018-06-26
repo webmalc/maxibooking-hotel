@@ -4,7 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
-use MBH\Bundle\ChannelManagerBundle\Form\ExpediaType;
+use MBH\Bundle\ChannelManagerBundle\Form\ChannelManagerConfigType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -34,7 +34,15 @@ class ExpediaController extends Controller
     {
         $config = $this->hotel->getExpediaConfig();
 
-        $form = $this->createForm(ExpediaType::class, $config);
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'expedia');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+
+        $form = $this->createForm(ChannelManagerConfigType::class, $config, [
+            'data_class' => ExpediaConfig::class,
+            'channelManagerName' => 'Expedia Partner Central'
+        ]);
 
         return [
             'form' => $form->createView(),
@@ -60,7 +68,10 @@ class ExpediaController extends Controller
             $config->setHotel($this->hotel);
         }
 
-        $form = $this->createForm(ExpediaType::class, $config);
+        $form = $this->createForm(ChannelManagerConfigType::class, $config, [
+            'data_class' => ExpediaConfig::class,
+            'channelManagerName' => 'Expedia Partner Central'
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

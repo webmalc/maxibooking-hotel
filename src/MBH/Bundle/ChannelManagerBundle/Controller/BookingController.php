@@ -34,9 +34,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     public function indexAction()
     {
         $config = $this->hotel->getBookingConfig();
-        
-        if (is_null($config)) {
-            
+
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'booking');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
         }
         
         $form = $this->createForm(
@@ -45,7 +46,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         );
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
@@ -113,8 +114,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($config);
             $this->dm->flush();
 
-            $this->get('mbh.channelmanager.booking')->syncServices($config);
-            $this->get('mbh.channelmanager')->updateInBackground();
+//            $this->get('mbh.channelmanager.booking')->syncServices($config);
+//            $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
@@ -122,7 +123,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         }
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
@@ -259,7 +260,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         }
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'logs' => $this->logs($config)
         ];
     }

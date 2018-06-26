@@ -2,52 +2,61 @@
     {% set services = true %}
 {% endif %}
 
-{% set menu = [
+{% set menu = [] %}
+{% if  config is null or not config.isReadyToSync() %}
+    {% set menu = menu|merge([
+        {'route': base, 'title': '<i class="fa fa-book"></i> ' ~ 'Инструкция'},
+    ]) %}
+    {% set active = active + 1 %}
+{% endif %}
+
+{% set menu = menu|merge([
     {'route': base, 'title': '<i class="fa fa-info-circle"></i>'~'views.tabs.main_settings'|trans({}, 'MBHChannelManagerBundle')},
     {'route': base ~ '_room', 'title': '<i class="fa fa-bed"></i>'~'views.tabs.room_types'|trans({}, 'MBHChannelManagerBundle')},
     {'route': base ~ '_tariff', 'title': '<i class="fa fa-sliders"></i>'~'views.tabs.tariffs'|trans({}, 'MBHChannelManagerBundle')}
-]
-%}
+]) %}
 
 {% if services %}
     {% set menu = menu|merge([
-            {'route': base ~ '_service', 'title': '<i class="fa fa-plug"></i>'~'views.tabs.services'|trans({}, 'MBHChannelManagerBundle')}
-        ])
-    %}
+        {'route': base ~ '_service', 'title': '<i class="fa fa-plug"></i>'~'views.tabs.services'|trans({}, 'MBHChannelManagerBundle')}
+    ]) %}
 {% endif %}
 
-{% if entity and (entity.rooms.count == 0 or entity.tariffs.count == 0 or entity.hotelId is empty) %}
+{% if config is defined and config and (config.rooms.count == 0 or config.tariffs.count == 0 or config.hotelId is empty) and config.isReadyToSync() %}
     <div class="alert alert-danger">
         <i class="fa fa-exclamation-circle"></i>&nbsp;
         {{ 'channelmanager.empty.config'|trans({}, 'MBHChannelManagerBundle') }}
     </div>
 {% endif %}
 
-{% if entity %}
-{%  set notifications = mbh_channelmanager_get_notifications(entity) %}
-{% if notifications|length %}
-    <div class="alert alert-warning">
-        {% for entry in notifications %}
-            <p>
-                <i class="fa fa-exclamation-circle"></i>&nbsp;
-                {{ entry|trans }}
-            </p>
-        {% endfor %}
-    </div>
-{% endif %}
+{% if config %}
+    {% if notifications is not defined %}
+        {% set notifications = mbh_channelmanager_get_notifications(config) %}
+    {% endif %}
+
+    {% if notifications|length %}
+        <div class="alert alert-warning">
+            {% for entry in notifications %}
+                <p>
+                    <i class="fa fa-exclamation-circle"></i>&nbsp;
+                    {{ entry|trans }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endif %}
 
 <ul class="nav nav-tabs" role="tablist">
-{% for item in menu %}
-    {% if (entity is null or not entity.isEnabled) and loop.index != 1 %}
-        <li class="disabled">
-            <a href="#" role="tab" data-toggle="tooltip"
-               title="{{ 'views.tabs.must_fill_main_settings'|trans({}, 'MBHChannelManagerBundle') }}">{{ item.title|raw }}</a>
-        </li>
-    {% else  %}
-        <li {% if loop.index == active %}class="active"{% endif %}>
-            <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route) }}"{% endif %}>{{item.title|raw}}</a>
-        </li>
-    {% endif  %}
-{% endfor %}
+    {% for item in menu %}
+        {% if (config is null or not config.isEnabled or not config.isReadyToSync()) and loop.index != active %}
+            <li class="disabled">
+                <a href="#" role="tab">{{ item.title|raw }}</a>
+            </li>
+        {% else %}
+            <li {% if loop.index == active %}class="active"{% endif %}>
+                <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"
+                   {% else %}href="{{ path(item.route) }}"{% endif %}>{{ item.title|raw }}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
 </ul>

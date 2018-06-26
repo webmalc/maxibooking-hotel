@@ -99,7 +99,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
 
     /**
      * @var bool
-     * @ODM\Field(type="float")
+     * @ODM\Field(type="bool")
      */
     protected $isAllPackagesPulled = false;
 
@@ -171,6 +171,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
         $this->rooms = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->setReadinessConfirmed(false);
     }
     
     /**

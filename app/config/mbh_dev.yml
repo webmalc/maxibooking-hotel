@@ -24,11 +24,6 @@ parameters:
         hundred_one_hotels:
           title: '101 Отель'
           service: 'mbh.channelmanager.hundred_one_hotels'
-        oktogo:
-          title: 'Oktogo'
-          service: 'mbh.channelmanager.oktogo'
-          api_username: .maxiBooking_api
-          api_password: qdcmBz9K
         expedia:
           title: 'Expedia'
           service: 'mbh.channelmanager.expedia'

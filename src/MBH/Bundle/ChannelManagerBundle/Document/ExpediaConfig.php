@@ -129,6 +129,7 @@ class ExpediaConfig extends Base implements BaseInterface
         $this->rooms = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->setReadinessConfirmed(false);
     }
 
     /**

@@ -3,12 +3,18 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
+use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * @Route("/")
@@ -27,7 +33,7 @@ class ChannelManagerController extends Controller
         $result = $this->get('mbh.channelmanager')->pullOrders($name);
 
         if ($result && !empty($result[$name]['result'])) {
-            return  $this->get('mbh.channelmanager')->pushResponse($name, $request);
+            return $this->get('mbh.channelmanager')->pushResponse($name, $request);
         }
 
         throw $this->createNotFoundException();
@@ -38,6 +44,7 @@ class ChannelManagerController extends Controller
      *
      * @Route("/logs", name="channel_manager_logs")
      * @Method({"GET", "POST"})
+     * @param Request $request
      * @return Response|array
      * @Template()
      * @Security("is_granted('ROLE_ADMIN')")
@@ -53,9 +60,9 @@ class ChannelManagerController extends Controller
                 file_put_contents($file, '');
 
                 $this->addFlash(
-                        'success',
-                        $this->get('translator')->trans('controller.channel_manager_controller.logs_clear_successful')
-                    );
+                    'success',
+                    $this->get('translator')->trans('controller.channel_manager_controller.logs_clear_successful')
+                );
 
                 return $this->redirect($this->generateUrl('channel_manager_logs'));
             }
@@ -98,26 +105,82 @@ class ChannelManagerController extends Controller
     }
 
     /**
-     * @Route("/wizard_info/{channelManagerName}", name="wizard_info")
+     * @Method({"GET", "POST"})
+     * @Route("/{channelManagerName}/wizard_info", name="wizard_info")
      * @param string $channelManagerName
+     * @param Request $request
      * @Template()
-     * @return array
+     * @return Response
      */
-    public function wizardInfoAction(string $channelManagerName)
+    public function wizardInfoAction(string $channelManagerName, Request $request)
     {
-        if (!in_array($channelManagerName, array_keys($this->getParameter('mbh.channelmanager.services')))) {
-            throw new \InvalidArgumentException("Incorrect name of channel manager: $channelManagerName");
-        }
+        $channelManagerService = $this->get('mbh.channelmanager');
+        $channelManagerService->checkForCMExistence($channelManagerName, true);
 
         $infoMessage = 'controller.channelManagerController.wizard_info_text.' . $channelManagerName;
         $wizardManager = $this->get('mbh.cm_wizard_manager');
-        $hasForm = $wizardManager->hasIntroForm($channelManagerName);
-        $form = $hasForm ? $this->createForm($wizardManager->getIntroForm($channelManagerName))->createView() : null;
+        $hasForm = $wizardManager->isConfiguredByTechSupport($channelManagerName);
 
-        return [
+        $responseParams = [
             'infoMessage' => $infoMessage,
             'hasForm' => $hasForm,
-            'form' => $form
+            'channelManagerName' => $channelManagerName,
         ];
+
+        if ($hasForm) {
+            $configName = $channelManagerService->getServiceIdByName($channelManagerName)->getConfigFullName();
+
+            /** @var ChannelManagerConfigInterface|Base $config */
+            $config = $this->dm->getRepository($configName)->findOneBy(['hotel' => $this->hotel]);
+            if (is_null($config)) {
+                $config = (new $configName());
+                $config->setHotel($this->hotel);
+            }
+            $form = $this->createForm($wizardManager->getIntroForm($channelManagerName), $config, [
+                'data_class' => $configName
+            ]);
+
+            if ($request->isMethod('POST')) {
+                if (!empty($config->getId())) {
+                    throw new \RuntimeException($configName . ' for hotel with ID="' . $this->hotel->getId() . ' is already exists');
+                }
+
+                $form->handleRequest($request);
+                $this->dm->persist($config);
+                $this->dm->flush();
+                //TODO: Дополнить
+                $this->addFlash('success', 'Данные подключения отправлены в тех.поддержку.');
+            }
+
+            $responseParams = array_merge($responseParams, [
+                'form' => $form->createView(),
+                'config' => $config
+            ]);
+        }
+
+        return $responseParams;
+    }
+
+    /**
+     * @Route("/confirm_cm_config/{channelManagerName}", name="confirm_cm_config")
+     * @param string $channelManagerName
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function confirmConfigReadiness(string $channelManagerName)
+    {
+        if (!$this->getUser() instanceof User || $this->getUser()->getUsername() !== UserData::MB_USER_USERNAME) {
+            throw new AccessDeniedException('Confirm channel manager config can only mb user');
+        }
+
+        /** @var AbstractChannelManagerService $cmService */
+        $cmService = $this->get('mbh.channelmanager')->getServiceIdByName($channelManagerName);
+        $confirmationResult = $cmService->confirmReadinessOfCM($this->hotel, $channelManagerName);
+
+        if ($confirmationResult) {
+            $this->addFlash('success', 'channel_manager.confirmation.success');
+            //TODO: Добавить отправку сообшения
+        }
+
+        return $this->redirectToRoute($channelManagerName);
     }
 }
