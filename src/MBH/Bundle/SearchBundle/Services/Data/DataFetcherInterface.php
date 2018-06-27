@@ -4,9 +4,9 @@
 namespace MBH\Bundle\SearchBundle\Services\Data;
 
 
-use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Lib\Data\DataFetchQueryInterface;
 
 interface DataFetcherInterface
 {
-    public function fetchNecessaryDataSet(SearchQuery $searchQuery): array;
+    public function fetchNecessaryDataSet(DataFetchQueryInterface $searchQuery): array;
 }

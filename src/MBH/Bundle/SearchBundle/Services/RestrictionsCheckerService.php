@@ -4,10 +4,11 @@
 namespace MBH\Bundle\SearchBundle\Services;
 
 
-use MBH\Bundle\SearchBundle\Lib\DataHolder;
+use MBH\Bundle\SearchBundle\Lib\Data\RestrictionsFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\RestrictionsCheckerInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\Data\RestrictionsFetcher;
 
 class RestrictionsCheckerService
 {
@@ -16,15 +17,15 @@ class RestrictionsCheckerService
      */
     private $checkers;
 
-    /** @var DataHolder */
-    private $dataHolder;
+    /** @var RestrictionsFetcher */
+    private $restrictionFetcher;
 
     /** @var string[] */
     private $errors = [];
 
-    public function __construct(DataHolder $dataHolder)
+    public function __construct(RestrictionsFetcher $restrictionsFetcher)
     {
-        $this->dataHolder = $dataHolder;
+        $this->restrictionFetcher = $restrictionsFetcher;
     }
 
 
@@ -43,7 +44,8 @@ class RestrictionsCheckerService
         }
         $isError = false;
         if (!$searchQuery->isRestrictionsWhereChecked()) {
-            $restrictions = $this->dataHolder->getCheckNecessaryRestrictions($searchQuery);
+            $fetchQuery = RestrictionsFetchQuery::createInstanceFromSearchQuery($searchQuery);
+            $restrictions = $this->restrictionFetcher->fetchNecessaryDataSet($fetchQuery);
             if (!empty($restrictions)) {
                 foreach ($this->checkers as $checker) {
                     try {

@@ -9,10 +9,9 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
-use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class SharedDataHolderTest extends SearchWebTestCase
+class SharedDataFetcherTest extends SearchWebTestCase
 {
     /**
      * @dataProvider dataProvider

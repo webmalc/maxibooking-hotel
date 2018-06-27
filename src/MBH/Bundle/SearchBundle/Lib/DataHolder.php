@@ -22,6 +22,11 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
+/**
+ * Class DataHolder
+ * @deprecated 
+ * @package MBH\Bundle\SearchBundle\Lib
+ */
 class DataHolder
 {
     /** @var Tariff[] */

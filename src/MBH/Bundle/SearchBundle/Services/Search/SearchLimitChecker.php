@@ -16,9 +16,13 @@ use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
+use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
+use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
+use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcherInterface;
 
 class SearchLimitChecker
 {
@@ -32,29 +36,41 @@ class SearchLimitChecker
     /** @var DocumentManager */
     private $dm;
 
+    /** @var SharedDataFetcherInterface */
+    private $sharedDataFetcher;
+
+    /** @var RoomCacheFetcher */
+    private $roomCacheFetcher;
+
+
     /**
      * SearchLimitChecker constructor.
      * @param ClientConfigRepository $configRepository
      * @param DocumentManager $documentManager
      * @param DataHolder $dataHolder
+     * @param SharedDataFetcher $sharedDataFetcher
      */
-    public function __construct(ClientConfigRepository $configRepository, DocumentManager $documentManager, DataHolder $dataHolder)
+    public function __construct(
+        ClientConfigRepository $configRepository,
+        DocumentManager $documentManager,
+        DataHolder $dataHolder,
+        SharedDataFetcher $sharedDataFetcher,
+        RoomCacheFetcher $roomCacheFetcher
+)
     {
         $this->clientConfig = $configRepository->fetchConfig();
         $this->dm = $documentManager;
         $this->dataHolder = $dataHolder;
+        $this->sharedDataFetcher = $sharedDataFetcher;
+        $this->roomCacheFetcher = $roomCacheFetcher;
     }
 
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @throws SearchLimitCheckerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException
-     */
+
     public function checkDateLimit(SearchQuery $searchQuery): void
     {
         $tariffId = $searchQuery->getTariffId();
-        $tariff = $this->dataHolder->getFetchedTariff($tariffId);
+        $tariff = $this->sharedDataFetcher->getFetchedTariff($tariffId);
 
         $tariffBegin = $tariff->getBegin();
         $tariffEnd = $tariff->getEnd();
@@ -73,14 +89,15 @@ class SearchLimitChecker
         }
     }
 
+
     /**
      * @param SearchQuery $searchQuery
      * @throws SearchLimitCheckerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
     public function checkTariffConditions(SearchQuery $searchQuery): void
     {
-        $tariff = $this->dataHolder->getFetchedTariff($searchQuery->getTariffId());
+        $tariff = $this->sharedDataFetcher->getFetchedTariff($searchQuery->getTariffId());
         //** TODO: Уточнить у сергея, тут должны быть приведенные значения взрослых-детей или из запроса ибо в поиске из запрсоа. */
         $duration = $searchQuery->getDuration();
         $checkResult = PromotionConditionFactory::checkConditions(
@@ -95,14 +112,10 @@ class SearchLimitChecker
         }
     }
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @throws SearchLimitCheckerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException
-     */
+
     public function checkRoomTypePopulationLimit(SearchQuery $searchQuery): void
     {
-        $roomType = $this->dataHolder->getFetchedRoomType($searchQuery->getRoomTypeId());
+        $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
         $searchTotalPlaces = $searchQuery->getSearchTotalPlaces();
         $roomTypeTotalPlaces = $roomType->getTotalPlaces();
 
@@ -113,6 +126,44 @@ class SearchLimitChecker
             throw new SearchLimitCheckerException('RoomType total place less than need in query.');
         }
     }
+
+    public function checkRoomCacheLimit(SearchQuery $searchQuery): array
+    {
+        $roomCacheQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
+        $roomCaches = $this->roomCacheFetcher->fetchNecessaryDataSet($roomCacheQuery);
+        $currentTariffId = $searchQuery->getTariffId();
+        $duration = $searchQuery->getDuration();
+
+        $currentTariff = $this->sharedDataFetcher->getFetchedTariff($currentTariffId);
+
+        $roomCachesWithNoQuotas = array_filter(
+            $roomCaches,
+            function ($roomCache) {
+                $isMainRoomCache = !array_key_exists('tariff', $roomCache) || null === $roomCache['tariff'];
+
+                return $isMainRoomCache && $roomCache['leftRooms'] > 0;
+            }
+        );
+
+        if (\count($roomCachesWithNoQuotas) !== $duration) {
+            throw new SearchLimitCheckerException('There are no free rooms left');
+        }
+
+        $roomCacheWithQuotasNoLeftRooms = array_filter($roomCaches,
+            function ($roomCache) use ($currentTariff) {
+                $isQuotedCache = array_key_exists('tariff', $roomCache) && (string)$roomCache['tariff']['$id'] === $currentTariff->getId();
+
+                return $isQuotedCache && $roomCache['leftRooms'] <= 0;
+            });
+
+        if (\count($roomCacheWithQuotasNoLeftRooms)) {
+            throw new SearchLimitCheckerException('There are no free rooms left because a quotes');
+        }
+
+        return $roomCachesWithNoQuotas;
+    }
+
+
 
     public function checkWindows(SearchResult $result)
     {
@@ -233,41 +284,5 @@ class SearchLimitChecker
             $this->dm->getHydratorFactory()->hydrate($room, (array)$firstRawRoom);
             $result->setVirtualRoom($room);
         }
-    }
-
-
-
-    public function checkRoomCacheLimit(SearchQuery $searchQuery): array
-    {
-        $roomCaches = $this->dataHolder->getNecessaryRoomCaches($searchQuery);
-        $currentTariffId = $searchQuery->getTariffId();
-        $duration = $searchQuery->getDuration();
-        $currentTariff = $this->dataHolder->getFetchedTariff($currentTariffId);
-
-        $roomCachesWithNoQuotas = array_filter(
-            $roomCaches,
-            function ($roomCache) {
-                $isMainRoomCache = !array_key_exists('tariff', $roomCache) || null === $roomCache['tariff'];
-
-                return $isMainRoomCache && $roomCache['leftRooms'] > 0;
-            }
-        );
-
-        if (\count($roomCachesWithNoQuotas) !== $duration) {
-            throw new SearchLimitCheckerException('There are no free rooms left');
-        }
-
-        $roomCacheWithQuotasNoLeftRooms = array_filter($roomCaches,
-            function ($roomCache) use ($currentTariff) {
-                $isQuotedCache = array_key_exists('tariff', $roomCache) && (string)$roomCache['tariff']['$id'] === $currentTariff->getId();
-
-                return $isQuotedCache && $roomCache['leftRooms'] <= 0;
-            });
-
-        if (\count($roomCacheWithQuotasNoLeftRooms)) {
-            throw new SearchLimitCheckerException('There are no free rooms left because a quotes');
-        }
-
-        return $roomCachesWithNoQuotas;
     }
 }

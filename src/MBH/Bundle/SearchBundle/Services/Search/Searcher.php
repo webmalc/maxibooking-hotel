@@ -6,7 +6,6 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -39,15 +38,6 @@ class Searcher
     }
 
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @return SearchResult
-     * @throws SearchException
-     * @throws SearcherException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
-     */
     public function search(SearchQuery $searchQuery): SearchResult
     {
 
@@ -61,7 +51,7 @@ class Searcher
 
         $this->searchLimitChecker->checkRoomCacheLimit($searchQuery);
 
-        if ($this->restrictionChecker->check($searchQuery)) {
+        if (!$this->restrictionChecker->check($searchQuery)) {
             throw new SearcherException('Violation in restriction.');
         }
 
