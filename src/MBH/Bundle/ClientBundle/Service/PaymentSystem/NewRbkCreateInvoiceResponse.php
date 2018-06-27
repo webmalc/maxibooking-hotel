@@ -13,8 +13,6 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * TODO добавить логирование ошибок
- *
  * Class NewRbkCreateInvoiceResponse
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem
  */
@@ -40,8 +38,9 @@ class NewRbkCreateInvoiceResponse implements \JsonSerializable
         $this->container = $container;
     }
 
-    public function errorInCurl(int $err): self
+    public function errorInCurl(string $err): self
     {
+        $this->loggerErrorInCurl($err);
         $this->data = ['error' => $err];
 
         return $this;
@@ -52,8 +51,10 @@ class NewRbkCreateInvoiceResponse implements \JsonSerializable
         $r = InvoiceResponse::load(json_decode($rawResponse, true));
 
         if ($r->isSuccess()) {
+            $this->loggerSuccess($package);
             $this->dataIfOk($r, $package, $cashDocument);
         } else {
+            $this->loggerFailed($package, $r);
             $this->data = ['error' => $r->getError()->getInfo()];
         }
 
@@ -101,6 +102,36 @@ class NewRbkCreateInvoiceResponse implements \JsonSerializable
         }
 
         $this->data = $data;
+    }
+
+    private function loggerErrorInCurl(string $err): void
+    {
+        $this->logger( 'Curl error: ' . $err);
+    }
+
+    private function loggerSuccess(Package $package): void
+    {
+        $this->logger('packageId = ' . $package->getId(), true);
+    }
+
+    private function loggerFailed(Package $package, InvoiceResponse $invoiceResponse): void
+    {
+        $msg = 'packageId = ' . $package->getId() . 'Error: ' .  $invoiceResponse->getError()->getInfo();
+
+        $this->logger($msg);
+    }
+
+    private function logger(string $msg, bool $isSuccess = false): void
+    {
+        $logger = $this->container->get('mbh.new_rbk_create_invoice.logger');
+
+        $prefix = 'Ok.';
+
+        if (!$isSuccess) {
+            $prefix = 'FAIL.';
+        }
+
+        $logger->info($prefix . 'Create Invoice.' . $msg);
     }
 
 }

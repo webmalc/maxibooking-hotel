@@ -36,3 +36,13 @@ services:
             - '%mbh.taxation%'
         tags:
             - { name: form.type }
+
+    mbh.new_rbk_create_invoice.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.new_rbk_create_invoice.logger_handler']]
+
+    mbh.new_rbk_create_invoice.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.paymentSystem_newRbk.log", 200]
