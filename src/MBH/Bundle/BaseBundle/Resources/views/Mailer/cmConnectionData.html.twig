@@ -1,0 +1,18 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+{% block subject %}
+    {% set subject = text %}
+    {{ parent() }}
+{% endblock %}
+
+{% block text %}
+    <div style="margin:10px 0">
+        <table align="center" style="width: 320px;">
+            {% for fieldName, value in connectionData %}
+            <tr>
+                <td style="text-align: left;width: 33.33%">{{ fieldName }}</td>
+                <td style="text-align: right;width: 33.33%">{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

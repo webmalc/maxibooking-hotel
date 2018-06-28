@@ -183,7 +183,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('booking_room'));
+            $redirectRouteName = $config->isReadyToSync() ? 'booking_room' : 'booking_tariff';
+
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [

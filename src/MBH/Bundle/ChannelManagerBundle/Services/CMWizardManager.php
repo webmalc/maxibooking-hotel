@@ -2,28 +2,30 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\ChannelManagerBundle\Form\IntroType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 
 class CMWizardManager
 {
     private $channelManager;
+    private $fieldsManager;
 
-    public function __construct(ChannelManager $channelManager) {
+    public function __construct(ChannelManager $channelManager, DocumentFieldsManager $fieldsManager) {
         $this->channelManager = $channelManager;
+        $this->fieldsManager = $fieldsManager;
     }
 
     const CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT = [
         'hundred_one_hotels',
         'ostrovok',
-        'myallocator',
         'vashotel'
     ];
 
     const INTRO_FORMS_BY_CM_NAMES = [
         'hundred_one_hotels' => IntroType::class,
         'ostrovok' => IntroType::class,
-        'myallocator' => IntroType::class,
         'vashotel' => IntroType::class
     ];
 
@@ -76,5 +78,25 @@ class CMWizardManager
         }
 
         throw new \RuntimeException('It is impossible to determine the current step of channel manager configuration');
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param string $channelManagerName
+     * @return array
+     */
+    public function getUnfilledDataErrors(Hotel $hotel, string $channelManagerName)
+    {
+        $result = [];
+        $emptyFields = $this->fieldsManager->getFieldsByCorrectnessStatuses([], $hotel)[$this->fieldsManager::EMPTY_FIELD_STATUS];
+        if (!empty($emptyFields)) {
+            $emptyFieldNames = array_map(function ($emptyFieldName) {
+                return '"' . $this->fieldsManager->getFieldName(Hotel::class, $emptyFieldName) . '"';
+            }, $emptyFields);
+
+            $result[] = 'Заполните информацию об отеле в ' . (count($emptyFields) === 1 ? 'поле' : 'полях') . ': ' . join(', ', $emptyFieldNames);
+        }
+
+        return $result;
     }
 }

@@ -473,8 +473,16 @@ services:
     mbh.yaml_manager:
         class: MBH\Bundle\BaseBundle\Service\YmlManager
 
-    mbh.docuument_fields_manager:
+    mbh.document_fields_manager:
         class: MBH\Bundle\BaseBundle\Service\DocumentFieldsManager
         arguments:
             - '@translator'
             - '@property_accessor'
+
+    mbh.messages_store:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\MessagesStore
+        arguments:
+            - '@router'
+            - '%locale%'
+            - '%support%'
+            - '%client%'

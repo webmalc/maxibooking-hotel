@@ -653,10 +653,13 @@ class User extends BaseUser implements RecipientInterface
 
     /**
      * @param string $locale
+     * @return User
      */
     public function setLocale(string $locale)
     {
         $this->locale = $locale;
+
+        return $this;
     }
 
 }

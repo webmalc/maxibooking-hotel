@@ -15,7 +15,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
     const SANDBOX_USERNAME = 'demo';
     const SANDBOX_USER_TOKEN = 'some_token_for_sandbox_user';
     //TODO: Вернуть на 'mb'
-    const MB_USER_USERNAME = 'admin';
+    const MB_USER_USERNAME = 'mb';
 
     const USERS = [
         'user-admin' => [

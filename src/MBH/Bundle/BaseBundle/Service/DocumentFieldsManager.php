@@ -73,14 +73,14 @@ class DocumentFieldsManager
     }
 
     /**
-     * @param array $fieldsDataByNames
+     * @param array $fieldNames
      * @param $document
      * @return array
      */
-    public function getFieldsByCorrectnessStatuses(array $fieldsDataByNames, $document)
+    public function getFieldsByCorrectnessStatuses(array $fieldNames, $document)
     {
         $checkedFields = [self::EMPTY_FIELD_STATUS => [], self::CORRECT_FIELD_STATUS => []];
-        foreach ($fieldsDataByNames as $field) {
+        foreach ($fieldNames as $field) {
             $fieldData = $this->accessor->getValue($document, $field);
             $isFieldEmpty = $this->isFieldEmpty($fieldData);
 

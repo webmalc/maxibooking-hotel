@@ -124,7 +124,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): ?ChannelManagerOverview
     {
-        $config = $this->getConfigForHotel($hotel);
+        $method = 'get' . static::CONFIG;
+        $config = $hotel->$method();
         if (!$config && !$config->getIsEnabled()) {
             return null;
         }
@@ -249,7 +250,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $result = [];
 
         foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
-            $config = $this->getConfigForHotel($hotel);
+            $method = 'get' . static::CONFIG;
+            $config = $hotel->$method();
 
             if ($config && $config instanceof BaseInterface && $config->isReadyToSync()) {
                 $result[] = $config;
@@ -875,59 +877,5 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
 
         return array_merge($expediaSources, self::CHANNEL_MANAGER_NAMES);
-    }
-
-    /**
-     * @param Hotel $hotel
-     * @param string $channelManagerName
-     * @return bool
-     */
-    public function confirmReadinessOfCM(Hotel $hotel, string $channelManagerName)
-    {
-        $config = $this->getConfigForHotel($hotel);
-        $isConfiguredByTechSupport
-            = $this->container->get('mbh.cm_wizard_manager')->isConfiguredByTechSupport($channelManagerName);
-
-        if (is_null($config)) {
-            if ($isConfiguredByTechSupport) {
-                throw new \InvalidArgumentException('Connection request was not sent!');
-            }
-
-            /** @var ChannelManagerConfigInterface $config */
-            $configType = $this->getConfigFullName();
-            $config = new $configType;
-            $config->setHotel($hotel);
-        }
-
-        //TODO: Может быть расширить кол-во необходимых данных
-        if ($isConfiguredByTechSupport && empty($config->getHotelId())) {
-            throw new \RuntimeException('Mandatory data is not specified');
-        }
-
-        $config->setReadinessConfirmed(true);
-
-        $this->dm->persist($config);
-        $this->dm->flush();
-
-        return true;
-    }
-
-    /**
-     * @return string
-     */
-    public function getConfigFullName()
-    {
-        return 'MBH\Bundle\ChannelManagerBundle\Document\\' . static::CONFIG;
-    }
-
-    /**
-     * @param Hotel $hotel
-     * @return ChannelManagerConfigInterface|null
-     */
-    public function getConfigForHotel(Hotel $hotel)
-    {
-        $configGetter = 'get' . static::CONFIG;
-
-        return $hotel->$configGetter();
     }
 }

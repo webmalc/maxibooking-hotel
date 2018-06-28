@@ -193,10 +193,11 @@ class ExpediaController extends Controller
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
-
             $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
-            return $this->redirectToRoute('expedia_room');
+            $redirectRouteName = $config->isReadyToSync() ? 'expedia_room' : 'expedia_tariff';
+
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [

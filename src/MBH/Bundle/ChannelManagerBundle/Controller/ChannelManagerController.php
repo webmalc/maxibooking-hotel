@@ -111,6 +111,8 @@ class ChannelManagerController extends Controller
      * @param Request $request
      * @Template()
      * @return Response
+     * @throws \Throwable
+     * @throws \RuntimeException
      */
     public function wizardInfoAction(string $channelManagerName, Request $request)
     {
@@ -128,7 +130,7 @@ class ChannelManagerController extends Controller
         ];
 
         if ($hasForm) {
-            $configName = $channelManagerService->getServiceIdByName($channelManagerName)->getConfigFullName();
+            $configName = $channelManagerService->getConfigFullName($channelManagerName);
 
             /** @var ChannelManagerConfigInterface|Base $config */
             $config = $this->dm->getRepository($configName)->findOneBy(['hotel' => $this->hotel]);
@@ -150,11 +152,21 @@ class ChannelManagerController extends Controller
                 $this->dm->flush();
                 //TODO: Дополнить
                 $this->addFlash('success', 'Данные подключения отправлены в тех.поддержку.');
+
+                $channelManagerHumanName = $channelManagerService->getServiceHumanName($channelManagerName);
+                $this->get('mbh.messages_store')
+                    ->sendCMConnectionDataMessage([
+                        'Клиент' => $this->getParameter('client'),
+                        'Channel manager' => $channelManagerHumanName,
+                        'data1' => 123,
+                        'data2' => 3243
+                    ], $channelManagerName, $this->get('mbh.notifier.mailer'));
             }
 
             $responseParams = array_merge($responseParams, [
                 'form' => $form->createView(),
-                'config' => $config
+                'config' => $config,
+                'notifications' => $wizardManager->getUnfilledDataErrors($this->hotel, $channelManagerName)
             ]);
         }
 
@@ -165,6 +177,7 @@ class ChannelManagerController extends Controller
      * @Route("/confirm_cm_config/{channelManagerName}", name="confirm_cm_config")
      * @param string $channelManagerName
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Throwable
      */
     public function confirmConfigReadiness(string $channelManagerName)
     {
@@ -172,13 +185,15 @@ class ChannelManagerController extends Controller
             throw new AccessDeniedException('Confirm channel manager config can only mb user');
         }
 
-        /** @var AbstractChannelManagerService $cmService */
-        $cmService = $this->get('mbh.channelmanager')->getServiceIdByName($channelManagerName);
-        $confirmationResult = $cmService->confirmReadinessOfCM($this->hotel, $channelManagerName);
+        $channelManagerService = $this->get('mbh.channelmanager');
+        $confirmationResult = $channelManagerService->confirmReadinessOfCM($this->hotel, $channelManagerName);
 
         if ($confirmationResult) {
             $this->addFlash('success', 'channel_manager.confirmation.success');
-            //TODO: Добавить отправку сообшения
+
+            $channelManagerHumanName = $channelManagerService->getServiceHumanName($channelManagerName);
+            $this->get('mbh.messages_store')
+                ->sendCMConfirmationMessage($channelManagerName, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
         }
 
         return $this->redirectToRoute($channelManagerName);

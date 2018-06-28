@@ -130,11 +130,11 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.vashotelController.settings_saved_success'));
+            $this->addFlash('success', 'controller.vashotelController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('vashotel_room'));
+            $redirectRouteName = $config->isReadyToSync() ? 'vashotel_room' : 'vashotel_tariff';
+
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [

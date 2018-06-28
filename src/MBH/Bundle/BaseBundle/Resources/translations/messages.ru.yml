@@ -711,5 +711,7 @@ support_modal.articles.booking_sync: 'Настройка синхронизац�
 support_modal.articles.chessboard: 'Информация в шахматке'
 support_modal.sandbox_button.text: 'Демо-версия'
 
-
 modal.close_button: Закрыть
+
+messages_store.channel_manager_connection.mail.text: 'Данные для подключения клиента'
+messages_store.channel_manager_confirmation.mail.text: 'Подключение к %channelManager% подтверждено'

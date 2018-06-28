@@ -24,6 +24,15 @@ class ChannelManager
     const OLD_PACKAGES_PULLING_PARTLY_STATUS ='partly';
     const OLD_PACKAGES_PULLING_ALL_STATUS = 'all';
 
+    const CONFIGS_BY_CM_NAMES = [
+        'booking' => 'BookingConfig',
+        'ostrovok' => 'OstrovokConfig',
+        'vashotel' => 'VashotelConfig',
+        'myallocator' => 'MyallocatorConfig',
+        'expedia' => 'ExpediaConfig',
+        'hundred_one_hotels' => 'HundredOneHotelsConfig'
+    ];
+
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
@@ -398,22 +407,91 @@ class ChannelManager
     }
 
     /**
+     * @param string $channelManagerName
+     * @return string
+     */
+    public function getServiceHumanName(string $channelManagerName)
+    {
+        $this->checkForCMExistence($channelManagerName, true);
+
+        return $this->container->getParameter('mbh.channelmanager.services')[$channelManagerName]['title'];
+    }
+
+    /**
      * @param ChannelManagerConfigInterface|null $config
      * @param string $channelManagerName
-     * @param string $routeName
      * @return bool|string
      */
-    public function checkForReadinessOrGetStepUrl(?ChannelManagerConfigInterface $config, string $channelManagerName, string $routeName = null)
+    public function checkForReadinessOrGetStepUrl(?ChannelManagerConfigInterface $config, string $channelManagerName)
     {
-        $routeName = $routeName ?? $channelManagerName;
         if (is_null($config) || !$config->isReadyToSync()) {
             $currentStepRouteName = $this->container->get('mbh.cm_wizard_manager')->getCurrentStepUrl($channelManagerName, $config);
-            if ($currentStepRouteName !== $routeName) {
-                return $this->container->get('router')->generate($currentStepRouteName, ['channelManagerName' => $channelManagerName]);
+            if ($currentStepRouteName !== $channelManagerName) {
+                $routeParams = $currentStepRouteName === 'wizard_info' ? ['channelManagerName' => $channelManagerName] : [];
+
+                return $this->container->get('router')->generate($currentStepRouteName, $routeParams);
             }
         }
 
         return true;
+    }
+
+
+    /**
+     * @param Hotel $hotel
+     * @param string $channelManagerName
+     * @return bool
+     */
+    public function confirmReadinessOfCM(Hotel $hotel, string $channelManagerName)
+    {
+        $config = $this->getConfigForHotel($hotel, $channelManagerName);
+        $isConfiguredByTechSupport
+            = $this->container->get('mbh.cm_wizard_manager')->isConfiguredByTechSupport($channelManagerName);
+
+        if (is_null($config)) {
+            if ($isConfiguredByTechSupport) {
+                throw new \InvalidArgumentException('Connection request was not sent!');
+            }
+
+            /** @var ChannelManagerConfigInterface $config */
+            $configType = $this->getConfigFullName($channelManagerName);
+            $config = new $configType;
+            $config->setHotel($hotel);
+        }
+
+        //TODO: Может быть расширить кол-во необходимых данных
+        if ($isConfiguredByTechSupport && empty($config->getHotelId())) {
+            throw new \RuntimeException('Mandatory data is not specified');
+        }
+
+        $config->setReadinessConfirmed(true);
+
+        $this->dm->persist($config);
+        $this->dm->flush();
+
+        return true;
+    }
+
+
+    /**
+     * @param string $channelManagerName
+     * @return string
+     */
+    public function getConfigFullName(string $channelManagerName)
+    {
+        return 'MBH\Bundle\ChannelManagerBundle\Document\\' . self::CONFIGS_BY_CM_NAMES[$channelManagerName];
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param string $channelManagerName
+     * @return ChannelManagerConfigInterface|null
+     */
+    public function getConfigForHotel(Hotel $hotel, string $channelManagerName)
+    {
+        $configGetter = 'get' . self::CONFIGS_BY_CM_NAMES[$channelManagerName];
+
+        return $hotel->$configGetter();
     }
 
     /**

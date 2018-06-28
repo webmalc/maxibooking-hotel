@@ -19,7 +19,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\Room;
 /**
  * Class HundredOneHotelsController
  * @package MBH\Bundle\ChannelManagerBundle\Controller
- * @Route("/hundredOneHotels")
+ * @Route("/hundred_one_hotels")
  */
 class HundredOneHotelsController extends Controller
 {
@@ -125,8 +125,8 @@ class HundredOneHotelsController extends Controller
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+            $this->addFlash('success', 'controller.bookingController.settings_saved_success');
+
 
             return $this->redirectToRoute('hundred_one_hotels_tariff');
         }
@@ -176,11 +176,11 @@ class HundredOneHotelsController extends Controller
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
+            $this->addFlash('success', 'controller.hundredOneHotelsController.settings_saved_success');
 
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.hundredOneHotelsController.settings_saved_success'));
+            $redirectRouteName = $config->isReadyToSync() ? 'hundred_one_hotels_room' : 'hundred_one_hotels_tariff';
 
-            return $this->redirectToRoute('hundred_one_hotels_room');
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [

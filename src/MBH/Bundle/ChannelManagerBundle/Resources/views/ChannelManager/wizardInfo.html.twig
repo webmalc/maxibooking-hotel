@@ -10,6 +10,7 @@
 {% if config is not defined %}
     {% set config = null %}
 {% endif %}
+{% set hasUnfilledData = notifications is defined and notifications is not empty %}
 
 {% block content %}
     {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 0, 'base': 'booking'} %}
@@ -30,7 +31,7 @@
                     <div class="container-fluid">
                         <ul class="nav navbar-nav">
                             <li>
-                                <button type="submit" name="save" class="btn btn-success navbar-btn"><i
+                                <button type="submit" name="save" class="btn btn-success navbar-btn" {{ hasUnfilledData ? 'disabled' }}><i
                                             class="fa fa-check-square-o"> </i> {{ 'Отправить заявку' }}
                                 </button>
                             </li>
@@ -41,16 +42,15 @@
             {% endif %}
             {% endif %}
 
-            {% if is_mb_user() and (config is empty or config.hotelId) %}
+            {% if is_mb_user() and (config is empty or config.hotelId) and not hasUnfilledData %}
                 {% embed '@MBHBase/Actions/base_list.html.twig' %}
                     {% block left %}
-
                         <li>
-                            <button id="confirm-config-button"
-                                    onclick="location.href = '{{ path('confirm_cm_config', {'channelManagerName': channelManagerName}) }}'"
-                                    class="btn btn-primary navbar-btn">
+                            <a id="confirm-config-button"
+                               href = "{{ path('confirm_cm_config', {'channelManagerName': channelManagerName}) }}"
+                                    class="btn btn-primary navbar-btn navbar-link-button">
                                 <i class="fa fa-check"> </i> {{ 'views.actions.confirm'|trans({}, 'MBHBaseBundle') }}
-                            </button>
+                            </a>
                         </li>
                     {% endblock %}
                 {% endembed %}

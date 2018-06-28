@@ -354,7 +354,7 @@ class Builder implements ContainerAwareInterface
         if ($this->container->getParameter('mbh.environment') == 'prod') {
             $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
-            $menu['services']->addChild('myallocator', ['route' => 'channels', 'label' => 'menu.communication.label.advanced'])
+            $menu['services']->addChild('myallocator', ['route' => 'myallocator', 'label' => 'menu.communication.label.advanced'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok'])
               ->setAttributes(['icon' => 'fa fa-cloud-download']);

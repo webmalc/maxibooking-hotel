@@ -34,7 +34,7 @@ class HundredOneHotelType extends ChannelManagerConfigType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_channelmanagerbundle_hundred_one_hotels_type';
     }

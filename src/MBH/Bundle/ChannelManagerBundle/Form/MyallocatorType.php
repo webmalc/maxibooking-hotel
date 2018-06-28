@@ -15,7 +15,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MyallocatorType extends AbstractType
 {
-
     /**
      * @var MyAllocator
      */
@@ -26,7 +25,7 @@ class MyallocatorType extends AbstractType
      */
     protected $currency;
 
-    public function __construct(MyAllocator $myallocator, $currency)
+    public function __construct($myallocator, $currency)
     {
         $this->myallocator = $myallocator;
         $this->currency = $currency;
@@ -80,17 +79,20 @@ class MyallocatorType extends AbstractType
             ]);
         }
 
+        if ($config->isReadyToSync()) {
+            $builder
+                ->add(
+                    'isEnabled',
+                    CheckboxType::class,
+                    [
+                        'label' => 'form.myallocatorType.isEnabled',
+                        'value' => true,
+                        'required' => false,
+                        'help' => 'form.myallocatorType.should_we_use_in_channel_manager'
+                    ]
+                );
+        }
         $builder
-            ->add(
-                'isEnabled',
-                CheckboxType::class,
-                [
-                    'label' => 'form.myallocatorType.isEnabled',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.myallocatorType.should_we_use_in_channel_manager'
-                ]
-            )
             ->add(
                 'currency',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [

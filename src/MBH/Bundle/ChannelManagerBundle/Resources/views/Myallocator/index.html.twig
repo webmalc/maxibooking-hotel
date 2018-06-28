@@ -5,7 +5,7 @@
 
 {% block content %}
 
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, 'base': 'channels', 'services': false} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, 'base': 'myallocator', 'services': false} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
@@ -13,7 +13,7 @@
             {% if config and config.token is not empty %}
                 <div class="bg-gray color-palette alert">
                     <i class="fa fa-check-circle"></i> {{ 'view.myallocator.index.cm_bind_tomb'|trans}}.
-                    <a href="{{ path('channels_user_unlink') }}" data-toggle="tooltip" title="{{ 'view.myallocator.index.remove_user'|trans }}" class="btn btn-xs btn-danger pull-right">
+                    <a href="{{ path('myallocator_user_unlink') }}" data-toggle="tooltip" title="{{ 'view.myallocator.index.remove_user'|trans }}" class="btn btn-xs btn-danger pull-right">
                         <i class="fa fa-trash"></i>
                     </a>
                 </div>
@@ -29,7 +29,7 @@
                 </div>
             {% endif %}
 
-            {{ form_start(form, {'action': path('channels_save'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_start(form, {'action': path('myallocator_save'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% include 'MBHChannelManagerBundle::actions.html.twig' %}
             {{ form_end(form) }}

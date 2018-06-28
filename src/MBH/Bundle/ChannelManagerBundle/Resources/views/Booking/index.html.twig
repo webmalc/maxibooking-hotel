@@ -23,7 +23,7 @@
             {{ form_widget(form) }}
             {% embed 'MBHChannelManagerBundle::actions.html.twig' %}
                 {% block additional_actions %}
-                    {% if config and (config.rooms.count != 0 and config.tariffs.count != 0 and config.hotelId is not empty) %}
+                    {% if config and config.isReadyToSync() %}
                         <li>
                             <div class="dropup">
                                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2"

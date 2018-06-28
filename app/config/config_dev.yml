@@ -36,3 +36,22 @@ assetic:
 
 swiftmailer:
     delivery_address: ['faainttt@gmail.com']
+
+services:
+    mbh.channelmanager.myallocator:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.booking:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.ostrovok:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.hundred_one_hotels:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.expedia:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.vashotel:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
