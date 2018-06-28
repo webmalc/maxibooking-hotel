@@ -5,9 +5,9 @@ namespace MBH\Bundle\BaseBundle\Menu;
 use Documents\User;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
+use MBH\Bundle\BaseBundle\Lib\Menu\BadgesHolder;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class Builder
 {
@@ -80,6 +80,32 @@ class Builder
         $this->setConfig();
         $this->parseOptions($options);
 
+
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
+
+        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->countByType('arrivals', true, $hotel);
+        $out = $dm->getRepository('MBHPackageBundle:Package')->countByType('out', true, $hotel);
+
+        $badges = new BadgesHolder();
+        if ($arrivals) {
+            $badges->addBadge(
+                'arrivals',
+                'bg-red',
+                $this->container->get('translator')->trans('menu.help.noarrival'),
+                $arrivals
+            );
+        }
+        if ($out) {
+            $badges->addBadge(
+                'out',
+                'bg-green',
+                $this->container->get('translator')->trans('menu.help.nodepart'),
+                $out
+            );
+        }
+
+
         $packages = [
             'package' => [
                 'options'    => [
@@ -112,7 +138,7 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItemWithCollapse(self::ROOT_MENU_ITEM_MAIN_MENU, 'menu.header.navigation', true);
+        $menu = $this->createRootItem(self::ROOT_MENU_ITEM_MAIN_MENU, 'menu.header.navigation', false, $badges);
 
         // chessboard
         $menu->addChild($this->createItem($this->getChessboardData()));
@@ -170,7 +196,7 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItemWithCollapse(self::ROOT_MENU_ITEM_MANAGEMENT_MENU, 'menu.settings.label.header');
+        $menu = $this->createRootItem(self::ROOT_MENU_ITEM_MANAGEMENT_MENU, 'menu.settings.label.header');
 
         // Hotel links
         $menu->addChild($this->itemsHotelLinks());
@@ -356,9 +382,9 @@ class Builder
      * @param bool $isOpen
      * @return ItemInterface
      */
-    private function createRootItemWithCollapse(string $id, string $label, bool $isOpen = false): ItemInterface
+    private function createRootItemWithCollapse(string $id, string $label, bool $isOpen = false, BadgesHolder $badges = null): ItemInterface
     {
-        return $this->createRootItem($id, $label, true, $isOpen);
+        return $this->createRootItem($id, $label, true, $badges, $isOpen);
     }
 
     /**
@@ -368,7 +394,7 @@ class Builder
      * @param bool $isOpen
      * @return ItemInterface
      */
-    private function createRootItem(string $id, string $label, bool $collapse = false, bool $isOpen = false): ItemInterface
+    private function createRootItem(string $id, string $label, bool $collapse = false, BadgesHolder $badges = null ,bool $isOpen = false): ItemInterface
     {
         $menu = $this->factory->createItem('root');
 
@@ -381,13 +407,17 @@ class Builder
             }
         }
 
-        $menu->setChildrenAttributes(
-            [
-                'class'           => implode(' ', $cssClass),
-                'id'              => $id,
-                'enabledCollapse' => $collapse,
-            ]
-        );
+        $attr = [
+            'class'           => implode(' ', $cssClass),
+            'id'              => $id,
+            'enabledCollapse' => $collapse,
+        ];
+
+        if ($badges !== null) {
+            $attr = array_merge($attr, $badges->addInAttributes());
+        }
+
+        $menu->setChildrenAttributes($attr);
         $menu->setLabel($label);
 
         return $menu;
@@ -421,6 +451,10 @@ class Builder
 
         $item = $this->factory->createItem($child, $params['options']);
         $item->setAttributes($params['attributes']);
+
+        if (!empty($params['attributes']['badges'])) {
+            $item->setLinkAttribute('class', 'content-badge');
+        }
 
         return $item;
     }
@@ -598,7 +632,6 @@ class Builder
                 ],
                 'attributes' => [
                     'dropdown' => true,
-                    //                    'icon'     => 'fa fa-diamond',
                     'icon'     => 'fa fa fa-arrows-h',
                 ],
             ],
@@ -614,9 +647,14 @@ class Builder
             ],
         ];
 
-        $children = [];
+        $booking = [];
+        $myAllLocator = [];
+        $ostrovok = [];
+        $vashotel = [];
+        $expedia = [];
+        $hotelInn = [];
 
-        if ($this->container->getParameter('mbh.environment') == 'prod') {
+        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
             $booking = [
                 'booking' => [
                     'options'    => [
@@ -677,18 +715,18 @@ class Builder
                 ],
             ];
 
-            $children[] = $booking;
-            $children[] = $myAllLocator;
-            $children[] = $ostrovok;
-            $children[] = $vashotel;
-            $children[] = $expedia;
         }
-
-        $children[] = $hundredOneHotel;
 
         $parent = $this->createItem($channelManager);
 
-        return $parent->setChildren($this->getItemsInArray($children));
+        return $parent->setChildren($this->getItemsInArray([
+            $booking,
+            $expedia,
+            $myAllLocator,
+            $ostrovok,
+            $hundredOneHotel,
+            $vashotel,
+        ]));
 
     }
 
@@ -1076,6 +1114,17 @@ class Builder
             ],
         ];
 
+        $salesChannelsReport = [
+            'sales_channels_report' => [
+                'options'    => [
+                    'route' => 'sales_channels_report',
+                    'label' => 'sales_channels_report.title',
+                ],
+                'attributes' => ['icon' => 'fa fa-compass'],
+            ],
+        ];
+
+
         $parent = $this->createItem($finAn);
 
         return $parent->setChildren(
@@ -1085,6 +1134,7 @@ class Builder
                 $packagesDailyReport,
                 $manager,
                 $analytic,
+                $salesChannelsReport,
             ])
         );
     }
@@ -1163,6 +1213,16 @@ class Builder
             ],
         ];
 
+        $reservationReport = [
+            'reservation_report' => [
+                'options'    => [
+                    'route' => 'reservation_report',
+                    'label' => 'reservation_report.title',
+                ],
+                'attributes' => ['icon' => 'fa fa-paper-plane-o'],
+            ],
+        ];
+
         $parent = $this->createItem($reports);
 
         return $parent->setChildren(
@@ -1170,6 +1230,7 @@ class Builder
                 $serviceList,
                 $reportPolls,
                 $reportDistribution,
+                $reservationReport,
             ])
         );
     }
@@ -1179,29 +1240,6 @@ class Builder
      */
     private function itemsHotelServices(): ItemInterface
     {
-        //Tasks links
-//        $queryCriteria = new TaskQueryCriteria();
-//        $queryCriteria->userGroups = $user->getGroups();
-//        $queryCriteria->performer = $user;
-//        $queryCriteria->onlyOwned = true;
-//        $queryCriteria->status = 'open';
-//        $queryCriteria->hotel = $hotel;
-//
-//        $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
-//
-//        $taskAttributes = ['icon' => 'fa fa-tasks'];
-//
-//        if ($openTaskCount > 0) {
-//            $taskAttributes += [
-//                'badge' => true,
-//                'badge_class' => 'bg-red',
-//                'badge_id' => 'task-counter',
-//                'badge_value' => $openTaskCount
-//            ];
-//        }
-
-//        $menu->addChild('task', ['route' => 'task', 'label' => 'menu.label.task'])->setAttributes($taskAttributes);
-
         $serviceHotel = [
             'hotel_services' => [
                 'options'    => [
@@ -1266,12 +1304,15 @@ class Builder
             $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
 
             if ($openTaskCount > 0) {
-                $taskAttributes += [
-                    'badge' => true,
-                    'badge_class' => 'bg-red',
-                    'badge_id' => 'task-counter',
-                    'badge_value' => $openTaskCount
-                ];
+                $taskAttributes = array_merge(
+                    $taskAttributes,
+                    BadgesHolder::createOne(
+                        'task-counter',
+                        'bg-red',
+                        '',
+                        $openTaskCount
+                    )
+                );
             }
         }
 
@@ -1293,41 +1334,15 @@ class Builder
      */
     private function itemsReception(): ItemInterface
     {
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-        $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
-
-        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->countByType('arrivals', true, $hotel);
-        $out = $dm->getRepository('MBHPackageBundle:Package')->countByType('out', true, $hotel);
-
-        $porterBadges = [];
-        if ($arrivals) {
-            $porterBadges += [
-                'badge' => true,
-                'badge_left'       => true,
-                'badge_class_left' => 'bg-red badge-sidebar-left badge-sidebar-margin',
-                'badge_id_left'    => 'arrivals',
-                'badge_value_left' => $arrivals,
-                'badge_title_left' => $this->container->get('translator')->trans('menu.help.noarrival'),
-            ];
-        }
-        if ($out) {
-            $porterBadges += [
-                'badge' => true,
-                'badge_right'       => true,
-                'badge_class_right' => 'bg-green badge-sidebar-right badge-sidebar-margin',
-                'badge_id_right'    => 'out',
-                'badge_value_right' => $out,
-                'badge_title_right' => $this->container->get('translator')->trans('menu.help.nodepart'),
-            ];
-        }
-
-        $parentOptions = ['route' => '_welcome', 'label' => 'menu.label.portie',];
-        $parentAttr = ['dropdown' => true, 'icon' => 'fa fa-bell'] + $porterBadges;
+        $parentOptions = [
+            'route' => '_welcome',
+            'label' => 'menu.label.portie',
+        ];
 
         $porterLink = [
-            self::PORTER_LINKS => [
+            'porter_links' => [
                 'options'    => $parentOptions,
-                'attributes' => $parentAttr,
+                'attributes' => ['dropdown' => true, 'icon' => 'fa fa-bell'],
             ],
         ];
 
@@ -1335,7 +1350,7 @@ class Builder
             'report_room_types' => [
                 'options'    => [
                     'route' => 'report_room_types',
-                    'label' => 'menu.header.navigation',
+                    'label' => 'menu.label.navigation',
                 ],
                 'attributes' => ['icon' => 'fa fa-bed'],
             ],
@@ -1376,7 +1391,6 @@ class Builder
         return $parent->setChildren(
             $this->getItemsInArray([
                 $reportPorter,
-                $this->getChessboardData(),
                 $reportRoomType,
                 $clients,
                 $organizations,
