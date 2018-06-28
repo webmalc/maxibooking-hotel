@@ -13,19 +13,6 @@ class RoomCacheHolder implements DataHolderInterface
 
     private $data;
 
-    public function set(DataFetchQueryInterface $fetchQuery, array $data): void
-    {
-        $hash = $fetchQuery->getHash();
-        $groupedByRoomTypeRoomCaches = [];
-        foreach ($data as $rawRoomCache) {
-            $roomTypeIdKey = (string)$rawRoomCache['roomType']['$id'];
-            $dateKey = Helper::convertMongoDateToDate($rawRoomCache['date'])->format('d-m-Y');
-            $groupedByRoomTypeRoomCaches[$roomTypeIdKey][$dateKey][] = $rawRoomCache;
-        }
-        $this->data[$hash] = $groupedByRoomTypeRoomCaches;
-    }
-
-
     /**
      * @param RoomCacheFetchQuery|DataFetchQueryInterface $fetchQuery
      * @return array|null
@@ -57,6 +44,19 @@ class RoomCacheHolder implements DataHolderInterface
         }
 
         return empty($roomCaches) ? $roomCaches : array_merge(...$roomCaches);
+    }
+
+
+    public function set(DataFetchQueryInterface $fetchQuery, array $data): void
+    {
+        $hash = $fetchQuery->getHash();
+        $groupedByRoomTypeRoomCaches = [];
+        foreach ($data as $rawRoomCache) {
+            $roomTypeIdKey = (string)$rawRoomCache['roomType']['$id'];
+            $dateKey = Helper::convertMongoDateToDate($rawRoomCache['date'])->format('d-m-Y');
+            $groupedByRoomTypeRoomCaches[$roomTypeIdKey][$dateKey][] = $rawRoomCache;
+        }
+        $this->data[$hash] = $groupedByRoomTypeRoomCaches;
     }
 
 }

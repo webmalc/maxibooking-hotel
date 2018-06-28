@@ -8,11 +8,14 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
-use MBH\Bundle\SearchBundle\Lib\DataHolder;
+use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
+use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
+use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 
 
 class SearchResultComposer
@@ -23,47 +26,54 @@ class SearchResultComposer
     /** @var Calculation */
     private $calculation;
 
-    /** @var DataHolder  */
-    private $dataHolder;
-
     private $limitChecker;
+
+    /** @var RoomCacheFetcher */
+    private $roomCacheFetcher;
+
+    /** @var SharedDataFetcher */
+    private $sharedDataFetcher;
+    /**
+     * @var AccommodationRoomSearcher
+     */
+    private $accommodationRoomSearcher;
 
     /**
      * SearchResultComposer constructor.
      * @param RoomTypeManager $roomManager
      * @param Calculation $calculation
-     * @param DataHolder $dataHolder
      * @param SearchLimitChecker $limitChecker
+     * @param RoomCacheFetcher $roomCacheFetcher
+     * @param SharedDataFetcher $sharedDataFetcher
+     * @param AccommodationRoomSearcher $roomSearcher
      */
-    public function __construct(RoomTypeManager $roomManager, Calculation $calculation, DataHolder $dataHolder, SearchLimitChecker $limitChecker)
+    public function __construct(RoomTypeManager $roomManager, Calculation $calculation, SearchLimitChecker $limitChecker, RoomCacheFetcher $roomCacheFetcher, SharedDataFetcher $sharedDataFetcher, AccommodationRoomSearcher $roomSearcher)
     {
         $this->roomManager = $roomManager;
         $this->calculation = $calculation;
-        $this->dataHolder = $dataHolder;
         $this->limitChecker = $limitChecker;
+        $this->roomCacheFetcher = $roomCacheFetcher;
+        $this->sharedDataFetcher = $sharedDataFetcher;
+        $this->accommodationRoomSearcher = $roomSearcher;
     }
 
 
     public function composeResult(SearchQuery $searchQuery): SearchResult
     {
-        $roomCaches = $this->dataHolder->getNecessaryRoomCaches($searchQuery);
-        //** TODO: Можно не передавать сюда roomCaches, а брать тут, но тогда
-        // там сложность в лимитах по тарифам. Надо подумать как это реализовать тут, а не выше
-        //  */
         $searchResult = new SearchResult();
-        $roomType = $this->dataHolder->getFetchedRoomType($searchQuery->getRoomTypeId());
-        $tariff = $this->dataHolder->getFetchedTariff($searchQuery->getTariffId());
+        $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
+        $tariff = $this->sharedDataFetcher->getFetchedTariff($searchQuery->getTariffId());
         if (!$roomType || !$tariff) {
             throw new SearchResultComposerException('Can not get Tariff or RoomType');
         }
         $this->limitChecker->checkTariffConditions($searchQuery);
-        $minCache = $this->getMinCacheValue($searchQuery, $roomCaches);
+        $minCache = $this->getMinCacheValue($searchQuery);
         $isUseCategories = $this->roomManager->useCategories;
         $actualAdults = $searchQuery->getActualAdults();
         $actualChildren = $searchQuery->getActualChildren();
         $infants = $searchQuery->getInfants();
 
-        $accommodationRooms = $this->getAccommodationRooms($searchQuery);
+        $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
 
         $prices = $this->getPrices($searchQuery, $roomType, $tariff, $actualAdults, $actualChildren);
 
@@ -133,19 +143,10 @@ class SearchResultComposer
     }
 
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @param RoomType $roomType
-     * @return array
-     * TODO: Наборосок, нужно внимательно разобраться с темой подбора комнаты для размещения.
-     */
-    private function getAccommodationRooms(SearchQuery $searchQuery): array
+    private function getMinCacheValue(SearchQuery $searchQuery): int
     {
-        return $this->dataHolder->getNecessaryAccommodationRooms($searchQuery);
-    }
-
-    private function getMinCacheValue(SearchQuery $searchQuery, array $roomCaches): int
-    {
+        $roomCacheFetchQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
+        $roomCaches = $this->roomCacheFetcher->fetchNecessaryDataSet($roomCacheFetchQuery);
 
         $min = min(array_column($roomCaches, 'leftRooms'));
         $duration = $searchQuery->getDuration();

@@ -20,11 +20,12 @@ abstract class AbstractDataFetcher implements DataFetcherInterface
     {
         $result = $this->holder->get($fetchQuery);
         if (null === $result) {
-            $result = $this->fetchData($fetchQuery);
+            $data = $this->fetchData($fetchQuery);
+            $this->holder->set($fetchQuery, $data);
+            $result = $this->holder->get($fetchQuery);
         }
-        $this->holder->set($fetchQuery, $result);
 
-        return $this->holder->get($fetchQuery);
+        return $result;
 
     }
 

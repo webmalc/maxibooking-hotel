@@ -382,8 +382,8 @@ class DataHolder
         $searchEnd = $searchQuery->getEnd();
         $forExcludeRoomsIds = $this->findIntersectWithDates($searchBegin, $searchEnd, $packageAccommodations);
         $allRooms = $this->roomsGroupedByRoomType[$hash][$roomTypeId];
-        $allRoomsIds = array_map('\strval', array_column($allRooms, '_id'));
 
+        $allRoomsIds = array_map('\strval', array_column($allRooms, '_id'));
         $accommodationRoomsIds = array_diff($allRoomsIds, $forExcludeRoomsIds);
         $accommodationRooms = array_filter($allRooms, function ($room) use ($accommodationRoomsIds) {
             return \in_array((string)$room['_id'], $accommodationRoomsIds, true);
@@ -409,7 +409,7 @@ class DataHolder
 
     private function getAllRoomsByRoomType(): array
     {
-        return $this->roomRepository->fetchRawAllRomsByRoomType([], true);
+        return $this->roomRepository->fetchRawAllRoomsByRoomType([], true);
     }
 
     private function getRoomTypeIdByRoom(string $needleRoomId, string $hash): string

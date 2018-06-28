@@ -4,6 +4,8 @@
 namespace MBH\Bundle\SearchBundle\Services\Data;
 
 
+use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -18,10 +20,14 @@ class SharedDataFetcher implements SharedDataFetcherInterface
     /** @var RoomType[] */
     private $roomTypes;
 
-    public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository)
+    /** @var Room[] */
+    private $rooms;
+
+    public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository, RoomRepository $roomRepository)
     {
         $this->tariffs = $tariffRepository->findAll();
         $this->roomTypes = $roomTypeRepository->findAll();
+        $this->rooms = $roomRepository->findAll();
     }
 
     /**
@@ -55,6 +61,17 @@ class SharedDataFetcher implements SharedDataFetcherInterface
         }
 
         throw new SharedFetcherException('There is no RoomType in RoomTypeHolder!');
+    }
+
+    public function getRoomTypeIdOfRoomId(string $roomId): string
+    {
+        foreach ($this->rooms as $room) {
+            if ($roomId === $room->getId()) {
+                return $room->getRoomType()->getId();
+            }
+        }
+
+        throw new SharedFetcherException('Can not determine RoomTypeId by RoomId');
     }
 
 

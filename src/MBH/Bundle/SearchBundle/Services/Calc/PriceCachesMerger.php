@@ -6,8 +6,10 @@ namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\SearchBundle\Lib\Data\PriceCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
+use MBH\Bundle\SearchBundle\Services\Data\PriceCacheFetcher;
 
 class PriceCachesMerger
 {
@@ -17,11 +19,15 @@ class PriceCachesMerger
     /** @var DataHolder */
     private $dataHolder;
 
+    /** @var PriceCacheFetcher */
+    private $priceCacheFetcher;
 
-    public function __construct(TariffRepository $tariffRepository, DataHolder $dataHolder)
+
+    public function __construct(TariffRepository $tariffRepository, DataHolder $dataHolder, PriceCacheFetcher $priceCacheFetcher)
     {
         $this->tariffRepository = $tariffRepository;
         $this->dataHolder = $dataHolder;
+        $this->priceCacheFetcher = $priceCacheFetcher;
     }
 
 
@@ -125,8 +131,11 @@ class PriceCachesMerger
 
     private function getRawPriceCaches(CalcQuery $calcQuery, string $searchingTariffId): array
     {
-        //** TODO тут проверить можно лимит на тариф, но! Взрослые дети ? Возможно стоит создавать несколько CalcQuery ? тогда не понять как делать проверку на restrictions */
-        return $this->dataHolder->getNecessaryPriceCaches($calcQuery, $searchingTariffId);
+//        //** TODO тут проверить можно лимит на тариф, но! Взрослые дети ? Возможно стоит создавать несколько CalcQuery ? тогда не понять как делать проверку на restrictions */
+//        return $this->dataHolder->getNecessaryPriceCaches($calcQuery, $searchingTariffId);
+        $fetchQuery = PriceCacheFetchQuery::createInstanceFromCalcQuery($calcQuery);
+        $fetchQuery->setTariffId($searchingTariffId);
+        return $this->priceCacheFetcher->fetchNecessaryDataSet($fetchQuery);
     }
 
     private function preparePriceCacheReturn(array $caches, string $tariffId): array

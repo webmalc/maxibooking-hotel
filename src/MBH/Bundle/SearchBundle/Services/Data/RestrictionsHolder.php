@@ -13,7 +13,7 @@ class RestrictionsHolder implements DataHolderInterface
 {
 
     /** @var array */
-    private $data;
+    protected $data;
 
     /**
      * @param DataFetchQueryInterface|RestrictionsFetchQuery $fetchQuery

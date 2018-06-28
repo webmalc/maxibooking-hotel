@@ -121,7 +121,7 @@ class RoomRepository extends AbstractBaseRepository
         return $groupedRooms;
     }
 
-    public function fetchRawAllRomsByRoomType(array $roomTypeIds = [], bool $grouped = false)
+    public function fetchRawAllRoomsByRoomType(array $roomTypeIds = [], bool $grouped = false)
     {
         $qb = $this->createQueryBuilder();
         if (\count($roomTypeIds)) {

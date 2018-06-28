@@ -16,7 +16,7 @@ class RestrictionFetcherTest extends SearchWebTestCase
     /** @dataProvider restrictionDataProvider
      * @param $data
      */
-    public function testGetCheckNecessaryRestrictions($data): void
+    public function testFetchNecessaryDataSet($data): void
     {
         $searchQuery = $this->createSearchQuery($data);
         $fetchQuery = RestrictionsFetchQuery::createInstanceFromSearchQuery($searchQuery);
