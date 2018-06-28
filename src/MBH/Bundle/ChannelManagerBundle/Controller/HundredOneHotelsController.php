@@ -7,6 +7,7 @@ use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
+use MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -47,8 +48,6 @@ class HundredOneHotelsController extends Controller
             'logs' => $this->logs($config)
         ];
     }
-
-
 
     /**
      * @Route("/", name="hundred_one_hotels_save")
@@ -188,5 +187,22 @@ class HundredOneHotelsController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
+    }
+
+    /**
+     * Sync old packages
+     * @Route("/packages/sync", name="hoh_packages_sync")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_101HOTELS')")
+     */
+    public function syncOldOrders()
+    {
+        $config = $this->hotel->getHundredOneHotelsConfig();
+        if ($config) {
+            $this->get('mbh.channelmanager')->pullOrdersInBackground(HundredOneHotels::CHANNEL_MANAGER_TYPE, true);
+            $this->addFlash('warning', 'controller.expediaController.old_ordes_sync_start');
+        }
+
+        return $this->redirect($this->generateUrl('hundred_one_hotels'));
     }
 }

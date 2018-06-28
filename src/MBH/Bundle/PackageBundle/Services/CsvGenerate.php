@@ -18,7 +18,6 @@ class CsvGenerate
 
     const DATA = [
         'type' => ['title' => 'csv.type.package', 'method' => 'getStatus'],
-        'typeOrder' => ['title' => 'csv.type.order.type', 'method' => 'getOrder'],
         'orderSource' => ['title' => 'csv.type.order.source', 'method' => 'getSource'],
         'numberWithPrefix' => ['title' => '#', 'method' => 'getNumberWithPrefix'],
         'dateBegin' => ['title' => 'csv.type.begin', 'method' => 'getBegin'],
@@ -30,7 +29,9 @@ class CsvGenerate
         'children' => ['title' => 'csv.type.children', 'method' => 'getChildren'],
         'countNight' => ['title' => 'csv.form.countNight', 'method' => 'getNights'],
         'countPersons' => ['title' => 'csv.form.countPersons', 'method' => 'countPersons'],
-        'price' => ['title' => 'csv.type.price', 'method' => 'getPrice'],
+        'price' => ['title' => 'csv.form.price', 'method' => 'getPrice'],
+        'packagePrice' => ['title' => 'csv.form.package_price', 'method' => 'getPackagePrice'],
+        'packageServicesPrice' => ['title' => 'csv.form.package_services_price', 'method' => 'getServicesPrice'],
         'paids' => ['title' => 'csv.type.paids', 'method' => 'getPaids'],
         'rest' => ['title' => 'csv.type.rest', 'method' => 'getRest'],
         'tariff' => ['title' => 'csv.type.tariff', 'method' => 'getTariff'],
@@ -38,7 +39,7 @@ class CsvGenerate
         'createdBy' => ['title' => 'csv.type.createdBy', 'method' => 'getCreatedBy'],
     ];
 
-    const DELIMETER = ";";
+    const DELIMITER = ";";
 
 
     public function __construct(ContainerInterface $container)
@@ -59,7 +60,7 @@ class CsvGenerate
             }
         }
 
-        $rows[] = implode(self::DELIMETER, $title);
+        $rows[] = implode(self::DELIMITER, $title);
         $dataCsv = [];
         /** @var Package $entity */
         foreach ($entities as $entity) {
@@ -70,17 +71,14 @@ class CsvGenerate
                     $method = $item['method'];
 
                     if ($method == 'countPersons') {
-
                         $dataCsv[] = $entity->getAdults() + $entity->getChildren();
-
-                    } elseif ($method == 'getOrder') {
-                        $entity->getStatus() == 'channel_manager' ? $dataCsv[] = $translator->trans('manager.channel_manager.' . $entity->getChannelManagerType()) : $dataCsv[] = '';
-                    } elseif ($method == 'getPaids') {
+                    }  elseif ($method == 'getPaids') {
                         $dataCsv[] = $entity->getCalculatedPayment();
                     } elseif ($method == 'getRest') {
                         $dataCsv[] = round($entity->getPrice() - $entity->getCalculatedPayment(), 2);
+                    } elseif ($method === 'getServicesPrice') {
+                        $dataCsv[] = $entity->getServicesPrice() ? $entity->getServicesPrice() : 0;
                     } else {
-
                         $call = $entity->$method();
 
                         if ($call instanceof \DateTime) {
@@ -93,14 +91,13 @@ class CsvGenerate
                 }
             }
 
-            $rows[] = implode(self::DELIMETER, $dataCsv);
+            $rows[] = implode(self::DELIMITER, $dataCsv);
             $dataCsv = [];
         }
 
         $content = implode("\n", $rows);
         $content = iconv('UTF-8', 'windows-1251//TRANSLIT', $content);
+
         return $content;
-
     }
-
 }

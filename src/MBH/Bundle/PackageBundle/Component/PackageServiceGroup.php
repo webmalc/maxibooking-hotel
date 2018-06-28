@@ -20,6 +20,9 @@ class PackageServiceGroup// extends PackageService
         $this->group[] = $packageService;
     }
 
+    /**
+     * @return float
+     */
     public function getTotal()
     {
         $total = 0;
@@ -29,6 +32,9 @@ class PackageServiceGroup// extends PackageService
         return $total;
     }
 
+    /**
+     * @return float
+     */
     public function getPrice()
     {
         $price = 0;
@@ -38,6 +44,10 @@ class PackageServiceGroup// extends PackageService
         return $price;
     }
 
+    /**
+     * @return int
+     * @throws \Exception
+     */
     public function getActuallyAmount()
     {
         $actuallyAmount = 0;
@@ -47,6 +57,9 @@ class PackageServiceGroup// extends PackageService
         return $actuallyAmount;
     }
 
+    /**
+     * @return int
+     */
     public function getAmount()
     {
         $amount = 0;

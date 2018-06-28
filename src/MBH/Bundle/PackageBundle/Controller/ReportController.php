@@ -444,22 +444,26 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         /** @var RoomType[] $roomTypes */
         $roomTypes = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
         $housings = $this->dm->getRepository('MBHHotelBundle:Housing')->findAll();
-        $floors = $this->dm->getRepository('MBHHotelBundle:Room')->createQueryBuilder()->select('floor')->distinct('floor')->getQuery()->execute();
+        $floors = $this->dm->getRepository('MBHHotelBundle:Room')
+            ->createQueryBuilder()
+            ->select('floor')
+            ->distinct('floor')
+            ->getQuery()
+            ->execute();
 
+        $criteria = new RoomTypeReportCriteria($this->hotel);
 
-        $criteria = new RoomTypeReportCriteria();
-        $criteria->hotel = $this->hotel->getId();
         $roomTypeReport = new RoomTypeReport($this->container);
         $result = $roomTypeReport->findByCriteria($criteria);
 
         return [
-            'roomTypes' => $roomTypes,
-            'housings' => $housings,
-            'floors' => $floors,
-            'result' => $result,
-            'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'statuses' => Package::getRoomStatuses(),
-            'roomStatuses' => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
+            'roomTypes'       => $roomTypes,
+            'housings'        => $housings,
+            'floors'          => $floors,
+            'result'          => $result,
+            'facilities'      => $this->get('mbh.facility_repository')->getAll(),
+            'statuses'        => Package::getRoomStatuses(),
+            'roomStatuses'    => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
@@ -474,21 +478,16 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function roomTypesTableAction(Request $request)
     {
-        $criteria = new RoomTypeReportCriteria();
-        $criteria->hotel = $this->hotel->getId();
-        $criteria->roomType = $request->get('roomType');
-        $criteria->housing = $request->get('housing');
-        $criteria->floor = $request->get('floor');
-        $criteria->status = $request->get('status');
+        $criteria = new RoomTypeReportCriteria($this->hotel, $request);
 
         $roomTypeReport = new RoomTypeReport($this->container);
         $result = $roomTypeReport->findByCriteria($criteria);
 
         return [
-            'result' => $result,
-            'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'roomStatuses' => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
-            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
+            'result'          => $result,
+            'facilities'      => $this->get('mbh.facility_repository')->getAll(),
+            'roomStatuses'    => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
 

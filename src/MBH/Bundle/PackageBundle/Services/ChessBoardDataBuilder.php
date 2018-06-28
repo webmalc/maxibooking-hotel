@@ -483,13 +483,30 @@ class ChessBoardDataBuilder
     public function getRoomsByRoomTypeIds()
     {
         if (!$this->isRoomsByRoomTypeIdsInit) {
-
             $roomTypes = $this->getRoomTypeIds();
             $skipValue = ($this->pageNumber - 1) * self::ROOM_COUNT_ON_PAGE;
 
-            $roomsByRoomTypeIds = $this->dm->getRepository('MBHHotelBundle:Room')
-                ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, $skipValue,
-                    self::ROOM_COUNT_ON_PAGE, true, true, ['fullTitle' => 'asc']);
+            $allRooms = $this->dm->getRepository('MBHHotelBundle:Room')
+                ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null,
+                    null, false, true, ['fullTitle' => 'asc'])->toArray();
+
+            usort($allRooms, function(Room $room1, Room $room2) {
+                return $room1->getRoomType()->getName() > $room2->getRoomType()->getName() ? 1 : -1;
+            });
+
+            $roomsByRoomTypeIds = [];
+            /** @var Room $room */
+            foreach ($allRooms as $index => $room) {
+                $numberOfRoom = $index + 1;
+                if ($numberOfRoom > $skipValue + self::ROOM_COUNT_ON_PAGE) {
+                    break;
+                }
+                if ($skipValue < $numberOfRoom) {
+                    isset($roomsByRoomTypeIds[$room->getRoomType()->getId()])
+                        ? $roomsByRoomTypeIds[$room->getRoomType()->getId()][] = $room
+                        : $roomsByRoomTypeIds[$room->getRoomType()->getId()] = [$room];
+                }
+            }
 
             $sortedRoomsByRoomTypeIds = [];
             foreach ($roomsByRoomTypeIds as $roomTypeId => $roomsByRoomTypeId) {
@@ -511,10 +528,9 @@ class ChessBoardDataBuilder
                     return $firstRoomIntName > $secondRoomIntName ? 1 : -1;
                 });
                 $sortedRoomsByRoomTypeIds[$roomTypeId] = $rooms;
-
-                $this->roomsByRoomTypeIds = $sortedRoomsByRoomTypeIds;
             }
 
+            $this->roomsByRoomTypeIds = $sortedRoomsByRoomTypeIds;
             $this->isRoomsByRoomTypeIdsInit = true;
         }
 

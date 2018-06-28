@@ -1,0 +1,62 @@
+{% include 'MBHClientBundle:PaymentSystem/newRbk:event.js.twig' %}
+var mbhNewRbk = {
+  urlPostMessage : '{{ app.request.getSchemeAndHttpHost() }}',
+  typePostMessage: '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\NewRbk::TYPE_POST_MSG') }}',
+  iframe         : null,
+  scriptId       : 'mbh-script-newrbk',
+  getScript   : function() {
+    var script = document.createElement('script');
+    script.id = this.scriptId;
+    script.src = '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\NewRbk::URL_FOR_CHECKOUT_JS') }}';
+
+    return script;
+  },
+  addListener : function() {
+    mbhNewRbk_Event.finished.create();
+    var self = this;
+    window.addEventListener("message", function(e) {
+      if (event.origin != self.urlPostMessage) {
+          {#// что-то прислали с неизвестного домена - проигнорируем..#}
+        return;
+      }
+      if (e.data.type !== self.typePostMessage) {
+        return;
+      }
+      self.openCheckout(e.data.data);
+    })
+  },
+  sendMsg     : function(msg) {
+    this.getIframe().postMessage({type: this.typePostMessage, data: msg}, this.urlPostMessage);
+  },
+  openCheckout: function(data) {
+    var self = this;
+    data.finished = function() {
+      mbhNewRbk_Event.finished.dispatch();
+      self.sendMsg('finished');
+    };
+      {#data.opened = function() {#}
+        {#console.log('Checkout opened');#}
+      {#};#}
+      {#data.closed = function() {#}
+      {#console.log('Checkout closed');#}
+      {#};#}
+    var checkout = RbkmoneyCheckout.configure(data);
+    checkout.open()
+  },
+  getIframe   : function() {
+    if (this.iframe === null) {
+      var parent = document.getElementById(this.scriptId).parentNode;
+      if (parent.id.search('mbh') == -1) {
+        console.error('Parent node maker not the MBH');
+        return;
+      }
+      this.iframe = window.frames[parent.querySelector('iframe[id^="mbh"]').id];
+    }
+
+    return this.iframe;
+  }
+};
+
+window.addEventListener('load', function(ev) {
+  mbhNewRbk.addListener();
+});

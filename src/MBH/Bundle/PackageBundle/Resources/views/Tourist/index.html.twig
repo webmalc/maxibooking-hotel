@@ -64,11 +64,18 @@
                                 class="fa fa-plus"> </i> {{ 'views.actions.list.add'|trans({}, 'MBHBaseBundle') }}
                     </button>
                 </li>
-                <li>
-                    <button type="button" id="fms-export-button" class="btn btn-warning navbar-btn"><i
-                                class="fa fa-upload" aria-hidden="true"></i>&nbsp;Контур ФМС
-                    </button>
-                </li>
+                {% if is_russian_client() %}
+                    <li>
+                        <button type="button" data-system="kontur" class="btn btn-warning navbar-btn fms-export-button"><i
+                                    class="fa fa-upload" aria-hidden="true"></i>&nbsp;Контур ФМС
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" data-system="sbis" class="btn btn-warning navbar-btn fms-export-button {{ not hasMyOrganization ? 'disabled'}}"  {{ hasMyOrganization ? '' : 'data-toggle="tooltip" title="Для выгрузки необходимо заполнить данные об огранизации"' }}>
+                            <i class="fa fa-upload" aria-hidden="true"></i>&nbsp;СБИС ФМС
+                        </button>
+                    </li>
+                {% endif %}
             {% endif %}
         {% endblock %}
         {% block right %}
@@ -76,7 +83,7 @@
         {% endblock %}
     {% endembed %}
     {% if is_russian_client() %}
-        <div class="modal fade modal-danger" id="kontur-export-confirmation" tabindex="-1" role="dialog"
+        <div class="modal fade modal-danger" id="fms-export-confirmation" tabindex="-1" role="dialog"
              aria-hidden="true">
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
@@ -84,8 +91,8 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h4 class="modal-title">Подтверждение выгрузки</h4>
                     </div>
-                    <div class="modal-body" id="kontur-export-confirmation-body">
-                        Количество туристов выгружаемых в Контур ФМС слишком большое.
+                    <div class="modal-body" id="fms-export-confirmation">
+                        Количество выгружаемых в ФМС туристов слишком большое.
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline pull-right" data-dismiss="modal"><i

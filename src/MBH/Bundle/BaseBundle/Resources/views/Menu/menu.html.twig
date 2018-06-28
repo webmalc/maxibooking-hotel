@@ -10,9 +10,28 @@
 
 {% import _self as macros %}
 
+{% block list %}
+
+    {% if item.hasChildren and options.depth is not same as(0) and item.displayChildren %}
+        {% import _self as knp_menu %}
+        {% set isRootItem = item.name == 'root' %}
+
+        {% if isRootItem %}
+            <div class="header{{ not ('collapse in' in item.childrenAttributes['class']) ? ' collapsed' : '' }}"
+                 data-toggle="collapse"
+                 data-target="#{{ item.childrenAttributes['id'] }}">
+            <span class="header-title">{{ item.label|trans }}</span>
+            <span class="icon-toggle"></span>
+            </div>
+        {% endif %}
+        <ul{{ knp_menu.attributes(listAttributes)}}>
+            {{ block('children') }}
+        </ul>
+    {% endif %}
+{% endblock %}
 
 {% block item %}
-
+{% wrapinline %}
     {%- set attributes = item.attributes %}
     {%- set header = item.attributes.header|default(false) %}
 
@@ -88,6 +107,7 @@
             {{ block('dividerElement') }}
         {%- endif %}
     {% endif %}
+{% endwrapinline %}
 {% endblock %}
 
 {% block dividerElement %}
@@ -135,13 +155,26 @@
     </span>
 {% endblock %}
 
-{% block label %}<span>{% if item.label == '&nbsp;' %}&nbsp;{% else %}{{ item.label|trans }}</span>
-    {% if item.attribute('badge_left') is defined %}
-        <small {% if item.attribute('badge_title_left') is defined %}data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_left') }}"{% endif %}  {% if item.attribute('badge_id_left') is defined %}id="{{ item.attribute('badge_id_left') }}"{% endif %}
-               class="label {% if item.attribute('badge_class_left') is defined %}{{ item.attribute('badge_class_left') }}{% endif %}">{{ item.attribute('badge_value_left') }}</small>
+{% block label %}
+    {% wrapinline %}
+    <span>{{ item.label == '&nbsp;' ? '&nbsp;' : item.label|trans }}</span>
+    {% if item.name is constant('MBH\\Bundle\\BaseBundle\\Menu\\Builder::PORTER_LINKS') %}
+        {% if item.attribute('badge_left') is not null or item.attribute('badge_right') is not null %}
+            <div class="parent_badge">
+                {% if item.attribute('badge_left') is defined %}
+                <small data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_left') }}"
+                       id="{{ item.attribute('badge_id_left') }}"
+                       class="label {{ item.attribute('badge_class_left') }}"
+                >{{ item.attribute('badge_value_left') }}</small>
+                {% endif %}
+                {% if item.attribute('badge_right') is defined %}
+                <small data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_right') }}"
+                       id="{{ item.attribute('badge_id_right') }}"
+                       class="label {{ item.attribute('badge_class_right') }}"
+                >{{ item.attribute('badge_value_right') }}</small>
+                {% endif %}
+            </div>
+        {% endif %}
     {% endif %}
-    {% if item.attribute('badge') is defined %}
-        <small {% if item.attribute('badge_title_right') is defined %}data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_right') }}"{% endif %} {% if item.attribute('badge_id_right') is defined %}id="{{ item.attribute('badge_id_right') }}"{% endif %}
-               class="label {% if item.attribute('badge_class_right') is defined %}{{ item.attribute('badge_class_right') }}{% endif %}">{{ item.attribute('badge_value_right') }}</small>
-    {% endif %}
-{% endif %}{% endblock %}
+    {% endwrapinline %}
+{% endblock %}
