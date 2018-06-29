@@ -73,7 +73,7 @@ class OrderSearchType extends AbstractType
                 SubmitType::class,
                 [
                     'label' => 'form.online.order_search.button_search',
-                    'attr'  => ['class' => 'btn btn-primary btn-sm'],
+                    'attr'  => ['class' => 'btn btn-primary btn-block'],
                 ]
             );
     }

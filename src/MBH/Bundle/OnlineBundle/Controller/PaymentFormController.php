@@ -47,9 +47,7 @@ class PaymentFormController extends Controller
     {
         $entity = new PaymentFormConfig();
 
-        $form = $this->createForm(PaymentFormType::class, $entity, [
-//            'user' => $this->getUser()->getUserName()
-        ]);
+        $form = $this->createForm(PaymentFormType::class, $entity);
 
         $form->handleRequest($request);
 
@@ -65,7 +63,6 @@ class PaymentFormController extends Controller
 
         return [
             'form' => $form->createView(),
-//            'config' => $this->container->getParameter('mbh.online.form')
         ];
     }
 
@@ -81,9 +78,7 @@ class PaymentFormController extends Controller
      */
     public function editAction(Request $request, PaymentFormConfig $entity)
     {
-        $form = $this->createForm(PaymentFormType::class, $entity, [
-//            'user' => $this->getUser()->getUserName()
-        ]);
+        $form = $this->createForm(PaymentFormType::class, $entity);
 
         $form->handleRequest($request);
 
@@ -99,8 +94,8 @@ class PaymentFormController extends Controller
 
         return [
             'config' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity),
+            'form'   => $form->createView(),
+            'logs'   => $this->logs($entity),
         ];
     }
 
@@ -113,7 +108,7 @@ class PaymentFormController extends Controller
     public function formCodeAction(PaymentFormConfig $config)
     {
         return [
-            'config' => $config,
+            'config'    => $config,
             'wrapperId' => PaymentFormConfig::WRAPPER_ID,
         ];
     }

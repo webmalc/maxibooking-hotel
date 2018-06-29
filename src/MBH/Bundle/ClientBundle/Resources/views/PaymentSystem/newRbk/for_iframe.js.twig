@@ -1,6 +1,6 @@
 {% include 'MBHClientBundle:PaymentSystem/newRbk:event.js.twig' %}
 var mbhNewRbkIframe = {
-  urlPostMessage : '{{ referer is defined ? referer : '*' }}',
+  urlPostMessage : '{{ referer }}',
   typePostMessage: '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\NewRbk::TYPE_POST_MSG') }}',
   addListener    : function() {
     mbhNewRbk_Event.finished.create();

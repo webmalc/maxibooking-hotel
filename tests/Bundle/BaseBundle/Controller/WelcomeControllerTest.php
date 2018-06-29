@@ -52,7 +52,7 @@ class WelcomeControllerTest extends WebTestCase
     /**
      * @var string
      */
-    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER = 20;
+    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER = 19;
 
     public static function setUpBeforeClass()
     {
@@ -83,28 +83,6 @@ class WelcomeControllerTest extends WebTestCase
             200,
             $this->client
         );
-    }
-
-    public function testSidebarActiveMainMenu()
-    {
-        $crawler = $this->getListCrawler(self::URL_CHESSBOARD);
-
-        $mainMenu = $crawler->filter('#' . Builder::ROOT_MENU_ITEM_MAIN_MENU . '.collapse.in');
-        $managementMenu = $crawler->filter('#' . Builder::ROOT_MENU_ITEM_MANAGEMENT_MENU . '.collapse.in');
-
-        $this->assertCount(1, $mainMenu);
-        $this->assertCount(0, $managementMenu);
-    }
-
-    public function testSidebarActiveManagerMenu()
-    {
-        $crawler = $this->getListCrawler(self::URL_ROOMTYPE);
-
-        $mainMenu = $crawler->filter('#' . Builder::ROOT_MENU_ITEM_MAIN_MENU . '.collapse.in');
-        $managementMenu = $crawler->filter('#' . Builder::ROOT_MENU_ITEM_MANAGEMENT_MENU . '.collapse.in');
-
-        $this->assertCount(0, $mainMenu);
-        $this->assertCount(1, $managementMenu);
     }
 
     public function testBadgeDefault()

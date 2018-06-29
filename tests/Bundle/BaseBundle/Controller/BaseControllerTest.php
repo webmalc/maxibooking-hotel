@@ -23,6 +23,7 @@ class BaseControllerTest extends WebTestCase
         'user_payer',                       //500 billing
         'payments_list_json',               //500 billing
         '_welcome',
+        'hoh_packages_sync',                //redirect
         'work_shift_wait',                  //redirect, need fixture
         'work_shift_new',                   //redirect, need fixture
         'work_shift_lock',                  //redirect, need fixture
@@ -76,6 +77,14 @@ class BaseControllerTest extends WebTestCase
         'price_cache_overview_save',
         'price_cache_generator',
         'price_cache_generator_save',
+        'online_form',
+        'online_form_new',
+        'online_form_edit',
+        'online_form_delete',
+        'online_payment_form',
+        'online_payment_form_new',
+        'online_payment_form_edit',
+        'online_payment_form_delete',
     ];
 
     private const ROUTERS_CHANNEL_MANAGER = [
@@ -99,10 +108,12 @@ class BaseControllerTest extends WebTestCase
         'oktogo_tariff_sync',
         'oktogo_tariff',
         'oktogo_service',
+        'channels',
         'channels_room',
         'channels_tariff',
         'channels_service',
         'channels_user_unlink',
+        'ostrovok',
         'ostrovok_room',
         'ostrovok_tariff',
         'ostrovok_service',

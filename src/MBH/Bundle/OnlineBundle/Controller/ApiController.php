@@ -796,7 +796,7 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/file/{configId}/load-result.js", name="online_form_load_result_file", defaults={"_format"="js"})
+     * @Route("/file/{configId}/load-result", name="online_form_load_result_file", defaults={"_format"="js"})
      * @Cache(expires="tomorrow", public=true)
      * @Template()
      */

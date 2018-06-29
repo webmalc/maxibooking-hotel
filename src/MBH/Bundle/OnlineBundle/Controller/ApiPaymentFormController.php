@@ -36,7 +36,7 @@ class ApiPaymentFormController extends Controller
 
 
     /**
-     * @Route("/file/{configId}/load.js", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
+     * @Route("/file/{configId}/load", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
      * @Cache(expires="tomorrow", public=true)
      * Template()
      */
@@ -82,7 +82,7 @@ class ApiPaymentFormController extends Controller
             'formId'        => OrderSearchType::PREFIX,
             'entityId'      => $formId,
             'entity'        => $entity,
-            'referer'       => $match[1],
+            'referer'       => $match[1] ?? '*',
             'paymentSystem' => $this->getPaymentSystem(),
         ];
     }
@@ -116,7 +116,13 @@ class ApiPaymentFormController extends Controller
             $msg[] = $err->getMessage();
         }
 
-        return $this->json(['error' => $msg !== [] ? implode("<br>", $msg) : 'not valid fields']);
+        return $this->json(
+            [
+                'error' => $msg !== []
+                    ? implode("<br>", $msg)
+                    : $this->container->get('translator')->trans('api.payment_form.search.not_valid_fields')
+            ]
+        );
     }
 
     /**

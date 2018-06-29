@@ -319,6 +319,7 @@ per_l: л.
 per_ml: мл.
 menu.header.navigation: Навигация
 menu.header.settings: Настройки
+menu.label.navigation: 'Обзор номеров'
 menu.label.hotel_services: 'Службы отеля'
 menu.label.web_site: 'Интернет сайт'
 menu.label.analytics: Аналитика
@@ -342,12 +343,12 @@ menu.label.nomandprice.promotions: Акции
 menu.label.task: Задачи
 menu.label.cash: Касса
 menu.label.warehouse: Склад
-menu.label.restaurant: Ресторан
+menu.label.restaurant: 'Заказы ресторана'
 menu.label.financial_analytics: 'Финансовая аналитика'
 menu.label.reports: Отчеты
 menu.label.reports.services: 'Дополнительные услуги'
 menu.label.reports.clients: Гости
-menu.label.reports.organizations: Организация
+menu.label.reports.organizations: Организации
 menu.label.reports.filling: Заполняемость
 menu.label.reports.managers: 'Отчеты по менеджерам'
 menu.label.reports.invite: 'Визовые приглашения'
@@ -374,14 +375,14 @@ menu.configs.sources: 'Источники продаж'
 menu.configs.delete_reasons: 'Причины удаления'
 menu.configs.templates: 'Шаблоны документов'
 menu.configs.parameters: Параметры
-menu.configs.tasktype: 'Типы задач'
+menu.configs.tasktype: 'Обслуживание номеров'
 menu.configs.warehouse: 'Номенклатура склада'
 menu.communication.label: Взаимодействие
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.your_hotel: ВашОтель
 menu.communication.label.onlineform: 'Онлайн модуль'
 menu.communication.label.online_payment_form: 'Платежный модуль'
-menu.communication.label.polls: Оценки
+menu.communication.label.polls: 'Настройка отзывов'
 menu.communication.label.site_settings: 'Настройки сайта'
 menu.communication.label.mb_site: Сайт
 menu.communication.label.invite: 'Визовое приглашение'
@@ -448,7 +449,7 @@ basebundle.menu.tables: Столы
 basebundle.menu.users: Пользователи
 basebundle.menu.groups: Группы
 basebundle.menu.sources: Источники
-basebundle.menu.reasond_of_removal: 'Причины удаления'
+basebundle.menu.reasond_of_removal: 'Причниы аннуляции'
 basebundle.menu.templates_of_document: 'Шаблоны документов'
 basebundle.menu.parammeters: Параметры
 basebundle.menu.type_of_task: 'Типы задач'

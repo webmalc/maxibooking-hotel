@@ -8,12 +8,13 @@ var mbhIframe = {
     var html = '<form id="' + this.idFormPayment +
         '" method="post" action="{{ url('online_form_api_newrbk_generate_invoice') }}">' +
         '<div class="form-group form-group-sm"> ' +
-        '<label for="total" class="col-form-label col-form-label-sm">Cумма к оплате</label>' +
-        '<input type="number" class="form-control input-sm" name="total" value="' + data.total + '">' +
-        '</div>' +
+        '<label for="total" class="col-form-label col-form-label-sm">{{ 'api.payment_form.pay_order.total' | trans }}</label>' +
+        '<div class="form-field">' +
+        '<input type="number" class="form-control input-sm" name="total" value="' + data.total + '" max="' + data.total + '">' +
+        '</div></div>' +
         '<input type="hidden" name="packageId" value="' + data.packageId + '">' +
         '<div class="form-group">' +
-        '<input type="submit" value="Оплатить" class="btn btn-success btn-sm">' +
+        '<input type="submit" value="{{ 'api.payment_form.pay_order.submit' | trans }}" class="btn btn-success btn-block">' +
         '</div>'
     ;
     html += '</form>';
@@ -37,9 +38,18 @@ var mbhIframe = {
     var $divResult = $('#' + this.idDivResultSearch);
     $divResult.removeClass();
     if (type == false) {
-        $divResult.find('.panel-body').html('');
+      $divResult.find('.panel-body')
+        .removeClass()
+        .addClass('panel-body')
+        .html('');
     } else {
-      $divResult.addClass('panel panel-' + type).find('.panel-body').html(data);
+      var $panelBody = $divResult.addClass('panel panel-' + type).find('.panel-body');
+
+      if (type !== 'info') {
+        $panelBody.addClass('bg-' + type);
+      }
+
+      $panelBody.html(data);
     }
   }
 };
@@ -74,11 +84,11 @@ window.onload = function(e) {
 
   $form.change(function(e) {
     mbhIframe.updateResultDiv(false);
-  })
+  });
   
   document.addEventListener('mbh_payment_finished', function() {
     mbhIframe.updateResultDiv('success', 'Оплачено!');
-  })
+  });
 };
 {% endautoescape %}
 {#{% endwrapinline %}#}
