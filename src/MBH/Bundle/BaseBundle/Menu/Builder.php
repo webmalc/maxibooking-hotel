@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
+use MBH\Bundle\BaseBundle\Lib\Menu\BadgesHolder;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -415,14 +416,27 @@ class Builder
             $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
 
             if ($openTaskCount > 0) {
-                $taskAttributes += [
-                    'badge' => true,
-                    'badge_class' => 'bg-red',
-                    'badge_id' => 'task-counter',
-                    'badge_value' => $openTaskCount
-                ];
+                $taskAttributes = array_merge(
+                    $taskAttributes,
+                    BadgesHolder::createOne(
+                        'task-counter',
+                        'bg-red',
+                        '',
+                        $openTaskCount
+                    )
+                );
             }
         }
+
+        $taskAttributes = array_merge(
+            $taskAttributes,
+            BadgesHolder::createOne(
+                'task-counter',
+                'bg-red',
+                '',
+                20
+            )
+        );
 
         $task = [
             'task' => [
@@ -449,6 +463,10 @@ class Builder
 
         $item = $this->factory->createItem($child, $params['options']);
         $item->setAttributes($params['attributes']);
+
+        if (!empty($params['attributes']['badges'])) {
+            $item->setLinkAttribute('class', 'content-badge');
+        }
 
         return $item;
     }
@@ -915,30 +933,26 @@ class Builder
         $arrivals = $dm->getRepository('MBHPackageBundle:Package')->countByType('arrivals', true, $hotel);
         $out = $dm->getRepository('MBHPackageBundle:Package')->countByType('out', true, $hotel);
 
-        $porterBadges = [];
+        $badges = new BadgesHolder();
         if ($arrivals) {
-            $porterBadges += [
-                'badge' => true,
-                'badge_left'       => true,
-                'badge_class_left' => 'bg-red badge-sidebar-left badge-sidebar-margin',
-                'badge_id_left'    => 'arrivals',
-                'badge_value_left' => $arrivals,
-                'badge_title_left' => $this->container->get('translator')->trans('menu.help.noarrival'),
-            ];
+            $badges->addBadge(
+                'arrivals',
+                'bg-red',
+                $this->container->get('translator')->trans('menu.help.noarrival'),
+                $arrivals
+            );
         }
         if ($out) {
-            $porterBadges += [
-                'badge' => true,
-                'badge_right'       => true,
-                'badge_class_right' => 'bg-green badge-sidebar-right badge-sidebar-margin',
-                'badge_id_right'    => 'out',
-                'badge_value_right' => $out,
-                'badge_title_right' => $this->container->get('translator')->trans('menu.help.nodepart'),
-            ];
+            $badges->addBadge(
+                'out',
+                'bg-green',
+                $this->container->get('translator')->trans('menu.help.nodepart'),
+                $out
+            );
         }
 
         $parentOptions = ['route' => '_welcome', 'label' => 'menu.label.portie',];
-        $parentAttr = ['dropdown' => true, 'icon' => 'fa fa-bell'] + $porterBadges;
+        $parentAttr = ['dropdown' => true, 'icon' => 'fa fa-bell'] + $badges->addInAttributes();
 
         $porterLink = [
             'porter_links' => [
