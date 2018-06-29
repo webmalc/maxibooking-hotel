@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Services\Data;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\SearchBundle\Lib\Data\DataFetchQueryInterface;
 use MBH\Bundle\SearchBundle\Lib\Data\RestrictionsFetchQuery;
+use Symfony\Component\Cache\Simple\AbstractCache;
 
 /**
  * Class RestrictionsFetcher
@@ -18,10 +19,10 @@ class RestrictionsFetcher extends AbstractDataFetcher
     /** @var RestrictionRepository */
     protected $restrictionRepository;
 
-    public function __construct(DataHolderInterface $holder, SharedDataFetcherInterface $sharedDataFetcher, RestrictionRepository $restrictionRepository)
+    public function __construct(DataHolderInterface $holder, SharedDataFetcherInterface $sharedDataFetcher, RestrictionRepository $restrictionRepository, AbstractCache $cache)
     {
         $this->restrictionRepository = $restrictionRepository;
-        parent::__construct($holder, $sharedDataFetcher);
+        parent::__construct($holder, $sharedDataFetcher, $cache);
     }
 
 

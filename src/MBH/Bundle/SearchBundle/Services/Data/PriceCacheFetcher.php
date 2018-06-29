@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Services\Data;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\PriceBundle\Document\PriceCacheRepository;
 use MBH\Bundle\SearchBundle\Lib\Data\DataFetchQueryInterface;
+use Symfony\Component\Cache\Simple\AbstractCache;
 
 class PriceCacheFetcher extends AbstractDataFetcher
 {
@@ -24,11 +25,11 @@ class PriceCacheFetcher extends AbstractDataFetcher
      * @param PriceCacheRepository $repository
      * @param ClientConfigRepository $configRepository
      */
-    public function __construct(DataHolderInterface $holder, SharedDataFetcherInterface $sharedDataFetcher, PriceCacheRepository $repository, ClientConfigRepository $configRepository)
+    public function __construct(DataHolderInterface $holder, SharedDataFetcherInterface $sharedDataFetcher, PriceCacheRepository $repository, ClientConfigRepository $configRepository, AbstractCache $cache)
     {
         $this->isUseCategory = $configRepository->fetchConfig()->getUseRoomTypeCategory();
         $this->priceCacheRepository = $repository;
-        parent::__construct($holder, $sharedDataFetcher);
+        parent::__construct($holder, $sharedDataFetcher, $cache);
     }
 
 

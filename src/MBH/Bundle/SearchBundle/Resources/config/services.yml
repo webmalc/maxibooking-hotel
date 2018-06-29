@@ -194,48 +194,72 @@ services:
         arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.restriction_repository', '@mbh_search.client_config_repository', '@mbh_search.room_cache_repository', '@mbh_search.room_repository', '@mbh_search.package_accommodation_repository', '@mbh_search.price_cache_repository', '@mbh_search.search_conditions_repository']
         deprecated: 'The "%service_id%" service is deprecated. Should be replaced by shared data fetcher'
 
-    mbh_search.shared_data_fetcher:
-        class: MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher
-        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.room_repository']
-
+##Holders
     mbh_search.room_cache_holder:
         class: MBH\Bundle\SearchBundle\Services\Data\RoomCacheHolder
-
-    mbh_search.room_cache_fetcher:
-        class: MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher
-        arguments: ['@mbh_search.room_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.room_cache_repository']
 
     mbh_search.restrictions_holder:
         class: MBH\Bundle\SearchBundle\Services\Data\RestrictionsHolder
 
-    mbh_search.restrictions_fetcher:
-        class: MBH\Bundle\SearchBundle\Services\Data\RestrictionsFetcher
-        arguments: ['@mbh_search.restrictions_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.restriction_repository']
-
     mbh_search.room_holder:
         class: MBH\Bundle\SearchBundle\Services\Data\RoomHolder
-
-    mbh_search.room_fetcher:
-        class: MBH\Bundle\SearchBundle\Services\Data\RoomFetcher
-        arguments: ['@mbh_search.room_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.room_repository']
 
     mbh_search.package_accommodation_holder:
         class: MBH\Bundle\SearchBundle\Services\Data\PackageAccommodationHolder
         arguments: ['@mbh_search.shared_data_fetcher']
 
-    mbh_search.package_accommodation_fetcher:
-        class: MBH\Bundle\SearchBundle\Services\Data\PackageAccommodationFetcher
-        arguments: ['@mbh_search.package_accommodation_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.package_accommodation_repository']
-
     mbh_search.price_cache_holder:
         class: MBH\Bundle\SearchBundle\Services\Data\PriceCacheHolder
         arguments: ['@mbh_search.client_config_repository']
 
-    mbh_search.redis_price_cache_holder:
-        class: MBH\Bundle\SearchBundle\Services\Data\CacheHolders\RedisCacheHolder
-        arguments: ['@mbh_search.price_cache_holder', '@cache.adapter.redis']
+##Caches
+    mbh_search.redis:
+        class: Symfony\Component\Cache\Adapter\RedisAdapter
+        factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', createConnection]
+        arguments: ['%mbh_redis%']
+
+    mbh_search.room_cache_redis_cache:
+        class: Symfony\Component\Cache\Simple\RedisCache
+        arguments: ['@mbh_search.redis', 'room_caches' ]
+
+    mbh_search.restrictions_redis_cache:
+        class: Symfony\Component\Cache\Simple\RedisCache
+        arguments: ['@mbh_search.redis', 'restrictions' ]
+
+    mbh_search.rooms_redis_cache:
+        class: Symfony\Component\Cache\Simple\RedisCache
+        arguments: ['@mbh_search.redis', 'rooms']
+
+    mbh_search.package_accommodation_redis_cache:
+        class: Symfony\Component\Cache\Simple\RedisCache
+        arguments: ['@mbh_search.redis', 'package_accommodations']
+
+    mbh_search.price_cache_redis_cache:
+        class: Symfony\Component\Cache\Simple\RedisCache
+        arguments: ['@mbh_search.redis', 'price_caches' ]
+
+
+##Fetchers
+    mbh_search.shared_data_fetcher:
+        class: MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher
+        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.room_repository']
+
+    mbh_search.room_cache_fetcher:
+        class: MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher
+        arguments: ['@mbh_search.room_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.room_cache_repository', '@mbh_search.room_cache_redis_cache']
+
+    mbh_search.restrictions_fetcher:
+        class: MBH\Bundle\SearchBundle\Services\Data\RestrictionsFetcher
+        arguments: ['@mbh_search.restrictions_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.restriction_repository', '@mbh_search.restrictions_redis_cache']
+
+    mbh_search.room_fetcher:
+        class: MBH\Bundle\SearchBundle\Services\Data\RoomFetcher
+        arguments: ['@mbh_search.room_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.room_repository', '@mbh_search.rooms_redis_cache']
+
+    mbh_search.package_accommodation_fetcher:
+        class: MBH\Bundle\SearchBundle\Services\Data\PackageAccommodationFetcher
+        arguments: ['@mbh_search.package_accommodation_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.package_accommodation_repository', '@mbh_search.package_accommodation_redis_cache']
 
     mbh_search.price_cache_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\PriceCacheFetcher
-        arguments: ['@mbh_search.redis_price_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.price_cache_repository', '@mbh_search.client_config_repository']
-#
+        arguments: ['@mbh_search.price_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.price_cache_repository', '@mbh_search.client_config_repository', '@mbh_search.price_cache_redis_cache']
