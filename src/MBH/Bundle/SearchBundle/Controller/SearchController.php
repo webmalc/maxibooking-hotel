@@ -42,7 +42,7 @@ class SearchController extends Controller
             $json = json_encode(['results' => $results], JSON_NUMERIC_CHECK);
             $answer = new JsonResponse($json, 200, [], true);
         } catch (SearchConditionException|SearchQueryGeneratorException $e) {
-            $answer = new JsonResponse(['error' => $e->getMessage()], 50);
+            $answer = new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
         return $answer;

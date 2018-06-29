@@ -145,7 +145,8 @@ class Search
      */
     private function createSearchConditions(array $data): SearchConditions
     {
-        $hash = uniqid(gethostname(), true);
+
+        $hash = uniqid(\AppKernel::DEFAULT_CLIENT, true);
         $conditions = $this->conditionsCreator->createSearchConditions($data);
         $conditions->setSearchHash($hash);
         $this->saveQueryStat($conditions);
