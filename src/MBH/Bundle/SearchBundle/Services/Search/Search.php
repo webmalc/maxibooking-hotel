@@ -24,7 +24,7 @@ class Search
     public const QUERIES_CHUNK_NUM = 20;
 
     /** @var bool  */
-    public const PRE_RESTRICTION_CHECK = true;
+    public const PRE_RESTRICTION_CHECK = false;
 
     /** @var RestrictionsCheckerService */
     private $restrictionChecker;

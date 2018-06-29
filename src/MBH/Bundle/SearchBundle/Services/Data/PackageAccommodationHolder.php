@@ -33,7 +33,7 @@ class PackageAccommodationHolder implements DataHolderInterface
     {
         $roomTypeId = $fetchQuery->getRoomTypeId();
         $hash = $fetchQuery->getHash();
-        $hashed = $this->data[$hash];
+        $hashed = $this->data[$hash] ?? null;
         if (null === $hashed) {
             return null;
         }
