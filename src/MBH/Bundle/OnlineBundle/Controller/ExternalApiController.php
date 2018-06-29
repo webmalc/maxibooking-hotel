@@ -92,6 +92,10 @@ class ExternalApiController extends BaseController
                     || ($formConfig->getHotels()->contains($roomType->getHotel())
                         && (!$formConfig->getRoomTypes() || $formConfig->getRoomTypeChoices()->contains($roomType)))
                 ) {
+                    if ($request->get('locale')) {
+                        $roomType->setLocale($request->getLocale());
+                        $this->dm->refresh($roomType);
+                    }
                     $responseData[] = $roomType->getJsonSerialized($isFull,
                         $this->get('vich_uploader.templating.helper.uploader_helper'),
                         $this->get('liip_imagine.cache.manager')
@@ -206,6 +210,11 @@ class ExternalApiController extends BaseController
                 || $formConfig->getHotels()->count() == 0
                 || in_array($hotel, $formConfig->getHotels()->toArray())
             ) {
+                if ($request->get('locale')) {
+                    $hotel->setLocale($request->getLocale());
+                    $this->dm->refresh($hotel);
+                }
+
                 $hotelData = $hotel->getJsonSerialized(
                     $isFull,
                     $this->get('vich_uploader.templating.helper.uploader_helper'),
