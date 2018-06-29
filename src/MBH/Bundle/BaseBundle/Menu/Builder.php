@@ -478,13 +478,14 @@ class Builder
             ],
         ];
 
+
         $booking = [];
         $myAllLocator = [];
         $ostrovok = [];
         $vashotel = [];
-        $expedia = [];
+        $oktogo = [];
 
-        if ($this->container->getParameter('mbh.environment') === 'prod') {
+        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
             $booking = [
                 'booking' => [
                     'options'    => [
@@ -535,11 +536,11 @@ class Builder
                 ],
             ];
 
-            $expedia = [
-                'expedia' => [
+            $oktogo = [
+                'oktogo' => [
                     'options'    => [
-                        'route' => 'expedia',
-                        'label' => 'Expedia',
+                        'route' => 'oktogo',
+                        'label' => 'Oktogo.ru',
                     ],
                     'attributes' => ['icon' => 'fa fa-cloud-download'],
                 ],
@@ -587,7 +588,6 @@ class Builder
             ],
         ];
 
-
         $parent = $this->createItem($channelManager);
 
         return $parent->setChildren($this->getItemsInArray([
@@ -595,7 +595,7 @@ class Builder
             $myAllLocator,
             $ostrovok,
             $vashotel,
-            $expedia,
+            $oktogo,
             $hundredOneHotel,
             $onlineForm,
             $paymentForm,
