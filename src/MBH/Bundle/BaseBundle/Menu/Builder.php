@@ -428,16 +428,6 @@ class Builder
             }
         }
 
-        $taskAttributes = array_merge(
-            $taskAttributes,
-            BadgesHolder::createOne(
-                'task-counter',
-                'bg-red',
-                '',
-                20
-            )
-        );
-
         $task = [
             'task' => [
                 'options'    => [
