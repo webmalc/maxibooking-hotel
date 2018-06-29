@@ -231,6 +231,11 @@ services:
         class: MBH\Bundle\SearchBundle\Services\Data\PriceCacheHolder
         arguments: ['@mbh_search.client_config_repository']
 
+    mbh_search.redis_price_cache_holder:
+        class: MBH\Bundle\SearchBundle\Services\Data\CacheHolders\RedisCacheHolder
+        arguments: ['@mbh_search.price_cache_holder', '@cache.adapter.redis']
+
     mbh_search.price_cache_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\PriceCacheFetcher
-        arguments: ['@mbh_search.price_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.price_cache_repository', '@mbh_search.client_config_repository']
+        arguments: ['@mbh_search.redis_price_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.price_cache_repository', '@mbh_search.client_config_repository']
+#
