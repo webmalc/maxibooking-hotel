@@ -167,7 +167,7 @@ class ChannelManagerControllerTest extends WebTestCase
         $tariffs = $hotel->getTariffs();
 
         $roomsForm = $tariffsFormCrawler->form([
-            $tariffsFormName . '[' . ChannelManagerServiceMock::FIRST_TARIFF_ID . ']' => $tariffs[0]
+            $tariffsFormName . '[' . ChannelManagerServiceMock::FIRST_TARIFF_ID . ']' => $tariffs[0]->getId()
         ]);
         $this->client->submit($roomsForm);
     }

@@ -95,7 +95,7 @@ class DocumentRelation implements \JsonSerializable
      * @param int $authorityOrganId
      * @return DocumentRelation
      */
-    public function setAuthorityOrganId(int $authorityOrganId): DocumentRelation
+    public function setAuthorityOrganId($authorityOrganId): DocumentRelation
     {
         $this->authorityOrganId = $authorityOrganId;
 

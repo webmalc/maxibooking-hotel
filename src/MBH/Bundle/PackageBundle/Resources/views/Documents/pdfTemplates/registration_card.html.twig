@@ -246,8 +246,8 @@
                                 <div class="title">
                                     <div>Pass №</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.passport'|trans }} №</div>
-                                </div>
-                                <div class="area" style="height: 38px !important;">{% if tourist and tourist.documentRelation and tourist.documentRelation.number and tourist.documentRelation.series %} {{ tourist.documentRelation.series }} {{ tourist.documentRelation.number }} {% endif %}</div>
+                                </div>and tourist.documentRelation.series
+                                <div class="area" style="height: 38px !important;">{% if tourist and tourist.documentRelation %} {% if tourist.documentRelation.series %} {{ tourist.documentRelation.series }}{% endif %} {% if tourist.documentRelation.number %}{{ tourist.documentRelation.number }}{% endif %} {% endif %}</div>
                             </div>
                         </td>
                         <td colspan="6">

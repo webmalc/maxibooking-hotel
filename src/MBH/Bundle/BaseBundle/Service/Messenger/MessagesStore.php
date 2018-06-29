@@ -26,22 +26,36 @@ class MessagesStore
      * @param Notifier $notifier
      * @throws \Throwable
      */
-    public function sendCMConnectionDataMessage(array $connectionData, string $channelManagerName, Notifier $notifier)
+    public function sendCMConnectionDataMessage(array $connectionData, Notifier $notifier)
     {
         $message = $notifier::createMessage();
         $techSupportUser = (new User())
             ->setEmail($this->supportData['support_main_email'][$this->locale])
             ->setLocale($this->locale);
+        $channelManagerName = $connectionData['channelManagerName'];
+        $channelManagerHumanName = $connectionData['channelManagerHumanName'];
+        $link = $this->router->generate('confirm_cm_config', ['channelManagerName' => $channelManagerName]);
+
+        $mailConnectionData = [
+            'система бронирования' => $channelManagerHumanName,
+            'название отеля' => $connectionData['hotelName'],
+            'ID отеля' => $connectionData['hotelId'],
+            'адрес отеля' => $connectionData['address']
+        ];
 
         $message
             ->setRecipients([$techSupportUser])
             ->setTemplate('MBHBaseBundle:Mailer:cmConnectionData.html.twig')
-            ->setAdditionalData(['connectionData' => $connectionData])
-            ->setText('messages_store.channel_manager_connection.mail.text')
+            ->setAdditionalData(['connectionData' => $mailConnectionData])
+            ->setTranslateParams([
+                '%channelManagerName%' => $channelManagerHumanName,
+                '%url%' => $link
+            ])
+            ->setSubject('messages_store.channel_manager_connection.mail.subject')
             ->setFrom('system')
             ->setType('success')
             ->setMessageType(NotificationType::TECH_SUPPORT_TYPE)
-            ->setLink($this->router->generate('confirm_cm_config', ['channelManagerName' => $channelManagerName]));
+            ->setLink($link);
 
         $notifier
             ->setMessage($message)
@@ -64,7 +78,7 @@ class MessagesStore
         $message
             ->setRecipients([$techSupportUser])
             ->setText('messages_store.channel_manager_confirmation.mail.text')
-            ->setSubject('messages_store.channel_manager_confirmation.mail.text')
+            ->setSubject('messages_store.channel_manager_confirmation.mail.subject')
             ->setTranslateParams(['%channelManager%' => $channelManagerHumanName])
             ->setFrom('system')
             ->setType('success')

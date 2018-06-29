@@ -43,10 +43,10 @@
                             </div>
                         </li>
                     {% endif %}
+                    {% include '@MBHChannelManager/ChannelManager/confirmCMButton.html.twig' with {channelManagerName: 'booking'} %}
                 {% endblock %}
             {% endembed %}
             {{ form_end(form) }}
-
             {% if config %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
             {% endif %}

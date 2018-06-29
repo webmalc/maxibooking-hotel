@@ -388,3 +388,18 @@ parameters:
         268: form.hotelExtendedType.all_public_areas_non_smoking
         900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 
+    guides_site:
+      articles:
+        common:
+          tariffs: 115003866533
+          package_info: 115003945433
+          hotel_creation: 115003827954
+          room_types: 115003861354
+          booking_sync: 115000737314
+          chessboard: 115004129354
+        channel_manager_connections:
+          booking: 115000737314
+          expedia: 115004172253
+          ostrovok: 115000755913
+          hundred_one_hotels: 115000759814
+          vashotel: 115004206894

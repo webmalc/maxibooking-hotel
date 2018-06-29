@@ -122,11 +122,13 @@ class ChannelManagerController extends Controller
         $infoMessage = 'controller.channelManagerController.wizard_info_text.' . $channelManagerName;
         $wizardManager = $this->get('mbh.cm_wizard_manager');
         $hasForm = $wizardManager->isConfiguredByTechSupport($channelManagerName);
+        $channelManagerHumanName = $channelManagerService->getServiceHumanName($channelManagerName);
 
         $responseParams = [
             'infoMessage' => $infoMessage,
             'hasForm' => $hasForm,
             'channelManagerName' => $channelManagerName,
+            'channelManagerHumanName' => $channelManagerHumanName,
         ];
 
         if ($hasForm) {
@@ -153,14 +155,15 @@ class ChannelManagerController extends Controller
                 //TODO: Дополнить
                 $this->addFlash('success', 'Данные подключения отправлены в тех.поддержку.');
 
-                $channelManagerHumanName = $channelManagerService->getServiceHumanName($channelManagerName);
                 $this->get('mbh.messages_store')
                     ->sendCMConnectionDataMessage([
-                        'Клиент' => $this->getParameter('client'),
-                        'Channel manager' => $channelManagerHumanName,
-                        'data1' => 123,
-                        'data2' => 3243
-                    ], $channelManagerName, $this->get('mbh.notifier.mailer'));
+                        'client' => $this->getParameter('client'),
+                        'channelManagerName' => $channelManagerName,
+                        'channelManagerHumanName' => $channelManagerHumanName,
+                        'hotelName' => $this->hotel->getName(),
+                        'hotelId' => $config->getHotelId(),
+//                        'address' => $this->hotel->
+                    ], $this->get('mbh.notifier.mailer'));
             }
 
             $responseParams = array_merge($responseParams, [

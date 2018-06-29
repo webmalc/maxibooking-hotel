@@ -294,10 +294,13 @@ class Extension extends \Twig_Extension
             $supportEmail = $this->isRussianClient()
                 ? $supportData['clients_support_email_ru']
                 : $supportData['clients_support_email_com'];
+            $supportMainEmail = $supportData['support_main_email'][$this->container->getParameter('locale')];
+
             $this->twigData = [
                 'demo_user_token' => UserData::SANDBOX_USER_TOKEN,
                 'clients_support_email' => $supportEmail,
-                'support_phone' => $supportData['russian_support_phone']
+                'support_phone' => $supportData['russian_support_phone'],
+                'support_main_email' => $supportMainEmail
             ];
 
             $this->isTwigDataInit = true;
@@ -343,6 +346,29 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @param string|null $type
+     * @param string|null $name
+     * @return string
+     */
+    public function getGuideArticleUrl(string $type = null, string $name = null)
+    {
+        $url = 'https://support.maxi-booking.com/hc/' . ($this->isRussianClient() ? 'ru' : 'com' );
+        if (!is_null($type) && !is_null($name)) {
+            $articlesByTypes = $this->container->getParameter('guides_site')['articles'];
+            if (!isset($articlesByTypes[$type])) {
+                throw new \InvalidArgumentException('Incorrect type of articles:' . $type);
+            }
+            if (!isset($articlesByTypes[$type][$name])) {
+                throw new \InvalidArgumentException('Incorrect name of article:', $name);
+            }
+
+            $url .= '/articles/' . $articlesByTypes[$type][$name];
+        }
+
+        return $url;
+    }
+
+    /**
      * @return array
      */
     public function getFunctions()
@@ -368,6 +394,7 @@ class Extension extends \Twig_Extension
             'get_twig_data'           => new \Twig_SimpleFunction('get_twig_data', [$this, 'getTwigData'], ['is_safe' => ['html']]),
             'is_mb_user'              => new \Twig_SimpleFunction('is_mb_user', [$this, 'isMBUser'], ['is_safe' => ['html']]),
             'get_properties'          => new \Twig_SimpleFunction('get_properties', [$this, 'getMethodsForTemplate'], ['is_safe' => ['html']]),
+            'get_guide_article_url'   => new \Twig_SimpleFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], ['is_safe' => ['html']]),
         ];
     }
 

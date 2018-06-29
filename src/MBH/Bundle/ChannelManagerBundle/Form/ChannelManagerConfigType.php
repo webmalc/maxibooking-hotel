@@ -22,7 +22,7 @@ class ChannelManagerConfigType extends AbstractType
     {
         /** @var ChannelManagerConfigInterface $config */
         $config = $builder->getData();
-        if ($config->isReadyToSync()) {
+        if (!is_null($config) && $config->isReadyToSync()) {
             $builder
                 ->add(
                     'isEnabled',

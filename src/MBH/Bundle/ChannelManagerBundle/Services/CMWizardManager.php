@@ -6,15 +6,22 @@ use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\ChannelManagerBundle\Form\IntroType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
+use MBH\Bundle\UserBundle\Document\User;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class CMWizardManager
 {
     private $channelManager;
     private $fieldsManager;
+    private $tokenStorage;
 
-    public function __construct(ChannelManager $channelManager, DocumentFieldsManager $fieldsManager) {
+    public function __construct(ChannelManager $channelManager, DocumentFieldsManager $fieldsManager, TokenStorage $tokenStorage)
+    {
         $this->channelManager = $channelManager;
         $this->fieldsManager = $fieldsManager;
+        $this->tokenStorage = $tokenStorage;
     }
 
     const CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT = [
@@ -62,10 +69,17 @@ class CMWizardManager
      */
     public function getCurrentStepUrl(string $channelManagerName, ?ChannelManagerConfigInterface $config)
     {
-        if (is_null($config) || !$config->isReadinessConfirmed()) {
+        $user = $this->tokenStorage->getToken()->getUser();
+        if (!$user instanceof User) {
+            throw new AccessDeniedException();
+        }
+
+        if (is_null($config)
+            || ($this->isConfiguredByTechSupport($channelManagerName) && empty($config->getHotelId()))
+            || (!$this->isConfiguredByTechSupport($channelManagerName) && !$config->isReadinessConfirmed())) {
             return 'wizard_info';
         }
-        if (!$config->isMainSettingsFilled()) {
+        if (is_null($config) or !$config->isMainSettingsFilled() or !$config->isReadinessConfirmed()) {
             return $channelManagerName;
         }
 

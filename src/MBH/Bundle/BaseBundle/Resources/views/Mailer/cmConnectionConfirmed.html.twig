@@ -1,0 +1,21 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+
+{% block text %}
+    <h2>
+        {{ 'messages_store.channel_manager_confirmation.text_1'|trans(transParams)}}
+    </h2>
+    <p>
+        {{ 'messages_store.channel_manager_confirmation.text_2'|trans}}
+    </p>
+    <h3>{{ 'messages_store.channel_manager_confirmation.text_3'|trans(transParams)}}:</h3>
+
+    система бронирования: [Название_системы_бронирования]
+    название отеля: [Название_отеля]
+    ID отеля: [ID_отеля_в_системе_бронирования]
+
+    - только для 101Отеля
+    API key: [ключ_для_подключения]
+
+    {{ 'messages_store.channel_manager_confirmation.text_4'|trans}}
+
+{% endblock %}

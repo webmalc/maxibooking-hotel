@@ -17,44 +17,41 @@
 
     <div class="tab-content">
         <div id="channel-manager-instruction" class="well">
-            {{ infoMessage|trans }}
+            {% include '@MBHChannelManager/ChannelManager/cmConnectionInstructions.html.twig' with {channelManager: channelManagerName} %}
         </div>
 
-        {% if hasForm %}
         <div class="tab-pane active" id="home">
-            {% if config and config.hotelId and config.id %}
-                <div class="well" id="connection-request-sent-message">Заявка отправлена, ожидайте сообщения тех. поддержки</div>
-            {% else %}
-                {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
-                {{ form_widget(form) }}
-                <div class="navbar">
-                    <div class="container-fluid">
-                        <ul class="nav navbar-nav">
-                            <li>
-                                <button type="submit" name="save" class="btn btn-success navbar-btn" {{ hasUnfilledData ? 'disabled' }}><i
-                                            class="fa fa-check-square-o"> </i> {{ 'Отправить заявку' }}
-                                </button>
-                            </li>
-                        </ul>
+            {% if hasForm %}
+                {% if config and config.hotelId and config.id %}
+                    <div class="well" id="connection-request-sent-message">Заявка отправлена, ожидайте сообщения тех.
+                        поддержки
                     </div>
-                </div>
-                {{ form_end(form) }}
-            {% endif %}
+                {% else %}
+                    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+                    {{ form_widget(form) }}
+                    <div class="navbar">
+                        <div class="container-fluid">
+                            <ul class="nav navbar-nav">
+                                <li>
+                                    <button type="submit" name="save"
+                                            class="btn btn-success navbar-btn" {{ hasUnfilledData ? 'disabled' }}><i
+                                                class="fa fa-check-square-o"> </i> {{ 'Отправить заявку' }}
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+                {% endif %}
             {% endif %}
 
-            {% if is_mb_user() and (config is empty or config.hotelId) and not hasUnfilledData %}
-                {% embed '@MBHBase/Actions/base_list.html.twig' %}
-                    {% block left %}
-                        <li>
-                            <a id="confirm-config-button"
-                               href = "{{ path('confirm_cm_config', {'channelManagerName': channelManagerName}) }}"
-                                    class="btn btn-primary navbar-btn navbar-link-button">
-                                <i class="fa fa-check"> </i> {{ 'views.actions.confirm'|trans({}, 'MBHBaseBundle') }}
-                            </a>
-                        </li>
-                    {% endblock %}
-                {% endembed %}
-            {% endif %}
+            {% embed '@MBHBase/Actions/base_list.html.twig' %}
+                {% block left %}
+                    {% if channelManagerName in ['booking', 'expedia', 'myallocator'] %}
+                        {% include '@MBHChannelManager/ChannelManager/confirmCMButton.html.twig' %}
+                    {% endif %}
+                {% endblock %}
+            {% endembed %}
         </div>
     </div>
 {% endblock %}
