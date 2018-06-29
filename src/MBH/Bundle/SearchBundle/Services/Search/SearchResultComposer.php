@@ -148,9 +148,21 @@ class SearchResultComposer
         $roomCacheFetchQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
         $roomCaches = $this->roomCacheFetcher->fetchNecessaryDataSet($roomCacheFetchQuery);
 
-        $min = min(array_column($roomCaches, 'leftRooms'));
+        //** TODO: Когда станет понятно на каком этапе отсекать лимиты, тут переделать. */
+        $roomCachesWithNoQuotas = array_filter(
+            $roomCaches,
+            function ($roomCache) {
+                $isMainRoomCache = !array_key_exists('tariff', $roomCache) || null === $roomCache['tariff'];
+
+                return $isMainRoomCache && $roomCache['leftRooms'] > 0;
+            }
+        );
+
+
+        $min = min(array_column($roomCachesWithNoQuotas, 'leftRooms'));
+
         $duration = $searchQuery->getDuration();
-        if ($min < 1 || \count($roomCaches) !== $duration) {
+        if ($min < 1 || \count($roomCachesWithNoQuotas) !== $duration) {
             throw new SearchResultComposerException('Error! RoomCaches count not equal duration');
         }
 
