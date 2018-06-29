@@ -17,7 +17,6 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
-use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
@@ -29,9 +28,6 @@ class SearchLimitChecker
 
     /** @var ClientConfig */
     private $clientConfig;
-
-    /** @var DataHolder */
-    private $dataHolder;
 
     /** @var DocumentManager */
     private $dm;
@@ -47,20 +43,18 @@ class SearchLimitChecker
      * SearchLimitChecker constructor.
      * @param ClientConfigRepository $configRepository
      * @param DocumentManager $documentManager
-     * @param DataHolder $dataHolder
      * @param SharedDataFetcher $sharedDataFetcher
+     * @param RoomCacheFetcher $roomCacheFetcher
      */
     public function __construct(
         ClientConfigRepository $configRepository,
         DocumentManager $documentManager,
-        DataHolder $dataHolder,
         SharedDataFetcher $sharedDataFetcher,
         RoomCacheFetcher $roomCacheFetcher
 )
     {
         $this->clientConfig = $configRepository->fetchConfig();
         $this->dm = $documentManager;
-        $this->dataHolder = $dataHolder;
         $this->sharedDataFetcher = $sharedDataFetcher;
         $this->roomCacheFetcher = $roomCacheFetcher;
     }

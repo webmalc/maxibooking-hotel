@@ -95,11 +95,11 @@ services:
 
     mbh_search.calculation:
         class: MBH\Bundle\SearchBundle\Services\Calc\Calculation
-        arguments: ['@mbh_search.price_caches_merger', '@mbh_search.data_holder']
+        arguments: ['@mbh_search.price_caches_merger', '@mbh_search.shared_data_fetcher']
 
     mbh_search.price_caches_merger:
         class: MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger
-        arguments: ['@mbh_search.tariff_repository', '@mbh_search.data_holder', '@mbh_search.price_cache_fetcher']
+        arguments: ['@mbh_search.tariff_repository', '@mbh_search.price_cache_fetcher']
 
     mbh_search.result_composer:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
@@ -117,7 +117,7 @@ services:
 #search limit checker for refactoring
     mbh_search.search_limit_checker:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchLimitChecker
-        arguments: ['@mbh_search.client_config_repository', '@doctrine.odm.mongodb.document_manager', '@mbh_search.data_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.room_cache_fetcher']
+        arguments: ['@mbh_search.client_config_repository', '@doctrine.odm.mongodb.document_manager', '@mbh_search.shared_data_fetcher', '@mbh_search.room_cache_fetcher']
 
 # repositories
     mbh_search.room_type_repository:

@@ -138,6 +138,10 @@ class CalcQuery
      */
     public function getConditionMaxBegin(): ?\DateTime
     {
+        if (!$this->conditionMaxBegin) {
+            return $this->searchBegin;
+        }
+
         return $this->conditionMaxBegin;
     }
 
@@ -157,6 +161,10 @@ class CalcQuery
      */
     public function getConditionMaxEnd(): ?\DateTime
     {
+        if (!$this->conditionMaxEnd) {
+            return $this->getSearchEnd();
+        }
+
         return $this->conditionMaxEnd;
     }
 

@@ -4,6 +4,8 @@
 namespace Tests\Bundle\SearchBundle\Services\Calc;
 
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -17,18 +19,9 @@ use Tests\Bundle\SearchBundle\SearchWebTestCase;
 class CalculationTest extends SearchWebTestCase
 {
 
-    /** @var Calculation */
-    private $service;
-
-    /** @var \MBH\Bundle\PackageBundle\Services\Calculation */
-    private $oldService;
-
     public function setUp()
     {
-        $this->service = $this->getContainer()->get('mbh_search.calculation');
-        $this->oldService = $this->getContainer()->get('mbh.calculation');
         parent::setUp();
-//        self::baseFixtures();
     }
 
 
@@ -66,16 +59,25 @@ class CalculationTest extends SearchWebTestCase
                 ->setRoomType($searchRoomType)
                 ->setSearchBegin($begin)
                 ->setSearchEnd($end)
-                ->setIsUseCategory($isUseCategory)
                 ->setActualAdults($variant['adults'])
                 ->setActualChildren($variant['children'])
                 ->setPromotion($fakePromotion)
+                ->setIsUseCategory($isUseCategory)
+                ->setConditionHash(uniqid('', false))
             ;
 
             if ($data['isExpectException'] ?? null) {
                 $this->expectException($data['expectedException']);
             }
-            $actual = $this->service->calcPrices($calcQuery);
+            if ($isUseCategory) {
+                $clientConfigRepo = $this->createMock(ClientConfigRepository::class);
+                $clientConfig = $this->createMock(ClientConfig::class);
+                $clientConfig->expects($this->any())->method('getUseRoomTypeCategory')->willReturn(true);
+                $clientConfigRepo->expects($this->any())->method('fetchConfig')->willReturn($clientConfig);
+                $this->getContainer()->set('mbh_search.client_config_repository', $clientConfigRepo);
+            }
+
+            $actual = $this->getContainer()->get('mbh_search.calculation')->calcPrices($calcQuery);
             $key = $variant['adults'] . '_' . $variant['children'];
             $this->assertArrayHasKey($key, $actual);
             $actualData = $actual[$key];

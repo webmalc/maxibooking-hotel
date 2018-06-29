@@ -11,29 +11,32 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationAdditionalPriceException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
-use MBH\Bundle\SearchBundle\Lib\DataHolder;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
+use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 
 class Calculation
 {
 
     /** @var PriceCachesMerger */
     private $priceCacheMerger;
-
-    /** @var DataHolder */
-    private $dataHolder;
+    /**
+     * @var SharedDataFetcher
+     */
+    private $sharedDataFetcher;
 
 
     /**
      * Calculation constructor.
      * @param PriceCachesMerger $merger
-     * @param DataHolder $dataHolder
+     * @param SharedDataFetcher $sharedDataFetcher
      */
-    public function __construct(PriceCachesMerger $merger, DataHolder $dataHolder)
+    public function __construct(PriceCachesMerger $merger, SharedDataFetcher $sharedDataFetcher)
     {
         $this->priceCacheMerger = $merger;
-        $this->dataHolder = $dataHolder;
+        $this->sharedDataFetcher = $sharedDataFetcher;
     }
 
 
@@ -79,7 +82,8 @@ class Calculation
      * @return array
      * @throws CalculationAdditionalPriceException
      * @throws CalculationException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException
+     * @throws CalcHelperException
+     * @throws SharedFetcherException
      */
     private function getPriceForCombination(array $combination, array $priceCaches, CalcQuery $calcQuery): array
     {
@@ -124,7 +128,7 @@ class Calculation
 
             $rawPriceDate = Helper::convertMongoDateToDate($rawPriceCache['date']);
             /** @var Tariff $tariff */
-            $tariff = $this->dataHolder->getFetchedTariff($cacheData['searchTariffId']);
+            $tariff = $this->sharedDataFetcher->getFetchedTariff($cacheData['searchTariffId']);
             $packagePrice = $this->getPackagePrice($dayPrice, $rawPriceDate, $tariff, $calcQuery->getRoomType(), $promotion, $calcQuery->getSpecial());
             $dayPrices[$rawPriceDate->format('d_m_Y')] = $dayPrice;
             $packagePrices[] = $packagePrice;
