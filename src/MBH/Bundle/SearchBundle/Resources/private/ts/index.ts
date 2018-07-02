@@ -1,6 +1,6 @@
-///<reference path="Writer.ts"/>
-///<reference path="AsyncSearcher.ts"/>
-///<reference path="SyncSearcher.ts"/>
+///<reference path="Writers/Writer.ts"/>
+///<reference path="Searchers/AsyncSearcher.ts"/>
+///<reference path="Searchers/SyncSearcher.ts"/>
 ///<reference path="DataReceivers/FormDataReceiver.ts"/>
 
 

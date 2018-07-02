@@ -5,10 +5,8 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
@@ -78,9 +76,7 @@ class Search
      * @param array $data
      * @param bool $isHideRestrictedResults
      * @return array
-     * @throws DataHolderException
-     * @throws MongoDBException
-     * @throws SearchConditionException
+     *\ @throws SearchConditionException
      * @throws SearchQueryGeneratorException
      */
     public function searchSync(array $data, bool $isHideRestrictedResults = true): array

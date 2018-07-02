@@ -1,6 +1,12 @@
 {% extends '@MBHBase/meta.html.twig' %}
+{% block styles %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bundles/mbhsearch/css/search.css') }}">
+{% endblock %}
+
 {% block scripts %}
     {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="{{ asset('bundles/mbhsearch/js/search.js') }}"></script>
     {#{% javascripts filter='uglifyjs2' '@MBHSearchBundle/Resources/public/js/search.js' %}
         <script type="text/javascript" src="{{ asset_url }}"></script>

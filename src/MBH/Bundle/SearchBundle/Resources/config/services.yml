@@ -263,3 +263,7 @@ services:
     mbh_search.price_cache_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\PriceCacheFetcher
         arguments: ['@mbh_search.price_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.price_cache_repository', '@mbh_search.client_config_repository', '@mbh_search.price_cache_redis_cache']
+
+#SearchResult To JSON
+    mbh_search.search_results_responder:
+        class: MBH\Bundle\SearchBundle\Services\SearchResultsResponder

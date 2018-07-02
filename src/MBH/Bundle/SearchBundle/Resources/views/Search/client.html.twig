@@ -1,8 +1,12 @@
 {% extends 'MBHSearchBundle::layout.html.twig' %}
 {% block body %}
-    <a href="#" id="async_search">Async Search!</a>
-    <a href="#" id="sync_search">Sync Search!</a>
-    {{ form(form) }}
-    <div id="results">Результаты тут!</div>
+    <div id="new_search">
+    <div class="left"><a href="#" id="async_search">Async Search!</a>
+        <a href="#" id="sync_search">Sync Search!</a>
+        {{ form(form) }}</div>
+    <div class="right">
+        <div id="results">Результаты тут!</div>
+    </div>
+    </div>
 {% endblock %}
 

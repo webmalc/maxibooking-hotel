@@ -29,8 +29,10 @@ class SearchController extends Controller
      *      name="search_sync_start_json",
      *      options={"expose"=true}
      *     )
+     * @param Request $request
+     * @return Response
      */
-    public function syncSearchAction(Request $request)
+    public function syncSearchAction(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
@@ -39,7 +41,9 @@ class SearchController extends Controller
                 throw new SearchConditionException('Bad received data');
             }
             $results = $search->searchSync($data);
-            $json = json_encode(['results' => $results], JSON_NUMERIC_CHECK);
+            $responder = $this->get('mbh_search.search_results_responder');
+            $resultsArray = $responder->handleResults($results);
+            $json = json_encode(['results' => $resultsArray], JSON_UNESCAPED_UNICODE);
             $answer = new JsonResponse($json, 200, [], true);
         } catch (SearchConditionException|SearchQueryGeneratorException $e) {
             $answer = new JsonResponse(['error' => $e->getMessage()], 400);
@@ -62,7 +66,7 @@ class SearchController extends Controller
 
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
-        $search->setAsyncQueriesChunk(300);
+        $search->setAsyncQueriesChunk(30);
 
 
         try {
@@ -88,7 +92,9 @@ class SearchController extends Controller
         $receiver = $this->get('mbh__search.async_result_receiver');
         try {
             $results = array_values($receiver->receive($conditions));
-            $json = json_encode(['results' => $results]);
+            $responder = $this->get('mbh_search.search_results_responder');
+            $resultsArray = $responder->handleResults($results);
+            $json = json_encode(['results' => $resultsArray], JSON_UNESCAPED_UNICODE);
             $answer = new JsonResponse($json, 200, [], true);
         } catch (AsyncResultReceiverException $exception) {
             $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage()], 204);

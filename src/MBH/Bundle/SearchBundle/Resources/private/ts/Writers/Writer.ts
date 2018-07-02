@@ -2,8 +2,11 @@
 
 class Writer {
     private $resultsContainer: JQuery;
-    private template: string = "<p>{{roomType}}</p>";
-    private countTemplate: string = "<p>{{count}}</p>";
+    private template: string = "<span>{{roomType}}</span>";
+    private countTemplate: string = "<span>{{count}}</span>";
+    private resultTemplate: string = "<p><span>{{begin}}</span>-<span>{{end}}</span>-<span> Тип Комнаты - {{roomType.name}}. Тариф {{tariff.name}}.</span>" +
+        "Цены: {{#prices}} {{#showPrices}}Price {{key}} Total {{value}}{{/showPrices}} {{/prices}}" +
+        "</p>";
     constructor(resultId: string) {
         this.$resultsContainer = $(`#${resultId}`);
     }
@@ -18,11 +21,24 @@ class Writer {
 
     public drawResults(results: SearchResultType[]): void {
 
-        let view = {
-            count: results.length
+        for(let result of results) {
+            let data = [];
+            result['showPrices'] = function () {
+                for (let index in this) {
+                    let price = this[index];
+                    data.push({
+                        'key': index,
+                        'value' : price.total
+                    });
+                }
+
+                return data;
+            };
+            let html = Mustache.render(this.resultTemplate, result);
+            this.$resultsContainer.append($(html));
         }
-        let html = Mustache.render(this.countTemplate, view);
-        this.$resultsContainer.append($(html));
+
+
         // for (let result of results) {
         //     let html = this.render(result);
         //     this.$resultsContainer.append($(html));
