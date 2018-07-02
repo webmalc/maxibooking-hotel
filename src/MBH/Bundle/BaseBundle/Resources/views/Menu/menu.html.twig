@@ -26,7 +26,6 @@
 {% block list %}
 
     {% if item.hasChildren and options.depth is not same as(0) and item.displayChildren %}
-        {% import _self as knp_menu %}
         {% set isRootItem = item.name == 'root' %}
 
         {% if isRootItem %}
@@ -44,7 +43,7 @@
             {% endif %}
                 </div>
         {% endif %}
-        <ul{{ knp_menu.attributes(listAttributes)}}>
+        <ul{{ macros.attributes(listAttributes)}}>
             {{ block('children') }}
         </ul>
     {% endif %}
