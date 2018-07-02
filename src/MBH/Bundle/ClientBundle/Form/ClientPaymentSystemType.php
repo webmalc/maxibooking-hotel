@@ -8,6 +8,7 @@ use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -38,7 +39,6 @@ class ClientPaymentSystemType extends AbstractType
     {
         /** @var ClientConfig $clientConfig */
         $clientConfig = $options['entity'];
-        $robokassaMerchantLogin = $robokassaMerchantPass1 = $robokassaMerchantPass2 = null;
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
         $rnkbKey = $rnkbShopIDP = null;
@@ -53,9 +53,6 @@ class ClientPaymentSystemType extends AbstractType
         }, ARRAY_FILTER_USE_KEY);
 
         if ($clientConfig) {
-            $robokassaMerchantLogin = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantLogin() : '';
-            $robokassaMerchantPass1 = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantPass1() : '';
-            $robokassaMerchantPass2 = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantPass2() : '';
             $payanywayMntId = $clientConfig->getPayanyway() ? $clientConfig->getPayanyway()->getPayanywayMntId() : '';
             $payanywayKey = $clientConfig->getPayanyway() ? $clientConfig->getPayanyway()->getPayanywayKey() : '';
             $moneymailShopIDP = $clientConfig->getMoneymail() ? $clientConfig->getMoneymail()->getMoneymailShopIDP() : '';
@@ -90,44 +87,9 @@ class ClientPaymentSystemType extends AbstractType
 
         UnitellerHelper::addFields($builder, $clientConfig, $this->extraData);
         NewRbkHelper::addFields($builder, $clientConfig, $this->extraData);
+        RobokassaHelper::addFields($builder, $clientConfig, $this->extraData);
 
         $builder
-            ->add(
-                'robokassaMerchantLogin',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.shop_login',
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' robokassa'],
-                    'group' => self::COMMON_GROUP,
-                    'mapped' => false,
-                    'data' => $robokassaMerchantLogin
-                ]
-            )
-            ->add(
-                'robokassaMerchantPass1',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.password_one',
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' robokassa'],
-                    'group' => self::COMMON_GROUP,
-                    'mapped' => false,
-                    'data' => $robokassaMerchantPass1
-                ]
-            )
-            ->add(
-                'robokassaMerchantPass2',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.password_two',
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' robokassa'],
-                    'group' => self::COMMON_GROUP,
-                    'mapped' => false,
-                    'data' => $robokassaMerchantPass2
-                ]
-            )
             ->add(
                 'payanywayMntId',
                 TextType::class,
