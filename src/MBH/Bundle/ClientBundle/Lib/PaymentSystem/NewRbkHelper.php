@@ -13,6 +13,7 @@ use MBH\Bundle\ClientBundle\Document\NewRbk;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\TaxMode;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -29,6 +30,7 @@ class NewRbkHelper implements HelperInterface
     const NAME_TYPE_LIFETIME_INVOICE = self::PREFIX . '_LifetimeInvoice';
     const NAME_TYPE_TAXATION_RATE_CODE = self::PREFIX . '_TaxationRateCode';
     const NAME_TYPE_WEBHOOK_KEY = self::PREFIX . '_WebhookApi';
+    const NAME_TYPE_IS_WITH_FISCALIZATION = self::PREFIX . '_IsWithFiscalization';
 
     /**
      * @param FormInterface $form
@@ -42,6 +44,7 @@ class NewRbkHelper implements HelperInterface
         $entity->setLifetimeInvoice($form->get(self::NAME_TYPE_LIFETIME_INVOICE)->getData());
         $entity->setTaxationRateCode($form->get(self::NAME_TYPE_TAXATION_RATE_CODE)->getData());
         $entity->setWebhookKey($form->get(self::NAME_TYPE_WEBHOOK_KEY)->getData());
+        $entity->setIsWithFiscalization($form->get(self::NAME_TYPE_IS_WITH_FISCALIZATION)->getData());
 
         return $entity;
     }
@@ -108,6 +111,18 @@ class NewRbkHelper implements HelperInterface
                     'group'    => $commonGroup,
                     'mapped'   => false,
                     'data'     => $newRbk->getLifetimeInvoice(),
+                ]
+            )
+            ->add(
+                self::NAME_TYPE_IS_WITH_FISCALIZATION,
+                CheckboxType::class,
+                [
+                    'mapped'   => false,
+                    'label'    => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
+                    'group'    => $commonGroup,
+                    'data'     => $newRbk->isWithFiscalization(),
+                    'required' => false,
+                    'attr'     => $commonAttr,
                 ]
             )
             ->add(

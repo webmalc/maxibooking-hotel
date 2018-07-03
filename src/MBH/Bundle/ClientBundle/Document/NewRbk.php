@@ -9,6 +9,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\CheckWebhook;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\Webhook;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
@@ -24,11 +25,12 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class NewRbk implements PaymentSystemInterface, TaxMapInterface
 {
+    use FiscalizationTrait;
+
     public const URL_FOR_CHECKOUT_JS = 'https://checkout.rbk.money/checkout.js';
     public const TYPE_POST_MSG = 'mbh-payment-newRbk';
 
     private const LIFETIME_INVOICE = 1;
-
     private const DEFAULT_TAX_RATE = '18%';
 
     private const TAX_RATE_MAP = [

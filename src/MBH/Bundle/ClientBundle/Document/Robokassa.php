@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Robokassa\Receipt;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class Robokassa implements PaymentSystemInterface, TaxMapInterface
 {
-    private const DEFAULT_FISCALIZATION = true;
+    use FiscalizationTrait;
 
     private const TAX_SYSTEM_MAP = [
         0 => 'osn',
@@ -52,12 +53,6 @@ class Robokassa implements PaymentSystemInterface, TaxMapInterface
      * @ODM\Field(type="string")
      */
     protected $robokassaMerchantPass2;
-
-    /**
-     * @var bool
-     * @ODM\Field(type="bool")
-     */
-    protected $isWithFiscalization = self::DEFAULT_FISCALIZATION;
 
     /**
      * @var string
@@ -124,24 +119,6 @@ class Robokassa implements PaymentSystemInterface, TaxMapInterface
     public function setTaxationSystemCode(string $taxationSystemCode): self
     {
         $this->taxationSystemCode = $taxationSystemCode;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isWithFiscalization(): bool
-    {
-        return $this->isWithFiscalization;
-    }
-
-    /**
-     * @param bool $isWithFiscalization
-     */
-    public function setIsWithFiscalization(bool $isWithFiscalization): self
-    {
-        $this->isWithFiscalization = $isWithFiscalization;
 
         return $this;
     }

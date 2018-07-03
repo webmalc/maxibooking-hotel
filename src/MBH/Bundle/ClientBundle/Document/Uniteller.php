@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class Uniteller implements PaymentSystemInterface
 {
+    use FiscalizationTrait;
+
     const COMMISSION = 0.035;
 
     const DO_CHECK_URL = 'https://wpay.uniteller.ru/api/1/iacheck';
@@ -41,31 +44,6 @@ class Uniteller implements PaymentSystemInterface
      * @ODM\Field(type="float")
      */
     protected $taxationSystemCode;
-
-    /**
-     * @var bool
-     * @ODM\Field(type="bool")
-     */
-    protected $isWithFiscalization = true;
-
-    /**
-     * @return bool
-     */
-    public function isWithFiscalization(): bool
-    {
-        return $this->isWithFiscalization;
-    }
-
-    /**
-     * @param bool $isWithFiscalization
-     * @return Uniteller
-     */
-    public function setIsWithFiscalization(bool $isWithFiscalization): Uniteller
-    {
-        $this->isWithFiscalization = $isWithFiscalization;
-
-        return $this;
-    }
 
     /**
      * @return float
