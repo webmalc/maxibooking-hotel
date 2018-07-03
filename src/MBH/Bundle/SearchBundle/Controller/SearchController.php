@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Controller;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,14 +26,16 @@ class SearchController extends Controller
 
     /**
      * @Route(
-     *     "/sync/json",
+     *     "/sync/json/{grouping}",
      *      name="search_sync_start_json",
-     *      options={"expose"=true}
+     *      options={"expose"=true},
+     *     defaults={"sorting" = null }
      *     )
      * @param Request $request
+     * @param null|string $grouping
      * @return Response
      */
-    public function syncSearchAction(Request $request): Response
+    public function syncSearchAction(Request $request, ?string $grouping = null): Response
     {
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
@@ -42,10 +45,11 @@ class SearchController extends Controller
             }
             $results = $search->searchSync($data);
             $responder = $this->get('mbh_search.search_results_responder');
-            $resultsArray = $responder->handleResults($results);
+            //** TODO: Временный костыль. Будем менять result Composer на новый результат в виде массива */
+            $resultsArray = $responder->handleResults($results, $grouping);
             $json = json_encode(['results' => $resultsArray], JSON_UNESCAPED_UNICODE);
             $answer = new JsonResponse($json, 200, [], true);
-        } catch (SearchConditionException|SearchQueryGeneratorException $e) {
+        } catch (SearchConditionException|SearchQueryGeneratorException|GroupingFactoryException $e) {
             $answer = new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
@@ -83,11 +87,12 @@ class SearchController extends Controller
     }
 
     /**
-     * @Route("/async/results/{id}" , name="search_async_results",  options={"expose"=true})
+     * @Route("/async/results/{id}/{sorting}" , name="search_async_results",  options={"expose"=true}, defaults={"sorting" = null})
      * @param SearchConditions $conditions
+     * @param null|string $sorting
      * @return JsonResponse
      */
-    public function getAsyncResultsAction(SearchConditions $conditions): JsonResponse
+    public function getAsyncResultsAction(SearchConditions $conditions, ?string $sorting = null): JsonResponse
     {
         $receiver = $this->get('mbh__search.async_result_receiver');
         try {

@@ -264,3 +264,197 @@ class Result implements \JsonSerializable
 
 
 }
+
+//MBH\Bundle\SearchBundle\Lib\Result\Result::__set_state(array(
+//    'begin' =>
+//        DateTime::__set_state(array(
+//            'date' => '2018-09-03 00:00:00.000000',
+//            'timezone_type' => 3,
+//            'timezone' => 'Europe/Moscow',
+//        )),
+//    'end' =>
+//        DateTime::__set_state(array(
+//            'date' => '2018-09-10 00:00:00.000000',
+//            'timezone_type' => 3,
+//            'timezone' => 'Europe/Moscow',
+//        )),
+//    'roomType' =>
+//        MBH\Bundle\SearchBundle\Lib\Result\RoomType::__set_state(array(
+//            'id' => '5705205674eb53a51f8b4568',
+//            'name' => 'Комфорт плюс 3-местные (новый корпус)',
+//            'categoryName' => 'АЛ номера комфорт плюс',
+//        )),
+//    'tariff' =>
+//        MBH\Bundle\SearchBundle\Lib\Result\Tariff::__set_state(array(
+//            'id' => '5705190f74eb53d01e8b45c5',
+//            'tariffName' => 'Основной тариф',
+//        )),
+//    'conditions' =>
+//        MBH\Bundle\SearchBundle\Lib\Result\Conditions::__set_state(array(
+//            'id' => 'fakeId',
+//            'begin' =>
+//                DateTime::__set_state(array(
+//                    'date' => '2018-09-03 00:00:00.000000',
+//                    'timezone_type' => 3,
+//                    'timezone' => 'Europe/Moscow',
+//                )),
+//            'end' =>
+//                DateTime::__set_state(array(
+//                    'date' => '2018-09-10 00:00:00.000000',
+//                    'timezone_type' => 3,
+//                    'timezone' => 'Europe/Moscow',
+//                )),
+//            'adults' => 2,
+//            'children' => 0,
+//            'childrenAges' =>
+//                array (
+//                ),
+//        )),
+//    'prices' =>
+//        array (
+//            0 =>
+//                MBH\Bundle\SearchBundle\Lib\Result\Price::__set_state(array(
+//                    'adults' => 2,
+//                    'children' => 0,
+//                    'childrenAges' => NULL,
+//                    'total' => 45198.0,
+//                    'dayPrices' =>
+//                        array (
+//                            0 =>
+//                                MBH\Bundle\SearchBundle\Lib\Result\DayPrice::__set_state(array(
+//                                    'date' =>
+//                                        DateTime::__set_state(array(
+//                                            'date' => '2018-09-03 00:00:00.000000',
+//                                            'timezone_type' => 3,
+//                                            'timezone' => 'Europe/Moscow',
+//                                        )),
+//                                    'tariff' =>
+//                                        MBH\Bundle\SearchBundle\Lib\Result\Tariff::__set_state(array(
+//                                            'id' => '5705190f74eb53d01e8b45c5',
+//                                            'tariffName' => 'Основной тариф',
+//                                        )),
+//                                    'price' => 6714.0,
+//                                    'adults' => 2,
+//                                    'children' => 0,
+//                                    'infants' => 0,
+//                                    'promotion' => NULL,
+//                                )),
+//                            1 =>
+//                                MBH\Bundle\SearchBundle\Lib\Result\DayPrice::__set_state(array(
+//                                    'date' =>
+//                                        DateTime::__set_state(array(
+//                                            'date' => '2018-09-04 00:00:00.000000',
+//                                            'timezone_type' => 3,
+//                                            'timezone' => 'Europe/Moscow',
+//                                        )),
+//                                    'tariff' =>
+//                                        MBH\Bundle\SearchBundle\Lib\Result\Tariff::__set_state(array(
+//                                            'id' => '5705190f74eb53d01e8b45c5',
+//                                            'tariffName' => 'Основной тариф',
+//                                        )),
+//                                    'price' => 6714.0,
+//                                    'adults' => 2,
+//                                    'children' => 0,
+//                                    'infants' => 0,
+//                                    'promotion' => NULL,
+//                                )),
+//                            2 =>
+//                                MBH\Bundle\SearchBundle\Lib\Result\DayPrice::__set_state(array(
+//                                    'date' =>
+//                                        DateTime::__set_state(array(
+//                                            'date' => '2018-09-05 00:00:00.000000',
+//                                            'timezone_type' => 3,
+//                                            'timezone' => 'Europe/Moscow',
+//                                        )),
+//                                    'tariff' =>
+//                                        MBH\Bundle\SearchBundle\Lib\Result\Tariff::__set_state(array(
+//                                            'id' => '5705190f74eb53d01e8b45c5',
+//                                            'tariffName' => 'Основной тариф',
+//                                        )),
+//                                    'price' => 6714.0,
+//                                    'adults' => 2,
+//                                    'children' => 0,
+//                                    'infants' => 0,
+//                                    'promotion' => NULL,
+//                                )),
+//                            3 =>
+//                                MBH\Bundle\SearchBundle\Lib\Result\DayPrice::__set_state(array(
+//                                    'date' =>
+//                                        DateTime::__set_state(array(
+//                                            'date' => '2018-09-06 00:00:00.000000',
+//                                            'timezone_type' => 3,
+//                                            'timezone' => 'Europe/Moscow',
+//                                        )),
+//                                    'tariff' =>
+//                                        MBH\Bundle\SearchBundle\Lib\Result\Tariff::__set_state(array(
+//                                            'id' => '5705190f74eb53d01e8b45c5',
+//                                            'tariffName' => 'Основной тариф',
+//                                        )),
+//                                    'price' => 6714.0,
+//                                    'adults' => 2,
+//                                    'children' => 0,
+//                                    'infants' => 0,
+//                                    'promotion' => NULL,
+//                                )),
+//                            4 =>
+//                                MBH\Bundle\SearchBundle\Lib\Result\DayPrice::__set_state(array(
+//                                    'date' =>
+//                                        DateTime::__set_state(array(
+//                                            'date' => '2018-09-07 00:00:00.000000',
+//                                            'timezone_type' => 3,
+//                                            'timezone' => 'Europe/Moscow',
+//                                        )),
+//                                    'tariff' =>
+//                                        MBH\Bundle\SearchBundle\Lib\Result\Tariff::__set_state(array(
+//                                            'id' => '5705190f74eb53d01e8b45c5',
+//                                            'tariffName' => 'Основной тариф',
+//                                        )),
+//                                    'price' => 6714.0,
+//                                    'adults' => 2,
+//                                    'children' => 0,
+//                                    'infants' => 0,
+//                                    'promotion' => NULL,
+//                                )),
+//                            5 =>
+//                                MBH\Bundle\SearchBundle\Lib\Result\DayPrice::__set_state(array(
+//                                    'date' =>
+//                                        DateTime::__set_state(array(
+//                                            'date' => '2018-09-08 00:00:00.000000',
+//                                            'timezone_type' => 3,
+//                                            'timezone' => 'Europe/Moscow',
+//                                        )),
+//                                    'tariff' =>
+//                                        MBH\Bundle\SearchBundle\Lib\Result\Tariff::__set_state(array(
+//                                            'id' => '5705190f74eb53d01e8b45c5',
+//                                            'tariffName' => 'Основной тариф',
+//                                        )),
+//                                    'price' => 6714.0,
+//                                    'adults' => 2,
+//                                    'children' => 0,
+//                                    'infants' => 0,
+//                                    'promotion' => NULL,
+//                                )),
+//                            6 =>
+//                                MBH\Bundle\SearchBundle\Lib\Result\DayPrice::__set_state(array(
+//                                    'date' =>
+//                                        DateTime::__set_state(array(
+//                                            'date' => '2018-09-09 00:00:00.000000',
+//                                            'timezone_type' => 3,
+//                                            'timezone' => 'Europe/Moscow',
+//                                        )),
+//                                    'tariff' =>
+//                                        MBH\Bundle\SearchBundle\Lib\Result\Tariff::__set_state(array(
+//                                            'id' => '5705190f74eb53d01e8b45c5',
+//                                            'tariffName' => 'Основной тариф',
+//                                        )),
+//                                    'price' => 4914.0,
+//                                    'adults' => 2,
+//                                    'children' => 0,
+//                                    'infants' => 0,
+//                                    'promotion' => NULL,
+//                                )),
+//                        ),
+//                )),
+//        ),
+//    'minRooms' => 2,
+//))

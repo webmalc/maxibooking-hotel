@@ -1,7 +1,4 @@
-#new_search .left {
-  float: left;
-}
-#new_search .right {
-  float: left;
+#new_search {
+  display: flex;
 }
 /*# sourceMappingURL=search.css.map */

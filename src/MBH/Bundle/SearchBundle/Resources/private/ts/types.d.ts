@@ -14,10 +14,6 @@ interface Routing {
 }
 
 interface SearchResultType {
-    id: string,
-    prices: {key: string}[],
-    rooms: Room[],
-    roomType: string
 
 }
 

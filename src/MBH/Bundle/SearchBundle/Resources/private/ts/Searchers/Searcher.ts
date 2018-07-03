@@ -32,12 +32,8 @@ abstract class Searcher {
 
     protected drawResults(data): void {
         const searchResults: SearchResultType[] = data.results;
-        if (searchResults.length) {
-            this.writer.drawResults(searchResults);
-        }
-
+        this.writer.drawResults(searchResults);
     }
-
     protected getSearchConditions() {
         return  this.searchDataReceiver.getSearchConditionsData();
 

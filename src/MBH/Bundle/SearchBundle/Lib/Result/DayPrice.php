@@ -163,7 +163,7 @@ class DayPrice implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'day' => $this->getDate()->format('dd-mm-YY'),
+            'day' => $this->getDate()->format('d-m-Y'),
             'tariff' => $this->getTariff(),
             'price' => $this->getPrice(),
             'adults' => $this->getAdults(),
