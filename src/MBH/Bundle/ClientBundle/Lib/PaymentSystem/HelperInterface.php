@@ -40,5 +40,5 @@ interface HelperInterface
      *   - '%mbh.payment_systems.default%'
      *   - '%mbh.taxation%'
      */
-    public static function addFields(FormBuilderInterface $builder, ClientConfig $config, array $extraData): void ;
+    public static function addFields(FormBuilderInterface $builder, ClientConfig $config, ExtraData $extraData): void ;
 }
