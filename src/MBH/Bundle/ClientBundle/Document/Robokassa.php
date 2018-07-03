@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Robokassa\Receipt;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -71,6 +72,11 @@ class Robokassa implements PaymentSystemInterface, TaxMapInterface
     protected $taxationSystemCode;
 
     /**
+     * @var null | Receipt
+     */
+    private $receipt = null;
+
+    /**
      * @return array
      */
     public function getTaxRateMap(): array
@@ -103,7 +109,6 @@ class Robokassa implements PaymentSystemInterface, TaxMapInterface
 
         return $this;
     }
-
 
     /**
      * @return null|string
@@ -214,7 +219,7 @@ class Robokassa implements PaymentSystemInterface, TaxMapInterface
         $createdAt = clone $cashDocument->getCreatedAt();
         $createdAt->modify('+30 minutes');
 
-        return [
+        $form = [
             'action' => 'https://auth.robokassa.ru/Merchant/Index.aspx',
             'testAction' => 'https://auth.robokassa.ru/Merchant/Index.aspx',
             'shopId' => $this->getRobokassaMerchantLogin(),
@@ -231,6 +236,12 @@ class Robokassa implements PaymentSystemInterface, TaxMapInterface
             'comment' => 'Order # ' . $cashDocument->getOrder()->getId() . '. CashDocument #' . $cashDocument->getId(),
             'signature' => $this->getSignature($cashDocument, $url),
         ];
+
+        if ($this->isWithFiscalization()) {
+            $form['receipt'] = $this->getPreparedReceipt($cashDocument);
+        }
+
+        return $form;
     }
 
     /**
@@ -238,15 +249,18 @@ class Robokassa implements PaymentSystemInterface, TaxMapInterface
      */
     public function getSignature(CashDocument $cashDocument, $url = null)
     {
-        return
-            md5(
-                $this->getRobokassaMerchantLogin() . ":" .                // MerchantLogin
-                $cashDocument->getTotal() . ":" .                      // OutSum
-                (int) preg_replace('/[^0-9]/', '', $cashDocument->getNumber()) . ":" . // InvId                                   // InvId
-                $this->getRobokassaMerchantPass1() . ":" .                                          // Pass1
-                'Shp_id=' . $cashDocument->getId()         // Shp_id
+        $signature = [];
+        $signature[] = $this->getRobokassaMerchantLogin();            // MerchantLogin
+        $signature[] = $cashDocument->getTotal();                    // OutSum
+        $signature[] = (int) preg_replace('/[^0-9]/', '', $cashDocument->getNumber()); // InvId
+        if ($this->isWithFiscalization()) {
+            $signature[] = $this->getPreparedReceipt($cashDocument);
+        }
+        $signature[] = $this->getRobokassaMerchantPass1();           // Pass1
+        $signature[] = 'Shp_id=' . $cashDocument->getId();       // Shp_id
 
-        );
+        return
+            md5(implode(':',$signature));
     }
 
     public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
@@ -261,18 +275,37 @@ class Robokassa implements PaymentSystemInterface, TaxMapInterface
         if (!$cashDocumentId) {
             return $holder;
         }
-        $signature = $total . ':' . $invId . ':' .  $this->getRobokassaMerchantPass2() . ':Shp_id=' . $cashDocumentId;
-        $signature = strtoupper(md5($signature));
+        $signature = [];
+        $signature[] = $total;
+        $signature[] = $invId;
+        $signature[] = $this->getRobokassaMerchantPass2();
+        $signature[] = 'Shp_id=' . $cashDocumentId;
 
-        if ($signature != $requestSignature) {
+        if (strtoupper(md5(implode(':',$signature))) !== strtoupper($requestSignature)) {
             return $holder;
         }
 
-        return $holder->parseData([
-            'doc'  => $cashDocumentId,
-            //'commission' => self::COMMISSION,
-            //'commissionPercent' => true,
-            'text' => 'OK' . $invId,
-        ]);
+        $holder->setDoc($cashDocumentId);
+        $holder->setText('OK' . $invId);
+
+        return $holder;
+    }
+
+    /**
+     * @return Receipt|null
+     */
+    private function getReceipt(CashDocument $cashDocument): ?Receipt
+    {
+        if ($this->receipt === null) {
+            $this->receipt = Receipt::create($cashDocument->getOrder(), $this);
+        }
+
+        return $this->receipt;
+    }
+
+
+    private function getPreparedReceipt(CashDocument $cashDocument): string
+    {
+        return urlencode(json_encode($this->getReceipt($cashDocument)));
     }
 }

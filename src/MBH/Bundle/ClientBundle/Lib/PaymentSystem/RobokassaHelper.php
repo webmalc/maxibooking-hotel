@@ -23,6 +23,7 @@ class RobokassaHelper implements HelperInterface
     const PREFIX = 'robokassa';
 
     const NAME_TYPE_TAXATION_RATE_CODE = self::PREFIX . '_TaxationRateCode';
+    const NAME_TYPE_TAXATION_SYSTEM_CODE = self::PREFIX . '_TaxationSystemCode';
 
     public static function instance(FormInterface $form): PaymentSystemInterface
     {
@@ -32,7 +33,8 @@ class RobokassaHelper implements HelperInterface
             ->setRobokassaMerchantPass1($form->get('robokassaMerchantPass1')->getData())
             ->setRobokassaMerchantPass2($form->get('robokassaMerchantPass2')->getData())
             ->setIsWithFiscalization($form->get('robokassaIsWithFiscalization')->getData())
-            ->setTaxationRateCode($form->get(self::NAME_TYPE_TAXATION_RATE_CODE)->getData());
+            ->setTaxationRateCode($form->get(self::NAME_TYPE_TAXATION_RATE_CODE)->getData())
+            ->setTaxationSystemCode($form->get(self::NAME_TYPE_TAXATION_SYSTEM_CODE)->getData());
 
         return $robokassa;
     }
@@ -105,6 +107,20 @@ class RobokassaHelper implements HelperInterface
                     'group'    => $group,
                     'data'     => $robokassa->getTaxationRateCode(),
                 ]
+            )
+            ->add(
+                self::NAME_TYPE_TAXATION_SYSTEM_CODE,
+                InvertChoiceType::class,
+                [
+                    'label'    => 'form.clientPaymentSystemType.uniteller.taxation_system_code',
+                    'choices'  => $extraData->getTaxationSystemCodes($robokassa),
+                    'mapped'   => false,
+                    'required' => false,
+                    'attr'     => $attr,
+                    'group'    => $group,
+                    'data'     => $robokassa->getTaxationSystemCode(),
+                ]
             );
+        ;
     }
 }
