@@ -3,10 +3,10 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ChannelManagerBundle\Form\IntroType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -16,12 +16,18 @@ class CMWizardManager
     private $channelManager;
     private $fieldsManager;
     private $tokenStorage;
+    private $billingApi;
 
-    public function __construct(ChannelManager $channelManager, DocumentFieldsManager $fieldsManager, TokenStorage $tokenStorage)
-    {
+    public function __construct(
+        ChannelManager $channelManager,
+        DocumentFieldsManager $fieldsManager,
+        TokenStorage $tokenStorage,
+        BillingApi $billingApi
+    ) {
         $this->channelManager = $channelManager;
         $this->fieldsManager = $fieldsManager;
         $this->tokenStorage = $tokenStorage;
+        $this->billingApi = $billingApi;
     }
 
     const CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT = [
@@ -29,12 +35,7 @@ class CMWizardManager
         'ostrovok',
         'vashotel'
     ];
-
-    const INTRO_FORMS_BY_CM_NAMES = [
-        'hundred_one_hotels' => IntroType::class,
-        'ostrovok' => IntroType::class,
-        'vashotel' => IntroType::class
-    ];
+    const HOTEL_ADDRESS_FIELDS = [];
 
     /**
      * @param string $channelManagerName
@@ -43,12 +44,11 @@ class CMWizardManager
     public function getIntroForm(string $channelManagerName)
     {
         $this->channelManager->checkForCMExistence($channelManagerName, true);
-        //TODO: Возможно уберу, если будет требоваться только ID
-        if (!array_key_exists($channelManagerName, self::INTRO_FORMS_BY_CM_NAMES)) {
-            throw new \InvalidArgumentException();
+        if (!$this->isConfiguredByTechSupport($channelManagerName)) {
+            throw new \InvalidArgumentException($channelManagerName . ' is configured by tech support!');
         }
 
-        return self::INTRO_FORMS_BY_CM_NAMES[$channelManagerName];
+        return IntroType::class;
     }
 
     /**
@@ -60,6 +60,28 @@ class CMWizardManager
         $this->channelManager->checkForCMExistence($channelManagerName, true);
 
         return in_array($channelManagerName, self::CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT);
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param string $channelManagerName
+     * @param string $channelManagerHumanName
+     * @return array
+     */
+    public function getConnectionInfoMessages(Hotel $hotel, string $channelManagerName, string $channelManagerHumanName)
+    {
+        $result = [];
+        if ($this->isConfiguredByTechSupport($channelManagerName)) {
+            $result[] = 'Название отеля, отображаемое в ' . $channelManagerHumanName . ': "' . $hotel->getName() . '"';
+        }
+        
+        if (in_array($channelManagerName, ['ostrovok', 'hundred_one_hotels']) && empty($this->getUnfilledFields($hotel))) {
+            $result[] = 'Адрес отеля, отображаемый в '
+                . $channelManagerHumanName
+                . ': "' . $this->getChannelManagerHotelAddress($hotel);
+        }
+        
+        return $result;
     }
 
     /**
@@ -79,6 +101,7 @@ class CMWizardManager
             || (!$this->isConfiguredByTechSupport($channelManagerName) && !$config->isReadinessConfirmed())) {
             return 'wizard_info';
         }
+
         if (is_null($config) or !$config->isMainSettingsFilled() or !$config->isReadinessConfirmed()) {
             return $channelManagerName;
         }
@@ -102,15 +125,44 @@ class CMWizardManager
     public function getUnfilledDataErrors(Hotel $hotel, string $channelManagerName)
     {
         $result = [];
-        $emptyFields = $this->fieldsManager->getFieldsByCorrectnessStatuses([], $hotel)[$this->fieldsManager::EMPTY_FIELD_STATUS];
-        if (!empty($emptyFields)) {
-            $emptyFieldNames = array_map(function ($emptyFieldName) {
-                return '"' . $this->fieldsManager->getFieldName(Hotel::class, $emptyFieldName) . '"';
-            }, $emptyFields);
+        if (in_array($channelManagerName, ['ostrovok', 'hundred_one_hotels'])) {
+            $emptyFields = $this->getUnfilledFields($hotel);
 
-            $result[] = 'Заполните информацию об отеле в ' . (count($emptyFields) === 1 ? 'поле' : 'полях') . ': ' . join(', ', $emptyFieldNames);
+            if (!empty($emptyFields)) {
+                $emptyFieldNames = array_map(
+                    function ($emptyFieldName) {
+                        return '"'.$this->fieldsManager->getFieldName(Hotel::class, $emptyFieldName).'"';
+                    },
+                    $emptyFields
+                );
+
+                $result[] = 'Заполните информацию об отеле в '
+                    .(count($emptyFields) === 1 ? 'поле' : 'полях')
+                    .': '.join(', ', $emptyFieldNames);
+            }
         }
 
         return $result;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return string
+     */
+    public function getChannelManagerHotelAddress(Hotel $hotel)
+    {
+        return $this->billingApi->getCityById($hotel->getCityId())->getName()
+            . ($hotel->getSettlement() ? (', ' . $hotel->getSettlement()) : '')
+            . ' ул. ' . $hotel->getStreet()
+            . ', ' . $hotel->getHouse()
+            . ($hotel->getCorpus() ? ('/' . $hotel->getCorpus()) : '');
+    }
+
+    private function getUnfilledFields(Hotel $hotel)
+    {
+        return $this->fieldsManager->getFieldsByCorrectnessStatuses(
+            ['house', 'cityId', 'street'],
+            $hotel
+        )[$this->fieldsManager::EMPTY_FIELD_STATUS];
     }
 }

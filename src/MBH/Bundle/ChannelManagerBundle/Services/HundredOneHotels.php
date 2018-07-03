@@ -380,9 +380,10 @@ class HundredOneHotels extends Base
     public function pullOrders($pullOldStatus = ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS)
     {
         $result = true;
+        $isPulledAllPackages = $pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS;
 
         /** @var HundredOneHotelsConfig $config */
-        foreach ($this->getConfig() as $config) {
+        foreach ($this->getConfig($isPulledAllPackages) as $config) {
             $this->log('begin pulling orders for hotel "' . $config->getHotel()->getName() . '" with id "' . $config->getHotel()->getId() . '"');
             /** @var HOHRequestFormatter $requestFormatter */
             $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
@@ -475,7 +476,18 @@ class HundredOneHotels extends Base
                         $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, false));
                     }
                 }
-            };
+            }
+
+            if ($result && $isPulledAllPackages) {
+                $config->setIsAllPackagesPulled(true);
+                $this->dm->flush();
+            }
+        }
+
+        if ($isPulledAllPackages) {
+            $cm = $this->container->get('mbh.channelmanager');
+            $cm->clearAllConfigsInBackground();
+            $cm->updateInBackground();;
         }
 
         return $result;

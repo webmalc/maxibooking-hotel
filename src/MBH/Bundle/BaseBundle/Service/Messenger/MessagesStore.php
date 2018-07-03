@@ -3,6 +3,12 @@
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Services\CMWizardManager;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
@@ -12,36 +18,31 @@ class MessagesStore
     private $locale;
     private $supportData;
     private $client;
+    private $cMWizardManager;
 
-    public function __construct(Router $router,  string $locale, array $supportData, string $client) {
+    public function __construct(Router $router,  string $locale, array $supportData, string $client, CMWizardManager $cMWizardManager) {
         $this->router = $router;
         $this->locale = $locale;
         $this->supportData = $supportData;
         $this->client = $client;
+        $this->cMWizardManager = $cMWizardManager;
     }
 
     /**
-     * @param array $connectionData
-     * @param string $channelManagerName
+     * @param ChannelManagerConfigInterface $config
+     * @param string $channelManagerHumanName
      * @param Notifier $notifier
      * @throws \Throwable
      */
-    public function sendCMConnectionDataMessage(array $connectionData, Notifier $notifier)
+    public function sendCMConnectionDataMessage(ChannelManagerConfigInterface $config, string $channelManagerHumanName, Notifier $notifier)
     {
         $message = $notifier::createMessage();
         $techSupportUser = (new User())
             ->setEmail($this->supportData['support_main_email'][$this->locale])
             ->setLocale($this->locale);
-        $channelManagerName = $connectionData['channelManagerName'];
-        $channelManagerHumanName = $connectionData['channelManagerHumanName'];
-        $link = $this->router->generate('confirm_cm_config', ['channelManagerName' => $channelManagerName]);
+        $link = $this->router->generate( $config->getName(), [], Router::ABSOLUTE_URL);
 
-        $mailConnectionData = [
-            'система бронирования' => $channelManagerHumanName,
-            'название отеля' => $connectionData['hotelName'],
-            'ID отеля' => $connectionData['hotelId'],
-            'адрес отеля' => $connectionData['address']
-        ];
+        $mailConnectionData = $this->getCmConnectionData($config, $channelManagerHumanName);
 
         $message
             ->setRecipients([$techSupportUser])
@@ -49,11 +50,13 @@ class MessagesStore
             ->setAdditionalData(['connectionData' => $mailConnectionData])
             ->setTranslateParams([
                 '%channelManagerName%' => $channelManagerHumanName,
-                '%url%' => $link
+                '%url%' => $link,
+                '%clientName%' => $this->client
             ])
             ->setSubject('messages_store.channel_manager_connection.mail.subject')
             ->setFrom('system')
             ->setType('success')
+            ->setHotel($config->getHotel())
             ->setMessageType(NotificationType::TECH_SUPPORT_TYPE)
             ->setLink($link);
 
@@ -63,30 +66,66 @@ class MessagesStore
     }
 
     /**
-     * @param string $channelManagerName
+     * @param ChannelManagerConfigInterface $config
      * @param string $channelManagerHumanName
      * @param Notifier $notifier
      * @throws \Throwable
      */
-    public function sendCMConfirmationMessage(string $channelManagerName, string $channelManagerHumanName, Notifier $notifier)
+    public function sendCMConfirmationMessage(ChannelManagerConfigInterface $config, string $channelManagerHumanName, Notifier $notifier)
     {
         $message = $notifier::createMessage();
-        $techSupportUser = (new User())
-            ->setEmail($this->supportData['support_main_email'][$this->locale])
-            ->setLocale($this->locale);
+
+        $mailConnectionData = $this->getCmConnectionData($config, $channelManagerHumanName);
 
         $message
-            ->setRecipients([$techSupportUser])
+            ->setTemplate('MBHBaseBundle:Mailer:cmConnectionConfirmed.html.twig')
             ->setText('messages_store.channel_manager_confirmation.mail.text')
+            ->setAdditionalData(['connectionData' => $mailConnectionData])
             ->setSubject('messages_store.channel_manager_confirmation.mail.subject')
-            ->setTranslateParams(['%channelManager%' => $channelManagerHumanName])
+            ->setTranslateParams([
+                '%channelManager%' => $channelManagerHumanName,
+                '%supportEmail%' => $this->supportData['support_main_email'][$this->locale]
+            ])
             ->setFrom('system')
             ->setType('success')
             ->setMessageType(NotificationType::CHANNEL_MANAGER_CONFIGURATION_TYPE)
-            ->setLink($this->router->generate($channelManagerName));
+            ->setLink($this->router->generate($config->getName()));
 
         $notifier
             ->setMessage($message)
             ->notify();
+    }
+
+    /**
+     * @param ChannelManagerConfigInterface $config
+     * @param string $channelManagerHumanName
+     * @return array
+     */
+    private function getCmConnectionData(ChannelManagerConfigInterface $config, string $channelManagerHumanName)
+    {
+        $mailConnectionData = [
+            'Система бронирования' => $channelManagerHumanName,
+            'Название отеля' => $config->getHotel()->getName(),
+        ];
+
+        if ($this->cMWizardManager->isConfiguredByTechSupport($config->getName())) {
+            $mailConnectionData['ID отеля'] = $config->getHotelId();
+        }
+
+        if (in_array($config->getName(), ['ostrovok', 'hundred_one_hotels'])) {
+            $mailConnectionData['Адрес отеля'] = $this->cMWizardManager->getChannelManagerHotelAddress($config->getHotel());
+            /** @var HundredOneHotelsConfig $config */
+            if ($config->getName() === 'hundred_one_hotels' && $config->getApiKey()) {
+                $mailConnectionData['API key'] = $config->getApiKey();
+            }
+        }
+
+        /** @var VashotelConfig $config */
+        if ($config->getName() === 'vashotel' && $config->getPassword()) {
+
+            $mailConnectionData['Ваш пароль'] = $config->getPassword();
+        }
+
+        return $mailConnectionData;
     }
 }

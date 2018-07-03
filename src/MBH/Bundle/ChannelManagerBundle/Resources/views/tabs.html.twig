@@ -5,7 +5,7 @@
 {% set menu = [] %}
 {% if  config is null or not config.isReadyToSync() %}
     {% set menu = menu|merge([
-        {'route': 'wizard_info', routeParams: {channelManagerName: base}, icon: 'fa-book', titleTransId: 'Инструкция'},
+        {'route': 'wizard_info', routeParams: {channelManagerName: base}, icon: 'fa-book', titleTransId: 'views.tabs.instruction'},
     ]) %}
     {% set active = active + 1 %}
 {% endif %}
@@ -44,14 +44,16 @@
         {% set routeParams = item.routeParams is defined ? item.routeParams : {} %}
         {% set title = (config and config.isReadyToSync() ? '<i class="fa ' ~ item.icon ~ '"></i>' : loop.index ~ '.') ~ item.titleTransId|trans({}, 'MBHChannelManagerBundle') %}
         {% set isConfiguredByTechSupport = base not in ['booking', 'expedia', 'myallocator'] %}
-        {% if not (loop.index == active or (config and config.isReadyToSync())
-            or (is_mb_user() and loop.index in [1, 2] and active in [1, 2] and (isConfiguredByTechSupport or (config and config.hotelId)))) %}
+        {% set isActiveTab = loop.index == active %}
+        {% if not (isActiveTab or (config and config.isReadyToSync())
+            or (is_mb_user() and loop.index in [1, 2] and active in [1, 2] and (isConfiguredByTechSupport or (config and config.hotelId))
+            and not (loop.index == 2 and active == 1 and isConfiguredByTechSupport and (config is empty or config.hotelId is empty)))) %}
             <li class="disabled">
                 <a href="#" role="tab">{{ title|raw }}</a>
             </li>
         {% else %}
-            <li {% if loop.index == active %}class="active"{% endif %}>
-                <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"
+            <li {% if isActiveTab %}class="active"{% endif %}>
+                <a {% if isActiveTab %}href="#home" role="tab" data-toggle="tab"
                    {% else %}href="{{ path(item.route, routeParams) }}"{% endif %}>{{ title|raw }}</a>
             </li>
         {% endif %}

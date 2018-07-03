@@ -10,10 +10,12 @@ interface ChannelManagerConfigInterface
     public function getIsEnabled();
 
     public function isMainSettingsFilled();
+
     /**
+     * @param bool $checkOldPackages
      * @return bool
      */
-    public function isReadyToSync(): bool;
+    public function isReadyToSync($checkOldPackages = false): bool;
     public function isReadinessConfirmed(): bool;
 
     /**

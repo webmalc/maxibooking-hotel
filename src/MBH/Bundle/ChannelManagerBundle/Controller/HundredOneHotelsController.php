@@ -100,6 +100,7 @@ class HundredOneHotelsController extends Controller
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getHundredOneHotelsConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -126,7 +127,7 @@ class HundredOneHotelsController extends Controller
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
 
-            $redirectRouteName = $config->isReadyToSync() ? 'hundred_one_hotels_tariff' : 'hoh_packages_sync';
+            $redirectRouteName = $inGuide ? 'hoh_packages_sync' : 'hundred_one_hotels_tariff';
 
             return $this->redirectToRoute($redirectRouteName);
         }

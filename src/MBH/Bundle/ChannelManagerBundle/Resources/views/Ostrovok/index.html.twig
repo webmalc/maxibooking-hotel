@@ -10,7 +10,11 @@
         <div class="tab-pane active" id="home">
             {{ form_start(form, {'action': path('ostrovok_save'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHChannelManagerBundle::actions.html.twig' %}
+            {% embed 'MBHChannelManagerBundle::actions.html.twig' %}
+                {% block additional_actions %}
+                    {% include '@MBHChannelManager/ChannelManager/confirmCMButton.html.twig' with {channelManagerName: 'ostrovok'} %}
+                {% endblock %}
+            {% endembed %}
             {{ form_end(form) }}
 
             {% if config %}

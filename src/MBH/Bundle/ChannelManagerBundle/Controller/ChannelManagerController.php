@@ -4,7 +4,6 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
@@ -119,13 +118,11 @@ class ChannelManagerController extends Controller
         $channelManagerService = $this->get('mbh.channelmanager');
         $channelManagerService->checkForCMExistence($channelManagerName, true);
 
-        $infoMessage = 'controller.channelManagerController.wizard_info_text.' . $channelManagerName;
         $wizardManager = $this->get('mbh.cm_wizard_manager');
         $hasForm = $wizardManager->isConfiguredByTechSupport($channelManagerName);
         $channelManagerHumanName = $channelManagerService->getServiceHumanName($channelManagerName);
 
         $responseParams = [
-            'infoMessage' => $infoMessage,
             'hasForm' => $hasForm,
             'channelManagerName' => $channelManagerName,
             'channelManagerHumanName' => $channelManagerHumanName,
@@ -156,20 +153,16 @@ class ChannelManagerController extends Controller
                 $this->addFlash('success', 'Данные подключения отправлены в тех.поддержку.');
 
                 $this->get('mbh.messages_store')
-                    ->sendCMConnectionDataMessage([
-                        'client' => $this->getParameter('client'),
-                        'channelManagerName' => $channelManagerName,
-                        'channelManagerHumanName' => $channelManagerHumanName,
-                        'hotelName' => $this->hotel->getName(),
-                        'hotelId' => $config->getHotelId(),
-//                        'address' => $this->hotel->
-                    ], $this->get('mbh.notifier.mailer'));
+                    ->sendCMConnectionDataMessage($config, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
             }
 
             $responseParams = array_merge($responseParams, [
                 'form' => $form->createView(),
                 'config' => $config,
-                'notifications' => $wizardManager->getUnfilledDataErrors($this->hotel, $channelManagerName)
+                'messages' => [
+                    'info' => $wizardManager->getConnectionInfoMessages($this->hotel, $channelManagerName, $channelManagerHumanName),
+                    'errors' => $wizardManager->getUnfilledDataErrors($this->hotel, $channelManagerName),
+                ]
             ]);
         }
 
@@ -185,10 +178,11 @@ class ChannelManagerController extends Controller
     public function confirmConfigReadiness(string $channelManagerName)
     {
         if (!$this->getUser() instanceof User || $this->getUser()->getUsername() !== UserData::MB_USER_USERNAME) {
-            throw new AccessDeniedException('Confirm channel manager config can only mb user');
+            throw new AccessDeniedException('Only mb user can confirm channel manager config');
         }
 
         $channelManagerService = $this->get('mbh.channelmanager');
+        $config = $channelManagerService->getConfigForHotel($this->hotel, $channelManagerName);
         $confirmationResult = $channelManagerService->confirmReadinessOfCM($this->hotel, $channelManagerName);
 
         if ($confirmationResult) {
@@ -196,7 +190,7 @@ class ChannelManagerController extends Controller
 
             $channelManagerHumanName = $channelManagerService->getServiceHumanName($channelManagerName);
             $this->get('mbh.messages_store')
-                ->sendCMConfirmationMessage($channelManagerName, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
+                ->sendCMConfirmationMessage($config, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
         }
 
         return $this->redirectToRoute($channelManagerName);
