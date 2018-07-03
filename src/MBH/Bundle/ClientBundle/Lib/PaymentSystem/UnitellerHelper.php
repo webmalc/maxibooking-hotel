@@ -64,7 +64,7 @@ class UnitellerHelper implements HelperInterface
                     'attr'     => $commonAttr,
                     'group'    => $commonGroup,
                     'mapped'   => false,
-                    'data'     => $uniteller->getUnitellerShopIDP() ?? '',
+                    'data'     => $uniteller->getUnitellerShopIDP(),
                 ]
             )
             ->add(
@@ -76,7 +76,7 @@ class UnitellerHelper implements HelperInterface
                     'attr'     => $commonAttr + ['type' => 'password'],
                     'group'    => $commonGroup,
                     'mapped'   => false,
-                    'data'     => $uniteller->getUnitellerPassword() ?? '',
+                    'data'     => $uniteller->getUnitellerPassword(),
                 ]
             )
             ->add(
@@ -84,12 +84,12 @@ class UnitellerHelper implements HelperInterface
                 InvertChoiceType::class,
                 [
                     'label'    => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
-                    'choices'  => $extraData->getTaxationRateCodes()['rate_codes'],
+                    'choices'  => $extraData->getTaxationRateCodes(),
                     'mapped'   => false,
                     'required' => false,
                     'attr'     => $commonAttr,
                     'group'    => $commonGroup,
-                    'data'     => $uniteller->getTaxationRateCode() ?? '',
+                    'data'     => $uniteller->getTaxationRateCode(),
                 ]
             )
             ->add(
@@ -97,12 +97,12 @@ class UnitellerHelper implements HelperInterface
                 InvertChoiceType::class,
                 [
                     'label'    => 'form.clientPaymentSystemType.uniteller.taxation_system_code',
-                    'choices'  => $extraData->getTaxationRateCodes()['system_codes'],
+                    'choices'  => $extraData->getTaxationSystemCodes(),
                     'mapped'   => false,
                     'required' => false,
                     'attr'     => $commonAttr,
                     'group'    => $commonGroup,
-                    'data'     => $uniteller->getTaxationSystemCode() ?? '',
+                    'data'     => $uniteller->getTaxationSystemCode(),
                 ]
             );
     }

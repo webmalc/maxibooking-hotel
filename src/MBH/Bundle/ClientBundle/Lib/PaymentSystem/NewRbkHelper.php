@@ -52,9 +52,6 @@ class NewRbkHelper implements HelperInterface
      */
     public static function addFields(FormBuilderInterface $builder, ClientConfig $config, ExtraData $extraData): void
     {
-
-        $codeTax = array_intersect_key($extraData->getTaxationRateCodes()['rate_codes'], TaxMode::TAXATION_RATE_CODE);
-
         /** @var NewRbk $newRbk */
         $newRbk = $config !== null ? $config->getNewRbk() : null;
         if ($newRbk === null) {
@@ -70,7 +67,7 @@ class NewRbkHelper implements HelperInterface
                 TextareaType::class,
                 [
                     'label'    => self::PREFIX_LABEL . self::NAME_TYPE_API_KEY,
-                    'required' => true,
+                    'required' => false,
                     'attr'     => $commonAttr,
                     'group'    => $commonGroup,
                     'mapped'   => false,
@@ -82,7 +79,7 @@ class NewRbkHelper implements HelperInterface
                 TextareaType::class,
                 [
                     'label'    => self::PREFIX_LABEL . self::NAME_TYPE_WEBHOOK_KEY,
-                    'required' => true,
+                    'required' => false,
                     'attr'     => $commonAttr,
                     'group'    => $commonGroup,
                     'mapped'   => false,
@@ -94,7 +91,7 @@ class NewRbkHelper implements HelperInterface
                 TextType::class,
                 [
                     'label'    => self::PREFIX_LABEL . self::NAME_TYPE_SHOP_ID,
-                    'required' => true,
+                    'required' => false,
                     'attr'     => $commonAttr,
                     'group'    => $commonGroup,
                     'mapped'   => false,
@@ -118,12 +115,12 @@ class NewRbkHelper implements HelperInterface
                 InvertChoiceType::class,
                 [
                     'label'    => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
-                    'choices'  => $codeTax,
+                    'choices'  => $extraData->getTaxationRateCodes($newRbk),
                     'mapped'   => false,
                     'required' => false,
                     'attr'     => $commonAttr,
                     'group'    => $commonGroup,
-                    'data'     => $newRbk->getTaxationRateCode() ?? '',
+                    'data'     => $newRbk->getTaxationRateCode(),
                 ]
             );
     }

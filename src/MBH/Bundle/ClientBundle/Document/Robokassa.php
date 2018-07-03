@@ -5,14 +5,35 @@ namespace MBH\Bundle\ClientBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Robokassa implements PaymentSystemInterface
+class Robokassa implements PaymentSystemInterface, TaxMapInterface
 {
+    private const DEFAULT_FISCALIZATION = true;
+
+    private const TAX_SYSTEM_MAP = [
+        0 => 'osn',
+        1 => 'usn_income',
+        2 => 'usn_income_outcome',
+        3 => 'envd',
+        4 => 'esn',
+        5 => 'patent',
+    ];
+
+    private const TAX_RATE_MAP = [
+        -1  => 'none',
+        0   => 'vat0',
+        10  => 'vat10',
+        18  => 'vat18',
+        110 => 'vat110',
+        118 => 'vat118',
+    ];
+
     /**
      * @var string
      * @ODM\Field(type="string")
@@ -32,6 +53,95 @@ class Robokassa implements PaymentSystemInterface
     protected $robokassaMerchantPass2;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isWithFiscalization = self::DEFAULT_FISCALIZATION;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $taxationRateCode;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $taxationSystemCode;
+
+    /**
+     * @return array
+     */
+    public function getTaxRateMap(): array
+    {
+        return self::TAX_RATE_MAP;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTaxSystemMap(): array
+    {
+        return self::TAX_SYSTEM_MAP;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getTaxationRateCode(): ?string
+    {
+        return $this->taxationRateCode;
+    }
+
+    /**
+     * @param string $taxationRateCode
+     */
+    public function setTaxationRateCode(string $taxationRateCode): self
+    {
+        $this->taxationRateCode = $taxationRateCode;
+
+        return $this;
+    }
+
+
+    /**
+     * @return null|string
+     */
+    public function getTaxationSystemCode(): ?string
+    {
+        return $this->taxationSystemCode;
+    }
+
+    /**
+     * @param string $taxationSystemCode
+     */
+    public function setTaxationSystemCode(string $taxationSystemCode): self
+    {
+        $this->taxationSystemCode = $taxationSystemCode;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWithFiscalization(): bool
+    {
+        return $this->isWithFiscalization;
+    }
+
+    /**
+     * @param bool $isWithFiscalization
+     */
+    public function setIsWithFiscalization(bool $isWithFiscalization): self
+    {
+        $this->isWithFiscalization = $isWithFiscalization;
+
+        return $this;
+    }
+
+    /**
      * Set robokassaMerchantLogin
      *
      * @param string $robokassaMerchantLogin
@@ -40,6 +150,7 @@ class Robokassa implements PaymentSystemInterface
     public function setRobokassaMerchantLogin($robokassaMerchantLogin)
     {
         $this->robokassaMerchantLogin = $robokassaMerchantLogin;
+
         return $this;
     }
 

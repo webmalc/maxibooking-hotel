@@ -62,10 +62,45 @@ class ExtraData
     }
 
     /**
+     * @param TaxMapInterface|null $paymentSystem
      * @return array
      */
-    public function getTaxationRateCodes(): array
+    public function getTaxationRateCodes(TaxMapInterface $paymentSystem = null): array
     {
-        return $this->taxationRateCodes;
+        if ($paymentSystem === null) {
+            return $this->taxationRateCodes['rate_codes'];
+        }
+
+        return $this->map($paymentSystem->getTaxRateMap(),$this->getTaxationRateCodes());
+    }
+
+    /**
+     * @param TaxMapInterface|null $paymentSystem
+     * @return array
+     */
+    public function getTaxationSystemCodes(TaxMapInterface $paymentSystem = null): array
+    {
+        if ($paymentSystem === null) {
+            return $this->taxationRateCodes['system_codes'];
+        }
+
+        return $this->map($paymentSystem->getTaxSystemMap(), $this->getTaxationSystemCodes());
+    }
+
+    /**
+     * @param array $externalDataMap
+     * @param array $interiorData
+     * @return array
+     */
+    private function map(array $externalDataMap, array  $interiorData): array
+    {
+        $externalData = [];
+        foreach ($externalDataMap as $interior => $external) {
+            if (!empty($interiorData[$interior])) {
+                $externalData[$external] = $interiorData[$interior];
+            }
+        }
+
+        return $externalData;
     }
 }

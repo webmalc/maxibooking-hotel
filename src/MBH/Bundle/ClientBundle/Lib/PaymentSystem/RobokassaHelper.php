@@ -7,33 +7,42 @@
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem;
 
 
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
+use MBH\Bundle\ClientBundle\Form\PaymentSystem\RobokassaType;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 
 class RobokassaHelper implements HelperInterface
 {
+    const PREFIX = 'robokassa';
+
+    const NAME_TYPE_TAXATION_RATE_CODE = self::PREFIX . '_TaxationRateCode';
+
     public static function instance(FormInterface $form): PaymentSystemInterface
     {
         $robokassa = new Robokassa();
-        $robokassa->setRobokassaMerchantLogin($form->get('robokassaMerchantLogin')->getData())
+        $robokassa
+            ->setRobokassaMerchantLogin($form->get('robokassaMerchantLogin')->getData())
             ->setRobokassaMerchantPass1($form->get('robokassaMerchantPass1')->getData())
-            ->setRobokassaMerchantPass2($form->get('robokassaMerchantPass2')->getData());
+            ->setRobokassaMerchantPass2($form->get('robokassaMerchantPass2')->getData())
+            ->setIsWithFiscalization($form->get('robokassaIsWithFiscalization')->getData())
+            ->setTaxationRateCode($form->get(self::NAME_TYPE_TAXATION_RATE_CODE)->getData());
 
         return $robokassa;
     }
 
     public static function addFields(FormBuilderInterface $builder, ClientConfig $config, ExtraData $extraData): void
     {
-        $robokassa = $config->getRobokassa();
+        $robokassa = $config->getRobokassa() ?? new Robokassa();
 
-        $robokassaMerchantLogin = $robokassa ? $config->getRobokassa()->getRobokassaMerchantLogin() : '';
-        $robokassaMerchantPass1 = $robokassa ? $config->getRobokassa()->getRobokassaMerchantPass1() : '';
-        $robokassaMerchantPass2 = $robokassa ? $config->getRobokassa()->getRobokassaMerchantPass2() : '';
+        $attr = ['class' => ClientPaymentSystemType::COMMON_ATTR_CLASS . ' ' . self::PREFIX];
+        $group = ClientPaymentSystemType::COMMON_GROUP;
 
         $builder
             ->add(
@@ -42,10 +51,10 @@ class RobokassaHelper implements HelperInterface
                 [
                     'label'    => 'form.clientPaymentSystemType.shop_login',
                     'required' => false,
-                    'attr'     => ['class' => ClientPaymentSystemType::COMMON_ATTR_CLASS . ' robokassa'],
-                    'group'    => ClientPaymentSystemType::COMMON_GROUP,
+                    'attr'     => $attr,
+                    'group'    => $group,
                     'mapped'   => false,
-                    'data'     => $robokassaMerchantLogin,
+                    'data'     => $robokassa->getRobokassaMerchantLogin(),
                 ]
             )
             ->add(
@@ -54,10 +63,10 @@ class RobokassaHelper implements HelperInterface
                 [
                     'label'    => 'form.clientPaymentSystemType.password_one',
                     'required' => false,
-                    'attr'     => ['class' => ClientPaymentSystemType::COMMON_ATTR_CLASS . ' robokassa'],
-                    'group'    => ClientPaymentSystemType::COMMON_GROUP,
+                    'attr'     => $attr,
+                    'group'    => $group,
                     'mapped'   => false,
-                    'data'     => $robokassaMerchantPass1,
+                    'data'     => $robokassa->getRobokassaMerchantPass1(),
                 ]
             )
             ->add(
@@ -66,10 +75,35 @@ class RobokassaHelper implements HelperInterface
                 [
                     'label'    => 'form.clientPaymentSystemType.password_two',
                     'required' => false,
-                    'attr'     => ['class' => ClientPaymentSystemType::COMMON_ATTR_CLASS . ' robokassa'],
-                    'group'    => ClientPaymentSystemType::COMMON_GROUP,
+                    'attr'     => $attr,
+                    'group'    => $group,
                     'mapped'   => false,
-                    'data'     => $robokassaMerchantPass2,
+                    'data'     => $robokassa->getRobokassaMerchantPass2(),
+                ]
+            )
+            ->add(
+                'robokassaIsWithFiscalization',
+                CheckboxType::class,
+                [
+                    'mapped'   => false,
+                    'label'    => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
+                    'group'    => $group,
+                    'data'     => $robokassa->isWithFiscalization(),
+                    'required' => false,
+                    'attr'     => $attr,
+                ]
+            )
+            ->add(
+                self::NAME_TYPE_TAXATION_RATE_CODE,
+                InvertChoiceType::class,
+                [
+                    'label'    => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
+                    'choices'  => $extraData->getTaxationRateCodes($robokassa),
+                    'mapped'   => false,
+                    'required' => false,
+                    'attr'     => $attr,
+                    'group'    => $group,
+                    'data'     => $robokassa->getTaxationRateCode(),
                 ]
             );
     }
