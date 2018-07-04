@@ -40,9 +40,9 @@
     {% endif %}
     <body style="background-color: transparent;">
     {% form_theme form '@MBHOnline/ApiPaymentForm/Form/block.html.twig' %}
-    {{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'form-horizontal well', 'id': formId}}) }}
+    {{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'form-horizontal well', 'id': formId}, 'entity': entity}) }}
     {{ form_widget(form) }}
-    {% if app.getEnvironment == 'prod' and entity.enabledReCaptcha %}
+    {% if entity.enabledReCaptcha is defined and entity.enabledReCaptcha %}
         <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
         <script src='https://www.google.com/recaptcha/api.js'></script>
     {% endif %}

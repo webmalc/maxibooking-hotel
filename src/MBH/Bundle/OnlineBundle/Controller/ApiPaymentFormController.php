@@ -17,6 +17,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -94,9 +96,11 @@ class ApiPaymentFormController extends Controller
 
         $form->handleRequest($request);
 
-        if (!$this->reCaptcha($searchForm, $request)) {
-            return new Response('Captcha is invalid', 401);
-        };
+        if ($searchForm->reCaptchaIsEnabled()) {
+            if (!$this->reCaptcha($request)) {
+                return new Response('Captcha is invalid', 401);
+            };
+        }
 
         if ($form->isValid()) {
             return $this->json($searchForm->search());
@@ -120,20 +124,12 @@ class ApiPaymentFormController extends Controller
     /**
      * @param Request $request
      * @return bool
-     * @throws \Doctrine\ODM\MongoDB\LockException
-     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
-    private function reCaptcha(SearchForm $searchForm,Request $request): bool
+    private function reCaptcha(Request $request): bool
     {
-        if ($this->get('kernel')->getEnvironment() === 'prod') {
-            if ($searchForm->reCaptchaIsEnabled()) {
-                $reCaptcha = new ReCaptcha($this->getParameter('mbh.recaptcha')['secret']);
+        $reCaptcha = new ReCaptcha($this->getParameter('mbh.recaptcha')['secret']);
 
-                return $reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess();
-            }
-        }
-
-        return true;
+        return $reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess();
     }
 
     private function getPaymentSystem(): string
@@ -141,6 +137,5 @@ class ApiPaymentFormController extends Controller
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         return $clientConfig->getPaymentSystem();
-//        return $clientConfig->getPaymentSystems()[0];
     }
 }
