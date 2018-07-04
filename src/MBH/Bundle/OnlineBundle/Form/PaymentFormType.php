@@ -52,9 +52,18 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
                 [
                     'label'    => 'form.payment.formType.fieldUserNameIsVisible',
                     'group'    => 'form.formType.parameters',
-//                    'value'    => false,
                     'required' => false,
                     'help'     => 'form.payment.formType.fieldUserNameIsVisible.help',
+                ]
+            )
+            ->add(
+                'enabledShowAmount',
+                CheckboxType::class,
+                [
+                    'label'    => 'form.payment.formType.enabledShowAmount',
+                    'group'    => 'form.formType.parameters',
+                    'required' => false,
+                    'help'     =>  'form.payment.formType.enabledShowAmount_help',
                 ]
             )
             ->add(
@@ -63,7 +72,6 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
                 [
                     'label'    => 'form.payment.formType.enabledReCaptcha',
                     'group'    => 'form.formType.parameters',
-//                    'value'    => false,
                     'required' => false,
                     'help'     => 'form.payment.formType.enabledReCaptcha.help',
                 ]
@@ -80,13 +88,13 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
 
         $builder
             ->add('js',
-            TextareaType::class,
-            [
-                'group' => 'form.formType.js_group',
-                'label' => 'form.formType.js_label',
-                'required' => false,
-                'attr' => ['rows' => 10]
-            ]);
+                TextareaType::class,
+                [
+                    'group'    => 'form.formType.js_group',
+                    'label'    => 'form.formType.js_label',
+                    'required' => false,
+                    'attr'     => ['rows' => 10],
+                ]);
     }
 
     public function getBlockPrefix()
