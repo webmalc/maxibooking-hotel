@@ -8,14 +8,13 @@ namespace MBH\Bundle\OnlineBundle\Lib;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Validator\Constraints as CustomAssert;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class SearchForm
 {
@@ -49,6 +48,11 @@ class SearchForm
      * @var DocumentManager
      */
     private $dm;
+
+    /**
+     * @var Order
+     */
+    private $order;
 
     public function __construct(ContainerInterface $container = null)
     {
@@ -163,19 +167,23 @@ class SearchForm
             return $result;
         }
 
-        $order = $package->getOrder();
+        $this->order = $package->getOrder();
 
-        if (!$this->isPayer($order)) {
+        if ($this->order === null) {
+            return $result;
+        }
+
+        if (!$this->isPayer()) {
             return $result;
         }
 
         $result->orderIsFound();
 
-        if ($order->getIsPaid()) {
+        if ($this->order->getIsPaid()) {
             return $result;
         }
 
-        $result->setTotal($package->getPrice() - $order->getPaid());
+        $result->setTotal($package->getPrice() - $this->order->getPaid());
         $result->setPackageId($package->getId());
 
         return $result;
@@ -185,79 +193,84 @@ class SearchForm
     /**
      * Проверка на существование плательщика
      *
-     * @param Order $order
      * @return bool
      */
-    private function isPayer(Order $order): bool
+    private function isPayer(): bool
     {
-        $criteria = [];
+        /* возможно лучше другой параметр использовать и дополнительный.
+           типа искать вместе или одного совпадения достаточно.
+           Сейчас только вместе.
+         */
+        if ($this->isUserNameVisible()) {
+            if (!$this->checkName()) {
+                return false;
+            };
+        }
+
+        if ($this->order->getOrganization() !== null) {
+            return $this->checkOrganization();
+        }
+
+        return $this->checkTourist();
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkName(): bool
+    {
+        $name = $this->getUserName();
+        $check = function ($srcName) use ($name) {
+            return preg_match('@' . $name . '@iu', $srcName);
+        };
+        if ($this->order->getOrganization() !== null) {
+            return $check($this->order->getOrganization()->getName());
+        } else {
+            return $check($this->order->getMainTourist()->getFullName());
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkOrganization(): bool
+    {
+        $org = $this->order->getOrganization();
 
         if ($this->isEmail()) {
-            $criteria['email'] = $this->getPhoneOrEmail();
-        } else {
-            $criteria['phone'] = $this->getPhoneOrEmail();
+            return $this->checkEmail($org);
         }
 
-        $payer = null;
-
-        if ($order->getOrganization() !== null) {
-            $this->addCriteriaNaming($criteria);
-            $payer = $this->dm->getRepository('MBHPackageBundle:Organization')
-                ->findOneBy($criteria);
-            if ($payer !== null) {
-                $hiIsOwner = $order->getOrganization() === $payer;
-            }
-        } else {
-            $this->addCriteriaNaming($criteria, false);
-            $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist');
-            if ($this->isEmail()) {
-                $payer = $tourist->findOneBy($criteria);
-            } else {
-                /** @var Builder $qb */
-                $qb = $tourist->createQueryBuilder();
-                if ($this->isNameNeed($criteria)) {
-                    $qb->addAnd($qb->expr()->field('lastName')->equals($criteria['lastName']));
-                }
-                $phone = Tourist::cleanPhone($criteria['phone']);
-                $qb->addOr($qb->expr()->field('mobilePhone')->equals($phone));
-                $qb->addOr($qb->expr()->field('phone')->equals($phone));
-                $payer = $qb->getQuery()->getSingleResult();
-            }
-            if ($payer !== null) {
-                $hiIsOwner = $order->getMainTourist() === $payer;
-            }
-        }
-
-        if ($payer === null || !$hiIsOwner) {
-            return false;
-        }
-
-        return true;
+        return $org->getPhone() === Tourist::cleanPhone($this->getPhoneOrEmail());
     }
 
     /**
-     * @param array $criteria
      * @return bool
      */
-    private function isNameNeed(array $criteria): bool
+    private function checkTourist(): bool
     {
-        return !empty($criteria['lastName']);
+        $t = $this->order->getMainTourist();
+
+        if ($this->isEmail()) {
+            return $this->checkEmail($t);
+        }
+
+        $phone = Tourist::cleanPhone($this->getPhoneOrEmail());
+
+        if ($t->getPhone(true) === $phone || $t->getMobilePhone(true) === $phone) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
-     * @param $criteria
-     * @param bool $isOrganization
+     * @param PayerInterface $payer
+     * @return bool
      */
-    private function addCriteriaNaming(&$criteria ,bool $isOrganization = true): void
+    private function checkEmail(PayerInterface $payer): bool
     {
-        if ($this->getUserName() !== null) {
-            $c = ['$regex' => $this->getUserName(), '$options' => 'i'];
-            if ($isOrganization) {
-                $criteria['name'] = $c;
-            } else {
-                $criteria['lastName'] = $c;
-            }
-        }
+        return $payer->getEmail() === $this->getPhoneOrEmail();
     }
 
     /**
