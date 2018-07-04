@@ -243,9 +243,11 @@ display: none;
                 <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true">
                     <i class="fa fa-upload"></i> {{ 'mbhcashbundle.view.cash.index.1c_export'|trans }} <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ path('cash_1c_export') }}" target="_blank">{{ 'mbhcashbundle.view.cash.index.upload_clearing'|trans }}</a></li> <li><a href="{{ path('cash_1c_export', {method: 'cashless'}) }}" target="_blank">{{ 'views.cash.index.upload_all'|trans({}, 'MBHCashBundle') }}</a></li>
-                </ul>
+                {% if hotel.organization %}
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{{ path('cash_1c_export') }}" target="_blank">{{ 'mbhcashbundle.view.cash.index.upload_clearing'|trans }}</a></li> <li><a href="{{ path('cash_1c_export', {method: 'cashless'}) }}" target="_blank">{{ 'views.cash.index.upload_all'|trans({}, 'MBHCashBundle') }}</a></li>
+                    </ul>
+                {% endif %}
             </div>
         </li>
     {% endif %}
