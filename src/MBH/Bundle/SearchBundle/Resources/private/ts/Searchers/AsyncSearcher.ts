@@ -22,7 +22,7 @@ class AsyncSearcher extends Searcher {
             let count: number = 0;
             let requestResults;
             let error: boolean = false;
-            const resultRoute = Routing.generate('search_async_results', {id: conditionsResults.conditionsId});
+            const resultRoute = Routing.generate('search_async_results', {id: conditionsResults.conditionsId, grouping: 'roomType'});
             do {
                 try {
                     requestResults = ajax = $.ajax({

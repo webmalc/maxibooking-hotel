@@ -188,8 +188,11 @@ class Result implements \JsonSerializable
 
         $roomType = $searchResult->getRoomType();
         $resultRoomType = new RoomType();
-        $resultRoomType->setId($roomType->getId())
-            ->setName($roomType->getName());
+        $resultRoomType
+            ->setId($roomType->getId())
+            ->setName($roomType->getName())
+            ->setHotelName($roomType->getHotel()->getName())
+        ;
         $category = $roomType->getCategory();
         if ($category) {
             $resultRoomType->setCategoryName($category->getName());

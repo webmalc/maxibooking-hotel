@@ -87,18 +87,19 @@ class SearchController extends Controller
     }
 
     /**
-     * @Route("/async/results/{id}/{sorting}" , name="search_async_results",  options={"expose"=true}, defaults={"sorting" = null})
+     * @Route("/async/results/{id}/{grouping}" , name="search_async_results",  options={"expose"=true}, defaults={"grouping" = null})
      * @param SearchConditions $conditions
-     * @param null|string $sorting
+     * @param null|string $grouping
      * @return JsonResponse
+     * @throws GroupingFactoryException
      */
-    public function getAsyncResultsAction(SearchConditions $conditions, ?string $sorting = null): JsonResponse
+    public function getAsyncResultsAction(SearchConditions $conditions, ?string $grouping = null): JsonResponse
     {
         $receiver = $this->get('mbh__search.async_result_receiver');
         try {
             $results = array_values($receiver->receive($conditions));
             $responder = $this->get('mbh_search.search_results_responder');
-            $resultsArray = $responder->handleResults($results);
+            $resultsArray = $responder->handleResults($results, $grouping);
             $json = json_encode(['results' => $resultsArray], JSON_UNESCAPED_UNICODE);
             $answer = new JsonResponse($json, 200, [], true);
         } catch (AsyncResultReceiverException $exception) {

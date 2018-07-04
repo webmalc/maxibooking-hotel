@@ -12,8 +12,8 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
  */
 interface GroupingInterface
 {
-    /** @param Result[] $results
+    /** @param Result[] $searchResults
      * @return array
      */
-    public function group(array $results): array;
+    public function group(array $searchResults): array;
 }

@@ -5,6 +5,7 @@ class SyncSearcher extends Searcher {
     }
 
     protected async doSearch(): Promise<void> {
+        this.onStartSearch();
         let ajax;
         const start_route = Routing.generate('search_sync_start_json', {grouping: 'roomType'});
         try {

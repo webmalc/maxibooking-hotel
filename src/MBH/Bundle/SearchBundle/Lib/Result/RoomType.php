@@ -15,6 +15,9 @@ class RoomType implements \JsonSerializable
     /** @var string */
     private $categoryName = '';
 
+    /** @var string */
+    private $hotelName;
+
     /**
      * @return string
      */
@@ -72,12 +75,34 @@ class RoomType implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getHotelName(): string
+    {
+        return $this->hotelName;
+    }
+
+    /**
+     * @param string $hotelName
+     * @return RoomType
+     */
+    public function setHotelName(string $hotelName): RoomType
+    {
+        $this->hotelName = $hotelName;
+
+        return $this;
+    }
+
+
+
     public function jsonSerialize()
     {
         return [
             'id' => $this->id,
             'name' => $this->getName(),
-            'categoryName' => $this->getCategoryName()
+            'categoryName' => $this->getCategoryName(),
+            'hotelName' => $this->getHotelName()
         ];
     }
 

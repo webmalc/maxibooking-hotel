@@ -4,8 +4,10 @@
 ///<reference path="vuejs.d.ts"/>
 ///<reference path="Writers/Writer.ts"/>
 
-const writer = new Writer();
+let writer = new Writer();
+
 const formDataReceiver = new FormDataReceiver('search_conditions');
 new AsyncSearcher('async_search', writer, formDataReceiver);
 new SyncSearcher('sync_search', writer, formDataReceiver);
+
 
