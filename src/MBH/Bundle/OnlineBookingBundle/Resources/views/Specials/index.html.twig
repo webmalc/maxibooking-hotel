@@ -1,4 +1,5 @@
 <script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/specials.js')) }}"></script>
+<script src="{{ absolute_url(asset('assets/vendor/admin-lte/plugins/daterangepicker/moment.min.js')) }}"></script>
 <script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/jquery.bxslider.min.js')) }}"></script>
 
 {% if multiHotel %}
@@ -22,6 +23,15 @@
         </ul>
     </div>
 </div>
+<div class="spec-wrap">
+    <div class="month-spec">
+        <ul class="bxslider_disable">
+            <li class="sorter-switcher"><a href="#" id="sorter_price">По цене</a></li>
+            <li class="sorter-switcher"><a href="#" id="sorter_date">По дате</a></li>
+        </ul>
+    </div>
+</div>
+
 <div id="block_spec_container">
 {% for special in data.specials %}
 <div class="oneblockspec{% for keymonth, month in data.byMonth %}{% if special.special.id in month %} {{ keymonth }} {% endif %}{% endfor %}"

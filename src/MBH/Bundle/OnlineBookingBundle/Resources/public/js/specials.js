@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, moment */
 
 var Special = function ($row) {
     this.$row = $row;
@@ -135,6 +135,7 @@ MonthSwitcher.prototype.init = function (specials) {
 
 MonthSwitcher.prototype.bindHandlers = function () {
     var that = this;
+    this.$row.off('click');
     this.$row.on('click', function (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -142,6 +143,7 @@ MonthSwitcher.prototype.bindHandlers = function () {
             that.showClickedSpecials();
             that.urlTool.changeUrl(that.id);
         }
+        console.log('clickclick');
     });
 };
 MonthSwitcher.prototype.setActive = function () {
@@ -182,6 +184,7 @@ HotelSwitcher.prototype.init = function (specials) {
 };
 HotelSwitcher.prototype.bindHandlers = function () {
     var that = this;
+    this.$row.off('click');
     this.$row.on('click', function (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -287,28 +290,110 @@ MonthSwitcherContainer.prototype.getActivePage = function() {
     return Math.ceil((switcherIndex) / pages);
 };
 
+var SorterPrice = function (initSpecials) {
+    this.initSpecialsFunction = initSpecials;
+    this.direction = true;
+    this.init();
+};
+SorterPrice.prototype.init = function () {
+    var that = this;
+    $('#sorter_price').on('click', function (e) {
+        e.preventDefault();
+        var $specs = $('#block_spec_container .oneblockspec');
+        var $sorted = that.sort($specs);
+        that.direction = !that.direction;
+        $('#block_spec_container').fadeOut().empty().append($sorted).fadeIn();
+        that.initSpecialsFunction();
+    });
+};
+SorterPrice.prototype.sort = function ($specs) {
+    var that = this;
+    $specs.sort(function (a, b) {
+        var priceA = parseInt(($(a).find('.spec_new_price').text()).replace(/ /g, ''));
+        var priceB = parseInt(($(b).find('.spec_new_price').text()).replace(/ /g, ''));
+
+        var compareResult;
+        if (that.direction) {
+            compareResult =  priceA > priceB ? -1 : 1;
+        } else {
+            compareResult = priceA < priceB ? -1 : 1;
+        }
+
+        return compareResult;
+
+    });
+
+    return $specs;
+};
+
+var SorterDate = function (initSpecials) {
+    this.initSpecialsFunction = initSpecials;
+    this.direction = false;
+    this.init();
+};
+SorterDate.prototype.init = function () {
+    var that = this;
+    $('#sorter_date').on('click', function (e) {
+        e.preventDefault();
+        var $specs = $('#block_spec_container .oneblockspec');
+        var $sorted = that.sort($specs);
+        that.direction = !that.direction;
+        $('#block_spec_container').empty().append($sorted);
+        that.initSpecialsFunction();
+    });
+};
+SorterDate.prototype.sort = function ($specs) {
+    var that = this;
+    $specs.sort(function (a, b) {
+        var dateA = moment($(a).find('.date').data('begin'), "DD.MM.YY");
+        var dateB = moment($(b).find('.date').data('begin'), "DD.MM.YY");
+        var compareResult;
+        if (that.direction) {
+            compareResult =  dateA > dateB ? -1 : 1;
+        } else {
+            compareResult = dateA < dateB ? -1 : 1;
+        }
+        if (dateA.isSame(dateB)) {
+            var priceA = parseInt(($(a).find('.spec_new_price').text()).replace(/ /g, ''));
+            var priceB = parseInt(($(b).find('.spec_new_price').text()).replace(/ /g, ''));
+            compareResult =  priceA < priceB ? -1 : 1;
+        }
+
+        return compareResult;
+    });
+
+    return $specs;
+};
+
 $(function () {
-    var urlTool = new UrlTool();
-    var defaultMonth = urlTool.getDefaultMonth();
-    var specials = [],
-        hotelSwitchers = [],
-        monthSwitcherContainer = new MonthSwitcherContainer();
-    $.each($('.oneblockspec'), function () {
-        var special = new Special($(this));
-        special.init();
-        specials.push(special);
-    });
-    $.each($('.month-switcher>a'), function () {
-        var switcher = new MonthSwitcher($(this), urlTool);
-        switcher.init(specials);
-        monthSwitcherContainer.addSwitcher(switcher);
-    });
-    $.each($('.hotel-switcher'), function () {
-        var hotelSwitcher = new HotelSwitcher($(this));
-        hotelSwitcher.init(specials);
-        hotelSwitchers.push(hotelSwitcher);
-    });
-    monthSwitcherContainer.showFirstEnabledSwitcher(defaultMonth);
-    /*callMonthSlider(monthSwitcherContainer);*/
+    var initSpecials = function () {
+        var urlTool = new UrlTool();
+        var defaultMonth = urlTool.getDefaultMonth();
+        var specials = [],
+            hotelSwitchers = [],
+            monthSwitcherContainer = new MonthSwitcherContainer();
+        $.each($('.oneblockspec'), function () {
+            var special = new Special($(this));
+            special.init();
+            specials.push(special);
+        });
+
+        $.each($('.month-switcher>a'), function () {
+            var switcher = new MonthSwitcher($(this), urlTool);
+            switcher.init(specials);
+            monthSwitcherContainer.addSwitcher(switcher);
+        });
+        $.each($('.hotel-switcher'), function () {
+            var hotelSwitcher = new HotelSwitcher($(this));
+            hotelSwitcher.init(specials);
+            hotelSwitchers.push(hotelSwitcher);
+        });
+        monthSwitcherContainer.showFirstEnabledSwitcher(defaultMonth);
+        /*callMonthSlider(monthSwitcherContainer);*/
+    };
+
+    initSpecials();
+    new SorterPrice(initSpecials);
+    new SorterDate(initSpecials);
 
 });
