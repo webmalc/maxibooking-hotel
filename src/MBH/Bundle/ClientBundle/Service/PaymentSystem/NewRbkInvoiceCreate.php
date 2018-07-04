@@ -184,6 +184,8 @@ class NewRbkInvoiceCreate
      */
     private function generateCashDocuments(): CashDocument
     {
+        $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
+
         $maxSum = $this->order->getPrice() - $this->order->getPaid();
         $total = $maxSum >= $this->getTotal() ? $this->getTotal() : $maxSum ;
 
@@ -193,7 +195,9 @@ class NewRbkInvoiceCreate
             ->setMethod(CashDocument::METHOD_ELECTRONIC)
             ->setOperation(CashDocument::OPERATION_IN)
             ->setOrder($this->order)
-            ->setTotal($total);
+            ->setTotal($total)
+            ->setDocumentDate(new \DateTime('now'))
+            ->setNumber($cashDocumentRepository->generateNewNumber($cashDocument));
 
         if ($this->order->getMainTourist() !== null) {
             $cashDocument->setTouristPayer($this->order->getMainTourist());
