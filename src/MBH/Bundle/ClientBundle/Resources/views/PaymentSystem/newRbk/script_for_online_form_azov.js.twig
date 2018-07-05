@@ -5,6 +5,7 @@ var mbhNewRbk_Azov = {
   createInvoice: function(form) {
     var self = this;
     $.post(form.action, $(form).serialize()).done(function(data) {
+      data = JSON.parse(data);
       if (data.status == true) {
         self.configAndOpen(data.data);
       }
