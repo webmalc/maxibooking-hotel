@@ -805,7 +805,11 @@ class ClientConfig extends Base
 
         $doc = $this->getPaymentSystemDocByName($paymentSystemName);
         $url = $url ?? $this->getSuccessUrl();
-        if (!$doc || $cashDocument->getOperation() != 'in' || $cashDocument->getMethod() != 'electronic' || $cashDocument->getIsPaid()) {
+        if (!$doc
+            || $cashDocument->getOperation() != CashDocument::OPERATION_IN
+            || $cashDocument->getMethod() != CashDocument::METHOD_ELECTRONIC
+            || $cashDocument->getIsPaid()
+        ) {
             return [];
         }
 
@@ -813,7 +817,10 @@ class ClientConfig extends Base
     }
 
     /**
-     * @inheritdoc
+     * @param Request $request
+     * @param $paymentSystemName
+     * @param ClientConfig $config
+     * @return CheckResultHolder
      * @throws Exception
      */
     public function checkRequest(Request $request, $paymentSystemName, ClientConfig $config)

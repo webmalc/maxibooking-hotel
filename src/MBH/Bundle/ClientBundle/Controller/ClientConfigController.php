@@ -21,6 +21,7 @@ use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use MBH\Bundle\ClientBundle\Service\Notice;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -203,11 +204,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         if ($form->isValid()) {
             switch ($paymentSystemName) {
                 case 'robokassa':
-                    $robokassa = new Robokassa();
-                    $robokassa->setRobokassaMerchantLogin($form->get('robokassaMerchantLogin')->getData())
-                        ->setRobokassaMerchantPass1($form->get('robokassaMerchantPass1')->getData())
-                        ->setRobokassaMerchantPass2($form->get('robokassaMerchantPass2')->getData());
-                    $config->setRobokassa($robokassa);
+                    $config->setRobokassa(RobokassaHelper::instance($form));
                     break;
                 case 'payanyway':
                     $payanyway = new Payanyway();

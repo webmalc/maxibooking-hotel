@@ -126,6 +126,8 @@ analytics_form.google_id.label: 'Идентификатор отслеживан
 analytics_form.yandex_id.label: 'Номер счетчика'
 form.payment.formType.enabledReCaptcha: 'Использовать reCaptcha?'
 form.payment.formType.fieldUserNameIsVisible: 'включить дополнительное поле?'
+form.payment.formType.enabledShowAmount: 'Сумма к оплате'
+form.payment.formType.enabledShowAmount_help: 'Показывать рекомендованную сумму к оплате'
 form.online.order_search.numberOrder: 'Номер заказа'
 form.online.order_search.phoneOrEmail: 'Номер телефона или email'
 form.online.order_search.userName: 'Фамилия/Организация'
