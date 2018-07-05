@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ApiNewRbkController
@@ -30,8 +31,12 @@ class ApiNewRbkController extends Controller
     {
         $invoice = new \MBH\Bundle\ClientBundle\Service\PaymentSystem\NewRbkInvoiceCreate($this->container);
 
-        $response = $invoice->getDataFromInvoice($request);
+        $data = $invoice->getDataFromInvoice($request);
 
-        return $this->json($response->arrayData());
+        $response = new Response();
+        $response->setContent(json_encode($data->arrayData(),JSON_UNESCAPED_UNICODE));
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+
+        return $response;
     }
 }
