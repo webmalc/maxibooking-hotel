@@ -1,5 +1,5 @@
 ///<reference path="DataManager.ts"/>
-var ChessBoardManager = (function () {
+var ChessBoardManager = /** @class */ (function () {
     function ChessBoardManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals) {
         this.canMoveAccommodation = true;
         this.currentSizeConfigNumber = currentStyleConfigNumber;
@@ -51,6 +51,10 @@ var ChessBoardManager = (function () {
             if (!$(this).hasClass('selected-date-row')) {
                 $(this).children('div').hide();
             }
+        });
+        var $numberOfRoomsSelect = $('#nuber-of-rooms-select');
+        $numberOfRoomsSelect.on("select2:select", function () {
+            window.location.href = Routing.generate('change_number_of_rooms', { numberOfRooms: $numberOfRoomsSelect.val() });
         });
         $('.pagination-sm').find('a').each(function () {
             var filterData = $('#accommodation-report-filter').serialize() + '&page=' + $(this).text();
@@ -794,7 +798,7 @@ var ChessBoardManager = (function () {
                                 self.actionManager.callUpdatePackageModal($(this), intervalData_1, changedSide, isDivide);
                             }
                         }
-                    }
+                    },
                 });
             }
         });
@@ -806,6 +810,7 @@ var ChessBoardManager = (function () {
             return 'x, y';
         }
         else if (intervalData.updateAccommodation
+            //Если интервал не имеет размещения, но имеет права на создание размещения(просмотр брони)
             || (intervalData.updateAccommodation == undefined) && intervalData.viewPackage) {
             return 'y';
         }
@@ -1136,7 +1141,7 @@ var ChessBoardManager = (function () {
                         snap: 'calendarRow',
                         start: function () {
                             isDragged = true;
-                        }
+                        },
                     }).mousedown(function (event) {
                         if (self.isIntervalAvailable(packageData)) {
                             relocatablePackage = this;
@@ -1304,10 +1309,9 @@ var ChessBoardManager = (function () {
         editButton.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>';
         return editButton;
     };
+    ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH = 8;
+    ChessBoardManager.POPOVER_MIN_WIDTH = 250;
+    ChessBoardManager.SCROLL_BAR_WIDTH = 16;
+    ChessBoardManager.LATE_CHECKOUT_EARLY_CHECKIN_COLOR = '#65619b';
     return ChessBoardManager;
 }());
-ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH = 8;
-ChessBoardManager.POPOVER_MIN_WIDTH = 250;
-ChessBoardManager.SCROLL_BAR_WIDTH = 16;
-ChessBoardManager.LATE_CHECKOUT_EARLY_CHECKIN_COLOR = '#65619b';
-//# sourceMappingURL=ChessBoardManager.js.map
