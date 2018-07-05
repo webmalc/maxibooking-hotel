@@ -36,6 +36,7 @@ class ApiNewRbkController extends Controller
         $response = new Response();
         $response->setContent(json_encode($data->arrayData(),JSON_UNESCAPED_UNICODE));
         $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+        $response->headers->set('Content-Type',  'application/json');
 
         return $response;
     }
