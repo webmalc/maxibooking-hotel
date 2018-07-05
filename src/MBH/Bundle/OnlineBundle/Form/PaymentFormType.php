@@ -66,16 +66,18 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
                     'help'     =>  'form.payment.formType.enabledShowAmount_help',
                 ]
             )
-            ->add(
-                'enabledReCaptcha',
-                CheckboxType::class,
-                [
-                    'label'    => 'form.payment.formType.enabledReCaptcha',
-                    'group'    => 'form.formType.parameters',
-                    'required' => false,
-                    'help'     => 'form.payment.formType.enabledReCaptcha.help',
-                ]
-            );
+//            /* пока выключил */
+//            ->add(
+//                'enabledReCaptcha',
+//                CheckboxType::class,
+//                [
+//                    'label'    => 'form.payment.formType.enabledReCaptcha',
+//                    'group'    => 'form.formType.parameters',
+//                    'required' => false,
+//                    'help'     => 'form.payment.formType.enabledReCaptcha.help',
+//                ]
+//            )
+        ;
 
         $builder
             ->add($this->isFullWidth($builder))
