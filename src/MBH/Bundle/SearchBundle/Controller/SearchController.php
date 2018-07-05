@@ -117,8 +117,10 @@ class SearchController extends Controller
         $begin = new \DateTime('10.09.2018');
         $end = new \DateTime('17.09.2018');
         $adults = 2;
+        $children = 1;
+        $childrenAges = [3];
         $conditions = new SearchConditions();
-        $conditions->setBegin($begin)->setEnd($end)->setAdults($adults);
+        $conditions->setBegin($begin)->setEnd($end)->setAdults($adults)->setChildren($children)->setChildrenAges($childrenAges);
         $form = $this->createForm(SearchConditionsType::class, $conditions);
         return $this->render('@MBHSearch/Search/client.html.twig', ['form' => $form->createView()]);
     }

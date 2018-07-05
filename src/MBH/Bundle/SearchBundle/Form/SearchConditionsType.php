@@ -120,11 +120,14 @@ class SearchConditionsType extends AbstractType
                         'choices' => range(0, 13),
                         'empty_data' => 12,
                         'compound' => false,
+                        'attr' => [
+                            'class' => 'plain-html'
+                        ]
                     ],
-                    'prototype' => false,
+                    'prototype' => true,
                     'allow_add' => true,
                     'allow_delete' => true,
-                    'by_reference' => false,
+                    'by_reference' => false
                 ]
             )
             ->add(

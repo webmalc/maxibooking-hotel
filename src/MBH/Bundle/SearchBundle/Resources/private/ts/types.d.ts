@@ -3,10 +3,12 @@ interface SearchDataType {
     end: string,
     adults: number,
     children?: number,
-    childrenAges?: number[],
+    childrenAges?: any,
     additionalBegin?: number,
     additionalEnd?: number,
-    roomTypes?: string[],
+    roomTypes?: any,
+    tariffs?: any,
+    hotels?: any
 }
 
 interface Routing {
