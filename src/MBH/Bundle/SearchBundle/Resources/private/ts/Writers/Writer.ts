@@ -1,22 +1,37 @@
 class Writer {
 
-    private data:object = {};
+    private data: object = {};
+
+    public searchStatus: boolean = false;
+
+    private statusVue;
 
     private rootApp;
+
 
     constructor() {
         this.init();
     }
 
     private init() {
+        this.searchVueInit();
+        this.showSearchStatusInit();
+    }
+
+    private showSearchStatusInit() {
+        this.statusVue = new Vue({
+            el: '#search-status',
+            template: '<span v-if="status">Идет поиск...</span><span v-else>поиск не идет.</span>',
+            data: {
+                status: this.searchStatus
+            }
+        })
+    }
+
+    private searchVueInit(): void {
         Vue.component('price', {
             props: ['combination', 'price'],
-            template: '<span><b>{{combination}} - {{price.total}} - th {{test()}}</b></span>',
-            methods: {
-                test: function () {
-                    return this.combination.split('').reverse().join('');
-                }
-            }
+            template: '<span><b>{{combination}} - {{price.total}}</b></span>',
         });
         Vue.component('prices', {
             props: ['prices'],
@@ -45,10 +60,12 @@ class Writer {
         console.log('Search started');
         this.data = {};
         this.rootApp.rawData = this.data;
+        this.statusVue.status = true;
     }
 
     public showStopSearch(): void {
         console.log('Search stopped');
+        this.statusVue.status = false;
     }
 
     public drawResults(data): void {
