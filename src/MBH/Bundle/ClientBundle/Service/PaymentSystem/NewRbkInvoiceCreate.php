@@ -92,9 +92,9 @@ class NewRbkInvoiceCreate
     {
         $apiKey = $this->entity->getApiKey();
 
-        $curl = curl_init();
+        $curl = \curl_init();
 
-        curl_setopt_array($curl, [
+        \curl_setopt_array($curl, [
             CURLOPT_URL => self::URL_RBK_MONEY_V_1_PROCESSING_INVOICES,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
@@ -113,10 +113,10 @@ class NewRbkInvoiceCreate
             })(),
         ]);
 
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
+        $response = \curl_exec($curl);
+        $err = \curl_error($curl);
 
-        curl_close($curl);
+        \curl_close($curl);
 
         $r = new NewRbkCreateInvoiceResponse($this->container);
 
