@@ -78,7 +78,7 @@ class NewRbkInvoiceCreate
     public function getDataFromInvoice(Request $request):NewRbkCreateInvoiceResponse
     {
         $this->parseRequest($request);
-        $this->checkCashDocument();
+        $this->cashDocument = $this->generateCashDocuments();
 
         return $this->sendQuery();
     }
@@ -147,36 +147,6 @@ class NewRbkInvoiceCreate
         $this->package = $this->dm->getRepository('MBHPackageBundle:Package')
             ->find($request->get('packageId'));
         $this->order = $this->package->getOrder();
-    }
-
-    /**
-     * Проверяет наличие документа в случае отсутствия
-     * (или если сумма из формы не равна сумме ордера)
-     * формируется новый cashDocuments
-     */
-    private function checkCashDocument(): void
-    {
-        $cashDocument = null;
-
-        if ($this->order->getCashDocuments() !== null) {
-            /** @var CashDocument $cd */
-            foreach ($this->order->getCashDocuments()->toArray() as $cd) {
-                if ($cd->getMethod() === CashDocument::METHOD_ELECTRONIC &&
-                    !$cd->getIsPaid() &&
-                    $cd->getTotal() == $this->getTotal() &&
-                    $cd->getOperation() === CashDocument::OPERATION_IN &&
-                    $cd->getDeletedAt() === null
-                ) {
-                    $cashDocument = $cd;
-                }
-            }
-        }
-
-        if ($cashDocument === null) {
-            $cashDocument = $this->generateCashDocuments();
-        }
-
-        $this->cashDocument = $cashDocument;
     }
 
     /**
