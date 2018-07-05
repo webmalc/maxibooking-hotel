@@ -483,7 +483,8 @@ class ChessBoardDataBuilder
      */
     public function getRoomsByRoomTypeIds()
     {
-        $numberOfRooms = $this->clientConfig->getFrontSettings()->getRoomsInChessboard();
+        $username = $this->container->get('security.token_storage')->getToken()->getUsername();
+        $numberOfRooms = $this->clientConfig->getFrontSettings()->getRoomsInChessboard($username);
         if (!$this->isRoomsByRoomTypeIdsInit) {
             $roomTypes = $this->getRoomTypeIds();
             $skipValue = ($this->pageNumber - 1) * $numberOfRooms;

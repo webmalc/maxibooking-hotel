@@ -317,7 +317,7 @@
              style="width:{{ headerWidth }}px;">
             <div class="title" style="height: {{ headerHeight }}px; background-color: white;">
                 <div class="tableTitleCell">
-                    {% set selectedNumberOfRooms = client_config().getFrontSettings().getRoomsInChessboard() %}
+                    {% set selectedNumberOfRooms = client_config().getFrontSettings().getRoomsInChessboard(app.user.username) %}
                     <select id="nuber-of-rooms-select" style="width: 100%;">
                         {% for numberOfRooms in numberOfRoomsOptions %}
                             <option value="{{ numberOfRooms }}" {{ numberOfRooms == selectedNumberOfRooms ? 'selected' }}>

@@ -126,7 +126,7 @@ class ChessBoardController extends BaseController
         $tourist->setCitizenshipTld(Country::RUSSIA_TLD);
         $tourist->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
         $colorSettings = $this->dm->getRepository('MBHClientBundle:ColorsConfig')->fetchConfig();
-        $numberOfRooms = $clientConfig->getFrontSettings()->getRoomsInChessboard();
+        $numberOfRooms = $clientConfig->getFrontSettings()->getRoomsInChessboard($this->getUser()->getUsername());
 
         return [
             'pageCount' => $numberOfRooms != 0 ? ceil($builder->getRoomCount() / $numberOfRooms) : 1,
@@ -459,7 +459,7 @@ class ChessBoardController extends BaseController
      */
     public function changeNumberOfRoomsOnPage(int $numberOfRooms)
     {
-        $this->clientConfig->getFrontSettings()->setRoomsInChessboard($numberOfRooms);
+        $this->clientConfig->getFrontSettings()->setRoomsInChessboard($numberOfRooms, $this->getUser()->getUsername());
         $this->dm->flush();
 
         return $this->redirectToRoute('chess_board_home');
