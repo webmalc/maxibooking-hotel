@@ -11,6 +11,7 @@ use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
 use MBH\Bundle\ClientBundle\Service\Notice;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -161,6 +162,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $rbk->setRbkEshopId($form->get('rbkEshopId')->getData())
                         ->setRbkSecretKey($form->get('rbkSecretKey')->getData());
                     $entity->setRbk($rbk);
+                    break;
+                case 'newRbk':
+                    $entity->setNewRbk(NewRbkHelper::instance($form));
                     break;
                 default:
                     break;

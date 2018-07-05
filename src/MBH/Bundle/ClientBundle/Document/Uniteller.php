@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -157,27 +158,29 @@ class Uniteller implements PaymentSystemInterface
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request)
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $cashDocumentId = $request->get('Order_ID');
         $status = $request->get('Status');
         $requestSignature = $request->get('Signature');
 
+        $holder = new CheckResultHolder();
+
         if (!$cashDocumentId || !$status || !$requestSignature || !in_array($status, ['authorized', 'paid'])) {
-            return false;
+            return $holder;
         }
         $signature = $cashDocumentId . $status . $this->getUnitellerPassword();
         $signature = strtoupper(md5($signature));
 
         if ($signature != $requestSignature) {
-            return false;
+            return $holder;
         }
 
-        return [
-            'doc' => $cashDocumentId,
-            'commission' => self::COMMISSION,
+        return $holder->parseData([
+            'doc'               => $cashDocumentId,
+            'commission'        => self::COMMISSION,
             'commissionPercent' => true,
-            'text' => 'OK'
-        ];
+            'text'              => 'OK',
+        ]);
     }
 }

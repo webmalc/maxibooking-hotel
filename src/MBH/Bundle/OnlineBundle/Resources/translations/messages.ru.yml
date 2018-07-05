@@ -23,7 +23,32 @@ controller.apiController.thank_you: 'Большое спасибо. '
 controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.<br>'
 controller.apiController.your_order_number: 'Номер вашего заказа: '
 controller.formController.settings_saved_success: 'Настройки успешно сохранены.'
-
+onlinebundle.resources.views.hotels: Отели
+onlinebundle.resources.views.room_types: 'Типы номеров'
+onlinebundle.resources.views.guests: Гости
+onlinebundle.resources.views.on: Включена
+onlinebundle.resources.views.all_hotels: 'Все отели'
+form.formType.css_label: css
+form.formType.is_horizontal.label: 'Горизонтальная?'
+form.formType.is_horizontal.help: 'Поля формы расположены в одну линию?'
+form.formType.css: Оформление
+form.formType.css_help: 'Дополнительные css-стили для онлайн формы'
+form.formType.js_label: javascript
+form.formType.js_group: Javascript
+form.formType.theme_label: Тема
+form.formType.resultsUrl_label: 'Страница результатов'
+form.formType.resultsUrl_help: 'URL страницы для вывода результатов поиска'
+form.formType.frame_width.is_full_width.label: 'На всю ширину?'
+form.formType.frame_width.is_full_width.help: 'Форма занимает 100% свободного места'
+form.formType.frame_width.label: Ширина
+form.formType.frame_width.help: 'Ширина фрейма'
+form.formType.frame_height.label: Высота
+form.formType.frame_height.help: 'Высота фрейма'
+form.formType.label.css_libraries: 'CSS библиотеки'
+form.formType.help.css_libraries: 'Подключение дополнительных css библиотек'
+form.formType.template: Шаблоны
+form.formType.template_label: 'Шаблон формы'
+form.formType.template_help: 'Шаблон формы поиска'
 form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
 
@@ -32,3 +57,21 @@ payment_types:
   online_full: 'Онлайн оплата (100%)'
   online_first_day: 'Онлайн оплата (одни сутки)'
   online_half: 'Онлайн оплата (50%)'
+
+onlinebundle.resources.da: Да
+onlinebundle.resources.net: Нет
+form.payment.formType.enabledReCaptcha: 'Использовать reCaptcha?'
+form.payment.formType.fieldUserNameIsVisible: 'включить дополнительное поле?'
+form.payment.formType.enabledShowAmount: 'Сумма к оплате'
+form.payment.formType.enabledShowAmount_help: 'Показывать рекомендованную сумму к оплате'
+form.online.order_search.numberOrder: 'Номер заказа'
+form.online.order_search.phoneOrEmail: 'Номер телефона или email'
+form.online.order_search.userName: 'Фамилия/Организация'
+form.payment.formType.enabledReCaptcha.help: 'Проверка reCaptcha'
+form.payment.formType.fieldUserNameIsVisible.help: 'B форме поиска, дополнительное поле "Фамилия"'
+form.online.order_search.button_search: 'Найти заказ'
+api.payment_form.result_search.not_found_order: 'Заказ не найден'
+api.payment_form.result_search.order_has_been_paid: 'Заказ уже оплачен'
+api.payment_form.pay_order.total: 'Сумма к оплате'
+api.payment_form.pay_order.submit: 'Оплатить'
+api.payment_form.search.not_valid_fields: 'Номер телефона или e-mail указан не корректно'

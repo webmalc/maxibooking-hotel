@@ -26,3 +26,23 @@ services:
     mbh.package_zip.logger_handler:
           class:     Monolog\Handler\StreamHandler
           arguments: [%kernel.logs_dir%/%kernel.environment%.packageZip.log, 200]
+
+    mbh.client_payment_system_type:
+        class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
+        arguments:
+            - '%mbh.payment_systems%'
+            - '%mbh.payment_systems.change%'
+            - '%mbh.payment_systems.default%'
+            - '%mbh.taxation%'
+        tags:
+            - { name: form.type }
+
+    mbh.new_rbk_create_invoice.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.new_rbk_create_invoice.logger_handler']]
+
+    mbh.new_rbk_create_invoice.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.paymentSystem_newRbk.log", 200]

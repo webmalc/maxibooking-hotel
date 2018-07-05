@@ -216,3 +216,13 @@ services:
         class: MBH\Bundle\BaseBundle\Lib\Report\Report
         arguments:
             - '@templating'
+
+    mbh.menu_builder:
+        class: MBH\Bundle\BaseBundle\Menu\Builder
+        arguments:
+            - "@knp_menu.factory"
+            - "@service_container"
+        tags:
+            - { name: knp_menu.menu_builder, method: mainMenu, alias: base_mainMenu }
+            - { name: knp_menu.menu_builder, method: managementMenu, alias: base_managementMenu }
+            - { name: knp_menu.menu_builder, method: createHotelMenu, alias: base_createHotelMenu }

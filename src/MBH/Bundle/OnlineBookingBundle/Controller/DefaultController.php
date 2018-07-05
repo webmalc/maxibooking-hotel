@@ -170,6 +170,7 @@ class DefaultController extends BaseController
                                     $this->container->getParameter('online_form_result_url')
                                 )
                             ),
+                            'successUrl' => $clientConfig->getSuccessUrl(),
                         ]
                     );
                 }

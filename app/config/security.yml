@@ -39,6 +39,7 @@ security:
     access_control:
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
         - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
+        - { path: ^/management/online/api_payment_form, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
         - { path: ^/media/cache/resolve, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
         - { path: ^/user/login$, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
         - { path: ^/online_booking, role: 'IS_AUTHENTICATED_ANONYMOUSLY', requires_channel: https }
