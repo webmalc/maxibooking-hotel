@@ -54,7 +54,9 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
         if ($numberOfInconsistencies > 0) {
             $notifier = $this->getContainer()->get('exception_notifier');
             $message = $notifier::createMessage();
-            $message->setText('Inconsistencies of room caches are found. Client:' . $this->getContainer()->getParameter('client'));
+            $message
+                ->setType('danger')
+                ->setText('Inconsistencies of room caches are found. Client:' . $this->getContainer()->getParameter('client'));
             $notifier
                 ->setMessage($message)
                 ->notify();;
