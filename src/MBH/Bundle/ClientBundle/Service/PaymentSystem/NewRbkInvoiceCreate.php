@@ -10,6 +10,7 @@ namespace MBH\Bundle\ClientBundle\Service\PaymentSystem;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\InvoiceRequest;
+use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -58,6 +59,11 @@ class NewRbkInvoiceCreate
      * @var CashDocument
      */
     private $cashDocument;
+
+    /**
+     * @var null | PaymentFormConfig
+     */
+    private $paymentForm = null;
 
     public function __construct(ContainerInterface $container)
     {
@@ -144,6 +150,11 @@ class NewRbkInvoiceCreate
     {
         $this->total = $request->get('total');
 
+        if (!empty($request->get('paymentFormId'))) {
+            $this->paymentForm = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
+                ->find($request->get('paymentFormId'));
+        }
+
         $this->package = $this->dm->getRepository('MBHPackageBundle:Package')
             ->find($request->get('packageId'));
         $this->order = $this->package->getOrder();
@@ -156,8 +167,12 @@ class NewRbkInvoiceCreate
     {
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
-        $maxSum = $this->order->getPrice() - $this->order->getPaid();
-        $total = $maxSum >= $this->getTotal() ? $this->getTotal() : $maxSum ;
+        if ($this->paymentForm !== null && $this->paymentForm->isEnabledMaxAmountLimit()) {
+            $maxSum = $this->order->getPrice() - $this->order->getPaid();
+            $total = $maxSum >= $this->getTotal() ? $this->getTotal() : $maxSum ;
+        } else {
+            $total = $this->getTotal();
+        }
 
         $cashDocument = new CashDocument();
         $cashDocument->setIsConfirmed(false)

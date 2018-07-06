@@ -84,11 +84,36 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     private $enabledShowAmount = false;
 
     /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $enabledMaxAmountLimit = true;
+
+    /**
      * @var string
      * @Gedmo\Versioned()
      * @ODM\Field(type="string")
      */
     private $js;
+
+    /**
+     * @return bool
+     */
+    public function isEnabledMaxAmountLimit(): bool
+    {
+        return $this->enabledMaxAmountLimit;
+    }
+
+    /**
+     * @param bool $enabledMaxAmountLimit
+     */
+    public function setEnabledMaxAmountLimit(bool $enabledMaxAmountLimit)
+    {
+        $this->enabledMaxAmountLimit = $enabledMaxAmountLimit;
+    }
 
     /**
      * @return array|ArrayCollection|Hotel[]

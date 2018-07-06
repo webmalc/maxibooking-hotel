@@ -66,6 +66,16 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
                     'help'     =>  'form.payment.formType.enabledShowAmount_help',
                 ]
             )
+            ->add(
+                'enabledMaxAmountLimit',
+                CheckboxType::class,
+                [
+                    'label'    => 'form.payment.formType.enabledMaxAmountLimit',
+                    'group'    => 'form.formType.parameters',
+                    'required' => false,
+                    'help'     =>  'form.payment.formType.enabledMaxAmountLimit_help',
+                ]
+            )
 //            /* пока выключил */
 //            ->add(
 //                'enabledReCaptcha',
