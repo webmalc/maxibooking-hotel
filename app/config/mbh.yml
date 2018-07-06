@@ -389,3 +389,13 @@ parameters:
         268: form.hotelExtendedType.all_public_areas_non_smoking
         900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 
+#     * Поведение меню:
+#     * - alwaysOpen не в зависимости от выбранного пункта все главные меню открыты
+#     * - custom запоминается последнее открытое меню (на фронтэнде) и в следующий раз открывается именно оно
+#     * - default открыто то меню пункт которого выбран
+    mbh.menu.behaviors:
+        - default
+        - custom
+        - alwaysOpen
+
+    mbh.menu.behaviors.now: custom

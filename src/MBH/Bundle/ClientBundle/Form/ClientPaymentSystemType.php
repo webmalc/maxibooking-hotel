@@ -6,10 +6,11 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -19,29 +20,18 @@ class ClientPaymentSystemType extends AbstractType
     const COMMON_ATTR_CLASS = 'payment-system-params';
     const COMMON_GROUP = 'form.clientPaymentSystemType.payment_system_group';
 
-
-    private $paymentSystems;
-    private $paymentSystemsChange;
-    private $paymentSystemsDefault;
-    private $taxationRateCodes;
-
     /**
-     * @var array
+     * @var ExtraData
      */
     private $extraData;
 
     public function __construct($paymentSystems, $paymentSystemsChange, $paymentSystemsDefault, $taxationRateCodes)
     {
-        $this->paymentSystems = $paymentSystems;
-        $this->paymentSystemsChange = $paymentSystemsChange;
-        $this->paymentSystemsDefault = $paymentSystemsDefault;
-        $this->taxationRateCodes = $taxationRateCodes;
-
-        $this->extraData = compact(
-            'paymentSystems',
-            'paymentSystemsChange',
-            'paymentSystemsDefault',
-            'taxationRateCodes'
+        $this->extraData = new ExtraData(
+            $paymentSystems,
+            $paymentSystemsChange,
+            $paymentSystemsDefault,
+            $taxationRateCodes
         );
     }
 
@@ -49,7 +39,6 @@ class ClientPaymentSystemType extends AbstractType
     {
         /** @var ClientConfig $clientConfig */
         $clientConfig = $options['entity'];
-        $robokassaMerchantLogin = $robokassaMerchantPass1 = $robokassaMerchantPass2 = null;
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
         $rnkbKey = $rnkbShopIDP = null;
@@ -58,15 +47,12 @@ class ClientPaymentSystemType extends AbstractType
         $invoiceDocument = null;
         $stripePubToken = null;
 
-        $paymentSystemName = $options['paymentSystemName'] ?? $this->paymentSystemsDefault;
-        $paymentSystemsChoices = array_filter($this->paymentSystems, function ($paymentSystemName) use ($clientConfig, $options) {
+        $paymentSystemName = $options['paymentSystemName'] ?? $this->extraData->getPaymentSystemsDefault();
+        $paymentSystemsChoices = array_filter($this->extraData->getPaymentSystems(), function ($paymentSystemName) use ($clientConfig, $options) {
             return !in_array($paymentSystemName, $clientConfig->getPaymentSystems()) || $paymentSystemName == $options['paymentSystemName'];
         }, ARRAY_FILTER_USE_KEY);
 
         if ($clientConfig) {
-            $robokassaMerchantLogin = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantLogin() : '';
-            $robokassaMerchantPass1 = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantPass1() : '';
-            $robokassaMerchantPass2 = $clientConfig->getRobokassa() ? $clientConfig->getRobokassa()->getRobokassaMerchantPass2() : '';
             $payanywayMntId = $clientConfig->getPayanyway() ? $clientConfig->getPayanyway()->getPayanywayMntId() : '';
             $payanywayKey = $clientConfig->getPayanyway() ? $clientConfig->getPayanyway()->getPayanywayKey() : '';
             $moneymailShopIDP = $clientConfig->getMoneymail() ? $clientConfig->getMoneymail()->getMoneymailShopIDP() : '';
@@ -101,44 +87,9 @@ class ClientPaymentSystemType extends AbstractType
 
         UnitellerHelper::addFields($builder, $clientConfig, $this->extraData);
         NewRbkHelper::addFields($builder, $clientConfig, $this->extraData);
+        RobokassaHelper::addFields($builder, $clientConfig, $this->extraData);
 
         $builder
-            ->add(
-                'robokassaMerchantLogin',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.shop_login',
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' robokassa'],
-                    'group' => self::COMMON_GROUP,
-                    'mapped' => false,
-                    'data' => $robokassaMerchantLogin
-                ]
-            )
-            ->add(
-                'robokassaMerchantPass1',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.password_one',
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' robokassa'],
-                    'group' => self::COMMON_GROUP,
-                    'mapped' => false,
-                    'data' => $robokassaMerchantPass1
-                ]
-            )
-            ->add(
-                'robokassaMerchantPass2',
-                TextType::class,
-                [
-                    'label' => 'form.clientPaymentSystemType.password_two',
-                    'required' => false,
-                    'attr' => ['class' => self::COMMON_ATTR_CLASS . ' robokassa'],
-                    'group' => self::COMMON_GROUP,
-                    'mapped' => false,
-                    'data' => $robokassaMerchantPass2
-                ]
-            )
             ->add(
                 'payanywayMntId',
                 TextType::class,
