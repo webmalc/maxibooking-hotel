@@ -30,18 +30,23 @@ class Writer {
     }
 
     private searchVueInit(): void {
-        Vue.component('price', {
-            props: ['combination', 'price'],
-            template: '<option>{{combination}} - {{rounded(price.total)}}</option>',
+        // Vue.component('price', {
+        //     props: ['combination', 'price'],
+        //     template: '<option>{{combination}} - {{rounded(price.total)}}</option>',
+        //     methods: {
+        //         rounded: function (price: number) {
+        //             return Number(price).toFixed(1);
+        //         }
+        //     }
+        // });
+        Vue.component('prices', {
+            props: ['prices', 'selected'],
+            template: `<span><select v-model="selected"><option v-for="(price, combination) in prices" :value="rounded(price.total)">{{combination}} - {{rounded(price.total)}} </option></select> <span>{{selected}}</span></span>`,
             methods: {
                 rounded: function (price: number) {
                     return Number(price).toFixed(1);
                 }
             }
-        });
-        Vue.component('prices', {
-            props: ['prices'],
-            template: '<span><select v-model="selected"><option is="price" v-for="(price, combination) in prices" :key="combination" :combination="combination" :price="price"></option></select> - {{ selected }}</span>'
         });
         Vue.component('tariff', {
             props: ['tariff'],
