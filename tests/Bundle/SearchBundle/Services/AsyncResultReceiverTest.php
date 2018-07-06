@@ -80,6 +80,7 @@ class AsyncResultReceiverTest extends SearchWebTestCase
                 $this->expectException(AsyncResultReceiverException::class);
             }
             /** @var array $taken */
+            /** @noinspection PhpUnusedLocalVariableInspection */
             $taken = array_merge($value['ok'], $value['error']);
             $actual = $service->receive($conditions);
             $this->assertCount(\count($value['expected']), $actual);

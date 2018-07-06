@@ -1,8 +1,9 @@
+
 class Writer {
 
     private data: object = {};
 
-    public searchStatus: boolean = false;
+    public searchStatus: {[index:string]: boolean} = {state: false};
 
     private statusVue;
 
@@ -21,7 +22,7 @@ class Writer {
     private showSearchStatusInit() {
         this.statusVue = new Vue({
             el: '#search-status',
-            template: '<span v-if="status">Идет поиск...</span><span v-else>поиск не идет.</span>',
+            template: '<span v-if="status.state">Идет поиск...</span><span v-else>поиск не идет.</span>',
             data: {
                 status: this.searchStatus
             }
@@ -31,11 +32,16 @@ class Writer {
     private searchVueInit(): void {
         Vue.component('price', {
             props: ['combination', 'price'],
-            template: '<span><b>{{combination}} - {{price.total}}</b></span>',
+            template: '<option>{{combination}} - {{rounded(price.total)}}</option>',
+            methods: {
+                rounded: function (price: number) {
+                    return Number(price).toFixed(1);
+                }
+            }
         });
         Vue.component('prices', {
             props: ['prices'],
-            template: '<span><price v-for="(price, combination) in prices" :key="combination" :combination="combination" :price="price"></price></span>'
+            template: '<span><select v-model="selected"><option is="price" v-for="(price, combination) in prices" :key="combination" :combination="combination" :price="price"></option></select> - {{ selected }}</span>'
         });
         Vue.component('tariff', {
             props: ['tariff'],
@@ -44,15 +50,37 @@ class Writer {
         Vue.component('search-result', {
             props: ['result'],
             template: '<li><span>{{result.begin}}-{{result.end}}.  Тариф - <tariff :tariff="result.tariff"></tariff><prices v-for="(prices, key) in result.prices" :prices="prices" :key="key"></prices></span></li>'
+
         });
         Vue.component('room-type', {
             props: ['roomType', 'searchResults'],
-            template: '<ul>{{roomType.name}}: {{roomType.hotelName}}<search-result v-for="(result, key) in searchResults" :key="key" :result="result"></search-result></ul>',
+            template: '<ul>{{roomType.name}}: {{roomType.hotelName}} - <li is="search-result" v-for="(result, key) in priceSorted" :key="key" :result="result"></li></ul>',
+            computed: {
+                priceSorted: function () {
+                    this.searchResults.sort(function (resultA, resultB) {
+                        let keyPriceA = Object.keys(resultA.prices[0])[0];
+                        let keyPriceB = Object.keys(resultB.prices[0])[0];
+                        let priceA = resultA.prices[0][keyPriceA].total;
+                        let priceB = resultB.prices[0][keyPriceB].total;
+                        if(priceA < priceB) {
+                            return -1;
+                        }
+                        if(priceA > priceB) {
+                            return 1;
+                        }
+
+                        return 0;
+                    });
+
+                    return this.searchResults;
+                },
+
+            }
         });
         this.rootApp = new Vue({
             el: '#vue_results',
             template: '<span><room-type v-for="(data, key) in rawData" :roomType="data.roomType" :searchResults="data.results" :key="key" ></room-type></span>',
-            data: {rawData: this.data}
+            data: {rawData: this.data},
         });
     }
 
@@ -60,12 +88,12 @@ class Writer {
         console.log('Search started');
         this.data = {};
         this.rootApp.rawData = this.data;
-        this.statusVue.status = true;
+        this.searchStatus.state = true;
     }
 
     public showStopSearch(): void {
         console.log('Search stopped');
-        this.statusVue.status = false;
+        this.searchStatus.state = false;
     }
 
     public drawResults(data): void {
