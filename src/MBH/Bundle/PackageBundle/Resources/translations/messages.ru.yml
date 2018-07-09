@@ -736,6 +736,7 @@ csv.form.children: Дети
 csv.form.price: Стоимость
 csv.form.createdAt: 'Дата создания'
 csv.form.createdBy: Создал
+csv.form.note: Комментарий
 csv.form.modal_title: 'Генерация документа'
 csv.form.modal_close: Закрыть
 csv.form.modal_generate: Сгенерировать
