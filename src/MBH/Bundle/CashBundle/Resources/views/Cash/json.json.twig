@@ -1,26 +1,8 @@
-{% autoescape false %}
-{% wrapinline %}
-{% spaceless %}
-{% filter clear_adjacent_whitespace %}
+{% extends 'MBHCashBundle:Cash:jsonCommon.json.twig' %}
 {% import 'MBHCashBundle:Cash:macrosHtml.html.twig' as html %}
-{
-    "draw" : "{{ draw }}",
-    "recordsTotal": "{{ recordsFiltered }}",
-    "totalIn": "{{ totalIn|number_format(2) }}",
-    "totalOut": "{{ totalOut|number_format(2) }}",
-    "noConfirmedTotalIn": "{{ noConfirmedTotalIn|number_format(2) }}",
-    "noConfirmedTotalOut": "{{ noConfirmedTotalOut|number_format(2) }}",
-    "total": "{{ total|number_format(2) }}",
-    "recordsFiltered": "{{ recordsFiltered }}",
-    "data": [
-        {% for entity in entities %}
-            [
-                {{ html.render(entity,operations,methods) }}
-            ]{% if loop.index != entities.count(true) %},{% endif %}
-        {% endfor %}
-    ]
-}
-{% endfilter %}
-{% endspaceless %}
-{% endwrapinline %}
-{% endautoescape %}
+{% block data %}
+{% for entity in entities %}
+[{{ html.render(entity,operations,methods) }}
+]{% if loop.index != entities.count(true) %},{% endif %}
+{% endfor %}
+{% endblock data %}
