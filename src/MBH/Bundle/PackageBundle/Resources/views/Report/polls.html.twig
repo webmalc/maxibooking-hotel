@@ -8,14 +8,14 @@
 {% block content %}
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'polls-report-filter-widget'} %}
-        <form id="polls-report-filter" action="{{ path('report_polls' ) }}" class="form-inline filter-form remember" role="form">
+        <form id="polls-report-filter" action="{{ path('report_polls' ) }}" class="form-inline filter-form" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='{{ 'report.polls'|trans}}' data-toggle='tooltip'></i>&nbsp
-                <input type="text" name="begin" id="polls-report-filter-begin" class="datepicker polls-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-45 days")|date('d.m.Y') : app.request.get('begin')}}">
+                <input type="text" name="begin" id="polls-report-filter-begin" class="datepicker polls-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y')}}">
             </div>
             <div class="input">
                 — &nbsp
-                <input type="text" name="end" id="polls-report-filter-end" class="datepicker polls-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end')}}">
+                <input type="text" name="end" id="polls-report-filter-end" class="datepicker polls-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
             </div>
 
             <div class="input">

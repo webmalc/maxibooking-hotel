@@ -604,10 +604,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 $this->dm->remove($package);
                 $this->dm->flush();
             }
-            foreach ($order->getFee() as $cashDoc) {
-                $this->dm->remove($cashDoc);
-                $this->dm->flush();
-            }
             $order->setChannelManagerStatus('modified');
             $order->setDeletedAt(null);
         }
@@ -635,23 +631,42 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
             $order->setCreditCard($card);
         }
-
         $this->dm->persist($order);
         $this->dm->flush();
 
+        $cashDocuments = [];
+        if (!empty((string)$reservation->reservation_extra_info)
+            && !empty((string)$reservation->reservation_extra_info->payer)
+            && !empty((string)$reservation->reservation_extra_info->payer->payments)) {
+            foreach ($reservation->payer->payments->payment as $paymentNode) {
+                $attributes = $paymentNode->attributes();
+                $note = (isset($attributes['payment_type']) ? ('payment_type:' . (string)$attributes['payment_type']) : '')
+                    . (isset($attributes['payout_type']) ? (' payout_type:' . (string)$attributes['payout_type']) : '');
+
+                $cashDocuments[] = (new CashDocument())
+                    ->setMethod(CashDocument::METHOD_ELECTRONIC)
+                    ->setOperation(CashDocument::OPERATION_IN)
+                    ->setOrder($order)
+                    ->setTouristPayer($payer)
+                    ->setTotal($this->currencyConvertToRub($config, (float)$attributes['amount']))
+                    ->setNote($note)
+                    ->setIsConfirmed(false);
+            }
+        }
+
         //fee
         if (!empty((float)$reservation->commissionamount)) {
-            $fee = new CashDocument();
-            $fee->setIsConfirmed(false)
+            $cashDocuments[] = (new CashDocument())
+                ->setIsConfirmed(false)
                 ->setIsPaid(false)
-                ->setMethod('electronic')
-                ->setOperation('fee')
+                ->setMethod(CashDocument::METHOD_ELECTRONIC)
+                ->setOperation(CashDocument::OPERATION_FEE)
                 ->setOrder($order)
                 ->setTouristPayer($payer)
                 ->setTotal($this->currencyConvertToRub($config, (float)$reservation->commissionamount));
-            $this->dm->persist($fee);
-            $this->dm->flush();
         }
+        $this->container->get('mbh.channelmanager.order_handler')->saveCashDocuments($order, $cashDocuments);
+        $this->dm->flush();
 
         //packages
         foreach ($reservation->room as $room) {
