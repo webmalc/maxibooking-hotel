@@ -40,6 +40,11 @@ class SearchForm
     private $configId;
 
     /**
+     * @var PaymentFormConfig | null
+     */
+    private $config = null;
+
+    /**
      * @var ContainerInterface
      */
     private $container;
@@ -115,11 +120,7 @@ class SearchForm
      */
     public function isUserNameVisible(): bool
     {
-        /** @var PaymentFormConfig $config */
-        $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-            ->find($this->getConfigId());
-
-        return $config->isFieldUserNameIsVisible();
+        return $this->getConfig()->isFieldUserNameIsVisible();
     }
 
     /**
@@ -133,24 +134,16 @@ class SearchForm
     /**
      * @param string $configId
      */
-    public function setConfigId(string $configId): void
+    public function setConfigId(string $configId): bool
     {
         $this->configId = $configId;
+
+        return $this->initConfig();
     }
 
     public function reCaptchaIsEnabled(): bool
     {
-        /** @var PaymentFormConfig $config */
-        $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-            ->find($this->getConfigId());
-        if ($config === null) {
-            $logger = $this->container->get('logger');
-            $logger->addError('not found id for PaymentFormConfig');
-
-            return true;
-        }
-
-        return $config->isEnabledReCaptcha();
+        return $this->getConfig()->isEnabledReCaptcha();
     }
 
     public function search(): SearchFormResult
@@ -179,7 +172,7 @@ class SearchForm
 
         $result->orderIsFound();
 
-        if ($this->order->getIsPaid()) {
+        if ($this->getConfig()->isEnabledMaxAmountLimit() && $this->order->getIsPaid()) {
             return $result;
         }
 
@@ -242,6 +235,36 @@ class SearchForm
         }
 
         return $org->getPhone() === Tourist::cleanPhone($this->getPhoneOrEmail());
+    }
+
+    /**
+     * @return bool
+     */
+    public function initConfig(PaymentFormConfig $config = null): bool
+    {
+        if ($config === null) {
+            $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
+                ->find($this->getConfigId());
+
+            if ($config === null) {
+                $logger = $this->container->get('logger');
+                $logger->addError('not found id for PaymentFormConfig');
+
+                return false;
+            }
+        }
+        $this->configId = $config->getId();
+        $this->config = $config;
+
+        return true;
+    }
+
+    /**
+     * @return PaymentFormConfig
+     */
+    private function getConfig(): PaymentFormConfig
+    {
+        return $this->config;
     }
 
     /**

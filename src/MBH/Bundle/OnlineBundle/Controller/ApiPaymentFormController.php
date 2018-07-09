@@ -10,15 +10,12 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Form\OrderSearchType;
-use MBH\Bundle\OnlineBundle\Lib\SearchForm;
 use ReCaptcha\ReCaptcha;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -60,12 +57,11 @@ class ApiPaymentFormController extends Controller
         $entity = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
             ->findOneById($formId);
 
-        if ($entity === null || !$entity->getIsEnabled()) {
+        $search = $this->container->get('mbh.online.search_order');
+
+        if (!$search->initConfig($entity) || !$entity->getIsEnabled()) {
             throw $this->createNotFoundException();
         }
-
-        $search = $this->container->get('mbh.online.search_order');
-        $search->setConfigId($formId);
 
         $form = $this->createForm(OrderSearchType::class, $search);
 
@@ -90,7 +86,11 @@ class ApiPaymentFormController extends Controller
     {
         $searchForm = $this->container->get('mbh.online.search_order');
 
-        $searchForm->setConfigId($request->get(OrderSearchType::PREFIX)['configId']);
+        if (!$searchForm->setConfigId($request->get(OrderSearchType::PREFIX)['configId'])) {
+            return $this->json(
+                ['error' => 'Обратитесь к администратору сайта']
+            );
+        };
 
         $form = $this->createForm(OrderSearchType::class, $searchForm);
 
