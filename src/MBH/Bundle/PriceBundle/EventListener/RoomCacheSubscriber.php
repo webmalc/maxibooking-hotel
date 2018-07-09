@@ -69,7 +69,7 @@ class RoomCacheSubscriber implements EventSubscriber
 
     public function preUpdate(LifecycleEventArgs $args)
     {
-        $this->update($args);
+//        $this->update($args);
     }
 
     /**
