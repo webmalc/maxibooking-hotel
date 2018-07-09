@@ -68,7 +68,8 @@ class CashController extends Controller
             'users' => $this->dm->getRepository('MBHUserBundle:User')->findBy(['enabled' => true],
                 ['username' => 'asc']),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-            'typeList' => CashDocumentQueryCriteria::getTypeList()
+            'typeList' => CashDocumentQueryCriteria::getTypeList(),
+            'hotel' => $this->hotel
         ];
     }
 
