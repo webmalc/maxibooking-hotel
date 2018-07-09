@@ -57,7 +57,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
             $messageText = "Произошла ошибка у \"" . $this->kernel->getClient()
                 . ". \"\n Сообщение \"" . $exception->getMessage()
                 . "\".\n Стек:" . $exception->getTraceAsString();
-            $message->setText($messageText);
+            $message
+                ->setType('danger')
+                ->setText($messageText);
             $this->exceptionNotifier
                 ->setMessage($message)
                 ->notify();
