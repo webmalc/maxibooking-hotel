@@ -4,12 +4,14 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
+use function GuzzleHttp\Promise\queue;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
@@ -395,19 +397,33 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Method({"GET"})
      * @Security("is_granted('ROLE_POLLS_REPORT')")
      * @Template()
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function pollsAction(Request $request)
     {
         $helper = $this->get('mbh.helper');
-        $request->get('begin') ? $begin = $helper->getDateFromString($request->get('begin')) : $begin = null;
-        $request->get('end') ? $end = $helper->getDateFromString($request->get('end')) : $end = null;
+        $begin = $request->get('begin') ? $helper->getDateFromString($request->get('begin')) : new \DateTime('midnight - 45 days');
+        $end = $request->get('end') ? $helper->getDateFromString($request->get('end')) : new \DateTime('midnight + 1 days');
+
+        $packageCriteria = new PackageQueryCriteria();
+        $packageCriteria->liveBegin = $begin;
+        $packageCriteria->liveEnd = $end;
+        $packageCriteria->filter = 'live_between';
+        $orderIds = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->queryCriteriaToBuilder($packageCriteria)
+            ->distinct('order.id')
+            ->getQuery()
+            ->toArray();
 
         $orders = $this->dm
             ->getRepository('MBHPackageBundle:Order')
-            ->fetchWithPolls($begin, $end, true);
+            ->fetchWithPolls($orderIds, true);
 
         return [
-            'orders' => $orders
+            'orders' => $orders,
+            'begin' => $begin,
+            'end' => $end
         ];
     }
 

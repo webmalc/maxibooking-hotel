@@ -50,5 +50,16 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
             sprintf('Recalculate complete. Entries: %s. Elapsed time: %s', number_format($num), $time->format('%H:%I:%S'))
         );
         $output->writeln($numberOfInconsistencies == 0 ? 'Inconsistencies not found' : 'Number of inconsistencies: ' . $numberOfInconsistencies);
+
+        if ($numberOfInconsistencies > 0) {
+            $notifier = $this->getContainer()->get('exception_notifier');
+            $message = $notifier::createMessage();
+            $message
+                ->setType('danger')
+                ->setText('Inconsistencies of room caches are found. Client:' . $this->getContainer()->getParameter('client'));
+            $notifier
+                ->setMessage($message)
+                ->notify();;
+        }
     }
 }

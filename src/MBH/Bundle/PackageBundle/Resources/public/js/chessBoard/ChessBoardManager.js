@@ -14,6 +14,7 @@ var ChessBoardManager = /** @class */ (function () {
         this.templateRemoveButton = ChessBoardManager.getTemplateRemoveButton();
         this.tableStartDate = ChessBoardManager.getTableStartDate();
         this.tableEndDate = ChessBoardManager.getTableEndDate();
+        this.updateChessboardDataWithoutActions();
     }
     ChessBoardManager.deletePackageElement = function (packageId) {
         var packageElement = document.getElementById(packageId);
@@ -51,10 +52,6 @@ var ChessBoardManager = /** @class */ (function () {
             if (!$(this).hasClass('selected-date-row')) {
                 $(this).children('div').hide();
             }
-        });
-        var $numberOfRoomsSelect = $('#nuber-of-rooms-select');
-        $numberOfRoomsSelect.on("select2:select", function () {
-            window.location.href = Routing.generate('change_number_of_rooms', { numberOfRooms: $numberOfRoomsSelect.val() });
         });
         $('.pagination-sm').find('a').each(function () {
             var filterData = $('#accommodation-report-filter').serialize() + '&page=' + $(this).text();
@@ -1308,6 +1305,23 @@ var ChessBoardManager = /** @class */ (function () {
         editButton.classList.add('popover-edit-button');
         editButton.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>';
         return editButton;
+    };
+    ChessBoardManager.prototype.updateChessboardDataWithoutActions = function () {
+        var _this = this;
+        var time = 0;
+        $(document).on('click', function () {
+            time = 0;
+        });
+        setInterval(function () {
+            time++;
+            console.log(time);
+            if (time > 30) {
+                ActionManager.showLoadingIndicator();
+                _this.dataManager.updatePackagesData();
+                ActionManager.hideLoadingIndicator();
+                time = 0;
+            }
+        }, 1000);
     };
     ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH = 8;
     ChessBoardManager.POPOVER_MIN_WIDTH = 250;
