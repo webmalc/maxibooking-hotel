@@ -43,7 +43,7 @@ class SiteForm extends AbstractType
 
         /** @var SiteConfig $siteConfig */
         $siteConfig = $builder->getData();
-        if (count($hotels) === 1 && !$siteConfig && $siteConfig->getHotels()->count() === 0) {
+        if (count($hotels) === 1 && $siteConfig && $siteConfig->getHotels()->count() === 0) {
             $siteConfig->addHotel(current($hotels));
         }
 

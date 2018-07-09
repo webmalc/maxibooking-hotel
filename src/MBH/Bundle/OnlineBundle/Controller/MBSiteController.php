@@ -70,6 +70,7 @@ class MBSiteController extends BaseController
         }
 
         return [
+            'warnings' => ['ololo'],
             'form' => $form->createView(),
             'hotelsSettings' => $siteManager->getHotelsSettingsInfo($config)
         ];
