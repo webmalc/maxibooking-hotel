@@ -496,3 +496,11 @@ services:
             - { name: knp_menu.menu_builder, method: mainMenu, alias: base_mainMenu }
             - { name: knp_menu.menu_builder, method: managementMenu, alias: base_managementMenu }
             - { name: knp_menu.menu_builder, method: createHotelMenu, alias: base_createHotelMenu }
+
+    mbh.data_comparer:
+        class: MBH\Bundle\BaseBundle\Service\DataComparer
+        arguments: ['@property_accessor']
+
+    mbh.periods_compiler:
+        class: MBH\Bundle\BaseBundle\Service\PeriodsCompiler
+        arguments: ['@mbh.data_comparer', '@doctrine.odm.mongodb.document_manager']

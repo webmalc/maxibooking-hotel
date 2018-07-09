@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Test\Traits;
 
-
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\BufferedOutput;

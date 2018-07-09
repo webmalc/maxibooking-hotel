@@ -2,20 +2,17 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
-use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class PeriodsCompiler
 {
-    private $propertyAccessor;
+    private $documentsComparer;
+    private $dm;
 
-    public function __construct(PropertyAccessor $propertyAccessor)
+    public function __construct(DataComparer $documentsComparer, DocumentManager $dm)
     {
-        $this->propertyAccessor = $propertyAccessor;
-    }
-
-    public function getPeriodsFromRawDocs()
-    {
-
+        $this->documentsComparer = $documentsComparer;
+        $this->dm = $dm;
     }
 
     /**
@@ -24,42 +21,44 @@ class PeriodsCompiler
      *
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param array $entitiesByDates
-     * @param array $comparePropertyMethods Массив имен методов, используемых для сравнения переданных сущностей
+     * @param array $dataByDates
+     * @param array $comparedFieldNames
      * @param string $dateFormat
+     * @param bool $isArray
      * @return array
      * @throws \Exception
      */
-    public function getPeriodsFromDayEntities(
+    public function getPeriodsByFieldNames(
         \DateTime $begin,
         \DateTime $end,
-        array $entitiesByDates,
-        array $comparePropertyMethods,
-        $dateFormat = 'd.m.Y'
+        array $dataByDates,
+        array $comparedFieldNames,
+        $dateFormat = 'd.m.Y',
+        $isArray = false
     ) {
         $periods = [];
         $currentPeriod = null;
 
-        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+1 day')) as $day) {
             /** @var \DateTime $day */
             $dayString = $day->format($dateFormat);
-            $dateEntity = isset($entitiesByDates[$dayString]) ? $entitiesByDates[$dayString] : null;
+            $dateEntity = isset($dataByDates[$dayString]) ? $dataByDates[$dayString] : null;
 
             //Если это начало цикла и переменная, хранящая период не инициализирована
             if (is_null($currentPeriod)) {
                 $currentPeriod = [
                     'begin' => $day,
                     'end' => $day,
-                    'entity' => $dateEntity
+                    'data' => $dateEntity
                 ];
-            } elseif ($this->isEquals($currentPeriod['entity'], $dateEntity, $comparePropertyMethods)) {
+            } elseif ($this->documentsComparer->isEqualByFields($currentPeriod['data'], $dateEntity, $comparedFieldNames, $isArray)) {
                 $currentPeriod['end'] = $day;
             } else {
                 is_null($currentPeriod) ?: $periods[] = $currentPeriod;
                 $currentPeriod = [
                     'begin' => $day,
                     'end' => $day,
-                    'entity' => $dateEntity
+                    'data' => $dateEntity
                 ];
             }
         }
@@ -68,22 +67,44 @@ class PeriodsCompiler
         return $periods;
     }
 
-    private function isEquals($firstEntity, $secondEntity, $comparedFields)
+    /**
+     * @param int $periodLengthInDays
+     * @param string $className
+     * @param string $comparedField
+     * @return array
+     * @throws \Exception
+     */
+    public function getPeriodsWithEmptyCaches(int $periodLengthInDays, string $className, string $comparedField)
     {
-        if (is_null($firstEntity) xor is_null($secondEntity)) {
-            return false;
-        } elseif (is_null($firstEntity) && is_null($secondEntity)) {
-            return true;
-        }
+        $cachesSortedByHotelRoomTypeAndTariff = $this->dm
+            ->getRepository($className)
+            ->findForDashboard($periodLengthInDays);
 
-        $isEqual = true;
-        foreach ($comparedFields as $comparedField) {
-            if ($this->propertyAccessor->getValue($firstEntity, $comparedField)
-                != $this->propertyAccessor->getValue($secondEntity, $comparedField)) {
-                $isEqual = false;
+        $periodBegin = new \DateTime('midnight');
+        $periodsEnd = new \DateTime('midnight + ' . $periodLengthInDays . ' days');
+
+        $periodsWithoutPrice = [];
+        foreach ($cachesSortedByHotelRoomTypeAndTariff as $hotelId => $cachesByRoomTypeAndTariff) {
+            foreach ($cachesByRoomTypeAndTariff as $roomTypeId => $cachesByTariff) {
+                foreach ($cachesByTariff as $tariffId => $caches) {
+                    $cachePeriods = $this
+                        ->getPeriodsByFieldNames($periodBegin, $periodsEnd, $caches, [$comparedField], 'd.m.Y', true);
+                    foreach ($cachePeriods as $periodNumber => $cachePeriodData) {
+                        if ((is_null($cachePeriodData['data']) || $cachePeriodData['data'][$comparedField] === 0)
+                            && $periodNumber !== (count($cachePeriods) - 1)) {
+                            $periodsWithoutPrice[] = [
+                                'begin' => $cachePeriodData['begin'],
+                                'end' => $cachePeriodData['end'],
+                                'tariff' => $this->dm->find('MBHPriceBundle:Tariff', $tariffId),
+                                'roomType' => $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId),
+                                'hotel' => $this->dm->find('MBHHotelBundle:Hotel', $hotelId)
+                            ];
+                        }
+                    }
+                }
             }
         }
 
-        return $isEqual;
+        return $periodsWithoutPrice;
     }
 }

@@ -70,7 +70,7 @@ class MBSiteController extends BaseController
         }
 
         return [
-            'warnings' => ['ololo'],
+            'warnings' => $siteManager->getUnfilledDataMessages($config->getHotels()->toArray()),
             'form' => $form->createView(),
             'hotelsSettings' => $siteManager->getHotelsSettingsInfo($config)
         ];

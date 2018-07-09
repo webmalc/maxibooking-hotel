@@ -41,9 +41,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         &$resultArray,
         \DateTime $day
     ) {
-        $resultArray[$serviceRoomTypeId][$serviceTariffId][$day->format(
-            self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING
-        )] = $priceCache;
+        $resultArray[$serviceRoomTypeId][$serviceTariffId][$day->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING)] = $priceCache;
     }
 
     /**
@@ -70,13 +68,13 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $localCurrency = $this->container->get('mbh.client_config_manager')->fetchConfig();
 
         $periodsCompiler = $this->container->get('mbh.periods_compiler');
-        $comparePropertyMethods = [
-            'getPrice',
-            'getIsPersonPrice',
-            'getAdditionalPrice',
-            'getAdditionalChildrenPrice',
-            'getSinglePrice',
-            'getChildPrice',
+        $comparedFields = [
+            'price',
+            'isPersonPrice',
+            'additionalPrice',
+            'additionalChildrenPrice',
+            'singlePrice',
+            'childPrice'
         ];
 
         $numberOfRoomType = 0;
@@ -89,18 +87,18 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     continue;
                 }
 
-                $periodsData = $periodsCompiler->getPeriodsFromDayEntities(
+                $periodsData = $periodsCompiler->getPeriodsByFieldNames(
                     $begin,
                     $end,
                     $pricesByDates,
-                    $comparePropertyMethods,
-                    'Y-m-d'
+                    $comparedFields,
+                    self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING
                 );
 
                 foreach ($periodsData as $periodData) {
                     $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
                     /** @var PriceCache $priceCache */
-                    $priceCache = $periodData['entity'];
+                    $priceCache = $periodData['data'];
                     $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
                     /** @var \DateTime $periodBegin */
                     $periodBegin = $periodData['begin'];
@@ -173,15 +171,17 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $xmlElements = [];
         $requestDataArray = $this->getRoomData($begin, $end, $roomTypes, $config);
         $periodsCompiler = $this->container->get('mbh.periods_compiler');
+
         foreach ($requestDataArray as $roomTypeId => $roomQuotasByDates) {
             $periodsData = $periodsCompiler
-                ->getPeriodsFromDayEntities(
+                ->getPeriodsByFieldNames(
                     $begin,
                     $end,
                     $roomQuotasByDates,
-                    ['getLeftRooms'],
+                    ['leftRooms'],
                     self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING
                 );
+
             foreach ($periodsData as $periodData) {
                 $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
                 $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
@@ -195,7 +195,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 $dateRangeElement->addAttribute('to', $periodEnd->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING));
 
                 /** @var RoomCache $roomCache */
-                $roomCache = $periodData['entity'];
+                $roomCache = $periodData['data'];
                 $roomTypeElement = $xmlRoomTypeData->addChild('RoomType');
                 $roomTypeElement->addAttribute('id', $roomTypeId);
                 $roomTypeElement->addAttribute('closed', $roomCache ? "false" : "true");
@@ -267,15 +267,17 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     ) {
         $restrictionRequestData = [];
         $xmlElements = [];
-        $comparePropertyMethods = [
-            'getMinStay',
-            'getMaxStay',
-            'getClosedOnArrival',
-            'getClosedOnDeparture',
-            'getClosed',
-        ];
+
         $requestDataArray = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $periodsCompiler = $this->container->get('mbh.periods_compiler');
+        $comparedFields = [
+            'minStay',
+            'maxStay',
+            'closedOnArrival',
+            'closedOnDeparture',
+            'closed',
+        ];
+
         foreach ($requestDataArray as $roomTypeId => $restrictionsByTariffs) {
             foreach ($restrictionsByTariffs as $tariffId => $restrictionsByDates) {
                 $tariffData = $serviceTariffs[$tariffId];
@@ -288,11 +290,11 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     continue;
                 }
 
-                $periodsData = $periodsCompiler->getPeriodsFromDayEntities(
+                $periodsData = $periodsCompiler->getPeriodsByFieldNames(
                     $begin,
                     $end,
                     $restrictionsByDates,
-                    $comparePropertyMethods,
+                    $comparedFields,
                     self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING
                 );
                 foreach ($periodsData as $periodData) {
@@ -315,7 +317,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $ratePlanElement->addAttribute('id', $tariffId);
 
                     /** @var Restriction $restriction */
-                    $restriction = $periodData['entity'];
+                    $restriction = $periodData['data'];
                     $restrictionData = $this->extractRestrictionData($restriction, $serviceTariffs, $tariffId);
                     $ratePlanElement->addAttribute('closed', $restrictionData['isClosed']);
 
@@ -361,10 +363,10 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     private function extractRestrictionData(?Restriction $restriction, $serviceTariffs, $serviceTariffId)
     {
         $isClosed = !is_null($restriction) && $restriction->getClosed();
-        $isClosedToArrival = $isClosed || (!is_null($restriction) && $restriction->getClosedOnArrival(
-            )) ? 'true' : 'false';
-        $isClosedToDeparture = $isClosed || (!is_null($restriction) && $restriction->getClosedOnDeparture(
-            )) ? 'true' : 'false';
+        $isClosedToArrival = $isClosed
+        || (!is_null($restriction) && $restriction->getClosedOnArrival() ? 'true' : 'false');
+        $isClosedToDeparture = $isClosed
+        || (!is_null($restriction) && $restriction->getClosedOnDeparture() ? 'true' : 'false');
 
         $minLOSDefault = $serviceTariffs[$serviceTariffId]['minLOSDefault'];
         $maxLOSDefault = $serviceTariffs[$serviceTariffId]['maxLOSDefault'];
