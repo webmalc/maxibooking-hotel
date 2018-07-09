@@ -82,6 +82,11 @@ class ChessBoardManager {
             }
         });
 
+        const $numberOfRoomsSelect = $('#nuber-of-rooms-select');
+        $numberOfRoomsSelect.on("select2:select", () => {
+            window.location.href = Routing.generate('change_number_of_rooms', {numberOfRooms: $numberOfRoomsSelect.val()});
+        });
+
         $('.pagination-sm').find('a').each(function () {
             let filterData = $('#accommodation-report-filter').serialize() + '&page=' + $(this).text();
             let route = Routing.generate('chess_board_home') + '?' + filterData;
