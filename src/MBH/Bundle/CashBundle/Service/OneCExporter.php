@@ -89,6 +89,8 @@ class OneCExporter
         Organization $hotelOrganization = null
     ): string
     {
+        $dateEnd = (clone $queryCriteria->end)->modify('-1 day')->format('d.m.Y');
+
         $format[] = '1CClientBankExchange';
         $format[] = $this->trans('versiyaformata') . '=1.02';
         $format[] = $this->trans('kodirovka') .'=Windows';
@@ -97,11 +99,11 @@ class OneCExporter
         $format[] = $this->trans('datasozdaniya') . '=' . date('d.m.Y');
         $format[] = $this->trans('vremyasozdaniya') . '=' . date('H:i:s');
         $format[] = $this->trans('datanachala') . '=' . $queryCriteria->begin->format('d.m.Y');
-        $format[] = $this->trans('datakontsa') . '=' . $queryCriteria->end->format('d.m.Y');
+        $format[] = $this->trans('datakontsa') . '=' . $dateEnd;
         $format[] = $this->trans('raschschet') . '=' . ($hotelOrganization ? $hotelOrganization->getCheckingAccount() : '');
         $format[] = $this->trans('sektsiyaraschschet');
         $format[] = $this->trans('datanachala') . '=' . $queryCriteria->begin->format('d.m.Y');
-        $format[] = $this->trans('datakontsa') . '=' . $queryCriteria->end->format('d.m.Y');
+        $format[] = $this->trans('datakontsa') . '=' . $dateEnd;
         $format[] = $this->trans('nachalnyyostatok') . '=0';
         $format[] = $this->trans('raschschet') . '=' . ($hotelOrganization ? $hotelOrganization->getCheckingAccount() : '');
         $format[] = $this->trans('vsegospisano') . '=0';

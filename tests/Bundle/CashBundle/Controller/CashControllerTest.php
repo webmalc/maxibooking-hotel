@@ -11,6 +11,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     private const URL_BASE = '/cash/';
     private const URL_ADD_NEW = '/cash/new';
     private const URL_JSON = '/cash/json';
+    private const URL_EXPORT_ONE_C = '/cash/export/1c';
 
     private const URL_POSTFIX_DELETE = 'delete';
     private const URL_POSTFIX_EDIT = 'edit';
@@ -28,6 +29,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     private const QUERY_FILTER_SHOW_NO_CONFIRMED_1 = 'show_no_confirmed=1';
     private const QUERY_FILTER_BY_DAY = 'by_day=1';
 
+    private const ORG_TEST_CHECKING_ACCOUNT = 'TestCheckingAccount';
 
     private const VALUES_DEFAULT = [
         'draw'                => '',
@@ -89,9 +91,20 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
         'data'                => [],
     ];
 
+    /**
+     * @var array
+     */
     private $valueJson = [];
 
+    /**
+     * @var string
+     */
     private static $idCashDocument;
+
+    /**
+     * @var \Symfony\Component\Translation\TranslatorInterface
+     */
+    private $translator;
 
     public static function setUpBeforeClass()
     {
@@ -245,8 +258,6 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     }
 
     /**
-     * filter=deletedAt&method=&show_no_paid=0&show_no_confirmed=0&by_day=0&deleted=1
-     *
      * @dataProvider getDefaultData
      */
     public function testDefaultValueFromJsonWithFilter(array $data)
@@ -496,6 +507,116 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     public function testFiltersAfterDelete($data)
     {
         $this->filterTest($data);
+    }
+
+    public function testButtonExportOneCNotAvailable()
+    {
+        $crawler = $this->getListCrawler(self::URL_BASE);
+
+        $this->assertCount(0,$crawler->filter('a[href="' . self::URL_EXPORT_ONE_C . '"]'));
+    }
+
+    public function testButtonExportOneCAvailable()
+    {
+        $this->setOrganizationForHotel();
+
+        $crawler = $this->getListCrawler(self::URL_BASE);
+
+        $this->assertCount(1,$crawler->filter('a[href="' . self::URL_EXPORT_ONE_C . '"]'));
+
+    }
+
+    /**
+     * @depends testButtonExportOneCAvailable
+     */
+    public function testStatusCodeReportOneC()
+    {
+        $this->getListCrawler(self::URL_EXPORT_ONE_C);
+        $this->assertStatusCode(
+            200,
+            $this->client
+        );
+    }
+
+    /**
+     * @depends testStatusCodeReportOneC
+     */
+    public function testExportOneC()
+    {
+        $this->getListCrawler(self::URL_EXPORT_ONE_C);
+
+        $content = explode("\r\n", mb_convert_encoding($this->client->getResponse()->getContent(), 'utf-8', 'windows-1251'));
+
+        $resultWithoutTime = array_filter($content, function ($value) {
+            return strpos($value,'ВремяСоздания') !== 0;
+        });
+
+        $this->assertStatusCode(
+            200,
+            $this->client
+        );
+
+        $this->assertEquals([],array_diff($this->getContetntReportOneC(),$resultWithoutTime));
+    }
+
+    private function getContetntReportOneC()
+    {
+        $this->translator = self::getContainer()->get('translator');
+        $body = '';
+
+        $dateBegin = (new DateTime('-7 days'))->format('d.m.Y');
+        $dateCreate = $dateEnd = (new DateTime())->format('d.m.Y');
+
+        $format[] = '1CClientBankExchange';
+        $format[] = $this->trans('versiyaformata') . '=1.02';
+        $format[] = $this->trans('kodirovka') .'=Windows';
+        $format[] = $this->trans('otpravitel') . '=';
+        $format[] = $this->trans('poluchatel') . '=';
+        $format[] = $this->trans('datasozdaniya') . '=' . $dateCreate;
+        $format[] = $this->trans('datanachala') . '=' . $dateBegin;
+        $format[] = $this->trans('datakontsa') . '=' . $dateEnd;
+        $format[] = $this->trans('raschschet') . '=' . self::ORG_TEST_CHECKING_ACCOUNT;
+        $format[] = $this->trans('sektsiyaraschschet');
+        $format[] = $this->trans('datanachala') . '=' . $dateBegin;
+        $format[] = $this->trans('datakontsa') . '=' . $dateEnd;
+        $format[] = $this->trans('nachalnyyostatok') . '=0';
+        $format[] = $this->trans('raschschet') . '=' . self::ORG_TEST_CHECKING_ACCOUNT;
+        $format[] = $this->trans('vsegospisano') . '=0';
+        $format[] = $this->trans('vsegopostupilo') . '=' . '0.00';
+        $format[] = $this->trans('konechnyyostatok') . '=0';
+        $format[] = $this->trans('konetsraschschet');
+        $format[] = $body . $this->trans('konetsfayla');
+
+        return $format;
+    }
+
+    private function trans(string $name, bool $prefix = true): string
+    {
+        $id = $prefix ? 'mbhcashbundle.service.onecexporter.' . $name : $name;
+
+
+        return $this->translator->trans($id);
+    }
+
+    private function setOrganizationForHotel(): void
+    {
+        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+
+        $org = new \MBH\Bundle\PackageBundle\Document\Organization();
+        $org->setName('TestOrg');
+        $org->setInn('1231313131');
+        $org->setCheckingAccount(self::ORG_TEST_CHECKING_ACCOUNT);
+
+        $hotels = $dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->findAll();
+
+        foreach ($hotels as $hotel) {
+            $org->addHotel($hotel);
+        }
+
+        $dm->persist($org);
+        $dm->flush();
     }
 
     private function getLinkForAction(string $action): string

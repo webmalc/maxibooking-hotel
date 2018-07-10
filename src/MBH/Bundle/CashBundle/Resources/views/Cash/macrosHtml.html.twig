@@ -6,6 +6,14 @@
         </div>
     {% endset %}
 
+    {% set td_editCashDocument %}
+        {% if not entity.deletedAt %}
+            <a class='cash-number text-center' href='{{ path('cash_edit', { 'id': entity.id }) }}' rel='main'>{{ entity.number }}</a>
+        {% else %}
+            <div class='cash-number text-center'>{{ entity.number }}</div>
+        {% endif %}
+    {% endset %}
+
     {% set td_order_edit %}
         {% if entity.order and entity.order.packages|length %}
             <a href=\"{{ path('package_order_edit', {id: entity.order.id, packageId: (entity.order.packages|first).id}) }}\">
@@ -61,7 +69,7 @@
     {% endset %}
 
     "{{ td_currenty }}",
-    "<a class='cash-number text-center' href='{{ path('cash_edit', { 'id': entity.id }) }}' rel='main'>{{ entity.number }}</a>",
+    "{{ td_editCashDocument }}",
     "{{ td_order_edit }}",
     "{{ td_in }}",
     "{{ td_out }}",
