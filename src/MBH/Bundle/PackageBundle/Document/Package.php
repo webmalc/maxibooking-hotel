@@ -1246,40 +1246,37 @@ class Package extends Base implements \JsonSerializable
      */
     public function getPricesByDateByPrice()
     {
-        $data = $this->getPricesByDate();
-        $dates = array_keys($data);
-        $prices = array_values($data);
-        $result = [];
-        $begin = null;
+        $lastPrice = null;
         $nights = 1;
-        for ($i = 0; $i < count($prices); ++$i) {
-            $price = $prices[$i];
-            $nextPrice = @$prices[$i + 1];
-            $date = $dates[$i];
-            $nextDate = @$dates[$i + 1];
-            if ($nextPrice) {
-                if ($price == $nextPrice) {
-                    if ($begin == null) {
-                        $begin = $date;
-                    }
-                    ++$nights;
-                } else {
-                    $result[$begin == null || $begin == $date ? ($date . ' - ' . $nextDate) : ($begin . ' - ' . $nextDate)] = [
-                        'price' => $price,
-                        'nights' => $nights
-                    ];
-                    $begin = null;
-                    $nights = 1;
-                }
-            } else {
-                if (!$nextDate) {
-                    $nextDate = \DateTime::createFromFormat('d_m_Y', $date)->modify('+1 day')->format('d_m_Y');
-                }
-                $result[$begin . ' - ' . $nextDate] = [
-                    'price' => $price,
-                    'nights' => $nights
+        $count = 0;
+
+        $result = [];
+        $rawResult = [];
+        /** @var PackagePrice $pp */
+        foreach ($this->getPackagePricesWithDiscount() as $pp) {
+            $end = (clone $pp->getDate())->modify('+1 day')->format('d_m_Y');
+            if ($lastPrice !== $pp->getPrice()) {
+                $nights = 1;
+                $count++;
+                $lastPrice = $pp->getPrice();
+                $rawResult[$count] = [
+                    'begin'  => $pp->getDate()->format('d_m_Y'),
+                    'price'  => $lastPrice,
+                    'nights' => $nights,
+                    'end'    => $end,
                 ];
+            } else {
+                $rawResult[$count]['nights'] = $nights;
+                $rawResult[$count]['end'] = $end;
             }
+            $nights++;
+        }
+
+        foreach ($rawResult as $r) {
+            $result[$r['begin'] . ' - ' . $r['end']] = [
+                'price'  => $r['price'],
+                'nights' => $r['nights'],
+            ];
         }
 
         return $result;
@@ -1891,7 +1888,7 @@ class Package extends Base implements \JsonSerializable
             'children' => $this->getChildren(),
             'begin' => $this->getBegin()->format('d.m.Y'),
             'end' => $this->getEnd()->format('d.m.Y'),
-            'services' => $services
+            'services' => $services,
         ];
     }
 }
