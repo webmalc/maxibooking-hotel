@@ -1247,33 +1247,29 @@ class Package extends Base implements \JsonSerializable
     public function getPricesByDateByPrice()
     {
         $lastPrice = null;
-        $nights = 1;
         $count = 0;
 
         $result = [];
         $rawResult = [];
         /** @var PackagePrice $pp */
         foreach ($this->getPackagePricesWithDiscount() as $pp) {
-            $end = (clone $pp->getDate())->modify('+1 day')->format('d_m_Y');
             if ($lastPrice !== $pp->getPrice()) {
-                $nights = 1;
                 $count++;
                 $lastPrice = $pp->getPrice();
                 $rawResult[$count] = [
-                    'begin'  => $pp->getDate()->format('d_m_Y'),
+                    'begin'  => $pp->getDate(),
                     'price'  => $lastPrice,
-                    'nights' => $nights,
-                    'end'    => $end,
+                    'nights' => 1,
                 ];
             } else {
-                $rawResult[$count]['nights'] = $nights;
-                $rawResult[$count]['end'] = $end;
+                $rawResult[$count]['nights']++;
             }
-            $nights++;
         }
 
         foreach ($rawResult as $r) {
-            $result[$r['begin'] . ' - ' . $r['end']] = [
+            $begin = $r['begin'];
+            $end = (clone $r['begin'])->modify('+' . $r['nights'] . 'days');
+            $result[$begin->format('d_m_Y') . ' - ' . $end->format('d_m_Y')] = [
                 'price'  => $r['price'],
                 'nights' => $r['nights'],
             ];
