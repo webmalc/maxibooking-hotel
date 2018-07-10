@@ -1268,10 +1268,11 @@ class Package extends Base implements \JsonSerializable
 
         foreach ($rawResult as $r) {
             $begin = $r['begin'];
-            $end = (clone $r['begin'])->modify('+' . $r['nights'] . 'days');
-            $result[$begin->format('d_m_Y') . ' - ' . $end->format('d_m_Y')] = [
-                'price'  => $r['price'],
+            $end = (clone $r['begin'])->modify('+' . $r['nights'] . ' days');
+            $result[$begin->format('d.m.Y') . ' - ' . $end->format('d.m.Y')] = [
+                'price'  => false,
                 'nights' => $r['nights'],
+                'sum'    => $r['price'] * $r['nights'],
             ];
         }
 
