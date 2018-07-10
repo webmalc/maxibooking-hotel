@@ -7,8 +7,9 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -70,7 +71,6 @@ class MBSiteController extends BaseController
         }
 
         return [
-            'warnings' => $siteManager->getUnfilledDataMessages($config->getHotels()->toArray()),
             'form' => $form->createView(),
             'hotelsSettings' => $siteManager->getHotelsSettingsInfo($config)
         ];
@@ -81,6 +81,7 @@ class MBSiteController extends BaseController
      * @Template()
      * @param Hotel $hotel
      * @return array
+     * @throws \Exception
      */
     public function hotelSettingsAction(Hotel $hotel)
     {
@@ -90,12 +91,15 @@ class MBSiteController extends BaseController
         $roomTypesWarnings = array_map(function (RoomType $roomType) use ($siteManager) {
             return $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($roomType);
         }, $hotel->getRoomTypes()->toArray());
+        $warningsCompiler = $this->get('mbh.warnings_compiler');
 
         return [
             'hotelsSettings' => $siteManager->getHotelsSettingsInfo($config),
             'hotel' => $hotel,
             'hotelWarnings' => $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($hotel),
-            'roomTypesWarnings' => $roomTypesWarnings
+            'roomTypesWarnings' => $roomTypesWarnings,
+            'emptyPriceCaches' => $warningsCompiler->getEmptyPriceCachePeriods(),
+            'emptyRoomCaches' => $warningsCompiler->getEmptyRoomCachePeriods()
         ];
     }
 }

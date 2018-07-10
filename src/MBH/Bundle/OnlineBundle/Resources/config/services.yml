@@ -43,4 +43,4 @@ services:
 
     mbh.site_manager:
         class: MBH\Bundle\OnlineBundle\Services\SiteManager
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.document_fields_manager', '@translator', '@mbh.periods_compiler']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.document_fields_manager', '@translator', '@mbh.warnings_compiler']

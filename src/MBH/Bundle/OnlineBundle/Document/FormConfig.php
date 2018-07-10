@@ -491,6 +491,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setNights($nights)
     {
         $this->nights = $nights;
+
         return $this;
     }
 
@@ -516,9 +517,10 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * @param array|ArrayCollection $hotels
      * @return FormConfig
      */
-    public function setHotels($hotels)
+    public function setHotels(array $hotels)
     {
-        $this->hotels = $hotels;
+        $this->hotels = new ArrayCollection($hotels);
+
         return $this;
     }
     
@@ -537,6 +539,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setRoomTypeChoices($roomTypeChoices)
     {
         $this->roomTypeChoices = $roomTypeChoices;
+
         return $this;
     }
 

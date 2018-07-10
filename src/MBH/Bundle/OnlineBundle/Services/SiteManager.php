@@ -2,17 +2,14 @@
 
 namespace MBH\Bundle\OnlineBundle\Services;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
-use MBH\Bundle\BaseBundle\Service\PeriodsCompiler;
+use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
-use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -40,18 +37,18 @@ class SiteManager
     private $dm;
     private $documentFieldsManager;
     private $translator;
-    private $periodsCompiler;
+    private $warningsCompiler;
 
     public function __construct(
         DocumentManager $dm, 
         DocumentFieldsManager $documentFieldsManager, 
         TranslatorInterface $translator,
-        PeriodsCompiler $periodsCompiler
+        WarningsCompiler $warningsCompiler
     ) {
         $this->dm = $dm;
         $this->documentFieldsManager = $documentFieldsManager;
         $this->translator = $translator;
-        $this->periodsCompiler = $periodsCompiler;
+        $this->warningsCompiler = $warningsCompiler;
     }
 
     /**
@@ -73,6 +70,7 @@ class SiteManager
     /**
      * @param SiteConfig|null $config
      * @return array
+     * @throws \Exception
      */
     public function getHotelsSettingsInfo(SiteConfig $config = null)
     {
@@ -82,6 +80,12 @@ class SiteManager
                 $numberOfWarnings = $this->getNumberOfWarnings($hotel);
                 foreach ($hotel->getRoomTypes() as $roomType) {
                     $numberOfWarnings += $this->getNumberOfWarnings($roomType);
+                    if (isset($this->warningsCompiler->getEmptyRoomCachePeriods()[$hotel->getId()][$roomType->getId()])) {
+                        $numberOfWarnings++;
+                    }
+                    if (isset($this->warningsCompiler->getEmptyPriceCachePeriods()[$hotel->getId()][$roomType->getId()])) {
+                        $numberOfWarnings++;
+                    }
                 }
 
                 $settingsInfo[] = [
@@ -156,9 +160,10 @@ class SiteManager
         $documentClass = ClassUtils::getClass($document);
         $fieldsDataByRouteNames = self::MANDATORY_FIELDS_BY_ROUTE_NAMES[$documentClass];
 
-        $result = ['document' => $document, 'fieldsData' => $this->checkFieldsCorrectness($fieldsDataByRouteNames, $document)];
-
-        return $result;
+        return [
+            'document' => $document,
+            'fieldsData' => $this->checkFieldsCorrectness($fieldsDataByRouteNames, $document)
+        ];
     }
 
     /**
@@ -196,7 +201,7 @@ class SiteManager
 
         $formConfig
             ->setResultsUrl($siteAddress)
-            ->setHotels(new ArrayCollection($config->getHotels()->toArray()))
+            ->setHotels($config->getHotels()->toArray())
             ->setRoomTypeChoices($roomTypes)
             ->setPaymentTypes($paymentTypes);
 
@@ -222,52 +227,5 @@ class SiteManager
     public function compileSiteAddress(string $siteDomain)
     {
         return self::SITE_PROTOCOL . $siteDomain . self::SITE_DOMAIN;
-    }
-
-    /**
-     * @param array $hotels
-     * @return array
-     * @throws \Exception
-     */
-    public function getUnfilledDataMessages(array $hotels)
-    {
-        $compileWarningMessages = function (array $emptyPeriods, $warningMessageId) use ($hotels) {
-            $periodDateFormat = 'd.m.Y';
-            $emptyPeriodStringsByRoomTypes = [];
-            foreach ($emptyPeriods as $emptyPeriod) {
-                /** @var RoomType $roomType */
-                $roomType = $emptyPeriod['roomType'];
-                if (in_array($roomType->getHotel(), $hotels)) {
-                    /** @var \DateTime $begin */
-                    $begin = $emptyPeriod['begin'];
-                    /** @var \DateTime $end */
-                    $end = $emptyPeriod['end'];
-
-                    $periodString = $begin->format($periodDateFormat) . '-' . $end->format($periodDateFormat);
-                    $roomTypeName = $roomType->getName();
-                    isset($emptyPeriodStringsByRoomTypes[$roomTypeName])
-                        ? $emptyPeriodStringsByRoomTypes[$roomTypeName][] = $periodString
-                        : $emptyPeriodStringsByRoomTypes[$roomTypeName] = [$periodString];
-                }
-            }
-
-            $emptyPeriodStrings = [];
-            foreach ($emptyPeriodStringsByRoomTypes as $roomTypeName => $periodStrings) {
-                $emptyPeriodStrings[] = $this->translator->trans($warningMessageId, [
-                    '%roomTypeName%' => $roomTypeName,
-                    '%periods%' => join(', ', $periodStrings)
-                ]);
-            }
-
-            return $emptyPeriodStrings;
-        };
-
-        $periodLengthInDays = 365;
-        $emptyRoomCachePeriods = $this->periodsCompiler->getPeriodsWithEmptyCaches($periodLengthInDays, RoomCache::class, 'totalRooms');
-        $emptyRoomCachePeriodsWarnings = $compileWarningMessages($emptyRoomCachePeriods, 'site_manager.empty_room_caches_warning');
-        $emptyPriceCachePeriods = $this->periodsCompiler->getPeriodsWithEmptyCaches($periodLengthInDays, PriceCache::class, 'price');
-
-        return array_merge($emptyRoomCachePeriodsWarnings,
-            $compileWarningMessages($emptyPriceCachePeriods, 'site_manager.empty_price_caches_warning'));
     }
 }

@@ -503,4 +503,8 @@ services:
 
     mbh.periods_compiler:
         class: MBH\Bundle\BaseBundle\Service\PeriodsCompiler
-        arguments: ['@mbh.data_comparer', '@doctrine.odm.mongodb.document_manager']
+        arguments: ['@mbh.data_comparer']
+
+    mbh.warnings_compiler:
+        class: MBH\Bundle\BaseBundle\Service\WarningsCompiler
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.periods_compiler']
