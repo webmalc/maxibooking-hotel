@@ -173,6 +173,8 @@ class CashController extends Controller
 
         if (!$queryCriteria->end) {
             $queryCriteria->end = new \DateTime('midnight +1 day');
+        } else {
+            $queryCriteria->end->modify('midnight +1 day');
         }
 
         $queryCriteria->filterByRange = empty($request->get('filter')) ? 'paidDate' : $request->get('filter');
