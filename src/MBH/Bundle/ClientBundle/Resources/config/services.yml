@@ -13,6 +13,7 @@ services:
         - [attach, ["@mbh.dashboard.room_cache"]]
         - [attach, ["@mbh.dashboard.price_cache"]]
         - [attach, ["@mbh.dashboard.limits"]]
+        - [attach, ["@mbh.dashboard.program_not_paid_source"]]
       arguments: ['@doctrine_mongodb']
 
     mbh.dashboard.price_cache:
@@ -32,7 +33,16 @@ services:
             - '@mbh.helper'
             - '@mbh.client_manager'
             - '@router'
-            - '@kernel'
+
+    mbh.dashboard.program_not_paid_source:
+        class: MBH\Bundle\ClientBundle\Service\Dashboard\ProgramNotPaidSource
+        arguments:
+            - '@doctrine_mongodb'
+            - '@validator'
+            - '@translator'
+            - '@mbh.helper'
+            - '@mbh.client_manager'
+            - '@router'
 
     mbh_bundle_client.twig.dashboard_extension:
         class: MBH\Bundle\ClientBundle\Twig\DashboardExtension

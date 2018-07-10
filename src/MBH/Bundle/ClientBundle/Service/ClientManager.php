@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
@@ -252,6 +253,27 @@ class ClientManager
     public function isRussianClient()
     {
         return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getNumberOfDaysBeforeDisable()
+    {
+        $clientOrdersResult = $this->billingApi->getClientOrdersSortedByExpiredData($this->client);
+        if ($clientOrdersResult->isSuccessful()) {
+            $clientOrders = $clientOrdersResult->getData();
+            if (!empty($clientOrders)) {
+                /** @var PaymentOrder $lastOrder */
+                $lastOrder = $clientOrders[0];
+                $daysBeforeDisable = (new \DateTime())->diff($lastOrder->getExpiredDateAsDateTime())->days;
+                if ($lastOrder->getStatus() !== 'paid' && $daysBeforeDisable > 0) {
+                    return $daysBeforeDisable;
+                }
+            }
+        }
+
+        return null;
     }
 
     private function getDefaultClientData()

@@ -264,6 +264,20 @@ class BillingApi
     }
 
     /**
+     * @param string $clientLogin
+     * @return Result
+     */
+    public function getClientOrdersSortedByExpiredData(string $clientLogin)
+    {
+        $queryData = [
+            'client__login' => $clientLogin,
+            'ordering' => '-expired_date'
+        ];
+
+        return $this->getEntities(self::ORDERS_ENDPOINT_SETTINGS, $queryData);
+    }
+
+    /**
      * @param $orderId
      * @return PaymentOrder|object
      */
