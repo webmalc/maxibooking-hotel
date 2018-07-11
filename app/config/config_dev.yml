@@ -36,3 +36,12 @@ assetic:
 
 swiftmailer:
     delivery_address: ['faainttt@gmail.com']
+
+vich_uploader:
+    db_driver: mongodb
+    storage:  file_system
+    mappings:
+        upload_image:
+            namer: vich_uploader.namer_uniqid
+            upload_destination: '%kernel.root_dir%/../web/upload/images'
+            uri_prefix:         '/upload/images'
