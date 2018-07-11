@@ -496,3 +496,4 @@ services:
             - '%locale%'
             - '%support%'
             - '%client%'
+            - '@mbh.cm_wizard_manager'
