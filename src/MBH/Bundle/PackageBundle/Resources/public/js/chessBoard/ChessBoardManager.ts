@@ -19,8 +19,8 @@ class ChessBoardManager {
     public actionManager;
     private templateRemoveButton;
     private templateDivideButton;
-    private tableStartDate;
-    private tableEndDate;
+    readonly tableStartDate;
+    readonly tableEndDate;
     private canMoveAccommodation = true;
     private currentSizeConfigNumber = currentStyleConfigNumber;
     private colors = colors;
@@ -56,6 +56,7 @@ class ChessBoardManager {
         this.templateRemoveButton = ChessBoardManager.getTemplateRemoveButton();
         this.tableStartDate = ChessBoardManager.getTableStartDate();
         this.tableEndDate = ChessBoardManager.getTableEndDate();
+        this.updateChessboardDataWithoutActions();
     }
 
     public hangHandlers() {
@@ -79,6 +80,11 @@ class ChessBoardManager {
             if (!$(this).hasClass('selected-date-row')) {
                 $(this).children('div').hide();
             }
+        });
+
+        const $numberOfRoomsSelect = $('#nuber-of-rooms-select');
+        $numberOfRoomsSelect.on("select2:select", () => {
+            window.location.href = Routing.generate('change_number_of_rooms', {numberOfRooms: $numberOfRoomsSelect.val()});
         });
 
         $('.pagination-sm').find('a').each(function () {
@@ -1484,5 +1490,22 @@ class ChessBoardManager {
         editButton.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>';
 
         return editButton;
+    }
+
+    private updateChessboardDataWithoutActions() {
+        let time = 0;
+        $(document).on('click', () => {
+            time = 0;
+        });
+
+        setInterval(() => {
+            time++;
+            if (time > 30) {
+                ActionManager.showLoadingIndicator();
+                this.dataManager.updatePackagesData();
+                ActionManager.hideLoadingIndicator();
+                time = 0;
+            }
+        }, 1000);
     }
 }

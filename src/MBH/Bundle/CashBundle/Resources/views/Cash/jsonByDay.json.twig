@@ -1,21 +1,13 @@
-{
-    "draw" : "{{ draw }}",
-    "recordsTotal": "{{ recordsFiltered }}",
-    "totalIn": "{{ totalIn|number_format(2) }}",
-    "totalOut": "{{ totalOut|number_format(2) }}",
-    "noConfirmedTotalIn": "{{ noConfirmedTotalIn|number_format }}",
-    "noConfirmedTotalOut": "{{ noConfirmedTotalOut|number_format }}",
-    "total": "{{ total|number_format }}",
-    "recordsFiltered": "{{ recordsFiltered }}",
-    "data": [
-        {% for item in data %}
-            [
-                "<div class='text-center'><i class='{{ currency().icon }}'></i></div>",
-                "<div class='text-center'>{% if item.paidDate %} {{ item.paidDate|convertMongoDate|date("d.m.Y") }} {% endif %}</div>",
-                "<div class='text-right'>{% if item.confirmedTotalIn != 0 %} <span class='text-success'> {{ item.confirmedTotalIn|number_format(2) }} </span><br><small>{{ item.countIn }} {{ 'views.cash.index.doc'|trans({}, 'MBHCashBundle') }}</small> {% else %} &mdash; {% endif %} {% if item.noConfirmedTotalIn > 0 %} <br><small class='text-info'>{{ 'views.cash.index.no_confirmed'|trans({}, 'MBHCashBundle') }}: {{ item.noConfirmedTotalIn|number_format(2) }}</small>{% endif %} </div>",
-                "<div class='text-right'>{% if item.confirmedTotalOut != 0 %} <span class='text-danger'> {{ item.confirmedTotalOut|number_format(2) }} </span><br><small>{{ item.countOut }} {{ 'views.cash.index.doc'|trans({}, 'MBHCashBundle') }}</small> {% else %} &mdash; {% endif %} {% if item.noConfirmedTotalOut > 0 %}<br><small class='text-info'>{{ 'views.cash.index.no_confirmed'|trans({}, 'MBHCashBundle') }}: {{ item.noConfirmedTotalOut|number_format(2) }}</small>{% endif %} </div>",
-                "<div class='text-right {% if item.noConfirmedTotalIn + item.confirmedTotalIn - item.confirmedTotalOut - item.noConfirmedTotalOut > 0 %}text-success{% else %}text-danger{% endif %}'>{{ (item.noConfirmedTotalIn + item.confirmedTotalIn - item.confirmedTotalOut - item.noConfirmedTotalOut)|number_format(2) }}</div>"
-            ]{% if loop.index != data|length %},{% endif %}
-        {% endfor %}
-    ]
-}
+{% extends 'MBHCashBundle:Cash:jsonCommon.json.twig' %}
+{% import 'MBHCashBundle:Cash:macrosHtml.html.twig' as html %}
+{% block data %}
+{% for item in data %}
+[
+    "<div class='text-center'><i class='{{ currency().icon }}'></i></div>",
+    "<div class='text-center'>{% if item.paidDate %} {{ item.paidDate|convertMongoDate|date("d.m.Y") }} {% endif %}</div>",
+    "<div class='text-right'>{% if item.confirmedTotalIn != 0 %} <span class='text-success'> {{ item.confirmedTotalIn|number_format(2) }} </span><br><small>{{ item.countIn }} {{ 'views.cash.index.doc'|trans({}, 'MBHCashBundle') }}</small> {% else %} &mdash; {% endif %} {% if item.noConfirmedTotalIn > 0 %} <br><small class='text-info'>{{ 'views.cash.index.no_confirmed'|trans({}, 'MBHCashBundle') }}: {{ item.noConfirmedTotalIn|number_format(2) }}</small>{% endif %} </div>",
+    "<div class='text-right'>{% if item.confirmedTotalOut != 0 %} <span class='text-danger'> {{ item.confirmedTotalOut|number_format(2) }} </span><br><small>{{ item.countOut }} {{ 'views.cash.index.doc'|trans({}, 'MBHCashBundle') }}</small> {% else %} &mdash; {% endif %} {% if item.noConfirmedTotalOut > 0 %}<br><small class='text-info'>{{ 'views.cash.index.no_confirmed'|trans({}, 'MBHCashBundle') }}: {{ item.noConfirmedTotalOut|number_format(2) }}</small>{% endif %} </div>",
+    "<div class='text-right {% if item.noConfirmedTotalIn + item.confirmedTotalIn - item.confirmedTotalOut - item.noConfirmedTotalOut > 0 %}text-success{% else %}text-danger{% endif %}'>{{ (item.noConfirmedTotalIn + item.confirmedTotalIn - item.confirmedTotalOut - item.noConfirmedTotalOut)|number_format(2) }}</div>"
+]{% if loop.index != data|length %},{% endif %}
+{% endfor %}
+{% endblock data %}

@@ -41,7 +41,7 @@ class RoomTypeManager
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $this->useCategories = $this->config && $this->config ->getUseRoomTypeCategory();
+        $this->useCategories = $this->config && $this->config->getUseRoomTypeCategory();
     }
 
     /**
@@ -78,15 +78,13 @@ class RoomTypeManager
         $roomType
             ->setHotel($hotel)
             ->setFullTitle($billingRoom->getName())
-            //TODO: Узнать про кол-во мест
             ->setPlaces(2)
-            ->setAdditionalPlaces(0)
-        ;
+            ->setAdditionalPlaces(0);
 
         $this->dm->persist($roomType);
 
         if ($withRooms) {
-            for ($i = 1; $i <= $billingRoom->getRooms(); $i ++) {
+            for ($i = 1; $i <= $billingRoom->getRooms(); $i++) {
                 $room = (new Room())
                     ->setRoomType($roomType)
                     ->setHotel($hotel)
@@ -109,26 +107,22 @@ class RoomTypeManager
     }
 
     /**
-     * @param array $hotels
+     * Get room types sorted by keys ['hotel', 'rooms']
+     *
      * @return array
      */
-    public function getSortedByHotels(array $hotels)
+    public function getSortedByHotels()
     {
-        $roomTypes = [];
+        $roomTypes = $this->getRooms();
+        $result = [];
 
-        /** @var Hotel $hotel */
-        foreach ($hotels as $hotel) {
-
-            if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
-                continue;
-            }
-
-            /** @var RoomType $roomType */
-            foreach ($this->getRooms($hotel) as $roomType) {
-                $roomTypes[$hotel->getName()][] = $roomType;
-            }
+        /** @var RoomTypeInterface $roomType */
+        foreach ($roomTypes as $roomType) {
+            isset($result[$roomType->getHotel()->getId()])
+                ? $result[$roomType->getHotel()->getId()]['rooms'][] = $roomType
+                : $result[$roomType->getHotel()->getId()] = ['hotel' => $roomType->getHotel(), 'rooms' => [$roomType]];
         }
 
-        return $roomTypes;
+        return $result;
     }
 }

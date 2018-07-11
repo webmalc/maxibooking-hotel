@@ -17,6 +17,7 @@
 {% set stylesFile = 'bundles/mbhpackage/css/chessboard/chessboard_' ~ stylesFileNumber ~ '.css' %}
 {% set subtrahend = (tableCellHeight / 5)|round %}
 {% set minuend = tableCellHeight - subtrahend %}
+{% set numberOfRoomsOptions = [0, 20,30, 50] %}
 
 {% block scripts %}
     {{ parent() }}
@@ -236,7 +237,7 @@
     <input type="hidden" name="end" id="accommodation-report-end" class="hidden"
            value="{{ endDate|date('d.m.Y') }}">
 
-    <form method="post" id="accommodation-report-filter" class="form-inline filter-form" role="form">
+    <form method="get" id="accommodation-report-filter" class="form-inline filter-form" role="form">
         <div class="input">
             <i class="fa fa-calendar" title='{{ 'chessboard_manager.dates.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
             <input type="text" name="filter_begin" id="accommodation-report-filter-begin"
@@ -315,7 +316,16 @@
         <div id="header-title" class="tile tile-not-selected tile-free both not-standard-tile"
              style="width:{{ headerWidth }}px;">
             <div class="title" style="height: {{ headerHeight }}px; background-color: white;">
-                <div class="tableTitleCell">&nbsp;</div>
+                <div class="tableTitleCell">
+                    {% set selectedNumberOfRooms = client_config().getFrontSettings().getRoomsInChessboard(app.user.username) %}
+                    <select id="nuber-of-rooms-select" style="width: 100%;">
+                        {% for numberOfRooms in numberOfRoomsOptions %}
+                            <option value="{{ numberOfRooms }}" {{ numberOfRooms == selectedNumberOfRooms ? 'selected' }}>
+                                {{ numberOfRooms == 0 ? 'chessboard.index.number_of_rooms_select.all_rooms'|trans : ' ' ~ 'chessboard.index.number_of_rooms_select.rooms'|trans({'%numberOfRooms%': numberOfRooms}) }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div class="tableTitleCell">
                 </div>
             </div>

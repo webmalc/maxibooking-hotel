@@ -118,7 +118,10 @@ class OrderSubscriber implements EventSubscriber
         }
     }
 
-
+    /**
+     * @param OnFlushEventArgs $args
+     * @throws \Throwable
+     */
     public function onFlush(OnFlushEventArgs $args)
     {
         $this->notifier = $this->container->get('mbh.notifier.mailer');
@@ -172,9 +175,24 @@ class OrderSubscriber implements EventSubscriber
                                 ->notify()
                             ;
 
-                            //TODO: Must be logged
                         } catch (\Exception $e) {
-                            return false;
+                            $logger = $this->container->get('logger');
+                            $logger->err($e->getTraceAsString());
+                            try {
+                                $notifier = $this->container->get('exception_notifier');
+                                $message = $notifier::createMessage();
+                                $messageText = "Произошла ошибка у \"".$this->kernel->getClient()
+                                    .". \"\n Сообщение \"".$e->getMessage()
+                                    ."\".\n Стек:".$e->getTraceAsString();
+                                $message
+                                    ->setType('danger')
+                                    ->setText($messageText);
+                                $notifier
+                                    ->setMessage($message)
+                                    ->notify();
+                            } catch (\Exception $exception) {
+                                $logger->err($exception->getTraceAsString());
+                            }
                         }
                     }
                 }

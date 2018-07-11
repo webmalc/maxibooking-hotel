@@ -733,7 +733,9 @@ csv.form.dateEnd: По
 csv.form.guests: Плательщик
 csv.form.adults: Взрослые
 csv.form.children: Дети
-csv.form.price: Стоимость
+csv.form.package_price: 'Стоимость проживания'
+csv.form.package_services_price: 'Стоимость услуг'
+csv.form.price: 'Общая сумма'
 csv.form.createdAt: 'Дата создания'
 csv.form.createdBy: Создал
 csv.form.note: Комментарий
@@ -811,6 +813,8 @@ chessboard_manager.room_type.title: 'Тип номера'
 chessboard_manager.housing.title: Корпус
 chessboard_manager.floor.title: Этаж
 chessboard_manager.filter.button.text: Применить
+chessboard.index.number_of_rooms_select.all_rooms: 'Все номера'
+chessboard.index.number_of_rooms_select.rooms: '%numberOfRooms% номеров'
 chessboard_manager.without_accommodation.tile.text: 'Без размещения'
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
 accommodation_manipulator.error.edited_room_busy: 'Невозможно изменить размещение, так как в указанные дни комната "%roomName%" занята.'

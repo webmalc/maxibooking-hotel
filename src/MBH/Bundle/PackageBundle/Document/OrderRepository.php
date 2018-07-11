@@ -8,22 +8,17 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 class OrderRepository extends DocumentRepository
 {
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
+     * @param array $orderIds
      * @param bool $isGrouped
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetchWithPolls(\DateTime $begin = null, \DateTime $end = null, $isGrouped = false)
+    public function fetchWithPolls(array $orderIds, $isGrouped = false)
     {
-        $qb = $this->createQueryBuilder('s')
+        $qb = $this->createQueryBuilder()
+            ->field('id')->in(array_values($orderIds))
             ->field('pollQuestions')->exists(true)
             ->field('pollQuestions')->notEqual(null);
-        if ($begin) {
-            $qb->field('createdAt')->gte($begin);
-        }
-        if ($end) {
-            $qb->field('createdAt')->lte($end);
-        }
 
         if ($isGrouped) {
             $result = [

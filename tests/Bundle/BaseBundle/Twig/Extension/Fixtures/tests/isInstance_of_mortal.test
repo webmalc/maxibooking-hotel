@@ -1,0 +1,13 @@
+--TEST--
+"instanceofMortal" test
+--TEMPLATE--
+{{ no_mortal is instanceofMortal ? 'ko' : 'ok' }}
+{{ mortal is instanceofMortal ? 'ok' : 'ko' }}
+--DATA--
+return array(
+    'no_mortal' => array(),
+    'mortal' => new MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal(),
+);
+--EXPECT--
+ok
+ok

@@ -85,6 +85,13 @@ var docReadyTables = function () {
         ],
         order: [[1, "desc"]]
     });
+
+    //prevent relocation to another page
+    setTimeout(function () {
+        $('table.table-striped').find('input, button, a').on('dblclick', function (e) {
+            return false;
+        });
+    }, 200)
 };
 
 $(document).ready(function () {

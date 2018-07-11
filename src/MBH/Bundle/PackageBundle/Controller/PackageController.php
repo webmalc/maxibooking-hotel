@@ -51,6 +51,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Template()
+     * @throws \Exception
      */
     public function indexAction()
     {
@@ -246,6 +247,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Template()
      * @param Request $request
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function jsonAction(Request $request)
     {
@@ -435,6 +437,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_NEW')")
      * @Template()
+     * @param Request $request
+     * @return array|JsonResponse|RedirectResponse
      */
     public function newAction(Request $request)
     {

@@ -2,12 +2,11 @@
 
 namespace Tests\Bundle\PriceBundle\Controller;
 
-use MBH\Bundle\BaseBundle\Lib\Test\Traits\CrudWebTestCaseTrait;
-use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase;
 
-class SpecialControllerTest extends WebTestCase
+
+class SpecialControllerTest extends CrudWebTestCase
 {
-    use CrudWebTestCaseTrait;
 
     public static function setUpBeforeClass()
     {
