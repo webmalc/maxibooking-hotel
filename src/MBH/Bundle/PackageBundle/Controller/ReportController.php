@@ -4,12 +4,14 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
+use function GuzzleHttp\Promise\queue;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
@@ -395,19 +397,33 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Method({"GET"})
      * @Security("is_granted('ROLE_POLLS_REPORT')")
      * @Template()
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function pollsAction(Request $request)
     {
         $helper = $this->get('mbh.helper');
-        $request->get('begin') ? $begin = $helper->getDateFromString($request->get('begin')) : $begin = null;
-        $request->get('end') ? $end = $helper->getDateFromString($request->get('end')) : $end = null;
+        $begin = $request->get('begin') ? $helper->getDateFromString($request->get('begin')) : new \DateTime('midnight - 45 days');
+        $end = $request->get('end') ? $helper->getDateFromString($request->get('end')) : new \DateTime('midnight + 1 days');
+
+        $packageCriteria = new PackageQueryCriteria();
+        $packageCriteria->liveBegin = $begin;
+        $packageCriteria->liveEnd = $end;
+        $packageCriteria->filter = 'live_between';
+        $orderIds = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->queryCriteriaToBuilder($packageCriteria)
+            ->distinct('order.id')
+            ->getQuery()
+            ->toArray();
 
         $orders = $this->dm
             ->getRepository('MBHPackageBundle:Order')
-            ->fetchWithPolls($begin, $end, true);
+            ->fetchWithPolls($orderIds, true);
 
         return [
-            'orders' => $orders
+            'orders' => $orders,
+            'begin' => $begin,
+            'end' => $end
         ];
     }
 
@@ -444,22 +460,26 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         /** @var RoomType[] $roomTypes */
         $roomTypes = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
         $housings = $this->dm->getRepository('MBHHotelBundle:Housing')->findAll();
-        $floors = $this->dm->getRepository('MBHHotelBundle:Room')->createQueryBuilder()->select('floor')->distinct('floor')->getQuery()->execute();
+        $floors = $this->dm->getRepository('MBHHotelBundle:Room')
+            ->createQueryBuilder()
+            ->select('floor')
+            ->distinct('floor')
+            ->getQuery()
+            ->execute();
 
+        $criteria = new RoomTypeReportCriteria($this->hotel);
 
-        $criteria = new RoomTypeReportCriteria();
-        $criteria->hotel = $this->hotel->getId();
         $roomTypeReport = new RoomTypeReport($this->container);
         $result = $roomTypeReport->findByCriteria($criteria);
 
         return [
-            'roomTypes' => $roomTypes,
-            'housings' => $housings,
-            'floors' => $floors,
-            'result' => $result,
-            'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'statuses' => Package::getRoomStatuses(),
-            'roomStatuses' => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
+            'roomTypes'       => $roomTypes,
+            'housings'        => $housings,
+            'floors'          => $floors,
+            'result'          => $result,
+            'facilities'      => $this->get('mbh.facility_repository')->getAll(),
+            'statuses'        => Package::getRoomStatuses(),
+            'roomStatuses'    => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
@@ -474,21 +494,16 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function roomTypesTableAction(Request $request)
     {
-        $criteria = new RoomTypeReportCriteria();
-        $criteria->hotel = $this->hotel->getId();
-        $criteria->roomType = $request->get('roomType');
-        $criteria->housing = $request->get('housing');
-        $criteria->floor = $request->get('floor');
-        $criteria->status = $request->get('status');
+        $criteria = new RoomTypeReportCriteria($this->hotel, $request);
 
         $roomTypeReport = new RoomTypeReport($this->container);
         $result = $roomTypeReport->findByCriteria($criteria);
 
         return [
-            'result' => $result,
-            'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'roomStatuses' => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
-            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
+            'result'          => $result,
+            'facilities'      => $this->get('mbh.facility_repository')->getAll(),
+            'roomStatuses'    => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
 

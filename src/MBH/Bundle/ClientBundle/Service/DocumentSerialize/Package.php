@@ -78,6 +78,25 @@ class Package extends Common
             : '';
     }
 
+    /**
+     * @return string
+     */
+    public function getAmountOfDiscount(): string
+    {
+        if ($this->entity->getDiscount() !== null) {
+            if ($this->entity->getIsPercentDiscount()) {
+                $msg = $this->entity->getDiscount(true) . '%';
+            } else {
+                $currency = $this->container->get('mbh.currency')->info();
+                $translate = $this->container->get('translator')->trans($currency['text']);
+                $msg = Helper::numFormat($this->entity->getDiscount()) . ' ' . $translate;
+            }
+
+            return $msg;
+        }
+
+        return '';
+    }
 
     /**
      * @return array

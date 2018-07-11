@@ -37,6 +37,7 @@ class CsvGenerate
         'tariff' => ['title' => 'csv.type.tariff', 'method' => 'getTariff'],
         'createdAt' => ['title' => 'csv.type.createdAt', 'method' => 'getCreatedAt'],
         'createdBy' => ['title' => 'csv.type.createdBy', 'method' => 'getCreatedBy'],
+        'note' => ['title' => 'csv.form.note', 'method' => 'getNote']
     ];
 
     const DELIMITER = ";";

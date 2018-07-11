@@ -270,7 +270,7 @@ class MyAllocator extends Base
             );
 
             foreach ($roomTypes as $roomTypeId => $roomType) {
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
                         $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
                         $allocations[] = [
@@ -337,7 +337,7 @@ class MyAllocator extends Base
 
                 $roomTypeId = $this->getRoomTypeArray($roomType['doc'])[0];
 
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                             $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
@@ -404,7 +404,7 @@ class MyAllocator extends Base
                 true
             );
             foreach ($roomTypes as $roomTypeId => $roomType) {
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
 
                         if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
@@ -716,11 +716,9 @@ class MyAllocator extends Base
             }
 
             //prices
-            $pricesByDate = [];
             foreach ($room['DayRates'] as $day) {
 
                 $date = $helper->getDateFromString($day['Date'], 'Y-m-d');
-                $pricesByDate[$date->format('d_m_Y')] = $this->currencyConvertToRub($config, (float)$day['Rate']);
                 $packagePrices[] = new PackagePrice(
                     $date, $this->currencyConvertToRub($config, (float)$day['Rate']), $tariffs['base']['doc']
                 );
@@ -763,7 +761,6 @@ class MyAllocator extends Base
                 ->setAdults(isset($room['Occupancy']) ? (int)$room['Occupancy']: 1)
                 ->setChildren(0)
                 ->setIsSmoking(!empty($room['OccupantSmoker']) ? true : false)
-                ->setPricesByDate($pricesByDate)
                 ->setPrices($packagePrices)
                 ->setPrice($packageTotal)
                 ->setOriginalPrice($packageTotal)

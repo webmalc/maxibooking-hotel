@@ -2,12 +2,11 @@
 
 namespace Tests\Bundle\HotelBundle\Controller;
 
-use MBH\Bundle\BaseBundle\Lib\Test\Traits\CrudWebTestCaseTrait;
-use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase;
 
-class HotelControllerTest extends WebTestCase
+
+class HotelControllerTest extends CrudWebTestCase
 {
-    use CrudWebTestCaseTrait;
 
     public static function setUpBeforeClass()
     {

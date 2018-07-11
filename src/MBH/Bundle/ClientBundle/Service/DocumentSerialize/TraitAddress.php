@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait TraitAddress
 {
-    public function __construct(ContainerInterface $container, BillingApi $billingApi)
+    public function __construct(ContainerInterface $container = null, BillingApi $billingApi = null)
     {
         parent::__construct($container);
         $this->billing = $billingApi;

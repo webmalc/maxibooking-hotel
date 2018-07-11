@@ -54,5 +54,7 @@ tinymce.addI18n('ru', {
   'Source Data'            : 'Источник данных',
   'Table for Cash Document': 'Таблица для документов оплаты',
   'Table for Tourist'      : 'Таблица для гостей',
-  'Amount'                 : 'Кол-во'
+  'Amount'                 : 'Кол-во',
+  'Amount Of Discount'     : 'Размер скидки',
+  'Package'                : 'Бронь'
 });

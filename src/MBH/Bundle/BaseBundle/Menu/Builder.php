@@ -2,17 +2,30 @@
 
 namespace MBH\Bundle\BaseBundle\Menu;
 
+use Documents\User;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
+use MBH\Bundle\BaseBundle\Lib\Menu\BadgesHolder;
+use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class Builder
 {
+    const ROOT_MENU_ITEM_CREATE_HOTEL_MENU = 'create-hotel-menu';
+
+    const ROOT_MENU_ITEM_MANAGEMENT_MENU = 'management-menu';
+
+    const ROOT_MENU_ITEM_MAIN_MENU = 'main-menu';
+
     /**
      * @var \MBH\Bundle\ClientBundle\Document\ClientConfig
      */
     protected $config;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * @var FactoryInterface
@@ -20,24 +33,46 @@ class Builder
     private $factory;
 
     /**
-     * @var ContainerInterface
+     * @var string|null
      */
-    protected $container;
+    private $titleUrl = null;
+
+    /**
+     * @var bool
+     */
+    private $isCurrent = false;
+
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\Routing\Router
+     */
+    private $currentRoute;
+
+    /**
+     * @var \Symfony\Component\Security\Core\Authorization\AuthorizationChecker
+     */
+    private $security;
+
+    /**
+     * @var string
+     */
+    private $behavior;
+
+    /**
+     * @var int
+     */
+    protected $counter = 0;
 
     public function __construct(FactoryInterface $factory, ContainerInterface $container)
     {
         $this->factory = $factory;
         $this->container = $container;
-    }
 
-    protected function setConfig()
-    {
-        if (!$this->config) {
-            $this->config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        }
+        $this->currentRoute = $this->container->get('router');
+        $this->currentRoute->getContext()->setMethod('GET');
+        $this->security = $this->container->get('security.authorization_checker');
+        
+        $this->setConfig();
     }
-
-    protected $counter = 0;
 
     /**
      * Main menu
@@ -47,10 +82,33 @@ class Builder
      */
     public function mainMenu(array $options)
     {
-        $this->setConfig();
+        $this->parseOptions($options);
 
-        /** @var UserInterface $user */
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
+
+        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->countByType('arrivals', true, $hotel);
+        $out = $dm->getRepository('MBHPackageBundle:Package')->countByType('out', true, $hotel);
+
+        $badges = new BadgesHolder();
+        if ($arrivals) {
+            $badges->addBadge(
+                'arrivals',
+                'bg-red',
+                $this->container->get('translator')->trans('menu.help.noarrival'),
+                $arrivals
+            );
+        }
+        if ($out) {
+            $badges->addBadge(
+                'out',
+                'bg-green',
+                $this->container->get('translator')->trans('menu.help.nodepart'),
+                $out
+            );
+        }
+
 
         $packages = [
             'package' => [
@@ -84,7 +142,8 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItemWithCollapse('main-menu', 'menu.header.navigation', true);
+
+        $menu = $this->createRootItem(self::ROOT_MENU_ITEM_MAIN_MENU, 'menu.header.navigation', true, $badges, true);
 
         // chessboard
         $menu->addChild($this->createItem($this->getChessboardData()));
@@ -110,26 +169,17 @@ class Builder
         // financial analytics
         $menu->addChild($this->itemsFinancialAnalytics());
 
-        return $this->filter($menu, $options);
+        return $this->filter($menu);
     }
 
     /**
      * User menu
      * @param \Knp\Menu\FactoryInterface $factory
-     * @param array $options
      * @return \Knp\Menu\MenuItem
      */
     public function managementMenu(array $options)
     {
-        $onlineForm = [
-            'online_form' => [
-                'options'    => [
-                    'route' => 'online_form',
-                    'label' => 'menu.communication.label.onlineform',
-                ],
-                'attributes' => ['icon' => 'fa fa-globe'],
-            ],
-        ];
+        $this->parseOptions($options);
 
         $parameters = [
             'config' => [
@@ -151,7 +201,7 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItemWithCollapse('management-menu', 'menu.settings.label.header');
+        $menu = $this->createRootItemWithCollapse(self::ROOT_MENU_ITEM_MANAGEMENT_MENU, 'menu.settings.label.header');
 
         // Hotel links
         $menu->addChild($this->itemsHotelLinks());
@@ -164,9 +214,6 @@ class Builder
 
         // web site
         $menu->addChild($this->itemsWebSite());
-
-        // online form
-        $menu->addChild($this->createItem($onlineForm));
 
         // analytics
         $menu->addChild($this->itemsAnalytics());
@@ -183,11 +230,10 @@ class Builder
         // profile
         $menu->addChild($this->createItem($profile));
 
-
 //        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'menu.communication.label.invite'])
 //            ->setAttributes(['icon' => 'fa fa-star']);
 
-        return $this->filter($menu, $options);
+        return $this->filter($menu);
     }
 
     /**
@@ -198,45 +244,41 @@ class Builder
      */
     public function createHotelMenu(array $options)
     {
+        $this->parseOptions($options);
 
-        $menu = $this->createRootItem('create-hotel-menu','menu.header.navigation');
+        $menu = $this->createRootItem(self::ROOT_MENU_ITEM_CREATE_HOTEL_MENU,'menu.header.navigation');
 
         $menu->addChild('create_hotel', ['route' => 'hotel_new', 'label' => 'menu.hotel_new.label'])
             ->setAttribute('icon', 'fa fa-plus');
 
-        return $this->filter($menu, $options);
+        return $this->filter($menu);
     }
 
     /**
      * @param ItemInterface $menu
      * @param FactoryInterface $factory
-     * @param array $options
      * @return ItemInterface
      */
-    public function filter(ItemInterface $menu, array $options)
+    public function filter(ItemInterface $menu)
     {
         $this->counter = 0;
-        $menu = $this->filterMenu($menu, $options);
+        $menu = $this->filterMenu($menu);
+        if ($this->behavior === 'default') {
+            $menu = $this->checkAndOpenRootMenu($menu);
+        }
 
         return empty($this->counter) ? $this->factory->createItem('root') : $menu;
     }
 
     /**
      * @param ItemInterface $menu
-     * @param array $options
      * @return ItemInterface
      */
-    public function filterMenu(ItemInterface $menu, array $options)
+    public function filterMenu(ItemInterface $menu)
     {
-        $router = $this->container->get('router');
-        $router->getContext()->setMethod('GET');
-        $security = $this->container->get('security.authorization_checker');
-        $this->setConfig();
-
-        !empty($options['title_url']) ? $title_url = $options['title_url'] : $title_url = null;
-
-        if ($menu->getUri() == $title_url) {
+        if ($menu->getUri() == $this->getTitleUrl()) {
             $menu->setCurrent(true);
+            $this->isCurrent = true;
         }
 
         foreach ($menu->getChildren() as $child) {
@@ -245,14 +287,14 @@ class Builder
             }
             $metadata = false;
 
-            if ($child->getUri() == $title_url) {
+            if ($child->getUri() == $this->getTitleUrl()) {
                 $menu->setCurrent(true);
             }
 
             try {
                 $url = str_replace('app_dev.php/', '', parse_url($child->getUri()))['path'];
 
-                $controllerInfo = explode('::', $router->match($url)['_controller']);
+                $controllerInfo = explode('::', $this->currentRoute->match($url)['_controller']);
 
                 $rMethod = new \ReflectionMethod($controllerInfo[0], $controllerInfo[1]);
 
@@ -261,23 +303,86 @@ class Builder
                 $menu->removeChild($child);
                 continue;
             }
-
-            preg_match('/\@Security\(\"is_granted\(\'(.*)\'\)\"\)/ixu', $metadata, $roles);
+            $reg = '/\@Security\(\"is_granted\(\'(ROLE\_ . +?)\'\)(?:\s((?:or|\|\|)|(?:and|\&\&))\sis_granted\(\'(ROLE\_ . +?)\'\))?\"\)/ixu';
+            preg_match($reg, $metadata, $roles);
 
             if (empty($metadata) || empty($roles[1])) {
                 continue;
             }
 
-            if (!$security->isGranted($roles[1])) {
+            $isAccessed = $this->security->isGranted($roles[1]);
+
+            if (!empty($roles[2])) {
+                $or = ['or','||'];
+                $and = ['and', '&&'];
+                if ((in_array($roles[2],$and) && $isAccessed) || (!$isAccessed && in_array($roles, $or))) {
+                    $isAccessed = $this->security->isGranted($roles[3]);
+                }
+            }
+
+            if (!$isAccessed) {
                 $menu->removeChild($child);
             } elseif (empty($child->getAttribute('dropdown'))) {
                 $this->counter += 1;
             }
 
-            $this->filterMenu($child, $options);
+            $this->filterMenu($child);
         }
 
         return $menu;
+    }
+
+    protected function setConfig()
+    {
+        if (!$this->config) {
+            $this->config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        }
+
+        $this->behavior = $this->container->getParameter('mbh.menu.behaviors.now');
+    }
+
+    /**
+     * @param ItemInterface $menu
+     * @return ItemInterface
+     */
+    private function checkAndOpenRootMenu(ItemInterface $menu): ItemInterface
+    {
+        if ($this->getTitleUrl() !== null && $this->isCurrent) {
+            $attr = $menu->getChildrenAttributes();
+            if (isset($attr['class']) && strpos($attr['class'], 'collapse') !== false) {
+                $attr['class'] .= ' in';
+                $menu->setChildrenAttributes($attr);
+            }
+            $this->isCurrent = false;
+        }
+
+        return $menu;
+    }
+
+    /**
+     * @param array $options
+     */
+    private function parseOptions(array $options): void
+    {
+        if (!empty($options['title_url'])) {
+            $this->setTitleUrl($options['title_url']);
+        }
+    }
+
+    /**
+     * @param $url
+     */
+    private function setTitleUrl($url): void
+    {
+        $this->titleUrl = $url;
+    }
+
+    /**
+     * @return null|string
+     */
+    private function getTitleUrl(): ?string
+    {
+        return $this->titleUrl;
     }
 
     /**
@@ -286,9 +391,9 @@ class Builder
      * @param bool $isOpen
      * @return ItemInterface
      */
-    private function createRootItemWithCollapse(string $id, string $label, bool $isOpen = false): ItemInterface
+    private function createRootItemWithCollapse(string $id, string $label, bool $isOpen = false, BadgesHolder $badges = null): ItemInterface
     {
-        return $this->createRootItem($id, $label, true, $isOpen);
+        return $this->createRootItem($id, $label, true, $badges, $isOpen);
     }
 
     /**
@@ -298,28 +403,68 @@ class Builder
      * @param bool $isOpen
      * @return ItemInterface
      */
-    private function createRootItem(string $id, string $label, bool $collapse = false, bool $isOpen = false): ItemInterface
+    private function createRootItem(
+        string $id,
+        string $label,
+        bool $collapse = false,
+        BadgesHolder $badges = null,
+        bool $isOpen = false
+    ): ItemInterface
     {
         $menu = $this->factory->createItem('root');
 
         $cssClass = [];
         $cssClass[] = 'sidebar-menu';
+
         if ($collapse) {
             $cssClass[] = 'collapse';
-            if ($isOpen) {
-                $cssClass[] = 'in';
-            }
+            $this->behaviorHandler($cssClass,$id,$isOpen);
         }
 
-        $menu->setChildrenAttributes(
-            [
-                'class' => implode(' ', $cssClass),
-                'id'    => $id,
-            ]
-        );
+        $attr = [
+            'class'           => implode(' ', $cssClass),
+            'id'              => $id,
+            'enabledCollapse' => $collapse,
+        ];
+
+        if ($badges !== null) {
+            $attr = array_merge($attr, $badges->addInAttributes());
+        }
+
+        $menu->setChildrenAttributes($attr);
         $menu->setLabel($label);
 
         return $menu;
+    }
+
+    /**
+     * Поведение меню:
+     * - alwaysOpen не в зависимости от выбранного пункта все главные меню открыты
+     * - custom запоминается последнее открытое меню (на фронтэнде) и в следующий раз открывается именно оно
+     * - default открыто то меню пункт которого выбран
+     *
+     * @param array $cssClass
+     * @param string $id
+     * @param bool $isOpen
+     */
+    private function behaviorHandler(array &$cssClass, string $id, bool $isOpen): void
+    {
+        switch ($this->behavior){
+            case 'alwaysOpen':
+                $cssClass[] = 'in';
+                break;
+            case 'custom':
+                /*
+                 * Можно перенести всю логику сюда с клиентской стороны,
+                 * нужно добавить ajax`ом запись (допустим в клиет конфиг) о открытом меню
+                 * и здесь уже "вершить дела"
+                 */
+                break;
+            default:
+                if (($this->getTitleUrl() === null && $isOpen)) {
+                    $cssClass[] = 'in';
+                }
+        }
     }
 
     /**
@@ -351,6 +496,10 @@ class Builder
         $item = $this->factory->createItem($child, $params['options']);
         $item->setAttributes($params['attributes']);
 
+        if (!empty($params['attributes']['badges'])) {
+            $item->setLinkAttribute('class', 'content-badge');
+        }
+
         return $item;
     }
 
@@ -364,26 +513,13 @@ class Builder
     {
         $items = [];
         foreach ($data as $item) {
-            $items[] = $this->createItem($item);
+            if ($item === []) {
+                continue;
+            }
+            $items[array_keys($item)[0]] = $this->createItem($item);
         }
 
         return $items;
-    }
-
-    /**
-     * @param string $attrHeader
-     * @return ItemInterface
-     */
-    private function getHeaderItem(string $attrHeader): ItemInterface
-    {
-        $headers = [
-            'header' => [
-                'options'    => [],
-                'attributes' => ['header' => $attrHeader],
-            ],
-        ];
-
-        return $this->createItem($headers);
     }
 
     /**
@@ -540,7 +676,6 @@ class Builder
                 ],
                 'attributes' => [
                     'dropdown' => true,
-                    //                    'icon'     => 'fa fa-diamond',
                     'icon'     => 'fa fa fa-arrows-h',
                 ],
             ],
@@ -556,9 +691,14 @@ class Builder
             ],
         ];
 
-        $children = [];
+        $booking = [];
+        $myAllLocator = [];
+        $ostrovok = [];
+        $vashotel = [];
+        $expedia = [];
+        $hotelInn = [];
 
-        if ($this->container->getParameter('mbh.environment') == 'prod') {
+        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
             $booking = [
                 'booking' => [
                     'options'    => [
@@ -573,7 +713,7 @@ class Builder
                 'myallocator' => [
                     'options'    => [
                         'route' => 'channels',
-                        'label' => 'enu.communication.label.advanced',
+                        'label' => 'menu.communication.label.advanced',
                     ],
                     'attributes' => ['icon' => 'fa fa-cloud-download'],
                 ],
@@ -619,18 +759,18 @@ class Builder
                 ],
             ];
 
-            $children[] = $booking;
-            $children[] = $myAllLocator;
-            $children[] = $ostrovok;
-            $children[] = $vashotel;
-            $children[] = $expedia;
         }
-
-        $children[] = $hundredOneHotel;
 
         $parent = $this->createItem($channelManager);
 
-        return $parent->setChildren($this->getItemsInArray($children));
+        return $parent->setChildren($this->getItemsInArray([
+            $booking,
+            $expedia,
+            $myAllLocator,
+            $ostrovok,
+            $hundredOneHotel,
+            $vashotel,
+        ]));
 
     }
 
@@ -712,6 +852,26 @@ class Builder
             ],
         ];
 
+        $onlineForm = [
+            'online_form' => [
+                'options'    => [
+                    'route' => 'online_form',
+                    'label' => 'menu.communication.label.onlineform',
+                ],
+                'attributes' => ['icon' => 'fa fa-globe'],
+            ],
+        ];
+
+        $paymentForm = [
+            'payment_form' => [
+                'options'    => [
+                    'route' => 'online_payment_form',
+                    'label' => 'menu.communication.label.online_payment_form',
+                ],
+                'attributes' => ['icon' => 'fa fa-money'],
+            ],
+        ];
+
         $onlinePolls = [
             'online_polls' => [
                 'options'    => [
@@ -737,8 +897,10 @@ class Builder
         return $parent->setChildren(
             $this->getItemsInArray([
 //                $siteSettings,
-$onlinePolls,
-$paymentSystem,
+                $onlinePolls,
+                $paymentSystem,
+                $onlineForm,
+                $paymentForm,
             ])
         );
     }
@@ -996,6 +1158,17 @@ $paymentSystem,
             ],
         ];
 
+        $salesChannelsReport = [
+            'sales_channels_report' => [
+                'options'    => [
+                    'route' => 'sales_channels_report',
+                    'label' => 'sales_channels_report.title',
+                ],
+                'attributes' => ['icon' => 'fa fa-compass'],
+            ],
+        ];
+
+
         $parent = $this->createItem($finAn);
 
         return $parent->setChildren(
@@ -1005,6 +1178,7 @@ $paymentSystem,
                 $packagesDailyReport,
                 $manager,
                 $analytic,
+                $salesChannelsReport,
             ])
         );
     }
@@ -1083,6 +1257,16 @@ $paymentSystem,
             ],
         ];
 
+        $reservationReport = [
+            'reservation_report' => [
+                'options'    => [
+                    'route' => 'reservation_report',
+                    'label' => 'reservation_report.title',
+                ],
+                'attributes' => ['icon' => 'fa fa-paper-plane-o'],
+            ],
+        ];
+
         $parent = $this->createItem($reports);
 
         return $parent->setChildren(
@@ -1090,6 +1274,7 @@ $paymentSystem,
                 $serviceList,
                 $reportPolls,
                 $reportDistribution,
+                $reservationReport,
             ])
         );
     }
@@ -1099,29 +1284,6 @@ $paymentSystem,
      */
     private function itemsHotelServices(): ItemInterface
     {
-        //Tasks links
-//        $queryCriteria = new TaskQueryCriteria();
-//        $queryCriteria->userGroups = $user->getGroups();
-//        $queryCriteria->performer = $user;
-//        $queryCriteria->onlyOwned = true;
-//        $queryCriteria->status = 'open';
-//        $queryCriteria->hotel = $hotel;
-//
-//        $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
-//
-//        $taskAttributes = ['icon' => 'fa fa-tasks'];
-//
-//        if ($openTaskCount > 0) {
-//            $taskAttributes += [
-//                'badge' => true,
-//                'badge_class' => 'bg-red',
-//                'badge_id' => 'task-counter',
-//                'badge_value' => $openTaskCount
-//            ];
-//        }
-
-//        $menu->addChild('task', ['route' => 'task', 'label' => 'menu.label.task'])->setAttributes($taskAttributes);
-
         $serviceHotel = [
             'hotel_services' => [
                 'options'    => [
@@ -1155,25 +1317,60 @@ $paymentSystem,
             ],
         ];
 
+        $parent = $this->createItem($serviceHotel);
+
+        return $parent->setChildren(
+            $this->getItemsInArray([
+//                $this->getTask(),
+                $warehouse,
+                $restaurant,
+            ])
+        );
+    }
+
+    private function getTask(): array
+    {
+        /** @var User $user */
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
+
+        $taskAttributes = ['icon' => 'fa fa-tasks'];
+
+        if ($user instanceof User) {
+            //Tasks links
+            $queryCriteria = new TaskQueryCriteria();
+            $queryCriteria->userGroups = $user->getGroups();
+            $queryCriteria->performer = $user;
+            $queryCriteria->onlyOwned = true;
+            $queryCriteria->status = 'open';
+            $queryCriteria->hotel = $hotel;
+
+            $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
+
+            if ($openTaskCount > 0) {
+                $taskAttributes = array_merge(
+                    $taskAttributes,
+                    BadgesHolder::createOne(
+                        'task-counter',
+                        'bg-red',
+                        '',
+                        $openTaskCount
+                    )
+                );
+            }
+        }
+
         $task = [
             'task' => [
                 'options'    => [
                     'route' => 'task',
                     'label' => 'menu.label.task',
                 ],
-                'attributes' => ['icon' => 'fa fa-tasks'],
+                'attributes' => $taskAttributes,
             ],
         ];
 
-        $parent = $this->createItem($serviceHotel);
-
-        return $parent->setChildren(
-            $this->getItemsInArray([
-                $task,
-                $warehouse,
-                $restaurant,
-            ])
-        );
+        return $task;
     }
 
     /**
@@ -1181,39 +1378,15 @@ $paymentSystem,
      */
     private function itemsReception(): ItemInterface
     {
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-        $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
-
-        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->countByType('arrivals', true, $hotel);
-        $out = $dm->getRepository('MBHPackageBundle:Package')->countByType('out', true, $hotel);
-
-        $porterBadges = [];
-        if ($arrivals) {
-            $porterBadges += [
-                'badge_left'       => true,
-                'badge_class_left' => 'bg-red badge-sidebar-left badge-sidebar-margin',
-                'badge_id_left'    => 'arrivals',
-                'badge_value_left' => $arrivals,
-                'badge_title_left' => $this->container->get('translator')->trans('menu.help.noarrival'),
-            ];
-        }
-        if ($out) {
-            $porterBadges += [
-                'badge_right'       => true,
-                'badge_class_right' => 'bg-green badge-sidebar-right badge-sidebar-margin',
-                'badge_id_right'    => 'out',
-                'badge_value_right' => $out,
-                'badge_title_right' => $this->container->get('translator')->trans('menu.help.nodepart'),
-            ];
-        }
-
-        $parentOptions = ['route' => '_welcome', 'label' => 'menu.label.portie',];
-        $parentAttr = ['dropdown' => true, 'icon' => 'fa fa-bell'] + $porterBadges;
+        $parentOptions = [
+            'route' => '_welcome',
+            'label' => 'menu.label.portie',
+        ];
 
         $porterLink = [
             'porter_links' => [
                 'options'    => $parentOptions,
-                'attributes' => $parentAttr,
+                'attributes' => ['dropdown' => true, 'icon' => 'fa fa-bell'],
             ],
         ];
 
@@ -1221,7 +1394,7 @@ $paymentSystem,
             'report_room_types' => [
                 'options'    => [
                     'route' => 'report_room_types',
-                    'label' => 'menu.header.navigation',
+                    'label' => 'menu.label.navigation',
                 ],
                 'attributes' => ['icon' => 'fa fa-bed'],
             ],
@@ -1262,7 +1435,6 @@ $paymentSystem,
         return $parent->setChildren(
             $this->getItemsInArray([
                 $reportPorter,
-                $this->getChessboardData(),
                 $reportRoomType,
                 $clients,
                 $organizations,

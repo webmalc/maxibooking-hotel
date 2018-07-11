@@ -2,7 +2,7 @@
 
 var toggler = function(id) {
     $("#" + id).toggle();
-}
+};
 
 var closePopovers = function() {
     'use strict';
@@ -43,21 +43,21 @@ var getHashVars = function() {
 var dangerTr = function() {
     'use strict';
     $('span.danger-tr').closest('tr').addClass('danger');
-}
+};
 
 mbh.loader = {
     html: '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>'+ Translator.trans("package.processing") +'...</div>',
     acceptTo: function($container) {
         $container.html(this.html);
     }
-}
+};
 
 mbh.error = {
     html: '<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>'+ Translator.trans("010-app.error_occured") +'.</div>',
     acceptTo: function($container) {
         $container.html(this.html);
     }
-}
+};
 
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),

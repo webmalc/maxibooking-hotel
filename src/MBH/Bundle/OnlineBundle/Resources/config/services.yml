@@ -24,3 +24,7 @@ services:
         arguments: ['@mbh.client_manager', '%mbh.online.form%']
         tags:
             {name: form.type}
+
+    mbh.online.search_order:
+        class: MBH\Bundle\OnlineBundle\Lib\SearchForm
+        arguments: ['@service_container']

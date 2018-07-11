@@ -217,6 +217,17 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * Заменяет больше двух побелов одним
+     *
+     * @param string $str
+     * @return string
+     */
+    public function clearAdjacentWhitespace(string $str): string
+    {
+        return preg_replace('/\s{2,}/',' ', $str);
+    }
+
+    /**
      * @return array
      */
     public function getFilters()
@@ -230,7 +241,8 @@ class Extension extends \Twig_Extension
             'convertMongoDate' => new \Twig_SimpleFilter('convertMongoDate', [$this, 'convertMongoDate']),
             'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
-            'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate'])
+            'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate']),
+            'clear_adjacent_whitespace' => new \Twig_SimpleFilter('clear_adjacent_whitespace', [$this, 'clearAdjacentWhitespace']),
         ];
     }
 
@@ -287,8 +299,9 @@ class Extension extends \Twig_Extension
         $data = [
             'allowed_guides' => $this->container->get('mbh.guides_data_service')->getAllowedGuides(),
             'client_country' => $this->getClient()->getCountry(),
-            'front_token' => $this->container->getParameter('billing_front_token'),
-            'billing_host' => $this->container->getParameter('billing_url') . '/',
+            'front_token'    => $this->container->getParameter('billing_front_token'),
+            'billing_host'   => $this->container->getParameter('billing_url') . '/',
+            'behavior_menu'  => $this->container->getParameter('mbh.menu.behaviors.now'),
         ];
 
         return json_encode($data);
