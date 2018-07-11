@@ -156,7 +156,9 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     public function newAction()
     {
         $entity = new Tariff();
-        $form = $this->createForm(TariffType::class, $entity);
+        $form = $this->createForm(TariffType::class, $entity, [
+            'hotel' => $this->hotel
+        ]);
 
         return [
             'form' => $form->createView(),
@@ -176,7 +178,9 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $entity = new Tariff();
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
 
-        $form = $this->createForm(TariffType::class, $entity);
+        $form = $this->createForm(TariffType::class, $entity, [
+            'hotel' => $this->hotel
+        ]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -208,7 +212,9 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(TariffType::class, $entity);
+        $form = $this->createForm(TariffType::class, $entity, [
+            'hotel' => $this->hotel
+        ]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -242,7 +248,9 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(TariffType::class, $entity);
+        $form = $this->createForm(TariffType::class, $entity, [
+            'hotel' => $this->hotel
+        ]);
 
         return [
             'entity' => $entity,

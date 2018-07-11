@@ -262,3 +262,6 @@ ROLE_PACKAGE_DOCS: 'Reservation documents'
 ROLE_PERSONAL_ACCOUNT: Profile
 ROLE_PROFILE: 'Profile - Profile'
 ROLE_PAYMENTS: 'Profile - Payments'
+ROLE_PASSWORD: 'Profile - Password'
+ROLE_SALES_CHANNELS_REPORT: 'Sales channels Report'
+ROLE_RESERVATION_REPORT: 'Reservation Report'

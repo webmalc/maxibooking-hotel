@@ -1,3 +1,4 @@
+{% spaceless %}
 <input type="hidden" name="begin" id="restriction-overview-begin" class="hidden" value="{{ begin|date('d.m.Y') }}">
 <input type="hidden" name="end" id="restriction-overview-end" class="hidden" value="{{ end|date('d.m.Y') }}">
 {% if error is defined and error is not empty  %}
@@ -53,14 +54,14 @@
 
                         {% for date in period %}
 
-                            <!-- BEGIN: set restriction -->
+                            {#<!-- BEGIN: set restriction -->#}
                             {% set restriction = restrictions[roomType.id][tariff.id][date|date('d.m.Y')]|default(null) %}
-                            <!-- END: set restriction -->
+                            {#<!-- END: set restriction -->#}
 
-                            <!-- BEGIN: set inputName & value -->
+                            {#<!-- BEGIN: set inputName & value -->#}
                             {% set inputName = restriction is null ? 'newRestrictions[' ~ roomType.id ~ '][' ~ tariff.id ~'][' ~ date|date('d.m.Y') ~ '][' ~ categoryId ~ ']' : 'updateRestrictions[' ~ restriction.id ~'][' ~ categoryId ~ ']' %}
                             {% set inputValue = restriction is null ? null : attribute(restriction, categoryId) %}
-                            <!-- END: set inputName & value  -->
+                            {#<!-- END: set inputName & value  -->#}
 
                             <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
                                 <span class="input">
@@ -81,3 +82,4 @@
         </tbody>
     </table>
 {% endif %}
+{% endspaceless %}

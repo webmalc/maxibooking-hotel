@@ -1,4 +1,13 @@
 ---
+- name: Add group
+  group:
+    name: vagrant
+
+- name: Create user ang group vagrant
+  user:
+    name: vagrant
+    password: vagrant
+    groups: vagrant
 
 - name: User www-data add group maxibooking
   user:

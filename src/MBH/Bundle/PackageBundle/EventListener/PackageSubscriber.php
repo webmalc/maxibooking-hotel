@@ -5,6 +5,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -101,6 +102,7 @@ class PackageSubscriber implements EventSubscriber
             }
 
             $end = clone $package->getEnd();
+
             $this->container->get('mbh.room.cache')->recalculate(
                 $package->getBegin(),
                 $end->modify('-1 day'),
@@ -122,6 +124,7 @@ class PackageSubscriber implements EventSubscriber
                     ->setHotel($package->getRoomType()->getHotel())
                     ->setEnd(new \DateTime('+10 minute'))
                     ->setLinkText('mailer.to_package')
+                    ->setMessageType(NotificationType::ERROR)
                     ->setLink($this->container->get('router')->generate('package_edit', ['id' => $package->getId()], true));
                 $notifier->setMessage($message)->notify();
             }

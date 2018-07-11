@@ -25,7 +25,6 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
         $start = new \DateTime();
         $num = 0;
 
-
         if ($input->getOption('roomTypes')) {
             $roomTypes = explode(',', trim($input->getOption('roomTypes'), ','));
         } else {
@@ -50,5 +49,18 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
             sprintf('Recalculate complete. Entries: %s. Elapsed time: %s', number_format($num), $time->format('%H:%I:%S'))
         );
         $output->writeln($numberOfInconsistencies == 0 ? 'Inconsistencies not found' : 'Number of inconsistencies: ' . $numberOfInconsistencies);
+
+        if ($numberOfInconsistencies > 0) {
+            list($minDate, $maxDate) = $this->getContainer()->get('mbh.helper')->getMinAndMaxDates($recalculationResult['inconsistentDates']);
+            $this->getContainer()->get('mbh.channelmanager')->updatePricesInBackground($minDate, $maxDate);
+            $notifier = $this->getContainer()->get('exception_notifier');
+            $message = $notifier::createMessage();
+            $message
+                ->setType('danger')
+                ->setText('Inconsistencies of room caches are found. Client:' . $this->getContainer()->getParameter('client'));
+            $notifier
+                ->setMessage($message)
+                ->notify();;
+        }
     }
 }

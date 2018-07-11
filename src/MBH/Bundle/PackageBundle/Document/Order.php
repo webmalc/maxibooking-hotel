@@ -25,6 +25,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Order extends Base
 {
+    const OFFLINE_STATUS = 'offline';
+    const ONLINE_STATUS = 'online';
+    const CHANNEL_MANAGER_STATUS = 'channel_manager';
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -157,7 +161,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="status")
      * @Assert\Choice(
-     *      choices = {"offline", "online", "channel_manager"},
+     *      callback = "getStatusesList",
      *      message = "validator.document.order.wrong_status"
      * )
      * @ODM\Index()
@@ -227,7 +231,6 @@ class Order extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="note")
-     * @ODM\Index()
      */
     protected $note;
 
@@ -296,6 +299,21 @@ class Order extends Base
     public function getPackages()
     {
         return $this->packages;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getPackagesSortedByNumber()
+    {
+        $packages = $this->packages->toArray();
+        usort($packages, function ($a, $b) {
+            /** @var Package $a */
+            /** @var Package $b */
+            return ($a->getNumber() < $b->getNumber()) ? -1 : 1;
+        });
+
+        return new ArrayCollection($packages);
     }
 
     /**
@@ -1001,6 +1019,18 @@ class Order extends Base
     public static function getChannelManagerNames()
     {
         return AbstractChannelManagerService::getChannelManagerNames();
+    }
+
+    /**
+     * @return array
+     */
+    public static function getStatusesList()
+    {
+        return [
+            self::CHANNEL_MANAGER_STATUS,
+            self::OFFLINE_STATUS,
+            self::ONLINE_STATUS
+        ];
     }
 
     /**

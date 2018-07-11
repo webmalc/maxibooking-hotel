@@ -7,11 +7,12 @@ parameters:
 
     #currencies
     mbh.currency.data:
-      usd: {text: '$', small: '$', icon: 'fa fa-usd'}
+      usd: {text: '$', small: '¢', icon: 'fa fa-usd'}
       eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
       rub: {text: 'currency.rub.text', small: 'currency.rub.small', icon: 'fa fa-ruble'}
       uah: {text: 'currency.uah.text', small: 'currency.uah.small', icon: 'fa fa-money'}
       kzt: {text: 'currency.kzt.text', small: 'currency.kzt.small', icon: 'fa fa-money'}
+      uzs: {text: 'currency.uzs.text', small: 'currency.uzs.small', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
 
     # ReCaptcha
@@ -199,6 +200,7 @@ parameters:
       payanyway: 'PayAnyWay'
       uniteller: 'Uniteller'
       rbk: 'Rbk'
+      newRbk: 'NewRbk'
       paypal: 'PayPal'
       rnkb: 'Rnkb'
       invoice: 'mbh.payment_systems.by_invoice'
@@ -383,3 +385,13 @@ parameters:
         268: form.hotelExtendedType.all_public_areas_non_smoking
         900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 
+#     * Поведение меню:
+#     * - alwaysOpen не в зависимости от выбранного пункта все главные меню открыты
+#     * - custom запоминается последнее открытое меню (на фронтэнде) и в следующий раз открывается именно оно
+#     * - default открыто то меню пункт которого выбран
+    mbh.menu.behaviors:
+        - default
+        - custom
+        - alwaysOpen
+
+    mbh.menu.behaviors.now: custom

@@ -1,6 +1,6 @@
 /*global window, $, services, document, datepicker, deleteLink, Routing, mbh, Translator */
 var PASSPORT_DOCUMENT_TYPE_CODE = "103008";
-var LIMIT_OF_EXPORTED_TO_KONTUR_TOURISTS = 100;
+var LIMIT_OF_EXPORTED_TO_FMS_TOURISTS = 100;
 
 var docReadyTourists = function () {
     'use strict';
@@ -144,12 +144,14 @@ var docReadyTourists = function () {
     new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
     new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
     handleAuthOrganFieldVisibility();
+    hangOnExportToKonturButtonClick();
 };
 
 /*global document, window, Routing, $ */
 $(document).ready(function () {
     'use strict';
     docReadyTourists();
+    hangOnExportToKonturButtonClick();
 });
 
 function handleAuthOrganFieldVisibility() {
@@ -187,14 +189,14 @@ function getTouristFilterFormData($touristForm, $citizenshipSelect) {
 }
 
 function hangOnExportToKonturButtonClick() {
-    var exportUrl = Routing.generate('export_to_kontur');
     var $touristForm = $('#tourist-form');
     var $citizenshipSelect = $('#mbhpackage_bundle_tourist_filter_form_citizenship');
 
-    $('#fms-export-button').click(function () {
+    $('.fms-export-button:not(.disabled)').click(function () {
+        var exportUrl = Routing.generate('export_to_fms_system', {'system' : this.getAttribute('data-system')});
         var numberOfExportedTourists = $('#tourist-table').DataTable().page.info().recordsTotal;
-        if (numberOfExportedTourists > LIMIT_OF_EXPORTED_TO_KONTUR_TOURISTS) {
-            $('#kontur-export-confirmation').modal('show');
+        if (numberOfExportedTourists > LIMIT_OF_EXPORTED_TO_FMS_TOURISTS) {
+            $('#fms-export-confirmation').modal('show');
         } else {
             window.open(exportUrl + '?' + $.param({'form': getTouristFilterFormData($touristForm, $citizenshipSelect)}));
         }

@@ -1,0 +1,7 @@
+first_param: 123
+second_param: 546
+third_param_enclosed:
+    enclosed_arr: [enclosed1, enclosed2]
+fourth_param: 'some string test data'
+parent_param:
+    added_param: enclosed_param_value

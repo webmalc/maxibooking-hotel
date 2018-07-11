@@ -19,6 +19,23 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
 {
     use ContainerAwareTrait;
 
+    const CHANNEL_MANAGER_SOURCES = [
+        '101 Отель' => HundredOneHotels::CHANNEL_MANAGER_TYPE,
+        'Островок' => 'ostrovok',
+        'Oktogo' => 'oktogo',
+        'Booking.com' => 'booking',
+        'Myallocator.com' => 'myallocator',
+        'TripAdvisor.com' => 'tripadvisor',
+        'ВашОтель.ру' => 'vashotel',
+    ];
+
+    const REGULAR_SOURCES = [
+        'fixtures.package_source_data.on_line_reservation' => 'online',
+        'fixtures.package_source_data.manager' => 'offline',
+        'fixtures.package_source_data.regulat_customer' => 'regular_customer',
+        'fixtures.package_source_data.recomendation_of_friends' => 'recommendet_friend',
+    ];
+
     public function load(ObjectManager $manager)
     {
         $locales = $this->container->getParameter('mbh.languages');
@@ -57,19 +74,7 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
 
     private function getSource(): array
     {
-        $sources = [
-            '101 Отель' => HundredOneHotels::CHANNEL_MANAGER_TYPE,
-            'Островок' => 'ostrovok',
-            'Oktogo' => 'oktogo',
-            'Booking.com' => 'booking',
-            'Myallocator.com' => 'myallocator',
-            'TripAdvisor.com' => 'tripadvisor',
-            'ВашОтель.ру' => 'vashotel',
-            'fixtures.package_source_data.on_line_reservation' => 'online',
-            'fixtures.package_source_data.manager' => 'offline',
-            'fixtures.package_source_data.regulat_customer' => 'regular_customer',
-            'fixtures.package_source_data.recomendation_of_friends' => 'recommendet_friend',
-        ];
+        $sources = array_merge(self::CHANNEL_MANAGER_SOURCES, self::REGULAR_SOURCES);
 
         $expediaSources = [];
         foreach (Expedia::BOOKING_SOURCES as $expediaSource) {

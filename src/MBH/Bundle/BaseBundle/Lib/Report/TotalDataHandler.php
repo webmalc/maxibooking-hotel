@@ -13,6 +13,7 @@ class TotalDataHandler extends ReportDataHandler
     /** @var  array */
     private $optionsByCalculationType;
     private $title;
+    private $numberOfDecimals = 2;
 
     /**
      * @param ReportDataHandler[] $dataHandlers
@@ -32,14 +33,38 @@ class TotalDataHandler extends ReportDataHandler
         return $this;
     }
 
-    private function getSumOfValues($rowOption)
+    /**
+     * @return int
+     */
+    public function getNumberOfDecimals(): ?int
+    {
+        return $this->numberOfDecimals;
+    }
+
+    /**
+     * @param int $numberOfDecimals
+     * @return TotalDataHandler
+     */
+    public function setNumberOfDecimals(int $numberOfDecimals): TotalDataHandler
+    {
+        $this->numberOfDecimals = $numberOfDecimals;
+
+        return $this;
+    }
+
+    /**
+     * @param $rowOption
+     * @param bool $isFormatted
+     * @return string
+     */
+    private function getSumOfValues($rowOption, $isFormatted = true)
     {
         $sum = 0;
         foreach ($this->dataHandlers as $dataHandler) {
             $sum += $dataHandler->getValueByOption($rowOption);
         }
         
-        return $sum;
+        return $isFormatted ? $this->getFormattedNumber($sum) : $sum;
     }
 
     /**
@@ -48,7 +73,16 @@ class TotalDataHandler extends ReportDataHandler
      */
     private function getAverageValue($rowOption)
     {
-        return $this->getSumOfValues($rowOption) / count($this->dataHandlers);
+        return $this->getFormattedNumber($this->getSumOfValues($rowOption, false) / count($this->dataHandlers));
+    }
+
+    /**
+     * @param $number
+     * @return string
+     */
+    private function getFormattedNumber($number)
+    {
+        return round($number, $this->getNumberOfDecimals());
     }
 
     /**

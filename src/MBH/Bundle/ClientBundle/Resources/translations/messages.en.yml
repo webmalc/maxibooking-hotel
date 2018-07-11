@@ -36,6 +36,10 @@ form.clientPaymentSystemType.successUrlDesc: 'Redirection URL for successful pay
 form.clientPaymentSystemType.failUrlDesc: 'Redirection URL for unsuccessful payments'
 form.clientPaymentSystemType.payment_system_group: 'Payment system'
 form.clientPaymentSystemType.payment_system_group_links: Links
+form.clientPaymentSystemType.newRbk_ApiKey: 'Api Key'
+form.clientPaymentSystemType.newRbk_WebhookApi: 'Webhook key'
+form.clientPaymentSystemType.newRbk_ShopId: 'Shop ID'
+form.clientPaymentSystemType.newRbk_LifetimeInvoice: 'Lifetime Invoice'
 mailer.notice.unpaid.order.list: 'List of reservations with overdue payments'
 form.clientConfigType.search_tariffs: 'Number of rates'
 form.clientConfigType.search_tariffs_desc: 'Default number of rates shown in the form'
@@ -107,14 +111,15 @@ form.colors_type.danger_additional_color.help: 'Additional color of the unpaid r
 form.colors_type.danger_additional_color.label: 'Unpaid (additional)'
 form.colors_type.group.chessboard: 'Reservation Calendar'
 form.colors_type.danger_color.help: 'Color of the unpaid reservation'
-form.clientConfigType.currency.options.usd: Dollars
-form.clientConfigType.currency.options.kzt: Tenge
-form.clientConfigType.currency.options.uah: UAH
-form.clientConfigType.currency.options.eur: Euro
-form.clientConfigType.currency.options.rub: Rubles
-form.clientConfigType.currency.label: Currency
+form.clientConfigType.currency.options.usd: 'Dollars'
+form.clientConfigType.currency.options.kzt: 'Tenge'
+form.clientConfigType.currency.options.uzs: 'Uzbekistan Sum'
+form.clientConfigType.currency.options.uah: 'UAH'
+form.clientConfigType.currency.options.eur: 'Euro'
+form.clientConfigType.currency.options.rub: 'Rubles'
+form.clientConfigType.currency.label: 'Currency'
 controller.clientConfig.change_time_zone_contact_support: 'To change the time zone, please contact support:"%supportEmail%"'
-room_controller.limit_of_room_fund_exceeded: 'Number of rooms exceeds available maximum set in rates. Available number of rooms: %availableNumberOfRooms%. Check details here <a target="_blank" href="%overviewUrl%">информация по номерам</a>'
+room_controller.limit_of_room_fund_exceeded: 'Number of rooms exceeds available maximum set in rates. Available number of rooms: %availableNumberOfRooms%. Check details here <a target="_blank" href="%overviewUrl%">rooms info</a>'
 controller.color_settings_action.config_successful_reset: 'Default settings are set'
 controller.color_settings_action.config_successful_saved: 'Settings saved successfully'
 form.clientPaymentSystemType.stripe_commission.label: 'Commission (in percent)'

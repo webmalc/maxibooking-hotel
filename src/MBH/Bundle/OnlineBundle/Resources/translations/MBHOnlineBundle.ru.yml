@@ -4,6 +4,7 @@ views.api.form.check_in_date: 'Дата заезда'
 views.api.form.check_out_date: 'Дата выезда'
 views.api.form.nights_amount: 'Количество ночей'
 views.api.form.room_type: 'Тип номера'
+views.api.form.room_type.choices.any: Любой
 views.api.form.adults: Взрослые
 views.api.form.children: Дети
 views.api.form.children_ages.label: 'Возраста детей'
@@ -79,6 +80,7 @@ views.form.index.edit: Редактирование
 views.form.index.new: Создание
 views.form.index.settings: Настройки
 views.form.index.site_embed_code: 'Код для сайта'
+views.form.analytics: Аналитика
 views.form.index.edit_templates: 'Тонкая настройка шаблона'
 views.form.index.site_embed_form_code: 'Код формы для вставки на сайт'
 views.form.index.before_closing_tag: 'Перед закрывающим тегом'

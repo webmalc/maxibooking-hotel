@@ -24,7 +24,10 @@ class TariffsType extends AbstractType
                 'query_builder' => function(DocumentRepository $er) use($options) {
                     $qb = $er->createQueryBuilder();
                     if ($options['hotel'] instanceof Hotel) {
-                        $qb->field('hotel.id')->equals($options['hotel']->getId());
+                        $qb
+                            ->field('hotel.id')->equals($options['hotel']->getId())
+                            ->field('isEnabled')->equals(true)
+                        ;
                     }
                     return $qb;
                 },
@@ -49,15 +52,24 @@ class TariffsType extends AbstractType
     public function check($data, ExecutionContextInterface $context)
     {
         $ids = [];
+        $notMappedTariffsIds = [];
+
         /** @var Tariff $tariff */
-        foreach($data as $tariff) {
+        foreach($data as $cmTariffId => $tariff) {
             if ($tariff && in_array($tariff->getId(), $ids)) {
                 $context->addViolation('tarifftype.validation');
             }
             if ($tariff) {
                 $ids[] = $tariff->getId();
             }
+            if (is_null($tariff)) {
+                $notMappedTariffsIds[] = $cmTariffId;
+            }
         };
+
+        if (!empty($notMappedTariffsIds)) {
+            $context->addViolation('tarifftype.validation.not_all_tariffs_synced', ['%ids%' => join(', ', $notMappedTariffsIds)]);
+        }
     }
 
     public function getBlockPrefix()

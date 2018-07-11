@@ -322,8 +322,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
         if($hotel) {
             $address = [];
-            $city = $this->billing->getCityById($hotel->getCityId());
-            if($city) {
+            if($hotel->getCityId()) {
+                $city = $this->billing->getCityById($hotel->getCityId());
                 $address[] = $city->getName();
 
                 if($hotel->getStreet()) {

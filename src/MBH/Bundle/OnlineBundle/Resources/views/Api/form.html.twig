@@ -69,17 +69,17 @@
 
     {% if formConfig.roomTypes %}
     {% set choices = formConfig.roomTypeChoices %}
+    {% if choices is empty %}
+        {% set choices = [] %}
+        {% for hotel in hotels %}
+            {% set choices = choices|merge(hotel.roomTypes) %}
+        {% endfor %}
+    {% endif %}
     <div class="mbh-form-row form-group {{ choices|length == 1 ? 'hidden' }}">
         <label for="mbh-form-roomType"> {{ 'views.api.form.room_type'|trans({}, 'MBHOnlineBundle') }}</label>
         <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
             <option></option>
-            {% if choices is empty %}
-                {% set choices = [] %}
-                {% for hotel in hotels %}
-                    {% set choices = choices|merge(hotel.roomTypes) %}
-                {% endfor %}
-            {% endif %}
-            <option value="">- any -</option>
+            <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
             {% for roomType in choices %}
                 <option value="{{ roomType.id }}" {{ choices|length == 1 ? 'selected' }}>{{ roomType.localeTitle(app.request.locale) }}</option>
             {% endfor %}
@@ -115,7 +115,7 @@
     </div>
 
     <div id="mbh-logo-link-wrapper">
-        <a id="mbh-logo-link" href="http://maxi-booking.ru/" target="_blank"> {{ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') }}</a>
+        <a id="mbh-logo-link" href="https://maxi-booking.ru/" target="_blank"> {{ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') }}</a>
     </div>
 
     <div id="mbh-actions-wrapper"></div>

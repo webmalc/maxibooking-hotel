@@ -733,9 +733,12 @@ csv.form.dateEnd: По
 csv.form.guests: Плательщик
 csv.form.adults: Взрослые
 csv.form.children: Дети
-csv.form.price: Стоимость
+csv.form.package_price: 'Стоимость проживания'
+csv.form.package_services_price: 'Стоимость услуг'
+csv.form.price: 'Общая сумма'
 csv.form.createdAt: 'Дата создания'
 csv.form.createdBy: Создал
+csv.form.note: Комментарий
 csv.form.modal_title: 'Генерация документа'
 csv.form.modal_close: Закрыть
 csv.form.modal_generate: Сгенерировать
@@ -810,6 +813,8 @@ chessboard_manager.room_type.title: 'Тип номера'
 chessboard_manager.housing.title: Корпус
 chessboard_manager.floor.title: Этаж
 chessboard_manager.filter.button.text: Применить
+chessboard.index.number_of_rooms_select.all_rooms: 'Все номера'
+chessboard.index.number_of_rooms_select.rooms: '%numberOfRooms% номеров'
 chessboard_manager.without_accommodation.tile.text: 'Без размещения'
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
 accommodation_manipulator.error.edited_room_busy: 'Невозможно изменить размещение, так как в указанные дни комната "%roomName%" занята.'
@@ -1246,6 +1251,8 @@ report.packages_daily_report_compiler.sum_for_packages: 'Приход за бр�
 report.packages_daily_report_compiler.cancellation_for_packages: 'Аннуляция за брони'
 report.packages_daily_report_compiler.return_for_packages: 'Вернули за брони'
 views.report.packages_daily_report.title: 'Денежные средства'
+views.report.reservation_report.title: 'Отчет по бронированию номеров'
+reservation_report.title: 'Бронирование'
 views.report.packages_daily_report.mail_title: 'Отчет по денежным средствам'
 views.report.packages_daily_report.dates_input.title: 'Даты бронирования'
 views.report.packages_daily_report.calculation_dates.title: 'Даты проживания'
@@ -1277,3 +1284,31 @@ mbh.analytics.types.sales_sources: 'Источники продаж'
 mbh.analytics.types.hotel_occupancy: 'Заполняемость отеля'
 mbh.analytics.types.sales_services: 'Динамика реализации услуг'
 mbh.analytics.types.sales_managers: 'Менеджеры и брони'
+views.report.reservation_report.period.title: 'Период'
+views.report.reservation_report.report_date.title: 'Дата'
+views.report.reservation_report.room_types.title: 'Типы комнат'
+reservation_report.number_of_packages_common: 'Забронировано номеров'
+reservation_report.total_row: Итого
+reservation_report.number_of_packages: 'Забронировано номеров по состоянию на %date%'
+reservation_report.previous_number_of_packages: 'Забронировано номеров по состоянию на %previousDate%'
+reservation_report.date: 'Дата'
+reservation_report.delta_number_of_packages: 'Дельта забронировано номеров'
+reservation_report.delta_numb_of_packages_in_percent: '% по бронированию номеров'
+reservation_report.packages_price: 'Цена по состоянию на %date%'
+reservation_report.previous_packages_price: 'Цена по состоянию на %previousDate%'
+
+sales_channels_report.title: 'Каналы продаж'
+sales_channels_report.dates.title: 'Даты'
+sales_channels_report.sort_by.title: 'Тип сортировки'
+sales_channels_report.sort_by.source: 'По источнику'
+sales_channels_report.sort_by.status: 'По типу брони'
+sales_channels_report.package_source.title: 'Источник продаж'
+sales_channels_report.room_type.title: 'Тип комнаты'
+sales_channels_report.data_types: 'Тип данных'
+sales_channels_report.data_types.count: 'Количество броней'
+sales_channels_report.data_types.sum: 'Стоимость броней'
+sales_channels_report.data_types.man-day: 'Человеко-дней'
+sales_channels_report.in_percents.title: 'В процентах?'
+sales_channels_report_compiler.date: Дата
+sales_channels_report_compiler.total: Итого
+sales_channels_report_compiler.without_source: 'Без источника'

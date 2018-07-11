@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>pdf</title>
+    <style type="text/css">
+        html {
+              padding: 10mm;
+        }
+        body {
+            margin: 0;
+        }
+
+        #en,
+        #el {
+            width: 935px;
+            /*border: 0.5px solid silver;*/
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .new-page{
+            page-break-before: always;
+        }
+
+        .header {
+            margin-top: 14px;
+            height: 110px;
+            position: relative;
+            background: -webkit-gradient(linear,left top, left bottom, color-stop(0%, #9ac3f6),color-stop(100%, #e1ecfb));
+        }
+
+        .header table {
+            width: 100%;
+            position: relative;
+        }
+
+        #en .header table {
+            top: 25px;
+        }
+        #el .header table {
+            top: 5px;
+        }
+
+        .header table td {
+            width: 50%;
+        }
+
+        .header table td:first-child span{
+            position: relative;
+            top: -35px;
+            font-size: 20px;
+            padding: 5px;
+            font-weight: bold;
+        }
+
+        .header table td:last-child {
+            text-align: center;
+        }
+
+        .header table td:last-child span:first-child {
+            color: #BFBFBF;
+            font-size: 35px;
+            font-weight: bold;
+            margin: auto;
+        }
+
+        .header table td:last-child span:last-child {
+            font-size: 35px;
+        }
+
+        .table-1 {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .table-1 tr td:first-child {
+            width: 145px;
+        }
+
+        .table-1 tr td:last-child {
+            min-width: 145px;
+        }
+
+        .table-2 tr td:first-child {
+            width: 170px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .table-2 tr td:last-child {
+            min-width: 210px;
+            border-bottom: 1px solid lightgray;
+        }
+
+        .table-2,
+        .table-3 {
+            margin-top: 30px;
+            margin-left: 95px;
+        }
+
+        .table-3 table {
+            border-collapse: collapse;
+            width: 727px;
+        }
+
+        .table-3 table td {
+            border: 0.5px solid #9CC2E5;
+        }
+        .service-group,
+        .table-3 thead tr {
+            background: #5B9BD5 !important;
+            text-align: center;
+            color: white;
+            height: 20px;
+        }
+        .table-3 thead td:first-child {
+            width: 305px;
+        }
+        .table-3 thead td:nth-of-type(2) {
+            width: 162px;
+        }
+        .table-3 thead td {
+            width: 130px;
+        }
+
+        .table-3 tbody tr {
+            height: 19px;
+        }
+        .table-3 tbody td {
+            text-align: center;
+        }
+        .table-3 tbody td:last-child {
+            text-align: right;
+        }
+
+        .table-3 tbody tr:nth-child(even) {
+            background: #DEEAF6;
+        }
+
+        .table-3 tbody .final-info td:nth-of-type(-n+2) {
+            background: white;
+            border: none;
+        }
+        .table-3 tbody .final-info td:nth-of-type(3) {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .government-tax {
+            margin-top: 50px;
+            margin-left: 95px;
+            width: 727px;
+        }
+
+        .government-tax table {
+            float: right;
+        }
+
+        .government-tax td:first-child {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .government-tax td:last-child {
+            text-align: right;
+            width: 125px;
+        }
+
+        .footer {
+            position: fixed;
+            text-align: center;
+            width: 100%;
+        }
+
+        #en .footer {
+            top: 1250px;
+        }
+
+        #el .footer {
+            top: 2600px;
+        }
+
+        .footer div span {
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div id="en">
+    <div class="header">
+        <table>
+            <tr>
+                <td>
+                    {% set hotelName %}
+                        {% if hotel.internationalTitle %}
+                            {{ hotel.internationalTitle }}
+                        {% else %}
+                            {{ hotel.fullTitle }}
+                        {% endif %}
+                    {% endset %}
+                    <span>{{ hotelName }}</span>
+                </td>
+                <td>
+                    <span>Hotel Invoice</span>
+                    <span># {{ package.numberWithPrefix }}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="main">
+        <div class="table-1">
+            <table>
+                <tr>
+                    <td>Address</td>
+                    <td>{{get_imperial_street(hotel) }}</td>
+                </tr>
+                <tr>
+                    <td>City, State, Zip:</td>
+                    <td>{{ get_imperial_city(hotel) }}</td>
+                </tr>
+                <tr>
+                    <td>Tel:</td>
+                    <td>{{ hotel.contactInformation.phoneNumber }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="table-2">
+            <table>
+                <tr>
+                    <td>Bill To:</td>
+                    <td>{{ payer.fullName }}</td>
+                </tr>
+                <tr>
+                    <td>Company:</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Name:</td><td>{{ payer.fullName }}</td>
+                </tr>
+                {% set payerAddress %}
+                    {% if payer and payer.addressObjectDecomposed and payer.addressObjectDecomposed.countryTld and payer.addressObjectDecomposed.regionId %}
+                        <tr>
+                            <td>Address line:</td>
+                            <td>
+                                {{ get_imperial_street(payer.addressObjectDecomposed) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>City, State, Zip</td>
+                            <td>
+                                {{ get_imperial_city(payer.addressObjectDecomposed) }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endset %}
+                {{ payerAddress }}
+                <tr>
+                    <td>Tel:</td><td>{{ payer.getPhone() }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="table-3">
+            <table>
+                <thead>
+                <tr>
+                    <td>Room Type</td>
+                    <td>Number of Nights</td>
+                    <td>Nightly Rate</td>
+                    <td>Total</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ package.roomType.FullTitle }}</td>
+                    <td>{{ package.Nights }}</td>
+                    <td>{{ (order.price/package.Nights)|number_format(2) }}</td>
+                    <td>{{ order.price|number_format(2) }}</td>
+                </tr>
+                {% set sumServiceGroupTotal = 0 %}
+                {% if packageServicesByType is not empty %}
+                    <tr class="service-group">
+                        <td>Additional services</td>
+                        <td colspan="3"></td>
+                    </tr>
+                    {% for serviceGroup in packageServicesByType %}
+                        <tr>
+                            <td>{{ serviceGroup.byService.name }}</td>
+                            <td>{{ serviceGroup.actuallyAmount }}</td>
+                            <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                            <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
+                        </tr>
+                        {% set sumServiceGroupTotal = sumServiceGroupTotal + serviceGroup.total %}
+                    {% endfor %}
+                {% endif %}
+                <tr class="final-info">
+                    <td></td><td></td>
+                    <td>Subtotal</td><td>{{ package.Price|number_format(2) }}</td>
+                </tr>
+                <tr class="final-info">
+                    <td></td><td></td>
+                    <td>Late Fees</td><td>-</td>
+                </tr>
+                <tr class="final-info">
+                    <td></td><td></td>
+                    <td>Taxes 0,5%</td><td>{{ order.price*0.05|number_format(2) }}</td>
+                </tr>
+                <tr class="final-info">
+                    <td></td><td></td>
+                    <td>Total Due</td><td>{{ ((order.price*0.05)+order.price+sumServiceGroupTotal)|number_format(2) }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="government-tax">
+            <table>
+                <tbody>
+                <tr>
+                    <td>Government tax:</td>
+                    <td>{{ (package.Nights*0.50)|number_format(2) }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="footer">
+        <div>
+            <span>Thank You for Staying With Us!</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

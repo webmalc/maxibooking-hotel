@@ -18,14 +18,12 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
             ->createQueryBuilder()
             ->distinct('roomType.$id')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
         return $this->createQueryBuilder()
             ->field('id')->in(iterator_to_array($ids))
             ->getQuery()
-            ->execute()
-            ;
+            ->execute();
     }
 
     /**
@@ -36,7 +34,7 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
     public function fetchQueryBuilder(Hotel $hotel = null, $roomTypes = null)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
 
         // hotel
         if ($hotel) {
@@ -52,6 +50,25 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
     }
 
     /**
+     * @param array $roomTypeIds
+     * @param array|null $hotelIds
+     * @return array|RoomType[]
+     */
+    public function getByHotelsAndIds(array $roomTypeIds = null, array $hotelIds = null)
+    {
+        $qb = $this->createQueryBuilder();
+
+        if (!is_null($roomTypeIds)) {
+            $qb->field('id')->in($roomTypeIds);
+        }
+        if (!is_null($hotelIds)) {
+            $qb->field('hotel.id')->in($hotelIds);
+        }
+
+        return $qb->getQuery()->toArray();
+    }
+
+    /**
      * @param Hotel $hotel
      * @param null $roomTypes
      * @return mixed
@@ -62,5 +79,21 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         return $this->fetchQueryBuilder($hotel, $roomTypes)->getQuery()->execute();
     }
 
+    /**
+     * @param string $query
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getByQueryName(string $query)
+    {
+        $qb = $this->createQueryBuilder();
 
+        return $qb
+            ->addOr($qb->expr()->field('title')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')))
+            ->addOr($qb->expr()->field('fullTitle')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')))
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
 }

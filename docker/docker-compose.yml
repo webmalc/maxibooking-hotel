@@ -60,6 +60,21 @@ mbh-php-fpm:
     - mbh-rabbitmq
     - mbh-redis
 
+mbh-php-cli:
+  build: .
+  dockerfile: php-cli/Dockerfile
+  container_name: mbh-php-cli
+  volumes:
+      - ..:/var/www/mbh
+      - ./php-cli/php-ini-overrides.ini:/etc/php/7.1/cli/conf.d/99-overrides.ini
+      - ./php-cli/fish:/root/.config/fish/functions
+      - /tmp/:/tmp/
+  links:
+    - mbh-memcached
+    - mbh-mongo
+    - mbh-rabbitmq
+    - mbh-redis
+
 mbh-webserver:
   image: phpdockerio/nginx:latest
   container_name: mbh-webserver

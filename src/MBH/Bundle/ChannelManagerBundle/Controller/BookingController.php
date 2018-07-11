@@ -5,10 +5,10 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
+use MBH\Bundle\ChannelManagerBundle\Form\BookingRoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\BookingType;
-use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManager;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -77,11 +77,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     {
         $config = $this->hotel->getBookingConfig();
         if ($config) {
-            $this->get('mbh.channelmanager')->pullOrders('booking', ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS);
-            $this->addFlash(
-                'warning',
-                $this->get('translator')->trans('controller.bookingController.packages_sync_start')
-            );
+            $this->get('mbh.channelmanager')->pullOrdersInBackground('booking', true);
+            $this->addFlash('warning', 'controller.bookingController.packages_sync_start');
         }
 
         return $this->redirect($this->generateUrl('booking'));
@@ -94,7 +91,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * @Security("is_granted('ROLE_BOOKING')")
      * @Template("MBHChannelManagerBundle:Booking:index.html.twig")
      * @param Request $request
-     * @return Response
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function saveAction(Request $request)
     {
@@ -105,26 +102,17 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $config = new BookingConfig();
             $config->setHotel($hotel);
         }
-        $form = $this->createForm(
-            BookingType::class,
-            $config
-        );
+        $form = $this->createForm(BookingType::class, $config);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($config);
-            $dm->flush();
+            $this->dm->persist($config);
+            $this->dm->flush();
 
             $this->get('mbh.channelmanager.booking')->syncServices($config);
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $request->getSession()->getFlashBag()
-                ->set(
-                    'success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success')
-                );
+            $this->addFlash('success','controller.bookingController.settings_saved_success');
 
             return $this->redirect($this->generateUrl('booking'));
         }
@@ -144,7 +132,6 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function roomAction(Request $request)
     {
@@ -154,7 +141,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
+        $form = $this->createForm(BookingRoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.booking')->pullRooms($config),
         ]);
@@ -162,23 +149,34 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $config->removeAllRooms();
-            foreach ($form->getData() as $id => $roomType) {
-                if ($roomType) {
-                    $configRoom = new Room();
-                    $configRoom->setRoomType($roomType)->setRoomId($id);
-                    $config->addRoom($configRoom);
-                    $this->dm->persist($config);
+
+            $bookingRoomsDataByRoomIds = [];
+            foreach ($form->getData() as $fieldName => $fieldData) {
+                $fieldsPrefixes = [BookingRoomsType::ROOM_TYPE_FIELD_PREFIX, BookingRoomsType::SINGLE_PRICES_FIELD_PREFIX];
+                foreach ($fieldsPrefixes as $prefix) {
+                    if ($this->helper->startsWith($fieldName, $prefix)) {
+                        $roomId = substr($fieldName, strlen($prefix));
+                        isset($bookingRoomsDataByRoomIds[$roomId])
+                            ? $bookingRoomsDataByRoomIds[$roomId][$prefix] = $fieldData
+                            : $bookingRoomsDataByRoomIds[$roomId] = [$prefix => $fieldData];
+                    }
                 }
             }
+
+            foreach ($bookingRoomsDataByRoomIds as $roomId => $roomData) {
+                if (!empty($roomData[BookingRoomsType::ROOM_TYPE_FIELD_PREFIX])) {
+                    $room = (new BookingRoom())
+                        ->setRoomType($roomData[BookingRoomsType::ROOM_TYPE_FIELD_PREFIX])
+                        ->setRoomId($roomId)
+                        ->setUploadSinglePrices($roomData[BookingRoomsType::SINGLE_PRICES_FIELD_PREFIX])
+                    ;
+                    $config->addRoom($room);
+                }
+            }
+
             $this->dm->flush();
-
             $this->get('mbh.channelmanager')->updateInBackground();
-
-            $request->getSession()->getFlashBag()
-                ->set(
-                    'success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success')
-                );
+            $this->addFlash('success', 'controller.bookingController.settings_saved_success');
 
             return $this->redirect($this->generateUrl('booking_room'));
         }
@@ -198,7 +196,6 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function tariffAction(Request $request)
     {

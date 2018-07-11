@@ -5,14 +5,12 @@ namespace MBH\Bundle\BillingBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
-use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Monolog\Logger;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 
 /**
  * Class MaintenanceController
@@ -112,8 +110,9 @@ class MaintenanceController extends BaseController
         $result = $this->get('mbh.client_instance_manager')->runRestoreCommand($clientLogin);
 
         return new JsonResponse($result->getApiResponse());
-
     }
+
+
 
     private function preHandleRequestData(Request $request): ?array
     {

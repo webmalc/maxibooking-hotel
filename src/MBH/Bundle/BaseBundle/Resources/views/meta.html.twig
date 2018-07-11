@@ -10,6 +10,33 @@
             <meta name="author" content="webmalc">
             <meta name="description" content="{% block meta_description %}{{project_title}}{% endblock %}">
             <title>{% block title %}{{project_title}}{% if title is defined %}: {{ title|trans }}{% endif %}{% endblock %}</title>
+            {#Client config set Date#}
+            {% set datePickerBeginDate = client_config().getActualBeginDate()  %}
+            {% set searchBeginDate = client_config().getSearchInputBeginDate() %}
+            <script>
+              var mbh = {
+                currency: {
+                  icon: "{{ currency().icon }}",
+                  text: "{{ currency().text|trans }}"
+
+                },
+                justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }},
+                startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
+                searchBeginDate: '{{ searchBeginDate|date('d.m.Y') }}',
+                UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
+                utils: {},
+                canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
+                showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }},
+                currentHotel: "{{ get_current_hotel() ? get_current_hotel().id : '' }}"
+              };
+
+              var additionalSettings = JSON.parse('{{ get_front_settings()|raw }}');
+              for (var propertyName in additionalSettings) {
+                if (additionalSettings.hasOwnProperty(propertyName)) {
+                  mbh[propertyName] = additionalSettings[propertyName];
+                }
+              }
+            </script>
 
             {% block styles %}
 
@@ -49,41 +76,20 @@
 
         <body class="hold-transition {{ loginPage is defined ? 'login-page' : 'skin-blue sidebar-mini fixed' }}">
         <script type="text/javascript">
-            if (localStorage.getItem('sidebar-collapse') == 'close') {
-                document.getElementsByTagName('body')[0].className+=' sidebar-collapse'
-            }
+          if (localStorage.getItem('sidebar-collapse') == 'close') {
+            document.getElementsByTagName('body')[0].className+=' sidebar-collapse'
+          }
         </script>
-
         {% block body %}{% endblock %}
 
         {% block scripts %}
-            {#Client config set Date#}
-            {% set datePickerBeginDate = client_config().getActualBeginDate()  %}
-            {% set searchBeginDate = client_config().getSearchInputBeginDate() %}
-            <script>
-                var mbh = {
-                    currency: {
-                        icon: "{{ currency().icon }}",
-                        text: "{{ currency().text|trans }}"
 
-                    },
-                    justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }}, 
-                    startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
-                    searchBeginDate: '{{ searchBeginDate|date('d.m.Y') }}',
-                    UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
-                    utils: {},
-                    canAddTips: {{ app.environment == 'dev' ? 'true' : 'false' }},
-                    showLabelTips: {{ client_config().showLabelTips ? 'true' : 'false' }},
-                    currentHotel: "{{ get_current_hotel() ? get_current_hotel().id : '' }}"
-                };
+            {% javascripts
+                '@MBHBaseBundle/Resources/public/js/menu/*'
+            %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+            {% endjavascripts %}
 
-                var additionalSettings = JSON.parse('{{ get_front_settings()|raw }}');
-                for (var propertyName in additionalSettings) {
-                    if (additionalSettings.hasOwnProperty(propertyName)) {
-                        mbh[propertyName] = additionalSettings[propertyName];
-                    }
-                }
-            </script>
             {{ app.session.remove('mbh.justLogin') }}
 
             {% javascripts filter='uglifyjs2'
@@ -144,8 +150,8 @@
             <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js"></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
-            <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-            <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+            {#<script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>#}
+            {#<script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>#}
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
 

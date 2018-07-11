@@ -109,6 +109,7 @@ class PackageQueryCriteria extends AbstractQueryCriteria
     private $accommodations = [];
 
     private $isWithoutAccommodation = false;
+    private $sources;
 
     /**
      * @param $roomTypeCriteria
@@ -169,5 +170,21 @@ class PackageQueryCriteria extends AbstractQueryCriteria
         $this->isWithoutAccommodation = $isWithoutAccommodation;
 
         return $this;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getSources()
+    {
+        return $this->sources;
+    }
+
+    /**
+     * @param array $sources
+     */
+    public function setSources($sources)
+    {
+        $this->sources = $sources;
     }
 }

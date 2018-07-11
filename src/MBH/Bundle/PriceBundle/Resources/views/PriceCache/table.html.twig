@@ -1,3 +1,4 @@
+{% spaceless %}
 <input type="hidden" name="begin" id="price-cache-overview-begin" class="hidden" value="{{ begin|date('d.m.Y') }}">
 <input type="hidden" name="end" id="price-cache-overview-end" class="hidden" value="{{ end|date('d.m.Y') }}">
 {% if error is defined and error is not empty  %}
@@ -58,14 +59,14 @@
 
                         {% for date in period %}
 
-                            <!-- BEGIN: set priceCache -->
+                            {#<!-- BEGIN: set priceCache -->#}
                             {% set priceCache = priceCaches[roomType.id][tariff.id][date|date('d.m.Y')]|default(null) %}
-                            <!-- END: set priceCache -->
+                            {#<!-- END: set priceCache -->#}
 
-                            <!-- BEGIN: set inputName & value -->
+                            {#<!-- BEGIN: set inputName & value -->#}
                             {% set inputName = priceCache is null ? 'newPriceCaches[' ~ roomType.id ~ '][' ~ tariff.id ~'][' ~ date|date('d.m.Y') ~ '][' ~ categoryId ~ ']' : 'updatePriceCaches[' ~ priceCache.id ~'][' ~ categoryId ~ ']' %}
                             {% set inputValue = priceCache is null ? null : attribute(priceCache, categoryId) %}
-                            <!-- END: set inputName & value  -->
+                            {#<!-- END: set inputName & value  -->#}
 
                             <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
                                 <span class="input">
@@ -86,3 +87,4 @@
         </tbody>
     </table>
 {% endif %}
+{% endspaceless %}

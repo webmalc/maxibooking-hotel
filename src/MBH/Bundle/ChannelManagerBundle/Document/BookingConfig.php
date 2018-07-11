@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -23,7 +24,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterface
 {
-
     public function getName()
     {
         return 'booking';
@@ -80,8 +80,8 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     protected $currencyDefaultRatio;
 
     /**
-     * @var array
-     * @ODM\EmbedMany(targetDocument="Room")
+     * @var array|BookingRoom[]
+     * @ODM\EmbedMany(targetDocument="BookingRoom")
      */
     protected $rooms;
 
@@ -99,6 +99,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
 
     /**
      * @var bool
+     * @ODM\Field(type="float")
      */
     protected $isAllPackagesPulled = false;
 
@@ -167,17 +168,17 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
 
     public function __construct()
     {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rooms = new ArrayCollection();
+        $this->tariffs = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
     
     /**
      * Add room
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Room $room
+     * @param Room $room
      */
-    public function addRoom(\MBH\Bundle\ChannelManagerBundle\Document\Room $room)
+    public function addRoom(Room $room)
     {
         $this->rooms[] = $room;
     }
@@ -185,9 +186,9 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * Remove room
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Room $room
+     * @param Room $room
      */
-    public function removeRoom(\MBH\Bundle\ChannelManagerBundle\Document\Room $room)
+    public function removeRoom(Room $room)
     {
         $this->rooms->removeElement($room);
     }
@@ -195,7 +196,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * Get rooms
      *
-     * @return \Doctrine\Common\Collections\Collection $rooms
+     * @return array|ArrayCollection|BookingRoom[] $rooms
      */
     public function getRooms()
     {
@@ -205,9 +206,9 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * Add tariff
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff
+     * @param Tariff $tariff
      */
-    public function addTariff(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff)
+    public function addTariff(Tariff $tariff)
     {
         $this->tariffs[] = $tariff;
     }
@@ -215,9 +216,9 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * Remove tariff
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff
+     * @param Tariff $tariff
      */
-    public function removeTariff(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff)
+    public function removeTariff(Tariff $tariff)
     {
         $this->tariffs->removeElement($tariff);
     }
@@ -225,7 +226,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * Get tariffs
      *
-     * @return \Doctrine\Common\Collections\Collection $tariffs
+     * @return array|ArrayCollection $tariffs
      */
     public function getTariffs()
     {
@@ -237,7 +238,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
      */
     public function removeAllRooms()
     {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rooms = new ArrayCollection();
 
         return $this;
     }
@@ -247,7 +248,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
      */
     public function removeAllTariffs()
     {
-        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tariffs = new ArrayCollection();
 
         return $this;
     }
@@ -257,7 +258,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
      */
     public function removeAllServices()
     {
-        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new ArrayCollection();
 
         return $this;
     }
@@ -265,9 +266,9 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * Add service
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     * @param Service $service
      */
-    public function addService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
+    public function addService(Service $service)
     {
         $this->services[] = $service;
     }
@@ -275,9 +276,9 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * Remove service
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     * @param Service $service
      */
-    public function removeService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
+    public function removeService(Service $service)
     {
         $this->services->removeElement($service);
     }
@@ -285,7 +286,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * Get services
      *
-     * @return \Doctrine\Common\Collections\Collection $services
+     * @return array|ArrayCollection
      */
     public function getServices()
     {
@@ -330,5 +331,18 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
         return $this;
     }
 
+    /**
+     * @param $roomId
+     * @return BookingRoom|null
+     */
+    public function getRoomById($roomId)
+    {
+        foreach ($this->rooms as $room) {
+            if ($room->getRoomId() === (string)$roomId) {
+                return $room;
+            }
+        }
 
+        return null;
+    }
 }

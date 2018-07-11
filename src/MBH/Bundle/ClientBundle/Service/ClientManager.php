@@ -10,6 +10,8 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class ClientManager
 {
@@ -20,21 +22,23 @@ class ClientManager
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
     const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
     const INSTALLATION_PAGE_RU = 'https://demo.maxi-booking.ru/';
-    const INSTALLATION_PAGE_COM = 'https://demo.maxi-booking.com/';
+    const INSTALLATION_PAGE_COM = 'https://login.maxi-booking.com/';
 
     private $dm;
     private $session;
     private $billingApi;
     private $logger;
     private $client;
+    private $kernel;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel)
     {
         $this->dm = $dm;
         $this->session = $session;
         $this->billingApi = $billingApi;
         $this->logger = $logger;
         $this->client = $client;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -62,12 +66,16 @@ class ClientManager
         $roomCachesByDate = $roomCacheRepository
             ->fetch($date, $date, null, [], null)
             ->toArray();
-        $roomCachesByDate = array_unique(array_merge($modifiedRoomCaches, $roomCachesByDate), SORT_REGULAR);
+        $roomCachesByDate = array_merge($modifiedRoomCaches, $roomCachesByDate);
 
         $numberOfExistedRooms = 0;
+        $roomCachesIds = [];
         /** @var RoomCache $roomCache */
         foreach ($roomCachesByDate as $roomCache) {
-            $numberOfExistedRooms += $roomCache->getTotalRooms();
+            if (!in_array($roomCache->getId(), $roomCachesIds)) {
+                $roomCachesIds[] = $roomCache->getId();
+                $numberOfExistedRooms += $roomCache->getTotalRooms();
+            }
         }
 
         return $numberOfExistedRooms > $this->getAvailableNumberOfRooms();
@@ -89,13 +97,15 @@ class ClientManager
     {
         $totalNumbersOfRoomsByDates = [];
         foreach ($rawNewRoomCachesData as $rawRoomCache) {
-            /** @var \MongoDate $date */
-            $date = $rawRoomCache['date'];
-            $dateString = $date->toDateTime()->format('d.m.Y');
-            if (isset($totalNumbersOfRoomsByDates[$dateString])) {
-                $totalNumbersOfRoomsByDates[$dateString] += $rawRoomCache['totalRooms'];
-            } else {
-                $totalNumbersOfRoomsByDates[$dateString] = $rawRoomCache['totalRooms'];
+            if (!isset($rawRoomCache['tariff'])) {
+                /** @var \MongoDate $date */
+                $date = $rawRoomCache['date'];
+                $dateString = $date->toDateTime()->format('d.m.Y');
+                if (isset($totalNumbersOfRoomsByDates[$dateString])) {
+                    $totalNumbersOfRoomsByDates[$dateString] += $rawRoomCache['totalRooms'];
+                } else {
+                    $totalNumbersOfRoomsByDates[$dateString] = $rawRoomCache['totalRooms'];
+                }
             }
         }
 
@@ -171,7 +181,7 @@ class ClientManager
      */
     public function isDefaultClient()
     {
-        return $this->client === \AppKernel::DEFAULT_CLIENT;
+        return false && $this->client === \AppKernel::DEFAULT_CLIENT || $this->kernel->getEnvironment() === 'test';
     }
 
     /**
@@ -190,17 +200,23 @@ class ClientManager
     {
         $dataReceiptTime = $this->session->get(Client::CLIENT_DATA_RECEIPT_DATETIME);
         $currentDateTime = new \DateTime();
+        $configRepository = $this->dm->getRepository('MBHClientBundle:ClientConfig');
+        $config = $configRepository->fetchConfig();
 
-        if (is_null($dataReceiptTime)
+        if (is_null($dataReceiptTime)|| !$config->isCacheValid()
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
             try {
                 /** @var Client $client */
                 $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
+                $configRepository->changeCacheValidity(true);
             } catch (\Exception $exception) {
                 $client = $this->session->get(self::SESSION_CLIENT_FIELD);
                 $this->logger->err($exception->getMessage());
             } finally {
+                if (!isset($client) || !$client instanceof Client) {
+                    throw new NotFoundHttpException('Can not get client with login "' . $this->client . '"');
+                }
                 $this->updateSessionClientData($client, $currentDateTime);
             }
         } else {

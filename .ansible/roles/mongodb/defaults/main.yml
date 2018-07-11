@@ -40,7 +40,19 @@ mongodb_users:
     password: maxibooking,
     roles: ['readWrite', 'dbAdmin'],
     database: maxibooking
-}
+  }
+  - {
+    name: user_test_db,
+    password: testpwd,
+    roles: ['readWrite', 'dbAdmin'],
+    database: template_db_for_test
+  }
+  - {
+    name: test,
+    password: testpwd,
+    roles: ['readWrite', 'dbAdmin'],
+    database: test
+  }
 
 mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with password for inter-process authentication
 

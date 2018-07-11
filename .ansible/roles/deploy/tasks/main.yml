@@ -14,7 +14,7 @@
     force: yes
     update: yes
     repo: '{{ repo }}'
-    version: master
+    version: dev
 
 - include_role:
     name: project_setup

@@ -12,8 +12,10 @@ form.clientConfigType.currency.options.rub: Рубли
 form.clientConfigType.currency.options.eur: Евро
 form.clientConfigType.currency.options.uah: Гривны
 form.clientConfigType.currency.options.kzt: Тенге
+form.clientConfigType.currency.options.uzs: 'Узбекские сумы'
 form.clientConfigType.currency.options.gel: 'Грузинские лари'
 form.clientConfigType.currency.options.usd: Доллары
+
 form.clientConfigType.sms_notification: 'Смс оповещение?'
 form.clientConfigType.notice_unpaid: Уведомление
 form.clientConfigType.is_notice_unpaid: 'Отправлять уведомление о неоплаченной брони через указанное количество дней'
@@ -54,6 +56,10 @@ form.clientPaymentSystemType.password_one: 'Пароль 1'
 form.clientPaymentSystemType.password_two: 'Пароль 2'
 form.clientPaymentSystemType.extended_account_number: 'Номер расширенного счета'
 form.clientPaymentSystemType.data_integrity_code: 'Код проверки целостности данных'
+form.clientPaymentSystemType.newRbk_ApiKey: 'Ключ API'
+form.clientPaymentSystemType.newRbk_WebhookApi: 'Ключ Webhook'
+form.clientPaymentSystemType.newRbk_ShopId: 'ID магазина (Shop_ID)'
+form.clientPaymentSystemType.newRbk_LifetimeInvoice: 'Время жизни инвойса'
 controller.clientConfig.change_time_zone_contact_support: 'Для изменения временной зоны, пожалуйста, обратитесь в службу тех.поддержки по адресу: "%supportEmail%"'
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'
 form.clientPaymentSystemType.successUrl: 'URL успешной оплаты'

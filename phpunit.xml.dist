@@ -10,17 +10,16 @@
     <php>
         <ini name="error_reporting" value="-1" />
         <server name="KERNEL_DIR" value="app/" />
+        <env name="MB_CLIENT" value="test"/>
+        <env name="MONGODB_ADMIN_LOGIN" value="root"/>
         <env name="MONGODB_ADMIN_PASSWORD" value="maxibooking"/>
-        <env name="MONGODB_DATABASE" value="test_db"/>
-        <env name="MB_CLIENT" value="maxibooking"/>
-        <env name="MONGODB_LOGIN" value="admin"/>
+        <env name="MONGODB_DATABASE" value="test"/>
+        <env name="MONGODB_LOGIN" value="test"/>
+        <env name="MONGODB_PASSWORD" value="testpwd"/>
         <env name="MONGODB_OPTIONS" value=""/>
-        <env name="MONGODB_PASSWORD" value="maxibooking"/>
-        <env name="MONGODB_ADMIN_LOGIN" value="admin"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
-        <env name="MONGODB_PRIMARY_HOST" value="mbh-mongo"/>
         <env name="MONGODB_HOST" value="mbh-mongo"/>
         <env name="MONGODB_PORT" value="27017"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
     </php>
 
     <testsuites>

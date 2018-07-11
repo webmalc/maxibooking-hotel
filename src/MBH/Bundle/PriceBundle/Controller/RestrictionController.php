@@ -58,7 +58,6 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 
     /**
      * @param Request $request
-     * @return Response
      * @Route("/table", name="restriction_overview_table", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_RESTRICTION_VIEW')")
@@ -95,8 +94,9 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         ];
 
         //get roomTypes
-        $roomTypesCallback = function () use ($hotel, $request, $dm) {
-            return $dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
+        $requestRoomTypes = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
+        $roomTypesCallback = function () use ($hotel, $requestRoomTypes, $dm) {
+            return $dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $requestRoomTypes);
         };
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
         $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
@@ -105,9 +105,9 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             return array_merge($response, ['error' => $this->container->get('translator')->trans('price.controller.restrictioncontroller.room_types_not_found')]);
         }
         //get tariffs
+        $requestTariffs = $this->helper->getDataFromMultipleSelectField($request->get('tariffs'));
         $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
-            ->fetchChildTariffs($hotel, 'restrictions', $request->get('tariffs'))
-        ;
+            ->fetchChildTariffs($hotel, 'restrictions', $requestTariffs);
         if (!count($tariffs)) {
             return array_merge($response, ['error' => $this->container->get('translator')->trans('price.controller.restrictioncontroller.tariffs_not_found')]);
         }
@@ -118,8 +118,8 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                 $begin,
                 $end,
                 $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [],
-                $request->get('tariffs') ? $request->get('tariffs') : [],
+                $requestRoomTypes,
+                $requestTariffs,
                 true
             )
         ;
@@ -151,6 +151,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $availableTariffs = $this->helper->toIds(
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'restrictions')
         );
+        $dates = [];
 
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
@@ -188,6 +189,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                     if ($validator->validate($newRestriction)) {
                         $dm->persist($newRestriction);
                     }
+                    $dates[] = $newRestriction->getDate();
                 }
             }
         }
@@ -214,16 +216,22 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                 ->setMinGuest($values['minGuest'] ? (int) $values['minGuest'] : null)
                 ->setClosedOnArrival(isset($values['closedOnArrival']) ? true : false)
                 ->setClosedOnDeparture(isset($values['closedOnDeparture']) ? true : false)
-                ->setClosed(isset($values['closed']) ? true : false)
-            ;
+                ->setClosed(isset($values['closed']) ? true : false);
 
             if ($validator->validate($restriction)) {
                 $dm->persist($restriction);
             }
+
+            $dates[] = $restriction->getDate();
         }
+
         $dm->flush();
 
-        $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
+        if (!empty($dates)) {
+            list($minDate, $maxDate) = $this->helper->getMinAndMaxDates($dates);
+            $this->get('mbh.channelmanager')->updateRestrictionsInBackground($minDate, $maxDate);
+        }
+
         $this->get('mbh.cache')->clear('restriction');
 
         $this->addFlash('success', 'price.controller.restrictioncontroller.change_successful_saved');
@@ -309,7 +317,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                 $data['weekdays']
             );
 
-            $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
+            $this->get('mbh.channelmanager')->updateRestrictionsInBackground($data['begin'], $data['end']);
             $this->get('mbh.cache')->clear('restriction');
 
             if ($request->get('save') !== null) {

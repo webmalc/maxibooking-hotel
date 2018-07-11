@@ -84,16 +84,22 @@ class OrderSubscriber implements EventSubscriber
             $dm->persist($entity);
             $dm->flush();
 
+            $packageIntervalDates = [];
             foreach($entity->getPackages() as $package) {
+                $packageIntervalDates[] = $package->getBegin();
+                $packageIntervalDates[] = $package->getEnd();
                 if ($package->getSpecial()) {
                     $dm = $args->getDocumentManager();
                     $dm->getRepository('MBHPriceBundle:Special')->recalculate($package->getSpecial(), $package);
                 }
             }
 
-            $this->_removeCache();
+            if (!empty($packageIntervalDates)) {
+                list($minDate, $maxDate) = $this->container->get('mbh.helper')->getMinAndMaxDates($packageIntervalDates);
+                $this->container->get('mbh.channelmanager')->updateRoomsInBackground($minDate, $maxDate);
+            }
 
-            $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
+            $this->_removeCache();
         }
 
         //Calc paid
@@ -112,7 +118,10 @@ class OrderSubscriber implements EventSubscriber
         }
     }
 
-
+    /**
+     * @param OnFlushEventArgs $args
+     * @throws \Throwable
+     */
     public function onFlush(OnFlushEventArgs $args)
     {
         $this->notifier = $this->container->get('mbh.notifier.mailer');
@@ -166,9 +175,24 @@ class OrderSubscriber implements EventSubscriber
                                 ->notify()
                             ;
 
-                            //TODO: Must be logged
                         } catch (\Exception $e) {
-                            return false;
+                            $logger = $this->container->get('logger');
+                            $logger->err($e->getTraceAsString());
+                            try {
+                                $notifier = $this->container->get('exception_notifier');
+                                $message = $notifier::createMessage();
+                                $messageText = "Произошла ошибка у \"".$this->kernel->getClient()
+                                    .". \"\n Сообщение \"".$e->getMessage()
+                                    ."\".\n Стек:".$e->getTraceAsString();
+                                $message
+                                    ->setType('danger')
+                                    ->setText($messageText);
+                                $notifier
+                                    ->setMessage($message)
+                                    ->notify();
+                            } catch (\Exception $exception) {
+                                $logger->err($exception->getTraceAsString());
+                            }
                         }
                     }
                 }

@@ -50,7 +50,6 @@ class Calculation
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb.odm.default_document_manager');
         $this->manager = $container->get('mbh.hotel.room_type_manager');
-        $this->mergingTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->getMergingTariffs();
         $this->helper = $container->get('mbh.helper');
     }
 
@@ -185,6 +184,10 @@ class Calculation
 
         $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
+        if (!isset($priceCaches[$roomTypeId][$tariffId])) {
+            return false;
+        }
+
         if (!$tariff->getIsDefault()) {
             $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel, null, $memcached);
             if (!$defaultTariff) {
@@ -200,13 +203,12 @@ class Calculation
             $defaultTariff = $tariff;
         }
 
-
         $mergingTariffsPrices = [];
-        foreach ($this->mergingTariffs as $mergingTariff) {
-            if ($mergingTariff->getParent() && $mergingTariff->getChildOptions()->isInheritPrices()) {
-                $ids = [$mergingTariff->getParent()->getId()];
+        if ($tariff->getMergingTariff()) {
+            if ($tariff->getMergingTariff()->getParent() && $tariff->getMergingTariff()->getChildOptions()->isInheritPrices()) {
+                $ids = [$tariff->getMergingTariff()->getParent()->getId()];
             } else {
-                $ids = [$mergingTariff->getId()];
+                $ids = [$tariff->getMergingTariff()->getId()];
             }
 
             $mergingTariffCallback = function () use ($begin, $end, $hotel, $roomTypeId, $ids, $memcached) {
@@ -228,23 +230,15 @@ class Calculation
             }
         }
 
-        if (!isset($priceCaches[$roomTypeId][$tariffId])) {
-            return false;
-        }
-
         $caches = [];
         foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $endPlus) as $cacheDay) {
             $cacheDayStr = $cacheDay->format('d.m.Y');
 
             if (isset($priceCaches[$roomTypeId][$tariffId][$cacheDayStr])) {
                 $caches[$cacheDayStr] = $priceCaches[$roomTypeId][$tariffId][$cacheDayStr];
-            } else {
-                foreach ($this->mergingTariffs as $mergingTariff) {
-                    if (isset($mergingTariffsPrices[$roomTypeId][$mergingTariff->getId()][$cacheDayStr])) {
-                        $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$mergingTariff->getId()][$cacheDayStr];
-                        break;
-                    }
-                }
+            } elseif ($tariff->getMergingTariff()
+                && isset($mergingTariffsPrices[$roomTypeId][$tariff->getMergingTariff()->getId()][$cacheDayStr])) {
+                $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$tariff->getMergingTariff()->getId()][$cacheDayStr];
             }
 
             if (empty($caches[$cacheDayStr]) && isset($defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr])) {
@@ -383,7 +377,7 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
-                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $originTariff, $roomType, $special);
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $cache->getTariff(), $roomType, $special);
                 $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
 
@@ -695,7 +689,7 @@ class Calculation
         /** @var LogEntryRepository $logEntryRepo */
         $logEntryRepo = $this->dm->getRepository('GedmoLoggable:LogEntry');
         $packageIds = $this->helper->toIds($packages);
-        $b = microtime(true);
+
         /** @var LogEntry[] $packagesRawLogs */
         $packagesRawLogs = $logEntryRepo
             ->createQueryBuilder()
@@ -744,7 +738,7 @@ class Calculation
                 $packageId = $package->getId();
                 $isCurrentDate = $dateString === $currentDateString;
 
-                if ($isCurrentDate) {
+                if ($isCurrentDate || !isset($sortedLogData[$packageId])) {
                     $price = $package->getPackagePrice();
                     $totalOverWrite = $package->getTotalOverwrite();
                     $servicesPrice = $package->getServicesPrice();
@@ -765,12 +759,14 @@ class Calculation
                     'isPercentDiscount' => $isPercentDiscount,
                     'discount' => $discount
                 ];
+
                 $prices[$dateString][$packageId] = $asCalculatedPrice
                     ? $this->calcPackagePrice($price, $totalOverWrite, $servicesPrice, $discount, $isPercentDiscount)
                     : $priceData;
 
                 $previousValue = $priceData;
             }
+
         }
 
         return $prices;

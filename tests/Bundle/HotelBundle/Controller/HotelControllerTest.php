@@ -2,12 +2,11 @@
 
 namespace Tests\Bundle\HotelBundle\Controller;
 
-use MBH\Bundle\BaseBundle\Lib\Test\Traits\CrudWebTestCaseTrait;
-use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase;
 
-class HotelControllerTest extends WebTestCase
+
+class HotelControllerTest extends CrudWebTestCase
 {
-    use CrudWebTestCaseTrait;
 
     public static function setUpBeforeClass()
     {
@@ -35,6 +34,49 @@ class HotelControllerTest extends WebTestCase
         ;
     }
 
+    public function testNew()
+    {
+        $this->newFormBaseTest();
+    }
+
+    /**
+     * @depends testNew
+     */
+    public function testIndex()
+    {
+        $this->listBaseTest();
+    }
+
+    /**
+     * @depends testIndex
+     */
+    public function testEdit()
+    {
+        $this->editFormBaseTest();
+    }
+
+    /**
+     * @depends testEdit
+     */
+    public function testDelete()
+    {
+        $url = $this->getListUrl();
+        $title = $this->getEditTitle();
+        $count = $this->getListItemsCount() + 1;
+
+        $result = $this->clickLinkInList($url, ' a[data-text="Вы действительно хотите удалить запись «' . $title . '»?"]', true);
+
+        $this->assertContains(
+            'Невозможно удалить данные об отеле, так как для него существуют записи о тарифах',
+            $result->filter('#messages')->text()
+        );
+        $this->assertSame($count, $result->filter($this->getListContainer() . 'a[rel="main"]')->count());
+
+    }
+
+    /**
+     * @depends testDelete
+     */
     public function testExtendedInformationForm()
     {
         $fixtures = $this->loadFixtures([

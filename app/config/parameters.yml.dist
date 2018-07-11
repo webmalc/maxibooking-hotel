@@ -10,7 +10,6 @@ parameters:
 
   #MongoBD
   mongodb_host: '%env(MONGODB_HOST)%'
-  mongodb_primary_host: '%env(MONGODB_PRIMARY_HOST)%'
   mongodb_port: '%env(MONGODB_PORT)%'
   mongodb_options: '%env(MONGODB_OPTIONS)%'
   mongodb_database: '%env(MONGODB_DATABASE)%'
@@ -80,5 +79,4 @@ parameters:
   memcache_host: 'localhost'
 
   domain: 'maxi-booking.ru'
-  sandbox_client: 'example'
   billing_url: 'https://billing.maxi-booking.com'

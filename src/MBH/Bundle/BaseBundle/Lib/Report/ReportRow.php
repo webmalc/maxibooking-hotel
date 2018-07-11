@@ -87,10 +87,12 @@ class ReportRow
      */
     public function getAttributes()
     {
+        $defaultAttributes = array_merge(['data-row-option' => $this->getRowOption()], $this->attributes);
+
         if (isset($this->callbacks['attributes'])) {
-            $this->attributes = array_merge($this->callbacks['attributes']($this), $this->attributes);
+            return array_merge($this->callbacks['attributes']($this), $defaultAttributes);
         }
 
-        return $this->attributes;
+        return $defaultAttributes;
     }
 }

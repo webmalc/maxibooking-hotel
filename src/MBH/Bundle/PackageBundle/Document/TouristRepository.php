@@ -38,10 +38,10 @@ class TouristRepository extends DocumentRepository
 
         $foreignTourists = [];
         /** @var Tourist $tourist */
-        foreach($tourists as $tourist) {
-            if($tourist) {
+        foreach ($tourists as $tourist) {
+            if ($tourist) {
                 $citizenship = $tourist->getCitizenshipTld();
-                if(!$citizenship || ($citizenship && $citizenship !== Country::RUSSIA_TLD)) {
+                if (!$citizenship || ($citizenship && $citizenship !== Country::RUSSIA_TLD)) {
                     $foreignTourists[] = $tourist;
                 }
             }
@@ -60,7 +60,7 @@ class TouristRepository extends DocumentRepository
 
         if ($criteria->search) {
             $fullNameRegex = new \MongoRegex('/.*' . $criteria->search . '.*/ui');
-            if(is_numeric($criteria->search)) {
+            if (is_numeric($criteria->search)) {
                 $queryBuilder->field('documentRelation.number')->equals($fullNameRegex);
             } else {
                 $queryBuilder->field('fullName')->equals($fullNameRegex);
@@ -76,7 +76,7 @@ class TouristRepository extends DocumentRepository
             }
         }
 
-        if($criteria->begin || $criteria->end) {
+        if ($criteria->begin || $criteria->end) {
             $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
             $packageCriteria = new PackageQueryCriteria();
             $packageCriteria->begin = $criteria->begin;
@@ -101,8 +101,7 @@ class TouristRepository extends DocumentRepository
         $queryBuilder
             ->skip($offset)
             ->limit($limit)
-            ->sort('fullName', 'asc')
-        ;
+            ->sort('fullName', 'asc');
         $tourists = $queryBuilder->getQuery()->execute();
 
         return $tourists;
@@ -132,9 +131,10 @@ class TouristRepository extends DocumentRepository
         $address = null,
         $note = null,
         $communicationLanguage = null
-    ) {
+    )
+    {
         $dm = $this->getDocumentManager();
-        $tourist  = null;
+        $tourist = null;
         $lastName = trim(mb_convert_case(mb_strtolower($lastName), MB_CASE_TITLE));
         $firstName = trim(mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE));
         if (empty($lastName)) {
@@ -149,8 +149,7 @@ class TouristRepository extends DocumentRepository
             $qb = $this->createQueryBuilder()
                 ->field('lastName')->equals($lastName)
                 ->field('firstName')->equals($firstName)
-                ->field('deletedAt')->equals(null)
-            ;
+                ->field('deletedAt')->equals(null);
 
             if (!empty($email)) {
                 $qb->addOr($qb->expr()->field('email')->equals($email));
@@ -173,8 +172,7 @@ class TouristRepository extends DocumentRepository
                 ->field('deletedAt')->equals(null)
                 ->field('email')->equals(null)
                 ->field('phone')->equals(null)
-                ->field('birthday')->equals(null)
-            ;
+                ->field('birthday')->equals(null);
 
             $tourist = $qb->getQuery()->getSingleResult();
         }
@@ -182,8 +180,7 @@ class TouristRepository extends DocumentRepository
         if (!$tourist || $tourist->getDeletedAt()) {
             $tourist = new Tourist();
             $tourist->setLastName($lastName)
-                ->setFirstName($firstName)
-            ;
+                ->setFirstName($firstName);
         }
 
         if ($patronymic) {
@@ -199,7 +196,7 @@ class TouristRepository extends DocumentRepository
             $tourist->setBirthday($birthday);
         }
         if ($note || $address) {
-            $tourist->setNote($address ?  'Address: ' . $address . "\n\n" . $note : $note);
+            $tourist->setNote($address ? 'Address: ' . $address . "\n\n" . $note : $note);
         }
 
         if ($communicationLanguage) {
@@ -210,5 +207,21 @@ class TouristRepository extends DocumentRepository
         $dm->flush($tourist);
 
         return $tourist;
+    }
+
+    /**
+     * @param string $query
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException]
+     */
+    public function getIdsWithNameByQueryString(string $query)
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 }

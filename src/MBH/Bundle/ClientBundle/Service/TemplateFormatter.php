@@ -2,19 +2,13 @@
 
 namespace MBH\Bundle\ClientBundle\Service;
 
-use Liip\ImagineBundle\Templating\ImagineExtension;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\UserBundle\Document\User;
 use Psr\Container\ContainerInterface;
-use Symfony\Bridge\Twig\Extension\AssetExtension;
-use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
-use Symfony\Bridge\Twig\Extension\TranslationExtension;
-use Symfony\Component\HttpFoundation\Response;
-use Vich\UploaderBundle\Twig\Extension\UploaderExtension;
+use MBH\Bundle\UserBundle\Document\User;
 
 class TemplateFormatter
 {
@@ -74,22 +68,29 @@ class TemplateFormatter
         $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
         $organization = $doc->getOrganization() ? $doc->getOrganization() : $hotel->getOrganization();
         $params = [
-            'package' => $package,
-            'order' => $order,
-            'hotel' => $hotel,
-            'payer' => $order->getPayer(),
-            'organization' => $organization,
-            'user' => $user,
-            'arrivalTimeDefault' => $hotel->getPackageArrivalTime(),
+            'package'              => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Package')->newInstance($package),
+            'order'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order')->newInstance($order),
+            'hotel'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Hotel')->newInstance($hotel),
+            'payer'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper')->payerInstance($order->getPayer()),
+            'organization'         => $organization,
+            'user'                 => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\User')->newInstance($user),
+            'arrivalTimeDefault'   => $hotel->getPackageArrivalTime(),
             'departureTimeDefault' => $hotel->getPackageDepartureTime(),
-            'documentTypes' => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes()
+            'documentTypes'        => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes(),
+            'currentDate'          => (new \DateTime())->format('d.m.Y'),
         ];
 
         $params = $this->addCalculatedParams($params, $package);
+
         $twig = $this->container->get('twig');
         $renderedTemplate = $twig->createTemplate($doc->getContent())->render($params);
 
-        return  $this->container->get('knp_snappy.pdf')->getOutputFromHtml($renderedTemplate);
+        return $this->container->get('knp_snappy.pdf')
+            ->getOutputFromHtml(
+                $renderedTemplate, [
+                                     'orientation' => $doc->getOrientation(),
+                                 ]
+            );
     }
 
 

@@ -1,3 +1,6 @@
+parameters:
+    log_file.documents_template_update: !php/const:MBH\Bundle\ClientBundle\Command\DocumentTemplateUpdateCommand::FILE_LOG_NAME
+
 services:
     mbh.mbhs:
         class: MBH\Bundle\ClientBundle\Service\Mbhs
@@ -32,6 +35,7 @@ services:
             - '@mbh.helper'
             - '@mbh.client_manager'
             - '@router'
+            - '@kernel'
 
     mbh_bundle_client.twig.dashboard_extension:
         class: MBH\Bundle\ClientBundle\Twig\DashboardExtension
@@ -47,6 +51,7 @@ services:
             - '@mbh.billing.api'
             - '@mbh.billing.logger'
             - '%client%'
+            - '@kernel'
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:
@@ -70,3 +75,25 @@ services:
     mbh.fms_dictionaries:
         class: MBH\Bundle\ClientBundle\Lib\FMSDictionaries
         arguments: ['@mbh.csv_reader']
+
+    MBH\Bundle\ClientBundle\Service\DocumentSerialize\:
+        resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/DocumentSerialize/*'
+        arguments:
+             - '@service_container'
+             - '@mbh.billing.api'
+
+    MBH\Bundle\ClientBundle\Service\PaymentSystem\:
+        resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/PaymentSystem/*'
+        arguments:
+            - '@service_container'
+    mbh.document_template_update.logger:
+          class:     Symfony\Bridge\Monolog\Logger
+          arguments: [app]
+          calls:
+              - [pushHandler, ['@mbh.document_template_update.logger_handler']]
+
+    mbh.document_template_update.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments:
+            - "%kernel.logs_dir%/%kernel.environment%.%log_file.documents_template_update%"
+            - 200

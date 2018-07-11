@@ -90,8 +90,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ];
 
         //get roomTypes
-        $roomTypesCallback = function () use ($hotel, $request) {
-            return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
+        $requestedRoomTypes = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
+        $roomTypesCallback = function () use ($hotel, $requestedRoomTypes) {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $requestedRoomTypes);
         };
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
         $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
@@ -113,7 +114,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
                 $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                $requestedRoomTypes,
                 false, true)
         ;
 
@@ -142,6 +143,8 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $availableTariffs = $this->helper->toIds(
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
         );
+
+        $dates = [];
 
         $roomCachesByDates = [];
         //new
@@ -174,8 +177,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                         ->setRoomType($roomType)
                         ->setDate($helper->getDateFromString($date))
                         ->setTotalRooms((int) $totalRooms['rooms'])
-                        ->setPackagesCount(0)
-                    ;
+                        ->setPackagesCount(0);
+
+                    $dates[] = $newRoomCache->getDate();
                     
                     $roomCachesByDates[$newRoomCache->getDate()->format('d.m.Y')][] = $newRoomCache;
                     if ($tariffId && isset($tariff) && !is_null($tariff)) {
@@ -212,6 +216,8 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 $this->dm->persist($roomCache);
             }
             $roomCachesByDates[$roomCache->getDate()->format('d.m.Y')][] = $roomCache;
+
+            $dates[] = $roomCache->getDate();
         }
 
         $busyDays = [];
@@ -234,7 +240,12 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         } else {
             $this->dm->flush();
             $this->addFlash('success', 'price.tariffcontroller.update_successfully_saved');
-            $this->get('mbh.channelmanager')->updateRoomsInBackground();
+
+            if (!empty($dates)) {
+                list($minDate, $maxDate) = $this->helper->getMinAndMaxDates($dates);
+                $this->get('mbh.channelmanager')->updateRoomsInBackground($minDate, $maxDate);
+            }
+
             $this->get('mbh.cache')->clear('room_cache');
         }
 
@@ -292,7 +303,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             );
             if (empty($error)) {
                 $this->addFlash('success', 'price.tariffcontroller.data_successfully_generated');
-                $this->get('mbh.channelmanager')->updateRoomsInBackground();
+                $this->get('mbh.channelmanager')->updateRoomsInBackground($data['begin'], $data['end']);
                 $this->get('mbh.cache')->clear('room_cache');
 
                 return $this->isSavedRequest() ?

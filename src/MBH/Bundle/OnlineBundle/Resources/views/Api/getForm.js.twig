@@ -30,7 +30,12 @@ jQuery(document).ready(function() {
         }
     };
 
-    $("#mbh-form").on('submit', function() {
+    var $mbhForm = $("#mbh-form");
+    $mbhForm.on('submit', function(e) {
+        window.parent.postMessage({
+            type: 'form-event',
+            purpose: 'search'
+        }, "*");
         window.sessionStorage.setItem('MBHSearchData',$(this).serialize());
     })
 

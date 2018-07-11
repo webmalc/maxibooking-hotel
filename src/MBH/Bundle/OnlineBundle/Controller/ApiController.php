@@ -15,12 +15,14 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Stripe\Charge;
+use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -251,40 +253,26 @@ class ApiController extends Controller
             $logger->info('FAIL. '.$logText.' .Not found config');
             throw $this->createNotFoundException();
         }
-        $response = $clientConfig->checkRequest($request, $paymentSystemName);
+        $holder = $clientConfig->checkRequest($request, $paymentSystemName, $clientConfig);
 
-        if (!$response) {
+        if (!$holder->isSuccess()) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
+            $holder->getIndividualErrorResponse();
             throw $this->createNotFoundException();
         }
 
-        if ($paymentSystemName === 'stripe') {
-            \Stripe\Stripe::setApiKey($clientConfig->getStripe()->getSecretKey());
-
-            $charge = Charge::create([
-                "amount" => $request->request->get('amount') * 100,
-                "currency" => $request->request->get('currency'),
-                "description" => "Charge for order #" . $response['doc'] ,
-                "source" => $request->get('stripeToken'),
-            ]);
-            if ($charge->status !== 'succeeded') {
-                throw new BadRequestHttpException('Stripe charge is not successful');
-            }
-        }
-
         //save cashDocument
-        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
+        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($holder->getDoc());
 
         if ($cashDocument && !$cashDocument->getIsPaid()) {
             $cashDocument->setIsPaid(true);
             $dm->persist($cashDocument);
             $dm->flush();
-
             //save commission
-            if (isset($response['commission']) && is_numeric($response['commission'])) {
+            if ($holder->getCommission() !== null && is_numeric($holder->getCommission())) {
                 $commission = clone $cashDocument;
-                $commissionTotal = (float)$response['commission'];
-                if (isset($response['commissionPercent']) && $response['commissionPercent']) {
+                $commissionTotal = (float)$holder->getCommission();
+                if ($holder->getCommissionPercent()) {
                     $commissionTotal = $commissionTotal * $cashDocument->getTotal();
                 }
                 $commission->setTotal($commissionTotal)
@@ -348,7 +336,7 @@ class ApiController extends Controller
 
         $logger->info('OK. '.$logText);
 
-        return $paymentSystemName === Stripe::NAME ? $this->redirectToRoute('successful_payment') : new Response($response['text']);
+        return $holder->getIndividualSuccessResponse($this) ?? new Response($holder->getText());
     }
 
     /**
@@ -379,7 +367,6 @@ class ApiController extends Controller
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
         $query->setSave(true);
-        $isViewTariff = false;
 
         if (!empty($request->get('children-ages')) && $query->children > 0 && $formConfig->isIsDisplayChildrenAges()) {
             $query->setChildrenAges($request->get('children-ages'));
@@ -390,17 +377,6 @@ class ApiController extends Controller
             $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         }
         foreach ($hotels as $hotel) {
-            if (is_null($query->tariff) && !$isViewTariff) {
-                $defaultTariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
-                    ['hotel.id' => $hotel->getId(), 'isDefault' => true, 'isOnline' => true, 'isEnabled' => true]
-                );
-                if (empty($defaultTariff)) {
-                    $query->tariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
-                        ['hotel.id' => $hotel->getId(), 'isOnline' => true, 'isEnabled' => true]
-                    );
-                }
-                $isViewTariff = true;
-            }
             foreach ($hotel->getRoomTypes() as $roomType) {
                 $query->addAvailableRoomType($roomType->getId());
             }
@@ -413,9 +389,18 @@ class ApiController extends Controller
             $results = [];
             $tariffResults = [];
         } else {
-            $results = $this->get('mbh.package.search')->search($query);
+            $search = $this->get('mbh.package.search');
+            $tariffResults = $search->searchTariffs($query);
 
-            $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
+            if (!empty($query->tariff)) {
+                $results = $search->search($query);
+                $defaultTariff = $query->tariff instanceof Tariff ? $query->tariff : $this->dm->find('MBHPriceBundle:Tariff', $query->tariff);
+            } else {
+                $results = $search->searchBeforeResult($query, $tariffResults);
+                if (!empty($results)) {
+                    $defaultTariff = current($results)->getTariff();
+                }
+            }
         }
 
         $hotels = $services = [];
@@ -808,6 +793,26 @@ class ApiController extends Controller
         }
 
         return $order;
+    }
+
+    /**
+     * @Route("/file/{configId}/load-result", name="online_form_load_result_file", defaults={"_format"="js"})
+     * @Cache(expires="tomorrow", public=true)
+     * @Template()
+     */
+    public function loadResultAction($configId)
+    {
+        $configForm = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
+            ->find($configId);
+
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+
+        return [
+            'config'         => $configForm,
+            'paymentSystems' => $clientConfig->getPaymentSystems(),
+            'successUrl'     => $clientConfig->getSuccessUrl(),
+        ];
     }
 
     /**

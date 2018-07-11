@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/dynamic_sales")
+ * @Route("/report/dynamic_sales")
  * @Method("GET")
  */
 class DynamicSalesController extends Controller implements CheckHotelControllerInterface

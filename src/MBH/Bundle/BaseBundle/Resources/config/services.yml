@@ -128,7 +128,7 @@ services:
             - { name: form.type, alias: mbh_language }
 
     mbh.event_listener.check_relation_subscriber:
-            class: MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Subscriber
+            class: MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\RemoveSubscriber
             arguments: ['@service_container']
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
@@ -469,3 +469,16 @@ services:
     mbh.guides_data_service:
         class: MBH\Bundle\BaseBundle\Service\GuidesDataService
         arguments: ['@security.authorization_checker']
+
+    mbh.yaml_manager:
+        class: MBH\Bundle\BaseBundle\Service\YmlManager
+
+    mbh.menu_builder:
+        class: MBH\Bundle\BaseBundle\Menu\Builder
+        arguments:
+            - "@knp_menu.factory"
+            - "@service_container"
+        tags:
+            - { name: knp_menu.menu_builder, method: mainMenu, alias: base_mainMenu }
+            - { name: knp_menu.menu_builder, method: managementMenu, alias: base_managementMenu }
+            - { name: knp_menu.menu_builder, method: createHotelMenu, alias: base_createHotelMenu }

@@ -8,8 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ODM\EmbeddedDocument
  */
-class 
-Room
+class Room
 {
     /**
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
@@ -31,7 +30,7 @@ Room
      * Set roomType
      *
      * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
-     * @return self
+     * @return static
      */
     public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
     {
@@ -53,7 +52,7 @@ Room
      * Set roomId
      *
      * @param string $roomId
-     * @return self
+     * @return static
      */
     public function setRoomId($roomId)
     {

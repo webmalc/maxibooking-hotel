@@ -1,16 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb3
- * Date: 06.04.18
- * Time: 13:22
- */
 
 namespace MBH\Bundle\BaseBundle\Lib\Test\Traits;
 
 
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
 
 trait FixturesTestTrait
@@ -18,6 +13,7 @@ trait FixturesTestTrait
     /**
      * Run console command
      * @param string $name
+     * @throws \Exception
      */
     public static function command(string $name)
     {
@@ -26,7 +22,8 @@ trait FixturesTestTrait
         $application->setAutoExit(false);
 
         $input = new ArrayInput(['command' => $name]);
-        $output = new NullOutput();
+//        $output = new NullOutput();
+        $output = new BufferedOutput();
         $application->run($input, $output);
     }
 
@@ -37,7 +34,7 @@ trait FixturesTestTrait
     {
         self::clearDB();
         $container = self::getContainerStat();
-        $container->get('mbh.billing_mongo_client')->copyDatabase('template_test_db', $container->getParameter('mongodb_database'));
+        $container->get('mbh.billing_mongo_client')->copyDatabase('template_db_for_test', $container->getParameter('mongodb_database'));
     }
 
     protected static function getContainerStat()
