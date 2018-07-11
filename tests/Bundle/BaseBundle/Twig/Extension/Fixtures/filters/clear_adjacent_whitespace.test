@@ -1,0 +1,13 @@
+--TEST--
+"clear_adjacent_whitespace" filter
+--TEMPLATE--
+{{ first | clear_adjacent_whitespace }}
+{{ second | clear_adjacent_whitespace | trim }}
+--DATA--
+return [
+    'first' => '  test remove    whitespace',
+    'second' => '  test remove    whitespace',
+]
+--EXPECT--
+ test remove whitespace
+test remove whitespace

@@ -68,7 +68,7 @@ class ChannelManagerController extends Controller
             }
 
             ob_start();
-            passthru('tail -1000 ' . escapeshellarg($file));
+            passthru('tail -2000 ' . escapeshellarg($file));
             $content = trim(preg_replace('/==>.*<==/', '', ob_get_clean()));
         }
 

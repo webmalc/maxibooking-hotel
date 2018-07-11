@@ -4,9 +4,8 @@
  * Date: 14.06.18
  */
 
-class FormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
+class FormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase
 {
-    use \MBH\Bundle\BaseBundle\Lib\Test\Traits\CrudWebTestCaseTrait;
 
     public static function setUpBeforeClass()
     {

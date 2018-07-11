@@ -45,7 +45,7 @@ class CheckResultHolder
     {
         foreach ($data as $key => $value){
             $setter = 'set' . ucfirst($key);
-            if (property_exists($this,$setter)) {
+            if (method_exists($this,$setter)) {
                 $this->$setter($value);
             }
         }

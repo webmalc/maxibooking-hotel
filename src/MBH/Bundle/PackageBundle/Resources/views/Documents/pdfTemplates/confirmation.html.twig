@@ -247,15 +247,15 @@
                 <tr>
                     <td align="center">{{ counter }}</td>
                     <td>
-                        {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace({'_': '.'}) }}
+                        {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date }}
                         {% if package.roomType and package.roomType.fullTitle %}
                             ({{ package.roomType.fullTitle }})
                         {% endif %}
                     </td>
                     <td align="center">{{ data.nights }}</td>
                     <td align="center">{{ "package.pdf.night"|trans({}, "MBHPackageBundle") }}</td>
-                    <td align="right">{{ data.price|number_format(2) }}</td>
-                    <td align="right">{{ (data.nights * data.price)|number_format(2) }}</td>
+                    <td align="right">{{ data.price != false ? data.price|number_format(2) : '' }}</td>
+                    <td align="right">{{ data.sum|number_format(2) }}</td>
                 </tr>
             {% endfor %}
         {% endfor %}

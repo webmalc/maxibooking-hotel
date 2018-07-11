@@ -27,14 +27,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ApiPaymentFormController extends Controller
 {
-    private function getPaymentSystem(): string
-    {
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-
-        return $clientConfig->getPaymentSystems()[0];
-    }
-
-
     /**
      * @Route("/file/{configId}/load", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
      * @Cache(expires="tomorrow", public=true)
@@ -142,5 +134,12 @@ class ApiPaymentFormController extends Controller
         }
 
         return true;
+    }
+
+    private function getPaymentSystem(): string
+    {
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        return $clientConfig->getPaymentSystems()[0];
     }
 }

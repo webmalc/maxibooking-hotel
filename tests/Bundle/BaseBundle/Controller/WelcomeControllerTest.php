@@ -85,28 +85,6 @@ class WelcomeControllerTest extends WebTestCase
         );
     }
 
-    public function testSidebarActiveMainMenu()
-    {
-        $crawler = $this->getListCrawler(self::URL_CHESSBOARD);
-
-        $mainMenu = $crawler->filter('#' . Builder::ROOT_MENU_ITEM_MAIN_MENU . '.collapse.in');
-        $managementMenu = $crawler->filter('#' . Builder::ROOT_MENU_ITEM_MANAGEMENT_MENU . '.collapse.in');
-
-        $this->assertCount(1, $mainMenu);
-        $this->assertCount(0, $managementMenu);
-    }
-
-    public function testSidebarActiveManagerMenu()
-    {
-        $crawler = $this->getListCrawler(self::URL_ROOMTYPE);
-
-        $mainMenu = $crawler->filter('#' . Builder::ROOT_MENU_ITEM_MAIN_MENU . '.collapse.in');
-        $managementMenu = $crawler->filter('#' . Builder::ROOT_MENU_ITEM_MANAGEMENT_MENU . '.collapse.in');
-
-        $this->assertCount(0, $mainMenu);
-        $this->assertCount(1, $managementMenu);
-    }
-
     public function testBadgeDefault()
     {
         $crawler = $this->getListCrawler(self::URL_CHESSBOARD);

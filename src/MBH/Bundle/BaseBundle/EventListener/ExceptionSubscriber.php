@@ -62,7 +62,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 . " Пользователь " . (!is_null($user) ? $user->getUsername() : 'без пользователя')
                 . ". \"\n Сообщение \"" . $exception->getMessage()
                 . "\".\n Стек:" . $exception->getTraceAsString();
-            $message->setText($messageText);
+            $message
+                ->setType('danger')
+                ->setText($messageText);
             $this->exceptionNotifier
                 ->setMessage($message)
                 ->notify();

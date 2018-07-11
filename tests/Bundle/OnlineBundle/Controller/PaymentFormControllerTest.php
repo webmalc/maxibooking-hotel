@@ -4,9 +4,8 @@
  * Date: 13.06.18
  */
 
-class PaymentFormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
+class PaymentFormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase
 {
-    use \MBH\Bundle\BaseBundle\Lib\Test\Traits\CrudWebTestCaseTrait;
 
     public static function setUpBeforeClass()
     {
