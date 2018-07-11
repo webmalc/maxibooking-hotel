@@ -26,10 +26,10 @@
                 <label><i class="fa fa-bed" title='{{ 'report.filling.filling.room_types'|trans }}' data-toggle='tooltip'></i></label>
                 <select name="roomTypes[]" multiple data-placeholder='{{ 'report.filling.filling.room_types'|trans }}' id="filling-report-filter-roomType" class="form-control input-sm">
                     <option></option>
-                    {% for hotelName, roomTypes in roomTypeList %}
-                        <optgroup label="{{ hotelName }}">
-                            {% for roomType in roomTypes %}
-                                <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
+                    {% for hotelId, hotelRoomsData in roomTypeList %}
+                        <optgroup label="{{ hotelRoomsData['hotel'].getName() }}">
+                            {% for roomType in hotelRoomsData['rooms'] %}
+                                <option value="{{ roomType.id }}">{{ roomType.name }}</option>
                             {% endfor %}
                         </optgroup>
                     {% endfor %}

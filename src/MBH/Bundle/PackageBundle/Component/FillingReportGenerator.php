@@ -19,21 +19,6 @@ class FillingReportGenerator
     use ContainerAwareTrait;
 
     /**
-     * @var Hotel
-     */
-    protected $hotel;
-
-    /**
-     * @param Hotel $hotel
-     * @return $this
-     */
-    public function setHotel(Hotel $hotel)
-    {
-        $this->hotel = $hotel;
-        return $this;
-    }
-
-    /**
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param RoomType[] $roomTypes
@@ -149,7 +134,6 @@ class FillingReportGenerator
                 '$lte' => $end,
             ],
             'roomType.id' => ['$in' => $roomTypeIDs],
-            'hotel.id' => $this->hotel->getId(),
             'tariff' => null
         ]);
 
