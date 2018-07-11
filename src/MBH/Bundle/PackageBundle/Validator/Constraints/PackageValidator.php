@@ -26,10 +26,25 @@ class PackageValidator extends ConstraintValidator
      */
     public function validate($package, Constraint $constraint)
     {
-        if($package->getBegin() >= $package->getEnd()) {
+        $begin = $package->getBegin();
+        $end = $package->getEnd();
+
+        if ($begin === null || $end === null) {
+            return;
+        }
+
+        if($begin >= $end) {
             $this->context->addViolation($constraint->beginEndMessage);
         }
-        if ($package->getRoomType()->getTotalPlaces() < ($package->getAdults() + $package->getChildren())) {
+
+        $roomType = $package->getRoomType();
+        $guest = $package->getAdults() + $package->getChildren();
+
+        if ($roomType === null || (int) $guest === 0) {
+            return;
+        }
+
+        if ($roomType->getTotalPlaces() < $guest) {
             $this->context->addViolation($constraint->placesMessage);
         }
         if ($package->getIsCheckOut() && !$package->getIsCheckIn()) {

@@ -137,6 +137,7 @@ package.copy.edit_reservation: 'редактирование брони '
 package.copy.deleted: Удалена
 package.edit.edit_reservation: 'редактирование брони '
 package.edit.price: Цена
+package.edit.package_price: 'Цена за проживание'
 package.edit.price_by_day: 'Цена по дням'
 package.edit.dates: Даты
 package.edit.guests: Гости

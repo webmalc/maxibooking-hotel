@@ -1,0 +1,45 @@
+{% extends 'MBHOnlineBundle:PaymentForm:layout.html.twig' %}
+
+{% set small_title = 'views.form.index.list'|trans({}, 'MBHOnlineBundle') %}
+{% set layout = "box" %}
+
+{% block content %}
+    <table class="table table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th>{{ 'onlinebundle.resources.views.hotels'|trans }}</th>
+            {#<th>{{ 'onlinebundle.resources.views.room_types'|trans }}</th>#}
+            {#<th>{{ 'onlinebundle.resources.views.guests'|trans }}</th>#}
+            <th>{{ 'onlinebundle.resources.views.on'|trans }}</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for paymentForm in paymentForms %}
+            <tr {{ not paymentForm.isEnabled ? 'class="danger"' }}>
+                <td class="text-center table-icon"><i class="fa fa-globe"></i></td>
+                <td>
+                    {% if paymentForm.hotels|length %}
+                        {{ paymentForm.hotels|join(', ') }}
+                    {% else %}
+                        {{ 'onlinebundle.resources.views.all_hotels'|trans }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not paymentForm.isEnabled %}
+                        <span class="label label-danger">{{ 'onlinebundle.resources.net'|trans }}</span>
+                    {% else %}
+                        <span class="label label-success">{{ 'onlinebundle.resources.da'|trans }}</span>
+                    {% endif %}
+                </td>
+                <td class="table-actions-td text-center">
+                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': paymentForm, 'route': 'online_payment_form'} %}{% endembed %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'online_payment_form_new', 'role': 'ONLINE_FORM'} %}
+{% endblock %}

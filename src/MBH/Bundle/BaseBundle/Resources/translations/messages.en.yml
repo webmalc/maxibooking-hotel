@@ -141,6 +141,12 @@ languages.en: English
 languages.ru: Russian
 form.quick_links: 'Quick links'
 menu.header.navigation: Navigation
+menu.label.hotel_services: 'Hotel Services'
+menu.label.web_site: 'WEB Site'
+menu.label.analytics: Analytics
+menu.label.users_and_roles: 'Users and Roles'
+menu.label.profile: Profile
+menu.label.payment_systems: 'Payment Systems'
 menu.label.broni: Reservations
 menu.label.podbor: Search
 menu.label.portie: Porter
@@ -157,6 +163,7 @@ menu.label.nomandprice.promotions: Sales
 menu.label.task: Tasks
 menu.label.warehouse: Stock
 menu.label.restaurant: Restaurant
+menu.label.financial_analytics: 'Financial Analytics'
 menu.label.reports: Reports
 menu.label.reports.services: Services
 menu.label.reports.clients: Guests
@@ -171,9 +178,9 @@ menu.settings.label.hotels: Hotels
 menu.settings.label.housing: Wings
 menu.settings.label.room_types: Rooms
 menu.settings.label.restaurant: Restaurant
-menu.settings.label.restaurant.ingredients: Ingredients
+menu.settings.label.restaurant.ingredients: 'Restaurant - Ingredients'
 menu.settings.label.restaurant.dishmenu: 'Restaurant menu'
-menu.settings.label.restaurant.tables: Tables
+menu.settings.label.restaurant.tables: 'Restaurant - Tables'
 menu.configs.config: Settings
 menu.configs.users: Users
 menu.configs.groups: Groups
@@ -185,6 +192,7 @@ menu.configs.warehouse: Stock
 menu.communication.label: Interactions
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.onlineform: 'Web module'
+menu.communication.label.online_payment_form: 'Payment module'
 menu.communication.label.polls: Ratings
 menu.communication.label.invite: 'Visa invitation'
 menu.communication.label.hundred_one_hotels: '101 Hotel'
@@ -408,8 +416,8 @@ security.two_factor.code: 'Login password'
 mailer.recipient.empty.email: 'Recipient email is empty %guest%'
 exception.relation_delete.message.task: 'Cannot be deleted. This type contains existing tasks (%total%)'
 cancel: Cancel
-portrait: Landscape
-landscape: Portrait
+portrait: Portrait
+landscape: Landscape
 age.full: year|year|years
 children: child|child|children
 days: day|day|days

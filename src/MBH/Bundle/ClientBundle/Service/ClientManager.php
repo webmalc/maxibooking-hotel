@@ -10,6 +10,7 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class ClientManager
@@ -213,6 +214,9 @@ class ClientManager
                 $client = $this->session->get(self::SESSION_CLIENT_FIELD);
                 $this->logger->err($exception->getMessage());
             } finally {
+                if (!isset($client) || !$client instanceof Client) {
+                    throw new NotFoundHttpException('Can not get client with login "' . $this->client . '"');
+                }
                 $this->updateSessionClientData($client, $currentDateTime);
             }
         } else {

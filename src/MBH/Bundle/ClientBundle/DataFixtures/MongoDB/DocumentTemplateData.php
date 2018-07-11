@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\ClientBundle\DataFixtures;
+namespace MBH\Bundle\ClientBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -15,8 +15,11 @@ use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
  */
 class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInterface
 {
+    const LOCALE_RU = 'ru';
+    const LOCALE_COM = 'com';
+
     const DOCUMENT_TEMPLATE_DATA = [
-        'ru' => [
+        self::LOCALE_RU => [
             'Акт' => 'act',
             'Счет' => 'bill',
             'Подтверждение' => 'confirmation',
@@ -26,7 +29,7 @@ class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInte
             'Расписка' => 'receipt',
             'Регистрационная карта' => 'registration_card'
         ],
-        'com' => [
+        self::LOCALE_COM => [
             'Invoice' => 'en_invoice'
         ]
     ];
@@ -36,7 +39,7 @@ class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInte
      */
     public function doLoad(ObjectManager $manager)
     {
-        $locale = $this->container->getParameter('locale') === 'ru' ? 'ru' : 'com';
+        $locale = $this->container->getParameter('locale') === self::LOCALE_RU ? self::LOCALE_RU : self::LOCALE_COM;
         foreach (self::DOCUMENT_TEMPLATE_DATA[$locale] as $name => $templateFile) {
             $filePath = $this->container->get('kernel')->getRootDir()
                 . '/../src/MBH/Bundle/PackageBundle/Resources/views/Documents/pdfTemplates/'

@@ -69,6 +69,15 @@ class DocumentTemplateController extends BaseController
     }
 
     /**
+     * @Route("/tinymce_codemirror", name="document_templates_tinymce_codemirror")
+     * @return Response
+     */
+    public function tinymceCodemirrorAction()
+    {
+        return $this->render('@MBHClient/DocumentTemplate/Tinymce/source.html.twig');
+    }
+
+    /**
      * @Route("/edit/{id}", name="document_templates_edit")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_EDIT')")

@@ -312,13 +312,28 @@ class PackageRepository extends DocumentRepository
      */
     public function getPackageByAccommodation(Room $room, \DateTime $date)
     {
-        $data = clone($date);
-        $data->modify('+ 1 day');
+        $dateBegin = (clone $date)->setTime(0, 0);
+        $dateEnd = (clone $date)->modify('tomorrow midnight');
+//        $date->modify('+ 1 day');
+
+        $subQuery = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')
+            ->createQueryBuilder()
+            ->select('id')
+            ->field('accommodation.id')->equals($room->getId())
+            ->field('begin')->lte($dateBegin)
+            ->field('end')->gte($dateEnd)
+            ->getQuery();
+
+        $accommodationsId = array_map(
+            function ($value) {
+                /** @var PackageAccommodation $value */
+                return $value->getId();
+            },
+            $subQuery->toArray());
 
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder
-            ->field('accommodation.id')->equals($room->getId())
-            //->field('arrivalTime')->lte($data)
+            ->field('accommodations.id')->in($accommodationsId)
             ->field('isCheckOut')->equals(false)
             ->sort('arrivalTime', -1)
             ->limit(1);
@@ -954,6 +969,9 @@ class PackageRepository extends DocumentRepository
             }
         }
 
+        $queryBuilder->addAnd(
+            $queryBuilder->expr()->field('deletedAt')->equals(null)
+        );
         return $queryBuilder->getQuery()->count();
     }
 

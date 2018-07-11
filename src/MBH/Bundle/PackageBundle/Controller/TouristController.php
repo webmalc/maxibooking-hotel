@@ -48,9 +48,11 @@ class TouristController extends Controller
     public function indexAction()
     {
         $form = $this->createForm(TouristFilterForm::class);
+        $hasMyOrganization = !empty($this->dm->getRepository('MBHPackageBundle:Organization')->getForFmsExport());
 
         return [
             'form' => $form->createView(),
+            'hasMyOrganization' => $hasMyOrganization
         ];
     }
 
@@ -674,12 +676,15 @@ class TouristController extends Controller
     }
 
     /**
-     * @Route("/export_to_kontur", name="export_to_kontur", options={"expose"=true})
+     * @Route("/export_to_fms_system/{system}", name="export_to_fms_system", options={"expose"=true})
      * @param Request $request
-     * @Security("is_granted('ROLE_TOURIST_REPORT')")
+     * @param string $system
      * @return Response
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     * @Security("is_granted('ROLE_TOURIST_REPORT')")
      */
-    public function compileKonturFMSArchive(Request $request)
+    public function compileFMSArchive(Request $request, string $system)
     {
         $touristQB = $this->get('mbh.tourist_manager')
             ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected())
@@ -696,15 +701,27 @@ class TouristController extends Controller
         $stringsToWriteByNames = [];
         /** @var Tourist $tourist */
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        $mainOrganization = $this->dm->getRepository('MBHPackageBundle:Organization')->findOneBy(['type' => 'my']);
         foreach ($touristQB->getQuery()->execute() as $tourist) {
             $touristPackage = $packageRepository->findOneByTourist($tourist, $packageCriteria);
             if (!is_null($touristPackage) && $tourist->getLastName() != 'Н/д') {
-                $viewFile = $tourist->getCitizenshipTld() === Country::RUSSIA_TLD
-                    ? '@MBHClient/Fms/fms_export_russian.xml.twig'
-                    : '@MBHClient/Fms/fms_export_foreign.xml.twig';
+                $isRussianTourist = $tourist->getCitizenshipTld() === Country::RUSSIA_TLD;
+                if ($system === 'kontur') {
+                    $viewFile = $isRussianTourist
+                        ? '@MBHClient/Fms/fms_export_russian.xml.twig'
+                        : '@MBHClient/Fms/fms_export_foreign.xml.twig';
+                } elseif($system === 'sbis') {
+                    $viewFile = $isRussianTourist
+                        ? '@MBHClient/Fms/export_to_sbis.xml.twig'
+                        : '@MBHClient/Fms/export_to_sbis_foreign.xml.twig';
+                } else {
+                    throw new \InvalidArgumentException('Incorrect export system name "' . $system . '"');
+                }
+
                 $xml = $this->renderView($viewFile, [
                     'package' => $touristPackage,
-                    'tourist' => $tourist
+                    'tourist' => $tourist,
+                    'organization' => $mainOrganization
                 ]);
 
                 $stringsToWriteByNames[$tourist->getName() . '.xml'] =  $xml;
@@ -712,7 +729,7 @@ class TouristController extends Controller
         }
 
         $zipManager = $this->get('mbh.zip_manager');
-        $zipFileName = 'kontur-export ' . $this->helper->getDatePeriodString($beginDate, $endDate, 'Y.m.d') . '.zip';
+        $zipFileName = $system . '-export ' . $this->helper->getDatePeriodString($beginDate, $endDate, 'Y.m.d') . '.zip';
 
         return $zipManager->writeToStreamedResponse($stringsToWriteByNames, $zipFileName);
     }
