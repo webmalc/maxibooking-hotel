@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Service;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
+use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use Psr\Container\ContainerInterface;
@@ -67,12 +68,15 @@ class TemplateFormatter
         $order = $package->getOrder();
         $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
         $organization = $doc->getOrganization() ? $doc->getOrganization() : $hotel->getOrganization();
+        if ($organization === null) {
+            $organization = new Organization();
+        }
         $params = [
             'package'              => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Package')->newInstance($package),
             'order'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order')->newInstance($order),
             'hotel'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Hotel')->newInstance($hotel),
             'payer'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper')->payerInstance($order->getPayer()),
-            'organization'         => $organization,
+            'organization'         => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\HotelOrganization')->newInstance($organization),
             'user'                 => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\User')->newInstance($user),
             'arrivalTimeDefault'   => $hotel->getPackageArrivalTime(),
             'departureTimeDefault' => $hotel->getPackageDepartureTime(),

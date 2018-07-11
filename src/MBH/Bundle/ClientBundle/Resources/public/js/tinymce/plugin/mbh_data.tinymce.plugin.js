@@ -227,7 +227,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
         text: 'Payer',
         menu: [
           {
-            text: 'Organization',
+            text: 'Payer Organization',
             menu: self.getMenu('payer', mbh_property.common.payer.organ)
           },
           {
