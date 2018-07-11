@@ -53,6 +53,10 @@ var ChessBoardManager = /** @class */ (function () {
                 $(this).children('div').hide();
             }
         });
+        var $numberOfRoomsSelect = $('#nuber-of-rooms-select');
+        $numberOfRoomsSelect.on("select2:select", function () {
+            window.location.href = Routing.generate('change_number_of_rooms', { numberOfRooms: $numberOfRoomsSelect.val() });
+        });
         $('.pagination-sm').find('a').each(function () {
             var filterData = $('#accommodation-report-filter').serialize() + '&page=' + $(this).text();
             var route = Routing.generate('chess_board_home') + '?' + filterData;
@@ -795,7 +799,7 @@ var ChessBoardManager = /** @class */ (function () {
                                 self.actionManager.callUpdatePackageModal($(this), intervalData_1, changedSide, isDivide);
                             }
                         }
-                    },
+                    }
                 });
             }
         });
@@ -1138,7 +1142,7 @@ var ChessBoardManager = /** @class */ (function () {
                         snap: 'calendarRow',
                         start: function () {
                             isDragged = true;
-                        },
+                        }
                     }).mousedown(function (event) {
                         if (self.isIntervalAvailable(packageData)) {
                             relocatablePackage = this;
@@ -1314,7 +1318,6 @@ var ChessBoardManager = /** @class */ (function () {
         });
         setInterval(function () {
             time++;
-            console.log(time);
             if (time > 30) {
                 ActionManager.showLoadingIndicator();
                 _this.dataManager.updatePackagesData();
@@ -1329,3 +1332,4 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.LATE_CHECKOUT_EARLY_CHECKIN_COLOR = '#65619b';
     return ChessBoardManager;
 }());
+//# sourceMappingURL=ChessBoardManager.js.map
