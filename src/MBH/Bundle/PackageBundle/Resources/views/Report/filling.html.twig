@@ -41,6 +41,15 @@
                 </select>
             </div>
             <div class="form-group input">
+                <label for="filling-report-filter-hotel"><i class="fa fa-home" title='{{ 'report.polls_view.hotel'|trans }}' data-toggle='tooltip'></i></label>
+                <select style="width: 250px;" name="hotels[]" multiple data-placeholder='{{ 'report.polls_view.hotel'|trans }}' id="filling-report-filter-hotel" class="form-control input-sm">
+                    <option></option>
+                    {% for hotel in hotels %}
+                        <option value="{{ hotel.id }}" {{ selected_hotel().id == hotel.id ? 'selected' }}>{{ hotel.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group input">
                 <label for="filling-report-filter-isEnabled"><i class="fa fa-toggle-on" title="{{ 'report.filling.filling.only_enabled'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>&nbsp;</label>
                 <input type="checkbox" id="filling-report-filter-isEnabled">
             </div>

@@ -12,6 +12,7 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
 use MBH\Bundle\PackageBundle\Services\SalesChannelsReportCompiler;
 use MBH\Bundle\UserBundle\Document\WorkShift;
@@ -231,6 +232,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Method("GET")
      * @Security("is_granted('ROLE_MANAGERS_REPORT')")
      * @Template()
+     * @param Request $request
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function userTableAction(Request $request)
     {
@@ -262,6 +266,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $qb->field('tariff.id')->in($request->get('tariffs'));
         }
 
+        /** @var Package[] $packages */
         $packages = $qb->getQuery()->execute();
 
         $data = $dates = $total = $allTotal = $dayTotal = [];
@@ -275,6 +280,25 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'paid' => 0,
         ];
 
+        $packageOrderIds = [];
+        $packageIds = [];
+        foreach ($packages as $package) {
+            $packageOrderIds[] = $package->getOrder()->getId();
+            $packageIds[] = $package->getId();
+        }
+        //preload orders and package services
+        $this->dm->getRepository('MBHPackageBundle:Order')->getByOrdersIds($packageOrderIds)->toArray();
+        /** @var PackageService[] $packageServices */
+        $packageServices = $this->dm->getRepository('MBHPackageBundle:PackageService')->findBy(['package.id' => ['$in' => $packageIds]]);
+        $packageServicesByPackageIds = [];
+
+        foreach ($packageServices as $packageService) {
+            isset($packageServicesByPackageIds[$packageService->getPackage()->getId()])
+                ? $packageServicesByPackageIds[$packageService->getPackage()->getId()][] = $packageService
+                : $packageServicesByPackageIds[$packageService->getPackage()->getId()] = [$packageService];
+        }
+        $usersByUsername = [];
+
         foreach ($packages as $package) {
             /** @var Package $package */
             if (empty($package->getOrder()->getChannelManagerType())
@@ -287,7 +311,13 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 $default['date'] = $package->getCreatedAt();
                 $default['user'] = $package->getCreatedBy();
 
-                $userDoc = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => $default['user']]);
+                if (isset($usersByUsername[$package->getCreatedBy()])) {
+                    $userDoc = $usersByUsername[$package->getCreatedBy()];
+                } else {
+                    $userDoc = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => $default['user']]);
+                    $usersByUsername[$package->getCreatedBy()] = $userDoc;
+                }
+
                 if ($userDoc) {
                     $default['user'] = $userDoc->getFullName(true);
                 }
@@ -302,13 +332,14 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                     $dayTotal[$day] = $default;
                 }
                 $packageOrderId = $package->getOrder()->getId();
-                $add = function ($entry, Package $package) use ($packageOrderId) {
+                $add = function ($entry, Package $package) use ($packageOrderId, $packageServices) {
                     $entry['sold']++;
                     $entry['packagePrice'] += $package->getPackagePrice();
                     $entry['price'] += $package->getPrice();
                     $entry['servicesPrice'] += $package->getServicesPrice();
                     $entry['paid'] += $package->getCalculatedPayment();
-                    foreach ($package->getServices() as $packageService) {
+                    $packageServicesList = isset($packageServices[$package->getId()]) ? $packageServices[$package->getId()] : [];
+                    foreach ($packageServicesList as $packageService) {
                         $entry['services'] += $packageService->getTotalAmount();
                     }
 
@@ -534,6 +565,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * @param Request $request
      * @return array
      * @Route("/filling", name="report_filling", options={"expose"=true})
      * @Method({"GET"})
@@ -568,17 +600,22 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $generator = $this->get('mbh.package.report.filling_report_generator');
         $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes, [], false);
+        $roomStatusOptions = array_merge([
+            'withoutStatus' => $this->get('translator')->trans('report.filling.filling.room_status.without_status')
+        ], $this->helper->sortByValue($roomStatuses));
 
         return [
-                'roomStatusOptions' => array_merge(['withoutStatus' => 'Без статуса'], $this->helper->sortByValue($roomStatuses)),
+                'roomStatusOptions' => $roomStatusOptions,
                 'roomTypes' => $roomTypes,
                 'roomTypeList' => $roomTypeList,
                 'begin' => $begin,
                 'end' => $end,
+                'hotels' => $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll()
             ] + $result;
     }
 
     /**
+     * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\Response
      * @Route("/filling/table", name="report_filling_table", options={"expose"=true})
      * @Method({"GET"})
@@ -612,13 +649,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ]);
         }
 
-        if ($request->get('roomTypes')) {
-            $requestedRoomTypesIds = $request->get('roomTypes');
-            $roomTypeIds = $requestedRoomTypesIds === [] || $requestedRoomTypesIds === [''] ? null : $requestedRoomTypesIds;
-            $roomTypes = $roomTypeRepository->fetch(null, $roomTypeIds)->toArray();
-        } else {
-            $roomTypes = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
-        }
+        $requestedRoomTypesIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
+        $requestedHotelIds = $this->helper->getDataFromMultipleSelectField($request->get('hotels'));
+        $roomTypeIds = empty($requestedRoomTypesIds) ? null : $requestedRoomTypesIds;
+        $hotelIds = empty($requestedHotelIds) ? null : $requestedHotelIds;
+        $roomTypes = $roomTypeRepository->getByIdsAndHotelsIds($roomTypeIds, $hotelIds);
+
         if (!$begin && !$end) {
             $begin = new \DateTime('midnight -1 day');
             $end = new\DateTime('midnight +6 day');
@@ -652,7 +688,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
-     * @return \Symfony\Component\Form\Form
+     * @return \Symfony\Component\Form\FormInterface
      */
     private function getWorkShiftForm()
     {
