@@ -3,12 +3,11 @@
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Lib\CanPullOldOrdersTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -24,6 +23,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterface
 {
     use ConfigTrait;
+    use CanPullOldOrdersTrait;
 
     public function getName()
     {
@@ -217,5 +217,13 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
     public function isMainSettingsFilled()
     {
         return $this->getIsEnabled() && !empty($this->getHotelId()) && $this->getApiKey();
+    }
+
+    /**
+     * @param bool $checkOldPackages
+     * @return bool
+     */
+    public function isReadyToSync($checkOldPackages = false): bool {
+        return $this->isSettingsFilled() && ($checkOldPackages ? $this->isAllPackagesPulled() : true);
     }
 }

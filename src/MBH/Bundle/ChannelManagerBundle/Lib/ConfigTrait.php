@@ -52,9 +52,18 @@ trait ConfigTrait
     }
 
     /**
+     * @param bool $checkOldPackages
      * @return bool
      */
-    public function isReadyToSync(): bool {
+    public function isReadyToSync($checkOldPackages = false): bool {
+        return $this->isSettingsFilled();
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isSettingsFilled()
+    {
         return $this->getIsEnabled() && !$this->getTariffs()->isEmpty() && !$this->getRooms()->isEmpty();
     }
 

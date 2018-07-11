@@ -5,16 +5,6 @@
 
 {% block content %}
 
-    {% if config and (config.rooms.count != 0 and config.tariffs.count != 0 and config.hotelId is not empty) and not config.isAllPackagesPulled %}
-        <div class="alert alert-danger">
-            <i class="fa fa-exclamation-circle"></i>&nbsp;
-            {{ 'channelmanager.orders_not_fetched.error'|trans({}, 'MBHChannelManagerBundle') }}
-            <button class="btn btn-primary" onclick="location.href = '{{ path('booking_all_packages_sync') }}'">
-                <i class="fa fa-cloud-download"></i>&nbsp;{{ 'views.channelmanager.actions.sync_all'|trans({}, 'MBHChannelManagerBundle') }}
-            </button>
-        </div>
-    {% endif %}
-
     {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, 'base': 'booking'} %}
 
     <div class="tab-content">
@@ -43,7 +33,6 @@
                             </div>
                         </li>
                     {% endif %}
-                    {% include '@MBHChannelManager/ChannelManager/confirmCMButton.html.twig' with {channelManagerName: 'booking'} %}
                 {% endblock %}
             {% endembed %}
             {{ form_end(form) }}

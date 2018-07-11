@@ -103,6 +103,7 @@ class ExpediaController extends Controller
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getExpediaConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -137,7 +138,9 @@ class ExpediaController extends Controller
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
-            return $this->redirectToRoute('expedia_tariff');
+            $redirectRouteName = $inGuide ? 'expedia_packages_sync' : 'expedia_tariff';
+
+            return $this->redirectToRoute($redirectRouteName);
         }
 
         return [

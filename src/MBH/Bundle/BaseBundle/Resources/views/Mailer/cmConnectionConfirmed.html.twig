@@ -5,17 +5,21 @@
         {{ 'messages_store.channel_manager_confirmation.text_1'|trans(transParams)}}
     </h2>
     <p>
-        {{ 'messages_store.channel_manager_confirmation.text_2'|trans}}
+        {{ 'messages_store.channel_manager_confirmation.text_2'|trans(transParams)}}
     </p>
     <h3>{{ 'messages_store.channel_manager_confirmation.text_3'|trans(transParams)}}:</h3>
 
-    система бронирования: [Название_системы_бронирования]
-    название отеля: [Название_отеля]
-    ID отеля: [ID_отеля_в_системе_бронирования]
+    <div style="margin:10px 0">
+        <table align="center" style="width: 420px;">
+            {% for fieldName, value in connectionData %}
+                <tr>
+                    <td style="text-align: left;width: 33.33%">{{ fieldName }}</td>
+                    <td style="text-align: right;width: 33.33%">{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 
-    - только для 101Отеля
-    API key: [ключ_для_подключения]
-
-    {{ 'messages_store.channel_manager_confirmation.text_4'|trans}}
+    {{ 'messages_store.channel_manager_confirmation.text_4'|trans(transParams)|raw}}
 
 {% endblock %}

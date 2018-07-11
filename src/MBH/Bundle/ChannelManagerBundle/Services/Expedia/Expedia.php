@@ -107,7 +107,7 @@ class Expedia extends ExtendedAbstractChannelManager
         $availableStatuses = ['confirmed', 'retrieved', 'pending'];
         foreach ($availableStatuses as $status) {
             /** @var ExpediaConfig $config */
-            foreach ($this->getConfig() as $config) {
+            foreach ($this->getConfig(true) as $config) {
 
                 $requestData = $this->requestDataFormatter->formatGetAllBookingsData($config, $status);
                 $request = $this->requestFormatter->formatGetOrdersRequest($requestData);
@@ -116,6 +116,10 @@ class Expedia extends ExtendedAbstractChannelManager
                 $this->handlePullOrdersResponse($response, $config, $result, true);
             }
         }
+
+        $cm = $this->container->get('mbh.channelmanager');
+        $cm->clearAllConfigsInBackground();
+        $cm->updateInBackground();
 
         return $result;
     }

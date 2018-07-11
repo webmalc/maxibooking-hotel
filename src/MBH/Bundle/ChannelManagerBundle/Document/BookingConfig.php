@@ -9,6 +9,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\ChannelManagerBundle\Lib\CanPullOldOrdersTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
@@ -30,6 +31,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     }
 
     use ConfigTrait;
+    use CanPullOldOrdersTrait;
     
     /**
      * Hook timestampable behavior
@@ -96,31 +98,6 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
      * @ODM\EmbedMany(targetDocument="Service")
      */
     protected $services;
-
-    /**
-     * @var bool
-     * @ODM\Field(type="bool")
-     */
-    protected $isAllPackagesPulled = false;
-
-    /**
-     * @return bool
-     */
-    public function isAllPackagesPulled(): ?bool
-    {
-        return $this->isAllPackagesPulled;
-    }
-
-    /**
-     * @param bool $isAllPackagesPulled
-     * @return BookingConfig
-     */
-    public function setIsAllPackagesPulled(bool $isAllPackagesPulled): BookingConfig
-    {
-        $this->isAllPackagesPulled = $isAllPackagesPulled;
-
-        return $this;
-    }
 
     /**
      * Set hotel
@@ -345,5 +322,13 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
         }
 
         return null;
+    }
+
+    /**
+     * @param bool $checkOldPackages
+     * @return bool
+     */
+    public function isReadyToSync($checkOldPackages = false): bool {
+        return $this->isSettingsFilled() && ($checkOldPackages ? $this->isAllPackagesPulled() : true);
     }
 }

@@ -207,6 +207,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getBookingConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -234,11 +235,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
-            $redirectRouteName = $config->isReadyToSync() ? 'booking_tariff' : 'booking_all_packages_sync';
+            $redirectRouteName = $inGuide ? 'booking_all_packages_sync' : 'booking_tariff';
 
             return $this->redirectToRoute($redirectRouteName);
         }
-
 
         return [
             'config' => $config,
