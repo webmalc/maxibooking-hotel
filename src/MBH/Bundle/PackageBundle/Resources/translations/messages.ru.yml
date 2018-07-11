@@ -896,6 +896,7 @@ report.filling.filling_table.number_of_places: мест
 report.filling.filling.dates: Даты
 report.filling.filling.room_types: 'Тип номера'
 report.filling.filling.room_status: 'Статус комнаты'
+report.filling.filling.room_status.without_status: 'Без статуса'
 report.filling.filling.only_enabled: 'Только влюченные?'
 report.polls_view.number_of_order: Заказ
 report.polls_view.hotel: Отель

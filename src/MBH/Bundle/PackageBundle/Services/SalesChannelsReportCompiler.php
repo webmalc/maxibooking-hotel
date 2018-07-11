@@ -139,7 +139,7 @@ class SalesChannelsReportCompiler
         /** @var RoomType[] $roomTypes */
         $roomTypes = array_values($this->dm
             ->getRepository('MBHHotelBundle:RoomType')
-            ->getByHotelsAndIds(
+            ->getByIdsAndHotelsIds(
                 empty($this->requestRoomTypesIds) ? null : $this->requestRoomTypesIds,
                 (empty($this->hotelsIds) ? null : $this->hotelsIds)
             ));
