@@ -42,14 +42,9 @@ class Calculation
 
     public function calcPrices(CalcQuery $calcQuery): array
     {
-        $caches = $this->getPriceCaches($calcQuery);
+        $priceCaches = $this->priceCacheMerger->getMergedPriceCaches($calcQuery);
 
-        return $this->getPrices($caches, $calcQuery);
-    }
-
-    private function getPriceCaches(CalcQuery $calcQuery): array
-    {
-        return $this->priceCacheMerger->getMergedPriceCaches($calcQuery);
+        return $this->getPrices($priceCaches, $calcQuery);
     }
 
     private function getPrices(array $priceCaches, CalcQuery $calcQuery): array

@@ -66,9 +66,10 @@ class SearchResultComposer
         if (!$roomType || !$tariff) {
             throw new SearchResultComposerException('Can not get Tariff or RoomType');
         }
-        $this->limitChecker->checkTariffConditions($searchQuery);
+        $this->limitChecker->checkTariffConditions($searchQuery); //** TODO: Убрать отсюда ибо уже есть проверка тарифа выше */
         $minCache = $this->getMinCacheValue($searchQuery);
         $isUseCategories = $this->roomManager->useCategories;
+
         $actualAdults = $searchQuery->getActualAdults();
         $actualChildren = $searchQuery->getActualChildren();
         $infants = $searchQuery->getInfants();
@@ -149,7 +150,7 @@ class SearchResultComposer
         $roomCaches = $this->roomCacheFetcher->fetchNecessaryDataSet($roomCacheFetchQuery);
 
         //** TODO: Когда станет понятно на каком этапе отсекать лимиты, тут переделать. */
-        $roomCachesWithNoQuotas = array_filter(
+        $mainRoomCaches = array_filter(
             $roomCaches,
             function ($roomCache) {
                 $isMainRoomCache = !array_key_exists('tariff', $roomCache) || null === $roomCache['tariff'];
@@ -159,11 +160,11 @@ class SearchResultComposer
         );
 
 
-        $min = min(array_column($roomCachesWithNoQuotas, 'leftRooms'));
+        $min = min(array_column($mainRoomCaches, 'leftRooms'));
 
         $duration = $searchQuery->getDuration();
-        if ($min < 1 || \count($roomCachesWithNoQuotas) !== $duration) {
-            throw new SearchResultComposerException('Error! RoomCaches count not equal duration');
+        if ($min < 1 || \count($mainRoomCaches) !== $duration) {
+            throw new SearchResultComposerException('Error! RoomCaches count not equal duration.');
         }
 
         return $min;

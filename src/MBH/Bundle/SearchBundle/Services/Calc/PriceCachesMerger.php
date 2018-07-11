@@ -29,7 +29,7 @@ class PriceCachesMerger
     public function getMergedPriceCaches(CalcQuery $calcQuery): array
     {
         $rawPriceTariffCaches = $this->getPriceTariffPriceCaches($calcQuery);
-        $priceTariffCaches = $this->refactorCacheArray($rawPriceTariffCaches);
+        $priceTariffCaches = $this->groupPriceCachesByDate($rawPriceTariffCaches);
         if (!\count($priceTariffCaches)) {
             throw new PriceCachesMergerException('No one priceCache for tariff ' . $calcQuery->getTariff()->getName(). ' RoomType '. $calcQuery->getRoomType()->getFullTitle() );
         }
@@ -38,14 +38,14 @@ class PriceCachesMerger
         }
 
         $rawMergingPriceCaches = $this->getMergingTariffPriceCaches($calcQuery);
-        $mergingPriceCaches = $this->refactorCacheArray($rawMergingPriceCaches);
+        $mergingPriceCaches = $this->groupPriceCachesByDate($rawMergingPriceCaches);
         $mergedPriceCaches = $this->mergePriceCaches($priceTariffCaches, $mergingPriceCaches);
         if ($this->checkCachesCount($mergedPriceCaches, $calcQuery->getDuration())) {
             return $mergedPriceCaches;
         }
 
         $rawBaseTariffPriceCaches = $this->getBaseTariffPriceCaches($calcQuery);
-        $baseTariffPriceCaches = $this->refactorCacheArray($rawBaseTariffPriceCaches);
+        $baseTariffPriceCaches = $this->groupPriceCachesByDate($rawBaseTariffPriceCaches);
         $lastMergedPriceCaches = $this->mergePriceCaches($mergedPriceCaches, $baseTariffPriceCaches);
         if ($this->checkCachesCount($lastMergedPriceCaches, $calcQuery->getDuration())) {
             return $lastMergedPriceCaches;
@@ -73,7 +73,7 @@ class PriceCachesMerger
         return $merged;
     }
 
-    private function refactorCacheArray(array $rawCaches): array
+    private function groupPriceCachesByDate(array $rawCaches): array
     {
         $result = [];
         $caches = $rawCaches['caches'] ?? [];
