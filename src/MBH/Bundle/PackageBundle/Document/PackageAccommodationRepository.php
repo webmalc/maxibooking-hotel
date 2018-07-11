@@ -9,6 +9,7 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 
+use Doctrine\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class PackageAccommodationRepository extends DocumentRepository
@@ -89,5 +90,25 @@ class PackageAccommodationRepository extends DocumentRepository
     public function getAccommodationByDate(\DateTime $dateTime)
     {
         return $this->getAccommodationByPeriod($dateTime, $dateTime);
+    }
+
+    /**
+     * @param array $roomsIds
+     * @param bool $returnIds
+     * @return Cursor
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getByRoomsIds(array $roomsIds, $returnIds = false)
+    {
+        $qb = $this
+            ->createQueryBuilder()
+            ->field('accommodation.id')->in($roomsIds);
+        if ($returnIds) {
+            $qb->distinct('id');
+        }
+
+        return $qb
+            ->getQuery()
+            ->execute();
     }
 }
