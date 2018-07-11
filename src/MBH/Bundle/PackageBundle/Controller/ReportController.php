@@ -594,6 +594,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         if (!$roomTypes) {
             $roomTypes = $roomTypeList;
         }
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $sortedRoomTypes = $this->get('mbh.hotel.room_type_manager')->getSortedByHotels($hotels);
 
         $begin = new \DateTime('midnight -1 day');
         $end = new \DateTime('midnight +6 day');
@@ -607,10 +609,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         return [
                 'roomStatusOptions' => $roomStatusOptions,
                 'roomTypes' => $roomTypes,
-                'roomTypeList' => $roomTypeList,
+                'roomTypeList' => $sortedRoomTypes,
                 'begin' => $begin,
                 'end' => $end,
-                'hotels' => $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll()
+                'hotels' => $hotels
             ] + $result;
     }
 

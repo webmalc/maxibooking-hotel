@@ -107,4 +107,28 @@ class RoomTypeManager
     {
         return $this->getRepository()->find($id);
     }
+
+    /**
+     * @param array $hotels
+     * @return array
+     */
+    public function getSortedByHotels(array $hotels)
+    {
+        $roomTypes = [];
+
+        /** @var Hotel $hotel */
+        foreach ($hotels as $hotel) {
+
+            if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
+                continue;
+            }
+
+            /** @var RoomType $roomType */
+            foreach ($this->getRooms($hotel) as $roomType) {
+                $roomTypes[$hotel->getName()][] = $roomType;
+            }
+        }
+
+        return $roomTypes;
+    }
 }
