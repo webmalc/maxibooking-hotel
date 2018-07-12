@@ -319,6 +319,35 @@ class ClientConfig extends Base
     }
 
     /**
+     * @var FrontSettings
+     * @ODM\EmbedOne(targetDocument="FrontSettings")
+     */
+    protected $frontSettings;
+
+    /**
+     * @return FrontSettings
+     */
+    public function getFrontSettings(): ?FrontSettings
+    {
+        if (empty($this->frontSettings)) {
+            $this->frontSettings = new FrontSettings();
+        }
+
+        return $this->frontSettings;
+    }
+
+    /**
+     * @param FrontSettings $frontSettings
+     * @return ClientConfig
+     */
+    public function setFrontSettings(FrontSettings $frontSettings): ClientConfig
+    {
+        $this->frontSettings = $frontSettings;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isCacheValid(): ?bool

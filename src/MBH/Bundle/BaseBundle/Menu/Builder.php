@@ -1321,7 +1321,7 @@ class Builder
 
         return $parent->setChildren(
             $this->getItemsInArray([
-                $this->getTask(),
+//                $this->getTask(),
                 $warehouse,
                 $restaurant,
             ])

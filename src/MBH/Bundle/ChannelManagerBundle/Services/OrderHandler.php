@@ -39,10 +39,6 @@ class OrderHandler
                 $this->dm->remove($package);
                 $this->dm->flush();
             }
-            foreach ($order->getFee() as $cashDoc) {
-                $this->dm->remove($cashDoc);
-                $this->dm->flush();
-            }
             if ($orderInfo->getChannelManagerName()) {
                 $order->setChannelManagerStatus('modified');
             }
@@ -73,7 +69,7 @@ class OrderHandler
         $this->dm->persist($order);
         $this->dm->flush();
 
-        $order = $this->saveCashDocument($order, $orderInfo);
+        $order = $this->saveCashDocuments($order, $orderInfo->getCashDocuments($order));
 
         foreach ($orderInfo->getPackagesData() as $packageInfo) {
             $package = $this->createPackage($packageInfo, $order);
@@ -106,10 +102,10 @@ class OrderHandler
      * Сохранение изменений в электронных кассовых документов между хранимыми и полученными с сервиса
      *
      * @param Order $order
-     * @param AbstractOrderInfo $orderInfo
+     * @param array $newCashDocuments
      * @return Order
      */
-    private function saveCashDocument(Order $order, AbstractOrderInfo $orderInfo)
+    public function saveCashDocuments(Order $order, array $newCashDocuments)
     {
         //Получаем сохраненные электронные кассовые документы
         $electronicCashDocuments = [];
@@ -121,7 +117,6 @@ class OrderHandler
                 }
             }
         }
-        $newCashDocuments = $orderInfo->getCashDocuments($order);
 
         //Удаляем одинаковые электронные кассовые документы из списка сохраненных и полученных с сервиса
         foreach ($newCashDocuments as $newCashDocumentIndex => $newCashDocument) {
