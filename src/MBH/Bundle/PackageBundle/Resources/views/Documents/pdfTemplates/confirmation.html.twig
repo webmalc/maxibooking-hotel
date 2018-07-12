@@ -8,7 +8,10 @@
             font-family: "Open Sans"; /*Arial*/
             font-size: 16px;
         }
-
+        table { page-break-inside:auto }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        thead { display:table-header-group;}
+        tfoot { display:table-footer-group }
         .document {
             padding-top: 0px;
             width: 900px;
@@ -201,7 +204,7 @@
                 <td>
                     <div class="area">
                         &nbsp
-                        {% if documentRelation and documentRelation.authority %}
+                        {% if documentRelation and documentRelation.authority is defined %}
                             {{ documentRelation.authority }}{% if documentRelation and documentRelation.issued %},
                             {{ documentRelation.issued|date('d.m.Y') }}
                         {% endif %}
