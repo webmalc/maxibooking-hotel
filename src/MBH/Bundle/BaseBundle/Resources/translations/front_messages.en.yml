@@ -135,20 +135,20 @@ online.online-calendar.close: Close
 online.online-calendar.prev_abbr: Prev
 online.online-calendar.next_abbr: Next
 online.online-calendar.today: Today
-online.online-calendar.sun_abbr: Sun
-online.online-calendar.mon_abbr: Mon
-online.online-calendar.tue_abbr: Tue
-online.online-calendar.wed_abbr: Wed
-online.online-calendar.thu_abbr: Thu
-online.online-calendar.fri_abbr: Fri
-online.online-calendar.sat_abbr: Sat
-online.online-calendar.sun_abbr_min: Sun
-online.online-calendar.mon_abbr_min: Mon
-online.online-calendar.tue_abbr_min: Tue
-online.online-calendar.wed_abbr_min: Wed
-online.online-calendar.thu_abbr_min: Thu
-online.online-calendar.fri_abbr_min: Fri
-online.online-calendar.sat_abbr_min: Sat
+online.online-calendar.sun_abbr: SUN
+online.online-calendar.mon_abbr: MON
+online.online-calendar.tue_abbr: TUE
+online.online-calendar.wed_abbr: WED
+online.online-calendar.thu_abbr: THU
+online.online-calendar.fri_abbr: FRI
+online.online-calendar.sat_abbr: SAT
+online.online-calendar.sun_abbr_min: SUN
+online.online-calendar.mon_abbr_min: MON
+online.online-calendar.tue_abbr_min: TUE
+online.online-calendar.wed_abbr_min: WED
+online.online-calendar.thu_abbr_min: THU
+online.online-calendar.fri_abbr_min: FRI
+online.online-calendar.sat_abbr_min: SAT
 cash.not_confirmed: 'Not confirmed'
 010-app.error_occured: 'Request error. Please try again.'
 010-app.shift_lock: 'Lock shift'
@@ -181,7 +181,7 @@ accommodation.modal_title.add_accommodation: 'Add accommodation'
 accommodation.modal_title.change_accommodation: 'Delete accommodation'
 dynamic_sales.option_data_type.comparative_graph_name.relative: 'Comparison of relative values in the category "% optionName%"'
 dynamic_sales.option_data_type.comparative_graph_name.absolute: 'Comparison of absolute values in the category "% optionName%"'
-package_bundle.accommodations.warning_before_setting_accoommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Reservation calendar</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
+package_bundle.accommodations.warning_before_setting_accoommodation: 'Warning! <br><br>You are about to allocate a room that does not match the room type per reservation. <br>Selected room type "%accommodationRoomTypeName%". <br>Room type per reservation "%packageRoomType%". <br>This allocation can result in incorrect available rooms data and lead to errors in new reservations. <br><br>To allocate a room that matches the room type per reservation please: <br><br>1. Optimize room allocation for this room type(%packageRoomType%) through <a target="_blank" href="%chessboard_route%">Calendar</a>. <br>2. Check that other rooms have been allocated correctly by cross checking room types per reservations with allocated room types on selected dates in <a target="_blank" href="%packages_route%">My Reservations</a> section. <br>3. Change the room type in the reservation. Note: Room type change in the reservation may affect reservation''s amount. <br>If you are confident that this allocation does not lead to errors, you may proceed with this allocation by clicking on “Continue” button.'
 package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Chessboard</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
 chessboard_manager.package_tooltip.package_number: Number
 chessboard_manager.package_tooltip.payer: Payer

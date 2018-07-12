@@ -20,7 +20,7 @@ price.views.restriction.table.closedOnDeparture: 'No check out'
 price.views.restriction.table.closed: Closed
 price.views.promotion.edit.small_title: 'Edit Sales'
 price.views.promotion.layout.small_title: Sales
-price.views.promotion.index.name: Title
+price.views.promotion.index.name: Name
 price.views.promotion.index.individual: Individual
 price.views.promotion.index.discount: Discount
 price.views.promotion.index.adults: 'Adults free of charge'
@@ -41,18 +41,18 @@ price.views.priceCache.index.rate: Rate
 price.views.priceCache.index.save: Save
 price.views.priceCache.index.random: 'Price wizard'
 price.views.priceCache.index.cancel: Cancel
-price.views.overview.tabla.rooms: 'Available rooms'
-price.views.overview.tabla.tariff_rooms: 'Room rates'
-price.views.overview.tabla.prices: Pricing
-price.views.overview.tabla.restriction: 'Conditions and restrictions'
+price.views.overview.tabla.rooms: 'Rooms for sale: Available'
+price.views.overview.tabla.tariff_rooms: 'Rate quotas: Available'
+price.views.overview.tabla.prices: 'Room prices: Available'
+price.views.overview.tabla.restriction: 'Conditions / restrictions on reservations: None'
 price.views.overview.layout.small_title: 'Rooms and rates'
 price.views.overview.index.small_title: Overview
 price.views.overview.index.date: Dates
 price.views.overview.index.type: 'Room type'
 price.views.overview.index.rate: Rate
 tariff.filter.status: 'Rate status'
-tariff.filter.state: 'Show disabled?'
-tariff.table.name: Title
+tariff.filter.state: 'Include non-active?'
+tariff.table.name: Name
 tariff.table.base: Default
 tariff.table.children: Child
 tariff.table.infant: Infant

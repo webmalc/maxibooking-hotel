@@ -11,7 +11,7 @@ form.userType.roles: Roles
 form.userType.groups: Groups
 form.userType.hotels: Hotels
 form.userType.hotels_user_has_access_to: 'Hotels available to this user'
-form.userType.is_included: 'Enabled?'
+form.userType.is_included: 'Active?'
 form.userType.expires_at: 'Valid until'
 form.userType.surname: 'Last name'
 form.userType.two_factor: 'Two factor authentification?'
@@ -29,7 +29,7 @@ controller.group.create_success: 'Group successfully added'
 controller.group.update_success: 'Group successfully updated'
 form.groupType.group.main: 'General information'
 form.groupType.group.roles: Permissions
-form.groupType.name: Title
+form.groupType.name: Name
 form.groupType.name.placeholder: 'Senior manager'
 form.userType.notifications_fieldset: Notifications
 form.userType.notifications: 'Reservations?'
@@ -142,10 +142,10 @@ form.payer_type.head.group: Director
 form.payer_type.organization.name.label: Name
 form.payer_type.country_group: Country
 form.client_contacts_type.phone.label: Phone
-form.client_contacts_type.email.label: Email
+form.client_contacts_type.email.label: 'Email address'
 form.payer_type.country.label: Country
 form.payer_type.label: 'Payer type'
-form.client_contacts_type.name.label: Name
+form.client_contacts_type.name.label: 'Contact Name'
 form.payer_type.address_group: Address
 form.payer_type.address.label: Address
 form.payer_type.city.label: City

@@ -24,7 +24,7 @@ views.cash.jsonButtons.are_you_sure_confirm_payment: 'Confirm the payment of <b>
 views.cash.jsonButtons.confirm: Confirm
 views.cash.jsonButtons.edit_record: 'Edit entry'
 views.cash.jsonButtons.delete_record: 'Delete entry'
-views.cash.layout.cash: Cashdesk
+views.cash.layout.cash: Transactions
 views.cash.index.show_no_paid: 'Include unpaid'
 views.cash.index.show_not_confirmed: 'Show unconfirmed only'
 views.cash.index.show_deleted: 'Include deleted'
@@ -36,6 +36,6 @@ cashDocument.method.cashless: Non-cash
 cashDocument.method.electronic: Electronic
 views.cash.edit.order_document: 'Order document'
 views.cash.index.doc: Document
-views.cash.index.cash_balance: 'Cashdesk balance'
+views.cash.index.cash_balance: 'Transactions Balance'
 views.cash.index.create: Create
 views.cash.index.upload_all: 'Export all'

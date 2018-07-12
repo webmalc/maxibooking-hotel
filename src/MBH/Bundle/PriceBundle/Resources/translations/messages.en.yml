@@ -1,7 +1,7 @@
-mbhpricebundle.form.tarifftype.nazvaniyedlyaispolʹzovaniyavnutri: 'Internal title'
+mbhpricebundle.form.tarifftype.nazvaniyedlyaispolʹzovaniyavnutri: 'Short Name'
 'mbhpricebundle.form.tarifftype.ispolʹzuyetsyalitarifvpoiske?': 'Show rate in search?'
 mbhpricebundle.view.service.index.udalitʹ: Delete
-mbhpricebundle.view.roomcache.table.ostalosʹ: Left
+mbhpricebundle.view.roomcache.table.ostalosʹ: Vacant
 mbhpricebundle.view.service.index.redaktirovatʹ: Edit
 mbhpricebundle.view.service.index.dobavitʹuslugu: 'Add service'
 mbhpricebundle.view.restriction.index.obzor: overview
@@ -18,9 +18,9 @@ mbhpricebundle.view.promotion.index.individualʹnaya: Individual
 mbhpricebundle.view.roomcache.index.obzor: overview
 mbhpricebundle.view.roomcache.index.sokhranitʹ: Save
 mbhpricebundle.form.restrictiongeneratortype.tarify: Rates
-form.promotionType.label.fullTitle: Title
+form.promotionType.label.fullTitle: Name
 mbhpricebundle.view.tariff.index.osnovnoy: Default
-form.promotionType.label.title: 'Internal title'
+form.promotionType.label.title: 'Short Name'
 mbhpricebundle.form.servicetype.opisaniye: Description
 mbhpricebundle.form.tarifftype.opisaniyetarifadlyaonlaynbronirovaniya: 'Rate description for reservation online'
 mbhpricebundle.form.tarifftype.nachalo: 'Period beginning'
@@ -54,7 +54,7 @@ mbhpricebundle.form.restrictiongeneratortype.dannyyebudutudaleny: 'Data will be 
 mbhpricebundle.form.servicecategorytype.osnovnyyeuslugi: 'General services'
 mbhpricebundle.form.servicecategorytype.opisaniyekategoriiuslugdlyaonlaynbronirovaniya: 'Service type description for a web form'
 mbhpricebundle.form.servicetype.seyf: Taxi
-mbhpricebundle.form.servicetype.mezhdunarodnoyenazvaniye: 'International title'
+mbhpricebundle.form.servicetype.mezhdunarodnoyenazvaniye: 'International name  <br>(if different)'
 mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya: 'Description used in web form'
 mbhpricebundle.form.servicetype.tiprascheta: 'Payment type'
 special.group.dates: Dates
@@ -69,7 +69,7 @@ specials.title: Title
 mbhpricebundle.view.pricecache.table.tsena: Price
 mbhpricebundle.view.service.index.tiprascheta: 'Payment type'
 mbhpricebundle.view.service.index.data: Date
-mbhpricebundle.view.service.index.vklyuchena: Enabled
+mbhpricebundle.view.service.index.vklyuchena: Active
 mbhpricebundle.view.promotion.index.redaktirovaniyezapisi: Edit
 mbhpricebundle.view.promotion.index.udaleniyezapisi: Delete
 specials.tariff: Rate
@@ -78,14 +78,14 @@ mbhpricebundle.form.tariffpromotionstype.dostupnyyeaktsii: 'Available options'
 mbhpricebundle.form.tariffpromotionstype.osnovnoy: Default
 mbhpricebundle.form.tariffpromotionstype.aktsiipoumolchaniyu: 'Default sales'
 mbhpricebundle.form.servicecategorytype.nazvaniye: Title
-mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye: 'Internal title'
+mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye: 'Short Name'
 mbhpricebundle.form.servicecategorytype.opisaniye: Description
 mbhpricebundle.form.tarifftype.nazvaniye: Title
 mbhpricebundle.form.tarifftype.osnovnoy: Main
-mbhpricebundle.form.tarifftype.vnutrenneyenazvaniye: 'Internal title'
+mbhpricebundle.form.tarifftype.vnutrenneyenazvaniye: 'Short Name'
 mbhpricebundle.form.tarifftype.opisaniye: Description
 mbhpricebundle.form.servicetype.nazvaniye: Title
-mbhpricebundle.form.servicetype.vnutrenneyenazvaniye: 'Internal title'
+mbhpricebundle.form.servicetype.vnutrenneyenazvaniye: 'Short Name'
 mbhpricebundle.form.servicetype.tsena: Price
 mbhpricebundle.form.restrictiongeneratortype.nachaloperioda: 'Period beginning'
 mbhpricebundle.form.restrictiongeneratortype.konetsperioda: 'Period ending'
@@ -108,8 +108,8 @@ mbhpricebundle.form.pricecachegeneratortype.tipynomerov: 'Room types'
 mbhpricebundle.form.pricecachegeneratortype.tarify: Rates
 mbhpricebundle.form.pricecachegeneratortype.tsena: Price
 mbhpricebundle.form.pricecachegeneratortype.tsenazadetskoyeosn.mesto: 'Price for childs main bed'
-mbhpricebundle.form.pricecachegeneratortype.tsenavzroslogodop.mesta: 'Price for adult additional bed'
-mbhpricebundle.form.pricecachegeneratortype.tsenadetskogodop.mesta: 'Price for childs additional bed'
+mbhpricebundle.form.pricecachegeneratortype.tsenavzroslogodop.mesta: 'Adult Price for Additional bed'
+mbhpricebundle.form.pricecachegeneratortype.tsenadetskogodop.mesta: 'Child Price for Additional bed'
 mbhpricebundle.form.roomcachegeneratortype.tipynomerov: 'Room types'
 mbhpricebundle.form.roomcachegeneratortype.tarify: Rates
 mbhpricebundle.form.roomcachegeneratortype.kolichestvomest: 'Number of beds available within selected dates. To make unavailable all rooms, type "-1"'
@@ -117,7 +117,7 @@ mbhpricebundle.form.tariffinheritancetype.tseny: Prices
 mbhpricebundle.form.tariffinheritancetype.usloviyaiogranicheniya: 'Conditions and restrictions'
 mbhpricebundle.view.pricecache.table.tsenazacheloveka: 'Price per person'
 mbhpricebundle.view.pricecache.table.tsenaOdnoMestnogo: 'Price of 1-person accommodation'
-mbhpricebundle.view.pricecache.table.tsenazadetskoyedop: 'Price for additional bed for a child'
+mbhpricebundle.view.pricecache.table.tsenazadetskoyedop: 'Child Price for Additional bed'
 mbhpricebundle.view.roomcache.table.kvotypotarifam: 'Rates quotas'
 mbhpricebundle.view.roomcache.table.zabronirovano: 'Reserved on'
 mbhpricebundle.view.overview.index.obzor: overview
@@ -125,7 +125,7 @@ mbhpricebundle.view.overview.index.daty: Dates
 mbhpricebundle.view.overview.index.tipnomera: 'Room type'
 mbhpricebundle.view.overview.index.tarif: Rate
 mbhpricebundle.view.overview.layout.nomeraitseny: 'Rooms and rates'
-mbhpricebundle.view.overview.table.nomeravprodazhe: 'Available rooms'
+mbhpricebundle.view.overview.table.nomeravprodazhe: 'Rooms for Sale'
 mbhpricebundle.view.overview.table.kvotypotarifam: 'Rates quotas'
 mbhpricebundle.view.overview.table.tseny: Prices
 mbhpricebundle.view.overview.table.usloviyaiogranicheniya: 'Conditions and restrictions'
@@ -195,7 +195,7 @@ mbhpricebundle.view.promotion.edit.redaktirovaniyeaktsii: 'Edit sale'
 mbhpricebundle.view.roomcache.index.daty: Dates
 mbhpricebundle.view.roomcache.index.grafik: Graph
 mbhpricebundle.view.roomcache.index.otmena: Cancel
-mbhpricebundle.view.roomcache.layout.nomeravprodazhe: 'Available rooms'
+mbhpricebundle.view.roomcache.layout.nomeravprodazhe: 'Rooms for Sale'
 mbhpricebundle.view.roomcache.generator.generator: Wizard
 mbhpricebundle.view.roomcache.table.nomeravprodazhe: 'Rooms for sale'
 mbhpricebundle.view.roomcache.table.vprodazhe: 'For sale'
@@ -220,7 +220,7 @@ form.promotionType.choice_label.condition.max_adults: 'Maximum number of adults'
 form.promotionType.choice_label.condition.min_adults: 'Minimum number of adults'
 form.promotionType.choice_label.condition.max_children: 'Maximum number of children'
 form.promotionType.choice_label.condition.min_children: 'Minimum number of children'
-tariffSubscriber.delete_exception_message.can_not_delete_main_tariff: 'Default rate cannot be deleted'
+tariffSubscriber.delete_exception_message.can_not_delete_main_tariff: 'Base Rate cannot be deleted'
 form.tariffType.minPrepay: 'Minimum prepayment'
 form.tariffType.minPerPrepay: 'Minimum prepayment in percents'
 form.tariffType.help: '% of order price from 0 to 100'
@@ -259,7 +259,7 @@ specials.discount: Discount
 specials.sold: Sold
 special.apply: Apply
 'mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi?': 'Is this service available?'
-mbhpricebundle.view.roomcache.graph.ostalosʹ: Left
+mbhpricebundle.view.roomcache.graph.ostalosʹ: Vacant
 'mbhpricebundle.form.tarifftype.skakogochislaispolʹzuyetsyatarif?': 'When this rate will start being visible (reservations will still be available before this date).'
 'mbhpricebundle.form.tarifftype.pokakoyechisloispolʹzuyetsyatarif?': 'When this rate will stop being visible (reservations will still be available past this date).'
 'mbhpricebundle.form.tarifftype.onlayn?': 'Online?'
@@ -267,7 +267,7 @@ mbhpricebundle.view.roomcache.graph.ostalosʹ: Left
 'mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyarebenkom?': 'Until what age the guest is considered a child'
 'mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyainfantom?': 'Until what age the guest is considered an infant'
 'mbhpricebundle.form.tarifftype.ispolʹzovatʹdlyakombinirovaniya?': 'Use for price combination?'
-'mbhpricebundle.form.tarifftype.vklyuchen?': 'Enabled?'
+'mbhpricebundle.form.tarifftype.vklyuchen?': 'Active?'
 mbhpricebundle.form.servicetype.usluganeispolʹzuyetsya: 'Service is not used'
 'mbhpricebundle.form.servicetype.data?': 'Date?'
 'mbhpricebundle.form.servicetype.ispolʹzovatʹlidatupridobavleniiuslugikbroni?': 'Take date into account when adding a service?'
@@ -275,7 +275,7 @@ mbhpricebundle.form.servicetype.usluganeispolʹzuyetsya: 'Service is not used'
 'mbhpricebundle.form.servicetype.ispolʹzovatʹlivremyapridobavleniiuslugikbroni?': 'Take time into account when adding a service?'
 'mbhpricebundle.form.servicetype.onlayn?': 'Online?'
 'mbhpricebundle.form.servicetype.ispolʹzovatʹliusluguvonlaynbronirovanii?': 'Show this service in web form?'
-'mbhpricebundle.form.servicetype.vklyuchena?': 'Enabled?'
+'mbhpricebundle.form.servicetype.vklyuchena?': 'Active?'
 'mbhpricebundle.form.restrictiongeneratortype.netzayezda?': 'No check in?'
 'mbhpricebundle.form.restrictiongeneratortype.netvyyezda?': 'No check out?'
 'mbhpricebundle.form.restrictiongeneratortype.zakryto?': 'Closed?'
@@ -318,9 +318,9 @@ mbhpricebundle.form.tariffinheritancetype.nasledovatliusloviyaiogranicheniyaotro
 mbhpricebundle.form.tariffinheritancetype.nasledovatlikvotynomerovotroditelskogotarif: 'Inherit room availability from parental rate'
 mbhpricebundle.form.roomcachegeneratortype.kolichestvo.mest: 'Number of beds'
 mbhpricebundle.view.service.index.redaktirovat.kategoriyu.uslug: 'Edit service category'
-mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.help: 'Title only visible inside MaxiBooking system'
-mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.placeholder: 'Internal title'
-mbhpricebundle.form.tarifftype.nazvaniyedlyaispolzovaniyavnutri: 'Title only visible inside MaxiBooking system'
+mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.help: 'Name within MaxiBooking'
+mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.placeholder: 'Main Services – Summer period %year%'
+mbhpricebundle.form.tarifftype.nazvaniyedlyaispolzovaniyavnutri: 'Name within MaxiBooking'
 mbhpricebundle.form.tarifftype.skakogochislaispolzuyetsyatarif: 'Since when this rate is used'
 mbhpricebundle.form.tarifftype.pokakoyechisloispolzuyetsyatarif: 'Until when this rate is used'
 mbhpricebundle.form.tarifftype.onlayn: 'Online?'
@@ -329,7 +329,7 @@ mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyarebenkom: 'Unt
 mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyainfantom: 'Until what age a guest is considered an infant'
 mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya: 'Use for combination?'
 mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help: 'Use this rate if two rates are available at the same time? <br>By default other rates are being combined with the default rate.'
-mbhpricebundle.form.tarifftype.vklyuchen: 'Enabled?'
+mbhpricebundle.form.tarifftype.vklyuchen: 'Active?'
 mbhpricebundle.form.tarifftype.ispolzuyetsyalitarifvpoiske: 'Show rate in search?'
 mbhpricebundle.form.tarifftype.promotions.common_info.group_name: 'General information'
 mbhpricebundle.form.servicetype.usluganeispolzuyetsya: 'Service is not used'
@@ -339,7 +339,7 @@ mbhpricebundle.form.servicetype.vremya: 'Time?'
 mbhpricebundle.form.servicetype.ispolzovatlivremyapridobavleniiuslugikbroni: 'Take time into account when adding a service?'
 mbhpricebundle.form.servicetype.onlayn: 'Online?'
 mbhpricebundle.form.servicetype.ispolzovatliusluguvonlaynbronirovanii: 'Show this service in web form?'
-mbhpricebundle.form.servicetype.vklyuchena: 'Enabled?'
+mbhpricebundle.form.servicetype.vklyuchena: 'Active?'
 mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi: 'Available for sale?'
 mbhpricebundle.form.restrictiongeneratortype.netzayezda: 'No check in?'
 mbhpricebundle.form.restrictiongeneratortype.netvyyezda: 'No check out?'
@@ -351,7 +351,7 @@ mbhpricebundle.form.pricecachegeneratortype.settings: Settings
 mbhpricebundle.form.pricecachegeneratortype.price: Price
 mbhpricebundle.form.pricecachegeneratortype.change_sum_or_percent: 'Set a price'
 mbhpricebundle.form.pricecachegeneratortype.price_for_single_accommodation: 'Price of 1-person accommodation'
-mbhpricebundle.form.pricecachegeneratortype.price_for_single_room_bookings: 'Price for one person accommodation in double, triple, etc. rooms'
+mbhpricebundle.form.pricecachegeneratortype.price_for_single_room_bookings: 'Single Occupancy Rate'
 mbhpricebundle.form.pricecachegeneratortype.tcena_detskogo_dop_mesta: 'Price for additional childs bed'
 mbhpricebundle.form.pricecachegeneratortype.price_one_place_accomodation: 'Price of 1-person accommodation'
 mbhpricebundle.form.pricecachegeneratortype.remember: 'Remember?'
@@ -361,13 +361,13 @@ mbhpricebundle.form.pricecachegeneratortype.period_can_not_be_more_than_year: 'P
 mbhpricebundle.form.pricecachegeneratortype.price_adult_extra_places: 'Price for additional adults bed'
 mbhpricebundle.form.pricecachegeneratortype.tsenazacheloveka: 'Price per person?'
 mbhpricebundle.form.pricecachegeneratortype.tsenazachelovekailizanomer: 'Price per person or for the whole room?'
-mbhpricebundle.form.pricecachegeneratortype.tsenapribronirovaniinomeranaodnogocheloveka: 'Price for one person accommodation in double, triple, etc. rooms'
+mbhpricebundle.form.pricecachegeneratortype.tsenapribronirovaniinomeranaodnogocheloveka: 'Single Occupancy Rate'
 mbhpricebundle.form.pricecachegeneratortype.zapomnit: 'Remember?'
 mbhpricebundle.form.roomcachegeneratortype.ustanovitkvoty: 'Set quotas for rates'
 mbhpricebundle.form.roomcachegeneratortype.ustanovitkvotynomerovpotarifam: 'Set room quotas based on rates?'
 mbhpricebundle.form.roomcachegeneratortype.zakryto: 'Closed?'
 mbhpricebundle.form.tariffinheritancetype.nasledovatlitsenyotroditelskogotarifa: 'Inherit price from the parrental rate'
-mbhpricebundle.view.roomcache.table.ostalos: Left
+mbhpricebundle.view.roomcache.table.ostalos: Vacant
 mbhpricebundle.view.service.index.redaktirovat: Edit
 mbhpricebundle.view.service.index.dobavituslugu: 'Add service'
 mbhpricebundle.view.service.index.udalit: Delete
@@ -383,7 +383,7 @@ mbhpricebundle.view.tariff.index.sozdatdocherniytarif: 'Create a subsidiary rate
 mbhpricebundle.view.tariff.editservices.dobavit: Add
 mbhpricebundle.view.promotion.index.individualnaya: Individual
 mbhpricebundle.view.roomcache.index.sokhranit: Save
-mbhpricebundle.view.roomcache.graph.ostalos: left
+mbhpricebundle.view.roomcache.graph.ostalos: Vacant
 price.datafixtures.mongodb.servicedata.eat: Meals
 price.datafixtures.mongodb.servicedata.breakfast: Breakfast
 price.datafixtures.mongodb.servicedata.breakfast.continental_breakfast: 'Continental breakfast'
@@ -417,19 +417,19 @@ price.datafixtures.mongodb.servicedata.children_bed: 'Childrens bed'
 price.datafixtures.mongodb.servicedata.transfer: Transfer
 price.datafixtures.mongodb.servicedata.accomodation: Accommodation
 price.datafixtures.mongodb.servicedata.options: Options
-price.datafixtures.mongodb.servicedata.default_tariff: 'Default rate'
+price.datafixtures.mongodb.servicedata.default_tariff: 'Base Rate'
 price.roomcachecontroller.change_successfully_saved: 'Changes successfully saved'
 price.roomcachecontroller.data_successfully_generate: 'Data successfully generated'
 price.tariffcontroller.entry_successfully_updated: 'Entry successfully edited.'
 price.controller.restrictioncontroller.change_successful_saved: 'Data saved successfully'
 price.controller.servicecontroller.entry_successful_saved: 'Entry successfully added.'
 price.controller.servicecontroller.entry_successfully_updated: 'Entry successfully edited.'
-price.resources.views.roomcache.number_on_sales: 'Available rooms'
+price.resources.views.roomcache.number_on_sales: 'Rooms for Sale'
 price.resources.views.quotas_for_tariffs: 'Rates quotas'
-price.resources.views.roomcache.in_sales: Available
+price.resources.views.roomcache.in_sales: 'Rooms available for sale'
 price.resources.views.booking: Reserved
-price.resources.views.booking_in_percents: 'Reserved %'
-price.resources.views.left: Left
+price.resources.views.booking_in_percents: 'Reserved in %'
+price.resources.views.left: Vacant
 price.resources.views.closet: Closed
 price.resources.views.roomcache.generator: Wizard
 price.resources.views.roomcache.view: Overview
@@ -439,12 +439,12 @@ price.resources.views.roomcache.graph.arrivals: Arrivals
 price.resources.views.roomcache.graph.calculation_rooms: 'Is necessary'
 price.resources.views.roomcache.graph.diff: Diff
 price.resources.views.roomcache.save: Save
-price.resources.views.roomcache.left: left
-price.resources.views.roomcache.number_in_sell: 'Available rooms'
+price.resources.views.roomcache.left: Vacant
+price.resources.views.roomcache.number_in_sell: 'Rooms for Sale'
 price.resources.views.roomcache.edit_category_of_services: 'Services category editing'
 price.form.public_information: 'General information'
-price.form.public_summer: 'Internal title'
-price.form.nazvanie_dla_ispolzovania_vnutri: 'Title only visible inside MaxiBooking system'
+price.form.public_summer: 'Base Summer period'
+price.form.nazvanie_dla_ispolzovania_vnutri: 'Name within MaxiBooking'
 price.form.s_kakogo_chisla_ispolzuetsa_tarif: 'When this rate will start being visible (reservations will still be available before this date).'
 price.form.po_kakoe_chislo_ispolzuetsa_tarif: 'When this rate will stop being visible (reservations will still be available past this date).'
 price.form.online: 'Web form?'
@@ -452,19 +452,19 @@ price.form.using_tariff_in_online_booking: 'Use this rate in web form?'
 price.form.what_age_is_client_considered_child: 'Until what age the guest is considered a child'
 price.form.what_age_is_client_considered_infant: 'Until what age the guest is considered an infant'
 price.form.use_combine_tariffs_in_transition_periods: 'Use combined prices when other rates are available at this time?'
-price.form.silence_special_tariffs_combined_with_basic_tariff: 'By default other rates are being combined with the default rate'
-price.form.on: 'Enabled?'
+price.form.silence_special_tariffs_combined_with_basic_tariff: 'By default other rates are being combined with the Base Rate'
+price.form.on: 'Active?'
 price.form.tariff_used_search: 'Show rate in search?'
 price.form.use_combination: 'Combined price?'
 price.form.save_summer: 'Safe - spring'
-price.form.name_for_using_inside_maxibooking: 'Title only visible inside MaxiBooking system'
+price.form.name_for_using_inside_maxibooking: 'Name within MaxiBooking'
 price.form.service_not_use: 'Service disabled'
 price.form.use_date_when_adding_service_reservation: 'Take date into account when adding a service?'
 price.form.should_i_use_time_when_i_add_service_my_reservation: 'Take time into account when adding a service?'
 price.form.date: 'Date?'
 price.form.setting: Settings
 price.form.time: 'Time?'
-price.form.she_on: 'Enabled?'
+price.form.she_on: 'Active?'
 price.form.should_i_use_service_online_booking: 'Show this service in web form?'
 price.form.is_service_available_sale: 'Available for sale?'
 pricebundle.resources.views.public_info: 'General information'
@@ -479,7 +479,7 @@ mbhpricebundle.view.service.index.tip.rascheta: 'Payment type'
 mbhpricebundle.view.special.index.tarif: Rate
 mbhpricebundle.view.special.index.tip.nomera: 'Room type'
 mbhpricebundle.view.tariff.index.daty: Dates
-mbhpricebundle.form.tarifftype.vnutrenneye.nazvaniye: 'Internal title'
+mbhpricebundle.form.tarifftype.vnutrenneye.nazvaniye: 'Short Name'
 mbhpricebundle.form.tarifftype.rebenok.do: 'Child is under'
 mbhpricebundle.form.tarifftype.infant.do: 'Infant is under'
 mbhpricebundle.form.tarifftype.opisaniye.tarifa.dlya.onlayn.bronirovaniya: 'Rate description for a web form'
@@ -499,7 +499,7 @@ mbhpricebundle.view.pricecache.table.price_for_adult_main_place: 'Price for addi
 mbhpricebundle.view.pricecache.table.price_for_children_additional_place: 'Price for additional childs bed'
 mbhpricebundle.view.tariff.index.small_title: List
 special.edit.sold: Sold
-special.edit.sold_from: 'Sold: %soldAmount% of %soldLimit%. Left: %remain%.'
+special.edit.sold_from: 'Sold: %soldAmount% of %soldLimit%. Vacant: %remain%.'
 special.edit.packages: Reservations
 mbhpricebundle.view.service.index.edit: Edit
 mbhpricebundle.view.service.index.no_services_in_this_category: 'This category has no any services'
@@ -512,7 +512,7 @@ mbhpricebundle.view.service.index.remove: Delete
 mbhpricebundle.view.service.index.remove_category: 'Delete service %categoryName% category'
 mbhpricebundle.view.service.index.service_not_used: 'Service disabled'
 mbhpricebundle.view.service.index.thing: Unit
-mbhpricebundle.view.tariff.index.show_disabled: 'Show disabled?'
+mbhpricebundle.view.tariff.index.show_disabled: 'Include non-active?'
 price.views.priceCache.index.warning_displayed_irrelevant_prices: 'Prices shown are irrelevant'
 roomCacheSubscriber.delete_exception_message.can_not_delete_room: 'Impossible to remove the room with reservations from sale'
 price.services.roomcachegraphgenerator.room_type_is_not_found: 'Room types not found'
@@ -533,7 +533,7 @@ price.controller.restrictioncontroller.data_successful_generate: 'Data generated
 price.controller.servicecontroller.price_successful_saved: 'Prices saved successfully'
 total_rooms_overview_table.rooms_count: Rooms
 total_rooms_overview_table.total: Total
-total_rooms_overview_table.number_of_unused_rooms: 'Left rooms'
+total_rooms_overview_table.number_of_unused_rooms: 'Vacant rooms'
 total_rooms_overview_table.rooms_at_sale: 'Rooms set for sale'
 total_rooms_overview_table.by_all_hotels: 'By all hotels'
 total_rooms_overview_table.number_of_rooms: 'Number of rooms'

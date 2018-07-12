@@ -1,6 +1,6 @@
 package.pdf.hotel_accommodation: 'Hotel accommodation'
 package.pdf.short_city_extend: city
-package.pdf.short_housing_extend: wing
+package.pdf.short_housing_extend: bldg
 package.pdf.short_apartment_extend: apt
 package.pdf.short_street_extend: str
 package.pdf.inn: TIN
@@ -52,7 +52,7 @@ order.edit.payment_card_info.hide_button.title: Hide
 order.edit.is_confirmed: 'Confirmed?'
 order.edit.is_confirmed_yes: 'Yes'
 order.edit.is_confirmed_no: 'No'
-order.layout.reservation: Reservation
+order.layout.reservation: Reservations
 order.navbar.delete_order: 'Delete order'
 order.navbar.lock: Block
 order.packages.dates: Dates
@@ -228,9 +228,9 @@ package.jsonButtons.confirm_order: 'Confirm order'
 package.jsonButtons.edit_record: Edit
 package.jsonButtons.delete_record: Delete
 package.jsonButtons.view_record: 'View record'
-package.layout.reservation: Reservation
+package.layout.reservation: Reservations
 package.listTabs.list: List
-package.listTabs.chess: 'Reservation Calendar'
+package.listTabs.chess: Calendar
 package.listTabs.placement: Accommodation
 package.listTabs.clients: Guests
 package.new.reservation_error: 'Reservation error'
@@ -298,7 +298,7 @@ search.index.enter_search_data: 'Enter parameters for room selection'
 search.layout.room_search: Reservation
 search.results.tariff_search: 'Search by rates'
 search.results.green: green
-search.results.main_tariffs: '- default rates'
+search.results.main_tariffs: '- Base Rates'
 search.results.blue: blue
 search.results.special_tariffs: '- special rates'
 search.results.check_in: 'Check in'
@@ -313,7 +313,7 @@ search.results.quantity: Quantity
 search.results.guests: Guests
 search.results.price: Price
 search.results.total_beds: 'Available beds'
-search.results.total_rooms: 'Available rooms'
+search.results.total_rooms: 'Rooms for Sale'
 search.results.reservate: Reserve
 search.results.accommodation: Accommodate
 search.results.nothing_found_for_your_request: 'Nothing found for your request'
@@ -326,7 +326,7 @@ package.index.summary.debt: Debt
 package.index.summary.nights: Nights
 package.index.summary.guests: Guests
 package.index.name: Title
-package.index.inner_name: 'Internal name'
+package.index.inner_name: 'Short Name'
 package.index.delete_reason: 'Deletion reason'
 package.index.edit_record: 'Edit entry'
 package.index.delete_record: Delete
@@ -356,7 +356,7 @@ modal.form.delete.reasons.order: 'Order deletion reason'
 modal.form.delete.reasons.reason_default: 'Not specified'
 modal.form.delete.reasons.close: Cancel
 modal.form.delete.reasons.delete: Delete
-views.list.based_on_technologies_mb: 'Based on MAXIBOOKING LLC technology'
+views.list.based_on_technologies_mb: 'Developed by MaxiBooking Ltd.'
 analytics.index.rooms_total: 'Rooms total'
 package.edit.query: Details
 package.pdf.persons: Persons
@@ -383,7 +383,7 @@ report.accommodationTable.no_main_guest: 'No main guest'
 report.accommodationTable.early_check_in: 'Early check in:'
 report.accommodationTable.late_check_out: 'Late check out:'
 source.edit.edit_reservation_source: 'Edit booking source for reservation #'
-source.index.inner_name: 'Internal title'
+source.index.inner_name: 'Short Name'
 source.index.edit_record: Edit
 source.index.delete_record: Delete
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Impossible to delete the record with reservations. Reservations:'
@@ -425,7 +425,7 @@ views.list.not_necessary: 'not requred'
 views.list.review_comiled: 'No feedback for this order!'
 report.poll.invite: 'Visa invitations'
 report.poll.small_title_order: 'Order evaluation'
-views.report.polls.not_found: 'Polls not found'
+views.report.polls.not_found: 'No records'
 views.report.polls.view_record: 'Go to results'
 mbh.package.arrivals.tourism: Recreation/Tourism
 mbh.package.arrivals.work: Job/Internship
@@ -447,7 +447,7 @@ dynamic_sales.room_type_options.total: Total
 dynamic.sales.result: Total
 order.index.summary.total: 'Sum total'
 report.work_shift.small_title: 'Work shifts'
-package.dynamic.sale: 'Dynamics of sales'
+package.dynamic.sale: 'Sales Dynamics'
 dynamic.sales.range_is_over_error: 'Period should not exceed %numberOfDays% days'
 dynamic.sales.day.number-of-created-packages: 'Reservations created in 24 hours'
 dynamic.sales.day.number-of-paid: 'Orders payed in 24 hours'

@@ -16,7 +16,7 @@ controller.cashController.payment_confirmed_success: 'Payment successfully confi
 cashDocumentCriteria.type.order: 'With order number'
 cashDocumentCriteria.type.other: 'Without order number'
 mbhcashbundle.service.onecexporter.vidplatezha: 'Payment type'
-mbhcashbundle.view.cash.index.ostatok.po.kasse: 'Cashdesk balance'
+mbhcashbundle.view.cash.index.ostatok.po.kasse: 'Transactions Balance'
 mbhcashbundle.service.onecexporter.sektsiyadokument: 'Document section'
 mbhcashbundle.service.onecexporter.platezhnoe.poruchenie: 'Payment order'
 form.cashDocumentType.platelshikBank1: 'Payer bank'

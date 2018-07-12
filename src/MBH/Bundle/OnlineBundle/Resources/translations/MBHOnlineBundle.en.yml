@@ -79,7 +79,7 @@ views.form.index.to_results_place: 'Place where results must be:'
 views.form.layout.online_form: 'Online module'
 views.form.period_is_not_filled: 'Check in and check out dates are not selected!'
 views.api.getPaymentType.reservation_guarantee_half: 'Guaranteed availability, prepayment of 50% total sum before arrival'
-views.api.getResultsTable.facilities: Facilities
+views.api.getResultsTable.facilities: Amenities
 views.form.index.list: List
 views.form.index.edit: Edit
 views.form.index.new: New

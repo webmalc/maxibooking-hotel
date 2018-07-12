@@ -6,7 +6,7 @@ warehouse.rec.del: Delete
 warehouse.record.th.price: Price
 warehouse.cat.new: 'New category'
 warehouse.cat.newSuccess: 'Category successfully added'
-warehouse.items.maxiTitle: 'Title only visible inside MaxiBooking system'
+warehouse.items.maxiTitle: 'Name within MaxiBooking'
 warehouse.items.saveSuccess: 'Changes successfully saved'
 warehouse.items.newSuccess: 'Commodity successfully added'
 warehouse.items.delSuccess: 'Commodity successfully deleted'
@@ -43,7 +43,7 @@ warehouse.resources.view.error_the_number_can_not_be_zero: 'Error. The quantity 
 warehouse.common.title: Stock
 warehouse.common.edit: Edit
 warehouse.common.del: Delete
-warehouse.common.included: Enabled
+warehouse.common.included: Active
 warehouse.field.unitPlaceholder: 'units, liters, etc.'
 warehouse.cat.title: Category
 warehouse.items.title: Commodity

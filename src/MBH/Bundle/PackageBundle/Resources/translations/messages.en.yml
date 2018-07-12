@@ -52,7 +52,7 @@ form.packageGuestType.surname: 'Last name'
 form.touristType.name: 'First name'
 form.packageGuestType.second_name: 'Middle name'
 form.touristType.gender: Sex
-form.organizationType.index: 'Zip code'
+form.organizationType.index: 'Postal code'
 form.searchType.check_in: 'Check in/out'
 form.packageGuestType.find_guest: 'Find guest'
 form.packageGuestType.placeholder_fio: 'John Smith'
@@ -115,8 +115,8 @@ form.packageServiceType.time: Time
 form.packageSourceType.name: Title
 form.packageSourceType.add_source: 'Add source'
 form.packageSourceType.adds: Advertisement
-form.packageSourceType.inner_name: 'Internal title'
-form.packageSourceType.inner_maxibooking_name: 'Title only visible inside MaxiBooking system'
+form.packageSourceType.inner_name: 'Short Name'
+form.packageSourceType.inner_maxibooking_name: 'Name within MaxiBooking'
 form.deleteReasonsType.add_source: 'Add deletion reason'
 form.deleteReasonsType.name: Title
 form.deleteReasonsType.default: Default
@@ -195,7 +195,7 @@ form.organizationType.accountant_fio: 'Accountant name'
 form.organizationType.city: City
 form.organizationType.street: Street
 form.organizationType.house: House
-form.organizationType.corpus: Wing
+form.organizationType.corpus: Building
 form.organizationType.flat: Office
 form.organizationType.bank: 'Bank name'
 form.organizationType.stamp: Stamp
@@ -223,7 +223,7 @@ form.BirthplaceType.main_region: 'Region (state)'
 form.BirthplaceType.district: District
 csv.type.tariffType: 'Room type'
 csv.form.rest: Debt
-form.AddressObjectDecomposedType.corpus: Wing
+form.AddressObjectDecomposedType.corpus: Building
 csv.form.tariff: Rate
 csv.form.tariffAccomodation: Accommodation
 csv.form.paids: Paid
@@ -236,12 +236,12 @@ form.AddressObjectDecomposedType.city: City
 form.AddressObjectDecomposedType.street: Street
 form.unwelcomeType.comment: Comment
 csv.form.tariffType: 'Room type'
-form.BirthplaceType.settlement: Settlement
+form.BirthplaceType.settlement: Province
 form.DocumentRelation.type: 'ID type'
-form.AddressObjectDecomposedType.zip_code: 'Zip code'
+form.AddressObjectDecomposedType.zip_code: 'Postal code'
 form.AddressObjectDecomposedType.region: 'Region (state)'
 form.AddressObjectDecomposedType.district: District
-form.AddressObjectDecomposedType.settlement: Settlement
+form.AddressObjectDecomposedType.settlement: Province
 form.AddressObjectDecomposedType.urbanarea: District
 form.AddressObjectDecomposedType.house: House
 form.AddressObjectDecomposedType.flat: Apartment
@@ -338,7 +338,7 @@ package.services.fixed_price_for_all_booking_room: 'Fixed price for every reserv
 package.services.breakfast_sweden_table: 'Breakfast Buffet'
 package.services.continental_breakfast: 'Continental breakfast'
 package.services.dinner: Lunch
-report.accommodation.chessBoard: 'Reservation Calendar'
+report.accommodation.chessBoard: Calendar
 form.chessBoard.begin.label: 'Check in'
 form.chessBoard.end.label: 'Check out'
 form.chessBoard.roomType.label: 'Room type'
@@ -370,7 +370,7 @@ modal.chessBoard.registered: Registered
 modal.chessBoard.not_specified: 'Not specified'
 modal.chessBoard.roomType: 'Room type'
 modal.chessBoard.accommodation: Accommodation
-modal.chessBoard.without_accommodation: 'Without allocation'
+modal.chessBoard.without_accommodation: 'Reservations awaiting room allocation'
 modal.chessBoard.services: Services
 modal.chessBoard.tariff: Rate
 modal.chessBoard.price: Price
@@ -397,14 +397,14 @@ controller.chessboard.payer: Payer
 chessboard_manager.dates.title: Dates
 chessboard_manager.size_slider.title: Scale
 chessboard_manager.room_type.title: 'Room type'
-chessboard_manager.housing.title: Wing
+chessboard_manager.housing.title: Building
 chessboard_manager.floor.title: Floor
 chessboard_manager.filter.button.text: Apply
-chessboard_manager.without_accommodation.tile.text: 'Without allocation'
+chessboard_manager.without_accommodation.tile.text: 'Reservations awaiting room allocation'
 package.accommodation.rooms: Rooms
 package.accommodation.room_type: 'Room type'
 package.accommodation.dates: Dates
-package.accommodation.housing: Wing
+package.accommodation.housing: Building
 package.accommodation.floor: Floor
 package.accommodation.status: Status
 package.accommodation.amenities: Amenities
@@ -412,14 +412,14 @@ package.accommodation.deleting_record: Delete
 package.accommodation.edit_record: Edit
 package.accommodation.choose_accommodation_on_dates: 'Select accommodation on'
 package.accommodation.place_in_room: 'Accommodate in this room'
-package.accommodation.rooms_not_found: 'Available rooms not found'
+package.accommodation.rooms_not_found: 'No rooms available for allocation had been found'
 package.resources.views.form: Form
 mbhpackagebundle.view.report.stoimost_prozhivania: 'Accommodation cost'
 mbhpackagebundle.view.report.roomtypestable.gosti: Guests
 mbhpackagebundle.view.report.roomtypestable.daty: Dates
 mbhpackagebundle.view.report.ostatok_v_prodashe: 'Remain (available)'
 mbhpackagebundle.view.order.touristedit.redaktirovaniye.zapisi: 'Edit entry'
-mbhpackagebundle.view.package.accommodation.korpus: Wing
+mbhpackagebundle.view.package.accommodation.korpus: Building
 mbhpackagebundle.view.package.guest.fio: 'Full name'
 mbhpackagebundle.view.package.service.nazvaniye: Title
 mbhpackagebundle.view.documents.pdftemplates.registration_card.kurenie_v_nashey_gostinice_zapresheno_etc: 'Smoking in our hotel is forbidden. It is only allowed in special smoking zones.'
@@ -453,7 +453,7 @@ mbhpackage.views.gostei_oformleno: 'Guests registered'
 mbhpackagebundle.view.documents.pdftemplates.form_1_g.mesto.rozhdeniya: 'Birth place'
 mbhpackagebundle.view.documents.pdftemplates.form: Form
 mbhpackagebundle.view.package.index.tip.broni: 'Reservation type'
-mbhpackagebundle.view.report.roomtypes.korpus: Wing
+mbhpackagebundle.view.report.roomtypes.korpus: Building
 mbhpackagebundle.view.report.roomtypes.etazh: Floor
 mbhpackagebundle.view.report.roomtypes.status.oplaty: 'Payment status'
 mbhpackagebundle.view.tourist.index.daty: Dates
@@ -534,7 +534,7 @@ tourist.edit_unwelcome.added: Added
 tourist.edit_unwelcome: 'Editing guest'
 tourist.edit.small_title: 'Editing guest #'
 report.room_types.room_type_filter.title: 'Room type'
-report.room_types.housing_filter.title: Wing
+report.room_types.housing_filter.title: Building
 report.room_types.floor_filter.title: Floor
 report.room_types.payment_status_filter.title: 'Payment status'
 report.filling_table_rows.total_number_of_guests: 'Guests total'
@@ -695,7 +695,7 @@ tourist.new_country_modal.country_name: 'Country name'
 mbhpackagebundle.view.tourist.index.migratsionnaya.karta: 'Migration card'
 controller.documentsController.action_view: View
 form.organizationType.kpp: 'Registry Number'
-package.accommodaton_modal.chessboard_button.text: 'Reservation Calendar'
+package.accommodaton_modal.chessboard_button.text: Calendar
 controller.packageController.service_edit_success: 'Service edited successfully'
 form.organizationType.type: Type
 controller.documentsController.table_row_tourist: Client
@@ -755,7 +755,7 @@ form.DocumentRelation.number: Number
 form.DocumentRelation.issued: 'Issue date'
 form.DocumentRelation.expiry: 'Valid until'
 report.accommodation.dates_filter.title: Dates
-report.accommodation.housing_filter.title: Wing
+report.accommodation.housing_filter.title: Building
 report.accommodation.floor_filter.title: Floor
 report.accommodation.find_button.title: Find
 report.filling_table_rows.debt: Debt
@@ -855,7 +855,7 @@ report.work_shift.users: User
 report.work_shift.status: Status
 report.work_shift.work_shifts: 'Work shifts'
 report.work_shift_list.employee: Employee
-report.work_shift_list.cash: Cashdesk
+report.work_shift_list.cash: Transactions
 report.work_shift_list.status: Status
 report.work_shift_list.in_process: 'In progress'
 report.work_shift_list.cash_income: Accepted
@@ -913,7 +913,7 @@ controller.chessboard.accommodation_update.not_first_or_last_accommodation_chang
 accommodation_manipulator.error.intersect_with_other_accommodations: 'The accommodation intersects with other reservation accommodations'
 csv.type.createdAt: 'Creation date'
 csv.type.createdBy: 'Created by'
-chessboard.index.housing: Wing
+chessboard.index.housing: Building
 chessboard.index.floor: Floor
 controller.chessboard.can_not_change_room_type_for_package_with_accommodations: 'Reservation type cannot be changed as it has accommodations'
 accommodation_manipulator.error.room_busy: 'Impossible to accommodate as the room "%roomName%" is occupied for these dates.'
@@ -956,14 +956,14 @@ package.resources.views.pol: Sex
 package.resources.views.oblast: Region
 package.resources.views.raion: District
 package.resources.views.city: City
-package.resources.views.nas_punkt: Settlement
+package.resources.views.nas_punkt: Province
 package.resources.views.seria: Series
 package.resources.views.vidan: 'Issued on'
 package.resources.views.country: Country
 package.resources.views.obl: Region
 package.resources.views.street: Street
 package.resources.views.home: 'House #'
-package.resources.views.kor: Wing
+package.resources.views.kor: Bldg
 package.resources.views.kv: 'Apartment #'
 package.resources.views.pribil: Arrived
 package.resources.views.vibil: Departed
@@ -987,7 +987,7 @@ report.filling.filling_table.number_of_places: 'Number of places'
 fixtures.package_source_data.on_line_reservation: 'Online booking'
 fixtures.package_source_data.regulat_customer: 'Regular customer'
 fixtures.package_source_data.recomendation_of_friends: 'Friend recomendation'
-package.resources.views.adres_region_ltc: 'Address (region, district, city, settlement)'
+package.resources.views.adres_region_ltc: 'Address (Region, District, City, Province)'
 package.resources.views.birthday_place: 'Birth place'
 package.resources.views.document: ID
 package.resources.views.organ_vidaushiy_document: 'Issuing authority'
@@ -1045,7 +1045,7 @@ mbhpackagebundle.views.imia: 'First name'
 mbhpackagebundle.views.g: city
 mbhpackagebundle.views.ul: street
 mbhpackagebundle.views.d: house
-mbhpackagebundle.views.korp: wing
+mbhpackagebundle.views.korp: bldg
 mbhpackagebundle.views.gostei_v_broni: 'Guests in the reservation'
 mbhpackagebundle.views.prikazom_ministerstava_finansov: 'Order of the Ministry of Finance'
 mbhpackagebundle.views.data_rozhdenia: 'Birth date'
@@ -1059,7 +1059,7 @@ mbhpackagebundle.views.komnata: Room
 mbhpackagebundle.views.pribil: Arrived
 mbhpackagebundle.views.data_chasi: 'date, time'
 mbhpackagebundle.views.vibil: Departed
-mbhpackagebundle.views.respublika_krai_oblast_okrug_raion_gorod_pgr_selo: 'region, district, city, settlement, street, house, apartment'
+mbhpackagebundle.views.respublika_krai_oblast_okrug_raion_gorod_pgr_selo: 'Region, District, City, Province, Street, House, Apartment'
 mbhpackagebundle.views.podpis: Signature
 mbhpackagebundle.views.poselena: Accommodated
 mbhpackagebundle.views.gorod_selenie: City
@@ -1074,7 +1074,7 @@ mbhpackagebundle.view.documents.pdftemplates.itog: Total
 mbhpackagebundle.view.documents.pdftemplates.schet: Invoice
 mbhpackagebundle.view.documents.pdftemplates.g: city
 mbhpackagebundle.view.documents.pdftemplates.d: house
-mbhpackagebundle.view.documents.pdftemplates.kor: wing
+mbhpackagebundle.view.documents.pdftemplates.kor: bldg
 mbhpackagebundle.view.documents.pdftemplates.kv: apartment
 mbhpackagebundle.view.documents.pdftemplates.form_1_g.vydan: 'Issued by'
 mbhpackagebundle.views.naimenovanie_organa_vnutrennih_del_vidavshego_document: 'Name of the body that issued the document'
@@ -1096,7 +1096,7 @@ mbhpackagebundle.view.documents.pdftemplates.registration_card.pol: Sex
 mbhpackagebundle.view.documents.pdftemplates.registration_card.data.rozhdeniya: 'Birth date'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.mesto.rozhdeniya: 'Birth place'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.strana: Country
-mbhpackagebundle.view.documents.pdftemplates.registration_card.indeks: 'ZIP code'
+mbhpackagebundle.view.documents.pdftemplates.registration_card.indeks: 'Postal code'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.gorod: City
 mbhpackagebundle.view.documents.pdftemplates.registration_card.ulitsa: Street
 mbhpackagebundle.view.documents.pdftemplates.registration_card.tarif: Rate
@@ -1129,7 +1129,7 @@ mbhpackagebundle.view.documents.pdftemplates.zakaza: order
 mbhpackagebundle.view.documents.pdftemplates.do: to
 mbhpackagebundle.view.documents.pdftemplates.fio: 'Full name'
 mbhpackagebundle.view.documents.pdftemplates.primechanie_v_sluchae_nesvoevremennogo_otkaza_etc: 'Note: in case of late refusal of the ordered services, the Hotel has the right to withhold compensation from the prepaid payment.'
-mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc: 'region, district, city, settlement, street, house, apartment'
+mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc: 'Region, District, City, Province, Street, House, Apartment'
 mbhpackagebundle.view.report.fillingtablerows.dolg: Debt
 mbhpackagebundle.view.deletereasons.index.da: 'Yes'
 mbhpackagebundle.view.deletereasons.index.net: 'No'
@@ -1137,7 +1137,7 @@ mbhpackagebundle.view.package.edit.tarif: Rate
 mbhpackagebundle.view.package.edit.aktsiya: Sale
 mbhpackagebundle.view.package.late.early.check.modal.da: 'Yes'
 mbhpackagebundle.view.report.accommodation.daty: Dates
-mbhpackagebundle.view.report.accommodation.korpus: Wing
+mbhpackagebundle.view.report.accommodation.korpus: Building
 mbhpackagebundle.view.report.accommodation.etazh: Floor
 mbhpackagebundle.view.report.filling.daty: Dates
 mbhpackagebundle.view.report.fillingtable.mest: beds
@@ -1158,7 +1158,7 @@ mbhpackagebundle.view.report.workshiftlist.status: Status
 views.report.packages_daily_report.hotels.title: Hotels
 views.report.distribution_report.packages_types.all: All
 distribution_by_days_report.title.sum: Sum
-distribution_by_days_report.title: 'Check in/out'
+distribution_by_days_report.title: 'Days Stats'
 distribution_by_days_report.days_of_week_abbr.mon: Mon
 distribution_by_days_report.days_of_week_abbr.tue: Tue
 distribution_by_days_report.days_of_week_abbr.wed: Wed
@@ -1175,7 +1175,7 @@ mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vi
 mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udostoveraushemu_lichnost: 'The certificate is issued to the ID'
 mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia: 'Full name and birth date'
 mbhpackagebundle.view.documents.pdftemplates.o_tom_chto_on_zaregistrirovan_po_mestu_prebivania: 'that he/she is registered at the place of stay at'
-mbhpackagebundle.view.report.ostatok_nomernoy_fond: 'Number of rooms left'
+mbhpackagebundle.view.report.ostatok_nomernoy_fond: 'Balance (number of rooms)'
 mbhpackagebundle.view.report.zabronirovano_nomerov: 'Rooms booked'
 mbhpackagebundle.view.report.nomera_bez_oplaty: 'Unpaid rooms'
 mbhpackagebundle.view.report.gostey_na_odin_nomer: 'Guests per room'
@@ -1210,8 +1210,8 @@ report.packages_daily_report_compiler.sum_for_day: 'Daily reservations cost'
 report.packages_daily_report_compiler.total_sum_for_day: 'Total a day'
 report.packages_daily_report_compiler.sum_for_packages: 'Income for booking'
 report.packages_daily_report_compiler.return_for_packages: 'Returned for bookings'
-views.report.packages_daily_report.title: Funds
-views.report.packages_daily_report.mail_title: 'Funds report'
+views.report.packages_daily_report.title: 'Cash Flow'
+views.report.packages_daily_report.mail_title: 'Cash Flow Report'
 views.report.packages_daily_report.calculation_dates.title: 'Accommodation dates'
 views.report.packages_daily_report.hotels.placeholder: Hotels
 views.report.packages_daily_report.update_button: Apply
@@ -1227,9 +1227,9 @@ distribution_by_days_report.days_of_week_abbr.fri: Fri
 distribution_by_days_report.days_of_week_abbr.sat: Sat
 distribution_by_days_report.days_of_week_abbr.sun: Sun
 distribution_by_days_report.total_row: Total
-mbh.analytics.types.sales_packages: 'Dynamics of sales by number of reservations'
-mbh.analytics.types.sales_cash: 'Dynamics of sales by reservations cost'
-mbh.analytics.types.sales_cash_documents: 'Dynamics of sales by money received'
+mbh.analytics.types.sales_packages: 'Sales Dynamics: Reservations received'
+mbh.analytics.types.sales_cash: 'Sales Dynamics: Reservations value'
+mbh.analytics.types.sales_cash_documents: 'Sales Dynamics: Payments received'
 mbh.analytics.types.sales_sources: 'Sales source'
 mbh.analytics.types.hotel_occupancy: 'Hotel occupancy rate'
 mbh.analytics.types.sales_services: 'Dynamics of services sales'
@@ -1242,7 +1242,7 @@ mbhpackagebundle.view.package.orderpackages.ne.razmeshcheno: 'Without allocation
 mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa: Questionnaire
 mbhpackagebundle.view.documents.pdftemplates.fms_form_5.blok.mashinochitayemykh.dannykh: 'Machine read information block'
 mbhpackagebundle.view.documents.pdftemplates.confirmation.vydan: issued
-mbhpackagebundle.view.documents.pdftemplates.form_1_g.indeks.poseleniya: 'Zip Code'
+mbhpackagebundle.view.documents.pdftemplates.form_1_g.indeks.poseleniya: 'Postal code'
 mbhpackagebundle.view.documents.pdftemplates.evidence.data.vydachi: 'issue date'
 mbhpackagebundle.view.documents.pdftemplates.confirmation.data.rozhdeniya: 'birth date'
 mbhpackagebundle.view.documents.pdftemplates.confirmation.adres: address
@@ -1266,7 +1266,7 @@ mbhpackagebundle.views.obratnaya_storona: 'Tax payer form back side'
 mbhpackagebundle.view.documents.pdftemplates.PP: Here
 report.filling_table_rows.reserved_rooms_from_room_fund: 'Room occupancy'
 report.filling.filling.room_status: 'Room status'
-report.filling.filling.only_enabled: 'Enabled only?'
+report.filling.filling.only_enabled: 'Active only?'
 package.document_type.tourist_age: age
 form.AddressObjectDecomposedType.region_id.help: 'If you can''t find the region, click %plusButtonHtml% to add it'
 form.organization_type.city.help: 'If you can''t find the city, click %plusButtonHtml% to add it'
@@ -1285,10 +1285,10 @@ sales_channels_report.room_type.title: 'Room type'
 sales_channels_report.sort_by.source: 'By source'
 sales_channels_report.dates.title: Dates
 reservation_report.date: Date
-reservation_report.title: Reservation
+reservation_report.title: 'Reservations Dynamics'
 reservation_report.total_row: Total
 views.report.reservation_report.report_date.title: Date
-views.report.reservation_report.title: 'Rooms reservation Report'
+views.report.reservation_report.title: 'Reservations Dynamics'
 views.report.reservation_report.room_types.title: 'Room type'
 reservation_report.number_of_packages_common: 'Number of booked rooms'
 reservation_report.number_of_packages: 'Number of booked rooms as of %date%'

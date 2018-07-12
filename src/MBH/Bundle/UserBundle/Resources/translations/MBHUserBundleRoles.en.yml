@@ -7,7 +7,7 @@ ROLE_MANAGER: Manager
 ROLE_SENIOR_MANAGER: 'Senior manager'
 ROLE_USER: User
 ROLE_READ_ONLY: Guest
-ROLE_BASE_USER: 'View and edit polls'
+ROLE_BASE_USER: 'Standard User'
 ROLE_STAFF: 'Service staff'
 ROLE_CLEANING: Janitor
 ROLE_COOKING: Kitchen
@@ -32,8 +32,8 @@ ROLE_USER_NEW: 'Add users'
 ROLE_USER_EDIT: 'Edit users'
 ROLE_USER_DELETE: 'Delete users'
 ROLE_USER_PROFILE: 'User profile'
-ROLE_CASH: Cashdesk
-ROLE_CASH_VIEW: 'View cashdesk'
+ROLE_CASH: Transactions
+ROLE_CASH_VIEW: 'View Transactions'
 ROLE_CASH_NEW: 'Add payment document'
 ROLE_CASH_EDIT: 'Edit payment document'
 ROLE_CASH_DELETE: 'Delete payment document'
@@ -47,11 +47,11 @@ ROLE_DOCUMENT_TEMPLATES_VIEW: 'View document templates'
 ROLE_DOCUMENT_TEMPLATES_NEW: 'Add document templates'
 ROLE_DOCUMENT_TEMPLATES_EDIT: 'Edit document templates'
 ROLE_DOCUMENT_TEMPLATES_DELETE: 'Delete document templates'
-ROLE_HOUSING: Wings
-ROLE_HOUSING_VIEW: 'View wings'
-ROLE_HOUSING_NEW: 'Add wings'
-ROLE_HOUSING_EDIT: 'Edit wings'
-ROLE_HOUSING_DELETE: 'Delete wings'
+ROLE_HOUSING: Buildings
+ROLE_HOUSING_VIEW: 'View Buildings'
+ROLE_HOUSING_NEW: 'Add Buildings'
+ROLE_HOUSING_EDIT: 'Edit Buildings'
+ROLE_HOUSING_DELETE: 'Delete Buildings'
 ROLE_ROOM: Rooms
 ROLE_ROOM_VIEW: 'View rooms'
 ROLE_ROOM_NEW: 'Add rooms'
@@ -161,7 +161,7 @@ ROLE_OKTOGO: Oktogo
 ROLE_HOTELINN: Hotel-inn
 ROLE_MYALLOCATOR: MyAllocator
 ROLE_101HOTELS: '101 Hotels'
-ROLE_POLLS: Polls
+ROLE_POLLS: Feedback
 ROLE_REPORTS: Reports
 ROLE_PACKAGE: Reservations
 ROLE_SEARCH: Search
@@ -194,7 +194,7 @@ ROLE_FORCE_BOOKING: 'Forced reservation'
 ROLE_PACKAGE_DELETE_REASON: 'Deletion reason'
 ROLE_TOURIST: Guests
 ROLE_PORTER_REPORT: 'Porter report'
-ROLE_ACCOMMODATION_REPORT: 'View Reservation Calendar'
+ROLE_ACCOMMODATION_REPORT: 'View Calendar'
 ROLE_SERVICES_REPORT: 'Services report'
 ROLE_ORGANIZATION: Companies
 ROLE_POLLS_REPORT: 'Ratings report'
@@ -239,7 +239,7 @@ ROLE_PRICE_SUMMARY: 'View reservation price summary'
 ROLE_PAYMENT_CARD_INFO: 'Credit card info'
 ROLE_DASHBOARD: 'System inquires'
 ROLE_DISTRIBUTION_BY_DAYS_OF_WEEK_REPORT: 'Check in/out reports'
-ROLE_DAILY_REPORT_BY_PACKAGES: 'Funds reports'
+ROLE_DAILY_REPORT_BY_PACKAGES: 'Cash Flow Report'
 ROLE_RESTAURANT_CATEGORY: 'Restaurant ingredient categories'
 ROLE_DYNAMIC_SALES_VIEW: 'Sales report'
 ROLE_RESTAURANT_MANAGER: 'Restaurant manager'
@@ -250,7 +250,7 @@ ROLE_RESTAURANT_INGREDIENT_VIEW: 'View ingredients'
 ROLE_RESTAURANT_DISHMENU_CATEGORY: 'Restaurant dish categories'
 ROLE_RESTAURANT_DISHORDER_EDIT: 'Edit orders'
 ROLE_RESTAURANT_TABLE_ITEM_DELETE: 'Delete seat'
-ROLE_DYNAMIC_SALES: 'Sales dynamics'
+ROLE_DYNAMIC_SALES: 'Sales Dynamics'
 ROLE_SPECIAL: 'Special offers'
 ROLE_SPECIAL_ADD: 'Add special offer'
 ROLE_SPECIAL_VIEW: 'View special offer'
