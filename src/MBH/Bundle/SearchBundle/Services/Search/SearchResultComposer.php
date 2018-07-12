@@ -6,10 +6,18 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultDayPrice;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultPrice;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
@@ -58,43 +66,92 @@ class SearchResultComposer
     }
 
 
-    public function composeResult(SearchQuery $searchQuery): SearchResult
+    public function composeResult(SearchQuery $searchQuery): Result
     {
-        $searchResult = new SearchResult();
         $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
         $tariff = $this->sharedDataFetcher->getFetchedTariff($searchQuery->getTariffId());
         if (!$roomType || !$tariff) {
             throw new SearchResultComposerException('Can not get Tariff or RoomType');
         }
-        $this->limitChecker->checkTariffConditions($searchQuery); //** TODO: Убрать отсюда ибо уже есть проверка тарифа выше */
-        $minCache = $this->getMinCacheValue($searchQuery);
-        $isUseCategories = $this->roomManager->useCategories;
+
+        $resultRoomType = new ResultRoomType();
+        $resultRoomType->setRoomType($roomType);
+
+
+        $resultTariff = new ResultTariff();
+        $resultTariff->setTariff($tariff);
+
 
         $actualAdults = $searchQuery->getActualAdults();
         $actualChildren = $searchQuery->getActualChildren();
         $infants = $searchQuery->getInfants();
 
-        $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
-
+        //** TODO: Цены вынести выше в поиске
+        // В дальнейшем цены могут содержать разное кол-во детей и взрослых (инфантов)
+        //
+        //*/
         $prices = $this->getPrices($searchQuery, $roomType, $tariff, $actualAdults, $actualChildren);
+        $combinations = array_keys($prices);
+        $resultPrices = [];
+        foreach ($combinations as $combination) {
+            [$adults, $children] = explode('_', $combination);
+            $currentPrice = $prices[$combination];
+            $resultPrice = new ResultPrice();
+            $resultPrice
+                ->setSearchAdults($searchQuery->getAdults())
+                ->setSearchChildren($searchQuery->getChildren() ?? 0)
+                ->setTotal($currentPrice['total']);
+            $packagePrices = $currentPrice['packagePrices'];
+            foreach ($packagePrices as $packagePrice) {
+                $dayPrice = new ResultDayPrice();
+                /** @var PackagePrice $packagePrice */
+                $dayTariff = new ResultTariff();
+                $dayTariff->setTariff($packagePrice->getTariff());
+                $dayPrice
+                    ->setDate($packagePrice->getDate())
+                    ->setTariff($dayTariff)
+                    ->setPrice($packagePrice->getPrice())
+                    ->setAdults($adults)
+                    ->setChildren($children)
+                    ->setInfants($infants);
 
-        $searchResult
+                $resultPrice->addDayPrice($dayPrice);
+            }
+            $resultPrices[] = $resultPrice;
+        }
+
+        $resultConditions = new ResultConditions();
+        $conditions = $searchQuery->getSearchConditions();
+        if (!$conditions || null === $conditions->getId()) {
+            throw new SearchResultComposerException('No conditions or conditions id in SearchQuery. Critical search error');
+        }
+        $resultConditions->setConditions($conditions);
+
+        $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
+        $resultAccommodationRooms = [];
+        if (!\count($accommodationRooms)) {
+            foreach ($accommodationRooms as $accommodationRoom) {
+                $resultAccommodationRoom = new ResultRoom();
+                $resultAccommodationRoom
+                    ->setId((string)$accommodationRoom['id'])
+                    ->setName($accommodationRoom['fullTitle'] ?? $accommodationRoom['title'] ?? '');
+                $resultAccommodationRooms[] = $resultAccommodationRoom;
+            }
+        }
+        $minRoomsCount = $this->getMinCacheValue($searchQuery);
+
+        $result = new Result();
+        $result
             ->setBegin($searchQuery->getBegin())
             ->setEnd($searchQuery->getEnd())
-            ->setTariff($tariff)
-            ->setRoomType($roomType)
-            ->setRoomsCount($minCache)
-            ->setAdults($actualAdults)
-            ->setChildren($actualChildren)
-            ->setUseCategories($isUseCategories)
-            ->setInfants($infants)
-            ->setRooms($accommodationRooms)
-            ->setQueryId($searchQuery->getSearchConditions()->getId())
-            ->setForceBooking($searchQuery->isForceBooking())
-        ;
-        $this->pricePopulate($searchResult, $prices);
+            ->setResultTariff($resultTariff)
+            ->setResultRoomType($resultRoomType)
+            ->setResultConditions($resultConditions)
+            ->setMinRoomsCount($minRoomsCount)
+            ->setPrices($resultPrices)
+            ->setAccommodationRooms($resultAccommodationRooms);
 
-        return $searchResult;
+        return $result;
     }
 
 
@@ -113,34 +170,18 @@ class SearchResultComposer
             //** TODO: Уточнить по поводу Promotion */
             /*->setPromotion()*/
             /** TODO: Это все необязательные поля, нужны исключительно для dataHolder чтоб получить все данные сразу */
-            ;
+        ;
         if ($conditions) {
             $calcQuery
                 ->setConditionTariffs($conditions->getTariffs())
                 ->setConditionRoomTypes($conditions->getRoomTypes())
                 ->setConditionMaxBegin($conditions->getMaxBegin())
                 ->setConditionMaxEnd($conditions->getMaxEnd())
-                ->setConditionHash($conditions->getSearchHash())
-            ;
+                ->setConditionHash($conditions->getSearchHash());
         }
 
 
-        $prices = $this->calculation->calcPrices($calcQuery);
-        if (!\count($prices)) {
-            throw new SearchResultComposerException('No prices returned from calculation');
-        }
-
-        return $prices;
-    }
-
-    private function pricePopulate(SearchResult $searchResult, array $prices): void
-
-    {
-        foreach ($prices as $price) {
-            $searchResult
-                ->addPrice($price['total'], $price['adults'], $price['children'])
-                ->setPackagePrices($price['packagePrices'], $price['adults'], $price['children']);
-        }
+        return $this->calculation->calcPrices($calcQuery);
     }
 
 

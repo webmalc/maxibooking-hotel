@@ -63,6 +63,10 @@ class Writer {
             computed: {
                 priceSorted: function () {
                     this.searchResults.sort(function (resultA, resultB) {
+                        if (typeof resultA.prices[0] !== 'object' || typeof resultB.prices[0] !== 'object') {
+                            return;
+                        }
+
                         let keyPriceA = Object.keys(resultA.prices[0])[0];
                         let keyPriceB = Object.keys(resultB.prices[0])[0];
                         let priceA = resultA.prices[0][keyPriceA].total;
@@ -102,16 +106,13 @@ class Writer {
     }
 
     public drawResults(data): void {
-
         for (let newKey in data) {
+            if (!data.hasOwnProperty(newKey)) {
+                continue;
+            }
             if (!this.data.hasOwnProperty(newKey)) {
-                let tempData = {};
-                tempData[newKey] = data[newKey];
-                /**
-                 * х.з почему тут именно так.
-                 * @url https://ru.vuejs.org/v2/guide/reactivity.html */
-                this.data = Object.assign({}, this.data, tempData);
-                this.rootApp.rawData = this.data;
+                //  * @url https://ru.vuejs.org/v2/guide/reactivity.html */
+                this.rootApp.$set(this.rootApp.rawData, newKey, data[newKey]);
             } else {
                 this.data[newKey].results = this.data[newKey].results.concat(data[newKey].results);
             }

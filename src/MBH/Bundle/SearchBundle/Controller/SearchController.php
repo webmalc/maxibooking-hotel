@@ -45,7 +45,6 @@ class SearchController extends Controller
             }
             $results = $search->searchSync($data);
             $responder = $this->get('mbh_search.search_results_responder');
-            //** TODO: Временный костыль. Будем менять result Composer на новый результат в виде массива */
             $resultsArray = $responder->handleResults($results, $grouping);
             $json = json_encode(['results' => $resultsArray], JSON_UNESCAPED_UNICODE);
             $answer = new JsonResponse($json, 200, [], true);

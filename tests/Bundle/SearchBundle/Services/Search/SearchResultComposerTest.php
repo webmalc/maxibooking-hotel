@@ -7,6 +7,7 @@ namespace Tests\Bundle\SearchBundle\Services\Search;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
@@ -25,13 +26,12 @@ class SearchResultComposerTest extends SearchWebTestCase
     public function testComposeResult($data): void
     {
         $searchQuery = $this->createSearchQuery($data);
-        $dataHolder = $this->getContainer()->get('mbh_search.data_holder');
-        $roomCaches = $dataHolder->getNecessaryRoomCaches($searchQuery);
-        $actual = $this->searchComposer->composeResult($searchQuery, $roomCaches);
+        /** @var Result $actual */
+        $searchQuery->getSearchConditions()->setId('fakeId');
+        $actual = $this->searchComposer->composeResult($searchQuery);
         $expected = $data['expected'];
         /** TODO: Добавить всякой фигни */
-        /** @var SearchResult $actual */
-        $this->assertEquals($expected['minCache'], $actual->getRoomsCount());
+        $this->assertEquals($expected['minCache'], $actual->getMinRoomsCount());
 
 
     }

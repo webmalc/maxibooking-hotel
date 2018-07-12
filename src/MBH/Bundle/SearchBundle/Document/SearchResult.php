@@ -13,6 +13,7 @@ use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\SearchBundle\Lib\SearchResultInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -20,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @package MBH\Bundle\SearchBundle\Document
  * @Document(collection="SearchResults",repositoryClass="SearchResultRepository")
  */
-class SearchResult extends Base implements \JsonSerializable
+class SearchResult extends Base implements \JsonSerializable, SearchResultInterface
 {
 
     use TimestampableDocument;

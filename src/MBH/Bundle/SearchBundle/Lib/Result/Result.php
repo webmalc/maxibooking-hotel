@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 
 class Result implements \JsonSerializable
 {
@@ -16,20 +17,32 @@ class Result implements \JsonSerializable
     /** @var \DateTime */
     private $end;
 
-    /** @var RoomType */
-    private $roomType;
+    /** @var ResultRoomType */
+    private $resultRoomType;
 
-    /** @var Tariff */
-    private $tariff;
+    /** @var ResultTariff */
+    private $resultTariff;
 
-    /** @var Conditions */
-    private $conditions;
+    /** @var ResultConditions */
+    private $resultConditions;
 
-    /** @var Price[] */
+    /** @var ResultPrice[] */
     private $prices;
 
     /** @var int */
-    private $minRooms;
+    private $minRoomsCount;
+
+    /** @var ResultRoom[] */
+    private $accommodationRooms = [];
+
+    /** @var ResultRoom */
+    private $virtualRoom;
+
+    /** @var string */
+    private $status = 'ok';
+
+    /** @var string */
+    private $error;
 
     /**
      * @return \DateTime
@@ -72,64 +85,64 @@ class Result implements \JsonSerializable
 
 
     /**
-     * @return RoomType
+     * @return ResultRoomType
      */
-    public function getRoomType(): RoomType
+    public function getResultRoomType(): ResultRoomType
     {
-        return $this->roomType;
+        return $this->resultRoomType;
     }
 
     /**
-     * @param RoomType $roomType
+     * @param ResultRoomType $resultRoomType
      * @return Result
      */
-    public function setRoomType(RoomType $roomType): Result
+    public function setResultRoomType(ResultRoomType $resultRoomType): Result
     {
-        $this->roomType = $roomType;
+        $this->resultRoomType = $resultRoomType;
 
         return $this;
     }
 
     /**
-     * @return Tariff
+     * @return ResultTariff
      */
-    public function getTariff(): Tariff
+    public function getResultTariff(): ResultTariff
     {
-        return $this->tariff;
+        return $this->resultTariff;
     }
 
     /**
-     * @param Tariff $tariff
+     * @param ResultTariff $resultTariff
      * @return Result
      */
-    public function setTariff(Tariff $tariff): Result
+    public function setResultTariff(ResultTariff $resultTariff): Result
     {
-        $this->tariff = $tariff;
+        $this->resultTariff = $resultTariff;
 
         return $this;
     }
 
     /**
-     * @return Conditions
+     * @return ResultConditions
      */
-    public function getConditions(): Conditions
+    public function getResultConditions(): ResultConditions
     {
-        return $this->conditions;
+        return $this->resultConditions;
     }
 
     /**
-     * @param Conditions $conditions
+     * @param ResultConditions $resultConditions
      * @return Result
      */
-    public function setConditions(Conditions $conditions): Result
+    public function setResultConditions(ResultConditions $resultConditions): Result
     {
-        $this->conditions = $conditions;
+        $this->resultConditions = $resultConditions;
 
         return $this;
     }
 
     /**
-     * @return Price[]
+     * @return ResultPrice[]
      */
     public function getPrices(): array
     {
@@ -137,7 +150,7 @@ class Result implements \JsonSerializable
     }
 
     /**
-     * @param Price[] $prices
+     * @param ResultPrice[] $prices
      * @return Result
      */
     public function setPrices(array $prices): Result
@@ -150,120 +163,215 @@ class Result implements \JsonSerializable
     /**
      * @return int
      */
-    public function getMinRooms(): int
+    public function getMinRoomsCount(): int
     {
-        return $this->minRooms;
+        return $this->minRoomsCount;
     }
 
     /**
-     * @param int $minRooms
+     * @param int $minRoomsCount
      * @return Result
      */
-    public function setMinRooms(int $minRooms): Result
+    public function setMinRoomsCount(int $minRoomsCount): Result
     {
-        $this->minRooms = $minRooms;
+        $this->minRoomsCount = $minRoomsCount;
 
         return $this;
     }
+
+    /**
+     * @return ResultRoom[]
+     */
+    public function getAccommodationRooms(): array
+    {
+        return $this->accommodationRooms;
+    }
+
+    /**
+     * @param ResultRoom[] $accommodationRooms
+     * @return Result
+     */
+    public function setAccommodationRooms(array $accommodationRooms): Result
+    {
+        $this->accommodationRooms = $accommodationRooms;
+
+        return $this;
+    }
+
+    /**
+     * @return ResultRoom
+     */
+    public function getVirtualRoom(): ?ResultRoom
+    {
+        return $this->virtualRoom;
+    }
+
+    /**
+     * @param ResultRoom $virtualRoom
+     * @return Result
+     */
+    public function setVirtualRoom(ResultRoom $virtualRoom): Result
+    {
+        $this->virtualRoom = $virtualRoom;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     * @return Result
+     */
+    public function setStatus(string $status): Result
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError(): string
+    {
+        return $this->error;
+    }
+
+    /**
+     * @param string $error
+     * @return Result
+     */
+    public function setError(string $error): Result
+    {
+        $this->error = $error;
+
+        return $this;
+    }
+
+
+
+
+
+
 
     public function jsonSerialize()
     {
         return [
             'begin' => $this->getBegin()->format('d-m-Y'),
             'end' => $this->getEnd()->format('d-m-Y'),
-            'roomType' => $this->getRoomType(),
-            'tariff' => $this->getTariff(),
-            'conditions' => $this->getConditions(),
+            'roomType' => $this->getResultRoomType(),
+            'tariff' => $this->getResultTariff(),
+            'conditions' => $this->getResultConditions(),
             'prices' => $this->getPrices(),
-            'minRooms' => $this->getMinRooms()
+            'minRooms' => $this->getMinRoomsCount(),
+            'accommodationRooms'  => $this->getAccommodationRooms(),
+            'virtualRoom' => $this->getVirtualRoom()
         ];
     }
 
-    public static function createInstance(SearchResult  $searchResult): self
+
+    public static function createErrorResult(SearchException $exception): Result
     {
-        //** TODO: Это вариант для выдачи для тестов скорости поиска
-        // будет переделано в сервисе compose Result
-        // */
         $result = new static();
-
-        $roomType = $searchResult->getRoomType();
-        $resultRoomType = new RoomType();
-        $resultRoomType
-            ->setId($roomType->getId())
-            ->setName($roomType->getName())
-            ->setHotelName($roomType->getHotel()->getName())
-        ;
-        $category = $roomType->getCategory();
-        if ($category) {
-            $resultRoomType->setCategoryName($category->getName());
-        }
-
-        $tariff = $searchResult->getTariff();
-        $resultTariff = new Tariff();
-        $resultTariff->setId($tariff->getId())
-            ->setTariffName($tariff->getName())
-        ;
-
-        $allPackagePrices = $searchResult->getAllPackagesPrices();
-
-        $combinations = array_keys($allPackagePrices);
-        $resultPrices = [];
-        foreach ($combinations as $combination) {
-            [$adults, $children] = explode('_', $combination);
-            $resultPrice = new Price();
-            $resultPrice
-                ->setAdults($adults)
-                ->setChildren($children)
-                ->setTotal($searchResult->getPrices()[$combination])
-            ;
-            $packagePrices = $allPackagePrices[$combination];
-            foreach ($packagePrices as $packagePrice) {
-                $dayPrice = new DayPrice();
-                /** @var PackagePrice $packagePrice */
-                $dayTariff = new Tariff();
-                $dayTariff
-                    ->setTariffName($packagePrice->getTariff()->getName())
-                    ->setId($packagePrice->getTariff()->getId())
-                ;
-                $dayPrice
-                    ->setDate($packagePrice->getDate())
-                    ->setTariff($dayTariff)
-                    ->setPrice($packagePrice->getPrice())
-                    ->setAdults($searchResult->getAdults())
-                    ->setChildren($searchResult->getChildren())
-                    ->setInfants($searchResult->getInfants())
-                ;
-
-                $resultPrice->addDayPrice($dayPrice);
-            }
-            $resultPrices[] = $resultPrice;
-        }
-
-        //** FakeData */
-        $resultConditions = new Conditions();
-        $resultConditions
-            ->setId('fakeId')
-            ->setBegin($searchResult->getBegin())
-            ->setEnd($searchResult->getEnd())
-            ->setChildren($searchResult->getChildren())
-            ->setAdults($searchResult->getAdults())
-            ->setChildrenAges([])
-
-        ;
-        //** EndFakeData */
         $result
-            ->setBegin($searchResult->getBegin())
-            ->setEnd($searchResult->getEnd())
-            ->setTariff($resultTariff)
-            ->setRoomType($resultRoomType)
-            ->setPrices($resultPrices)
-            ->setConditions($resultConditions)
-            ->setMinRooms($searchResult->getRoomsCount())
-
+            ->setStatus('error')
+            ->setError($exception->getMessage())
         ;
 
         return $result;
     }
+//    public static function createInstance(SearchResult  $searchResult): self
+//    {
+//        //** TODO: Это вариант для выдачи для тестов скорости поиска
+//        // будет переделано в сервисе compose Result
+//        // */
+//        $result = new static();
+//
+//        $roomType = $searchResult->getRoomType();
+//        $resultRoomType = new ResultRoomType();
+//        $resultRoomType
+//            ->setId($roomType->getId())
+//            ->setName($roomType->getName())
+//            ->setHotelName($roomType->getHotel()->getName())
+//        ;
+//        $category = $roomType->getCategory();
+//        if ($category) {
+//            $resultRoomType->setCategoryName($category->getName());
+//        }
+//
+//        $tariff = $searchResult->getTariff();
+//        $resultTariff = new ResultTariff();
+//        $resultTariff->setId($tariff->getId())
+//            ->setTariffName($tariff->getName())
+//        ;
+//
+//        $allPackagePrices = $searchResult->getAllPackagesPrices();
+//
+//        $combinations = array_keys($allPackagePrices);
+//        $resultPrices = [];
+//        foreach ($combinations as $combination) {
+//            [$adults, $children] = explode('_', $combination);
+//            $resultPrice = new ResultPrice();
+//            $resultPrice
+//                ->setSearchAdults($adults)
+//                ->setSearchChildren($children)
+//                ->setTotal($searchResult->getPrices()[$combination])
+//            ;
+//            $packagePrices = $allPackagePrices[$combination];
+//            foreach ($packagePrices as $packagePrice) {
+//                $dayPrice = new ResultDayPrice();
+//                /** @var PackagePrice $packagePrice */
+//                $dayTariff = new ResultTariff();
+//                $dayTariff
+//                    ->setTariffName($packagePrice->getTariff()->getName())
+//                    ->setId($packagePrice->getTariff()->getId())
+//                ;
+//                $dayPrice
+//                    ->setDate($packagePrice->getDate())
+//                    ->setTariff($dayTariff)
+//                    ->setPrice($packagePrice->getPrice())
+//                    ->setAdults($searchResult->getAdults())
+//                    ->setChildren($searchResult->getChildren())
+//                    ->setInfants($searchResult->getInfants())
+//                ;
+//
+//                $resultPrice->addDayPrice($dayPrice);
+//            }
+//            $resultPrices[] = $resultPrice;
+//        }
+//
+//        //** FakeData */
+//        $resultConditions = new ResultConditions();
+//        $resultConditions
+//            ->setId('fakeId')
+//            ->setBegin($searchResult->getBegin())
+//            ->setEnd($searchResult->getEnd())
+//            ->setChildren($searchResult->getChildren())
+//            ->setAdults($searchResult->getAdults())
+//            ->setChildrenAges([])
+//
+//        ;
+//        //** EndFakeData */
+//        $result
+//            ->setBegin($searchResult->getBegin())
+//            ->setEnd($searchResult->getEnd())
+//            ->setResultTariff($resultTariff)
+//            ->setResultRoomType($resultRoomType)
+//            ->setPrices($resultPrices)
+//            ->setConditions($resultConditions)
+//            ->setMinRoomsCount($searchResult->getRoomsCount())
+//
+//        ;
+//
+//        return $result;
+//    }
 
 
 }

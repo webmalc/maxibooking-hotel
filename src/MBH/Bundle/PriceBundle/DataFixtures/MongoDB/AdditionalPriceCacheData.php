@@ -19,7 +19,7 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
     public const TARIFFS = [
         'main-tariff' => [
             'beginOffset' => 0,
-            'endOffset' => 0,
+            'endOffset' => 30,
         ],
         AdditionalTariffData::DOWN_TARIFF_NAME.'-tariff'=> [
             'beginOffset' => 4,
@@ -27,7 +27,7 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
         ],
         AdditionalTariffData::UP_TARIFF_NAME.'-tariff'=> [
             'beginOffset' => 8,
-            'endOffset' => 5,
+            'endOffset' => 25,
         ]
 
     ];
@@ -95,9 +95,10 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
                     /** @var RoomType $roomType */
                     $roomType = $this->getReference($roomTypeKey . '/' . $hotelNumber);
                     foreach ($period as $day) {
-                        $actualBeginOffset = (int)$day->diff($begin)->format('%a');
-                        $actualEndOffset = (int)$day->diff($end)->format('%a');
-                        if ($actualBeginOffset < $offsets['beginOffset'] || $actualEndOffset < $offsets['endOffset']) {
+                        $beginOffsetDay = (clone $begin)->modify("+ {$offsets['beginOffset']}days");
+                        $endOffsetDay = (clone $begin)->modify("+ {$offsets['endOffset']}days");
+
+                        if ($beginOffsetDay > $day || $endOffsetDay < $day) {
                             continue;
                         }
 

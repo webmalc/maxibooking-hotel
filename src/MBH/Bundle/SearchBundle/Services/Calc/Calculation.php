@@ -65,6 +65,10 @@ class Calculation
             }
         }
 
+        if (!\count($prices)) {
+            throw new CalculationException('No prices at this time, sorry.');
+        }
+
         return $prices;
 
     }

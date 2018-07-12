@@ -15,9 +15,12 @@ use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
@@ -159,19 +162,19 @@ class SearchLimitChecker
 
 
 
-    public function checkWindows(SearchResult $result)
+    public function checkWindows(Result $result)
     {
         if ($this->clientConfig->getSearchWindows()) {
             //** TODO: Уточнить если форс */
-            if($result->getForceBooking() || $result->getBegin() <= new \DateTime('midnight')) {
+            if($result->getResultConditions()->isForceBooking() || $result->getBegin() <= new \DateTime('midnight')) {
                 return;
             }
 
-            $roomType = $result->getRoomType();
+            $roomType = $result->getResultRoomType()->getRoomType();
             $begin = clone $result->getBegin();
             $end = clone $result->getEnd();
             /** @var Tariff $tariff */
-            $tariff = $this->dm->getRepository(Tariff::class)->fetchBaseTariff($result->getTariff()->getHotel());
+            $tariff = $this->dm->getRepository(Tariff::class)->fetchBaseTariff($result->getResultTariff()->getTariff()->getHotel());
             /** @var RestrictionRepository $restrictionRepo */
             $restrictionRepo = $this->dm->getRepository(Restriction::class);
             /** @var Restriction $beginRestriction */
@@ -256,7 +259,7 @@ class SearchLimitChecker
 
             }
             $collection = $preferredRooms->count() ? $preferredRooms : $emptyRooms;
-            $result->setRoomsCount($emptyRooms->count() + $preferredRooms->count());
+            $result->setMinRoomsCount($emptyRooms->count() + $preferredRooms->count());
 
             if (!$collection->count()) {
                 throw new SearchLimitCheckerException('Window checker throws an error. '.$roomType->getName());
@@ -276,7 +279,12 @@ class SearchLimitChecker
             $firstRawRoom = $collection->current();
             $room = new Room();
             $this->dm->getHydratorFactory()->hydrate($room, (array)$firstRawRoom);
-            $result->setVirtualRoom($room);
+            $resultRoom = new ResultRoom();
+            $resultRoom
+                ->setId($room->getId())
+                ->setName($room->getName())
+            ;
+            $result->setVirtualRoom($resultRoom);
         }
     }
 }

@@ -4,7 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-class Promotion implements \JsonSerializable
+class ResultPromotion implements \JsonSerializable
 {
     /** @var string */
     private $id;
@@ -22,9 +22,9 @@ class Promotion implements \JsonSerializable
 
     /**
      * @param string $id
-     * @return Promotion
+     * @return ResultPromotion
      */
-    public function setId(string $id): Promotion
+    public function setId(string $id): ResultPromotion
     {
         $this->id = $id;
 
@@ -41,9 +41,9 @@ class Promotion implements \JsonSerializable
 
     /**
      * @param string $name
-     * @return Promotion
+     * @return ResultPromotion
      */
-    public function setName(string $name): Promotion
+    public function setName(string $name): ResultPromotion
     {
         $this->name = $name;
 

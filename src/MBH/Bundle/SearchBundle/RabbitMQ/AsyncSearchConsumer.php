@@ -6,10 +6,11 @@ namespace MBH\Bundle\SearchBundle\RabbitMQ;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncSearchConsumerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -22,16 +23,23 @@ class AsyncSearchConsumer implements ConsumerInterface
 
     /** @var SearchConditionsRepository */
     private $conditionsRepository;
+    /**
+     * @var AsyncResultStoreInterface
+     */
+    private $resultStore;
+
 
     /**
      * AsyncSearchConsumer constructor.
      * @param Searcher $searcher
      * @param SearchConditionsRepository $conditionsRepository
+     * @param AsyncResultStoreInterface $resultStore
      */
-    public function __construct(Searcher $searcher, SearchConditionsRepository $conditionsRepository)
+    public function __construct(Searcher $searcher, SearchConditionsRepository $conditionsRepository, AsyncResultStoreInterface $resultStore)
     {
         $this->searcher = $searcher;
         $this->conditionsRepository = $conditionsRepository;
+        $this->resultStore = $resultStore;
     }
 
 
@@ -46,18 +54,16 @@ class AsyncSearchConsumer implements ConsumerInterface
         if (!$conditions ) {
             throw new AsyncSearchConsumerException('Error! Can not find SearchConditions for search');
         }
-        $dm = $this->conditionsRepository->getDocumentManager();
         foreach ($searchQueries as $searchQuery) {
             /** @var SearchQuery $searchQuery */
             $searchQuery->setSearchConditions($conditions);
             try {
                 $result = $this->searcher->search($searchQuery);
             } catch (SearchException $exception) {
-                $result = SearchResult::createErrorResult($exception)->setQueryId($conditions->getId());
+                $result = Result::createErrorResult($exception);
             }
 
-            $dm->persist($result);
-            $dm->flush($result);
+            $this->resultStore->store($result);
         }
 
     }

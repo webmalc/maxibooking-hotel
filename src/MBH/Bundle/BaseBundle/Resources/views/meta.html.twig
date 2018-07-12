@@ -84,11 +84,11 @@
 
         {% block scripts %}
 
-            {% javascripts
-                '@MBHBaseBundle/Resources/public/js/menu/*'
-            %}
-            <script type="text/javascript" src="{{ asset_url }}"></script>
-            {% endjavascripts %}
+            {#{% javascripts#}
+                {#'@MBHBaseBundle/Resources/public/js/menu/*'#}
+            {#%}#}
+            {#<script type="text/javascript" src="{{ asset_url }}"></script>#}
+            {#{% endjavascripts %}#}
 
             {{ app.session.remove('mbh.justLogin') }}
 

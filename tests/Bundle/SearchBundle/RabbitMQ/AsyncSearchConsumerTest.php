@@ -4,14 +4,14 @@
 namespace Tests\Bundle\SearchBundle\RabbitMQ;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncSearchConsumerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
 use PhpAmqpLib\Message\AMQPMessage;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
@@ -29,22 +29,18 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
 
         $searchConditions = $this->createMock(SearchConditions::class);
 
-        $dm = $this->createMock(DocumentManager::class);
-        $dm->expects($this->exactly(2))->method('persist')->willReturnCallback(function ($searchResult) {
-            $this->assertInstanceOf(SearchResult::class, $searchResult);
-        } );
-        $dm->expects($this->exactly(2))->method('flush')->willReturnCallback(function ($searchResult) {
-            $this->assertInstanceOf(SearchResult::class, $searchResult);
-        } );
-
         $conditionsRepository = $this->createMock(SearchConditionsRepository::class);
         $conditionsRepository->expects($this->once())->method('find')->willReturn($searchConditions);
-        $conditionsRepository->expects($this->once())->method('getDocumentManager')->willReturn($dm);
 
         $searcher = $this->createMock(Searcher::class);
-        $searcher->expects($this->exactly(2))->method('search')->willReturn(new SearchResult());
+        $searcher->expects($this->exactly(2))->method('search')->willReturn(new Result());
 
-        $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository);
+        $stocker = $this->createMock(AsyncResultStoreInterface::class);
+        $stocker->expects($this->exactly(2))->method('store')->willReturnCallback(function ($searchResult) {
+            $this->assertInstanceOf(Result::class, $searchResult);
+        } );
+
+        $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository, $stocker);
         $consumer->execute($message);
     }
 
@@ -60,26 +56,22 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
         $searchConditions = $this->createMock(SearchConditions::class);
         $searchConditions->expects($this->any())->method('getId')->willReturn($body['conditionsId']);
 
-        $dm = $this->createMock(DocumentManager::class);
+        $resultStore = $this->createMock(AsyncResultStoreInterface::class);
         $exceptionMessage = 'Not found message';
-        $dm->expects($this->exactly(2))->method('persist')->willReturnCallback(function ($searchResult) use ($exceptionMessage, $body) {
-            /** @var SearchResult $searchResult */
-            $this->assertInstanceOf(SearchResult::class, $searchResult);
+        $resultStore->expects($this->exactly(2))->method('store')->willReturnCallback(function ($searchResult) use ($exceptionMessage, $body) {
+            /** @var Result $searchResult */
+            $this->assertInstanceOf(Result::class, $searchResult);
             $this->assertEquals('error', $searchResult->getStatus());
             $this->assertEquals($exceptionMessage, $searchResult->getError());
-            $this->assertEquals($body['conditionsId'],$searchResult->getQueryId());
         } );
-        $dm->expects($this->exactly(2))->method('flush')->willReturnCallback(function ($searchResult) {
-            $this->assertInstanceOf(SearchResult::class, $searchResult);
-        } );
+
         $conditionsRepository = $this->createMock(SearchConditionsRepository::class);
         $conditionsRepository->expects($this->once())->method('find')->willReturn($searchConditions);
-        $conditionsRepository->expects($this->once())->method('getDocumentManager')->willReturn($dm);
 
         $searcher = $this->createMock(Searcher::class);
         $searcher->expects($this->exactly(2))->method('search')->willThrowException(new SearchException($exceptionMessage));
 
-        $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository);
+        $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository, $resultStore);
         $consumer->execute($message);
     }
 
@@ -95,7 +87,8 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
         $conditionsRepository = $this->createMock(SearchConditionsRepository::class);
         $conditionsRepository->expects($this->once())->method('find')->willReturn(null);
         $searcher = $this->createMock(Searcher::class);
-        $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository);
+        $resultStore = $this->createMock(AsyncResultStoreInterface::class);
+        $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository, $resultStore);
         $this->expectException(AsyncSearchConsumerException::class);
         $consumer->execute($message);
     }

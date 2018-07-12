@@ -6,10 +6,10 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
@@ -75,7 +75,7 @@ class Search
     /**
      * @param array $data
      * @param bool $isHideRestrictedResults
-     * @return array
+     * @return Result[]
      *\ @throws SearchConditionException
      * @throws SearchQueryGeneratorException
      */
@@ -88,7 +88,7 @@ class Search
             try {
                 $results[] = $this->searcher->search($searchQuery);
             } catch (SearchException $e) {
-                $restrictedResult = SearchResult::createErrorResult($e);
+                $restrictedResult = Result::createErrorResult($e);
                 if (!$isHideRestrictedResults) {
                     $results[] = $restrictedResult;
                 }

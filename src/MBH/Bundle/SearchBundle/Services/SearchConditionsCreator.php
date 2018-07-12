@@ -40,7 +40,7 @@ class SearchConditionsCreator
         }
 
         if (!$conditionForm->isValid()) {
-            throw new SearchConditionException('No valid SearchConditions data. '.$conditionForm->getErrors());
+            throw new SearchConditionException('No valid SearchConditions data.'.$conditionForm->getErrors());
         }
 
         return $conditionForm->getData();

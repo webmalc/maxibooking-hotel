@@ -6,6 +6,46 @@ use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class SearchControllerTest extends SearchWebTestCase
 {
+
+    /** @dataProvider requestDataProvider
+     * @param iterable $requestData
+     * @param bool $result
+     */
+    public function testSyncSearchAction(iterable $requestData, bool $result): void
+    {
+
+        $this->client->request(
+            'POST',
+            '/search/sync/json',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($requestData)
+        );
+
+        $response = $this->client->getResponse();
+        $json = $response->getContent();
+        if ($result) {
+            $this->assertTrue($response->isSuccessful());
+            $this->assertJson($json);
+            $answer = json_decode($json, true);
+            $this->assertCount(8, $answer['results']);
+            $actualResults = $answer['results'];
+            foreach ($actualResults as $actualResult) {
+                $this->assertArrayHasKey('conditions', $actualResult);
+                $this->assertNotEmpty($actualResult['conditions']['id']);
+            }
+
+        } else {
+            $this->assertFalse($response->isSuccessful());
+            $this->assertEquals(400, $response->getStatusCode());
+            $answer = json_decode($response->getContent(), true);
+            $this->assertArrayHasKey('error', $answer);
+            $this->assertNotNull($answer['error']);
+        }
+    }
+
+
     /** @dataProvider requestDataProvider
      * @param iterable $requestData
      * @param bool $result

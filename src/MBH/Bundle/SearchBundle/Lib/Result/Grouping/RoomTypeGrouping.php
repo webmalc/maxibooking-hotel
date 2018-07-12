@@ -11,17 +11,17 @@ class RoomTypeGrouping implements GroupingInterface
     public function group(array $searchResults): array
     {
         $grouped = [];
-        foreach ($searchResults as $seasrchResult) {
-            /** @var Result $seasrchResult */
-            $roomType = $seasrchResult->getRoomType();
+        foreach ($searchResults as $searchResult) {
+            /** @var Result $searchResult */
+            $roomType = $searchResult->getResultRoomType();
             $roomTypes[$roomType->getId()][] = $roomType;
-            $grouped[$roomType->getId()][] = $seasrchResult;
+            $grouped[$roomType->getId()][] = $searchResult;
         }
 
         $grouped = array_map(function ($groupedResults) {
             /** @var Result[] $groupedResults */
             return [
-                'roomType' => $groupedResults[0]->getRoomType(),
+                'roomType' => $groupedResults[0]->getResultRoomType(),
                 'results' => $groupedResults
             ];
         }, $grouped);

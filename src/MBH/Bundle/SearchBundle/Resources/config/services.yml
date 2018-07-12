@@ -267,3 +267,7 @@ services:
 #SearchResult To JSON
     mbh_search.search_results_responder:
         class: MBH\Bundle\SearchBundle\Services\SearchResultsResponder
+
+#AsyncStores
+    mbh_search.redis_store:
+        class: MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\RedisStore

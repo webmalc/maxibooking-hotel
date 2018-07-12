@@ -4,12 +4,12 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-class DayPrice implements \JsonSerializable
+class ResultDayPrice implements \JsonSerializable
 {
     /** @var \DateTime */
     private $date;
 
-    /** @var Tariff */
+    /** @var ResultTariff */
     private $tariff;
 
     /** @var float */
@@ -24,7 +24,7 @@ class DayPrice implements \JsonSerializable
     /** @var int */
     private $infants;
 
-    /** @var Promotion */
+    /** @var ResultPromotion */
     private $promotion;
 
     /**
@@ -37,9 +37,9 @@ class DayPrice implements \JsonSerializable
 
     /**
      * @param \DateTime $date
-     * @return DayPrice
+     * @return ResultDayPrice
      */
-    public function setDate(\DateTime $date): DayPrice
+    public function setDate(\DateTime $date): ResultDayPrice
     {
         $this->date = $date;
 
@@ -47,18 +47,18 @@ class DayPrice implements \JsonSerializable
     }
 
     /**
-     * @return Tariff
+     * @return ResultTariff
      */
-    public function getTariff(): Tariff
+    public function getTariff(): ResultTariff
     {
         return $this->tariff;
     }
 
     /**
-     * @param Tariff $tariff
-     * @return DayPrice
+     * @param ResultTariff $tariff
+     * @return ResultDayPrice
      */
-    public function setTariff(Tariff $tariff): DayPrice
+    public function setTariff(ResultTariff $tariff): ResultDayPrice
     {
         $this->tariff = $tariff;
 
@@ -75,9 +75,9 @@ class DayPrice implements \JsonSerializable
 
     /**
      * @param float $price
-     * @return DayPrice
+     * @return ResultDayPrice
      */
-    public function setPrice(float $price): DayPrice
+    public function setPrice(float $price): ResultDayPrice
     {
         $this->price = $price;
 
@@ -94,9 +94,9 @@ class DayPrice implements \JsonSerializable
 
     /**
      * @param int $adults
-     * @return DayPrice
+     * @return ResultDayPrice
      */
-    public function setAdults(int $adults): DayPrice
+    public function setAdults(int $adults): ResultDayPrice
     {
         $this->adults = $adults;
 
@@ -113,9 +113,9 @@ class DayPrice implements \JsonSerializable
 
     /**
      * @param int $children
-     * @return DayPrice
+     * @return ResultDayPrice
      */
-    public function setChildren(int $children): DayPrice
+    public function setChildren(int $children): ResultDayPrice
     {
         $this->children = $children;
 
@@ -132,9 +132,9 @@ class DayPrice implements \JsonSerializable
 
     /**
      * @param int $infants
-     * @return DayPrice
+     * @return ResultDayPrice
      */
-    public function setInfants(int $infants): DayPrice
+    public function setInfants(int $infants): ResultDayPrice
     {
         $this->infants = $infants;
 
@@ -142,18 +142,18 @@ class DayPrice implements \JsonSerializable
     }
 
     /**
-     * @return Promotion
+     * @return ResultPromotion
      */
-    public function getPromotion(): ?Promotion
+    public function getPromotion(): ?ResultPromotion
     {
         return $this->promotion;
     }
 
     /**
-     * @param Promotion $promotion
-     * @return DayPrice
+     * @param ResultPromotion $promotion
+     * @return ResultDayPrice
      */
-    public function setPromotion(Promotion $promotion): DayPrice
+    public function setPromotion(ResultPromotion $promotion): ResultDayPrice
     {
         $this->promotion = $promotion;
 

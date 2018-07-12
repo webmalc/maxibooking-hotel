@@ -13,7 +13,6 @@ use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
-use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class CalculationTest extends SearchWebTestCase

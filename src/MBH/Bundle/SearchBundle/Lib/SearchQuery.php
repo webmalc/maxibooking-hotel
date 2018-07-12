@@ -281,6 +281,8 @@ class SearchQuery
     }
 
     /**
+     * @deprecated
+     * TODO: Возраст будет браться из калькуляции взависимости от  тарифа priceCache (из за комбинирования тарифов)
      * @param int $childAge
      * @return SearchQuery
      */
@@ -292,6 +294,8 @@ class SearchQuery
     }
 
     /**
+     * @deprecated
+     * TODO: Возраст будет браться из калькуляции взависимости от  тарифа priceCache (из за комбинирования тарифов)
      * @return int
      */
     public function getInfantAge(): int

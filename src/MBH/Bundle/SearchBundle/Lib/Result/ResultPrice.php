@@ -4,13 +4,13 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-class Price implements \JsonSerializable
+class ResultPrice implements \JsonSerializable
 {
     /** @var int */
-    private $adults;
+    private $searchAdults;
 
     /** @var  int*/
-    private $children;
+    private $searchChildren;
 
     /** @var array */
     private $childrenAges;
@@ -18,24 +18,24 @@ class Price implements \JsonSerializable
     /** @var float */
     private $total;
 
-    /** @var DayPrice[] */
+    /** @var ResultDayPrice[] */
     private $dayPrices;
 
     /**
      * @return int
      */
-    public function getAdults(): int
+    public function getSearchAdults(): int
     {
-        return $this->adults;
+        return $this->searchAdults;
     }
 
     /**
-     * @param int $adults
-     * @return Price
+     * @param int $searchAdults
+     * @return ResultPrice
      */
-    public function setAdults(int $adults): Price
+    public function setSearchAdults(int $searchAdults): ResultPrice
     {
-        $this->adults = $adults;
+        $this->searchAdults = $searchAdults;
 
         return $this;
     }
@@ -43,18 +43,18 @@ class Price implements \JsonSerializable
     /**
      * @return int
      */
-    public function getChildren(): int
+    public function getSearchChildren(): int
     {
-        return $this->children;
+        return $this->searchChildren;
     }
 
     /**
-     * @param int $children
-     * @return Price
+     * @param int $searchChildren
+     * @return ResultPrice
      */
-    public function setChildren(int $children): Price
+    public function setSearchChildren(int $searchChildren): ResultPrice
     {
-        $this->children = $children;
+        $this->searchChildren = $searchChildren;
 
         return $this;
     }
@@ -69,9 +69,9 @@ class Price implements \JsonSerializable
 
     /**
      * @param array $childrenAges
-     * @return Price
+     * @return ResultPrice
      */
-    public function setChildrenAges(array $childrenAges): Price
+    public function setChildrenAges(array $childrenAges): ResultPrice
     {
         $this->childrenAges = $childrenAges;
 
@@ -88,9 +88,9 @@ class Price implements \JsonSerializable
 
     /**
      * @param float $total
-     * @return Price
+     * @return ResultPrice
      */
-    public function setTotal(float $total): Price
+    public function setTotal(float $total): ResultPrice
     {
         $this->total = $total;
 
@@ -98,7 +98,7 @@ class Price implements \JsonSerializable
     }
 
     /**
-     * @return DayPrice[]
+     * @return ResultDayPrice[]
      */
     public function getDayPrices(): array
     {
@@ -106,7 +106,7 @@ class Price implements \JsonSerializable
     }
 
 
-    public function addDayPrice(DayPrice $dayPrice): Price
+    public function addDayPrice(ResultDayPrice $dayPrice): ResultPrice
     {
         $this->dayPrices[] = $dayPrice;
 
@@ -116,9 +116,9 @@ class Price implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            $this->getAdults().'_'.$this->children => [
-                'adults' => $this->getAdults(),
-                'children' => $this->getChildren(),
+            $this->getSearchAdults().'_'.$this->getSearchChildren() => [
+                'adults' => $this->getSearchAdults(),
+                'children' => $this->getSearchChildren(),
                 'total' => $this->getTotal(),
                 'dayPrices' => $this->getDayPrices()
             ]

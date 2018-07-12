@@ -4,13 +4,16 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-class Tariff implements \JsonSerializable
+use MBH\Bundle\HotelBundle\Document\Room;
+
+class ResultRoom implements \JsonSerializable
 {
     /** @var string */
     private $id;
 
     /** @var string */
-    private $tariffName;
+    private $name;
+
 
     /**
      * @return string
@@ -22,9 +25,9 @@ class Tariff implements \JsonSerializable
 
     /**
      * @param string $id
-     * @return Tariff
+     * @return ResultRoom
      */
-    public function setId(string $id): Tariff
+    public function setId(string $id): ResultRoom
     {
         $this->id = $id;
 
@@ -34,18 +37,18 @@ class Tariff implements \JsonSerializable
     /**
      * @return string
      */
-    public function getTariffName(): string
+    public function getName(): string
     {
-        return $this->tariffName;
+        return $this->name;
     }
 
     /**
-     * @param string $tariffName
-     * @return Tariff
+     * @param string $name
+     * @return ResultRoom
      */
-    public function setTariffName(string $tariffName): Tariff
+    public function setName(string $name): ResultRoom
     {
-        $this->tariffName = $tariffName;
+        $this->name = $name;
 
         return $this;
     }
@@ -54,7 +57,7 @@ class Tariff implements \JsonSerializable
     {
         return [
             'id' => $this->getId(),
-            'name' => $this->getTariffName()
+            'name' => $this->getName()
         ];
     }
 

@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -38,7 +39,7 @@ class Searcher
     }
 
 
-    public function search(SearchQuery $searchQuery): SearchResult
+    public function search(SearchQuery $searchQuery): Result
     {
 
         //** TODO: Надобно сделать сервис проверки лимитов и под каждый лимит отдельный класс

@@ -4,7 +4,9 @@
 namespace MBH\Bundle\SearchBundle\Lib\Exceptions;
 
 
-class SearchResultComposerException extends SearchException
+use MBH\Bundle\BaseBundle\Lib\Exception;
+
+class SearchResultComposerException extends Exception
 {
 
 }
