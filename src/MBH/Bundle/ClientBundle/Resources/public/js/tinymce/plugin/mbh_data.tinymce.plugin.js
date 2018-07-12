@@ -148,7 +148,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
       },
       name  : 'landscape',
       width : 'width: 1769px',
-      height: 'height: 1223px'
+      height: 'height: 1206px'
     };
 
     function changeSelect(change, orientation) {
