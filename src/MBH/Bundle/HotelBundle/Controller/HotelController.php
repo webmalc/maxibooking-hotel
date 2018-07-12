@@ -452,13 +452,11 @@ class HotelController extends Controller
      * @Route("/{id}/delete", name="hotel_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_HOTEL_DELETE')")
-     * @param $id
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \MBH\Bundle\PackageBundle\Lib\DeleteException
      */
-    public function deleteAction($id)
+    public function deleteAction(Hotel $hotel)
     {
-        $hotel = $this->dm->find('MBHHotelBundle:Hotel', $id);
         $relatedDocumentsData = $this->helper->getRelatedDocuments($hotel);
         foreach ($relatedDocumentsData as $relatedDocumentData) {
             /** @var Relationship $relationship */
