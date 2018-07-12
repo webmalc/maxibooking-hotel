@@ -52,8 +52,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
     for (var i = 0, len = property.length; i < len; i++) {
       var str = '{{ ' + entity + '.' + property[i] + ' }}';
       if (entity === 'hotel' && property[i] === 'getLogo') {
-        str = '<table><tr><td><div style="width: 95px; height: 80px; background-color: lightgrey;">{{ ' + entity + '.' +
-            property[i] + '|raw }}</div></td></tr></table>';
+        str = '{{ ' + entity + '.' + property[i] + '|raw }}';
       }
       var tempObj = {
         tempStr: str,
