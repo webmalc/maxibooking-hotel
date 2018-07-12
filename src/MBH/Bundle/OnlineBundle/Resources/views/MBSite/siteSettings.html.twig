@@ -3,14 +3,6 @@
 {% block content %}
     {{ parent() }}
     <div class="tab-content">
-    {% if warnings %}
-        {% for warning in warnings %}
-            <div class="alert alert-warning">
-                <i class="fa fa-exclamation-circle"></i>&nbsp;
-                {{ warning }}
-            </div>
-        {% endfor %}
-    {% endif %}
 
     <div class="box box-default box-solid">
 

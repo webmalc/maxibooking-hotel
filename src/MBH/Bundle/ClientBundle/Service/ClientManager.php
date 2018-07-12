@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
+use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Monolog\Logger;
@@ -19,6 +20,7 @@ class ClientManager
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_payment';
     const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems', 'user_tariff', 'update_tariff_modal'];
     const SESSION_CLIENT_FIELD = 'client';
+    const SESSION_CLIENT_SITE = 'client-site';
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
     const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
     const INSTALLATION_PAGE_RU = 'https://login.maxi-booking.ru/';
@@ -243,7 +245,36 @@ class ClientManager
     }
 
     /**
+     * @return WebSite|null
+     */
+    public function getClientSite()
+    {
+        $clientSite = $this->session->get(self::SESSION_CLIENT_SITE);
+        if (empty($clientSite)) {
+            $clientSite = $this->billingApi->getClientSite();
+            $this->session->set(self::SESSION_CLIENT_SITE, $clientSite);
+        }
+
+        return $clientSite;
+    }
+
+    /**
+     * @param WebSite $site
+     * @return Result
+     */
+    public function addOrUpdateSite(WebSite $site)
+    {
+        $result = $site->getId() ? $this->billingApi->updateClientSite($site) : $this->billingApi->addClientSite($site);
+        if ($result->isSuccessful()) {
+            $this->session->set(self::SESSION_CLIENT_SITE, $site);
+        }
+
+        return $result;
+    }
+
+    /**
      * @return bool
+     * @throws \Exception
      */
     public function isRussianClient()
     {

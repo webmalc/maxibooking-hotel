@@ -83,7 +83,7 @@ class ProfileController extends Controller
      * @Security("is_granted('ROLE_PAYMENTS')")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws Exception
+     * @throws \Exception
      */
     public function contactsAction(Request $request)
     {
@@ -188,7 +188,7 @@ class ProfileController extends Controller
      * @Route("/payer", name="user_payer")
      * @param Request $request
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function payerAction(Request $request)
     {
@@ -278,6 +278,7 @@ class ProfileController extends Controller
      * @Route("/payment_order/{orderId}", name="show_payment_order")
      * @param $orderId
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Exception
      */
     public function showPaymentOrderAction($orderId)
     {

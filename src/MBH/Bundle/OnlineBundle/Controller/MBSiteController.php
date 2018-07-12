@@ -3,6 +3,8 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BillingBundle\Lib\Model\Result;
+use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
@@ -10,6 +12,7 @@ use MBH\Bundle\OnlineBundle\Form\SiteForm;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -34,6 +37,8 @@ class MBSiteController extends BaseController
         $form = $this->createForm(SiteForm::class, $config);
         $form->handleRequest($request);
         $formConfig = $siteManager->fetchFormConfig();
+        $clientManager = $this->get('mbh.client_manager');
+        $clientSite = $clientManager->getClientSite();
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
@@ -41,29 +46,32 @@ class MBSiteController extends BaseController
                 $config = $form->getData();
                 $this->dm->persist($config);
 
-                $client = $this->get('mbh.client_manager')->getClient();
-                $isSuccess = true;
-//                if ($config->getSiteDomain() !== $client->getWebsiteUrl()
-//                    || $config->getIsEnabled() !== $client->getIsWebSiteEnabled()) {
-//                    $client
-//                        ->setIsWebSiteEnabled($config->getIsEnabled())
-//                        ->setWebsiteUrl($siteManager->compileSiteAddress($config->getSiteDomain()));
-//                    $updateResult = $this->get('mbh.billing.api')->updateClient($client);
-//                    if (!$updateResult->isSuccessful()) {
-//                        if (isset($updateResult->getErrors()['website']['url'])) {
-//                            foreach ($updateResult->getErrors()['website']['url'] as $error) {
-//                                $form->get('siteDomain')->addError(new FormError($error));
-//                            }
-//                        } else {
-//                            throw new \UnexpectedValueException();
-//                        }
-//                    }
-//                }
+                $client = $clientManager->getClient();
+                $newSiteAddress = $siteManager->compileSiteAddress($config->getSiteDomain());
 
-                if ($isSuccess) {
-                    $siteManager->updateSiteFormConfig($config, $formConfig, $request->get($form->getName())['paymentTypes']);
-                    $this->dm->flush();
-                    $this->addFlash('success', 'mb_site_controller.site_config_saved');
+                if (is_null($clientSite)) {
+                    $clientSite = (new WebSite());
+                }
+
+
+                if ($clientSite->getUrl() !== $newSiteAddress
+                    || $config->getIsEnabled() !== $clientSite->getIs_enabled()) {
+                    $clientSite
+                        ->setUrl($newSiteAddress)
+                        ->setClient($client->getLogin());
+                    $result = $clientManager->addOrUpdateSite($clientSite);
+
+                    if ($result->isSuccessful()) {
+                        $siteManager->updateSiteFormConfig($config, $formConfig, $request->get($form->getName())['paymentTypes']);
+                        $this->dm->flush();
+                        $this->addFlash('success', 'mb_site_controller.site_config_saved');
+                    } elseif (isset($result->getErrors()['url'])) {
+                        foreach ($result->getErrors()['url'] as $error) {
+                            $form->get('siteDomain')->addError(new FormError($error));
+                        }
+                    } else {
+                        throw new \UnexpectedValueException('Incorrect errors from billing: ' . json_encode($result->getErrors()));
+                    }
                 }
             }
         } else {
