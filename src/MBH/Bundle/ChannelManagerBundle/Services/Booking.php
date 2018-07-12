@@ -217,7 +217,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
             );
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
                         $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
                         $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
@@ -288,7 +288,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 $bookingRoom = $config->getRoomById($roomTypeInfo['syncId']);
 
                 /** @var \DateTime $day */
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     foreach ($tariffs as $tariff) {
                         /** @var Tariff $tariffDocument */
                         $tariffDocument = $tariff['doc'];
@@ -390,7 +390,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     foreach ($tariffs as $tariff) {
                         /** @var Tariff $tariffDocument */
                         $tariffDocument = $tariff['doc'];

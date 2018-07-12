@@ -255,7 +255,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $method = 'get' . static::CONFIG;
             $config = $hotel->$method();
 
-            if ($config && $config instanceof BaseInterface && $config->getIsEnabled()) {
+            if ($config && $config instanceof BaseInterface && $config->isReadyToSync()) {
                 $result[] = $config;
             }
         }

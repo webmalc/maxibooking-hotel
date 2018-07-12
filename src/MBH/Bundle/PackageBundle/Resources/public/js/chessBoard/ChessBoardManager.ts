@@ -1500,7 +1500,6 @@ class ChessBoardManager {
 
         setInterval(() => {
             time++;
-            console.log(time);
             if (time > 30) {
                 ActionManager.showLoadingIndicator();
                 this.dataManager.updatePackagesData();

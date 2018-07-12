@@ -162,6 +162,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $availableTariffs = $this->helper->toIds(
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
         );
+        $dates = [];
 
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
@@ -197,6 +198,8 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                     if ($validator->validate($newPriceCache)) {
                         $this->dm->persist($newPriceCache);
                     }
+
+                    $dates[] = $newPriceCache->getDate();
                 }
             }
         }
@@ -241,12 +244,19 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 $this->dm->persist($newPriceCache);
                 $priceCache->setCancelDate(new \DateTime(), true);
             }
+
+            $dates[] = $newPriceCache->getDate();
         }
+
         $this->dm->flush();
 
         $this->addFlash('success', 'price.roomcachecontroller.change_successfully_saved');
 
-        $this->get('mbh.channelmanager')->updatePricesInBackground();
+        if (!empty($dates)) {
+            list($minDate, $maxDate) = $this->helper->getMinAndMaxDates($dates);
+            $this->get('mbh.channelmanager')->updatePricesInBackground($minDate, $maxDate);
+        }
+
         $this->get('mbh.cache')->clear('price_cache');
 
         return $this->redirect($this->generateUrl('price_cache_overview', [
@@ -376,7 +386,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 $childrenPrices
             );
 
-            $this->get('mbh.channelmanager')->updatePricesInBackground();
+            $this->get('mbh.channelmanager')->updatePricesInBackground($data['begin'], $data['end']);
             $this->get('mbh.cache')->clear('price_cache');
 
             $session->getFlashBag()->set('success', $this->container->get('translator')->trans('price.roomcachecontroller.data_successfully_generate'));

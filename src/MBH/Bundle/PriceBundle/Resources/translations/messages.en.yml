@@ -356,8 +356,6 @@ mbhpricebundle.form.pricecachegeneratortype.tcena_detskogo_dop_mesta: 'Price for
 mbhpricebundle.form.pricecachegeneratortype.price_one_place_accomodation: 'Price of 1-person accommodation'
 mbhpricebundle.form.pricecachegeneratortype.remember: 'Remember?'
 mbhpricebundle.form.pricecachegeneratortype.remember_to_reuse: 'Remember prices for later use'
-mbhpricebundle.form.pricecachegeneratortype.beginning_period_should_be_less_than_end_period: 'Beggining date must be earlier than ending date'
-mbhpricebundle.form.pricecachegeneratortype.period_can_not_be_more_than_year: 'Period can''t be more than a year'
 mbhpricebundle.form.pricecachegeneratortype.price_adult_extra_places: 'Price for additional adults bed'
 mbhpricebundle.form.pricecachegeneratortype.tsenazacheloveka: 'Price per person?'
 mbhpricebundle.form.pricecachegeneratortype.tsenazachelovekailizanomer: 'Price per person or for the whole room?'

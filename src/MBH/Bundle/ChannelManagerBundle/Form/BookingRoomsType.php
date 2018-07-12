@@ -76,6 +76,7 @@ class BookingRoomsType extends AbstractType
     public function check($data, ExecutionContextInterface $context)
     {
         $ids = [];
+        $notMappedRoomsId = [];
         /** @var RoomType $roomType */
         foreach ($data as $key => $roomType) {
             if ($this->helper->startsWith($key, self::ROOM_TYPE_FIELD_PREFIX)) {
@@ -85,8 +86,15 @@ class BookingRoomsType extends AbstractType
                 if ($roomType) {
                     $ids[] = $roomType->getId();
                 }
+                if (is_null($roomType)) {
+                    $notMappedRoomsId[] = substr($key, strlen(self::ROOM_TYPE_FIELD_PREFIX));
+                }
             }
         };
+
+        if (!empty($notMappedRoomsId)) {
+            $context->addViolation('roomtype.validation.not_all_rooms_synced', ['%ids%' => join(', ', $notMappedRoomsId)]);
+        }
     }
 
     public function getBlockPrefix()
