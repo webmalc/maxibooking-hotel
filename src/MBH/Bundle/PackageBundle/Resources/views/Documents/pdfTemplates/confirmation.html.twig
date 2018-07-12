@@ -4,57 +4,96 @@
     <meta charset="utf-8">
     <title>Pdf</title>
     <style type="text/css">
-        html {
-            padding: 10mm;
-        }
         body {
-            margin: 0;
+            font-family: "Open Sans"; /*Arial*/
+            font-size: 16px;
+        }
+
+        .document {
+            padding-top: 0px;
+            width: 900px;
+            margin: 0 auto;
+        }
+
+        .ib {
+            display: inline-block;
+        }
+
+        .area {
+            border-bottom: solid #000000 1px;
+        }
+
+        .left {
+            float: left;
+        }
+
+        .right {
+            float: right;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .indent {
+            text-indent: 1.5em;
+        }
+
+        .upper {
+            text-transform: uppercase;
+        }
+        .header .title {
+            float: left;
+            padding-top: 10px;
+            width: 90%;
+        }
+
+        .header .title p {
+            font-weight: bold;
+            font-size: 22px
+        }
+
+        .header .logo {
+            float: right;
+            width: 10%;
+        }
+
+        .header .logo img {
+            height: 80px;
+            max-width: 200px;
+        }
+
+        .main {
+            padding-top: 20px;
+        }
+
+        .table {
+            margin: 10px 0px 10px 0px;
+            width: 100%;
+        }
+
+        .table td {
+            padding: 3px;
+        }
+        .ta table {
+            margin-left: 1.5em;
+            width: 890px;
+        }
+        .signatures {
+            border: 0;
+            width: 100%;
+        }
+
+        .signatures .area {
+            border-bottom: 1px solid #000;
+            height: 80px;
         }
     </style>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
+          rel='stylesheet' type='text/css'>
 </head>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
-      rel='stylesheet' type='text/css'>
 <body>
-<style>
-    body {
-        font-family: "Open Sans"; /*Arial*/
-        font-size: 16px;
-    }
 
-    .document {
-        padding-top: 0px;
-        width: 900px;
-        margin: 0 auto;
-    }
-
-    .ib {
-        display: inline-block;
-    }
-
-    .area {
-        border-bottom: solid #000000 1px;
-    }
-
-    .left {
-        float: left;
-    }
-
-    .right {
-        float: right;
-    }
-
-    .center {
-        text-align: center;
-    }
-
-    .indent {
-        text-indent: 1.5em;
-    }
-
-    .upper {
-        text-transform: uppercase;
-    }
-</style>
 {% set hotel = null %}
 {% set tourist = null %}
 {% set documentRelation = null %}
@@ -71,43 +110,6 @@
     {% set documentRelation = tourist.documentRelation %}
 {% endif %}
 
-<style>
-    /* Header */
-    .header .title {
-        float: left;
-        padding-top: 10px;
-        width: 90%;
-    }
-
-    .header .title p {
-        font-weight: bold;
-        font-size: 22px
-    }
-
-    .header .logo {
-        float: right;
-        width: 10%;
-    }
-
-    .header .logo img {
-        height: 80px;
-        max-width: 200px;
-    }
-
-    .main {
-        padding-top: 20px;
-    }
-
-    .table {
-        margin: 10px 0px 10px 0px;
-        width: 100%;
-    }
-
-    .table td {
-        padding: 3px;
-    }
-</style>
-
 <div class="header">
     <div class="title">
         <p>
@@ -117,7 +119,7 @@
     </div>
     {% if hotel and hotel.logoImage %}
         <div class="logo">
-            <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80'))) }}">
+            <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('scaler'))) }}">
         </div>
     {% endif %}
     <div style="clear: both"></div>
@@ -136,12 +138,7 @@
         {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if package.address.inn is defined %}{{ package.address.inn }}{% else %}________________________{% endif %}
         , {{ "package.pdf.notifies_customers"|trans({}, "MBHPackageBundle") }}
     </p>
-    <style>
-        .ta table {
-            margin-left: 1.5em;
-            width: 890px;
-        }
-    </style>
+
     <div class="ta">
         <table border="0">
             <tbody>
@@ -325,17 +322,6 @@
              {#src="{{ hotel.organization.stamp }}">#}
     {#{% endif %}#}
 
-    <style>
-        .signatures {
-            border: 0;
-            width: 100%;
-        }
-
-        .signatures .area {
-            border-bottom: 1px solid #000;
-            height: 80px;
-        }
-    </style>
 </div>
 </div>
 </body>
