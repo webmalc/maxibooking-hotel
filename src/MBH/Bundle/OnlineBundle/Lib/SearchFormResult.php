@@ -7,7 +7,7 @@
 namespace MBH\Bundle\OnlineBundle\Lib;
 
 
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SearchFormResult implements \JsonSerializable
 {

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BillingBundle\Service;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BaseBundle\Lib\Exception;
@@ -18,6 +19,7 @@ use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Lib\Model\Service;
 use MBH\Bundle\BillingBundle\Lib\Model\AuthorityOrgan;
 use MBH\Bundle\BillingBundle\Lib\Model\City;
+use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\UserBundle\Document\User;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
@@ -42,6 +44,7 @@ class BillingApi
     const ORDERS_ENDPOINT_SETTINGS = ['endpoint' => 'orders', 'model' => PaymentOrder::class, 'returnArray' => false];
     const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
     const PAYER_COMPANY_ENDPOINT_SETTINGS = ['endpoint' => 'companies', 'model' => Company::class, 'returnArray' => false];
+    const SITES_ENDPOINT_SETTINGS = ['endpoint' => 'client-websites', 'model' => WebSite::class, 'returnArray' => false];
 
     const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s\Z';
     const BILLING_DATETIME_FORMAT_WITH_MICROSECONDS = 'Y-m-d\TH:i:s.u\Z';
@@ -210,6 +213,33 @@ unset($clientData['websiteUrl']);
         }
 
         return $this->clientCompanies;
+    }
+
+    /**
+     * @return null|WebSite
+     */
+    public function getClientSite()
+    {
+        $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint'], $this->billingLogin);
+        try {
+            $response = $this->sendGet($url);
+            return $this->serializer->deserialize($response->getBody(), self::SITES_ENDPOINT_SETTINGS['model'], 'json');
+        } catch (ClientException $exception) {
+            return null;
+        }
+    }
+
+    public function addClientSite(WebSite $clientSite)
+    {
+        $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint']);
+
+        return $this->sendPostAndHandleResult($url, $this->serializer->normalize($clientSite));
+    }
+
+    public function updateClientSite(WebSite $clientSite)
+    {
+        $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint'], $this->billingLogin);
+        return $this->updateEntity($url, $this->serializer->normalize($clientSite), self::SITES_ENDPOINT_SETTINGS['model']);
     }
 
     /**
@@ -390,7 +420,6 @@ unset($clientData['websiteUrl']);
         ]);
     }
 
-
     /**
      * @param $clientIp
      * @param $userAgent
@@ -433,7 +462,7 @@ unset($clientData['websiteUrl']);
             return $requestResult;
         }
 
-            $decodedResponse = json_decode((string)$response->getBody(), true);
+        $decodedResponse = json_decode((string)$response->getBody(), true);
         if ($decodedResponse['status'] !== true) {
             $requestResult->setIsSuccessful(false);
         }
@@ -450,8 +479,8 @@ unset($clientData['websiteUrl']);
     private function tryDeserializeObject(ResponseInterface $response, Result $requestResult, $modelType)
     {
         try {
-            $client = $this->serializer->deserialize($response->getBody(), $modelType, 'json');
-            $requestResult->setData($client);
+            $data = $this->serializer->deserialize($response->getBody(), $modelType, 'json');
+            $requestResult->setData($data);
         } catch (\Exception $exception) {
             $this->logger->error('Error by deserialization of client: "' . $exception->getMessage() . '"');
             $requestResult->setIsSuccessful(false);

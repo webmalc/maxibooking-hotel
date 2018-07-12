@@ -33,6 +33,10 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
         };
         $roomTypes = $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+        $emptyPeriodWarnings = $this->get('mbh.warnings_compiler')->getEmptyCacheWarningsAsStrings($this->hotel, 'room');
+        if (!empty($emptyPeriodWarnings)) {
+            $this->addFlash('warning', join('<br>', $emptyPeriodWarnings));
+        }
 
         return [
             'roomTypes' => $roomTypes,

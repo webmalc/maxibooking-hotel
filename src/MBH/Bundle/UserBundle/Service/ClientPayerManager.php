@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\UserBundle\Service;
 
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Company;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
@@ -36,7 +35,7 @@ class ClientPayerManager
     /**
      * @param array $formPayerData
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function saveClientPayerAndReturnErrors(array $formPayerData): array
     {
@@ -107,6 +106,7 @@ class ClientPayerManager
 
     /**
      * @return Company|null
+     * @throws \Exception
      */
     public function getClientPayerCompany() {
         if (!$this->isClientPayerCompanyInit) {
@@ -123,6 +123,7 @@ class ClientPayerManager
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function getErrorsCausedByUnfilledDataForPayment()
     {

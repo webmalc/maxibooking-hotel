@@ -730,3 +730,5 @@ support_modal.sandbox_button.text: 'Демо-версия'
 
 
 modal.close_button: Закрыть
+site_manager.empty_room_caches_warning: '%roomTypeName%: Не выставлены номера в продаже на периоды: %periods%'
+site_manager.empty_price_caches_warning: '%roomTypeName%: Для тарифа "%tariffName%" не выставлены цены на периоды: %periods%'

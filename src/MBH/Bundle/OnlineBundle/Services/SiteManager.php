@@ -2,10 +2,10 @@
 
 namespace MBH\Bundle\OnlineBundle\Services;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
+use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
@@ -37,12 +37,18 @@ class SiteManager
     private $dm;
     private $documentFieldsManager;
     private $translator;
+    private $warningsCompiler;
 
-    public function __construct(DocumentManager $dm, DocumentFieldsManager $documentFieldsManager, TranslatorInterface $translator)
-    {
+    public function __construct(
+        DocumentManager $dm, 
+        DocumentFieldsManager $documentFieldsManager, 
+        TranslatorInterface $translator,
+        WarningsCompiler $warningsCompiler
+    ) {
         $this->dm = $dm;
         $this->documentFieldsManager = $documentFieldsManager;
         $this->translator = $translator;
+        $this->warningsCompiler = $warningsCompiler;
     }
 
     /**
@@ -64,6 +70,7 @@ class SiteManager
     /**
      * @param SiteConfig|null $config
      * @return array
+     * @throws \Exception
      */
     public function getHotelsSettingsInfo(SiteConfig $config = null)
     {
@@ -73,6 +80,12 @@ class SiteManager
                 $numberOfWarnings = $this->getNumberOfWarnings($hotel);
                 foreach ($hotel->getRoomTypes() as $roomType) {
                     $numberOfWarnings += $this->getNumberOfWarnings($roomType);
+                    if (isset($this->warningsCompiler->getEmptyRoomCachePeriods()[$hotel->getId()][$roomType->getId()])) {
+                        $numberOfWarnings++;
+                    }
+                    if (isset($this->warningsCompiler->getEmptyPriceCachePeriods()[$hotel->getId()][$roomType->getId()])) {
+                        $numberOfWarnings++;
+                    }
                 }
 
                 $settingsInfo[] = [
@@ -147,9 +160,10 @@ class SiteManager
         $documentClass = ClassUtils::getClass($document);
         $fieldsDataByRouteNames = self::MANDATORY_FIELDS_BY_ROUTE_NAMES[$documentClass];
 
-        $result = ['document' => $document, 'fieldsData' => $this->checkFieldsCorrectness($fieldsDataByRouteNames, $document)];
-
-        return $result;
+        return [
+            'document' => $document,
+            'fieldsData' => $this->checkFieldsCorrectness($fieldsDataByRouteNames, $document)
+        ];
     }
 
     /**
@@ -187,7 +201,7 @@ class SiteManager
 
         $formConfig
             ->setResultsUrl($siteAddress)
-            ->setHotels(new ArrayCollection($config->getHotels()->toArray()))
+            ->setHotels($config->getHotels()->toArray())
             ->setRoomTypeChoices($roomTypes)
             ->setPaymentTypes($paymentTypes);
 

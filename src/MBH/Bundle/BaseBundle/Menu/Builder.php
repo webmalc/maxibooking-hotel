@@ -53,6 +53,11 @@ class Builder
     private $security;
 
     /**
+     * @var string
+     */
+    private $behavior;
+
+    /**
      * @var int
      */
     protected $counter = 0;
@@ -77,7 +82,6 @@ class Builder
      */
     public function mainMenu(array $options)
     {
-        $this->setConfig();
         $this->parseOptions($options);
 
 
@@ -138,7 +142,8 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItem(self::ROOT_MENU_ITEM_MAIN_MENU, 'menu.header.navigation', false, $badges);
+
+        $menu = $this->createRootItem(self::ROOT_MENU_ITEM_MAIN_MENU, 'menu.header.navigation', true, $badges, true);
 
         // chessboard
         $menu->addChild($this->createItem($this->getChessboardData()));
@@ -196,7 +201,7 @@ class Builder
             ],
         ];
 
-        $menu = $this->createRootItem(self::ROOT_MENU_ITEM_MANAGEMENT_MENU, 'menu.settings.label.header');
+        $menu = $this->createRootItemWithCollapse(self::ROOT_MENU_ITEM_MANAGEMENT_MENU, 'menu.settings.label.header');
 
         // Hotel links
         $menu->addChild($this->itemsHotelLinks());
@@ -258,7 +263,9 @@ class Builder
     {
         $this->counter = 0;
         $menu = $this->filterMenu($menu);
-        $menu = $this->checkAndOpenRootMenu($menu);
+        if ($this->behavior === 'default') {
+            $menu = $this->checkAndOpenRootMenu($menu);
+        }
 
         return empty($this->counter) ? $this->factory->createItem('root') : $menu;
     }
@@ -330,6 +337,8 @@ class Builder
         if (!$this->config) {
             $this->config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         }
+
+        $this->behavior = $this->container->getParameter('mbh.menu.behaviors.now');
     }
 
     /**
@@ -394,17 +403,22 @@ class Builder
      * @param bool $isOpen
      * @return ItemInterface
      */
-    private function createRootItem(string $id, string $label, bool $collapse = false, BadgesHolder $badges = null ,bool $isOpen = false): ItemInterface
+    private function createRootItem(
+        string $id,
+        string $label,
+        bool $collapse = false,
+        BadgesHolder $badges = null,
+        bool $isOpen = false
+    ): ItemInterface
     {
         $menu = $this->factory->createItem('root');
 
         $cssClass = [];
         $cssClass[] = 'sidebar-menu';
+
         if ($collapse) {
             $cssClass[] = 'collapse';
-            if ($this->getTitleUrl() === null && $isOpen) {
-                $cssClass[] = 'in';
-            }
+            $this->behaviorHandler($cssClass,$id,$isOpen);
         }
 
         $attr = [
@@ -421,6 +435,36 @@ class Builder
         $menu->setLabel($label);
 
         return $menu;
+    }
+
+    /**
+     * Поведение меню:
+     * - alwaysOpen не в зависимости от выбранного пункта все главные меню открыты
+     * - custom запоминается последнее открытое меню (на фронтэнде) и в следующий раз открывается именно оно
+     * - default открыто то меню пункт которого выбран
+     *
+     * @param array $cssClass
+     * @param string $id
+     * @param bool $isOpen
+     */
+    private function behaviorHandler(array &$cssClass, string $id, bool $isOpen): void
+    {
+        switch ($this->behavior){
+            case 'alwaysOpen':
+                $cssClass[] = 'in';
+                break;
+            case 'custom':
+                /*
+                 * Можно перенести всю логику сюда с клиентской стороны,
+                 * нужно добавить ajax`ом запись (допустим в клиет конфиг) о открытом меню
+                 * и здесь уже "вершить дела"
+                 */
+                break;
+            default:
+                if (($this->getTitleUrl() === null && $isOpen)) {
+                    $cssClass[] = 'in';
+                }
+        }
     }
 
     /**

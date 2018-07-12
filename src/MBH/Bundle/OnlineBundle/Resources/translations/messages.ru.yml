@@ -133,6 +133,8 @@ site_form.pers_data_policy.label: 'Политика обработки перс�
 site_form.hotels.label: Отели
 site_form.hotels.help: 'Отели, данные по которым отображаются на сайте'
 site_form.hotels.hotel_data: 'Данные отеля'
+site_form.hotels.required_fields.price_caches: 'Цены'
+site_form.hotels.required_fields.room_caches: 'Номера в продаже'
 mb_site_controller.site_config_saved: 'Настройки успешно сохранены!'
 site_manager.photos_tab: Изображение
 site_manager.mandatory_field_empty.error: 'Поле "%fieldTitle%" обязательно для заполнения, так как оно используется на сайте'
@@ -141,6 +143,8 @@ analytics_form.google_id.label: 'Идентификатор отслеживан
 analytics_form.yandex_id.label: 'Номер счетчика'
 form.payment.formType.enabledReCaptcha: 'Использовать reCaptcha?'
 form.payment.formType.fieldUserNameIsVisible: 'включить дополнительное поле?'
+form.payment.formType.enabledShowAmount: 'Сумма к оплате'
+form.payment.formType.enabledShowAmount_help: 'Показывать рекомендованную сумму к оплате'
 form.online.order_search.numberOrder: 'Номер заказа'
 form.online.order_search.phoneOrEmail: 'Номер телефона или email'
 form.online.order_search.userName: 'Фамилия/Организация'

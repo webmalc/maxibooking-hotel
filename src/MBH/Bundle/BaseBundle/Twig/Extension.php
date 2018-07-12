@@ -284,8 +284,9 @@ class Extension extends \Twig_Extension
         $data = [
             'allowed_guides' => $this->container->get('mbh.guides_data_service')->getAllowedGuides(),
             'client_country' => $this->getClient()->getCountry(),
-            'front_token' => $this->container->getParameter('billing_front_token'),
-            'billing_host' => $this->container->getParameter('billing_url') . '/',
+            'front_token'    => $this->container->getParameter('billing_front_token'),
+            'billing_host'   => $this->container->getParameter('billing_url') . '/',
+            'behavior_menu'  => $this->container->getParameter('mbh.menu.behaviors.now'),
             'language' => $language
         ];
 
