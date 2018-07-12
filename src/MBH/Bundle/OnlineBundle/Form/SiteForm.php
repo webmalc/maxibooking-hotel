@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
@@ -17,6 +18,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class SiteForm extends AbstractType
 {
@@ -92,7 +95,12 @@ class SiteForm extends AbstractType
                 'help' => 'site_form.hotels.help',
                 'query_builder' => function(HotelRepository $hotelRepository) {
                     return $hotelRepository->getQBWithAvailable();
-                }
+                },
+                'constraints' => [new Callback(function (PersistentCollection $data, ExecutionContextInterface $context) {
+                    if ($data->isEmpty()) {
+                        $context->addViolation('validator.site_form.hotels_collection_is_empty');
+                    }
+                })]
             ]);
     }
 

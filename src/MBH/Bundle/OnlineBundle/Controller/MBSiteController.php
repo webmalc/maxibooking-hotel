@@ -53,7 +53,7 @@ class MBSiteController extends BaseController
                     $clientSite = (new WebSite());
                 }
 
-
+                $isSuccess = true;
                 if ($clientSite->getUrl() !== $newSiteAddress
                     || $config->getIsEnabled() !== $clientSite->getIs_enabled()) {
                     $clientSite
@@ -61,17 +61,21 @@ class MBSiteController extends BaseController
                         ->setClient($client->getLogin());
                     $result = $clientManager->addOrUpdateSite($clientSite);
 
-                    if ($result->isSuccessful()) {
-                        $siteManager->updateSiteFormConfig($config, $formConfig, $request->get($form->getName())['paymentTypes']);
-                        $this->dm->flush();
-                        $this->addFlash('success', 'mb_site_controller.site_config_saved');
-                    } elseif (isset($result->getErrors()['url'])) {
-                        foreach ($result->getErrors()['url'] as $error) {
-                            $form->get('siteDomain')->addError(new FormError($error));
+                    if (!$result->isSuccessful()) {
+                        $isSuccess = false;
+                        if (isset($result->getErrors()['url'])) {
+                            foreach ($result->getErrors()['url'] as $error) {
+                                $form->get('siteDomain')->addError(new FormError($error));
+                            }
+                        } else {
+                            throw new \UnexpectedValueException('Incorrect errors from billing: ' . json_encode($result->getErrors()));
                         }
-                    } else {
-                        throw new \UnexpectedValueException('Incorrect errors from billing: ' . json_encode($result->getErrors()));
                     }
+                }
+                if ($isSuccess) {
+                    $siteManager->updateSiteFormConfig($config, $formConfig, $request->get($form->getName())['paymentTypes']);
+                    $this->dm->flush();
+                    $this->addFlash('success', 'mb_site_controller.site_config_saved');
                 }
             }
         } else {
