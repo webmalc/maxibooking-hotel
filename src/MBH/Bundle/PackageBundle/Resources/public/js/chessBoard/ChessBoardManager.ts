@@ -8,6 +8,7 @@ declare let styleConfigs;
 declare let currentStyleConfigNumber;
 declare let colors;
 declare let subtrahend;
+declare let isMobileDevice;
 
 class ChessBoardManager {
     private static PACKAGE_FONT_SIZE_WIDTH = 8;
@@ -148,37 +149,48 @@ class ChessBoardManager {
 
         this.onAddGuestClick();
 
-        //Фиксирование верхнего и левого блоков таблицы
-        chessBoardContentBlock.onscroll = function () {
-            ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
-        };
+        if (!isMobileDevice()) {
+            //Фиксирование верхнего и левого блоков таблицы
+            chessBoardContentBlock.onscroll = function () {
+                ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
+            };
+        }
 
         let templatePackageElement = ChessBoardManager.getTemplateElement();
         //Создание брони
         let dateElements = $('.date, .leftRooms');
+        const $document = $(document);
+
         if (canCreatePackage) {
-            dateElements.mousedown(function (event) {
-                let startXPosition = event.pageX;
-                let startLeftScroll = chessBoardContentBlock.scrollLeft;
+            dateElements.on("touchstart mousedown", function (event) {
+                const isMouseDownEvent = event.type.toLowerCase() === 'mousedown';
+                const startXPosition = isMouseDownEvent ? event.pageX : event.originalEvent.touches[0].pageX;
+                const startLeftScroll = chessBoardContentBlock.scrollLeft;
                 let newPackage = <HTMLElement>templatePackageElement.cloneNode(true);
                 newPackage.classList.add('success');
-                let dateJqueryObject = $(this.parentNode);
-                let currentRoomDateElements = dateJqueryObject.parent().children();
-                let startDateNumber = currentRoomDateElements.index(dateJqueryObject);
-                let startDate = moment(self.tableStartDate).add(startDateNumber, 'day');
+
+                const dateJqueryObject = $(this.parentNode);
+                const currentRoomDateElements = dateJqueryObject.parent().children();
+                const startDateNumber = currentRoomDateElements.index(dateJqueryObject);
+                const startDate = moment(self.tableStartDate).add(startDateNumber, 'day');
                 newPackage = self.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), wrapper);
                 newPackage.id = 'newPackage' + packages.length;
                 newPackage.style.zIndex = '999';
                 newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth - (self.arrowWidth * 2) + 'px';
-                let newPackageStartXOffset = parseInt(newPackage.style.left, 10);
-                document.onmousemove = function (event) {
-                    let scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
-                    let mouseXOffset = startXPosition - event.pageX;
-                    let isLeftMouseShift = mouseXOffset > 0;
-                    let packageLengthRestriction = self.getPackageLengthRestriction(startDate, isLeftMouseShift, self.tableStartDate, self.tableEndDate);
-                    let griddedOffset = self.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
-                    let leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
-                    let packageWidth = griddedOffset - 2 * self.arrowWidth;
+                const newPackageStartXOffset = parseInt(newPackage.style.left, 10);
+
+                $document.on('touchmove mousemove', function (event) {
+                    if (event.type === 'touchemove') {
+                        event.preventDefault();
+                    }
+                    const scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
+                    const mouseXOffset = startXPosition - (isMouseDownEvent ? event.pageX : event.originalEvent.touches[0].pageX);
+                    const isLeftMouseShift = mouseXOffset > 0;
+                    const packageLengthRestriction = self.getPackageLengthRestriction(startDate, isLeftMouseShift, self.tableStartDate, self.tableEndDate);
+                    const griddedOffset = self.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
+                    const leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
+                    const packageWidth = griddedOffset - 2 * self.arrowWidth;
+
                     if (self.isPackageLocationCorrect(newPackage)) {
                         newPackage.classList.add('success');
                         newPackage.classList.remove('danger');
@@ -190,16 +202,16 @@ class ChessBoardManager {
                     }
                     newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
                     newPackage.style.width = packageWidth + 'px';
-                };
-                document.onmouseup = function () {
-                    document.onmousemove = null;
-                    this.onmouseup = null;
+                });
+                $document.on('mouseup touchend', function () {
+                    $document.unbind('mousemove touchmove mouseup touchend');
+
                     if ((newPackage.style.width) && self.isPackageLocationCorrect(newPackage) && newPackage.id) {
-                        let packageData = self.getPackageData($(newPackage));
+                        const packageData = self.getPackageData($(newPackage));
                         self.saveNewPackage(packageData);
                     }
                     self.updateTable();
-                };
+                });
                 this.ondragstart = function () {
                     return false;
                 };
@@ -408,8 +420,8 @@ class ChessBoardManager {
         let packageDiv = templatePackageElement.cloneNode(true);
         packageDiv.id = packageItem.id;
 
-        let description = document.createElement('div');
         let packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
+        let description = document.createElement('div');
         let descriptionText = packageName ? packageName.substr(0, packageCellCount * 5) : '';
 
         packageDiv.setAttribute('data-description', descriptionText);
@@ -435,25 +447,27 @@ class ChessBoardManager {
         description.setAttribute('data-content', descriptionPopoverContent);
 
         const $packageDiv = $(packageDiv);
-        packageDiv.onmousemove = function () {
-            const isElementInPopoverWindow = packageDiv.parentNode.classList.contains('popover-package-container');
-            if (!isElementInPopoverWindow) {
-                $packageDiv.find('.package-action-buttons').show();
-                let $descriptionElement = $(this).find('.package-description');
-                if ($descriptionElement.length > 0) {
-                    let popoverId = $descriptionElement.attr('aria-describedby');
-                    if (popoverId == null) {
-                        $('.popover').popover('hide');
-                        $descriptionElement.popover('show');
+        if (isMobileDevice()) {
+            packageDiv.onmousemove = function () {
+                const isElementInPopoverWindow = packageDiv.parentNode.classList.contains('popover-package-container');
+                if (!isElementInPopoverWindow) {
+                    $packageDiv.find('.package-action-buttons').show();
+                    let $descriptionElement = $(this).find('.package-description');
+                    if ($descriptionElement.length > 0) {
+                        let popoverId = $descriptionElement.attr('aria-describedby');
+                        if (popoverId == null) {
+                            $('.popover').popover('hide');
+                            $descriptionElement.popover('show');
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        packageDiv.onmouseleave = function () {
-            $packageDiv.find('.package-action-buttons').hide();
-            $packageDiv.find('.package-description').popover('hide');
-        };
+            packageDiv.onmouseleave = function () {
+                $packageDiv.find('.package-action-buttons').hide();
+                $packageDiv.find('.package-description').popover('hide');
+            };
+        }
 
         if (packageItem.position == 'middle' || packageItem.position == 'left') {
             packageDiv.classList.add('with-right-divider');
@@ -793,7 +807,7 @@ class ChessBoardManager {
                         line.style.left = defaultLeftValue + 'px';
                         element.appendChild(line);
 
-                        element.onmousemove = function (event) {
+                        $element.on('mousemove touchmove', function (event) {
                             let offset = event.clientX - packageLeftCoordinate;
                             let griddedOffset;
                             if (isAccommodationAbroadTable) {
@@ -812,12 +826,12 @@ class ChessBoardManager {
                             }
 
                             line.style.left = griddedOffset + 'px';
-                            element.onclick = function () {
-                                element.onmousemove = null;
+                            $element.on('click touchstart', function () {
+                                $element.off('mousemove touchmove');
                                 $('.dividing-line').remove();
                                 self.divide(this, griddedOffset);
-                            }
-                        };
+                            })
+                        });
                     }
                 }
             });
@@ -1300,7 +1314,7 @@ class ChessBoardManager {
                         start: function () {
                             isDragged = true;
                         },
-                    }).mousedown(function (event) {
+                    }).on('mousedown touchstart', function (event) {
                         if (self.isIntervalAvailable(packageData)) {
                             relocatablePackage = this;
                             $wrapper.append(this);
@@ -1316,14 +1330,14 @@ class ChessBoardManager {
                             }
                             $popover.popover('hide');
                         }
-                        document.body.onmouseup = function () {
-                            document.body.onmouseup = null;
+                        $(document.body).on('mouseup touchend', function () {
+                            $(document.body).off('mouseup touchend');
                             if (!isDragged && relocatablePackage) {
                                 if (self.isPackageLocationCorrect(relocatablePackage)) {
                                     self.actionManager.callUpdatePackageModal($(relocatablePackage), relocatablePackageData);
                                 }
                             }
-                        };
+                        });
                     });
                 }
             });

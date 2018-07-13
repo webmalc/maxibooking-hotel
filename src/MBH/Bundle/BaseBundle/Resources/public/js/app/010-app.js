@@ -286,7 +286,7 @@ $(document).ready(function() {
 
     //scrolling height
     (function() {
-        if (!$('.scrolling').length) {
+        if (!$('.scrolling').length || isMobileDevice()) {
             return null;
         }
         var height = function() {
