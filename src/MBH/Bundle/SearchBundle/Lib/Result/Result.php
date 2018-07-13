@@ -4,12 +4,14 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MBH\Bundle\SearchBundle\Document\SearchResult;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 
-class Result implements \JsonSerializable
+class Result implements \JsonSerializable, ResultCacheablesInterface
 {
+
+    /** @var string */
+    private $uniqueId;
 
     /** @var \DateTime */
     private $begin;
@@ -255,10 +257,19 @@ class Result implements \JsonSerializable
         return $this;
     }
 
+    public function getId(): string
+    {
+        if (null === $this->uniqueId) {
+            $this->uniqueId = uniqid('results_id', true);
+        }
 
+        return $this->uniqueId;
+    }
 
-
-
+    public function getSearchHash(): string
+    {
+        return $this->resultConditions->getSearchHash();
+    }
 
 
     public function jsonSerialize()
@@ -272,17 +283,21 @@ class Result implements \JsonSerializable
             'prices' => $this->getPrices(),
             'minRooms' => $this->getMinRoomsCount(),
             'accommodationRooms'  => $this->getAccommodationRooms(),
-            'virtualRoom' => $this->getVirtualRoom()
+            'virtualRoom' => $this->getVirtualRoom(),
+            'status' => $this->getStatus(),
+            'uniqueId' => $this->getId()
         ];
     }
 
 
-    public static function createErrorResult(SearchException $exception): Result
+    public static function createErrorResult(SearchConditions $conditions,SearchException $exception): Result
     {
         $result = new static();
         $result
             ->setStatus('error')
             ->setError($exception->getMessage())
+            ->setResultConditions((new ResultConditions())->setConditions($conditions))
+
         ;
 
         return $result;

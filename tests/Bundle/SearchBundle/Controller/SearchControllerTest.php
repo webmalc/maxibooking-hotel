@@ -93,7 +93,7 @@ class SearchControllerTest extends SearchWebTestCase
             ];
         $this->client->request(
             'POST',
-            'search/async/start',
+            '/search/async/start',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -109,7 +109,7 @@ class SearchControllerTest extends SearchWebTestCase
             sleep(1);
             $this->client->request(
                 'GET',
-                '/async/results/'.$conditionsId,
+                '/search/async/results/'.$conditionsId,
                 [],
                 [],
                 [],

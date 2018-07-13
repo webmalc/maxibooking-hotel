@@ -88,7 +88,7 @@ class Search
             try {
                 $results[] = $this->searcher->search($searchQuery);
             } catch (SearchException $e) {
-                $restrictedResult = Result::createErrorResult($e);
+                $restrictedResult = Result::createErrorResult($conditions, $e);
                 if (!$isHideRestrictedResults) {
                     $results[] = $restrictedResult;
                 }

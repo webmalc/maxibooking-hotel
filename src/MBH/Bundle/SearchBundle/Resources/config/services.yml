@@ -108,11 +108,7 @@ services:
 # async receive results
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
-        arguments: ['@mbh_search.searcher', '@mbh_search.search_conditions_repository']
-
-    mbh__search.async_result_receiver:
-        class: MBH\Bundle\SearchBundle\Services\AsyncResultReceiver
-        arguments: ['@mbh_search.search_result_repository', '@mbh_search.search_result_holder_repository']
+        arguments: ['@mbh_search.searcher', '@mbh_search.search_conditions_repository', '@mbh_search.redis_store']
 
 #search limit checker for refactoring
     mbh_search.search_limit_checker:
@@ -275,4 +271,4 @@ services:
 #AsyncStores
     mbh_search.redis_store:
         class: MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore
-        arguments: ['@mbh_search.search_result_redis_cache']
+        arguments: ['@snc_redis.results_client']

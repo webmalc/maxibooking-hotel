@@ -478,16 +478,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
-    /**
-     * Get Full title
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->fullTitle;
-    }
-
     public function __toString()
     {
         return $this->getTitleOrFullTitle();

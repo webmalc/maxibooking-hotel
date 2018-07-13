@@ -18,6 +18,10 @@ class SearchResultsResponder
      */
     public function handleResults(array $results, ?string $grouping = null): array
     {
+        $results = array_filter($results, function ($result) {
+            /** @var Result $result */
+            return $result->getStatus() === 'ok';
+        });
         if ($grouping) {
             $groupingFactory = new GroupingFactory();
             /** @noinspection CallableParameterUseCaseInTypeContextInspection */
@@ -28,8 +32,4 @@ class SearchResultsResponder
         return $results;
     }
 
-    public function handleAsyncResults(array $results, ?string $goruping = null): array
-    {
-        return $this->handleResults(array_values($results));
-    }
 }

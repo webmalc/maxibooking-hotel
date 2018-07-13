@@ -377,3 +377,15 @@ bazinga_js_translation:
     active_domains:
             - front_messages
 
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: '%mbh_redis%'
+        search_results:
+            type: predis
+            alias: results
+            dsn: '%mbh_redis%'
+            options:
+                prefix: 'search_results_'

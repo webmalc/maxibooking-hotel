@@ -14,7 +14,7 @@ class ResultRoomType implements \JsonSerializable
     /**
      * @return string
      */
-    public function getId(): string
+    public function getId()
     {
         return $this->roomType->getId();
     }
