@@ -125,8 +125,9 @@
                 <th style="width: 200px;">{{ "package.pdf.services_name"|trans({}, "MBHPackageBundle") }}</th>
                 <th style="width: 30px;">{{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</th>
                 <th style="width: 30px;">{{ "package.pdf.unit"|trans({}, "MBHPackageBundle") }}</th>
-                <th style="width: 100px;">{{ "package.pdf.price"|trans({}, "MBHPackageBundle") }}</th>
-                <th style="width: 100px;">{{ "package.pdf.sum"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 80px;">{{ "package.pdf.price"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 30px;">Скидка</th>
+                <th style="width: 90px;">{{ "package.pdf.sum"|trans({}, "MBHPackageBundle") }}</th>
             </tr>
             </thead>
             <tbody>
@@ -134,9 +135,13 @@
             {% set packages = package.order.packages %}
 
             {% set counter = 0 %}
+            {% set newPackages = false %}
+            {% set countData = 0 %}
             {% for package in packages %}
+                {% set newPackages = true %}
                 {% for date,data in package.pricesByDateByPrice %}
                     {% set counter = counter + 1 %}
+                    {% set countData = countData + 1 %}
                     <tr>
                         <td align="center">{{ counter }}</td>
                         <td>
@@ -147,10 +152,18 @@
                         </td>
                         <td align="center">{{ data.nights }}</td>
                         <td align="center">{{ "package.pdf.night"|trans({}, "MBHPackageBundle") }}</td>
-                        <td align="right">{{ data.price != false ? data.price|number_format(2) : '' }}</td>
-                        <td align="right">{{ data.sum|number_format(2) }}</td>
+                        <td align="right">{{ data.fullPrice != false ? data.fullPrice|number_format(2) : '' }}</td>
+                        {% if newPackages and countData == 1 %}
+                            <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">
+                                {{ package.discount }}{{ package.getIsPercentDiscount ? '%' }}
+                            </td>
+                            <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                        {% endif %}
+
                     </tr>
                 {% endfor %}
+                {% set newPackages = false %}
+                {% set countData = 0 %}
             {% endfor %}
 
             {% for serviceGroup in packageServicesByType %}
@@ -161,6 +174,7 @@
                     <td align="center">{{ serviceGroup.actuallyAmount }}</td>
                     <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
                     <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                    <td align="right"></td>
                     <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
                 </tr>
             {% endfor %}
@@ -188,21 +202,16 @@
             </tr>
             </thead>
             <tbody>
-            {% set counter = 0 %}
-            {% set paidTotal = 0 %}
+            {% set paidTotal = order.paid %}
             {% for cashDocument in package.order.cashDocuments %}
-                {% if cashDocument.isPaid %}
-                    {% set counter = counter + 1 %}
+                {% if cashDocument.isPaid and cashDocument.operation != constant('MBH\\Bundle\\CashBundle\\Document\\CashDocument::OPERATION_FEE') %}
                     <tr>
-                        <td align="center">{{ counter }}</td>
+                        <td align="center">{{ loop.index }}</td>
                         <td align="center">{{ cashDocument.paidDate|date('d.m.Y') }}</td>
                         <td align="center">{{ ('cashDocument.method.' ~ cashDocument.method)|trans({}, 'MBHCashBundle') }}</td>
                         <td align="right">{{ cashDocument.operation in ['fee', 'out'] ? '-' : '+' }}{{ cashDocument.total|number_format(2) }}</td>
                     </tr>
-                    {% if cashDocument.operation in ['fine', 'in'] %}
-                        {% set paidTotal = paidTotal + cashDocument.total %}
-                    {% else %}
-                    {% endif %}
+
                 {% endif %}
             {% endfor %}
             </tbody>

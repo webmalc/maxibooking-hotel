@@ -82,6 +82,7 @@ class TemplateFormatter
             'departureTimeDefault' => $hotel->getPackageDepartureTime(),
             'documentTypes'        => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes(),
             'currentDate'          => (new \DateTime())->format('d.m.Y'),
+            'total'                => $package->getOrder()->getPrice(),
         ];
 
         $params = $this->addCalculatedParams($params, $package);
@@ -112,13 +113,11 @@ class TemplateFormatter
         /** @var PackageServiceGroupByService[] $packageServicesByType */
         $packageServicesByType = [];
 
-        $total = 0;
         $packages = $package->getOrder()->getPackages();
 
         /** @var Package $package */
         foreach($packages as $package) {
             $packageServices = array_merge(iterator_to_array($package->getServices()), $packageServices);
-            $total += $package->getPackagePrice(true);
         }
 
         foreach($packageServices as $ps) {
@@ -128,11 +127,9 @@ class TemplateFormatter
                 $packageServicesByType[$groupBy] = new PackageServiceGroupByService($service, $ps->getPrice());
             }
             $packageServicesByType[$groupBy]->add($ps);
-            $total += $ps->getTotal();
         }
 
         return $params + [
-                'total' => $total,
                 'packageServicesByType' => $packageServicesByType
             ];
     }

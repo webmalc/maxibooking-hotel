@@ -91,6 +91,19 @@
             border-bottom: 1px solid #000;
             height: 80px;
         }
+
+        .services {
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+
+        .services th,
+        .services td {
+            border: 1px solid black;
+        }
+        .services td {
+            padding: 3px;
+        }
     </style>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
           rel='stylesheet' type='text/css'>
@@ -147,13 +160,13 @@
             <tbody>
             <tr>
                 <td style="width: 40px">{{ 'mbhpackagebundle.view.documents.pdftemplates.fio'|trans }}.</td>
-                <td style="width: 60%;">
-                    <div class="area">&nbsp{% if tourist %}{{ tourist.fullName }}{% endif %}</div>
+                <td style="width: 60%;" class="area">
+                    <div>{% if tourist %}{{ tourist.fullName }}{% endif %}</div>
                 </td>
                 <td style="width: 130px">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.data.rozhdeniya'|trans }} </td>
-                <td>
-                    <div class="area">
-                        &nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
+                <td class="area">
+                    <div>
+                        {% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
                 </td>
             </tr>
             </tbody>
@@ -162,8 +175,8 @@
             <tbody>
             <tr>
                 <td style="width: 20px">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.adres'|trans }} </td>
-                <td>
-                    <div class="area">&nbsp
+                <td class="area">
+                    <div>
                         {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.countryTld and tourist.addressObjectDecomposed.regionId %}
                             {{ get_country(tourist.addressObjectDecomposed.countryTld).name }}, {{ get_region(tourist.addressObjectDecomposed.regionId).name }}{% if tourist.addressObjectDecomposed.city %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
                             {{ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans }}. {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.kor'|trans }}. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.kv'|trans }}. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
@@ -178,21 +191,21 @@
             <tbody>
             <tr>
                 <td>{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.tip.dokumenta'|trans }} </td>
-                <td style="width: 45%">
-                    <div class="area">
-                        &nbsp{% if documentRelation and documentRelation.type %}{{ documentTypes[documentRelation.type] }}{% endif %}</div>
+                <td style="width: 45%" class="area">
+                    <div>
+                        {% if documentRelation and documentRelation.type %}{{ documentTypes[documentRelation.type] }}{% endif %}</div>
                 </td>
 
                 <td>{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.seriya'|trans }} </td>
-                <td style="width: 15%">
-                    <div class="area">
-                        &nbsp{% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</div>
+                <td style="width: 15%" class="area">
+                    <div>
+                        {% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</div>
                 </td>
 
                 <td>№</td>
-                <td style="width: 15%">
-                    <div class="area">
-                        &nbsp{% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% endif %}</div>
+                <td style="width: 15%" class="area">
+                    <div>
+                        {% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% endif %}</div>
                 </td>
             </tr>
             </tbody>
@@ -201,13 +214,14 @@
             <tbody>
             <tr>
                 <td style="width: 50px">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.vydan'|trans }} </td>
-                <td>
-                    <div class="area">
-                        &nbsp
+                <td class="area">
+                    <div>
+                        
                         {% if documentRelation and documentRelation.authority is defined %}
-                            {{ documentRelation.authority }}{% if documentRelation and documentRelation.issued %},
-                            {{ documentRelation.issued|date('d.m.Y') }}
-                        {% endif %}
+                            {{ documentRelation.authority }}
+                            {% if documentRelation and documentRelation.issued %},
+                             {{ documentRelation.issued|date('d.m.Y') }}
+                             {% endif %}
                         {% endif %}
                     </div>
                 </td>
@@ -225,25 +239,30 @@
     </p>
 
     <!-- Services -->
-    <table border="1" cellpadding="0" cellspacing="0" class="table">
+    <table width="100%" cellpadding="0" cellspacing="0" class="services">
         <thead>
         <tr>
             <th style="width: 30px;">№</th>
-            <th style="width: 100px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.naimenovaniye.uslug'|trans }} </th>
-            <th style="width: 30px;">
-            {{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</th>
+            <th style="width: 200px;">{{ "package.pdf.services_name"|trans({}, "MBHPackageBundle") }}</th>
+            <th style="width: 30px;">{{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</th>
             <th style="width: 30px;">{{ "package.pdf.unit"|trans({}, "MBHPackageBundle") }}</th>
-            <th style="width: 100px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.tsena'|trans }}</th>
-            <th style="width: 100px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.summa'|trans }}</th>
+            <th style="width: 80px;">{{ "package.pdf.price"|trans({}, "MBHPackageBundle") }}</th>
+            <th style="width: 30px;">Скидка</th>
+            <th style="width: 90px;">{{ "package.pdf.sum"|trans({}, "MBHPackageBundle") }}</th>
         </tr>
         </thead>
         <tbody>
+
         {% set packages = package.order.packages %}
 
         {% set counter = 0 %}
+        {% set newPackages = false %}
+        {% set countData = 0 %}
         {% for package in packages %}
+            {% set newPackages = true %}
             {% for date,data in package.pricesByDateByPrice %}
                 {% set counter = counter + 1 %}
+                {% set countData = countData + 1 %}
                 <tr>
                     <td align="center">{{ counter }}</td>
                     <td>
@@ -254,20 +273,29 @@
                     </td>
                     <td align="center">{{ data.nights }}</td>
                     <td align="center">{{ "package.pdf.night"|trans({}, "MBHPackageBundle") }}</td>
-                    <td align="right">{{ data.price != false ? data.price|number_format(2) : '' }}</td>
-                    <td align="right">{{ data.sum|number_format(2) }}</td>
+                    <td align="right">{{ data.fullPrice != false ? data.fullPrice|number_format(2) : '' }}</td>
+                    {% if newPackages and countData == 1 %}
+                        <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">
+                            {{ package.discount }}{{ package.getIsPercentDiscount ? '%' }}
+                        </td>
+                        <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                    {% endif %}
+
                 </tr>
             {% endfor %}
+            {% set newPackages = false %}
+            {% set countData = 0 %}
         {% endfor %}
 
         {% for serviceGroup in packageServicesByType %}
             {% set counter = counter + 1 %}
             <tr>
                 <td align="center">{{ counter }}</td>
-                <td>{{ serviceGroup.byService.fullTitle }}</td>
+                <td>{{ serviceGroup.byService.name }}</td>
                 <td align="center">{{ serviceGroup.actuallyAmount }}</td>
                 <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
                 <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                <td align="right"></td>
                 <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
             </tr>
         {% endfor %}
