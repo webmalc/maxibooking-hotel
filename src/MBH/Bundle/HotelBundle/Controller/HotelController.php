@@ -473,7 +473,7 @@ class HotelController extends Controller
 
         $hotelMainTariff = $this->dm
             ->getRepository('MBHPriceBundle:Tariff')
-            ->findOneBy(['isDefault' => true, 'hotel.id' => $id]);
+            ->findOneBy(['isDefault' => true, 'hotel.id' => $hotel->getId()]);
 
         $this->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
 
@@ -487,7 +487,7 @@ class HotelController extends Controller
         }
         $this->dm->flush();
 
-        $response = $this->deleteEntity($id, 'MBHHotelBundle:Hotel', 'hotel');
+        $response = $this->deleteEntity($hotel->getId(), 'MBHHotelBundle:Hotel', 'hotel');
 
         return $response;
     }
