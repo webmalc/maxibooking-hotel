@@ -7,6 +7,7 @@
 namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 use MBH\Bundle\HotelBundle\Document\Hotel as HotelBase;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 
 /**
  * Class Hotel
@@ -15,7 +16,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel as HotelBase;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-class Hotel extends Common
+class Hotel extends Common implements AddressInterface
 {
     use TraitAddress;
 

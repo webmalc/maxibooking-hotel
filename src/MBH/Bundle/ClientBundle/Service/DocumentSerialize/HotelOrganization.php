@@ -6,17 +6,18 @@
 
 namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
+
 /**
  * Class HotelOrganization
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-class HotelOrganization extends Common
+class HotelOrganization extends Common implements AddressInterface
 {
     use TraitAddress;
 
     protected const METHOD = [
         'getShortName',
-        'getName',
         'getDirectorFio',
         'getAccountantFio',
         'getPhone',
