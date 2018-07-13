@@ -238,6 +238,10 @@ services:
         class: Symfony\Component\Cache\Simple\RedisCache
         arguments: ['@mbh_search.redis', 'price_caches' ]
 
+    mbh_search.search_result_redis_cache:
+        class: Symfony\Component\Cache\Simple\RedisCache
+        arguments: ['@mbh_search.redis', 'search_results' ]
+
 
 ##Fetchers
     mbh_search.shared_data_fetcher:
@@ -270,4 +274,5 @@ services:
 
 #AsyncStores
     mbh_search.redis_store:
-        class: MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\RedisStore
+        class: MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore
+        arguments: ['@mbh_search.search_result_redis_cache']

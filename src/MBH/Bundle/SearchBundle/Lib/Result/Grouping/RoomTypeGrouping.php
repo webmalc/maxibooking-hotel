@@ -8,14 +8,18 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 
 class RoomTypeGrouping implements GroupingInterface
 {
+    /**
+     * @param array $searchResults
+     * @return Result[]
+     */
     public function group(array $searchResults): array
     {
         $grouped = [];
         foreach ($searchResults as $searchResult) {
             /** @var Result $searchResult */
-            $roomType = $searchResult->getResultRoomType();
-            $roomTypes[$roomType->getId()][] = $roomType;
-            $grouped[$roomType->getId()][] = $searchResult;
+            $resultRoomType = $searchResult->getResultRoomType();
+            $roomTypes[$resultRoomType->getId()][] = $resultRoomType;
+            $grouped[$resultRoomType->getId()][] = $searchResult;
         }
 
         $grouped = array_map(function ($groupedResults) {

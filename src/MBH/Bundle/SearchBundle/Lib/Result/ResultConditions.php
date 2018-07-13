@@ -84,6 +84,11 @@ class ResultConditions implements \JsonSerializable
         return $this->conditions->isForceBooking();
     }
 
+    public function getSearchHash(): string
+    {
+        return $this->conditions->getSearchHash();
+    }
+
 
 
 
@@ -95,7 +100,8 @@ class ResultConditions implements \JsonSerializable
             'end' => $this->getEnd()->format('d-m-Y'),
             'adults' => $this->getAdults(),
             'children' => $this->getChildren(),
-            'childrenAges' => $this->getChildrenAges()
+            'childrenAges' => $this->getChildrenAges(),
+            'hash' => $this->getSearchHash()
         ];
     }
 

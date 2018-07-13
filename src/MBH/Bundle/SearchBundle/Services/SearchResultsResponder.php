@@ -25,7 +25,11 @@ class SearchResultsResponder
             $results = $grouping->group($results);
         }
 
-
         return $results;
+    }
+
+    public function handleAsyncResults(array $results, ?string $goruping = null): array
+    {
+        return $this->handleResults(array_values($results));
     }
 }
