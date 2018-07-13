@@ -194,6 +194,11 @@ class ClientConfigType extends AbstractType
                 'multiple' => true,
                 'required' => false
             ])
+            ->add('isMBSiteEnabled', CheckboxType::class, [
+                'label' => 'form.clientConfigType.is_mb_site_enabled.label',
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false
+            ])
             ->add(
                 'can_book_without_payer',
                 CheckboxType::class,

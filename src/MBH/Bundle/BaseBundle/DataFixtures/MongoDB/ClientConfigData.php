@@ -1,8 +1,6 @@
 <?php
 
-
 namespace MBH\Bundle\BaseBundle\DataFixtures\MongoDB;
-
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -24,10 +22,8 @@ class ClientConfigData extends AbstractFixture implements OrderedFixtureInterfac
         $manager->flush();
     }
 
-
     public function getOrder()
     {
         return -500;
     }
-
 }

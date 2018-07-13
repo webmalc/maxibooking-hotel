@@ -29,7 +29,6 @@ class MBSiteSettingsController extends BaseController
             ->getForMBSite();
 
         return new JsonResponse([
-            //TODO: Может быть еще фильтровать по тому насколько заполнены данные в отелях
             'hotelsIds' => $this->helper->toIds($siteConfig->getHotels()),
             'formConfigId' => $formConfig->getId(),
             'keyWords' => $siteConfig->getKeyWords(),

@@ -141,8 +141,7 @@ class BillingApi
     {
         $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT_SETTINGS['endpoint'], $client->getLogin());
         $clientData = $this->serializer->normalize($client);
-unset($clientData['websiteUrl']);
-        unset($clientData['isWebSiteEnabled']);
+
         return $this->updateEntity($url, $clientData, Client::class);
     }
 
@@ -229,6 +228,10 @@ unset($clientData['websiteUrl']);
         }
     }
 
+    /**
+     * @param WebSite $clientSite
+     * @return Result
+     */
     public function addClientSite(WebSite $clientSite)
     {
         $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint']);
@@ -236,10 +239,26 @@ unset($clientData['websiteUrl']);
         return $this->sendPostAndHandleResult($url, $this->serializer->normalize($clientSite));
     }
 
+    /**
+     * @param WebSite $clientSite
+     * @return Result
+     */
     public function updateClientSite(WebSite $clientSite)
     {
         $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint'], $this->billingLogin);
+
         return $this->updateEntity($url, $this->serializer->normalize($clientSite), self::SITES_ENDPOINT_SETTINGS['model']);
+    }
+
+    /**
+     * @param string $siteUrl
+     * @return Result
+     */
+    public function getSitesByUrlResult(string $siteUrl)
+    {
+        $queryParams = ['search' => $siteUrl];
+
+        return $this->getEntities(self::SITES_ENDPOINT_SETTINGS, $queryParams);
     }
 
     /**

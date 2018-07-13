@@ -5,8 +5,6 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
-use MBH\Bundle\OnlineBundle\Document\GoogleAnalyticConfig;
-use MBH\Bundle\OnlineBundle\Document\YandexAnalyticConfig;
 use MBH\Bundle\OnlineBundle\Form\AnalyticsForm;
 use MBH\Bundle\OnlineBundle\Form\FormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
