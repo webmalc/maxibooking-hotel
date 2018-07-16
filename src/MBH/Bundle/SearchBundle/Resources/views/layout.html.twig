@@ -8,6 +8,7 @@
     {{ parent() }}
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+    <script src="{{ asset('js/fos_js_routes.js') }}"></script>
     <script src="{{ asset('bundles/mbhsearch/js/search.js') }}"></script>
     {#{% javascripts filter='uglifyjs2' '@MBHSearchBundle/Resources/public/js/search.js' %}
         <script type="text/javascript" src="{{ asset_url }}"></script>

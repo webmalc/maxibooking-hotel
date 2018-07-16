@@ -14,21 +14,42 @@ class RoomTypeGrouping implements GroupingInterface
      */
     public function group(array $searchResults): array
     {
-        $grouped = [];
-        foreach ($searchResults as $searchResult) {
-            /** @var Result $searchResult */
-            $resultRoomType = $searchResult->getResultRoomType();
-            $roomTypes[$resultRoomType->getId()][] = $resultRoomType;
-            $grouped[$resultRoomType->getId()][] = $searchResult;
-        }
+        $groupedByRoomTypeId = $this->groupByRoomTypeId($searchResults);
 
         $grouped = array_map(function ($groupedResults) {
             /** @var Result[] $groupedResults */
             return [
                 'roomType' => $groupedResults[0]->getResultRoomType(),
-                'results' => $groupedResults
+                'results' => $this->groupByDateTime($groupedResults)
+
             ];
-        }, $grouped);
+        }, $groupedByRoomTypeId);
+
+        return $grouped;
+    }
+
+    private function groupByRoomTypeId(array $searchResults): array
+    {
+        $grouped = [];
+        foreach ($searchResults as $searchResult) {
+            /** @var Result $searchResult */
+            $resultRoomType = $searchResult->getResultRoomType();
+            $grouped[$resultRoomType->getId()][] = $searchResult;
+        }
+
+        return $grouped;
+    }
+
+    private function groupByDateTime($searchResults): array
+    {
+        $grouped = [];
+        foreach ($searchResults as $result) {
+            /** @var Result $result */
+            $begin = $result->getBegin();
+            $end = $result->getEnd();
+            $key = $begin->format('d.m.Y') . '_' . $end->format('d.m.Y');
+            $grouped[$key][] = $result;
+        }
 
         return $grouped;
     }

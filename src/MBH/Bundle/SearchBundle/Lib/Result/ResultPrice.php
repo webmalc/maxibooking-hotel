@@ -116,12 +116,10 @@ class ResultPrice implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            $this->getSearchAdults().'_'.$this->getSearchChildren() => [
                 'adults' => $this->getSearchAdults(),
                 'children' => $this->getSearchChildren(),
                 'total' => $this->getTotal(),
                 'dayPrices' => $this->getDayPrices()
-            ]
         ];
     }
 

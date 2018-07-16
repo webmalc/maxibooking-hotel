@@ -98,8 +98,8 @@ class SearchResultComposer
             $currentPrice = $prices[$combination];
             $resultPrice = new ResultPrice();
             $resultPrice
-                ->setSearchAdults($searchQuery->getAdults())
-                ->setSearchChildren($searchQuery->getChildren() ?? 0)
+                ->setSearchAdults($adults)
+                ->setSearchChildren($children ?? 0)
                 ->setTotal($currentPrice['total']);
             $packagePrices = $currentPrice['packagePrices'];
             foreach ($packagePrices as $packagePrice) {
