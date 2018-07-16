@@ -185,7 +185,7 @@ class ChessBoardManager {
                 newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth - (self.arrowWidth * 2) + 'px';
                 const newPackageStartXOffset = parseInt(newPackage.style.left, 10);
 
-                $document.on('touchmove mousemove', function (event) {
+                $(document).on('touchmove mousemove', function (event) {
                     console.log(event);
                     const isMouseMoveEvent = event.type === 'mousemove';
                     const scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
@@ -208,10 +208,10 @@ class ChessBoardManager {
                     newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
                     newPackage.style.width = packageWidth + 'px';
                 });
-                $document.on('mouseup touchend', function () {
+                $(document).on('mouseup touchend', function () {
                     console.log(event);
                     chessBoardContentBlock.style.overflow = 'auto';
-                    $document.unbind('mousemove touchmove mouseup touchend');
+                    $document.unbind('mousemove  mouseup touchend');
                     if ((newPackage.style.width) && self.isPackageLocationCorrect(newPackage) && newPackage.id) {
                         const packageData = self.getPackageData($(newPackage));
                         self.saveNewPackage(packageData);
