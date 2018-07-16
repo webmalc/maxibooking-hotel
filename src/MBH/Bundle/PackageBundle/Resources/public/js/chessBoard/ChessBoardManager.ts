@@ -1328,7 +1328,8 @@ class ChessBoardManager {
                             relocatablePackageData = self.dataManager.getNoAccommodationIntervalById(this.id);
                             let intervalStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
                             this.style.left = self.getPackageLeftOffset(intervalStartDate, this) + 'px';
-                            this.style.top = self.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
+                            const pageY = event.type === 'touchstart' ? event.originalEvent.touches[0].pageY : event.pageY;
+                            this.style.top = self.getNearestTableLineTopOffset(pageY - document.body.scrollTop)
                                 + document.body.scrollTop - wrapperTopOffset + subtrahend / 2 + 'px';
                             if (!self.isPackageLocationCorrect(relocatablePackage)) {
                                 relocatablePackage.classList.add('red-package');
