@@ -87,6 +87,7 @@ class ClientManager
      * @param array $rawNewRoomCachesData
      * @param array $rawUpdatedRoomCaches
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getDaysWithExceededLimitNumberOfRoomsInSell(
         \DateTime $begin,

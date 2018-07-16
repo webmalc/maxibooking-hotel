@@ -23,6 +23,6 @@ monolog:
 services:
     mbh.exception_subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\ExceptionSubscriber
-        arguments: ['@kernel', '@exception_notifier']
+        arguments: ['@kernel', '@exception_notifier', '@security.token_storage']
         tags:
             - {name: kernel.event_subscriber}

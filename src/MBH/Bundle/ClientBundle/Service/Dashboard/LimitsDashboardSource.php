@@ -34,6 +34,10 @@ class LimitsDashboardSource extends AbstractDashboardSource
         $this->router = $router;
     }
 
+    /**
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     protected function generateMessages(): array
     {
         $begin = new \DateTime('midnight');
