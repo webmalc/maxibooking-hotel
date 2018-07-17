@@ -229,7 +229,24 @@
     .nav-tabs-custom {
       #package-tabs li {
         width: 100%;
+        border-bottom: 0.5px solid #3c8dbc;
+
+        &:not(.active) {
+          background: #9c9c9c7d;
+        }
       }
+      div.tab-content {
+        .created-info {
+          ul {
+            display: flex;
+            li>a {
+              white-space: nowrap;
+            }
+          }
+        }
+      }
+
+      /** кнопки в футере*/
       #actions {
         ul:not(.dropdown-menu) {
           //display: flex;
