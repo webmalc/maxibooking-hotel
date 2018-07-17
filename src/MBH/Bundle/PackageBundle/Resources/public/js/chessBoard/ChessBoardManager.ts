@@ -9,6 +9,7 @@ declare let currentStyleConfigNumber;
 declare let colors;
 declare let subtrahend;
 declare let isMobileDevice;
+declare let isLowWidth;
 
 class ChessBoardManager {
     private static PACKAGE_FONT_SIZE_WIDTH = 8;
