@@ -46,7 +46,7 @@ class WarningsCompiler
 
         $periodsWithoutPrice = [];
         foreach ($cachesSortedByHotelRoomTypeAndTariff as $hotelId => $cachesByRoomTypeAndTariff) {
-            if (!is_null($hotel) || $hotel->getId() !== $hotelId) {
+            if (!is_null($hotel) && $hotel->getId() !== $hotelId) {
                 continue;
             }
 
