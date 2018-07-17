@@ -57,7 +57,7 @@ class HotelType extends AbstractType
         ]);
 
         $builder
-            ->add('logoImage', HotelLogoImageType::class, [
+            ->add('logoImage', LogoImageType::class, [
                 'label' => 'form.hotel_logo.image_file.help',
                 'group' => 'form.hotelType.settings',
                 'required' => false,

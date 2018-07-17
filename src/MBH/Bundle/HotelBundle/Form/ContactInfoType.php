@@ -5,6 +5,8 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ContactInfoType extends AbstractType
@@ -29,8 +31,7 @@ class ContactInfoType extends AbstractType
                 'help' => 'form.contact_info_type.email.help',
                 'required' => false,
                 'group' => 'form.hotel_contact_information.contact_info.group'
-            ])
-            ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

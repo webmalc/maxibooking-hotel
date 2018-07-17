@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Form\HotelFlow;
 
 use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
+use MBH\Bundle\BaseBundle\Service\MBHFormBuilder;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -11,9 +12,11 @@ use Symfony\Component\Translation\TranslatorInterface;
 class HotelAddressType extends AbstractType
 {
     private $translator;
+    private $formBuilder;
 
-    public function __construct(TranslatorInterface $translator) {
+    public function __construct(TranslatorInterface $translator, MBHFormBuilder $formBuilder) {
         $this->translator = $translator;
+        $this->formBuilder = $formBuilder;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -31,30 +34,28 @@ class HotelAddressType extends AbstractType
                     'placeholder' => 'form.hotelExtendedType.city',
                 ],
                 'help' => $cityHelp
-            ])
-            ->add('settlement', MultiLanguagesType::class, [
-                'group' => 'form.hotelExtendedType.address',
-                'data' => $builder->getData(),
-                'fields_options' => [
-                    'label' => 'form.hotelExtendedType.settlement',
-                    'required' => false,
-                ],
-                'field_type' => TextType::class,
-            ])
+            ]);
+
+        $this->formBuilder->addMultiLangField($builder, TextType::class, 'settlement', [
+            'group' => 'form.hotelExtendedType.address',
+            'label' => 'form.hotelExtendedType.settlement',
+            'required' => false,
+        ]);
+
+        $builder
             ->add('zipCode', TextType::class, [
                 'label' => 'form.hotelExtendedType.zip_code',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
-            ])
-            ->add('street', MultiLanguagesType::class, [
-                'group' => 'form.hotelExtendedType.address',
-                'data' => $builder->getData(),
-                'fields_options' => [
-                    'label' => 'form.hotelExtendedType.street',
-                    'required' => false,
-                ],
-                'field_type' => TextType::class,
-            ])
+            ]);
+
+        $this->formBuilder->addMultiLangField($builder, TextType::class, 'street', [
+            'group' => 'form.hotelExtendedType.address',
+            'label' => 'form.hotelExtendedType.street',
+            'required' => false,
+        ]);
+
+        $builder
             ->add('internationalStreetName', TextType::class, [
                 'group' => 'form.hotelExtendedType.address',
                 'label' => 'form.hotelExtendedType.international_street_name.label',

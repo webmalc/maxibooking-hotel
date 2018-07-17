@@ -26,5 +26,34 @@ $(document).ready(function () {
         maxboostedstep: 1
     });
 
+    drawLinesBetweenFlowTabs();
 });
 
+function drawLinesBetweenFlowTabs() {
+    var $linesBetweenFlowTabs = $('.line-between-flow-tabs');
+    if ($linesBetweenFlowTabs.length === 0) {
+        return;
+    }
+    var top;
+    var tabWidthPlusLineWidth = 60 + 10;
+    var containerWidth = parseInt(getComputedStyle($linesBetweenFlowTabs.get(0).parentNode).width, 10);
+    var numberOfLinesOnLine = Math.floor(containerWidth / tabWidthPlusLineWidth);
+
+    $linesBetweenFlowTabs.each(function (lineNumber, line) {
+        if (typeof top === "undefined") {
+            top = parseInt(getComputedStyle(line).top, 10);
+        }
+
+        var left = (lineNumber % numberOfLinesOnLine) * tabWidthPlusLineWidth;
+        line.style.top = top + 'px';
+        line.style.left = left + 'px';
+
+        if (left + 2 * tabWidthPlusLineWidth > containerWidth) {
+            var clonedLine = line.cloneNode();
+            clonedLine.style.top = top + 'px';
+            clonedLine.style.left = left + tabWidthPlusLineWidth + 'px';
+            $linesBetweenFlowTabs.parent().append(clonedLine);
+            top += 61;
+        }
+    });
+}

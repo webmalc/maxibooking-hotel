@@ -25,7 +25,7 @@ class HotelContactInformationType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $this->mbhFormBuilder->addMergedFormFields($builder, HotelAddressType::class, $builder->getData());
+        $this->mbhFormBuilder->mergeFormFields($builder, HotelAddressType::class, $builder->getData());
 
         $builder
             ->add('aboutLink', TextType::class, [
@@ -54,7 +54,7 @@ class HotelContactInformationType extends AbstractType
                 'required' => false,
             ]);
 
-        $this->mbhFormBuilder->addMergedFormFields($builder, HotelLocationType::class, $builder->getData());
+        $this->mbhFormBuilder->mergeFormFields($builder, HotelLocationType::class, $builder->getData());
 
         $builder
             ->add('contactInformation', ContactInfoType::class)

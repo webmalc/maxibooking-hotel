@@ -3,35 +3,49 @@
 namespace MBH\Bundle\HotelBundle\Form\HotelFlow;
 
 use Craue\FormFlowBundle\Form\FormFlow;
-use Craue\FormFlowBundle\Tests\IntegrationTestBundle\Form\PhotoUploadForm;
 
 class HotelFlow extends FormFlow
 {
+    protected $allowRedirectAfterSubmit = true;
+
     /**
      * @return array
      */
     protected function loadStepsConfig()
     {
-        $hotelFlowLabels = [
-            'Ввод имени отеля',
-            'Ввод описания отеля',
-            'Логотип отеля',
-            'Адрес отеля',
-            'Координаты отеля на карте',
-            'Контакты'
-        ];
-
-        $steps = array_map(function (string $step) {
-            return [
-                'label' => $step,
+        return [
+            [
+                'Ввод имени отеля',
                 'form_type' => HotelFlowType::class
-            ];
-        }, $hotelFlowLabels);
-
-        return array_merge($steps, [[
-            'label' => 'Фотографии',
-            'form_type' => PhotoUploadForm::class
+            ],
+            [
+                'Ввод описания отеля',
+                'form_type' => HotelFlowType::class
+            ],
+            [
+                'Логотип отеля',
+                'form_type' => HotelFlowType::class
+            ],
+            [
+                'Адрес отеля',
+                'form_type' => HotelAddressType::class
+            ],
+            [
+                'Координаты отеля на карте',
+                'form_type' => HotelLocationType::class
+            ],
+            [
+                'Контакты',
+                'form_type' => HotelFlowType::class
+            ],
+            [
+                'label' => 'Главная фотография',
+                'form_type' => HotelFlowType::class
+            ],
+            [
+                'label' => 'Фотографии',
+                'form_type' => HotelFlowType::class
             ]
-        ]);
+        ];
     }
 }

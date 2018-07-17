@@ -346,7 +346,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * Edits an existing entity.
      *
-     * @Route("/{id}", name="package_update")
+     * @Route("/{id}/edit", name="package_update")
      * @Method("POST")
      * @Security("is_granted('ROLE_PACKAGE_EDIT') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template("MBHPackageBundle:Package:edit.html.twig")

@@ -115,12 +115,12 @@ services:
 
     mbh.hotel_address_type:
         class: MBH\Bundle\HotelBundle\Form\HotelFlow\HotelAddressType
-        arguments: ['@translator']
+        arguments: ['@translator', '@mbh.form_builder']
         tags: [{name: form.type}]
 
     mbh.hotel_flow_type:
         class: MBH\Bundle\HotelBundle\Form\HotelFlow\HotelFlowType
-        arguments: ['@mbh.form_builder']
+        arguments: ['@mbh.form_builder', '@router']
         tags: [{name: form.type}]
 
     mbh.hotel_flow:

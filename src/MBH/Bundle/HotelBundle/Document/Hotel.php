@@ -1602,6 +1602,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         $this->images->removeElement($image);
     }
 
+    /**
+     * @return ArrayCollection|Image[]
+     */
     public function getImages()
     {
         return $this->images;
@@ -1627,6 +1630,47 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
+    /**
+     * @return Image|mixed
+     */
+    public function getDefaultImage()
+    {
+        foreach ($this->getImages() as $image) {
+            if ($image->getIsDefault()) {
+                return $image;
+            }
+        }
+
+        return $this->getImages()->isEmpty() ? null : $this->getImages()->first();
+    }
+
+    /**
+     * @return null
+     */
+    public function getPlugForHotelFlowImagesField()
+    {
+        return null;
+    }
+
+    public function setPlugForHotelFlowImagesField(Image $image)
+    {
+        if (!is_null($this->getImages()->last()->getId())) {
+            $this->addImage($image);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Image $image
+     * @return Hotel
+     */
+    public function setDefaultImage(Image $image)
+    {
+        $this->addImage($image);
+
+        return $this;
+    }
 
     /**
      * @return mixed
@@ -1849,7 +1893,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                     $comprehensiveData['logoUrl'] = $cacheManager->getBrowserPath($uploaderHelper->asset($this->getLogoImage(), 'imageFile'), 'scaler');
                 }
             } else {
-                throw new \InvalidArgumentException('It\'s required uploader helper and current domain for serialization of the full information about the hotel!');
+                throw new \InvalidArgumentException('It\'s required to pass uploader helper and current domain for serialization of the full information about the hotel!');
             }
 
             if (!is_null($this->latitude)) {

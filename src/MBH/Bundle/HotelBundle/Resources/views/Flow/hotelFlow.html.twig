@@ -1,30 +1,62 @@
 {% extends "MBHHotelBundle::layout.html.twig" %}
 
 {% set title = 'views.flow.hotel_flow.title'|trans({}, 'MBHHotelBundle') %}
-{% set layout = "box" %}
+{% set layout = "tabs" %}
+
+{% if form.logoImage is defined %}
+    {% form_theme form.logoImage '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
+{% elseif form.defaultImage is defined %}
+    {% form_theme form.defaultImage '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
+{% elseif form.plugForHotelFlowImagesField is defined %}
+    {% form_theme form.plugForHotelFlowImagesField '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
+{% endif %}
+
+{% set isLastStep = flow.lastStepNumber == flow.currentStep %}
+{% set isImagesStep = isLastStep %}
+
 
 {% block content %}
     <div class="tab-content">
     <div>
         {% include '@MBHHotel/Flow/flowStepList.html.twig' %}
     </div>
+
     {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
-    {{ form_errors(form) }}
+    {{ form_widget(form) }}
 
-    {#{% if flow.getCurrentStepNumber() == 1 %}#}
-    {#<div>#}
-    {#When selecting four wheels you have to choose the engine in the next step.<br />#}
-    {#{{ form_row(form.numberOfWheels) }}#}
-    {#</div>#}
-    {#{% endif %}#}
+    {% if isImagesStep %}
+        <button type="submit" class="btn btn-primary navbar-btn" name="add_image">Добавить в галерею</button>
+        {% include '@MBHHotel/Hotel/image-list.html.twig' with {images: hotel.images, entity: hotel,  withButtons: false} %}
+    {% endif %}
 
-    {{ form_rest(form) }}
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                {% if flow.currentStep > 1 %}
+                <li>
+                    <button type="submit" class="btn btn-primary navbar-btn" value="back"
+                            name="{{ flow.getFormTransitionKey() }}">
+                        <i class="fa fa-arrow-left"></i>
+                        &nbsp;{{- 'button.back'| trans({}, 'CraueFormFlowBundle') -}}
+                    </button>
+                </li>
+                {% endif %}
+                <li>
+                    <button type="submit" class="btn btn-{{ isLastStep ? 'success' : 'primary' }} primary navbar-btn">
+                        {% if isLastStep %}
+                            <i class="fa fa-check-square-o"></i>
+                        {% endif %}
+                        {{- (isLastStep ? 'button.finish' : 'button.next')| trans({}, 'CraueFormFlowBundle') -}}
+                        {% if not isLastStep %}
+                            &nbsp;<i class="fa fa-arrow-right"></i>
+                        {% endif %}
 
-    {% include '@CraueFormFlow/FormFlow/buttons.html.twig' with {
-        craue_formflow_button_class_last: 'btn btn-primary',
-        craue_formflow_button_class_back: 'btn',
-        craue_formflow_button_class_reset: 'btn btn-warning',
-    } %}
-    {{ form_end(form) }}
+                    </button>
+                </li>
+                {{ form_end(form) }}
+            </ul>
+        </div>
     </div>
+
+    {% include '@MBHHotel/Hotel/coordinates-modal.html.twig' with {entity: hotel} %}
 {% endblock %}

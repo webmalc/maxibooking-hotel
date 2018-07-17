@@ -1,43 +1,27 @@
 {% use '@CraueFormFlow/FormFlow/stepList_blocks.html.twig' %}
 
-{% set menu = [
-    {'route': 'hotel_edit', 'title': '<i class="fa fa-info-circle"></i> '~ 'views.hotel.tabs.main_info'|trans({}, 'MBHHotelBundle')},
-    {'route': 'hotel_contact_information', 'title': '<i class="fa fa-book"></i> '~ 'views.hotel.tabs.contact_info'|trans({}, 'MBHHotelBundle')},
-    {'route': 'hotel_edit_extended', 'title': '<i class="fa fa-cogs"></i> '~ 'views.hotel.tabs.additional_settings'|trans({}, 'MBHHotelBundle')},
-    {'route': 'hotel_images', 'title': '<i class="fa fa-picture-o"></i> '~ 'views.hotel.tabs.images'|trans({}, 'MBHHotelBundle')},
-]
-%}
-
-<ul class="nav nav-tabs" role="tablist">
-    {% for item in menu %}
-        {% if entity is null and loop.index != 1 %}
-            <li class="disabled">
-                <a href="#" role="tab" data-toggle="tooltip" title="{{ 'views.hotel.tabs.main_info_required'|trans({}, 'MBHHotelBundle') }}">{{item.title|raw}}</a>
-            </li>
-        {% else  %}
-            <li {% if loop.index == active %}class="active"{% endif %}>
-                {% if entity is null %}{% set route = 'hotel_new' %}{% else %}{% set route = item.route %}{% endif %}
-                <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route, {'id': entity.id|default(null)}) }}"{% endif %}>{{item.title|raw}}</a>
-            </li>
-        {% endif  %}
-    {% endfor %}
-</ul>
-
-
 {%- if flow.getStepLabels() is not empty -%}
-<ul class="nav nav-tabs" role="tablist">
-        {% for stepLabel in flow.getStepLabels() %}
-            <li{{ block('craue_flow_stepList_class') }}>
-                {%- if craue_isStepLinkable(flow, loop.index) -%}
-                    <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all
-                        | merge(app.request.attributes.get('_route_params'))
-                        | craue_addDynamicStepNavigationParameters(flow, loop.index)) }}">
-                        {{- block('craue_flow_stepLabel') -}}
-                    </a>
-                {%- else -%}
-                    {{ block('craue_flow_stepLabel') }}
-                {%- endif -%}
-            </li>
+    <div  style="position:relative;">
+        {% for lineNumber in 1..flow.stepCount %}
+            <div class="line-between-flow-tabs {{ loop.index > flow.currentStep ? 'line-to-not-passed' }}">&nbsp;</div>
         {% endfor %}
-</ul>
+
+        <ul class="nav nav-tabs" id="flow-step-tabs">
+            {% for stepLabel in flow.getStepLabels() %}
+
+                {% if loop.index == flow.currentStep %}
+                    {% set stepStatusClass = 'active' %}
+                {% elseif loop.index < flow.currentStep %}
+                    {% set stepStatusClass = 'passed-step' %}
+                {% else %}
+                    {% set stepStatusClass = 'not-passed-step' %}
+                {% endif %}
+
+                <li class="flow-step-tab {{ stepStatusClass }}">
+                    {#{{- block('craue_flow_stepLabel') -}}#}
+                    {{ loop.index }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {%- endif -%}

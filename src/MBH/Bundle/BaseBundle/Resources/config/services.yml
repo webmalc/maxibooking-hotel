@@ -428,7 +428,7 @@ services:
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
-        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator']
+        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator', '@mbh.client_config_manager']
 
     mbh.protected.file.downloader:
         class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
@@ -499,6 +499,7 @@ services:
         arguments:
             - '@translator'
             - '@property_accessor'
+            - '@annotation_reader'
 
     mbh.messages_store:
         class: MBH\Bundle\BaseBundle\Service\Messenger\MessagesStore

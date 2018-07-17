@@ -1,0 +1,38 @@
+li.flow-step-tab {
+    -webkit-border-radius: 28px;
+    -moz-border-radius: 28px;
+    border-radius: 28px;
+    padding: 0 17px;
+    margin: 0 5px 5px 5px;
+    font-size: 35px;
+}
+.flow-step-tab.not-passed-step {
+    border: 3px solid #F3F2EE;
+    color: #b9b6aa;
+}
+.flow-step-tab.passed-step {
+    color: #7AC29A;
+}
+.flow-step-tab.passed-step, .flow-step-tab.active {
+    border: 3px solid #7AC29A;
+}
+.flow-step-tab.active {
+    color: white;
+    background-color: #7AC29A;
+}
+#flow-step-tabs {
+    border-bottom: 0;
+    margin-left: 5px;
+    margin-bottom: 10px;
+}
+.line-between-flow-tabs {
+    background-color: #7AC29A;
+    width: 10px;
+    height: 3px;
+    z-index: 1;
+    position: absolute;
+    top: 28px;
+}
+.line-to-not-passed {
+    background-color: #F3F2EE;
+}

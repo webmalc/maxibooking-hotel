@@ -118,10 +118,7 @@ class HotelController extends Controller
 
         if ($form->isValid()) {
             $this->get('mbh.hotel.hotel_manager')->create($entity);
-            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
-                $this->get('mbh.form_data_handler')
-                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
-            }
+            $this->get('mbh.form_data_handler')->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
             $this->addFlash('success', 'controller.hotelController.record_created_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
@@ -150,12 +147,10 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
-                $this->get('mbh.form_data_handler')
-                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
-            }
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
             $this->dm->flush();
-
+            $this->dm->refresh($entity);
             $this->addFlash('success', 'controller.hotelController.record_edited_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
@@ -249,12 +244,15 @@ class HotelController extends Controller
      * @Route("/{id}/logoImage/delete", name="hotel_delete_logo_image")
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      */
-    public function deleteImageLogoAction(Hotel $hotel)
+    public function deleteImageLogoAction(Request $request, Hotel $hotel)
     {
         $hotel->removeLogoImage();
         $this->dm->flush();
+        $redirectUrl = $request->get('redirect_url')
+            ? $request->get('redirect_url')
+            : $this->generateUrl('hotel_edit', ['id' => $hotel->getId()]) ;
 
-        return $this->redirect($this->generateUrl('hotel_edit', ['id' => $hotel->getId()]));
+        return $this->redirect($redirectUrl);
     }
 
     /**

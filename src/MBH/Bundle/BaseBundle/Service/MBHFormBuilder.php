@@ -54,7 +54,7 @@ class MBHFormBuilder
      * @param string $mergedFormName
      * @param $data
      */
-    public function addMergedFormFields(FormBuilderInterface $formBuilder, string $mergedFormName, $data)
+    public function mergeFormFields(FormBuilderInterface $formBuilder, string $mergedFormName, $data)
     {
         $mergedFormBuilder = $this->formFactory->createBuilder($mergedFormName, $data);
         foreach ($mergedFormBuilder->all() as $formField) {
