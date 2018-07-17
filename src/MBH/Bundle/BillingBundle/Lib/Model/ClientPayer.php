@@ -3,8 +3,6 @@
 namespace MBH\Bundle\BillingBundle\Lib\Model;
 
 
-use MBH\Bundle\BillingBundle\Service\BillingApi;
-
 class ClientPayer
 {
     private $id;
