@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
-use MBH\Bundle\BaseBundle\Form\FormWithMultiLangFields;
-use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
+use MBH\Bundle\BaseBundle\Service\MBHFormBuilder;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -11,16 +11,18 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class HotelType extends FormWithMultiLangFields
+class HotelType extends AbstractType
 {
-    public function __construct(ClientConfigManager $clientConfigManager)
+    private $formBuilder;
+
+    public function __construct(MBHFormBuilder $formBuilder)
     {
-        parent::__construct($clientConfigManager);
+        $this->formBuilder = $formBuilder;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder = $this->addMultiLangField($builder, TextType::class, 'fullTitle', [
+        $builder = $this->formBuilder->addMultiLangField($builder, TextType::class, 'fullTitle', [
             'group' => 'form.hotelType.general_info',
             'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel'],
             'label' => 'form.hotelType.name'
@@ -47,7 +49,7 @@ class HotelType extends FormWithMultiLangFields
                 'help' => 'form.hotelType.document_use_name'
             ]);
 
-        $builder = $this->addMultiLangField($builder, TextareaType::class, 'description', [
+        $builder = $this->formBuilder->addMultiLangField($builder, TextareaType::class, 'description', [
             'attr' => ['class' => 'tinymce'],
             'label' => 'form.hotelType.description',
             'group' => 'form.hotelType.general_info',

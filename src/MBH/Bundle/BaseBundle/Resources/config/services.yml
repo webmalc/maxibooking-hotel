@@ -520,3 +520,9 @@ services:
     mbh.warnings_compiler:
         class: MBH\Bundle\BaseBundle\Service\WarningsCompiler
         arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.periods_compiler']
+
+    mbh.form_builder:
+        class: MBH\Bundle\BaseBundle\Service\MBHFormBuilder
+        arguments:
+            - '@mbh.client_config_manager'
+            - '@form.factory'
