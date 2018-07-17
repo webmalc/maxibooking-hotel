@@ -274,11 +274,13 @@ var deleteLink = function () {
 
 $(document).ready(function() {
     'use strict';
+    var $debug = $('#ololo');
+    $debug.html(isLowWidthDevice() ? 'Low' : 'High');
     if (isLowWidthDevice()) {
         var $logoBlock = $('header.main-header > .logo');
         var logoBlockHeight = parseInt($logoBlock.css('height'), 10);
-        console.log(logoBlockHeight);
         $(window).scroll(function () {
+            $debug.html(document.body.scrollTop);
             if (document.body.scrollTop > logoBlockHeight) {
                 $logoBlock.hide();
             } else {
