@@ -141,7 +141,6 @@ var ChessBoardManager = /** @class */ (function () {
                 newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth - (self.arrowWidth * 2) + 'px';
                 var newPackageStartXOffset = parseInt(newPackage.style.left, 10);
                 $(document).on('touchmove mousemove', function (event) {
-                    console.log(event);
                     var isMouseMoveEvent = event.type === 'mousemove';
                     var scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
                     var mouseXOffset = startXPosition - (isMouseMoveEvent ? event.pageX : event.originalEvent.touches[0].pageX);
@@ -164,7 +163,6 @@ var ChessBoardManager = /** @class */ (function () {
                     newPackage.style.width = packageWidth + 'px';
                 });
                 $(document).on('mouseup touchend', function () {
-                    console.log(event);
                     chessBoardContentBlock.style.overflow = 'auto';
                     $document.unbind('mousemove  mouseup touchend');
                     if ((newPackage.style.width) && self.isPackageLocationCorrect(newPackage) && newPackage.id) {
@@ -297,7 +295,6 @@ var ChessBoardManager = /** @class */ (function () {
         headerTitle.style.left = chessBoardContentBlock.scrollLeft + 'px';
     };
     ChessBoardManager.onWindowYScrollForMobiles = function (startTopOffset) {
-        console.log(startTopOffset);
         var monthsAndDates = document.getElementById('months-and-dates');
         monthsAndDates.style.top = document.body.scrollTop + 'px';
         var headerTitle = document.getElementById('header-title');

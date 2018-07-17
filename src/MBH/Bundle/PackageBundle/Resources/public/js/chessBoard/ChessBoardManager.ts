@@ -186,7 +186,6 @@ class ChessBoardManager {
                 const newPackageStartXOffset = parseInt(newPackage.style.left, 10);
 
                 $(document).on('touchmove mousemove', function (event) {
-                    console.log(event);
                     const isMouseMoveEvent = event.type === 'mousemove';
                     const scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
                     const mouseXOffset = startXPosition - (isMouseMoveEvent ? event.pageX : event.originalEvent.touches[0].pageX);
@@ -209,7 +208,6 @@ class ChessBoardManager {
                     newPackage.style.width = packageWidth + 'px';
                 });
                 $(document).on('mouseup touchend', function () {
-                    console.log(event);
                     chessBoardContentBlock.style.overflow = 'auto';
                     $document.unbind('mousemove  mouseup touchend');
                     if ((newPackage.style.width) && self.isPackageLocationCorrect(newPackage) && newPackage.id) {
@@ -365,7 +363,6 @@ class ChessBoardManager {
     }
 
     protected static onWindowYScrollForMobiles(startTopOffset) {
-        console.log(startTopOffset);
         let monthsAndDates = document.getElementById('months-and-dates');
         monthsAndDates.style.top = document.body.scrollTop + 'px';
 
