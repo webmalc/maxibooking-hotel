@@ -743,6 +743,7 @@ messages_store.channel_manager_confirmation.text_2: 'Ваша заявка на 
 messages_store.channel_manager_confirmation.text_3: 'Данные для подключения'
 messages_store.channel_manager_confirmation.text_4: 'Если у Вас возникли вопросы, обратитесь, пожалуйста, в службу поддержки <br>по адресу:<a href="mailto:%supportEmail%">%supportEmail%</a>!'
 messages_store.new_connection.text: 'Клиент "%client%" начал настройку канала "%channelManager%".'
+messages_store.new_connection.subject: 'Начало настройки канала "%channelManager%"'
 
 cm_connection_instructions.part1.text1: '<strong>Для настройки взаимодействия %channelManagerName% и программы Максибукинг нужно  получить разрешение от системы бронирования.</strong>'
 cm_connection_instructions.part1.text2: '<strong>Примечание</strong>: Обратите внимание, что количество продаваемых номеров и цены на них будут выгружаться из системы “Максибукинг”.'
