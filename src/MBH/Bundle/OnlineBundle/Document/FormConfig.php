@@ -551,7 +551,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      */
     public function getResultsUrl($forResultsPage = false): ?string
     {
-        return $forResultsPage ? $this->resultsUrl . SiteManager::DEFAULT_RESULTS_PAGE : $this->resultsUrl;
+        return $forResultsPage && $this->isForMbSite() ? $this->resultsUrl . SiteManager::DEFAULT_RESULTS_PAGE : $this->resultsUrl;
     }
 
     /**
