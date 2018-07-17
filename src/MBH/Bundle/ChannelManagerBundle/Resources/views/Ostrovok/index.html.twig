@@ -4,7 +4,7 @@
 {% set layout = 'tabs' %}
 
 {% block content %}
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': entity, 'base': 'ostrovok'} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, 'base': 'ostrovok'} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
@@ -13,8 +13,8 @@
             {% include 'MBHChannelManagerBundle::actions.html.twig' %}
             {{ form_end(form) }}
 
-            {% if entity %}
-                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs, 'delete_route': 'tariff_delete' } %}
             {% endif %}
         </div>
     </div>

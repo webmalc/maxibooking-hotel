@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Menu\Builder;
 
 /**
  * Class HotelRepository
@@ -28,9 +29,20 @@ class HotelRepository extends DocumentRepository
     }
 
     /**
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    public function getQBWithAvailable()
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('isEnabled')->equals(true);
+    }
+
+    /**
      * @param array $hotelsIds
      * @param bool $isEmptyAsAll
      * @return Cursor|Hotel[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getByIds(array $hotelsIds, $isEmptyAsAll = true)
     {

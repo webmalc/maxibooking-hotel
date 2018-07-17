@@ -140,7 +140,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
             'package' => $package,
-            'clientConfig' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()
+            'clientConfig' => $this->clientConfig
         ];
     }
 
@@ -447,7 +447,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     /**
      * Order update
      *
-     * @Route("/{id}/update/{packageId}", name="package_order_update")
+     * @Route("/{id}/edit/{packageId}", name="package_order_update")
      * @Method("POST")
      * @Security("(is_granted('ROLE_PACKAGE_EDIT_ALL') and is_granted('ROLE_ORDER_EDIT')) or (is_granted('ROLE_ORDER_EDIT') and is_granted('EDIT', entity))")
      * @Template("MBHPackageBundle:Order:edit.html.twig")

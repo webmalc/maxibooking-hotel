@@ -2,33 +2,18 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
-use Symfony\Component\Form\AbstractType;
-use MBH\Bundle\BaseBundle\Service\Currency;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class HundredOneHotelType extends AbstractType
+class HundredOneHotelType extends ChannelManagerConfigType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        parent::buildForm($builder, $options);
+
         $builder
-            ->add('isEnabled', CheckboxType::class, [
-                    'label' => 'form.hundredOneHotels.is_included',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.hundredOneHotels.should_we_use_in_channel_manager'
-                ]
-            )
-            ->add(
-                'hotelId', TextType::class, [
-                    'label' => 'form.hundredOneHotels.hotel_id',
-                    'required' => true,
-                    'help' => 'form.hundredOneHotels.hotel_id_in_101_hotels'
-                ]
-            )
             ->add('apiKey', TextType::class, [
                     'label' => 'form.hundredOneHotels.api_key.label',
                     'required' => true,
@@ -43,12 +28,13 @@ class HundredOneHotelType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig',
-        ));
+        $resolver->setDefaults([
+            'data_class' => HundredOneHotelsConfig::class,
+            'channelManagerName' => '101hotels.ru'
+        ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_channelmanagerbundle_hundred_one_hotels_type';
     }

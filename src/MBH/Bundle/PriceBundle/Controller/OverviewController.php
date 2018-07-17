@@ -25,7 +25,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
     public function indexAction()
     {
         $roomTypeManager = $this->get('mbh.hotel.room_type_manager');
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $getRoomTypeCallback = function () use ($roomTypeManager) {
             return $roomTypeManager->getRooms($this->hotel);
         };
@@ -77,7 +77,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
             'hotel' => $hotel
         ];
 
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $inputRoomTypeIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
         $roomTypeManager = $this->get('mbh.hotel.room_type_manager');
         $roomTypesCallback = function () use ($inputRoomTypeIds, $roomTypeManager) {

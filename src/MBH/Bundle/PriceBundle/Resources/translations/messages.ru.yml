@@ -70,6 +70,8 @@ mbhpricebundle.form.servicetype.mezhdunarodnoyenazvaniye: 'Международ�
 mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya: 'Описание услуги для онлайн бронирования'
 mbhpricebundle.form.servicetype.tiprascheta: 'Тип расчета'
 mbhpricebundle.form.servicetype.is_displaceable: 'Смещаемая?'
+mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.label: 'Изменять количество гостей?'
+mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.help: 'Изменять количество гостей в услуге при изменении количества гостей в брони?'
 mbhpricebundle.form.servicetype.is_displaceable.help: 'Смещать ли даты услуги при изменении дат брони?'
 mbhpricebundle.form.servicetype.includeArrival: 'Учитывать заезд?'
 mbhpricebundle.form.servicetype.includeArrival.help: 'Учитывать ли дату заезда брони?'

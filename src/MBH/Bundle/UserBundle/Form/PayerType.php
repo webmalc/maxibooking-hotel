@@ -103,7 +103,7 @@ class PayerType extends AbstractType
                 ],
                 'data' => $client->getRegion()
             ])
-            ->add('postalCode', IntegerType::class, [
+            ->add('postalCode', TextType::class, [
                 'required' => false,
                 'group' => 'form.payer_type.address_group',
                 'label' => 'form.payer_type.postal_code.label',

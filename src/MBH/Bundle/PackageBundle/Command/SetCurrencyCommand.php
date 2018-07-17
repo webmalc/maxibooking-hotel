@@ -27,7 +27,7 @@ class SetCurrencyCommand extends ContainerAwareCommand
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $currency = $this->getContainer()->getParameter('locale.currency');
         /** @var ClientConfig $clientConfig */
-        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->getContainer()->get('mbh.client_config_manager')->fetchConfig();
         $clientConfig->setCurrency($currency);
         $this->getContainer()->get('logger')->info($currency);
         $dm->flush();

@@ -44,7 +44,8 @@ class NoticeUnpaid
         $currentDay = new \DateTime('midnight'); // Current day
 
         // Number of days after which a payment is considered overdue
-        $dateUnpaid = $this->dm->getRepository('MBHClientBundle:ClientConfig')
+        $dateUnpaid = $this->container
+            ->get('mbh.client_config_manager')
             ->fetchConfig()
             ->getNoticeUnpaid();
 

@@ -159,6 +159,7 @@ class ClientPayerManager
 
     /**
      * @return Company|null
+     * @throws \Exception
      */
     public function getClientCompany()
     {
@@ -222,6 +223,7 @@ class ClientPayerManager
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function getErrorsCausedByUnfilledDataForPayment()
     {

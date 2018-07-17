@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ChannelManagerBundle\Lib\CanPullOldOrdersTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -28,6 +29,7 @@ class ExpediaConfig extends Base implements BaseInterface
     }
 
     use ConfigTrait;
+    use CanPullOldOrdersTrait;
 
     /**
      * Hook timestampable behavior
@@ -129,6 +131,7 @@ class ExpediaConfig extends Base implements BaseInterface
         $this->rooms = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->setReadinessConfirmed(false);
     }
 
     /**
@@ -249,5 +252,13 @@ class ExpediaConfig extends Base implements BaseInterface
     public function getServices()
     {
         return $this->services;
+    }
+
+    /**
+     * @param bool $checkOldPackages
+     * @return bool
+     */
+    public function isReadyToSync($checkOldPackages = false): bool {
+        return $this->isSettingsFilled() && ($checkOldPackages ? $this->isAllPackagesPulled() : true);
     }
 }

@@ -485,7 +485,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $result = true;
         $isPulledAllPackages = $pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS;
         /** @var BookingConfig $config */
-        foreach ($this->getConfig() as $config) {
+        foreach ($this->getConfig($isPulledAllPackages) as $config) {
             $request = $this->templating->render(
                 'MBHChannelManagerBundle:Booking:reservations.xml.twig',
                 ['config' => $config, 'params' => $this->params, 'pullOldStatus' => $pullOldStatus]
@@ -556,6 +556,12 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 $config->setIsAllPackagesPulled(true);
                 $this->dm->flush();
             }
+        }
+
+        if ($isPulledAllPackages) {
+            $cm = $this->container->get('mbh.channelmanager');
+            $cm->clearAllConfigsInBackground();
+            $cm->updateInBackground();
         }
 
         return $result;

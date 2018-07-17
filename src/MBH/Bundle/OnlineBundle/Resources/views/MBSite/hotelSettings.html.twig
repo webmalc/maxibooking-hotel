@@ -1,0 +1,76 @@
+{% extends 'MBHOnlineBundle:MBSite:layout.html.twig' %}
+
+{% block content %}
+    {{ parent() }}
+
+    {% set displayedDataList = [] %}
+    {% set displayedDataList = displayedDataList|merge([
+        {'categoryName': 'site_form.hotels.hotel_data'|trans, 'categoryIcon' : 'home', isRoomType: false}|merge(hotelWarnings)
+    ]) %}
+    {% for roomData in roomTypesWarnings %}
+        {% set displayedDataList = displayedDataList|merge([
+            {'categoryName': roomData['document'].name, 'categoryIcon' : 'bed', isRoomType: true}|merge(roomData)
+        ]) %}
+    {% endfor %}
+
+    <div class="tab-content">
+        <ul class="nav nav-pills nav-stacked">
+            {% for displayedData in displayedDataList %}
+                {% set document = displayedData['document'] %}
+                {% set documentId = document.id %}
+                <li>
+                    <a style="background-color: #e7f3e2; font-size: 16px">
+                        <i class='fa fa-{{ displayedData['categoryIcon'] }}'></i>{{ displayedData['categoryName'] }}</a>
+                    <ol style="list-style-type: none; padding-left: 0">
+                        {% for routeName, warningInfo in displayedData['fieldsData'] %}
+                            {% for correctnessType, fieldNames in warningInfo %}
+                                {% for fieldName in fieldNames %}
+                                    <li class="row" style=" margin-bottom: 5px">
+                                        <div class="col-xs-6 col-md-3 text-right">
+                                            <a target="_blank" href="{{ path(routeName, {'id': documentId}) }}">
+                                                {{ get_field_name(document, fieldName) }}
+                                            </a>&nbsp;
+                                        </div>
+                                        <div class="col-xs-6 col-md-9">
+                                            {% set class = correctnessType == 'correct' ? 'success' : 'danger' %}
+                                            {% set faSign = correctnessType == 'correct' ? 'check' : 'exclamation' %}
+                                            <a target="_blank" href="{{ path(routeName, {'id': documentId }) }}">
+                                                <small class="label label-{{ class }} label-as-badge"><i
+                                                            class="fa fa-{{ faSign }}"></i></small>
+                                            </a>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endfor %}
+
+                        {% if displayedData['isRoomType'] %}
+                            {% set cachesDisplayData = [
+                                {title: 'site_form.hotels.required_fields.price_caches', isFilled: emptyPriceCaches[document.hotel.id][documentId] is not defined, routeName: 'price_cache_overview'},
+                                {title: 'site_form.hotels.required_fields.room_caches', isFilled: emptyRoomCaches[document.hotel.id][documentId] is not defined, routeName: 'room_cache_overview'}
+                            ] %}
+
+                            {% for cacheDisplayData in cachesDisplayData %}
+                                <li class="row" style=" margin-bottom: 5px">
+                                    <div class="col-xs-6 col-md-3 text-right">
+                                        <a target="_blank" href="{{ path(cacheDisplayData.routeName) }}">
+                                            {{ cacheDisplayData.title|trans }}
+                                        </a>&nbsp;
+                                    </div>
+                                    <div class="col-xs-6 col-md-9">
+                                        {% set class = cacheDisplayData.isFilled ? 'success' : 'danger' %}
+                                        {% set faSign = cacheDisplayData.isFilled ? 'check' : 'exclamation' %}
+                                        <a target="_blank" href="{{ path(cacheDisplayData.routeName) }}">
+                                            <small class="label label-{{ class }} label-as-badge"><i
+                                                        class="fa fa-{{ faSign }}"></i></small>
+                                        </a>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ol>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

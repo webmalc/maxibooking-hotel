@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use FOS\UserBundle\Mailer\MailerInterface;
 use FOS\UserBundle\Model\UserInterface;
+use MBH\Bundle\BaseBundle\DataFixtures\MongoDB\NotificationTypeData;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\MailerNotificationException;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
@@ -256,8 +257,12 @@ class Mailer implements \SplObserver, MailerInterface
         }
 
         if (!count($recipients)) {
-            $error = 'Failed to send email. There is not a single recipient.';
-            $this->logger->alert($error);
+            if (in_array($messageType, NotificationTypeData::getStuffOwnerTypes())) {
+                $recipients = [$this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin'])];
+            } else {
+                $error = 'Failed to send email. There is not a single recipient.';
+                $this->logger->alert($error);
+            }
         }
 
         return $recipients;
@@ -362,7 +367,7 @@ class Mailer implements \SplObserver, MailerInterface
             return true;
         }
         /** @var ClientConfig $clientConfig */
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         if ($notificationType) {
             $result = $clientConfig->isNotificationTypeExists($notificationType);
         }

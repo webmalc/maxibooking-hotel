@@ -1,13 +1,38 @@
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li><button type="submit" name="save" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"> </i> {{ 'views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle') }}</button></li>
-            <li><button type="button" onclick="location.href = '{{ path('channel_manager_sync', {'url': title_url}) }}'" class="btn btn-primary navbar-btn"><i class="fa fa-cloud-download"> </i> {{ 'views.channelmanager.actions.sync'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
-            {% block additional_actions %}{% endblock %}
-            {% if is_granted('ROLE_ADMIN') %}
-            <li><button type="button" onclick="location.href = '{{ path('channel_manager_logs', {'url': title_url}) }}'" class="btn btn-default navbar-btn"><i class="fa fa-clock-o"> </i> {{ 'views.actions.saveButtons.log'|trans({}, 'MBHBaseBundle') }}</button></li>
+            <li>
+                <button type="submit" name="save" class="btn btn-success navbar-btn"><i
+                            class="fa fa-check-square-o"> </i> {{ 'views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle') }}
+                </button>
+            </li>
+            {% if config and config.isReadyToSync() %}
+                <li>
+                    <button type="button"
+                            onclick="location.href = '{{ path('channel_manager_sync', {'url': title_url}) }}'"
+                            class="btn btn-primary navbar-btn"><i
+                                class="fa fa-cloud-download"> </i> {{ 'views.channelmanager.actions.sync'|trans({}, 'MBHChannelManagerBundle') }}
+                    </button>
+                </li>
             {% endif %}
-            <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"> </i> {{ 'views.actions.saveButtons.cancel'|trans({}, 'MBHBaseBundle') }}</button></li>
+            {% block additional_actions %}{% endblock %}
+            {% if config and config.isReadyToSync() %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li>
+                        <button type="button"
+                                onclick="location.href = '{{ path('channel_manager_logs', {'url': title_url}) }}'"
+                                class="btn btn-default navbar-btn"><i
+                                    class="fa fa-clock-o"> </i> {{ 'views.actions.saveButtons.log'|trans({}, 'MBHBaseBundle') }}
+                        </button>
+                    </li>
+                {% endif %}
+                <li>
+                    <button type="button" onclick="location.href = '{{ title_url|default(path('_welcome')) }}'"
+                            class="btn btn-default navbar-btn"><i
+                                class="fa fa-ban"> </i> {{ 'views.actions.saveButtons.cancel'|trans({}, 'MBHBaseBundle') }}
+                    </button>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </div>

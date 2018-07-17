@@ -348,7 +348,7 @@ class ClientInstanceManager
 
             $isHotelDefault = $propertyNumber === 0;
             $this->logger->info('Start creation of hotel "'.$property->getName().'"');
-            $hotel = $this->hotelManager->createByBillingProperty($property, $isHotelDefault);
+            $hotel = $this->hotelManager->createByBillingProperty($property, $isHotelDefault, $client);
             $this->logger->info('Hotel "'.$property->getName().'" created. Start creation of rooms');
 
             $this->logger->info('Add manager rights to hotel');

@@ -1,0 +1,17 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<div class="panel-body">
+<div class="bs-example container">
+    <div class="well">
+        <h1 class="text-center">
+            {% set titleId = success ? 'view.payment_result_page.title.succcess' : 'view.payment_result_page.title.fail' %}
+            {{ titleId|trans }}
+        </h1>
+    </div>
+    <div class="text-center">
+        <a class="btn btn-primary btn-lg" target="_top" href="{{ path('user_payment')}}">
+            {% set buttonTextId = success ? 'view.payment_result_page.button.text.success' : 'view.payment_result_page.button.text.fail' %}
+            {{ buttonTextId|trans }}
+        </a>
+    </div>
+</div>
+</div>

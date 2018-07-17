@@ -69,13 +69,14 @@ class RoomCacheGraphGenerator
     private $tariff;
 
     private $container;
+    private $config;
 
     public function __construct(Helper $helper, ManagerRegistry $dm, ContainerInterface $container)
     {
         $this->container = $container;
         $this->helper = $helper;
         $this->dm = $dm;
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $this->config = $container->get('mbh.client_config_manager')->fetchConfig();
     }
 
     /**

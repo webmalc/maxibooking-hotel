@@ -18,7 +18,7 @@
                 {% for paymentSystemName in config.paymentSystems %}
                     <tr>
                         <td class="text-center table-icon"><i class="fa fa-credit-card" aria-hidden="true"></i></td>
-                        <td>{{ paymentSystems[paymentSystemName] }}</td>
+                        <td>{{ paymentSystems[paymentSystemName]|trans }}</td>
                         <td class="table-actions-td text-center">
                             {% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}
                                 <a href='{{ path('client_payment_system_form', {'paymentSystemName': paymentSystemName}) }}' class='btn btn-success btn-xs' title='{{ 'client.views.payment_systems.edit'|trans({},'MBHClientBundle') }}' data-toggle='tooltip'>

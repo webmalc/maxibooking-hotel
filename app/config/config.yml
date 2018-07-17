@@ -233,7 +233,7 @@ parameters:
 
 # Lexik translation bundle
 lexik_translation:
-    fallback_locale: [ru]         # (required) default locale(s) to use
+    fallback_locale: [en, ru]         # (required) default locale(s) to use
     managed_locales: [ru, en]
     storage:
         type: mongodb
@@ -366,7 +366,7 @@ liip_imagine:
 
 
 bazinga_js_translation:
-    locale_fallback:      ru
+    locale_fallback:      en
     default_domain:       front_messages
     active_domains:
             - front_messages

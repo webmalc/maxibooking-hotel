@@ -1,1 +1,2 @@
 validator.document.order_sum_less_zero: 'Сумма заказа не может быть меньше нуля'
+validator.site_form.hotels_collection_is_empty: 'Необходмо указать хотя бы 1 отель'
