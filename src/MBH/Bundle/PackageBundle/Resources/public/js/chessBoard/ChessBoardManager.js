@@ -671,8 +671,9 @@ var ChessBoardManager = /** @class */ (function () {
             self.addResizable($element, intervalData);
             if (isMobileDevice) {
                 var touchTime_1;
+                var isTouchEnd_1 = false;
                 $element.on('touchstart', function () {
-                    if (moment().diff(touchTime_1) < 500) {
+                    if (isTouchEnd_1 && touchTime_1 && moment().diff(touchTime_1) < 500) {
                         if (intervalData.viewPackage) {
                             self.dataManager.getPackageDataRequest(intervalData.packageId);
                         }
@@ -680,6 +681,12 @@ var ChessBoardManager = /** @class */ (function () {
                     }
                     else {
                         touchTime_1 = new moment();
+                        isTouchEnd_1 = false;
+                    }
+                });
+                $element.on('touchend', function () {
+                    if (touchTime_1) {
+                        isTouchEnd_1 = true;
                     }
                 });
             }

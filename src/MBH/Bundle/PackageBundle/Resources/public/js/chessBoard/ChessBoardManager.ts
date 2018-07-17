@@ -791,14 +791,21 @@ class ChessBoardManager {
             self.addResizable($element, intervalData);
             if (isMobileDevice) {
                 let touchTime;
+                let isTouchEnd = false;
                 $element.on('touchstart', () => {
-                    if (moment().diff(touchTime) < 500) {
+                    if (isTouchEnd && touchTime && moment().diff(touchTime) < 500) {
                         if (intervalData.viewPackage) {
                             self.dataManager.getPackageDataRequest(intervalData.packageId);
                         }
                         touchTime = null;
                     } else {
                         touchTime = new moment();
+                        isTouchEnd = false;
+                    }
+                });
+                $element.on('touchend', () => {
+                    if (touchTime) {
+                        isTouchEnd = true;
                     }
                 });
             } else {
