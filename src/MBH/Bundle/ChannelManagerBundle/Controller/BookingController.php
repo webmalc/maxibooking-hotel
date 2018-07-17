@@ -35,7 +35,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     {
         $config = $this->hotel->getBookingConfig();
 
-        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'booking');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, 'booking');
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }

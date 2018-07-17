@@ -144,7 +144,7 @@ class ActionManager {
             editModal.modal('hide');
             setTimeout(() => {
                 self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
-            }, 100);
+            }, 250);
 
         })
     }

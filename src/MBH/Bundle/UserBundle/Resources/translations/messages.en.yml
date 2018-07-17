@@ -198,3 +198,7 @@ client_payer_manager.payer_data: 'payer data'
 controller.profileController.new_password_saved_success: 'New password successfully saved'
 view.profile.change_pass: 'Change password'
 views.profile.profile: Profile
+view.payment_result_page.button.text.success: OK
+view.payment_result_page.button.text.fail: 'Try again'
+view.payment_result_page.title.fail: 'Payment error'
+view.payment_result_page.title.succcess: 'Payment was successful!'

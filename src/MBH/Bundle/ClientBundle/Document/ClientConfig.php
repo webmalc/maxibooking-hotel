@@ -310,7 +310,7 @@ class ClientConfig extends Base
      * @var bool
      * @ODM\Field(type="bool")
      */
-    protected $isMBSiteEnabled = true;
+    protected $isMBSiteEnabled = false;
 
     /**
      * @return bool

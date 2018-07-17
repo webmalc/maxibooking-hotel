@@ -15,36 +15,37 @@ use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\UserBundle\Document\User;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class CMWizardManager
 {
-    private $channelManager;
     private $fieldsManager;
     private $tokenStorage;
     private $billingApi;
     private $translator;
     private $warningsCompiler;
     private $helper;
+    private $router;
 
     public function __construct(
-        ChannelManager $channelManager,
         DocumentFieldsManager $fieldsManager,
         TokenStorage $tokenStorage,
         BillingApi $billingApi,
         TranslatorInterface $translator,
         WarningsCompiler $warningsCompiler,
-        Helper $helper
+        Helper $helper,
+        Router $router
     ) {
-        $this->channelManager = $channelManager;
         $this->fieldsManager = $fieldsManager;
         $this->tokenStorage = $tokenStorage;
         $this->billingApi = $billingApi;
         $this->translator = $translator;
         $this->warningsCompiler = $warningsCompiler;
         $this->helper = $helper;
+        $this->router = $router;
     }
 
     const CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT = [
@@ -59,12 +60,35 @@ class CMWizardManager
      */
     public function getIntroForm(string $channelManagerName)
     {
-        $this->channelManager->checkForCMExistence($channelManagerName, true);
         if (!$this->isConfiguredByTechSupport($channelManagerName)) {
             throw new \InvalidArgumentException($channelManagerName . ' is configured by tech support!');
         }
 
         return IntroType::class;
+    }
+
+
+    /**
+     * @param ChannelManagerConfigInterface|null $config
+     * @param string $channelManagerName
+     * @return bool|string
+     */
+    public function checkForReadinessOrGetStepUrl(?ChannelManagerConfigInterface $config, string $channelManagerName)
+    {
+        if (is_null($config) || !$config->isReadyToSync()) {
+            $currentStepRouteName = $this
+                ->getCurrentStepUrl($channelManagerName, $config);
+
+            if ($currentStepRouteName !== $channelManagerName) {
+                $routeParams = in_array($currentStepRouteName, ['wizard_info', 'cm_data_warnings'])
+                    ? ['channelManagerName' => $channelManagerName]
+                    : [];
+
+                return $this->router->generate($currentStepRouteName, $routeParams);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -73,8 +97,6 @@ class CMWizardManager
      */
     public function isConfiguredByTechSupport(string $channelManagerName)
     {
-        $this->channelManager->checkForCMExistence($channelManagerName, true);
-
         return in_array($channelManagerName, self::CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT);
     }
 
@@ -157,15 +179,12 @@ class CMWizardManager
     }
 
     /**
-     * @param Hotel $hotel
-     * @param string $channelManagerName
+     * @param ChannelManagerConfigInterface $config
      * @param string $cacheClass
      * @return array
      */
-    public function getLastCachesData(Hotel $hotel, string $channelManagerName, string $cacheClass)
+    public function getLastCachesData(ChannelManagerConfigInterface $config, string $cacheClass)
     {
-        $config = $this->channelManager->getConfigForHotel($hotel, $channelManagerName);
-
         /** @var RoomType[] $syncRoomTypes */
         $syncRoomTypes = array_map(function(Room $room) {
             return $room->getRoomType();

@@ -1307,3 +1307,9 @@ sales_channels_report.in_percents.title: 'In percents?'
 sales_channels_report_compiler.without_source: 'No source'
 csv.form.price: Cost
 csv.form.package_services_price: 'Services price'
+csv.form.note: Comment
+chessboard_manager.change_dates_button.add: '+ %numberOfDays% days'
+chessboard_manager.change_dates_button.subtract: '- %numberOfDays% days'
+chessboard.index.number_of_rooms_select.all_rooms: 'All rooms'
+chessboard.index.number_of_rooms_select.rooms: '%numberOfRooms% rooms'
+report.filling.filling.room_status.without_status: 'No status'
