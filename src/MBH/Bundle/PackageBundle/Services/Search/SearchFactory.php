@@ -65,30 +65,20 @@ class SearchFactory implements SearchInterface
     /**
      * @param SearchQuery $query
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult[]
-     * @throws \ReflectionException
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function search(SearchQuery $query)
     {
         /** @var ClientConfig $clientConfig */
         $clientConfig = $this->dm->getRepository(ClientConfig::class)->fetchConfig();
         $query->setSave(($clientConfig->isQueryStat() === true) && $query->isSave());
-        $searchCache = $this->container->get('mbh.search_cache');
 
-        $groupedByRoomTypes = $this->search instanceof SearchWithTariffs;
-        $searchResults = $searchCache->searchByQuery($query, $groupedByRoomTypes);
-        if (is_null($searchResults)) {
-            $savedQueryId = $query->isSave() ? $this->saveQuery($query): null;
-            $searchResults = $this->search->search($query);
-
-            if (null !== $savedQueryId ) {
-                array_walk($searchResults, [$this, 'injectQueryId'], $savedQueryId);
-            }
-
-            $searchCache->saveToCache($query, $searchResults, $groupedByRoomTypes);
+        $savedQueryId = $query->isSave() ? $this->saveQuery($query): null;
+        $search = $this->search->search($query);
+        if (null !== $savedQueryId ) {
+            array_walk($search, [$this, 'injectQueryId'], $savedQueryId);
         }
 
-        return $searchResults;
+        return $search;
     }
 
     /**

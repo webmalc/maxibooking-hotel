@@ -792,4 +792,38 @@ class Helper
     {
         return (int)($date->diff($date2)->format("%r%a"));
     }
+
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param int $maxLength
+     * @param int $minLength
+     * @return \Generator|\DatePeriod[]
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
+    public function getDatePeriodsGenerator(\DateTime $begin, \DateTime $end, int $maxLength, int $minLength = 1)
+    {
+        if ($begin >= $end) {
+            throw new \InvalidArgumentException('Begin of period must not be less or equal than end!');
+        }
+
+        $oneDayInterval = new \DateInterval('P1D');
+        $period = new \DatePeriod($begin, $oneDayInterval, $end);
+        $generatorPeriodLength = $end->diff($begin)->days;
+        if ($generatorPeriodLength < $minLength) {
+            throw new \InvalidArgumentException('Length of passed period must not be less than minimum length!');
+        }
+
+        /** @var \DateTime $startDay */
+        foreach ($period as $numberOfDay => $startDay) {
+            $periodLength = $minLength;
+            while ($periodLength <= $maxLength && ($generatorPeriodLength - $numberOfDay) >= $periodLength) {
+                $periodEnd = (clone $startDay)->modify('+' . $periodLength . 'days');
+                yield new \DatePeriod((clone $startDay), $oneDayInterval, $periodEnd);
+                $periodLength++;
+            }
+        }
+    }
 }
