@@ -97,7 +97,7 @@ class SiteForm extends AbstractType
                 'query_builder' => function(HotelRepository $hotelRepository) {
                     return $hotelRepository->getQBWithAvailable();
                 },
-                'constraints' => [new Callback(function (PersistentCollection $data, ExecutionContextInterface $context) {
+                'constraints' => [new Callback(function ($data, ExecutionContextInterface $context) {
                     if ($data->isEmpty()) {
                         $context->addViolation('validator.site_form.hotels_collection_is_empty');
                     }

@@ -47,7 +47,7 @@ class HotelFlowType extends AbstractType
                 $this->mbhFormBuilder->addMultiLangField($builder, TextareaType::class, 'description', [
                     'attr' => ['class' => 'tinymce'],
                     'label' => 'form.hotelType.description',
-                    'group' => 'form.hotelType.general_info',
+                    'group' => 'no-group',
                     'required' => false
                 ]);
                 break;
@@ -65,22 +65,25 @@ class HotelFlowType extends AbstractType
                 break;
             case 6:
                 $builder->add('contactInformation', ContactInfoType::class, [
-                    'group' => 'no-group'
+                    'group' => 'no-group',
+                    'hasGroups' => false
                 ]);
                 break;
             case 7:
                 $builder->add('defaultImage', LogoImageType::class, [
-                    'label' => 'Фотография',
+                    'label' => 'Главная',
                     'group' => 'form.hotelType.settings',
                     'required' => false,
-                    'logo_image_download_url' => $this->getDownloadUrl($hotel->getDefaultImage())
+                    'logo_image_download_url' => $this->getDownloadUrl($hotel->getDefaultImage()),
+                    'showHelp' => false
                 ]);
                 break;
             case 8:
                 $builder->add('plugForHotelFlowImagesField', LogoImageType::class, [
-                    'label' => 'Фотография',
+                    'label' => 'Фотографии отеля',
                     'group' => 'form.hotelType.settings',
                     'required' => false,
+                    'showHelp' => false
                 ]);
                 break;
             default:

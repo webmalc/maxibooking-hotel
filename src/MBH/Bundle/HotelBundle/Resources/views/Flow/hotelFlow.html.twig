@@ -14,46 +14,61 @@
 {% set isLastStep = flow.numberOfSteps == flow.currentStepNumber %}
 {% set isImagesStep = isLastStep %}
 
-
 {% block content %}
     <div class="tab-content">
     <div>
         {% include '@MBHHotel/Flow/flowStepList.html.twig' %}
     </div>
+    <div class="box box-default box-solid">
 
-    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
-    {{ form_widget(form) }}
+        <div class="box-header with-border">
+            <h3 class="box-title">{{ flow.currentStepLabel }}</h3>
 
-    {% if isImagesStep %}
-        <button type="submit" class="btn btn-primary navbar-btn" name="add_image">Добавить в галерею</button>
-        {% include '@MBHHotel/Hotel/image-list.html.twig' with {images: hotel.images, entity: hotel,  withButtons: false} %}
-    {% endif %}
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool form-group-collapse" data-widget="collapse">
+                    <i class="fa fa-minus"></i>
+                </button>
+            </div>
+        </div>
 
-    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
-        <div class="container-fluid">
-            <ul class="nav navbar-nav">
-                {% if flow.currentStepNumber > 1 %}
-                <li>
-                    <button type="submit" class="btn btn-primary navbar-btn" name="back">
-                        <i class="fa fa-arrow-left"></i>
-                        &nbsp;{{- 'button.back'| trans({}, 'CraueFormFlowBundle') -}}
-                    </button>
-                </li>
-                {% endif %}
-                <li>
-                    <button type="submit" class="btn btn-{{ isLastStep ? 'success' : 'primary' }} primary navbar-btn">
-                        {% if isLastStep %}
-                            <i class="fa fa-check-square-o"></i>
+        <div class="box-body">
+            {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+
+            {% if isImagesStep %}
+                {% include '@MBHHotel/Hotel/image-list.html.twig' with {images: hotel.images, entity: hotel,  withButtons: true} %}
+            {% endif %}
+
+            <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+                <div class="container-fluid">
+                    <ul class="nav navbar-nav">
+                        {% if flow.currentStepNumber > 1 %}
+                            <li>
+                                <button type="submit" class="btn btn-primary navbar-btn" name="back">
+                                    <i class="fa fa-arrow-left"></i>
+                                    &nbsp;{{- 'views.flow.hotel_flow.back_button.title'| trans -}}
+                                </button>
+                            </li>
                         {% endif %}
-                        {{- (isLastStep ? 'button.finish' : 'button.next')| trans({}, 'CraueFormFlowBundle') -}}
-                        {% if not isLastStep %}
-                            &nbsp;<i class="fa fa-arrow-right"></i>
-                        {% endif %}
-
-                    </button>
-                </li>
-                {{ form_end(form) }}
-            </ul>
+                        <li>
+                            {% if isLastStep %}
+                                <button type="submit" name="finish"
+                                        class="btn btn-{{ isLastStep ? 'success' : 'primary' }} primary navbar-btn">
+                                    &nbsp;<i
+                                            class="fa fa-check-square"></i>&nbsp; {{- 'views.flow.hotel_flow.finish_button.title' | trans -}}
+                                </button>
+                            {% else %}
+                                <button type="submit" name="next"
+                                        class="btn btn-{{ isLastStep ? 'success' : 'primary' }} primary navbar-btn">
+                                    {{ 'views.flow.hotel_flow.next_button.title'|trans }}
+                                    &nbsp;<i class="fa fa-arrow-right"></i>
+                                </button>
+                            {% endif %}
+                        </li>
+                        {{ form_end(form) }}
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 

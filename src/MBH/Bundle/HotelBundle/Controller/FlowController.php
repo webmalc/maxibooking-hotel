@@ -6,6 +6,7 @@ use Gedmo\Mapping\Annotation\Translatable;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Form\HotelFlow\HotelFlow;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,8 +29,12 @@ class FlowController extends BaseController
     {
         //TODO: Пока что для текущего отеля
         $hotel = $this->hotel;
+
+        /** @var HotelFlow $flow */
         $flow = $this->get('mbh.hotel_flow')->init($hotel);
-        $form = $flow->createForm($hotel);
+
+        $formData = in_array($flow->getCurrentStepNumber(), [8]) ? null : $this->hotel;
+        $form = $flow->createForm($formData);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -40,29 +45,23 @@ class FlowController extends BaseController
             $this->dm->persist($hotel);
 
             if ($flow->getCurrentStepNumber() === 7) {
-                /** @var Image $savedImage */
-                $savedImage = $hotel->getImages()->last();
-                $savedImage->setIsDefault(true);
-                $this->dm->persist($savedImage);
+//                $this->dm->persist($hotel->getDefaultImage());
             }
 
             if ($flow->getCurrentStepNumber() === 8) {
-                $this->dm->persist($hotel->getImages()->last());
+                $savedImage = $form->getData();
+                $hotel->addImage($savedImage);
+                $this->dm->persist($savedImage);
             }
 
             $this->dm->flush();
 
-            if (!$request->request->has('add_image')) {
+            if ($flow->isButtonClicked('next') || $flow->isButtonClicked('back')) {
                 $flow->nextStep();
-
-                if (!$flow->isLastStep()) {
-//                    $flow->reset();
-//
-//                    return $this->redirectToRoute('hotel_flow');
-                }
             }
 
-            $form = $flow->createForm($this->hotel);
+            $formData = in_array($flow->getCurrentStepNumber(), [8]) ? null : $this->hotel;
+            $form = $flow->createForm($formData);
         }
 
         return [

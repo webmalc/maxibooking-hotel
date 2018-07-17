@@ -344,10 +344,6 @@ class HotelController extends Controller
             $this->get('mbh.form_data_handler')
                 ->saveTranslationsFromMultipleFieldsForm($form, $request, ['settlement', 'street']);
 
-            if ($hotel->getStreet() && !$hotel->getInternationalStreetName()) {
-                $hotel->setInternationalStreetName(Helper::translateToLat($hotel->getStreet()));
-            }
-
             $this->dm->persist($hotel);
             $this->dm->flush();
 
@@ -389,7 +385,7 @@ class HotelController extends Controller
             $image = $form->getData();
             $hotel->addImage($image);
             if ($image->getIsDefault()) {
-                $this->setHotelMainImage($hotel, $image);
+                $hotel->setDefaultImage($image);
             }
             $this->dm->persist($image);
             $this->dm->flush();
@@ -445,22 +441,12 @@ class HotelController extends Controller
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
             throw $this->createNotFoundException();
         }
-        $this->setHotelMainImage($hotel, $newMainImage);
+        $hotel->setDefaultImage($newMainImage);
 
         $this->dm->flush();
         $this->addFlash('success', 'controller.hotelController.success_main_image_set');
 
         return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
-    }
-
-    private function setHotelMainImage(Hotel $hotel, Image $newMainImage)
-    {
-        foreach ($hotel->getImages() as $image) {
-            /** @var Image $image */
-            $image->setIsDefault($image->getId() == $newMainImage->getId());
-        }
-
-        return $hotel;
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\HotelBundle\Form\HotelFlow;
 
-use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
 use MBH\Bundle\BaseBundle\Service\MBHFormBuilder;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -56,12 +55,6 @@ class HotelAddressType extends AbstractType
         ]);
 
         $builder
-            ->add('internationalStreetName', TextType::class, [
-                'group' => 'form.hotelExtendedType.address',
-                'label' => 'form.hotelExtendedType.international_street_name.label',
-                'help' => 'form.hotelExtendedType.international_street_name.help',
-                'required' => false
-            ])
             ->add('house', TextType::class, [
                 'label' => 'form.hotelExtendedType.house',
                 'group' => 'form.hotelExtendedType.address',

@@ -183,7 +183,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     /**
      * Edits an existing entity.
      *
-     * @Route("/{id}", name="room_type_update")
+     * @Route("/{id}/edit", name="room_type_update")
      * @Method("POST")
      * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @ParamConverter(class="MBHHotelBundle:RoomType")

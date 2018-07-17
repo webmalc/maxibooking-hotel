@@ -281,3 +281,6 @@ facility_controller.facility_description.save_table.success: 'Изменения
 views.facility.list.facility_title: Удобство
 views.facility.list.description_title: Описание
 views.facility.list.save_changes_button.title: 'Сохранить изменения'
+views.flow.hotel_flow.finish_button.title: Завершить
+views.flow.hotel_flow.back_button.title: Назад
+views.flow.hotel_flow.next_button.title: Вперед

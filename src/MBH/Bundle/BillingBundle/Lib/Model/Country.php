@@ -77,7 +77,7 @@ class Country
      * @param string $code2
      * @return Country
      */
-    public function setCode2(string $code2): Country
+    public function setCode2(?string $code2): Country
     {
         $this->code2 = $code2;
 
@@ -154,7 +154,7 @@ class Country
      * @param string $phone
      * @return Country
      */
-    public function setPhone(string $phone): Country
+    public function setPhone(?string $phone): Country
     {
         $this->phone = $phone;
 

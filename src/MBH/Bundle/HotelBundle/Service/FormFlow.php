@@ -55,11 +55,13 @@ abstract class FormFlow
      */
     public function createForm($data = null)
     {
-        $formType = $this->getStepsConfig()[$this->getCurrentStepNumber()]['form_type'];
+        $formType = $this->getCurrentStepInfo()['form_type'];
+        $definedOptions = isset($this->getCurrentStepInfo()['options']) ? $this->getCurrentStepInfo()['options'] : [];
 
-        return $this->formFactory->create($formType, $data, [
-            'flow_step' => $this->getCurrentStepNumber()
-        ]);
+        return $this->formFactory->create($formType, $data, array_merge($definedOptions, [
+            'flow_step' => $this->getCurrentStepNumber(),
+            'hasGroups' => false
+        ]));
     }
 
     /**
@@ -78,7 +80,7 @@ abstract class FormFlow
      */
     public function nextStep()
     {
-        if ($this->request->request->has('back')) {
+        if ($this->isButtonClicked('back')) {
             if ($this->isFirstStep()) {
                 throw new \RuntimeException('So this is the first step!');
             }
@@ -122,10 +124,32 @@ abstract class FormFlow
         return count($this->getStepsConfig());
     }
 
+    /**
+     * @return bool
+     */
+    public function isBackButtonClicked()
+    {
+        return $this->isButtonClicked('back');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNextButtonClicked()
+    {
+        return $this->isButtonClicked('next');
+    }
+
+    public function isButtonClicked(string $buttonName)
+    {
+        return $this->request->request->has($buttonName);
+    }
+
     public function reset()
     {
         $this->flowConfig->setCurrentStep(1);
     }
+
 
     protected function getDocumentForForm($step)
     {
@@ -140,6 +164,14 @@ abstract class FormFlow
         return array_map(function (array $stepConfig) {
             return $stepConfig['label'];
         }, $this->getStepsConfig());
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentStepLabel()
+    {
+        return $this->getCurrentStepInfo()['label'];
     }
 
     /**
@@ -159,6 +191,14 @@ abstract class FormFlow
         }
 
         return $config;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getCurrentStepInfo()
+    {
+        return $this->getStepsConfig()[$this->getCurrentStepNumber() - 1];
     }
 
     /**

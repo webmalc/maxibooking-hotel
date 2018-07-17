@@ -2,11 +2,17 @@
 
 namespace MBH\Bundle\HotelBundle\Form\HotelFlow;
 
+use MBH\Bundle\HotelBundle\Form\HotelImageType;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
 
 class HotelFlow extends FormFlow
 {
     protected $allowRedirectAfterSubmit = true;
+
+    public function isAddImageButtonClick()
+    {
+        return $this->isButtonClicked('add_image');
+    }
 
     /**
      * @return array
@@ -44,7 +50,11 @@ class HotelFlow extends FormFlow
             ],
             [
                 'label' => 'Фотографии',
-                'form_type' => HotelFlowType::class
+                'form_type' => HotelImageType::class,
+                'options' => [
+                    'withIsDefaultField' => false,
+                    'hasConstraints' => false
+                ]
             ]
         ];
     }

@@ -1546,25 +1546,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @return string
      */
-    public function getInternationalStreetName(): ?string
-    {
-        return $this->internationalStreetName;
-    }
-
-    /**
-     * @param string $internationalStreetName
-     * @return Hotel
-     */
-    public function setInternationalStreetName(string $internationalStreetName = null): Hotel
-    {
-        $this->internationalStreetName = $internationalStreetName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getCheckinoutPolicy() : ?string
     {
         return $this->checkinoutPolicy;
@@ -1641,35 +1622,43 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
             }
         }
 
-        return $this->getImages()->isEmpty() ? null : $this->getImages()->first();
-    }
-
-    /**
-     * @return null
-     */
-    public function getPlugForHotelFlowImagesField()
-    {
         return null;
     }
 
-    public function setPlugForHotelFlowImagesField(Image $image)
+    /**
+     * @param Image $defaultImage
+     * @return Hotel
+     */
+    public function setDefaultImage(Image $defaultImage)
     {
-        if (!is_null($this->getImages()->last()->getId())) {
-            $this->addImage($image);
+        if (!$this->isImageSaved($defaultImage)) {
+            $this->addImage($defaultImage);
+        }
+
+        foreach ($this->getImages() as $image) {
+            /** @var Image $image */
+            $image->setIsDefault($image->getId() == $defaultImage->getId());
         }
 
         return $this;
     }
 
     /**
-     * @param Image $image
-     * @return Hotel
+     * @param Image $checkedImage
+     * @return bool
      */
-    public function setDefaultImage(Image $image)
+    private function isImageSaved(Image $checkedImage)
     {
-        $this->addImage($image);
+        foreach ($this->getImages() as $image) {
+            if ($checkedImage->getImageName() === $image->getImageName()
+                && $checkedImage->getHeight() === $image->getHeight()
+                && $checkedImage->getWidth() === $image->getWidth()
+            ) {
+                return true;
+            }
+        }
 
-        return $this;
+        return false;
     }
 
     /**

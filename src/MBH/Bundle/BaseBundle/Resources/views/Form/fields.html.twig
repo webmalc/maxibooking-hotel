@@ -24,7 +24,7 @@
         {% endif %}
 
         {% for group, items in groups %}
-            {% if group != 'no-group' %}
+            {% if group != 'no-group' and form.vars.hasGroups != false %}
             <div class="box box-default box-solid" {% if form.vars.nonDisplayGroups is defined and group in form.vars.nonDisplayGroups %} style="display: none;" {% endif %}>
 
                 <div class="box-header with-border">

@@ -19,7 +19,7 @@ class LogoImageType extends AbstractType
                 'allow_delete' => false,
                 'label' => false,
                 'required' => false,
-                'help' => 'form.hotel_logo.image_file.help',
+                'help' => $options['showHelp'] ? 'form.hotel_logo.image_file.help' : '',
                 'group' => 'no-group'
             ]);
     }
@@ -37,7 +37,8 @@ class LogoImageType extends AbstractType
         $resolver->setDefaults([
             'data_class' => BaseImage::class,
             'logo_image_delete_url' => null,
-            'logo_image_download_url' => null
+            'logo_image_download_url' => null,
+            'showHelp' => true
         ]);
     }
 
