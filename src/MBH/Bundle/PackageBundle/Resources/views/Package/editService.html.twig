@@ -12,5 +12,11 @@
 
 {% block scripts %}
     {{ parent() }}
+    <script>
+        var currentService = {
+            serviceId: "{{ service.service.id}}",
+            isRecalcWithGuests: {{ service.recalcCausedByTouristsNumberChange == true ? "true" : "false"}}
+        };
+    </script>
     {% include 'MBHPackageBundle:Package:serviceScripts.html.twig' with {'entity': package} %}
 {% endblock %}
