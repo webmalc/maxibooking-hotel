@@ -56,6 +56,7 @@ class HundredOneHotelsController extends Controller
      * @Template("MBHChannelManagerBundle:HundredOneHotels:index.html.twig")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Throwable
      */
     public function saveAction(Request $request)
     {
@@ -65,6 +66,7 @@ class HundredOneHotelsController extends Controller
             $config = new HundredOneHotelsConfig();
             $config->setHotel($this->hotel);
         }
+
         $form = $this->createForm(HundredOneHotelType::class, $config);
 
         $form->handleRequest($request);
@@ -78,10 +80,15 @@ class HundredOneHotelsController extends Controller
                 $dm->persist($config);
                 $dm->flush();
 
-                $this->get('mbh.channelmanager')->updateInBackground();
+                $channelManagerService = $this->get('mbh.channelmanager');
+                $channelManagerService->updateInBackground();
 
-                $this->addFlash('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                $this->addFlash('success', 'controller.bookingController.settings_saved_success');
+                if (!$config->isReadyToSync()) {
+                    $channelManagerHumanName = $channelManagerService->getServiceHumanName('hundred_one_hotels');
+                    $this->get('mbh.messages_store')
+                        ->sendCMConfirmationMessage($config, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
+                }
             }
         }
 
@@ -127,9 +134,11 @@ class HundredOneHotelsController extends Controller
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
 
-            $redirectRouteName = $inGuide ? 'hoh_packages_sync' : 'hundred_one_hotels_tariff';
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'hundred_one_hotels'])
+                : $this->generateUrl('hundred_one_hotels_tariff');
 
-            return $this->redirectToRoute($redirectRouteName);
+            return $this->redirect($redirectRoute);
         }
 
         return [

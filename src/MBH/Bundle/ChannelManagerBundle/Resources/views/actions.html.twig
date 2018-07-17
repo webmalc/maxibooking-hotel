@@ -1,12 +1,13 @@
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li>
-                <button type="submit" name="save" class="btn btn-success navbar-btn"><i
-                            class="fa fa-check-square-o"> </i> {{ 'views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle') }}
-                </button>
-            </li>
+
             {% if config and config.isReadyToSync() %}
+                <li>
+                    <button type="submit" name="save" class="btn btn-success navbar-btn"><i
+                                class="fa fa-check-square-o"> </i> {{ 'views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle') }}
+                    </button>
+                </li>
                 <li>
                     <button type="button"
                             onclick="location.href = '{{ path('channel_manager_sync', {'url': title_url}) }}'"
@@ -14,8 +15,16 @@
                                 class="fa fa-cloud-download"> </i> {{ 'views.channelmanager.actions.sync'|trans({}, 'MBHChannelManagerBundle') }}
                     </button>
                 </li>
+            {% else %}
+                <li>
+                    <button type="submit" name="save" class="btn btn-primary navbar-btn">
+                        {{ 'cm_wizard.buttons.next_step.title'|trans }} <i class="fa fa-arrow-right"> </i>
+                    </button>
+                </li>
             {% endif %}
+
             {% block additional_actions %}{% endblock %}
+
             {% if config and config.isReadyToSync() %}
                 {% if is_granted('ROLE_ADMIN') %}
                     <li>

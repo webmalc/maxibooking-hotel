@@ -13,7 +13,6 @@ use MBH\Bundle\BaseBundle\Document\NotificationType;
  */
 class UserRepository extends DocumentRepository
 {
-
     /**
      * @param string $notificationTypeName
      * @return mixed

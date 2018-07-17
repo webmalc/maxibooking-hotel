@@ -3,12 +3,10 @@
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use MBH\Bundle\BaseBundle\Document\NotificationType;
-use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Services\CMWizardManager;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
@@ -90,6 +88,33 @@ class MessagesStore
             ->setType('success')
             ->setMessageType(NotificationType::CHANNEL_MANAGER_CONFIGURATION_TYPE)
             ->setLink($this->router->generate($config->getName()));
+
+        $notifier
+            ->setMessage($message)
+            ->notify();
+    }
+
+    /**
+     * @param string $channelManagerHumanName
+     * @param Notifier $notifier
+     * @throws \Throwable
+     */
+    public function sendMessageToTechSupportAboutNewConnection(string $channelManagerHumanName, Notifier $notifier)
+    {
+        $message = $notifier::createMessage();
+
+        $techSupportUser = (new User())
+            ->setEmail($this->supportData['support_main_email'][$this->locale])
+            ->setLocale($this->locale);
+
+        $message
+            ->setRecipients([$techSupportUser])
+            ->setText('messages_store.new_connection.text')
+            ->setTranslateParams(['%client%' => $this->client, '%channelManager%' => $channelManagerHumanName])
+            ->setSlackChannelUrl(SlackMessenger::CHANNEL_MANAGER_CHANNEL_URL)
+            ->setMessageType(NotificationType::TECH_SUPPORT_TYPE)
+            ->setSubject('messages_store.new_connection.subject')
+            ->setTemplate('MBHBaseBundle:Mailer:base.html.twig');
 
         $notifier
             ->setMessage($message)
