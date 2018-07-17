@@ -124,7 +124,7 @@ var ChessBoardManager = /** @class */ (function () {
         var dateElements = $('.date, .leftRooms');
         var $document = $(document);
         if (canCreatePackage) {
-            var eventName = isMobileDevice ? 'contextmenu' : 'mousedown';
+            var eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
             dateElements.on(eventName, function (event) {
                 chessBoardContentBlock.style.overflow = 'hidden';
                 event.preventDefault();
@@ -669,7 +669,7 @@ var ChessBoardManager = /** @class */ (function () {
             var intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             var $element = $(element);
             self.addResizable($element, intervalData);
-            if (isMobileDevice) {
+            if (isMobileDevice()) {
                 var touchTime_1;
                 var isTouchEnd_1 = false;
                 $element.on('touchstart', function () {
@@ -1258,7 +1258,7 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.prototype.getTableWidth = function () {
         var chessboardStyles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
         var chessboardWidth = parseInt(chessboardStyles.width, 10);
-        return chessboardWidth - (!isMobileDevice ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
+        return chessboardWidth - (!isMobileDevice() ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
     };
     ChessBoardManager.getIntervalOutOfTableSide = function (intervalData) {
         var tableBeginDate = ChessBoardManager.getTableStartDate();
