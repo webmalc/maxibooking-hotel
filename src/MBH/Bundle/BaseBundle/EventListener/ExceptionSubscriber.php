@@ -55,6 +55,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function notifyException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
+        $user = $this->tokenStorage->getToken();
         if (!$exception instanceof AccessDeniedException && !$exception instanceof NotFoundHttpException && $this->kernel->getEnvironment() === 'prod') {
             $user = $this->tokenStorage->getToken();
             $message = $this->exceptionNotifier::createMessage();

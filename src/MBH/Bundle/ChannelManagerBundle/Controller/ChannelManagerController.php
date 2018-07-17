@@ -149,7 +149,6 @@ class ChannelManagerController extends Controller
                 $form->handleRequest($request);
                 $this->dm->persist($config);
                 $this->dm->flush();
-
                 $this->addFlash('success', 'channel_manager.confirmation_flash.success');
 
                 $this->get('mbh.messages_store')
