@@ -170,7 +170,11 @@ fos_user:
     firewall_name: main
     user_class: MBH\Bundle\UserBundle\Document\User
     group:
-            group_class: MBH\Bundle\UserBundle\Document\Group
+        group_class: MBH\Bundle\UserBundle\Document\Group
+
+    from_email:
+        address: "%mailer_user%"
+        sender_name: NoReply
     
 # KnpMenuBundle Configuration    
 knp_menu:
