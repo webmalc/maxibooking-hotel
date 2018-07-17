@@ -15,27 +15,27 @@ class HotelFlow extends FormFlow
     {
         return [
             [
-                'Ввод имени отеля',
+                'label' => 'Ввод имени отеля',
                 'form_type' => HotelFlowType::class,
             ],
             [
-                'Ввод описания отеля',
+                'label' => 'Ввод описания отеля',
                 'form_type' => HotelFlowType::class
             ],
             [
-                'Логотип отеля',
+                'label' => 'Логотип отеля',
                 'form_type' => HotelFlowType::class
             ],
             [
-                'Адрес отеля',
+                'label' => 'Адрес отеля',
                 'form_type' => HotelAddressType::class
             ],
             [
-                'Координаты отеля на карте',
+                'label' => 'Координаты отеля на карте',
                 'form_type' => HotelLocationType::class
             ],
             [
-                'Контакты',
+                'label' => 'Контакты',
                 'form_type' => HotelFlowType::class
             ],
             [

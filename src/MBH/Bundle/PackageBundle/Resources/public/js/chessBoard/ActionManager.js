@@ -112,7 +112,9 @@ var ActionManager = /** @class */ (function () {
             var specialId = element.classList.contains('cancel') ? null : element.getAttribute('data-id');
             var newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
             editModal.modal('hide');
-            self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
+            setTimeout(function () {
+                self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
+            }, 250);
         });
     };
     ActionManager.prototype.modifyButtonsByGuest = function ($editModal) {

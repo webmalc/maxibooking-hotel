@@ -11,7 +11,7 @@
     {% form_theme form.plugForHotelFlowImagesField '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
 {% endif %}
 
-{% set isLastStep = flow.lastStepNumber == flow.currentStep %}
+{% set isLastStep = flow.numberOfSteps == flow.currentStepNumber %}
 {% set isImagesStep = isLastStep %}
 
 
@@ -32,10 +32,9 @@
     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
         <div class="container-fluid">
             <ul class="nav navbar-nav">
-                {% if flow.currentStep > 1 %}
+                {% if flow.currentStepNumber > 1 %}
                 <li>
-                    <button type="submit" class="btn btn-primary navbar-btn" value="back"
-                            name="{{ flow.getFormTransitionKey() }}">
+                    <button type="submit" class="btn btn-primary navbar-btn" name="back">
                         <i class="fa fa-arrow-left"></i>
                         &nbsp;{{- 'button.back'| trans({}, 'CraueFormFlowBundle') -}}
                     </button>

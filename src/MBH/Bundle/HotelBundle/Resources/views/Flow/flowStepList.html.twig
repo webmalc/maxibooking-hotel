@@ -2,23 +2,22 @@
 
 {%- if flow.getStepLabels() is not empty -%}
     <div  style="position:relative;">
-        {% for lineNumber in 1..flow.stepCount %}
-            <div class="line-between-flow-tabs {{ loop.index > flow.currentStep ? 'line-to-not-passed' }}">&nbsp;</div>
+        {% for lineNumber in 1..flow.numberOfSteps %}
+            <div class="line-between-flow-tabs {{ loop.index > flow.currentStepNumber ? 'line-to-not-passed' }}">&nbsp;</div>
         {% endfor %}
 
         <ul class="nav nav-tabs" id="flow-step-tabs">
             {% for stepLabel in flow.getStepLabels() %}
 
-                {% if loop.index == flow.currentStep %}
+                {% if loop.index == flow.currentStepNumber %}
                     {% set stepStatusClass = 'active' %}
-                {% elseif loop.index < flow.currentStep %}
+                {% elseif loop.index < flow.currentStepNumber %}
                     {% set stepStatusClass = 'passed-step' %}
                 {% else %}
                     {% set stepStatusClass = 'not-passed-step' %}
                 {% endif %}
 
                 <li class="flow-step-tab {{ stepStatusClass }}">
-                    {#{{- block('craue_flow_stepLabel') -}}#}
                     {{ loop.index }}
                 </li>
             {% endfor %}

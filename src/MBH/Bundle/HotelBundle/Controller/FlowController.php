@@ -28,12 +28,11 @@ class FlowController extends BaseController
     {
         //TODO: Пока что для текущего отеля
         $hotel = $this->hotel;
-        $flow = $this->get('mbh.hotel_flow');
-        $flow->bind($hotel);
-        $form = $flow->createForm();
+        $flow = $this->get('mbh.hotel_flow')->init($hotel);
+        $form = $flow->createForm($hotel);
+        $form->handleRequest($request);
 
-        if ($flow->isValid($form)) {
-            $flow->saveCurrentStepData($form);
+        if ($form->isValid()) {
             $multiLangFields = $this->get('mbh.document_fields_manager')
                 ->getPropertiesByAnnotationClass(Hotel::class, Translatable::class);
             $this->get('mbh.form_data_handler')
@@ -54,15 +53,16 @@ class FlowController extends BaseController
             $this->dm->flush();
 
             if (!$request->request->has('add_image')) {
-                $IsNotLastStep = $flow->nextStep();
-                if (!$IsNotLastStep) {
-                    $flow->reset();
+                $flow->nextStep();
 
-                    return $this->redirectToRoute('hotel_flow');
+                if (!$flow->isLastStep()) {
+//                    $flow->reset();
+//
+//                    return $this->redirectToRoute('hotel_flow');
                 }
             }
 
-            $form = $flow->createForm();
+            $form = $flow->createForm($this->hotel);
         }
 
         return [
