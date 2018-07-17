@@ -18,6 +18,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Doctrine\Common\Collections\Collection;
 
@@ -78,7 +79,8 @@ class SiteForm extends AbstractType
             ])
             ->add('paymentTypes', PaymentTypesType::class, [
                 'mapped' => false,
-                'help' => 'form.formType.reservation_payment_types_with_online_form'
+                'help' => 'form.formType.reservation_payment_types_with_online_form',
+                'constraints' => [new NotBlank()]
             ])
             ->add('colorTheme', ChoiceType::class, [
                 'label' => 'site_config.color_theme.colors.label',
