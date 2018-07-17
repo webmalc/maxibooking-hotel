@@ -551,7 +551,6 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      */
     public function getResultsUrl($forResultsPage = false): ?string
     {
-        return 'http://localhost:4200';
         return $forResultsPage ? $this->resultsUrl . SiteManager::DEFAULT_RESULTS_PAGE : $this->resultsUrl;
     }
 

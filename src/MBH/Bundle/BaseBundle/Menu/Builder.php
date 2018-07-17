@@ -691,14 +691,8 @@ class Builder
             ],
         ];
 
-        $booking = [];
-        $myAllLocator = [];
-        $ostrovok = [];
-        $vashotel = [];
-        $expedia = [];
-        $hotelInn = [];
 
-        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
+//        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
             $booking = [
                 'booking' => [
                     'options'    => [
@@ -759,7 +753,7 @@ class Builder
                 ],
             ];
 
-        }
+//        }
 
         $parent = $this->createItem($channelManager);
 
