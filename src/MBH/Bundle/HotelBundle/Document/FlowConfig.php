@@ -19,12 +19,6 @@ class FlowConfig extends Base
     private $currentStep = 1;
 
     /**
-     * @var array
-     * @ODM\Field(type="hash")
-     */
-    private $documentIdsBySteps = [];
-
-    /**
      * Id of the base document, handled in first step of the flow
      * @var string
      * @ODM\Field(type="string")
@@ -66,25 +60,6 @@ class FlowConfig extends Base
     public function setCurrentStep(int $currentStep): FlowConfig
     {
         $this->currentStep = $currentStep;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getDocumentIdsBySteps(): ?array
-    {
-        return $this->documentIdsBySteps;
-    }
-
-    /**
-     * @param array $documentIdsBySteps
-     * @return FlowConfig
-     */
-    public function setDocumentIdsBySteps(array $documentIdsBySteps): FlowConfig
-    {
-        $this->documentIdsBySteps = $documentIdsBySteps;
 
         return $this;
     }

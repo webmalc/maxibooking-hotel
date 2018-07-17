@@ -45,7 +45,7 @@ class FlowController extends BaseController
             $this->dm->persist($hotel);
 
             if ($flow->getCurrentStepNumber() === 7) {
-//                $this->dm->persist($hotel->getDefaultImage());
+                $this->dm->persist($hotel->getDefaultImage());
             }
 
             if ($flow->getCurrentStepNumber() === 8) {
