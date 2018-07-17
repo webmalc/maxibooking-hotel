@@ -33,7 +33,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
     {
         $entity = $this->hotel->getOstrovokConfig();
 
-        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($entity, 'ostrovok');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($entity, 'ostrovok');
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }

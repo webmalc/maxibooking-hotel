@@ -423,29 +423,6 @@ class ChannelManager
         return $this->container->getParameter('mbh.channelmanager.services')[$channelManagerName]['title'];
     }
 
-    /**
-     * @param ChannelManagerConfigInterface|null $config
-     * @param string $channelManagerName
-     * @return bool|string
-     */
-    public function checkForReadinessOrGetStepUrl(?ChannelManagerConfigInterface $config, string $channelManagerName)
-    {
-        if (is_null($config) || !$config->isReadyToSync()) {
-            $currentStepRouteName = $this->container
-                ->get('mbh.cm_wizard_manager')
-                ->getCurrentStepUrl($channelManagerName, $config);
-
-            if ($currentStepRouteName !== $channelManagerName) {
-                $routeParams = in_array($currentStepRouteName, ['wizard_info', 'cm_data_warnings'])
-                    ? ['channelManagerName' => $channelManagerName]
-                    : [];
-
-                return $this->container->get('router')->generate($currentStepRouteName, $routeParams);
-            }
-        }
-
-        return true;
-    }
 
     /**
      * @param Hotel $hotel
