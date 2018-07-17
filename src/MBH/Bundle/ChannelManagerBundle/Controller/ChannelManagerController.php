@@ -191,8 +191,8 @@ class ChannelManagerController extends Controller
                 $cmWizard->getLastCachesData($this->hotel, $channelManagerName, PriceCache::class),
             'lastDefinedRoomCaches' =>
                 $cmWizard->getLastCachesData($this->hotel, $channelManagerName, RoomCache::class),
-            'emptyRoomCachePeriods' => $warningsCompiler->getEmptyRoomCachePeriods(),
-            'emptyPriceCachePeriods' => $warningsCompiler->getEmptyPriceCachePeriods()
+            'emptyRoomCachePeriods' => $warningsCompiler->getEmptyRoomCachePeriods($this->hotel),
+            'emptyPriceCachePeriods' => $warningsCompiler->getEmptyPriceCachePeriods($this->hotel)
         ];
     }
 
