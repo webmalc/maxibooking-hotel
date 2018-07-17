@@ -350,7 +350,6 @@ report.porter.lives.table: Residents
 report.porter.arrivals.table: 'Checking in'
 report.porter.out.table: 'Check out'
 report.porter.note: Comment
-modal.form.delete.reasons.confirmation: 'Are you sure you want to delete this entry?'
 modal.form.delete.reasons.package: 'Reservation deletion reason'
 modal.form.delete.reasons.order: 'Order deletion reason'
 modal.form.delete.reasons.reason_default: 'Not specified'
