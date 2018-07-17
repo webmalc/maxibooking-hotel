@@ -370,19 +370,31 @@ var docReadyForms = function () {
     $('.checkbox-mini').bootstrapSwitch(bootstrapSwitchConfig);
 
     //Select2 configuration
-    $('select:not(.plain-html)').addClass('select2').select2({
+    if (isMobileDevice()) {
+        $('select').each(function() {
+          var placeholder = $(this).data('placeholder');
+
+          if (placeholder !== undefined) {
+            $(this).find('option:first-child')
+            .prop('disabled', true)
+            .text(placeholder);
+          }
+        });
+    } else {
+      $('select:not(.plain-html)').addClass('select2').select2({
         placeholder: Translator.trans("020-forms.make_choice"),
         allowClear: true,
         width: 'resolve',
         formatSelection: function (item, container) {
-            var optgroup = $(item.element).parent('optgroup').attr('label');
-            if (!optgroup) {
-                return item.text;
-            } else {
-                return optgroup + ': ' + item.text.toLowerCase();
-            }
+          var optgroup = $(item.element).parent('optgroup').attr('label');
+          if (!optgroup) {
+            return item.text;
+          } else {
+            return optgroup + ': ' + item.text.toLowerCase();
+          }
         }
-    });
+      });
+    }
 
     //Datepicker configuration
     $('.datepicker').datepicker({

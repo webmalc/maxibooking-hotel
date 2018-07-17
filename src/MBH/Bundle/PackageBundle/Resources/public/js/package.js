@@ -201,6 +201,9 @@ var initRemovePackageButton = function() {
 
 var docReadyPackages = function() {
   'use strict';
+
+  var isMobile = isMobileDevice();
+
   initRemovePackageButton();
 
   //spinners
@@ -241,42 +244,45 @@ var docReadyPackages = function() {
   });
 
   //package filter select 2
-  (function() {
+  if (!isMobile) {
+    (function() {
 
-    var format = function(icon) {
-      var originalOption = icon.element;
-      return '<span><i class="' + $(originalOption).data('icon') + '"></i> ' + icon.text + '</span>';
-    };
+      var format = function(icon) {
+        var originalOption = icon.element;
+        return '<span><i class="' + $(originalOption).data('icon') + '"></i> ' + icon.text + '</span>';
+      };
 
-    $('#package-filter-status, #package-source-filter').each(function() {
-      $(this).select2({
-        placeholder    : $(this).prop('data-placeholder'),
-        allowClear     : true,
-        width          : 'element',
-        formatResult   : format,
-        formatSelection: format
+      $('#package-filter-status, #package-source-filter').each(function() {
+        $(this).select2({
+          placeholder    : $(this).prop('data-placeholder'),
+          allowClear     : true,
+          width          : 'element',
+          formatResult   : format,
+          formatSelection: format
+        });
       });
-    });
-  }());
+    }());
+  }
+
+  //package datatable
 
   var customOptionForDataTable = {
     pageLength: 50,
     'language': {}
   };
 
-  if (window.outerWidth < 800) {
+  if (isMobile) {
     customOptionForDataTable = {
       pageLength: 10,
       language  : {
         "paginate": {
           "previous": "<",
-          "next": ">"
+          "next"    : ">"
         }
       }
     };
   }
 
-  //package datatable
   var pTable = $('#package-table').on('init.dt', function() {
     var timeout = 0;
     var $input = $('.dataTables_filter input');
@@ -542,7 +548,9 @@ var docReadyPackages = function() {
             'offText'  : Translator.trans('package.no'),
             'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>'
           });
-          $body.find('select').select2();
+          $body.find('select').select2({
+            minimumResultsForSearch: -1
+          });
         }
       }
     });
@@ -582,13 +590,21 @@ function setPaymentCardVisibility() {
 
 var actionWhenXS = {
   afterLoadPage: function() {
-    if (document.documentElement.clientWidth < 768) {
+    if (isMobileDevice()) {
       this.hideBox();
+      this.scroll();
     }
   },
   hideBox      : function() {
     $('#dishorder-table-filter-widget').addClass('collapsed-box');
     $('#package-table-links-widget').addClass('collapsed-box');
+  },
+  scroll: function() {
+    var elem = document.querySelector('section.content .tab-content');
+
+    if (elem !== null) {
+      elem.scrollIntoView();
+    }
   }
 };
 

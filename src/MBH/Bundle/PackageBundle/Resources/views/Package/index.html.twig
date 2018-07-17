@@ -17,13 +17,15 @@
                                id="package-filter-begin"
                                class="datepicker package-filter begin-datepicker form-control"
                                data-date-format="dd.mm.yyyy"
-                               value="{{ client_config().getActualBeginDate()|date('d.m.Y') }}">
+                               value="{{ client_config().getActualBeginDate()|date('d.m.Y') }}"
+                               readonly>
                         &nbsp—&nbsp
                         <input type="text"
                                id="package-filter-end"
                                class="datepicker package-filter end-datepicker form-control"
                                data-date-format="dd.mm.yyyy"
-                               value="">
+                               value=""
+                               readonly>
                     </div>
                 </div>
                 &nbsp;

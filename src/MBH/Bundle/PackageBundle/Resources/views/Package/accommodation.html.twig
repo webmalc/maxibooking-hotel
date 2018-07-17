@@ -22,7 +22,7 @@
     <div class="tab-content">
         {% if package.accommodations|length %}
             <div class="box box-default box-solid">
-                <div class="box-header with-border"><h3 class="box-title">{{ 'package.accommodation.rooms'|trans }}</h3>
+                <div class="box-header with-border box-header_when-mobile"><h3 class="box-title">{{ 'package.accommodation.rooms'|trans }}</h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
                                 id="mbh_bundle_packagebundle_package_accommodations"><i class="fa fa-minus"></i>
@@ -117,8 +117,8 @@
         {% if emptyIntervalsAccommodation|length %}
 
             {% if optGroupRooms|length %}
-                <div class="box box-default box-solid">
-                    <div class="box-header with-border"><h3
+                <div class="box box-default box-solid box-header_when-mobile">
+                    <div class="box-header with-border box-header_when-mobile"><h3
                                 class="box-title">{{ 'package.accommodation.choose_accommodation_on_dates'|trans }}
                             &emsp;&emsp;</h3>
                         <div class="btn-group">

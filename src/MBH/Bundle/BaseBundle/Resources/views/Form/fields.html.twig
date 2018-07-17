@@ -24,7 +24,7 @@
         {% endif %}
         {% for group, items in groups %}
             {% if group != 'no-group' %}
-            <div class="box box-default box-solid" {% if form.vars.nonDisplayGroups is defined and group in form.vars.nonDisplayGroups %} style="display: none;" {% endif %}>
+            <div class="box box-default box-solid box-header_when-mobile" {% if form.vars.nonDisplayGroups is defined and group in form.vars.nonDisplayGroups %} style="display: none;" {% endif %}>
 
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ group|trans }}</h3>
