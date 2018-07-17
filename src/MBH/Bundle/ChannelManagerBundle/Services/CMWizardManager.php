@@ -217,6 +217,11 @@ class CMWizardManager
         return $lastDefinedCaches;
     }
 
+    public function sendMessageToTechSupportAboutNewConnection(ChannelManagerConfigInterface $config)
+    {
+
+    }
+
     /**
      * @param Hotel $hotel
      * @return array

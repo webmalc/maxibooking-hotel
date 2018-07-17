@@ -58,6 +58,7 @@ class ExpediaController extends Controller
      * @Template("MBHChannelManagerBundle:Expedia:index.html.twig")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Throwable
      */
     public function saveAction(Request $request)
     {
@@ -83,6 +84,10 @@ class ExpediaController extends Controller
                 $this->get('mbh.channelmanager')->updateInBackground();
 
                 $this->addFlash('success', 'controller.expediaController.settings_saved_success');
+                if (!$config->isReadyToSync()) {
+                    $this->get('mbh.messages_store')
+                        ->sendMessageToTechSupportAboutNewConnection('Expedia', $this->get('mbh.instant_notifier'));
+                }
             } else {
                 $this->addFlash('danger', $errorMessage);
             }

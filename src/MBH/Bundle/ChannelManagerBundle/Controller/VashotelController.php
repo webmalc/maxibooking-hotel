@@ -165,6 +165,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getVashotelConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -193,7 +194,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $this->addFlash('success', 'controller.vashotelController.settings_saved_success');
 
-            $redirectRoute = $config->isReadyToSync()
+            $redirectRoute = $inGuide
                 ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'vashotel'])
                 : $this->generateUrl('vashotel_tariff');
 

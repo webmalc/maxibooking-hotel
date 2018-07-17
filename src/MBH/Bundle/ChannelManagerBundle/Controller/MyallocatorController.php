@@ -57,6 +57,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
      * @Template("MBHChannelManagerBundle:Myallocator:index.html.twig")
      * @param Request $request
      * @return Response
+     * @throws \Throwable
      */
     public function saveAction(Request $request)
     {
@@ -93,6 +94,10 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
+
+            if ($config->isReadyToSync()) {
+                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('MyAllocator', $this->get('mbh.instant_notifier'));
+            }
 
             return $this->redirect($this->generateUrl('myallocator'));
         }
