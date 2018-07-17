@@ -124,7 +124,8 @@ var ChessBoardManager = /** @class */ (function () {
         var dateElements = $('.date, .leftRooms');
         var $document = $(document);
         if (canCreatePackage) {
-            dateElements.on("contextmenu mousedown", function (event) {
+            var eventName = isMobileDevice ? 'contextmenu' : 'mousedown';
+            dateElements.on(eventName, function (event) {
                 chessBoardContentBlock.style.overflow = 'hidden';
                 event.preventDefault();
                 var startXPosition = event.pageX;
@@ -668,11 +669,27 @@ var ChessBoardManager = /** @class */ (function () {
             var intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             var $element = $(element);
             self.addResizable($element, intervalData);
-            $element.dblclick(function () {
-                if (intervalData.viewPackage) {
-                    self.dataManager.getPackageDataRequest(intervalData.packageId);
-                }
-            });
+            if (isMobileDevice) {
+                var touchTime_1;
+                $element.on('touchstart', function () {
+                    if (moment().diff(touchTime_1) < 500) {
+                        if (intervalData.viewPackage) {
+                            self.dataManager.getPackageDataRequest(intervalData.packageId);
+                        }
+                        touchTime_1 = null;
+                    }
+                    else {
+                        touchTime_1 = new moment();
+                    }
+                });
+            }
+            else {
+                $element.dblclick(function () {
+                    if (intervalData.viewPackage) {
+                        self.dataManager.getPackageDataRequest(intervalData.packageId);
+                    }
+                });
+            }
             $element.find('.remove-package-button').on('click touchstart', function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
@@ -1232,8 +1249,9 @@ var ChessBoardManager = /** @class */ (function () {
         return packageCellCount * styleConfigs[this.currentSizeConfigNumber].tableCellWidth;
     };
     ChessBoardManager.prototype.getTableWidth = function () {
-        var styles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
-        return parseInt(styles.width, 10) - styleConfigs[this.currentSizeConfigNumber].headerWidth;
+        var chessboardStyles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
+        var chessboardWidth = parseInt(chessboardStyles.width, 10);
+        return chessboardWidth - (!isMobileDevice ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
     };
     ChessBoardManager.getIntervalOutOfTableSide = function (intervalData) {
         var tableBeginDate = ChessBoardManager.getTableStartDate();

@@ -166,8 +166,10 @@ class ChessBoardManager {
         let dateElements = $('.date, .leftRooms');
         const $document = $(document);
 
+
         if (canCreatePackage) {
-            dateElements.on("contextmenu mousedown", function (event) {
+            const eventName = isMobileDevice ? 'contextmenu' : 'mousedown';
+            dateElements.on(eventName, function (event) {
                 chessBoardContentBlock.style.overflow = 'hidden';
                 event.preventDefault();
                 const startXPosition = event.pageX;
@@ -787,11 +789,26 @@ class ChessBoardManager {
             let intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             let $element = $(element);
             self.addResizable($element, intervalData);
-            $element.dblclick(function () {
-                if (intervalData.viewPackage) {
-                    self.dataManager.getPackageDataRequest(intervalData.packageId);
-                }
-            });
+            if (isMobileDevice) {
+                let touchTime;
+                $element.on('touchstart', () => {
+                    if (moment().diff(touchTime) < 500) {
+                        if (intervalData.viewPackage) {
+                            self.dataManager.getPackageDataRequest(intervalData.packageId);
+                        }
+                        touchTime = null;
+                    } else {
+                        touchTime = new moment();
+                    }
+                });
+            } else {
+                $element.dblclick(function () {
+                    if (intervalData.viewPackage) {
+                        self.dataManager.getPackageDataRequest(intervalData.packageId);
+                    }
+                });
+            }
+
             $element.find('.remove-package-button').on('click touchstart', function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
@@ -1404,9 +1421,10 @@ class ChessBoardManager {
     }
 
     private getTableWidth() {
-        let styles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
+        const chessboardStyles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
+        const chessboardWidth = parseInt(chessboardStyles.width, 10);
 
-        return parseInt(styles.width, 10) - styleConfigs[this.currentSizeConfigNumber].headerWidth;
+        return chessboardWidth - (!isMobileDevice ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
     }
 
     private static getIntervalOutOfTableSide(intervalData) {
