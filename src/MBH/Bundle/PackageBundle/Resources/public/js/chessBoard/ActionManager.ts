@@ -296,7 +296,6 @@ class ActionManager {
         let newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
         let isAccommodationInAnotherRoomType = ActionManager.isAccommodationInAnotherRoomType(newIntervalData, intervalData);
         if (isAccommodationInAnotherRoomType || (intervalData && changedSide)) {
-            console.log('Пыщ пыщ пыщ');
             let alertMessageData = this.getAlertMessage(newIntervalData, intervalData, isAccommodationInAnotherRoomType);
             if (alertMessageData) {
                 ActionManager.showAlertMessage(alertMessageData, $updateForm);

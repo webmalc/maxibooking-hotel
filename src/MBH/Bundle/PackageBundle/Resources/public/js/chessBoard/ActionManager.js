@@ -257,7 +257,6 @@ var ActionManager = /** @class */ (function () {
         var newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
         var isAccommodationInAnotherRoomType = ActionManager.isAccommodationInAnotherRoomType(newIntervalData, intervalData);
         if (isAccommodationInAnotherRoomType || (intervalData && changedSide)) {
-            console.log('Пыщ пыщ пыщ');
             var alertMessageData = this.getAlertMessage(newIntervalData, intervalData, isAccommodationInAnotherRoomType);
             if (alertMessageData) {
                 ActionManager.showAlertMessage(alertMessageData, $updateForm);
