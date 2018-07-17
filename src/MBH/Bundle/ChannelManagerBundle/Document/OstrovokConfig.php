@@ -10,6 +10,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
+use MBH\Bundle\ChannelManagerBundle\Lib\IsConnectionSettingsReadTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,6 +31,7 @@ class OstrovokConfig extends Base implements BaseInterface
     protected $hotel;
 
     use ConfigTrait;
+    use IsConnectionSettingsReadTrait;
 
     /**
      * Hook timestampable behavior
@@ -76,7 +78,6 @@ class OstrovokConfig extends Base implements BaseInterface
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->setReadinessConfirmed(false);
     }
 
     public function getName()

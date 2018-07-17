@@ -33,6 +33,12 @@ class ChannelManager
         'hundred_one_hotels' => 'HundredOneHotelsConfig'
     ];
 
+    const PULL_OLD_ORDERS_ROUTES = [
+        'booking' => 'booking_all_packages_sync',
+        'hundred_one_hotels' => 'hoh_packages_sync',
+        'expedia' => 'expedia_packages_sync'
+    ];
+
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
@@ -425,9 +431,14 @@ class ChannelManager
     public function checkForReadinessOrGetStepUrl(?ChannelManagerConfigInterface $config, string $channelManagerName)
     {
         if (is_null($config) || !$config->isReadyToSync()) {
-            $currentStepRouteName = $this->container->get('mbh.cm_wizard_manager')->getCurrentStepUrl($channelManagerName, $config);
+            $currentStepRouteName = $this->container
+                ->get('mbh.cm_wizard_manager')
+                ->getCurrentStepUrl($channelManagerName, $config);
+
             if ($currentStepRouteName !== $channelManagerName) {
-                $routeParams = $currentStepRouteName === 'wizard_info' ? ['channelManagerName' => $channelManagerName] : [];
+                $routeParams = in_array($currentStepRouteName, ['wizard_info', 'cm_data_warnings'])
+                    ? ['channelManagerName' => $channelManagerName]
+                    : [];
 
                 return $this->container->get('router')->generate($currentStepRouteName, $routeParams);
             }
@@ -436,40 +447,27 @@ class ChannelManager
         return true;
     }
 
-
     /**
      * @param Hotel $hotel
      * @param string $channelManagerName
-     * @return bool
      */
-    public function confirmReadinessOfCM(Hotel $hotel, string $channelManagerName)
+    public function setIsConnectionInstructionRead(Hotel $hotel, string $channelManagerName)
     {
-        $config = $this->getConfigForHotel($hotel, $channelManagerName);
-        $isConfiguredByTechSupport
-            = $this->container->get('mbh.cm_wizard_manager')->isConfiguredByTechSupport($channelManagerName);
-
-        if (is_null($config)) {
-            if ($isConfiguredByTechSupport) {
-                throw new \InvalidArgumentException('Connection request was not sent!');
-            }
-
-            /** @var ChannelManagerConfigInterface $config */
-            $configType = $this->getConfigFullName($channelManagerName);
-            $config = new $configType;
-            $config->setHotel($hotel);
-            $this->dm->persist($config);
+        if (!is_null($this->getConfigForHotel($hotel, $channelManagerName))) {
+            throw new \RuntimeException('There is existing config');
         }
 
-        if ($isConfiguredByTechSupport && empty($config->getHotelId())) {
-            throw new \RuntimeException('Mandatory data is not specified');
-        }
+        /** @var ChannelManagerConfigInterface $config */
+        $configType = $this->getConfigFullName($channelManagerName);
+        $config = new $configType;
+        $config
+            ->setHotel($hotel)
+            ->setIsConnectionSettingsRead(true);
 
-        $config->setReadinessConfirmed(true);
+        $this->dm->persist($config);
 
         $this->dm->flush();
         $this->dm->refresh($hotel);
-
-        return true;
     }
 
 

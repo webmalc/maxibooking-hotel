@@ -138,9 +138,11 @@ class ExpediaController extends Controller
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
-            $redirectRouteName = $inGuide ? 'expedia_packages_sync' : 'expedia_tariff';
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'expedia'])
+                : $this->generateUrl('expedia_tariff');
 
-            return $this->redirectToRoute($redirectRouteName);
+            return $this->redirect($redirectRoute);
         }
 
         return [

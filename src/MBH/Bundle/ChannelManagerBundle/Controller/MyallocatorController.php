@@ -187,6 +187,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getMyallocatorConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -212,12 +213,13 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
+            $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.myallocatorController.settings_saved_success'));
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'myallocator'])
+                : $this->generateUrl('myallocator_tariff');
 
-            return $this->redirect($this->generateUrl('myallocator_tariff'));
+            return $this->redirect($redirectRoute);
         }
 
         return [

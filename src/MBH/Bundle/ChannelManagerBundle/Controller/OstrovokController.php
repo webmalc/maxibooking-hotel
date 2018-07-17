@@ -186,12 +186,13 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
+            $this->addFlash('success', 'controller.ostrovokController.settings_saved_success');
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.ostrovokController.settings_saved_success'));
+            $redirectRoute = $entity->isReadyToSync()
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'ostrovok'])
+                : $this->generateUrl('ostrovok_tariff');
 
-            return $this->redirect($this->generateUrl('ostrovok_tariff'));
+            return $this->redirect($redirectRoute);
         }
 
 

@@ -114,8 +114,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($config);
             $this->dm->flush();
 
-//            $this->get('mbh.channelmanager.booking')->syncServices($config);
-//            $this->get('mbh.channelmanager')->updateInBackground();
+            $this->get('mbh.channelmanager.booking')->syncServices($config);
+            $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
@@ -235,9 +235,11 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
-            $redirectRouteName = $inGuide ? 'booking_all_packages_sync' : 'booking_tariff';
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'booking'])
+                : $this->generateUrl('booking_tariff');
 
-            return $this->redirectToRoute($redirectRouteName);
+            return $this->redirect($redirectRoute);
         }
 
         return [
