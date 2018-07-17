@@ -71,6 +71,8 @@ package.continue: Продолжить
 package.yes: Да
 package.no: Нет
 package.processing: Подождите
+package.remove_package: 'Удалить бронь "%title%"?'
+package.remove_order: 'Удалить заказ "%title%"?'
 analytics.months.jan_abbr: Янв
 analytics.months.feb_abbr: Фев
 analytics.months.mar_abbr: Мар
