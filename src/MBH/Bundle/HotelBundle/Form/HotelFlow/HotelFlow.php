@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Form\HotelFlow;
 
-use Craue\FormFlowBundle\Form\FormFlow;
+use MBH\Bundle\HotelBundle\Service\FormFlow;
 
 class HotelFlow extends FormFlow
 {
@@ -11,12 +11,12 @@ class HotelFlow extends FormFlow
     /**
      * @return array
      */
-    protected function loadStepsConfig()
+    protected function getStepsConfig()
     {
         return [
             [
                 'Ввод имени отеля',
-                'form_type' => HotelFlowType::class
+                'form_type' => HotelFlowType::class,
             ],
             [
                 'Ввод описания отеля',
