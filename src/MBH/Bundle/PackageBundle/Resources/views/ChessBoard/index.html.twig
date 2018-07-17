@@ -23,6 +23,7 @@
     {{ parent() }}
     {% javascripts filter='uglifyjs2'
     '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
+    '@MBHBaseBundle/Resources/public/vendor/touch-punch.js'
     'assets/vendor/admin-lte/plugins/bootstrap-slider/bootstrap-slider.js'
     '@MBHPackageBundle/Resources/public/js/tourist.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
@@ -132,7 +133,7 @@
         .package-with-right-arrow:before,
         .package:not(.near-right-element) > .ui-resizable-e,
         .package:not(.near-left-element) > .ui-resizable-w {
-            border-bottom: {{ halfMinuend - 2 }}px solid transparent !important;
+            border-bottom: {{ halfMinuend }}px solid transparent !important;
             border-top: {{ halfMinuend }}px solid transparent !important;
         }
 
@@ -238,7 +239,7 @@
            value="{{ endDate|date('d.m.Y') }}">
 
     <form method="get" id="accommodation-report-filter" class="form-inline filter-form" role="form">
-        <div class="input">
+        <div class="input" style="display: inline-flex; justify-content: center; align-items: center;">
             <i class="fa fa-calendar" title='{{ 'chessboard_manager.dates.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
             <input type="text" name="filter_begin" id="accommodation-report-filter-begin"
                    class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm"
@@ -310,7 +311,7 @@
 
     <input type="hidden" id="pageNumber" value="{{ pageNumber }}">
     {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': pageNumber, 'pages': pageCount, class : 'accommodation-report-pagination'} %}
-
+    <div id="ololo"></div>
     <div id="accommodation-chessBoard-content" class="scrolling">
         <!---------------------------- MONTHS AND DATES ------------------------->
         <div id="header-title" class="tile tile-not-selected tile-free both not-standard-tile"

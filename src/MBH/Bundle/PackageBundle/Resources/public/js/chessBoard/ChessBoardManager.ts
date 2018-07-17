@@ -8,6 +8,8 @@ declare let styleConfigs;
 declare let currentStyleConfigNumber;
 declare let colors;
 declare let subtrahend;
+declare let isMobileDevice;
+declare let isLowWidth;
 
 class ChessBoardManager {
     private static PACKAGE_FONT_SIZE_WIDTH = 8;
@@ -70,6 +72,7 @@ class ChessBoardManager {
             }, 1000)
         });
         this.addAccommodationElements();
+
         $('#s_tourist').change(function () {
             $('#select2-s_tourist-results').val(this.value);
         });
@@ -148,37 +151,53 @@ class ChessBoardManager {
 
         this.onAddGuestClick();
 
-        //Фиксирование верхнего и левого блоков таблицы
-        chessBoardContentBlock.onscroll = function () {
-            ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
-        };
+        if (isMobileDevice()) {
+            window.onscroll = function() {
+                // ChessBoardManager.onWindowYScrollForMobiles(getComputedStyle(chessBoardContentBlock).top);
+            };
+        } else {
+            //Фиксирование верхнего и левого блоков таблицы
+            chessBoardContentBlock.onscroll = function () {
+                ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
+            };
+        }
 
         let templatePackageElement = ChessBoardManager.getTemplateElement();
         //Создание брони
         let dateElements = $('.date, .leftRooms');
+        const $document = $(document);
+
+
         if (canCreatePackage) {
-            dateElements.mousedown(function (event) {
-                let startXPosition = event.pageX;
-                let startLeftScroll = chessBoardContentBlock.scrollLeft;
+            const eventName = isMobileDevice ? 'contextmenu' : 'mousedown';
+            dateElements.on(eventName, function (event) {
+                chessBoardContentBlock.style.overflow = 'hidden';
+                event.preventDefault();
+                const startXPosition = event.pageX;
+                const startLeftScroll = chessBoardContentBlock.scrollLeft;
                 let newPackage = <HTMLElement>templatePackageElement.cloneNode(true);
                 newPackage.classList.add('success');
-                let dateJqueryObject = $(this.parentNode);
-                let currentRoomDateElements = dateJqueryObject.parent().children();
-                let startDateNumber = currentRoomDateElements.index(dateJqueryObject);
-                let startDate = moment(self.tableStartDate).add(startDateNumber, 'day');
+
+                const dateJqueryObject = $(this.parentNode);
+                const currentRoomDateElements = dateJqueryObject.parent().children();
+                const startDateNumber = currentRoomDateElements.index(dateJqueryObject);
+                const startDate = moment(self.tableStartDate).add(startDateNumber, 'day');
                 newPackage = self.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), wrapper);
                 newPackage.id = 'newPackage' + packages.length;
                 newPackage.style.zIndex = '999';
                 newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth - (self.arrowWidth * 2) + 'px';
-                let newPackageStartXOffset = parseInt(newPackage.style.left, 10);
-                document.onmousemove = function (event) {
-                    let scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
-                    let mouseXOffset = startXPosition - event.pageX;
-                    let isLeftMouseShift = mouseXOffset > 0;
-                    let packageLengthRestriction = self.getPackageLengthRestriction(startDate, isLeftMouseShift, self.tableStartDate, self.tableEndDate);
-                    let griddedOffset = self.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
-                    let leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
-                    let packageWidth = griddedOffset - 2 * self.arrowWidth;
+                const newPackageStartXOffset = parseInt(newPackage.style.left, 10);
+
+                $(document).on('touchmove mousemove', function (event) {
+                    const isMouseMoveEvent = event.type === 'mousemove';
+                    const scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
+                    const mouseXOffset = startXPosition - (isMouseMoveEvent ? event.pageX : event.originalEvent.touches[0].pageX);
+                    const isLeftMouseShift = mouseXOffset > 0;
+                    const packageLengthRestriction = self.getPackageLengthRestriction(startDate, isLeftMouseShift, self.tableStartDate, self.tableEndDate);
+                    const griddedOffset = self.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
+                    const leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
+                    const packageWidth = griddedOffset - 2 * self.arrowWidth;
+
                     if (self.isPackageLocationCorrect(newPackage)) {
                         newPackage.classList.add('success');
                         newPackage.classList.remove('danger');
@@ -190,16 +209,16 @@ class ChessBoardManager {
                     }
                     newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
                     newPackage.style.width = packageWidth + 'px';
-                };
-                document.onmouseup = function () {
-                    document.onmousemove = null;
-                    this.onmouseup = null;
+                });
+                $(document).on('mouseup touchend', function () {
+                    chessBoardContentBlock.style.overflow = 'auto';
+                    $document.unbind('mousemove  mouseup touchend');
                     if ((newPackage.style.width) && self.isPackageLocationCorrect(newPackage) && newPackage.id) {
-                        let packageData = self.getPackageData($(newPackage));
+                        const packageData = self.getPackageData($(newPackage));
                         self.saveNewPackage(packageData);
                     }
                     self.updateTable();
-                };
+                });
                 this.ondragstart = function () {
                     return false;
                 };
@@ -216,7 +235,7 @@ class ChessBoardManager {
         return moment((<HTMLInputElement>document.getElementById('accommodation-report-end')).value, "DD.MM.YYYY");
     }
 
-    protected  handleSizeSlider() {
+    protected handleSizeSlider() {
         let $slider = $('#ex1');
         $slider.slider({tooltip: 'hide', reverseed: true});
         $slider.on('slideStop', () => {
@@ -246,7 +265,7 @@ class ChessBoardManager {
         document.cookie = updatedCookie;
     }
 
-    protected  setContentWidth(chessBoardContentBlock) {
+    protected setContentWidth(chessBoardContentBlock) {
         let contentWidth = parseInt($('#months-and-dates').css('width'), 10)
             + styleConfigs[this.currentSizeConfigNumber].headerWidth + ChessBoardManager.SCROLL_BAR_WIDTH;
 
@@ -257,7 +276,7 @@ class ChessBoardManager {
         }
     }
 
-    protected  saveNewPackage(packageData) {
+    protected saveNewPackage(packageData) {
         'use strict';
         let $searchPackageForm = $('#package-search-form');
 
@@ -346,6 +365,15 @@ class ChessBoardManager {
         headerTitle.style.left = chessBoardContentBlock.scrollLeft + 'px';
     }
 
+    protected static onWindowYScrollForMobiles(startTopOffset) {
+        let monthsAndDates = document.getElementById('months-and-dates');
+        monthsAndDates.style.top = document.body.scrollTop + 'px';
+
+        let headerTitle = document.getElementById('header-title');
+        headerTitle.style.top = document.body.scrollTop + 'px';
+        headerTitle.style.left = document.body.scrollLeft + 'px';
+    }
+
     protected getPackageLengthRestriction(startDate, isLeftMouseShift, tableStartDate, tableEndDate) {
         'use strict';
         if (isLeftMouseShift) {
@@ -376,6 +404,9 @@ class ChessBoardManager {
         wrapper.append(packages);
         this.addListeners('.package');
         this.updateAccommodationsWithNeighbors();
+        if (isMobileDevice()) {
+            $('.package .package-action-buttons').show();
+        }
     }
 
     protected static getTemplateElement() {
@@ -408,8 +439,8 @@ class ChessBoardManager {
         let packageDiv = templatePackageElement.cloneNode(true);
         packageDiv.id = packageItem.id;
 
-        let description = document.createElement('div');
         let packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
+        let description = document.createElement('div');
         let descriptionText = packageName ? packageName.substr(0, packageCellCount * 5) : '';
 
         packageDiv.setAttribute('data-description', descriptionText);
@@ -435,25 +466,27 @@ class ChessBoardManager {
         description.setAttribute('data-content', descriptionPopoverContent);
 
         const $packageDiv = $(packageDiv);
-        packageDiv.onmousemove = function () {
-            const isElementInPopoverWindow = packageDiv.parentNode.classList.contains('popover-package-container');
-            if (!isElementInPopoverWindow) {
-                $packageDiv.find('.package-action-buttons').show();
-                let $descriptionElement = $(this).find('.package-description');
-                if ($descriptionElement.length > 0) {
-                    let popoverId = $descriptionElement.attr('aria-describedby');
-                    if (popoverId == null) {
-                        $('.popover').popover('hide');
-                        $descriptionElement.popover('show');
+        if (!isMobileDevice()) {
+            packageDiv.onmousemove = function () {
+                const isElementInPopoverWindow = packageDiv.parentNode.classList.contains('popover-package-container');
+                if (!isElementInPopoverWindow) {
+                    $packageDiv.find('.package-action-buttons').show();
+                    let $descriptionElement = $(this).find('.package-description');
+                    if ($descriptionElement.length > 0) {
+                        let popoverId = $descriptionElement.attr('aria-describedby');
+                        if (popoverId == null) {
+                            $('.popover').popover('hide');
+                            $descriptionElement.popover('show');
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        packageDiv.onmouseleave = function () {
-            $packageDiv.find('.package-action-buttons').hide();
-            $packageDiv.find('.package-description').popover('hide');
-        };
+            packageDiv.onmouseleave = function () {
+                $packageDiv.find('.package-action-buttons').hide();
+                $packageDiv.find('.package-description').popover('hide');
+            };
+        }
 
         if (packageItem.position == 'middle' || packageItem.position == 'left') {
             packageDiv.classList.add('with-right-divider');
@@ -493,7 +526,8 @@ class ChessBoardManager {
         if (hasButtons && !packageItem.isLocked) {
             if (packageItem.updateAccommodation
                 && packageEndDate.diff(packageStartDate, 'days') > 1
-                && !this.isAbroadRightTableSide(packageEndDate)) {
+                && !this.isAbroadRightTableSide(packageEndDate)
+                && !isMobileDevice()) {
                 $(packageDiv).find('.package-action-buttons').append(this.templateDivideButton.cloneNode(true));
             }
             if (packageItem.removePackage && (packageItem.position == 'full' || packageItem.position == 'right')) {
@@ -756,21 +790,43 @@ class ChessBoardManager {
             let intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             let $element = $(element);
             self.addResizable($element, intervalData);
-            $element.dblclick(function () {
-                if (intervalData.viewPackage) {
-                    self.dataManager.getPackageDataRequest(intervalData.packageId);
-                }
-            });
-            $element.find('.remove-package-button').click(function () {
+            if (isMobileDevice) {
+                let touchTime;
+                let isTouchEnd = false;
+                $element.on('touchstart', () => {
+                    if (isTouchEnd && touchTime && moment().diff(touchTime) < 500) {
+                        if (intervalData.viewPackage) {
+                            self.dataManager.getPackageDataRequest(intervalData.packageId);
+                        }
+                        touchTime = null;
+                    } else {
+                        touchTime = new moment();
+                        isTouchEnd = false;
+                    }
+                });
+                $element.on('touchend', () => {
+                    if (touchTime) {
+                        isTouchEnd = true;
+                    }
+                });
+            } else {
+                $element.dblclick(function () {
+                    if (intervalData.viewPackage) {
+                        self.dataManager.getPackageDataRequest(intervalData.packageId);
+                    }
+                });
+            }
+
+            $element.find('.remove-package-button').on('click touchstart', function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
-            $element.find('.divide-package-button').click((event) => {
+            $element.find('.divide-package-button').on('click touchstart', (event) => {
                 self.canMoveAccommodation = false;
-                let scissorIcon = event.target;
+                let $scissorIcon = $(event.target);
                 if (intervalData.viewPackage) {
-                    scissorIcon.onclick = function () {
+                    $scissorIcon.on('click touchstart', function () {
                         self.updatePackagesData();
-                    };
+                    });
                     let accommodationWidth = parseInt(element.style.width, 10);
                     let tableCellWidth = styleConfigs[self.currentSizeConfigNumber].tableCellWidth;
                     if (accommodationWidth > tableCellWidth && accommodationWidth <= tableCellWidth * 2) {
@@ -793,7 +849,7 @@ class ChessBoardManager {
                         line.style.left = defaultLeftValue + 'px';
                         element.appendChild(line);
 
-                        element.onmousemove = function (event) {
+                        $element.on('mousemove touchmove', function (event) {
                             let offset = event.clientX - packageLeftCoordinate;
                             let griddedOffset;
                             if (isAccommodationAbroadTable) {
@@ -812,12 +868,12 @@ class ChessBoardManager {
                             }
 
                             line.style.left = griddedOffset + 'px';
-                            element.onclick = function () {
-                                element.onmousemove = null;
+                            $element.on('click touchstart', function () {
+                                $element.off('mousemove touchmove');
                                 $('.dividing-line').remove();
                                 self.divide(this, griddedOffset);
-                            }
-                        };
+                            })
+                        });
                     }
                 }
             });
@@ -888,7 +944,7 @@ class ChessBoardManager {
                     scroll: true,
                     drag: function (event, ui) {
                         element.style.zIndex = 200;
-                        if (!self.isIntervalAvailable(intervalData, isDivide) || !self.canMoveAccommodation) {
+                        if (!self.isIntervalAvailable(intervalData, event, isDivide) || !self.canMoveAccommodation) {
                             ui.position.left = ui.originalPosition.left;
                             ui.position.top = ui.originalPosition.top;
                         } else {
@@ -1300,8 +1356,8 @@ class ChessBoardManager {
                         start: function () {
                             isDragged = true;
                         },
-                    }).mousedown(function (event) {
-                        if (self.isIntervalAvailable(packageData)) {
+                    }).on('mousedown touchstart', function (event) {
+                        if (self.isIntervalAvailable(packageData, event)) {
                             relocatablePackage = this;
                             $wrapper.append(this);
                             this.style.position = 'absolute';
@@ -1309,21 +1365,22 @@ class ChessBoardManager {
                             relocatablePackageData = self.dataManager.getNoAccommodationIntervalById(this.id);
                             let intervalStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
                             this.style.left = self.getPackageLeftOffset(intervalStartDate, this) + 'px';
-                            this.style.top = self.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
+                            const pageY = event.type === 'touchstart' ? event.originalEvent.touches[0].pageY : event.pageY;
+                            this.style.top = self.getNearestTableLineTopOffset(pageY - document.body.scrollTop)
                                 + document.body.scrollTop - wrapperTopOffset + subtrahend / 2 + 'px';
                             if (!self.isPackageLocationCorrect(relocatablePackage)) {
                                 relocatablePackage.classList.add('red-package');
                             }
                             $popover.popover('hide');
                         }
-                        document.body.onmouseup = function () {
-                            document.body.onmouseup = null;
+                        $(document.body).on('mouseup touchend', function () {
+                            $(document.body).off('mouseup touchend');
                             if (!isDragged && relocatablePackage) {
                                 if (self.isPackageLocationCorrect(relocatablePackage)) {
                                     self.actionManager.callUpdatePackageModal($(relocatablePackage), relocatablePackageData);
                                 }
                             }
-                        };
+                        });
                     });
                 }
             });
@@ -1337,7 +1394,7 @@ class ChessBoardManager {
         });
     }
 
-    private isIntervalAvailable(packageData, isDivide = false) {
+    private isIntervalAvailable(packageData, event, isDivide = false) {
         if (packageData.isLocked) {
             ActionManager.callUnblockModal(packageData.packageId);
             event.preventDefault();
@@ -1372,9 +1429,10 @@ class ChessBoardManager {
     }
 
     private getTableWidth() {
-        let styles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
+        const chessboardStyles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
+        const chessboardWidth = parseInt(chessboardStyles.width, 10);
 
-        return parseInt(styles.width, 10) - styleConfigs[this.currentSizeConfigNumber].headerWidth;
+        return chessboardWidth - (!isMobileDevice ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
     }
 
     private static getIntervalOutOfTableSide(intervalData) {
@@ -1397,7 +1455,7 @@ class ChessBoardManager {
         }
     }
 
-    private  updateLeftRoomCounts() {
+    private updateLeftRoomCounts() {
         let self = this;
         let leftRoomCounts = self.dataManager.getLeftRoomCounts();
         $('.leftRoomsLine').each(function (index, item) {

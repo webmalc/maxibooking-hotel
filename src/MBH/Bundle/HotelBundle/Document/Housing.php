@@ -92,13 +92,6 @@ class Housing extends Base
     protected $flat;
 
     /**
-     * @var int
-     * @ODM\Integer()
-     * @Assert\Type(type="numeric")
-     */
-    protected $vegaAddressId;
-
-    /**
      * @return mixed
      */
     public function getHotel()
@@ -275,26 +268,6 @@ class Housing extends Base
     public function getAddress()
     {
         return $this->getStreet() . ' ' . $this->getHouse() . ' ' . $this->getCorpus();
-    }
-
-
-    /**
-     * @return int
-     */
-    public function getVegaAddressId()
-    {
-        return $this->vegaAddressId;
-    }
-
-    /**
-     * @param int $vegaAddressId
-     * @return self
-     */
-    public function setVegaAddressId($vegaAddressId)
-    {
-        $this->vegaAddressId = $vegaAddressId;
-
-        return $this;
     }
 
     public function __toString()
