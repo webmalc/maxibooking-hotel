@@ -215,7 +215,7 @@ jQuery(document).ready(function() {
             (function() {
                 var servicesWrapper = jQuery('#mbh-results-services-wrapper'),
                     show = function() {
-                        var selected = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked').filter(function() {
+                        var selected = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked').filter(function() {
                             return parseInt(jQuery(this).val(), 10) > 0;
                         });
                         servicesWrapper.hide();
@@ -259,7 +259,7 @@ jQuery(document).ready(function() {
                         totalServices = 0,
                         total = 0,
                         nextButton = jQuery('#mbh-results-next'),
-                        roomCount = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked'),
+                        roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked'),
                         servicesCount = jQuery('select.mbh-results-services-count');
                     nextButton.prop('disabled', true);
                     roomCount.each(function() {
@@ -277,7 +277,7 @@ jQuery(document).ready(function() {
                                 span = tr.find('span.mbh-results-services-prices');
                             if (span.length) {
                                 totalServices += parseInt(span.attr('data-value')) * jQuery(this).val();
-                            };
+                            }
                         }
                     });
 
@@ -296,6 +296,8 @@ jQuery(document).ready(function() {
                 });
             }());
 
+            wrapper.trigger('results-load-event');
+
             // results next button
             (function() {
                 jQuery('#mbh-results-next').click(function() {
@@ -304,7 +306,7 @@ jQuery(document).ready(function() {
                         purpose: 'rooms'
                     }, "*");
                     var urlParams = getUrlVars(),
-                        roomCount = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked'),
+                        roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked'),
                         servicesCount = jQuery('select.mbh-results-services-count');
                     requestParams.begin = jQuery('#mbh-results-duration-begin').text();
                     requestParams.end = jQuery('#mbh-results-duration-end').text();
@@ -347,7 +349,7 @@ jQuery(document).ready(function() {
                                         'children': tourists[1]
                                     });
                                 }
-                            };
+                            }
                         }
                     });
                     servicesCount.each(function() {

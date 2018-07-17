@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
+use MBH\Bundle\ChannelManagerBundle\Services\ChannelManager;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,9 +48,12 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 $this->log('begin update prices');
                 $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
-                $result = $this->checkResponse($sendResult);
-                $this->log('response for update prices request:');
-                $this->log($sendResult);
+                $isResponseSuccessful = $this->checkResponse($sendResult);
+                if (!$isResponseSuccessful) {
+                    $result = $isResponseSuccessful;
+                    $this->log('response for update prices request:');
+                    $this->log($sendResult);
+                }
             }
         }
 
@@ -75,9 +79,12 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 $this->log('begin update rooms');
                 $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
-                $result = $this->checkResponse($sendResult);
-                $this->log('response for update rooms request:');
-                $this->log($sendResult);
+                $isResponseSuccessful = $this->checkResponse($sendResult);
+                if (!$isResponseSuccessful) {
+                    $result = $isResponseSuccessful;
+                    $this->log('response for update rooms request:');
+                    $this->log($sendResult);
+                }
             }
         }
 
@@ -105,9 +112,12 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 $this->log('begin update restrictions');
                 $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
-                $result = $this->checkResponse($sendResult);
-                $this->log('response for update restrictions request:');
-                $this->log($sendResult);
+                $isResponseSuccessful = $this->checkResponse($sendResult);
+                if (!$isResponseSuccessful) {
+                    $result = $isResponseSuccessful;
+                    $this->log('response for update restrictions request:');
+                    $this->log($sendResult);
+                }
             }
         }
 
@@ -227,12 +237,12 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         );
     }
 
-    public function pullOrders()
+    public function pullOrders($pullOldStatus = ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS)
     {
         $result = true;
 
         /** @var ChannelManagerConfigInterface $config */
-        foreach ($this->getConfig() as $config) {
+        foreach ($this->getConfig($pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS) as $config) {
             $this->log('begin pulling orders for hotel "' . $config->getHotel()->getName() . '" with id "' . $config->getHotel()->getId() . '"');
 
             $requestData = $this->requestDataFormatter->formatGetBookingsData($config);
@@ -335,5 +345,4 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     {
         return null;
     }
-
 }

@@ -1,0 +1,10 @@
+{% include 'MBHClientBundle:PaymentSystem/newRbk:for_parent.js.twig' %}
+
+window.addEventListener('load', function(ev) {
+  var wrapper = document.getElementById('mbh-results-wrapper');
+  wrapper.appendChild(mbhNewRbk.getScript());
+});
+
+document.addEventListener('mbh_payment_finished', function() {
+  window.location.href = '{{ successUrl }}';
+});

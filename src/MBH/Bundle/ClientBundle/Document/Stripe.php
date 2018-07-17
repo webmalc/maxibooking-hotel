@@ -4,8 +4,12 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use Stripe\Charge;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @ODM\EmbeddedDocument
@@ -137,7 +141,7 @@ class Stripe implements PaymentSystemInterface
      * @param Request $request
      * @return array|bool
      */
-    public function checkRequest(Request $request)
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $requestSignature = $request->get('signature');
 
@@ -150,15 +154,40 @@ class Stripe implements PaymentSystemInterface
             'orderId' => $request->get('orderId'),
         ]);
 
+        $holder = new CheckResultHolder();
+
         if ($requestSignature != $signature) {
-            return false;
+            return $holder;
         }
 
-        return [
-            'doc' => $orderId,
-            'commission' => $this->getCommissionInPercents() ? $this->getCommissionInPercents() : null,
+        $holder->parseData([
+            'doc'               => $orderId,
+            'commission'        => $this->getCommissionInPercents() ? $this->getCommissionInPercents() : null,
             'commissionPercent' => true,
-            'text' => 'OK'
-        ];
+        ]);
+
+        $holder->setIndividualSuccessResponse(function (Controller $controller) {
+            return $controller->redirectToRoute('successful_payment');
+        });
+
+        \Stripe\Stripe::setApiKey($clientConfig->getStripe()->getSecretKey());
+
+        $charge = Charge::create([
+            "amount" => $request->request->get('amount') * 100,
+            "currency" => $request->request->get('currency'),
+            "description" => "Charge for order #" . $holder->getDoc() ,
+            "source" => $request->get('stripeToken'),
+        ]);
+        if ($charge->status !== 'succeeded') {
+            $holder->setIndividualErrorResponse(
+                function () {
+                        throw new BadRequestHttpException('Stripe charge is not successful');
+                    }
+                );
+
+            return $holder;
+        }
+
+        return $holder;
     }
 }

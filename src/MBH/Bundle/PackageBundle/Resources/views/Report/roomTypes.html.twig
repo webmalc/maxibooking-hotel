@@ -49,6 +49,20 @@
                     {% endfor %}
                 </select>
             </div>
+            {# После добавления даты, необходимо учитывать статус плательщика (Заехал/Не заехал и т.п.) #}
+            {#<div class="form-group">#}
+                {#<label>#}
+                    {#<i class="fa fa-calendar fa-custom-style"#}
+                       {#title='{{ 'package.index.dates'|trans }}'#}
+                       {#data-toggle='tooltip'></i>#}
+                {#</label>#}
+                {#<input type="text"#}
+                       {#id="accommodation-report-filter-date"#}
+                       {#name="date"#}
+                       {#class="datepicker form-control input-sm"#}
+                       {#data-date-format="dd.mm.yyyy"#}
+                       {#value="{{ date()|date('d.m.Y') }}">#}
+            {#</div>#}
         </form>
     </div></div>
 

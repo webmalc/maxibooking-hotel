@@ -71,6 +71,8 @@ mbhpricebundle.form.servicetype.mezhdunarodnoyenazvaniye: 'Международ�
 mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya: 'Описание услуги для онлайн бронирования'
 mbhpricebundle.form.servicetype.tiprascheta: 'Тип расчета'
 mbhpricebundle.form.servicetype.is_displaceable: 'Смещаемая?'
+mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.label: 'Изменять количество гостей?'
+mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.help: 'Изменять количество гостей в услуге при изменении количества гостей в брони?'
 mbhpricebundle.form.servicetype.is_displaceable.help: 'Смещать ли даты услуги при изменении дат брони?'
 mbhpricebundle.form.servicetype.includeArrival: 'Учитывать заезд?'
 mbhpricebundle.form.servicetype.includeArrival.help: 'Учитывать ли дату заезда брони?'
@@ -159,6 +161,7 @@ mbhpricebundle.form.pricecachegeneratortype.price_for_people: 'Цена за ч�
 mbhpricebundle.form.pricecachegeneratortype.price_for_children_defaulp_place: 'Цена за детское осн. место'
 mbhpricebundle.form.pricecachegeneratortype.settings: Настройки
 mbhpricebundle.form.pricecachegeneratortype.price: Цены
+mbhpricebundle.form.pricecachegeneratortype.change_sum: 'Укажите сумму'
 mbhpricebundle.form.pricecachegeneratortype.change_sum_or_percent: 'Укажите сумму или процент от цены'
 mbhpricebundle.form.pricecachegeneratortype.price_for_single_accommodation: 'Цена 1-местного размещения'
 mbhpricebundle.form.pricecachegeneratortype.price_for_single_room_bookings: 'Цена при бронировании номера на одного человека.'
@@ -166,8 +169,6 @@ mbhpricebundle.form.pricecachegeneratortype.tcena_detskogo_dop_mesta: 'Цена 
 mbhpricebundle.form.pricecachegeneratortype.price_one_place_accomodation: 'Цена 1-местного размещения'
 mbhpricebundle.form.pricecachegeneratortype.remember: 'Запомнить?'
 mbhpricebundle.form.pricecachegeneratortype.remember_to_reuse: 'Запомнить для повторного использования'
-mbhpricebundle.form.pricecachegeneratortype.beginning_period_should_be_less_than_end_period: 'Начало периода должно быть меньше конца периода.'
-mbhpricebundle.form.pricecachegeneratortype.period_can_not_be_more_than_year: 'Период не может быть больше года.'
 mbhpricebundle.form.pricecachegeneratortype.price_adult_extra_places: 'Цена взрослого доп. места'
 mbhpricebundle.form.pricecachegeneratortype.tsena: Цена
 mbhpricebundle.form.pricecachegeneratortype.tsenazacheloveka: 'Цена за человека?'

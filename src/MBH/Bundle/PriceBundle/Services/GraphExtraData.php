@@ -93,7 +93,7 @@ class GraphExtraData
      * @param Hotel $hotel
      * @return GraphExtraData|null
      */
-    public function get(Request $request, RoomCacheGraphGenerator $generator, Hotel $hotel): self
+    public function get(Request $request, RoomCacheGraphGenerator $generator, Hotel $hotel): ?self
     {
         $this->hotel = $hotel;
         $this->generation = $generator;
@@ -106,10 +106,11 @@ class GraphExtraData
 
         if (empty($tariffs)) {
             return $this->dataSimple();
-        } else {
-            $this->initVariables($tariffs);
-            return $this->dataWithTariff();
         }
+
+        $this->initVariables($tariffs);
+
+        return $this->dataWithTariff();
     }
 
     /**
@@ -126,12 +127,12 @@ class GraphExtraData
 
         if (isset($this->rawData[$roomTypeKey][$date->format('d.m.Y')])) {
             return $this->rawData[$roomTypeKey][$date->format('d.m.Y')];
-        } else {
-            return [
-                'leftRooms'    => 0,
-                'needArrivals' => 0,
-            ];
         }
+
+        return [
+            'leftRooms'    => 0,
+            'needArrivals' => 0,
+        ];
     }
 
     /**

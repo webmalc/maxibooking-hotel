@@ -134,6 +134,12 @@ class PackageCsvType extends AbstractType
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',
             ])
+            ->add('note', CheckboxType::class, [
+                'label' => 'csv.form.note',
+                'required' => false,
+                'attr' => array('checked' => 'checked'),
+                'group' => 'csv.form.group',
+            ])
             ->add('roomType', HiddenType::class, [
                 'required' => false,
             ])

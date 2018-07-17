@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\ExtendedAbstractChannelManager;
+use MBH\Bundle\ChannelManagerBundle\Services\ChannelManager;
 use MBH\Bundle\PackageBundle\Document\Order;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
@@ -88,15 +89,25 @@ class Expedia extends ExtendedAbstractChannelManager
 
     }
 
+    public function pullOrders($pullOldStatus = ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS)
+    {
+        if ($pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS) {
+            return parent::pullOrders();
+        }
+
+        return $this->pullAllOrders();
+    }
+
     /**
      * pull all orders during client connection
      */
     public function pullAllOrders()
     {
+        $result = true;
         $availableStatuses = ['confirmed', 'retrieved', 'pending'];
         foreach ($availableStatuses as $status) {
             /** @var ExpediaConfig $config */
-            foreach ($this->getConfig() as $config) {
+            foreach ($this->getConfig(true) as $config) {
 
                 $requestData = $this->requestDataFormatter->formatGetAllBookingsData($config, $status);
                 $request = $this->requestFormatter->formatGetOrdersRequest($requestData);
@@ -105,6 +116,12 @@ class Expedia extends ExtendedAbstractChannelManager
                 $this->handlePullOrdersResponse($response, $config, $result, true);
             }
         }
+
+        $cm = $this->container->get('mbh.channelmanager');
+        $cm->clearAllConfigsInBackground();
+        $cm->updateInBackground();
+
+        return $result;
     }
 
     /**

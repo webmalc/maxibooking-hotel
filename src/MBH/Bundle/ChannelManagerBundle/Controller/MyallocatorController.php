@@ -24,7 +24,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 {
     /**
      * Main configuration page
-     * @Route("/", name="channels")
+     * @Route("/", name="myallocator")
      * @Method("GET")
      * @Security("is_granted('ROLE_MYALLOCATOR')")
      * @Template()
@@ -32,6 +32,11 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     public function indexAction()
     {
         $config = $this->hotel->getMyallocatorConfig();
+
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'myallocator');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
 
         $form = $this->createForm(
             MyallocatorType::class, $config, ['config' => $config]
@@ -46,7 +51,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
     /**
      * Main configuration save
-     * @Route("/", name="channels_save")
+     * @Route("/", name="myallocator_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_MYALLOCATOR')")
      * @Template("MBHChannelManagerBundle:Myallocator:index.html.twig")
@@ -69,8 +74,6 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
         if ($form->isValid()) {
 
-            $flash = $request->getSession()->getFlashBag();
-
             if (!$config->getToken()) {
                 $username = $form->get('username')->getData();
                 $password = $form->get('password')->getData();
@@ -80,10 +83,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
                 if ($token) {
                     $config->setToken($token);
                 } else {
-                    $flash->set(
-                        'danger',
-                        $this->get('translator')->trans('controller.myallocatorController.invalid_credentials')
-                    );
+                    $this->addFlash('danger', 'controller.myallocatorController.invalid_credentials');
                 }
             }
 
@@ -92,9 +92,9 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $flash->set('success', $this->get('translator')->trans('controller.myallocatorController.settings_saved_success'));
+            $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('channels'));
+            return $this->redirect($this->generateUrl('myallocator'));
         }
 
         return [
@@ -106,7 +106,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
     /**
      * Unlink user from PMS
-     * @Route("/user/unlink", name="channels_user_unlink")
+     * @Route("/user/unlink", name="myallocator_user_unlink")
      * @Method("GET")
      * @Security("is_granted('ROLE_MYALLOCATOR')")
      */
@@ -120,12 +120,12 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
             $this->dm->flush();
         }
 
-        return $this->redirect($this->generateUrl('channels'));
+        return $this->redirect($this->generateUrl('myallocator'));
     }
 
     /**
      * Room configuration page
-     * @Route("/room", name="channels_room")
+     * @Route("/room", name="myallocator_room")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_MYALLOCATOR')")
      * @Template()
@@ -160,12 +160,11 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
+            $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.myallocatorController.settings_saved_success'));
+            $redirectRouteName = $config->isReadyToSync() ? 'myallocator_room' : 'myallocator_tariff';
 
-            return $this->redirect($this->generateUrl('channels_room'));
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [
@@ -177,7 +176,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
     /**
      * Tariff configuration page
-     * @Route("/tariff", name="channels_tariff")
+     * @Route("/tariff", name="myallocator_tariff")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_MYALLOCATOR')")
      * @Template()
@@ -218,7 +217,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
                 ->set('success',
                     $this->get('translator')->trans('controller.myallocatorController.settings_saved_success'));
 
-            return $this->redirect($this->generateUrl('channels_tariff'));
+            return $this->redirect($this->generateUrl('myallocator_tariff'));
         }
 
         return [
@@ -230,7 +229,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
     /**
      * Service configuration page
-     * @Route("/service", name="channels_service")
+     * @Route("/service", name="myallocator_service")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_MYALLOCATOR')")
      * @param Request $request

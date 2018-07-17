@@ -1,0 +1,32 @@
+{% extends 'MBHOnlineBundle:PaymentForm:layout.html.twig' %}
+
+{#{% set small_title = 'views.form.index.new'|trans({}, 'MBHOnlineBundle') %}#}
+{% set layout = "tabs" %}
+
+{% block content %}
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a href="#online-payment-form-config" data-toggle="tab">
+                <i class="fa fa-cog"> </i> {{ 'views.form.index.settings'|trans({}, 'MBHOnlineBundle') }}
+            </a>
+        </li>
+        <li class="disabled">
+            <a href="#"
+               data-toggle="tooltip"
+               title='{{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}'>
+                <i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane in active" id="online-payment-form-config">
+
+            {{ form_start(form, {'action': path('online_payment_form_new'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+            {{ form_end(form) }}
+        </div>
+        <div class="tab-pane"  id="online-payment-form-code"></div>
+    </div>
+{% endblock %}

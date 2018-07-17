@@ -19,7 +19,14 @@ class TariffValidator extends ConstraintValidator
             $this->context->buildViolation($constraint->messageAges)->atPath('infantAge')->addViolation();
         }
 
-        if ($tariff->getBegin() && $tariff->getEnd() && $tariff->getBegin() > $tariff->getEnd()) {
+        $begin = $tariff->getBegin();
+        $end = $tariff->getEnd();
+
+        if (!$begin instanceof \DateTimeInterface || !$end instanceof \DateTimeInterface) {
+            return;
+        }
+
+        if ($tariff->getBegin() > $tariff->getEnd()) {
             $this->context->buildViolation($constraint->messageDates)->atPath('end')->addViolation();
         }
 

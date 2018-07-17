@@ -13,6 +13,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
+use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields="email", message="validator.user.email_is_busy")
  * @MongoDBUnique(fields="username", message="mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan")
  */
-class User extends BaseUser implements RecipientInterface
+class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
     const TWO_FACTOR_TYPES = ['email', 'google'];
@@ -653,10 +654,32 @@ class User extends BaseUser implements RecipientInterface
 
     /**
      * @param string $locale
+     * @return User
      */
     public function setLocale(string $locale)
     {
         $this->locale = $locale;
+
+        return $this;
     }
 
+    public function getShortName()
+    {
+        return $this->getLastNameWithInitials();
+    }
+
+    public function getLastNameWithInitials()
+    {
+        $result = $this->getLastName();
+
+        if (!empty($this->getFirstName())) {
+            $result .= ' ' . mb_substr($this->getFirstName(), 0, 1) . '.';
+        }
+
+        if (!empty($this->getPatronymic())) {
+            $result .= mb_substr($this->getPatronymic(), 0, 1) . '.';
+        }
+
+        return $result;
+    }
 }

@@ -93,7 +93,7 @@
             {% set settle = status == 'open' %}
 
             <tr class="{{ rowClass }}">
-                <td class="text-center">
+                <td {# 1 search #}class="text-center">
                     <a {% if not (settle or supposeAccommodation) %}disabled="disabled"{% endif %} data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
                        href="{{ settle_link }}" class="btn btn-xs btn-default {% if not (settle or supposeAccommodation) %}disabled{% endif %}">
                         {% if settle or supposeAccommodation %}<i class="fa fa-search"></i> {% endif %}{{ room.name }}{#{ 'report.roomType.settle'|trans }#}
@@ -110,7 +110,7 @@
                         </small>
                     </div>
                 </td>
-                <td>
+                <td{# 2 #}>
                     {% if not room.facilities is empty or not room.allFacilities is empty %}
                         <span class="label {% if room.facilities is not empty %}label-warning{% else %}label-default{% endif %}">
                             <i class="fa fa-bed"
@@ -124,7 +124,7 @@
                         </span>
                     {% endif %}
                 </td>
-                <td class="text-center">
+                <td {# 3 #}class="text-center">
                     {% if is_granted('ROLE_ROOM_STATUS_EDIT') %}
                         {% if room.status is iterable and room.status is not empty %}
                             {% for status in room.status %}
@@ -145,7 +145,7 @@
                         <i class="fa fa-lg mbf-keys" data-toggle='tooltip'></i>
                     {% endif %}
                 </td>
-                <td>
+                <td{# 4 package #}>
                     {% if package and not settle %}
                         <a data-id="{{ package.id }}" href="javascript:void(0)" class="btn btn-xs btn-{{ style }}"
                             style="cursor: pointer;" data-html="true" data-container="body" data-toggle="popover" data-placement="top" data-content="
@@ -173,7 +173,7 @@
                         </a>
                     {% endif %}
                 </td>
-                <td>
+                <td{# 5 payer #}>
                     {% if package %}
                         <a data-toggle='tooltip'
                            href='{{ path('package_order_tourist_edit', {'id': package.order.id, 'packageId': package.id}) }}'
@@ -203,13 +203,13 @@
                         </small>
                     {% endif %}
                 </td>
-                <td>
+                <td{# 6 date #}>
                     {% if package %}
                         {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br>
                         <small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                     {% endif %}
                 </td>
-                <td class="text-left td-md hidden-xs hidden-sm">
+                <td {# 7 order #}class="text-left td-md hidden-xs hidden-sm">
                 {% if package %}
                     <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}'
                        href='{{ path('package_order_cash', {'id': package.order.id, 'packageId': package.id}) }}'
@@ -238,7 +238,7 @@
                     </small>
                 {% endif %}
                 </td>
-                <td>
+                <td{# 8 status#}>
                     {% if status != constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_OPEN') %}
                         {% set statusClass = null %}
                         {% if status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_IN_TODAY') %}

@@ -2,17 +2,55 @@
 
 {% macro attributes(attributes) %}
     {% for name, value in attributes %}
-        {%- if value is not none and value is not same as(false) -%}
+        {%- if name != 'badges' and value is not none and value is not same as(false) -%}
             {{- ' %s="%s"'|format(name, value is same as(true) ? name|e : value|e)|raw -}}
         {%- endif -%}
     {%- endfor -%}
 {% endmacro %}
 
+{% macro badge(attributes)%}
+{% if attributes.badges is defined %}
+    <div class="parent_badge">
+    {% for badge in attributes.badges %}
+        <small data-toggle="tooltip" data-placement="bottom" title="{{ badge.title }}"
+            id="{{ badge.id }}"
+            class="label {{ badge.class }}"
+            >{{ badge.value }}</small>
+    {% endfor %}
+    </div>
+{% endif %}
+{% endmacro %}
+
 {% import _self as macros %}
 
+{% block list %}
+
+    {% if item.hasChildren and options.depth is not same as(0) and item.displayChildren %}
+        {% set isRootItem = item.name == 'root' %}
+
+        {% if isRootItem %}
+            {% if item.childrenAttributes['enabledCollapse'] %}
+                <div class="header{{ not ('collapse in' in item.childrenAttributes['class']) ? ' collapsed' : '' }}"
+                    data-toggle="collapse"
+                    data-target="#{{ item.childrenAttributes['id'] }}">
+                    <span class="header-title">{{ item.label|trans }}</span>
+                    {{ macros.badge(item.childrenAttributes) }}
+                    <span class="icon-toggle"></span>
+            {% else %}
+                <div class="header{{ item.childrenAttributes['badges'] is not defined ? ' collapse-disabled' }}">
+                    <span class="header-title">{{ item.label|trans }}</span>
+                    {{ macros.badge(item.childrenAttributes) }}
+            {% endif %}
+                </div>
+        {% endif %}
+        <ul{{ macros.attributes(listAttributes)}}>
+            {{ block('children') }}
+        </ul>
+    {% endif %}
+{% endblock %}
 
 {% block item %}
-
+{% wrapinline %}
     {%- set attributes = item.attributes %}
     {%- set header = item.attributes.header|default(false) %}
 
@@ -88,6 +126,7 @@
             {{ block('dividerElement') }}
         {%- endif %}
     {% endif %}
+{% endwrapinline %}
 {% endblock %}
 
 {% block dividerElement %}
@@ -135,13 +174,9 @@
     </span>
 {% endblock %}
 
-{% block label %}<span>{% if item.label == '&nbsp;' %}&nbsp;{% else %}{{ item.label|trans }}</span>
-    {% if item.attribute('badge_left') is defined %}
-        <small {% if item.attribute('badge_title_left') is defined %}data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_left') }}"{% endif %}  {% if item.attribute('badge_id_left') is defined %}id="{{ item.attribute('badge_id_left') }}"{% endif %}
-               class="label {% if item.attribute('badge_class_left') is defined %}{{ item.attribute('badge_class_left') }}{% endif %}">{{ item.attribute('badge_value_left') }}</small>
-    {% endif %}
-    {% if item.attribute('badge') is defined %}
-        <small {% if item.attribute('badge_title_right') is defined %}data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_right') }}"{% endif %} {% if item.attribute('badge_id_right') is defined %}id="{{ item.attribute('badge_id_right') }}"{% endif %}
-               class="label {% if item.attribute('badge_class_right') is defined %}{{ item.attribute('badge_class_right') }}{% endif %}">{{ item.attribute('badge_value_right') }}</small>
-    {% endif %}
-{% endif %}{% endblock %}
+{% block label %}
+    {% wrapinline %}
+    <span>{{ item.label == '&nbsp;' ? '&nbsp;' : item.label|trans }}</span>
+    {{ macros.badge(item.attributes) }}
+    {% endwrapinline %}
+{% endblock %}

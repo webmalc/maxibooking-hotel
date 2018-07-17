@@ -11,11 +11,6 @@ trait DeleteReasonTrait
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('note', TextareaType::class, [
-                'label' => 'report.porter.note',
-                'required' => false,
-                'attr' => ['rows' => '10'],
-            ])
             ->add('deleteReason', DocumentType::class, [
                 'label' => 'modal.form.delete.reasons.reason',
                 'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReason',
@@ -24,7 +19,15 @@ trait DeleteReasonTrait
                         ->field('deletedAt')->exists(false)
                         ->sort(['isDefault' => 'desc']);
                 },
-                'required' => true
-            ]);
+                'required' => true,
+                'group' => 'no-group'
+            ])
+            ->add('note', TextareaType::class, [
+                'label' => 'report.porter.note',
+                'required' => false,
+                'attr' => ['rows' => '10'],
+                'group' => 'no-group'
+            ])
+        ;
     }
 }

@@ -7,6 +7,7 @@ use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
+use MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -15,12 +16,11 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class HundredOneHotelsController
  * @package MBH\Bundle\ChannelManagerBundle\Controller
- * @Route("/hundredOneHotels")
+ * @Route("/hundred_one_hotels")
  */
 class HundredOneHotelsController extends Controller
 {
@@ -35,6 +35,11 @@ class HundredOneHotelsController extends Controller
     {
         $config = $this->hotel->getHundredOneHotelsConfig();
 
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'hundred_one_hotels');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+
         $form = $this->createForm(HundredOneHotelType::class, $config);
 
         return [
@@ -43,8 +48,6 @@ class HundredOneHotelsController extends Controller
             'logs' => $this->logs($config)
         ];
     }
-
-
 
     /**
      * @Route("/", name="hundred_one_hotels_save")
@@ -68,8 +71,7 @@ class HundredOneHotelsController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $errorMessage = $this->get('mbh.channelmanager.hundred_one_hotels')->sendTestRequestAndGetErrorMessage($config);
             if (isset($errorMessage)) {
-                $this->addFlash('danger',
-                    $this->get('translator')->trans($errorMessage));
+                $this->addFlash('danger', $errorMessage);
             } else {
                 /* @var $dm DocumentManager; */
                 $dm = $this->get('doctrine_mongodb')->getManager();
@@ -82,6 +84,7 @@ class HundredOneHotelsController extends Controller
                     $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
             }
         }
+
         return $this->redirectToRoute('hundred_one_hotels');
     }
 
@@ -97,6 +100,7 @@ class HundredOneHotelsController extends Controller
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getHundredOneHotelsConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -121,10 +125,11 @@ class HundredOneHotelsController extends Controller
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+            $this->addFlash('success', 'controller.bookingController.settings_saved_success');
 
-            return $this->redirectToRoute('hundred_one_hotels_tariff');
+            $redirectRouteName = $inGuide ? 'hoh_packages_sync' : 'hundred_one_hotels_tariff';
+
+            return $this->redirectToRoute($redirectRouteName);
         }
 
         return [
@@ -142,7 +147,6 @@ class HundredOneHotelsController extends Controller
      * @Security("is_granted('ROLE_101HOTELS')")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function roomAction(Request $request)
     {
@@ -172,11 +176,11 @@ class HundredOneHotelsController extends Controller
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
+            $this->addFlash('success', 'controller.hundredOneHotelsController.settings_saved_success');
 
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.hundredOneHotelsController.settings_saved_success'));
+            $redirectRouteName = $config->isReadyToSync() ? 'hundred_one_hotels_room' : 'hundred_one_hotels_tariff';
 
-            return $this->redirectToRoute('hundred_one_hotels_room');
+            return $this->redirectToRoute($redirectRouteName);
         }
 
         return [
@@ -184,5 +188,22 @@ class HundredOneHotelsController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
+    }
+
+    /**
+     * Sync old packages
+     * @Route("/packages/sync", name="hoh_packages_sync")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_101HOTELS')")
+     */
+    public function syncOldOrders()
+    {
+        $config = $this->hotel->getHundredOneHotelsConfig();
+        if ($config) {
+            $this->get('mbh.channelmanager')->pullOrdersInBackground(HundredOneHotels::CHANNEL_MANAGER_TYPE, true);
+            $this->addFlash('warning', 'controller.expediaController.old_ordes_sync_start');
+        }
+
+        return $this->redirect($this->generateUrl('hundred_one_hotels'));
     }
 }

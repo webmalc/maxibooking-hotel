@@ -580,13 +580,12 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
 
                 //prices
                 $total = $totalServices = 0;
-                $pricesByDate = $packagePrices = [];
+                $packagePrices = [];
                 $packageServices = [];
                 $breakfastCount  = 0;
                 foreach ($room->pricePerDay->price as $price) {
                     $total += (float)$price->price;
                     $date = $helper->getDateFromString((string)$price['date'], 'Y-m-d');
-                    $pricesByDate[$date->format('d_m_Y')] = (float)$price->price;
                     $packagePrices[] =  $packagePrices[] = new PackagePrice(
                         $date,
                         (float)$price->price,
@@ -675,7 +674,6 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                     ->setAdults((int)$room->guests_count)
                     ->setChildren(0)
                     ->setIsSmoking(false)
-                    ->setPricesByDate($pricesByDate)
                     ->setPrices($packagePrices)
                     ->setPrice((float)$total)
                     ->setTotalOverwrite((float)$total)
@@ -943,7 +941,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
 
                     $data['rate'] = $tariffId;
 
-                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                         $info = false;
 
                         if (isset($priceCaches[$roomTypeId][$tariffDoc->getId()][$day->format('d.m.Y')])) {
@@ -1074,7 +1072,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                 foreach ($roomTypes as $roomTypeId => $roomType) {
                     $data['rate'] = $tariffId;
 
-                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                         $info = false;
                         $restriction = null;
 

@@ -53,19 +53,27 @@ class RoomsType extends AbstractType
     public function check($data, ExecutionContextInterface $context)
     {
         $ids = [];
-        foreach($data as $roomType) {
+        $notMappedRoomsId = [];
+        foreach($data as $cmRoomId => $roomType) {
             if ($roomType && in_array($roomType->getId(), $ids)) {
                 $context->addViolation('roomtype.validation');
             }
             if ($roomType) {
                 $ids[] = $roomType->getId();
             }
+            if (is_null($roomType)) {
+                $notMappedRoomsId[] = $cmRoomId;
+            }
         };
+
+        if (!empty($notMappedRoomsId)) {
+            $context->addViolation('roomtype.validation.not_all_rooms_synced', ['%ids%' => join(', ', $notMappedRoomsId)]);
+        }
     }
 
     public function getBlockPrefix()
     {
-        return 'mbh_bundle_channelmanagerbundle_booking_type';
+        return 'mbh_bundle_channelmanagerbundle_rooms_type';
     }
 
 }

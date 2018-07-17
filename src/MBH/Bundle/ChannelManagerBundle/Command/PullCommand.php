@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Command;
 
+use MBH\Bundle\ChannelManagerBundle\Services\ChannelManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,9 +27,13 @@ class PullCommand extends ContainerAwareCommand
         $logger->addInfo(
             'ChannelManager Pull command started'
         );
+
+        $oldPackageStatus = $input->getOption('old') === false
+            ? ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS
+            : ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS;
         $this->getContainer()->get('mbh.channelmanager')->pullOrders(
             $input->getOption('service'),
-            $input->getOption('old')
+            $oldPackageStatus
         );
 
         $time = $start->diff(new \DateTime());

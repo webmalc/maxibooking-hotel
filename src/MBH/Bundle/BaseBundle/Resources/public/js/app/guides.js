@@ -49,13 +49,13 @@ var GUIDES = {
         getSteps: function () {
             return [
                 {
-                    selector: '#main-menu li.dropdown:eq(1)',
+                    selector: '#management-menu li.dropdown:eq(1)',
                     event: 'click',
                     description: Translator.trans("guides.room_cache.dropdown_click")
                 },
                 {
                     timeout: 500,
-                    selector: '#main-menu li.dropdown:eq(1) li:eq(2)',
+                    selector: '#management-menu li.dropdown:eq(1) li:eq(2)',
                     event: 'click',
                     description: Translator.trans("guides.room_cache.menu_item")
                 }
@@ -106,13 +106,13 @@ var GUIDES = {
         getSteps: function () {
             return [
                 {
-                    selector: '#main-menu li.dropdown:eq(1)',
+                    selector: '#management-menu li.dropdown:eq(1)',
                     event: 'click',
                     description: Translator.trans("guides.price_cache.dropdown_menu_click")
                 },
                 {
                     timeout: 500,
-                    selector: '#main-menu li.dropdown:eq(1) li:eq(3)',
+                    selector: '#management-menu li.dropdown:eq(1) li:eq(3)',
                     event: 'click',
                     description: Translator.trans("guides.price_cache.menu_click")
                 }
@@ -474,7 +474,7 @@ function updateSteps(steps) {
 }
 
 function isFirstStepOpenDropdownMenu(steps) {
-    return steps[0].selector && steps[0].selector.indexOf('#main-menu') === 0
+    return steps[0].selector && (steps[0].selector.indexOf('#main-menu') === 0 || steps[0].selector.indexOf('#management-menu') === 0)
         && $(steps[0].selector).hasClass('active')
         && $(steps[0].selector).hasClass('dropdown');
 }

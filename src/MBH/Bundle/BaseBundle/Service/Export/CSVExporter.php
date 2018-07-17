@@ -25,6 +25,7 @@ class CSVExporter
      * @param $entityName
      * @param null $exportedFields
      * @return Response
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function exportToCSVResponse(Builder $qb, $entityName, $exportedFields = null): Response
     {
@@ -49,7 +50,7 @@ class CSVExporter
         }
 
         $content = join("\n", $rows);
-        $content =  mb_convert_encoding($content,'windows-1251', 'UTF-8');
+        $content =  mb_convert_encoding($content,'windows-1251//TRANSLIT', 'UTF-8');
 
         return $this->getCsvAttachmentResponse($content);
     }

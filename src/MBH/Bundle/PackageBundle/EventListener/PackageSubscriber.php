@@ -5,6 +5,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -108,7 +109,6 @@ class PackageSubscriber implements EventSubscriber
                 $package->getRoomType(),
                 $package->getTariff()
             );
-            $this->container->get('mbh.room.cache')->recalculateByPackage($package);
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($package->getBegin(), $package->getEnd());
 
             //corrupted
@@ -124,6 +124,7 @@ class PackageSubscriber implements EventSubscriber
                     ->setHotel($package->getRoomType()->getHotel())
                     ->setEnd(new \DateTime('+10 minute'))
                     ->setLinkText('mailer.to_package')
+                    ->setMessageType(NotificationType::ERROR)
                     ->setLink($this->container->get('router')->generate('package_edit', ['id' => $package->getId()], true));
                 $notifier->setMessage($message)->notify();
             }
@@ -184,7 +185,6 @@ class PackageSubscriber implements EventSubscriber
                 $doc->getTariff(),
                 false
             );
-            $this->container->get('mbh.room.cache')->recalculateByPackage($doc);
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
             $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
         }
@@ -205,8 +205,8 @@ class PackageSubscriber implements EventSubscriber
         }
         $package = $entity;
         $dm = $args->getDocumentManager();
-        /** @var Package $entity */
 
+        /** @var Package $entity */
         // Set number
         if (empty($package->getNumber())) {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
@@ -269,7 +269,6 @@ class PackageSubscriber implements EventSubscriber
                     }
                 }
             }
-            $this->container->get('mbh.room.cache')->recalculateByPackage($document);
 
 //            $creator = $this->container->get('mbh.hotel.console_auto_task_creator');
 //            if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {

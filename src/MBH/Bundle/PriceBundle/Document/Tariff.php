@@ -728,7 +728,7 @@ class Tariff extends Base implements ConditionsInterface
      * @param int $minPerPrepay
      * @return $this
      */
-    public function setMinPerPrepay(int $minPerPrepay)
+    public function setMinPerPrepay(?int $minPerPrepay)
     {
         $this->minPerPrepay = $minPerPrepay;
 

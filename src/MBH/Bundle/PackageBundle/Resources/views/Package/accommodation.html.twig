@@ -114,7 +114,7 @@
             </div>
         {% endif %}
 
-        {% if emptyIntervalsAccommodation|length %}
+        {% if emptyIntervalsAccommodation|length and package.deletedAt is empty %}
 
             {% if optGroupRooms|length %}
                 <div class="box box-default box-solid">

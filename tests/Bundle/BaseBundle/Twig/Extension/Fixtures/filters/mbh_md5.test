@@ -1,0 +1,8 @@
+--TEST--
+"mbh_md5" filter
+--TEMPLATE--
+{{ "1"| mbh_md5 }}
+--DATA--
+return []
+--EXPECT--
+c4ca4238a0b923820dcc509a6f75849b

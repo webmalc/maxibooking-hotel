@@ -33,6 +33,7 @@ class SpecialData extends AbstractFixture implements OrderedFixtureInterface
                 $special = new Special();
                 $special->setHotel($hotel)
                     ->setTitle('Test special #' . $i)
+                    ->setFullTitle('Test special #' . $i)
                     ->setDescription('Test special #' . $i .  'description')
                     ->setBegin($begin)
                     ->setEnd($end)

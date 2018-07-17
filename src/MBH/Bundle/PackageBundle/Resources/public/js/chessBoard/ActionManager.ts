@@ -94,6 +94,7 @@ class ActionManager {
                 ActionManager.showResultPrices($row);
             })
         });
+        editBody.find('.search-room-select').prop('disabled', true);
 
         editModal.find('input.modalPackageId').val(packageData.id);
         editModal.modal('show');

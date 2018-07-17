@@ -271,7 +271,6 @@ class Package extends Base implements \JsonSerializable
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="note")
-     * @ODM\Index()
      */
     protected $note;
 
@@ -560,6 +559,14 @@ class Package extends Base implements \JsonSerializable
     public function getChildren()
     {
         return $this->children;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfGuests()
+    {
+        return $this->getAdults() + $this->getChildren();
     }
 
     /**
@@ -1041,11 +1048,11 @@ class Package extends Base implements \JsonSerializable
     /**
      * get services for recalculation
      *
-     * @return array
+     * @return PackageService[]
      */
     public function getServicesForRecalc(): array
     {
-        return array_filter($this->services->toArray(), function ($service) {
+        return array_filter($this->services->toArray(), function (PackageService $service) {
             if (!$service->isRecalcWithPackage()) {
                 return false;
             }
@@ -1241,46 +1248,42 @@ class Package extends Base implements \JsonSerializable
         return $this->getPackagePrice(true) / $this->getNights();
     }
 
-
     /**
      * @return array
      */
     public function getPricesByDateByPrice()
     {
-        $data = $this->getPricesByDate();
-        $dates = array_keys($data);
-        $prices = array_values($data);
+        $lastPrice = null;
+        $count = 0;
+
         $result = [];
-        $begin = null;
-        $nights = 1;
-        for ($i = 0; $i < count($prices); ++$i) {
-            $price = $prices[$i];
-            $nextPrice = @$prices[$i + 1];
-            $date = $dates[$i];
-            $nextDate = @$dates[$i + 1];
-            if ($nextPrice) {
-                if ($price == $nextPrice) {
-                    if ($begin == null) {
-                        $begin = $date;
-                    }
-                    ++$nights;
-                } else {
-                    $result[$begin == null || $begin == $date ? ($date . ' - ' . $nextDate) : ($begin . ' - ' . $nextDate)] = [
-                        'price' => $price,
-                        'nights' => $nights
-                    ];
-                    $begin = null;
-                    $nights = 1;
-                }
-            } else {
-                if (!$nextDate) {
-                    $nextDate = \DateTime::createFromFormat('d_m_Y', $date)->modify('+1 day')->format('d_m_Y');
-                }
-                $result[$begin . ' - ' . $nextDate] = [
-                    'price' => $price,
-                    'nights' => $nights
+        $rawResult = [];
+
+        foreach ($this->getPrices() as $pp) {
+            if ($lastPrice !== $pp->getPrice()) {
+                $count++;
+                $lastPrice = $pp->getPrice();
+                $rawResult[$count] = [
+                    'begin'         => $pp->getDate(),
+                    'discountPrice' => $this->discountCalculation($pp),
+                    'nights'        => 1,
+                    'fullPrice'     => $lastPrice,
                 ];
+            } else {
+                $rawResult[$count]['nights']++;
             }
+        }
+
+        foreach ($rawResult as $r) {
+            $begin = $r['begin'];
+            $end = (clone $r['begin'])->modify('+' . $r['nights'] . ' days');
+            $result[$begin->format('d.m.Y') . ' - ' . $end->format('d.m.Y')] = [
+                'price'         => $r['discountPrice'], //для совместимости
+                'fullPrice'     => $r['fullPrice'],
+                'discountPrice' => $r['discountPrice'],
+                'nights'        => $r['nights'],
+                'sum'           => $r['discountPrice'] * $r['nights'],
+            ];
         }
 
         return $result;
@@ -1596,13 +1599,8 @@ class Package extends Base implements \JsonSerializable
     {
         if (!$this->isPackagePricesWithDiscountInit) {
             foreach ($this->getPrices() as $price) {
-                $priceFraction = $this->getPackagePrice() != 0 ? $price->getPrice() / $this->getPackagePrice() : 0;
-
                 $clonedPrice = clone $price;
-                $priceWithDiscount = $this->isPercentDiscount
-                    ? $price->getPrice() * (1 - $this->getDiscount(false))
-                    : $price->getPrice() - $this->discount * $priceFraction;
-                $clonedPrice->setPrice($priceWithDiscount);
+                $clonedPrice->setPrice($this->discountCalculation($price));
                 $this->packagePricesWithDiscount[] = $clonedPrice;
             }
             $this->isPackagePricesWithDiscountInit = true;
@@ -1610,7 +1608,6 @@ class Package extends Base implements \JsonSerializable
 
         return $this->packagePricesWithDiscount;
     }
-
 
     /**
      * @param array $prices
@@ -1892,7 +1889,19 @@ class Package extends Base implements \JsonSerializable
             'children' => $this->getChildren(),
             'begin' => $this->getBegin()->format('d.m.Y'),
             'end' => $this->getEnd()->format('d.m.Y'),
-            'services' => $services
+            'services' => $services,
         ];
+    }
+
+    /**
+     * @param PackagePrice $price
+     * @return float
+     */
+    private function discountCalculation(PackagePrice $price): float
+    {
+        $priceFraction = $this->getPackagePrice() != 0 ? $price->getPrice() / $this->getPackagePrice() : 0;
+        return $this->isPercentDiscount
+            ? $price->getPrice() * (1 - $this->getDiscount(false))
+            : $price->getPrice() - $this->discount * $priceFraction;
     }
 }

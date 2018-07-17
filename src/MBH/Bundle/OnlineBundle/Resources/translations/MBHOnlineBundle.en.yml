@@ -1,9 +1,10 @@
 views.api.form.rooms_reservation: Reservation
 views.api.form.hotel: Hotel
-views.api.form.check_in_date: 'Check in'
-views.api.form.check_out_date: 'Check out'
+views.api.form.check_in_date: Check-in
+views.api.form.check_out_date: Check-out
 views.api.form.nights_amount: Nights
 views.api.form.room_type: 'Room type'
+views.api.form.room_type.choices.any: Any
 views.api.form.adults: Adults
 views.api.form.children: Children
 views.api.form.find_room: 'Find room'
@@ -49,9 +50,9 @@ views.api.getUserForm.name: 'First Name'
 views.api.getUserForm.phone: 'Phone number'
 views.api.getUserForm.email: Email
 views.api.getUserForm.placeholder_email: mail@example.com
-views.api.getUserForm.birth_date: 'Birth Date'
-views.api.getUserForm.check_in_time: 'Check in time'
-views.api.getUserForm.check_out_time: 'Check out time'
+views.api.getUserForm.birth_date: 'Date of Birth'
+views.api.getUserForm.check_in_time: 'Check-in time'
+views.api.getUserForm.check_out_time: 'Check-out time'
 views.api.getUserForm.comment: Comment
 views.api.getUserForm.required_fields: '- required fields'
 views.api.getUserForm.choose_other_rooms: 'Select other rooms'
@@ -77,9 +78,9 @@ views.form.index.before_closing_tag: 'Place before closing tag'
 views.form.index.search_page_embed_code: 'Search page embed code:'
 views.form.index.to_results_place: 'Place where results must be:'
 views.form.layout.online_form: 'Online module'
-views.form.period_is_not_filled: 'Check in and check out dates are not selected!'
+views.form.period_is_not_filled: 'Check-in and check-out dates are not selected!'
 views.api.getPaymentType.reservation_guarantee_half: 'Guaranteed availability, prepayment of 50% total sum before arrival'
-views.api.getResultsTable.facilities: Facilities
+views.api.getResultsTable.facilities: Amenities
 views.form.index.list: List
 views.form.index.edit: Edit
 views.form.index.new: New
@@ -95,3 +96,4 @@ views.api.get_user_form.default_patronymic: James
 views.api.getUserForm.document_number: 'ID/Passport number'
 views.api.getUserForm.personal_data_policies: 'Confirm that I have read <a target="_blank" href="url">Data Policy/a> and agree with the terms.'
 views.form.index.edit_templates: 'Template tweaking'
+views.form.analytics: Analytics

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ns4:case xmlns:ns4="http://umms.fms.gov.ru/replication/migration/staying" schemaVersion="1.0"
+          xmlns="http://umms.fms.gov.ru/replication/core" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+          xmlns:ns2="http://umms.fms.gov.ru/replication/migration"
+          xmlns:ns3="http://umms.fms.gov.ru/replication/foreign-citizen-core">
+    <uid>{{ package.id }}</uid>
+    {#<supplierInfo>Maxibooking</supplierInfo>#}
+    {% if tourist.documentRelation and tourist.documentRelation.authorityOrganId %}
+        <subdivision>
+            <type>officialOrgan</type>
+            <element>{{ tourist.documentRelation.authorityOrganId }}</element>
+        </subdivision>
+    {% endif %}
+
+    <date>{{ date()|date('Y-m-d\\TH:i:s') }}</date>
+
+    <ns2:personDataDocument>
+        <person>
+            <uid>{{ tourist.id }}</uid>
+            <lastName>{{ tourist.lastName }}</lastName>
+            <lastNameLat>{{ tourist.lastName|transToLat }}</lastNameLat>
+            <firstName>{{ tourist.firstName }}</firstName>
+            <firstNameLat>{{ tourist.firstName|transToLat }}</firstNameLat>
+            {% if tourist.patronymic %}
+                <middleName>{{ tourist.patronymic }}</middleName>
+                <middleNameLat>{{ tourist.patronymic|transToLat }}</middleNameLat>
+            {% endif %}
+            <gender>
+                <type>Gender</type>
+                <element>{{ tourist.sex == 'female' ? 'F' : 'M' }}</element>
+            </gender>
+            {% if tourist.birthday %}
+                <birthDate>{{ tourist.birthday|date('Y-m-d') }}</birthDate>
+            {% endif %}
+            {% if tourist.citizenshipTld %}
+                <citizenship>
+                    <type>Citizenship</type>
+                    <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
+                    <value>{{ get_country(tourist.citizenshipTld).name }}</value>
+                </citizenship>
+            {% endif %}
+            {% if tourist.birthplace %}
+                <birthPlace>
+                    {% if tourist.birthplace.countryTld %}
+                        <country>
+                            <type>Country</type>
+                            <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
+                            <value>{{ get_country(tourist.birthplace.countryTld).name }}</value>
+                        </country>
+                    {% endif %}
+                    <place>{{ tourist.birthplace.mainRegion }}</place>
+                    <place2>{{ tourist.birthplace.district }}</place2>
+                    <place3>{{ tourist.birthplace.city }}</place3>
+                    <place4>{{ tourist.birthplace.settlement }}</place4>
+                </birthPlace>
+            {% endif %}
+        </person>
+
+        {% if tourist.documentRelation %}
+            <document>
+                <type>
+                    <type>DocumentType</type>
+                    <element>{{ tourist.documentRelation.type }}</element>
+                </type>
+                <series>{{ tourist.documentRelation.series }}</series>
+                <number>{{ tourist.documentRelation.number }}</number>
+                {% set passportType = 103008 %}
+                {% if tourist.documentRelation.type == passportType %}
+                    <authorityOrgan>
+                        <type>officialOrgan</type>
+                        <element>{{ tourist.documentRelation.authorityOrganId }}</element>
+                    </authorityOrgan>
+                {% else %}
+                    <authority>{{ tourist.documentRelation.authorityOrganText }}</authority>
+                {% endif %}
+                {% if tourist.documentRelation.issued %}
+                    <issued>{{ tourist.documentRelation.issued|date('Y-m-d') }}</issued>
+                {% endif %}
+                {% if tourist.documentRelation.expiry %}
+                    <validFrom>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validFrom>
+                    <validTo>{{ tourist.documentRelation.expiry|date('Y-m-d') }}</validTo>
+                {% endif %}
+            </document>
+        {% endif %}
+        <entered>{{ package.arrivalTime ? 'true' : 'false' }}</entered>
+    </ns2:personDataDocument>
+
+    {% set hotel = package.roomType.hotel %}
+    <ns2:stayPlace>
+        <address>
+            {% if hotel.countryTld %}
+                {% if hotel.countryTld == 'ru' %}
+                    <russianAddress>
+                        {% if hotel.regionId and hotel.cityId and hotel.street %}
+                            <addressObjectString>{{ get_region(hotel.regionId).name|replace({'область' : 'обл'}) }}
+                                $${{ get_city(hotel.cityId).name }}
+                                $$${{ hotel.street|capitalize }}
+                            </addressObjectString>
+                        {% endif %}
+                        {% if hotel.house %}
+                            <housing>
+                                <type>
+                                    <type>addressObjectType</type>
+                                    <element>1202</element>
+                                </type>
+                                <value>{{ hotel.house }}</value>
+                            </housing>
+                        {% endif %}
+                        {% if hotel.flat %}
+                            <housing>
+                                <type>
+                                    <type>addressObjectType</type>
+                                    <element>1304</element>
+                                </type>
+                                <value>{{ hotel.flat }}</value>
+                            </housing>
+                        {% endif %}
+                        {% if hotel.corpus %}
+                            <housing>
+                                <type>
+                                    <type>addressObjectType</type>
+                                    <element>1203</element>
+                                </type>
+                                <value>{{ hotel.corpus }}</value>
+                            </housing>
+                        {% endif %}
+                    </russianAddress>
+                {% else %}
+                    <foreignAddress>
+                        <country>
+                            <type>Country</type>
+                            <element>{{ get_country(hotel.countryTld).code3 }}</element>
+                            <value>{{ get_country(hotel.countryTld).name }}</value>
+                        </country>
+                    </foreignAddress>
+                {% endif %}
+            {% endif %}
+        </address>
+    </ns2:stayPlace>
+
+    <ns2:stayPeriod>
+        <dateFrom>{{ package.begin|date('Y-m-d') }}</dateFrom>
+        <dateTo>{{ package.end|date('Y-m-d') }}</dateTo>
+    </ns2:stayPeriod>
+
+    {% if tourist.visa and tourist.visa.specialStatus %}
+        <ns2:stateProgramMember>
+            <type>mig.specialStatus</type>
+            <element>{{ tourist.visa.specialStatus }}</element>
+        </ns2:stateProgramMember>
+    {% endif %}
+
+    <ns2:host>
+        <ns2:organization>
+            <uid>{{ organization.id }}</uid>
+            <inn>{{ organization.inn }}</inn>
+            <name>{{ organization.name }}</name>
+            <address>
+                <address>
+                    {% if hotel.countryTld %}
+                        {% if hotel.countryTld == 'ru' %}
+                            <russianAddress>
+                                {% if hotel.regionId and hotel.cityId and hotel.street %}
+                                    <addressObjectString>{{ get_region(hotel.regionId).name|replace({'область' : 'обл'}) }}
+                                        $${{ get_city(hotel.cityId).name }}
+                                        $$${{ hotel.street|capitalize }}
+                                    </addressObjectString>
+                                {% endif %}
+                                {% if hotel.house %}
+                                    <housing>
+                                        <type>
+                                            <type>addressObjectType</type>
+                                            <element>1202</element>
+                                        </type>
+                                        <value>{{ hotel.house }}</value>
+                                    </housing>
+                                {% endif %}
+                                {% if hotel.flat %}
+                                    <housing>
+                                        <type>
+                                            <type>addressObjectType</type>
+                                            <element>1304</element>
+                                        </type>
+                                        <value>{{ hotel.flat }}</value>
+                                    </housing>
+                                {% endif %}
+                                {% if hotel.corpus %}
+                                    <housing>
+                                        <type>
+                                            <type>addressObjectType</type>
+                                            <element>1203</element>
+                                        </type>
+                                        <value>{{ hotel.corpus }}</value>
+                                    </housing>
+                                {% endif %}
+                            </russianAddress>
+                        {% else %}
+                            <foreignAddress>
+                                <country>
+                                    <type>Country</type>
+                                    <element>{{ get_country(hotel.countryTld).code3 }}</element>
+                                    <value>{{ get_country(hotel.countryTld).name }}</value>
+                                </country>
+                            </foreignAddress>
+                        {% endif %}
+                    {% endif %}
+                </address>
+            </address>
+        </ns2:organization>
+    </ns2:host>
+
+    {% if tourist.visa and tourist.visa.visitPurpose %}
+        <ns2:entrancePurpose>
+            <type>VisitPurpose</type>
+            <element>{{ tourist.visa.visitPurpose }}</element>
+        </ns2:entrancePurpose>
+    {% endif %}
+
+    {% if tourist.migration %}
+        <ns2:migrationCard>
+            {% if tourist.migration.series %}
+                <ns3:series>{{ tourist.migration.series }}</ns3:series>
+            {% endif %}
+            {% if tourist.migration.number %}
+                <ns3:number>{{ tourist.migration.number }}</ns3:number>
+            {% endif %}
+            {% if tourist.visa and tourist.visa.issued and tourist.visa.expiry %}
+                <ns3:stayPeriod>
+                    <dateFrom>{{ tourist.visa.issued|date('Y-m-d') }}</dateFrom>
+                    <dateTo>{{ tourist.visa.expiry|date('Y-m-d') }}</dateTo>
+                </ns3:stayPeriod>
+            {% endif %}
+            {% if tourist.visa.arrivalTime %}
+                <ns3:entranceDate>{{ tourist.visa.arrivalTime|date('Y-m-d') }}</ns3:entranceDate>
+            {% endif %}
+            {% if tourist.visa.departureTime %}
+                <ns3:departureDate>{{ tourist.visa.departureTime|date('Y-m-d') }}</ns3:departureDate>
+            {% endif %}
+            {% if tourist.visa.visitPurpose %}
+                <ns3:visitPurpose>
+                    <type>VisitPurpose</type>
+                    <element>{{ tourist.visa.visitPurpose }}</element>
+                </ns3:visitPurpose>
+            {% endif %}
+
+        </ns2:migrationCard>
+    {% endif %}
+
+    <ns2:docResidence>
+        {% if tourist.visa %}
+            {% set visaDocType = tourist.visa.type %}
+            {% if visaDocType == 'visa' %}
+                {% set residentDocTypeNumber = 139356 %}
+                {% set node = 'visa' %}
+            {% elseif visaDocType == 'residence' %}
+                {% set residentDocTypeNumber = 135709 %}
+                {% set node = 'permResidencePermit' %}
+            {% elseif visaDocType == 'temporary_residence_permit' %}
+                {% set residentDocTypeNumber = 139373 %}
+                {% set node = 'tempResidencePermit' %}
+            {% endif %}
+            <ns2:{{ node }}>
+                {% if visaDocType %}
+                    <type>
+                        <type>DocumentType</type>
+                        <element>{{ residentDocTypeNumber }}</element>
+                    </type>
+                {% endif %}
+                {% if tourist.visa.series %}
+                    <series>{{ tourist.visa.series }}</series>
+                {% endif %}
+                {% if tourist.visa.number %}
+                    <number>{{ tourist.visa.number }}</number>
+                {% endif %}
+                {% if tourist.visa.issued %}
+                    <issued>{{ tourist.visa.issued|date('Y-m-d') }}</issued>
+                    <validFrom>{{ tourist.visa.issued|date('Y-m-d') }}</validFrom>
+                {% endif %}
+                {% if tourist.visa.expiry %}
+                    <validTo>{{ tourist.visa.expiry|date('Y-m-d') }}</validTo>
+                {% endif %}
+                {% if visaDocType == 'visa' and tourist.visa.visaCategory %}
+                    <ns3:category>
+                        <type>VisaCategory</type>
+                        <element>{{ tourist.visa.visaCategory }}</element>
+                    </ns3:category>
+                {% endif %}
+                {% if visaDocType == 'visa' and tourist.visa.visaCategory %}
+                    <ns3:multiplicity>
+                        <type>VisaMultiplicity</type>
+                        <element>{{ tourist.visa.multiplicityType }}</element>
+                    </ns3:multiplicity>
+                {% endif %}
+                {% if visaDocType == 'visa' and tourist.visa.identifier %}
+                    <ns3:identitifier>{{ tourist.visa.identifier }}</ns3:identitifier>
+                {% endif %}
+                {% if tourist.visa.entryGoal and visaDocType == 'visa' %}
+                    <ns3:visitPurpose>
+                        <type>EntryGoal</type>
+                        <element>{{ tourist.visa.entryGoal }}</element>
+                    </ns3:visitPurpose>
+                {% endif %}
+            </ns2:{{ node }}>
+        {% endif %}
+    </ns2:docResidence>
+
+    {% if tourist.visa and tourist.visa.profession %}
+        <ns2:profession>{{ tourist.visa.profession }}</ns2:profession>
+    {% endif %}
+</ns4:case>

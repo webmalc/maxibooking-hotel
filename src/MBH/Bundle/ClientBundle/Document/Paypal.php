@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\ClientBundle\Lib\PaypalIPN;
@@ -58,7 +59,7 @@ class Paypal implements PaymentSystemInterface
     /**
      * @inheritdoc
      */
-    public function checkRequest(Request $request)
+    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
     {
         $cashDocumentId = $request->get('item_name');
         $total = $request->get('mc_gross');
@@ -72,19 +73,18 @@ class Paypal implements PaymentSystemInterface
         $Ipn = new PaypalIPN();
         $statusResponse = $Ipn->checkPayment($dataRequest, $test);
 
-        if ($statusResponse == 'VERIFIED') {
-            return [
-                'doc' => $cashDocumentId,
+        $holder = new CheckResultHolder();
+
+        if (in_array($statusResponse,['INVALID', 'ERROR'])) {
+            return $holder;
+        } elseif ($statusResponse === 'VERIFIED') {
+            return $holder->parseData([
+                'doc'        => $cashDocumentId,
                 'commission' => $commission,
                 //'commissionPercent' => true,
-                'text' => 'OK'
-            ];
-        } elseif ($statusResponse == 'INVALID') {
-            return false;
-        } elseif ($statusResponse == 'ERROR') {
-            return false;
+                'text'       => 'OK',
+            ]);
         }
-
     }
 
     /**

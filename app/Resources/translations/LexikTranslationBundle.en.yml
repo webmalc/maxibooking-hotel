@@ -3,7 +3,7 @@ translations.key: Key
 translations.grid_caption: 'Translations list'
 translations.cache_removed: 'Cache files have been removed'
 translations.new_translation: 'New translation'
-translations.add_translation: 'Add translation'
+translations.add_translation: 'Add a translation'
 translations.save: Save
 translations.save_add: 'Save and Add'
 translations.page_title: Translations
@@ -27,4 +27,4 @@ overview.show_grid: 'Translation grid'
 overview.msg_latest_translation: 'Latest translation date: %date% UTC.'
 overview.domain: Domain
 overview.no_stats: 'No data to display.'
-translations.invalidate_cache: 'Clear cache'
+translations.invalidate_cache: 'Invalidate cache'

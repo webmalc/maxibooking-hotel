@@ -1,0 +1,21 @@
+{% extends 'MBHOnlineBundle:PaymentForm:layout.html.twig' %}
+{% if form.formTemplate is defined %}
+    {% form_theme form.formTemplate '@MBHOnline/Form/Template/formTemplate.html.twig' %}
+{% endif %}
+{#{% set small_title = 'views.form.index.edit'|trans({}, 'MBHOnlineBundle') %}#}
+{% set layout = "tabs" %}
+{% set active = 1 %}
+
+{% block content %}
+    {% include '@MBHOnline/PaymentForm/tabs.html.twig' %}
+    <div class="tab-content">
+
+        {{ form_start(form, {'action': path('online_payment_form_edit', {id: config.id}), 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+        {{ form_end(form) }}
+        {% if config %}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs } %}
+        {% endif %}
+    </div>
+{% endblock %}

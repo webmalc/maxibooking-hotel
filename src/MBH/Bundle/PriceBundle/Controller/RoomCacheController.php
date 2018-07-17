@@ -27,12 +27,16 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     public function indexAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         //get roomTypes
         $roomTypesCallback = function () use ($hotel) {
             return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
         };
         $roomTypes = $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+        $emptyPeriodWarnings = $this->get('mbh.warnings_compiler')->getEmptyCacheWarningsAsStrings($this->hotel, 'room');
+        if (!empty($emptyPeriodWarnings)) {
+            $this->addFlash('warning', join('<br>', $emptyPeriodWarnings));
+        }
 
         return [
             'roomTypes' => $roomTypes,
@@ -94,7 +98,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $roomTypesCallback = function () use ($hotel, $requestedRoomTypes) {
             return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $requestedRoomTypes);
         };
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         if (!count($roomTypes)) {
@@ -144,6 +148,8 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
         );
 
+        $dates = [];
+
         $roomCachesByDates = [];
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
@@ -175,8 +181,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                         ->setRoomType($roomType)
                         ->setDate($helper->getDateFromString($date))
                         ->setTotalRooms((int) $totalRooms['rooms'])
-                        ->setPackagesCount(0)
-                    ;
+                        ->setPackagesCount(0);
+
+                    $dates[] = $newRoomCache->getDate();
                     
                     $roomCachesByDates[$newRoomCache->getDate()->format('d.m.Y')][] = $newRoomCache;
                     if ($tariffId && isset($tariff) && !is_null($tariff)) {
@@ -213,6 +220,8 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 $this->dm->persist($roomCache);
             }
             $roomCachesByDates[$roomCache->getDate()->format('d.m.Y')][] = $roomCache;
+
+            $dates[] = $roomCache->getDate();
         }
 
         $busyDays = [];
@@ -235,7 +244,12 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         } else {
             $this->dm->flush();
             $this->addFlash('success', 'price.tariffcontroller.update_successfully_saved');
-            $this->get('mbh.channelmanager')->updateRoomsInBackground();
+
+            if (!empty($dates)) {
+                list($minDate, $maxDate) = $this->helper->getMinAndMaxDates($dates);
+                $this->get('mbh.channelmanager')->updateRoomsInBackground($minDate, $maxDate);
+            }
+
             $this->get('mbh.cache')->clear('room_cache');
         }
 
@@ -293,7 +307,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             );
             if (empty($error)) {
                 $this->addFlash('success', 'price.tariffcontroller.data_successfully_generated');
-                $this->get('mbh.channelmanager')->updateRoomsInBackground();
+                $this->get('mbh.channelmanager')->updateRoomsInBackground($data['begin'], $data['end']);
                 $this->get('mbh.cache')->clear('room_cache');
 
                 return $this->isSavedRequest() ?

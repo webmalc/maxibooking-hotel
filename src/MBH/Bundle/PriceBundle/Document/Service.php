@@ -142,6 +142,13 @@ class Service extends Base
     protected $recalcWithPackage = false;
 
     /**
+     * @var bool
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="bool")
+     */
+    protected $recalcCausedByTouristsNumberChange = false;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Field(type="boolean")
@@ -179,6 +186,25 @@ class Service extends Base
      * @Gedmo\Locale
      */
     protected $locale;
+
+    /**
+     * @return bool
+     */
+    public function isRecalcCausedByTouristsNumberChange(): ?bool
+    {
+        return $this->recalcCausedByTouristsNumberChange;
+    }
+
+    /**
+     * @param bool $recalcCausedByTouristsNumberChange
+     * @return Service
+     */
+    public function setRecalcCausedByTouristsNumberChange(bool $recalcCausedByTouristsNumberChange): Service
+    {
+        $this->recalcCausedByTouristsNumberChange = $recalcCausedByTouristsNumberChange;
+
+        return $this;
+    }
 
     /**
      * @return string

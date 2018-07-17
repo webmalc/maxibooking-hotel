@@ -3,43 +3,37 @@
 <head>
     <meta charset="utf-8">
     <title>Pdf</title>
-</head>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-<body>
-<style>
-    body{
-        font-family: "Open Sans"; /*Arial*/
-        font-size: 16px;
-    }
-    .document{
-        padding-top: 0px;
-        width: 900px;
-        margin: 0 auto;
-    }
-    .ib{
-        display: inline-block;
-    }
-    .area {
-        border-bottom: solid #000000 1px;
-    }
-    .left {
-        float: left;
-    }
-    .right {
-        float: right;
-    }
-    .center {
-        text-align: center;
-    }
-    .indent {
-        text-indent: 1.5em;
-    }
-    .upper {
-        text-transform: uppercase;
-    }
-</style>
-<div class="document">
-    <style>
+    <style type="text/css">
+        body{
+            font-family: "Open Sans"; /*Arial*/
+            font-size: 16px;
+        }
+        .document{
+            padding-top: 0px;
+            width: 900px;
+            margin: 0 auto;
+        }
+        .ib{
+            display: inline-block;
+        }
+        .area {
+            border-bottom: solid #000000 1px;
+        }
+        .left {
+            float: left;
+        }
+        .right {
+            float: right;
+        }
+        .center {
+            text-align: center;
+        }
+        .indent {
+            text-indent: 1.5em;
+        }
+        .upper {
+            text-transform: uppercase;
+        }
         .two-list {
             width: 900px;
             margin-top: 20px;
@@ -76,8 +70,21 @@
         table.main td {
             padding: 1px 0;
         }
-    </style>
+        .left-form {
+            float: left;
+            width: 450px;
+        }
 
+        .left-form .block {
+            margin: 0 20px;
+            border: solid 1px;
+            height: 200px;
+        }
+    </style>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div class="document">
     {% set organization = null %}
     {% set tourist = null %}
     {% set hotel = null %}
@@ -475,19 +482,6 @@
                     </div>
                 </div>
 
-                <style>
-                    .left-form {
-                        float: left;
-                        width: 450px;
-                    }
-
-                    .left-form .block {
-                        margin: 0 20px;
-                        border: solid 1px;
-                        height: 200px;
-                    }
-                </style>
-
                 <div class="left-form">
 
                     <div class="form" style="border-right: none">
@@ -847,9 +841,6 @@
                             </table>
                         </div>
                     </div>
-
-
-
                 </div>
 
                 <div style="clear: both"></div>

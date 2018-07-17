@@ -1,4 +1,4 @@
-restaurant.dishorder.noingredients: 'Нет ингредиентов для составления блюд.'
+restaurant.dishorder.noingredients: 'Нет ингредиентов для составления блюд'
 restaurant.dishmenu.item.action.new.action.new: 'Добавить новые ингрeдиенты'
 restaurantbundle.controller.entity_successful_created: 'Запись успешно создана.'
 restaurantbundle.controller.entry_successfully_edited: 'Запись успешно отредактирована.'

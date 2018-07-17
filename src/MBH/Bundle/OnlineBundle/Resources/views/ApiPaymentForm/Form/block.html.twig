@@ -1,0 +1,20 @@
+{%- block form_row -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    <div class="form-group">
+        {{- form_label(form) -}}
+        {{- form_errors(form) -}}
+        <div class="form-field">
+            {{- form_widget(form, widget_attr) -}}
+        </div>
+        {#{{- form_help(form) -}}#}
+    </div>
+{%- endblock form_row -%}
+
+{%- block button_row -%}
+    <div class="form-group" style="text-align: center;">
+        {{- form_widget(form) -}}
+    </div>
+{%- endblock button_row -%}

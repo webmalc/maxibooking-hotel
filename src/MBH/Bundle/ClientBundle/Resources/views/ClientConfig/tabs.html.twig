@@ -1,9 +1,10 @@
 {% set menu = [
     {'route': 'client_config', 'title': '<i class="fa fa-cog"></i> '~ 'client.tabs.params'|trans({}, 'MBHClientBundle')},
-    {'route': 'client_payment_systems', 'title': '<i class="' ~ currency().icon ~ '"></i> '~ 'client.tabs.payment_system'|trans({}, 'MBHClientBundle')},
-    {'route': 'color_settings', 'title': '<i class="fa fa-paint-brush" aria-hidden="true"></i> '~ 'client.views.clientConfig.tabs.color_settings'|trans({}, 'MBHClientBundle')}
 ]
 %}
+{% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}
+    {% set menu = menu|merge([{'route': 'color_settings', 'title': '<i class="fa fa-paint-brush" aria-hidden="true"></i> '~ 'client.views.clientConfig.tabs.color_settings'|trans({}, 'MBHClientBundle')}]) %}
+{% endif %}
 
 <ul class="nav nav-tabs" role="tablist">
 {% for item in menu %}

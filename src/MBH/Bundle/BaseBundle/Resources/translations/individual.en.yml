@@ -1,2 +1,2 @@
-form.tourist.inn.label: TIN
-form.organization.inn.label: TIN
+form.tourist.inn.label: 'Tax number'
+form.organization.inn.label: 'Tax number'

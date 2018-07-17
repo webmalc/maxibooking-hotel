@@ -4,6 +4,9 @@ parameters:
         russian_support_phone: '8(800) 200-78-30'
         clients_support_email_ru: 'welcome@maxi-booking.ru'
         clients_support_email_com: 'welcome@maxi-booking.com'
+        support_main_email:
+          ru: 'support@maxi-booking.ru'
+          en: 'support@maxi-booking.com'
 
     #currencies
     mbh.currency.data:
@@ -66,100 +69,100 @@ parameters:
       facilities:
         # Здание
         building:
-          parking: 'facilities.parking'
-          fitness: 'facilities.fitness'
-          swimming: 'facilities.swimming'
-          sauna: 'facilities.sauna'
-          internet: 'facilities.internet'
-          shopping: 'facilities.shopping'
-          restaurant: 'facilities.restaurant'
-          cafeteria: 'facilities.cafeteria'
-          fastfood: 'facilities.fastfood'
-          beach-bar: 'facilities.beach-bar'
-          beer: 'facilities.beer'
-          baggage-safe: 'facilities.baggage-safe'
-          baggage-man: 'facilities.baggage-man'
-          disc-floppy: 'facilities.disc-floppy'
-          spa: 'facilities.spa'
-          lounge: 'facilities.lounge'
-          skiing: 'facilities.skiing'
-          chapel: 'facilities.chapel'
+          parking: {title: 'facilities.parking', description: ''}
+          fitness: {title: 'facilities.fitness', description: ''}
+          swimming: {title: 'facilities.swimming', description: ''}
+          sauna: {title: 'facilities.sauna', description: ''}
+          internet: {title: 'facilities.internet', description: ''}
+          shopping: {title: 'facilities.shopping', description: ''}
+          restaurant: {title: 'facilities.restaurant', description: ''}
+          cafeteria: {title: 'facilities.cafeteria', description: ''}
+          fastfood: {title: 'facilities.fastfood', description: ''}
+          beach-bar: {title: 'facilities.beach-bar', description: ''}
+          beer: {title: 'facilities.beer', description: ''}
+          baggage-safe: {title: 'facilities.baggage-safe', description: ''}
+          baggage-man: {title: 'facilities.baggage-man', description: ''}
+          disc-floppy: {title: 'facilities.disc-floppy', description: ''}
+          spa: {title: 'facilities.spa', description: ''}
+          lounge: {title: 'facilities.lounge', description: ''}
+          skiing: {title: 'facilities.skiing', description: ''}
+          chapel: {title: 'facilities.chapel', description: ''}
 
         # Правила размещения
         rules:
-          animals: 'facilities.animals'
-          no-animals: 'facilities.no-animals'
-          credit-card: 'facilities.credit-card'
-          cc-nc: 'facilities.cc-nc'
-          breakfast: 'facilities.breakfast'
+          animals: {title: 'facilities.animals', description: ''}
+          no-animals: {title: 'facilities.no-animals', description: ''}
+          credit-card: {title: 'facilities.credit-card', description: ''}
+          cc-nc: {title: 'facilities.cc-nc', description: ''}
+          breakfast: {title: 'facilities.breakfast', description: ''}
 
         # Возможности
         ability:
-          reception: 'facilities.reception'
-          wifi: 'facilities.wifi'
-          free-wifi: 'facilities.free-wifi'
-          car-side: 'facilities.car-side'
-          taxi: 'facilities.taxi'
-          menu: 'facilities.menu'
-          travelling: 'facilities.travelling'
-          lock: 'facilities.lock'
-          camera: 'facilities.camera'
-          keys: 'facilities.keys'
-          metro: 'facilities.metro'
-          disfacilities: 'facilities.disability'
-          blind: 'facilities.blind'
+          reception: {title: 'facilities.reception', description: ''}
+          wifi: {title: 'facilities.wifi', description: ''}
+          free-wifi: {title: 'facilities.free-wifi', description: ''}
+          car-side: {title: 'facilities.car-side', description: ''}
+          taxi: {title: 'facilities.taxi', description: ''}
+          menu: {title: 'facilities.menu', description: ''}
+          travelling: {title: 'facilities.travelling', description: ''}
+          lock: {title: 'facilities.lock', description: ''}
+          camera: {title: 'facilities.camera', description: ''}
+          keys: {title: 'facilities.keys', description: ''}
+          metro: {title: 'facilities.metro', description: ''}
+          disfacilities: {title: 'facilities.disability', description: ''}
+          blind: {title: 'facilities.blind', description: ''}
 
         # Тип комнаты
         roomtype:
-          maleroom: 'facilities.maleroom'
-          femaleroom: 'facilities.femaleroom'
-          ruby: 'facilities.ruby'
+          maleroom: {title: 'facilities.maleroom', description: ''}
+          femaleroom: {title: 'facilities.femaleroom', description: ''}
+          ruby: {title: 'facilities.ruby', description: ''}
 
         # Мебель
         furniture:
-          bed: 'facilities.bed'
-          double-bed: 'facilities.double-bed'
-          sofa: 'facilities.sofa'
-          armchair: 'facilities.armchair'
-          table: 'facilities.table'
-          platen: 'facilities.platen'
-          chair: 'facilities.chair'
-          dresstable: 'facilities.dresstable'
-          wardrobe: 'facilities.wardrobe'
-          bookcase: 'facilities.bookcase'
-          torchere: 'facilities.torchere'
-          safe: 'facilities.safe'
+          bed: {title: 'facilities.bed', description: ''}
+          double-bed: {title: 'facilities.double-bed', description: ''}
+          sofa: {title: 'facilities.sofa', description: ''}
+          armchair: {title: 'facilities.armchair', description: ''}
+          table: {title: 'facilities.table', description: ''}
+          platen: {title: 'facilities.platen', description: ''}
+          chair: {title: 'facilities.chair', description: ''}
+          dresstable: {title: 'facilities.dresstable', description: ''}
+          wardrobe: {title: 'facilities.wardrobe', description: ''}
+          bookcase: {title: 'facilities.bookcase', description: ''}
+          torchere: {title: 'facilities.torchere', description: ''}
+          safe: {title: 'facilities.safe', description: ''}
 
         # Еда
         food:
-          kitchen: 'facilities.kitchen'
-          bar: 'facilities.bar'
-          teapot: 'facilities.teapot'
-          coffee: 'facilities.coffee'
-          fridge: 'facilities.fridge'
+          kitchen: {title: 'facilities.kitchen', description: ''}
+          bar: {title: 'facilities.bar', description: ''}
+          teapot: {title: 'facilities.teapot', description: ''}
+          coffee: {title: 'facilities.coffee', description: ''}
+          fridge: {title: 'facilities.fridge', description: ''}
 
         # Удобства
         amenity:
-          bath: 'facilities.bath'
-          sink: 'facilities.sink'
-          shower: 'facilities.shower'
-          toilets: 'facilities.toilets'
-          ws: 'facilities.ws'
-          sign-in: 'facilities.sign-in'
+          bath: {title: 'facilities.bath', description: ''}
+          sink: {title: 'facilities.sink', description: ''}
+          shower: {title: 'facilities.shower', description: ''}
+          toilets: {title: 'facilities.toilets', description: ''}
+          ws: {title: 'facilities.ws', description: ''}
+          sign-in: {title: 'facilities.sign-in', description: ''}
 
         # Техника
         technical:
-          telephone: 'facilities.telephone'
-          fan: 'facilities.fan'
-          conditioner: 'facilities.conditioner'
-          modern-tv: 'facilities.modern-tv'
-          old-tv: 'facilities.old-tv'
-          homecinema: 'facilities.homecinema'
-          washmachine: 'facilities.washmachine'
-          radio: 'facilities.radio'
-          iron: 'facilities.iron'
-          plug: 'facilities.plug'
-          board-games: 'facilities.board-games'
+          telephone: {title: 'facilities.telephone', description: ''}
+          fan: {title: 'facilities.fan', description: ''}
+          conditioner: {title: 'facilities.conditioner', description: ''}
+          modern-tv: {title: 'facilities.modern-tv', description: ''}
+          old-tv: {title: 'facilities.old-tv', description: ''}
+          homecinema: {title: 'facilities.homecinema', description: ''}
+          washmachine: {title: 'facilities.washmachine', description: ''}
+          radio: {title: 'facilities.radio', description: ''}
+          iron: {title: 'facilities.iron', description: ''}
+          plug: {title: 'facilities.plug', description: ''}
+          board-games: {title: 'facilities.board-games', description: ''}
 
     #mbhs
     mbh.mbhs:
@@ -200,6 +203,7 @@ parameters:
       payanyway: 'PayAnyWay'
       uniteller: 'Uniteller'
       rbk: 'Rbk'
+      newRbk: 'NewRbk'
       paypal: 'PayPal'
       rnkb: 'Rnkb'
       invoice: 'mbh.payment_systems.by_invoice'
@@ -254,11 +258,11 @@ parameters:
         hundred_one_hotels:
           title: '101 Отель'
           service: 'mbh.channelmanager.hundred_one_hotels'
-        oktogo:
-          title: 'Oktogo'
-          service: 'mbh.channelmanager.oktogo'
-          api_username: .maxiBooking_api
-          api_password: qdcmBz9K
+#        oktogo:
+#          title: 'Oktogo'
+#          service: 'mbh.channelmanager.oktogo'
+#          api_username: .maxiBooking_api
+#          api_password: qdcmBz9K
 
     #параметры логов
     mbh.logs.max: 100
@@ -372,7 +376,7 @@ parameters:
     mbh.languages:
         - en
         - ru
-        
+
     mbh.warehouse.operations:
         in: "mbh.warehouse.operations.in"
         out: "mbh.warehouse.operations.out"
@@ -384,3 +388,28 @@ parameters:
         268: form.hotelExtendedType.all_public_areas_non_smoking
         900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 
+    guides_site:
+      articles:
+        common:
+          tariffs: 115003866533
+          package_info: 115003945433
+          hotel_creation: 115003827954
+          room_types: 115003861354
+          booking_sync: 115000737314
+          chessboard: 115004129354
+        channel_manager_connections:
+          booking: 115000737314
+          expedia: 115004172253
+          ostrovok: 115000755913
+          hundred_one_hotels: 115000759814
+          vashotel: 115004206894
+#     * Поведение меню:
+#     * - alwaysOpen не в зависимости от выбранного пункта все главные меню открыты
+#     * - custom запоминается последнее открытое меню (на фронтэнде) и в следующий раз открывается именно оно
+#     * - default открыто то меню пункт которого выбран
+    mbh.menu.behaviors:
+        - default
+        - custom
+        - alwaysOpen
+
+    mbh.menu.behaviors.now: custom

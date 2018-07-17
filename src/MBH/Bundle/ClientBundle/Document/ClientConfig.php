@@ -11,6 +11,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -165,6 +166,12 @@ class ClientConfig extends Base
     protected $stripe;
 
     /**
+     * @var NewRbk
+     * @ODM\EmbedOne(targetDocument="NewRbk")
+     */
+    protected $newRbk;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
@@ -287,6 +294,86 @@ class ClientConfig extends Base
     protected $isCacheValid = false;
 
     /**
+     * @var array
+     * @ODM\Field(type="collection")
+     * @Assert\NotBlank()
+     */
+    protected $languages = ['ru'];
+
+    /**
+     * @var FrontSettings
+     * @ODM\EmbedOne(targetDocument="FrontSettings")
+     */
+    protected $frontSettings;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isMBSiteEnabled = true;
+
+    /**
+     * @return bool
+     */
+    public function isMBSiteEnabled(): ?bool
+    {
+        return $this->isMBSiteEnabled;
+    }
+
+    /**
+     * @param bool $isMBSiteEnabled
+     * @return ClientConfig
+     */
+    public function setIsMBSiteEnabled(bool $isMBSiteEnabled): ClientConfig
+    {
+        $this->isMBSiteEnabled = $isMBSiteEnabled;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLanguages(): ?array
+    {
+        return $this->languages;
+    }
+
+    /**
+     * @param array $languages
+     * @return ClientConfig
+     */
+    public function setLanguages(array $languages): ClientConfig
+    {
+        $this->languages = $languages;
+
+        return $this;
+    }
+
+    /**
+     * @return FrontSettings
+     */
+    public function getFrontSettings(): ?FrontSettings
+    {
+        if (empty($this->frontSettings)) {
+            $this->frontSettings = new FrontSettings();
+        }
+
+        return $this->frontSettings;
+    }
+
+    /**
+     * @param FrontSettings $frontSettings
+     * @return ClientConfig
+     */
+    public function setFrontSettings(FrontSettings $frontSettings): ClientConfig
+    {
+        $this->frontSettings = $frontSettings;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isCacheValid(): ?bool
@@ -303,6 +390,22 @@ class ClientConfig extends Base
         $this->isCacheValid = $isCacheValid;
 
         return $this;
+    }
+
+    /**
+     * @return NewRbk
+     */
+    public function getNewRbk(): ?NewRbk
+    {
+        return $this->newRbk;
+    }
+
+    /**
+     * @param NewRbk $newRbk
+     */
+    public function setNewRbk(NewRbk $newRbk): void
+    {
+        $this->newRbk = $newRbk;
     }
 
     /**
@@ -490,7 +593,7 @@ class ClientConfig extends Base
     /**
      * @return bool
      */
-    public function isIsDisableableOn(): bool
+    public function isDisableableOn(): bool
     {
         return $this->isDisableableOn;
     }
@@ -753,7 +856,11 @@ class ClientConfig extends Base
 
         $doc = $this->getPaymentSystemDocByName($paymentSystemName);
         $url = $url ?? $this->getSuccessUrl();
-        if (!$doc || $cashDocument->getOperation() != 'in' || $cashDocument->getMethod() != 'electronic' || $cashDocument->getIsPaid()) {
+        if (!$doc
+            || $cashDocument->getOperation() != CashDocument::OPERATION_IN
+            || $cashDocument->getMethod() != CashDocument::METHOD_ELECTRONIC
+            || $cashDocument->getIsPaid()
+        ) {
             return [];
         }
 
@@ -761,16 +868,20 @@ class ClientConfig extends Base
     }
 
     /**
-     * @inheritdoc
+     * @param Request $request
+     * @param $paymentSystemName
+     * @param ClientConfig $config
+     * @return CheckResultHolder
+     * @throws Exception
      */
-    public function checkRequest(Request $request, $paymentSystemName)
+    public function checkRequest(Request $request, $paymentSystemName, ClientConfig $config)
     {
         $doc = $this->getPaymentSystemDocByName($paymentSystemName);
         if (!$doc) {
-            return false;
+            return new CheckResultHolder();
         }
 
-        return $doc->checkRequest($request);
+        return $doc->checkRequest($request, $config);
     }
 
     /**

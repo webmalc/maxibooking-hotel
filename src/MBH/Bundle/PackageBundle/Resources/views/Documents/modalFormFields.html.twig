@@ -4,17 +4,18 @@
     {% spaceless %}
         {% if label is not same as(false) %}
             {% if not compound %}
-    {% set label_attr = label_attr|merge({'for': id}) %}
-{% endif %}
+                {% set label_attr = label_attr|merge({'for': id}) %}
+            {% endif %}
             {% if required %}
-    {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
-{% endif %}
+                {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+            {% endif %}
             {% if label is empty %}
-    {% set label = name|humanize %}
-{% endif %}
-            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' control-label col-md-2')|trim}) %}
+                {% set label = name|humanize %}
+            {% endif %}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' control-label col-md-3')|trim}) %}
 
-            <label {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain)|raw }}{% if required %}&nbsp;<span class="required-star text-danger">*</span>{% endif %}</label>
+            <label {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain)|raw }}{% if required %}&nbsp;
+            <span class="required-star text-danger">*</span>{% endif %}</label>
         {% endif %}
     {% endspaceless %}
 {% endblock form_label %}

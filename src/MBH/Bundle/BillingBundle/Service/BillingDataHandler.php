@@ -48,14 +48,9 @@ class BillingDataHandler
                 $entity->setIs_enabled(false);
                 $entity->setIs_checked(false);
             }
+
             $response = $this->billingApi->createBillingEntity($endpointSettings, $entity);
-            $decodedResponse = json_decode($response->getBody(), true);
-            if (!isset($decodedResponse['id'])) {
-                $responseCompiler->setIsSuccessful(false);
-                $this->formDataHandler->fillFormByBillingErrors($form, $decodedResponse);
-            } else {
-                $responseCompiler->setData($decodedResponse);
-            }
+
         } else {
             $responseCompiler->setIsSuccessful(false);
         }

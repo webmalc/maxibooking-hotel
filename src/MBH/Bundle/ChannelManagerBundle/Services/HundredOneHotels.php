@@ -80,7 +80,7 @@ class HundredOneHotels extends Base
                 true
             );
 
-            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                 foreach ($roomTypes as $serviceRoomTypeId => $roomTypeInfo) {
                     /** @var RoomType $roomType */
                     $roomType = $roomTypeInfo['doc'];
@@ -151,7 +151,7 @@ class HundredOneHotels extends Base
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
-            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                 /** @var \DateTime $day */
                 foreach ($roomTypes as $serviceRoomTypeId => $roomTypeInfo) {
                     /** @var RoomType $roomType */
@@ -255,7 +255,7 @@ class HundredOneHotels extends Base
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
-            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                 /** @var \DateTime $day */
                 foreach ($roomTypes as $serviceRoomTypeId => $roomTypeInfo) {
                     /** @var RoomType $roomType */
@@ -374,18 +374,32 @@ class HundredOneHotels extends Base
 
     /**
      * Pull orders from service server
+     * @param string $pullOldStatus
      * @return mixed
      */
-    public function pullOrders()
+    public function pullOrders($pullOldStatus = ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS)
     {
         $result = true;
+        $isPulledAllPackages = $pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS;
 
         /** @var HundredOneHotelsConfig $config */
-        foreach ($this->getConfig() as $config) {
+        foreach ($this->getConfig($isPulledAllPackages) as $config) {
             $this->log('begin pulling orders for hotel "' . $config->getHotel()->getName() . '" with id "' . $config->getHotel()->getId() . '"');
             /** @var HOHRequestFormatter $requestFormatter */
             $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
-            $startTime = new \DateTime('- 1 hour');
+
+            switch ($pullOldStatus) {
+                case ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS:
+                    $startTime = new \DateTime('- 1 year');
+                    break;
+                case ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS:
+                    $startTime = new \DateTime('- 1 hour');
+                    break;
+                default:
+                    $startTime = new \DateTime('- 1 hour');
+                    $this->log('Passed invalid $pullOldStatus argument="' . $pullOldStatus . '"');
+            }
+
             $endTime = new \DateTime();
             $requestFormatter->addDateCondition($startTime, $endTime);
             $request = $requestFormatter->getRequest($config, 'get_bookings');
@@ -462,7 +476,18 @@ class HundredOneHotels extends Base
                         $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, false));
                     }
                 }
-            };
+            }
+
+            if ($result && $isPulledAllPackages) {
+                $config->setIsAllPackagesPulled(true);
+                $this->dm->flush();
+            }
+        }
+
+        if ($isPulledAllPackages) {
+            $cm = $this->container->get('mbh.channelmanager');
+            $cm->clearAllConfigsInBackground();
+            $cm->updateInBackground();;
         }
 
         return $result;

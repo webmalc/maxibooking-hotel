@@ -21,6 +21,7 @@ class NotificationType extends Base
 {
     public const ONLINE_ORDER_TYPE = 'online_order';
     public const CHANNEL_MANAGER_TYPE = 'channel_manager_order';
+    public const CHANNEL_MANAGER_CONFIGURATION_TYPE = 'channel_manager_configuration';
     public const CASH_DOC_CONFIRMATION_TYPE = 'cash_confirm';
     public const ONLINE_PAYMENT_CONFIRM_TYPE = 'online_payment_confirm';
     public const ARRIVAL_TYPE = 'arrival';
@@ -29,8 +30,9 @@ class NotificationType extends Base
     public const CONFIRM_ORDER_TYPE = 'confirm_order';
     public const TASK_TYPE = 'task';
     public const EMAIL_RESETTING_TYPE = 'email_resetting';
-
+    public const ERROR = 'error';
     public const AUTH_TYPE = 'auth';
+    public const TECH_SUPPORT_TYPE = 'tech-support';
 
     public const OWNER_STUFF = 'stuff';
     public const OWNER_CLIENT = 'client';
@@ -123,7 +125,8 @@ class NotificationType extends Base
             self::UNPAID_TYPE,
             self::CONFIRM_ORDER_TYPE,
             self::TASK_TYPE,
-            self::EMAIL_RESETTING_TYPE
+            self::EMAIL_RESETTING_TYPE,
+            self::ERROR
         ];
     }
 
@@ -140,7 +143,8 @@ class NotificationType extends Base
     {
         return [
             self::EMAIL_RESETTING_TYPE,
-            self::AUTH_TYPE
+            self::AUTH_TYPE,
+            self::TECH_SUPPORT_TYPE
         ];
     }
 }

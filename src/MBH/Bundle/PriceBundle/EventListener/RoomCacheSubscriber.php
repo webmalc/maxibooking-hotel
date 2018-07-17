@@ -69,7 +69,7 @@ class RoomCacheSubscriber implements EventSubscriber
 
     public function preUpdate(LifecycleEventArgs $args)
     {
-        $this->update($args);
+//        $this->update($args);
     }
 
     /**
@@ -80,7 +80,7 @@ class RoomCacheSubscriber implements EventSubscriber
     {
         $doc = $args->getDocument();
 
-        if ($doc instanceof RoomCache && $doc->getPackagesCount() > 0) {
+        if ($doc instanceof RoomCache && $doc->getPackagesCount() > 0 && empty($doc->getTariff())) {
             throw new DeleteException(
                 $this->container->get('translator')->trans(
                     'roomCacheSubscriber.delete_exception_message.can_not_delete_room'

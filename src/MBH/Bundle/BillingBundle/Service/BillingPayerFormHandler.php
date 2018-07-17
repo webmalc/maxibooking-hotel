@@ -55,12 +55,6 @@ class BillingPayerFormHandler extends FormDataHandler
             'orgState' => 'region',
             'orgAddress' => 'address',
             'orgPostalCode' => 'postal_code',
-            'surname' => 'boss_lastname',
-            'name' => 'boss_firstname',
-            'patronymic' => 'boss_patronymic',
-            'base' => 'boss_operation_base',
-            'proxy' => 'proxy_number',
-            'proxyDate' => 'proxy_date',
             'checkingAccount' => 'account_number',
             'bank_name' => 'bank',
             'swift' => 'swift'
@@ -75,6 +69,7 @@ class BillingPayerFormHandler extends FormDataHandler
     /**
      * @param $payerData
      * @return BillingPayerFormHandler
+     * @throws \Exception
      */
     public function setInitData($payerData)
     {
@@ -148,10 +143,17 @@ class BillingPayerFormHandler extends FormDataHandler
      */
     private function getMandatoryFields($payerData)
     {
+        if ($this->isRussianPayer && $this->payerType === self::NATURAL_ENTITY_ID) {
+            return [];
+        }
+
         $fieldsByCategories = array_keys($this->getBillingFieldsByFormFields());
 
-        if ($this->IsRussianLegalPayerWithProxyBase($payerData)) {
+        if ($this->IsRussianLegalPayerWithCharterBase($payerData)) {
             $fieldsByCategories = array_diff($fieldsByCategories, ['proxy', 'proxyDate']);
+        }
+        if ($this->isRussianPayer && $this->payerType === self::LEGAL_ENTITY_ID) {
+            $fieldsByCategories = array_diff($fieldsByCategories, ['kpp']);
         }
 
         return $fieldsByCategories;
@@ -168,9 +170,10 @@ class BillingPayerFormHandler extends FormDataHandler
 
         $extraFields = array_merge($extraFields, ['country', 'payerType']);
 
-        if ($this->IsRussianLegalPayerWithProxyBase($payerData)) {
+        if ($this->IsRussianLegalPayerWithCharterBase($payerData)) {
             $extraFields = array_merge($extraFields, ['proxy', 'proxyDate']);
         }
+
 
         return array_diff_key($payerData, array_flip($extraFields));
     }
@@ -179,7 +182,7 @@ class BillingPayerFormHandler extends FormDataHandler
      * @param $payerData
      * @return bool
      */
-    private function IsRussianLegalPayerWithProxyBase($payerData): bool
+    private function IsRussianLegalPayerWithCharterBase($payerData): bool
     {
         return $this->isRussianPayer && $this->payerType === self::LEGAL_ENTITY_ID && $payerData['base'] !== 'proxy';
     }

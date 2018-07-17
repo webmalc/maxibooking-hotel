@@ -37,12 +37,25 @@
         </td>
     </tr>
     <tr>
+        <td>
+            {{ 'order.edit.payer'|trans({}, 'MBHPackageBundle') }}
+        </td>
+        <td>
+            {% if package.order.payer %}{{ package.order.payer.shortName }}{% else %}
+                &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}
+        </td>
+    </tr>
+    <tr>
         <td>{{ 'modal.chessBoard.guests' |trans }}</td>
-        <td>{% if package.order.payer %}{{ package.order.payer.shortName }}{% else %}
-            &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}
+        <td>
+            {% if package.adults > 0 %}{{ package.adults }} {{ 'modal.chessBoard.number_of_adults'|trans }}{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} {{ 'modal.chessBoard.number_of_children'|trans }}{% endif %}
+            / {{ 'modal.chessBoard.registered'|trans }}: {{ package.tourists|length }}
+            <br>
             <small>
-                <br>{% if package.adults > 0 %}{{ package.adults }} {{ 'modal.chessBoard.number_of_adults'|trans}}{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} {{ 'modal.chessBoard.number_of_children'|trans}}{% endif %}
-                / {{ 'modal.chessBoard.registered'|trans }}: {{ package.tourists|length }}</small>
+            {% for tourist in package.tourists %}
+                {{ tourist.name }}<br>
+            {% endfor %}
+            </small>
         </td>
     </tr>
     <tr>
@@ -54,18 +67,18 @@
         <td>{% if package.servicesPrice %}{{ package.servicesPrice|number_format(2) }}{% else %} 0 {% endif %}</td>
     </tr>
     {% if package.services|length > 0 %}
+        <tr>
+            <td>{{ 'modal.chessBoard.services'|trans }}:</td>
+            <td></td>
+        </tr>
+        {% for service in package.services %}
             <tr>
-                <td>{{ 'modal.chessBoard.services'|trans }}:</td>
-                <td></td>
+                <td style="text-align: right; padding-right: 40px;">
+                    {{ service.service.name ~ '(' ~ service.amount ~ ')' }}
+                </td>
+                <td>{{ service.price * service.amount|number_format(2) }}</td>
             </tr>
-            {% for service in package.services %}
-                <tr>
-                    <td style="text-align: right; padding-right: 40px;">
-                        {{ service.service.name ~ '(' ~ service.amount ~ ')' }}
-                    </td>
-                    <td>{{ service.price * service.amount|number_format(2)}}</td>
-                </tr>
-            {% endfor %}
+        {% endfor %}
     {% endif %}
     <tr>
         <td>{{ 'modal.chessBoard.payed'|trans }}</td>
@@ -77,8 +90,8 @@
     </tr>
     {% if package.accommodations|length > 0 %}
         <tr>
-            <td style="text-align: right; padding-right: 40px;">{{ 'modal.chessBoard.dates'|trans}}</td>
-            <td style="font-weight: bold">{{ 'modal.chessBoard.rooms'|trans}}</td>
+            <td style="text-align: right; padding-right: 40px;">{{ 'modal.chessBoard.dates'|trans }}</td>
+            <td style="font-weight: bold">{{ 'modal.chessBoard.rooms'|trans }}</td>
         </tr>
         {% for accommodation in package.accommodations %}
 

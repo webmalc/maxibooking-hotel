@@ -1,9 +1,9 @@
 <nav class="navbar navbar-static-top" role="navigation">
-    <!-- Sidebar toggle button-->
+    {#<!-- Sidebar toggle button-->#}
     <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
         <span class="sr-only">{{ 'mbhbasebundle.views.minimize_menu'|trans }}</span>
     </a>
-    <!-- Navbar Right Menu -->
+    {#<!-- Navbar Right Menu -->#}
     <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
             <li class="notifications-menu" id="support-info">
@@ -17,7 +17,7 @@
             {% set cash = user_cash() %}
 
             {% if cash['count'] %}
-            <!-- Cash docs notifications: begin -->
+            {#<!-- Cash docs notifications: begin -->#}
             <li class="dropdown messages-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <i class="{{ currency()['icon'] }}"></i> {{ 'mbhbasebundle.views.kass'|trans }}
@@ -46,7 +46,7 @@
                     {% endif %}
                 </ul>
             </li>
-            <!-- Cash docs notifications: end -->
+            {#<!-- Cash docs notifications: end -->#}
             {% endif %}
 
 
@@ -65,12 +65,12 @@
             {% endif %}
 
 
-            <!-- Menu selected hotel: begin -->
+            {#<!-- Menu selected hotel: begin -->#}
             {% if selected_hotel() and is_granted('ROLE_HOTEL_VIEW') %}
 
                 <li class="dropdown notifications-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                        <i class="fa fa-home"></i>&nbsp;{{ selected_hotel().getTitleOrFullTitle() }}
+                        <i class="fa fa-home"></i>&nbsp;{{ selected_hotel().name }}
                         &nbsp;<i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu">
@@ -81,7 +81,7 @@
                                     <li>
                                         {% if title_url is defined  %}{% set hotel_url = title_url %}{% else %}{% set hotel_url = null %}{% endif%}
                                         <a href="{{ path('hotel_select', {'id': hotel.id, 'url': hotel_url}) }}">
-                                            <i class="fa fa-home"></i>&nbsp;{{ hotel.getTitleOrFullTitle() }}
+                                            <i class="fa fa-home"></i>&nbsp;{{ hotel.name }}
                                         </a>
                                     </li>
                                 {% endfor %}
@@ -95,20 +95,20 @@
                     </ul>
                 </li>
             {% endif %}
-            <!-- Menu selected hotel: end -->
+            {#<!-- Menu selected hotel: end -->#}
 
-            <!-- User Account Menu -->
+            {#<!-- User Account Menu -->#}
             <li class="dropdown user user-menu">
-                <!-- Menu Toggle Button -->
+                {#<!-- Menu Toggle Button -->#}
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <!-- The user image in the navbar-->
+                    {#<!-- The user image in the navbar-->#}
                     <img src="{{ gravatar(app.user.email) }}" class="user-image" alt="{{ app.user.fullName(true) }}">
-                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                    {#<!-- hidden-xs hides the username on small devices so only the image appears. -->#}
                     <span class="hidden-xs">{{ app.user.fullName(true) }}&nbsp;<i class="fa fa-caret-down"></i></span>
 
                 </a>
                 <ul class="dropdown-menu">
-                    <!-- The user image in the menu -->
+                    {#<!-- The user image in the menu -->#}
                     <li class="user-header">
                         <img src="{{ gravatar(app.user.email) }}" class="img-circle" alt="{{ app.user.fullName(true) }}">
                         <p>
@@ -119,7 +119,7 @@
                             </small>
                         </p>
                     </li>
-                    <!-- Menu Footer-->
+                    {#<!-- Menu Footer-->#}
                     <li class="user-footer">
                         {% if is_granted('ROLE_PAYMENTS') or is_granted('ROLE_PROFILE') %}
                         <div class="pull-left">

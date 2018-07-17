@@ -7,11 +7,21 @@
            xmlns:ns6="http://umms.fms.gov.ru/replication/migration/staying/unreg"
            xmlns:ns7="http://umms.fms.gov.ru/replication/migration/staying"
            xmlns:ns8="http://umms.fms.gov.ru/replication/invitation-application">
+    <uid>{{ package.id }}</uid>
+    {% set isRussianTourist = tourist.citizenshipTld == 'ru' %}
+
+    {% if tourist.documentRelation and tourist.documentRelation.authorityOrganId %}
+        <subdivision>
+            <type>officialOrgan</type>
+            <element>{{ tourist.documentRelation.authorityOrganId }}</element>
+        </subdivision>
+    {% endif %}
 
     <date>{{ date()|date('Y-m-d\\TH:i:s') }}</date>
 
     <ns1:personDataDocument>
         <person>
+            <uid>{{ tourist.id }}</uid>
             <lastName>{{ tourist.lastName }}</lastName>
             <firstName>{{ tourist.firstName }}</firstName>
             <middleName>{{ tourist.patronymic }}</middleName>
@@ -20,12 +30,13 @@
                 <element>{{ tourist.sex == 'female' ? 'F' : 'M' }}</element>
             </gender>
             {% if tourist.birthday %}
-                <birthDate>{{ tourist.birthday|date('Y-m-d') }}</birthDate>
+                <birthDate>{{ tourist.birthday|date('d.m.Y') }}</birthDate>
             {% endif %}
             {% if tourist.citizenshipTld %}
                 <citizenship>
                     <type>Citizenship</type>
                     <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
+                    <value>{{ get_country(tourist.citizenshipTld).name }}</value>
                 </citizenship>
             {% endif %}
             {% if tourist.birthplace %}
@@ -34,12 +45,21 @@
                         <country>
                             <type>Country</type>
                             <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
+                            <value>{{ get_country(tourist.birthplace.countryTld).name }}</value>
                         </country>
                     {% endif %}
-                    <place>{{ tourist.birthplace.mainRegion }}</place>
-                    <place2>{{ tourist.birthplace.district }}</place2>
-                    <place3>{{ tourist.birthplace.city }}</place3>
-                    <place4>{{ tourist.birthplace.settlement }}</place4>
+                    {% if tourist.birthplace.mainRegion %}
+                        <place>{{ tourist.birthplace.mainRegion }}</place>
+                    {% endif %}
+                    {% if tourist.birthplace.district %}
+                        <place2>{{ tourist.birthplace.district }}</place2>
+                    {% endif %}
+                    {% if tourist.birthplace.city %}
+                        <place3>{{ tourist.birthplace.city }}</place3>
+                    {% endif %}
+                    {% if tourist.birthplace.settlement %}
+                        <place4>{{ tourist.birthplace.settlement }}</place4>
+                    {% endif %}
                 </birthPlace>
             {% endif %}
         </person>
@@ -75,47 +95,56 @@
 
     {% if tourist.addressObjectDecomposed %}
         <ns1:livingAddress>
-            {% if tourist.citizenshipTld == 'ru' %}
+            {% if isRussianTourist %}
                 <russianAddress>
                     {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
                     <addressObjectString>{{ get_region(tourist.addressObjectDecomposed.regionId).name|replace({'область' : 'обл'}) }}
                         $${{ tourist.addressObjectDecomposed.city }}
-                        г$$${{ tourist.addressObjectDecomposed.street|capitalize }} ул
+                        $$${{ tourist.addressObjectDecomposed.street|capitalize }}
                     </addressObjectString>
-                    <housing>
-                        <type>
-                            <type>addressObjectType</type>
-                            <element>1202</element>
-                        </type>
-                        <value>{{ tourist.addressObjectDecomposed.house }}</value>
-                    </housing>
-                    <housing>
-                        <type>
-                            <type>addressObjectType</type>
-                            <element>1304</element>
-                        </type>
-                        <value>{{ tourist.addressObjectDecomposed.flat }}</value>
-                    </housing>
-                    <housing>
-                        <type>
-                            <type>addressObjectType</type>
-                            <element>1203</element>
-                        </type>
-                        <value>{{ tourist.addressObjectDecomposed.corpus }}</value>
-                    </housing>
-                    <housing>
-                        <type>
-                            <type>addressObjectType</type>
-                            <element>1204</element>
-                        </type>
-                        <value>{{ tourist.addressObjectDecomposed.structure }}</value>
-                    </housing>
+                    {% if tourist.addressObjectDecomposed.house %}
+                        <housing>
+                            <type>
+                                <type>addressObjectType</type>
+                                <element>1202</element>
+                            </type>
+                            <value>{{ tourist.addressObjectDecomposed.house }}</value>
+                        </housing>
+                    {% endif %}
+                    {% if tourist.addressObjectDecomposed.flat %}
+                        <housing>
+                            <type>
+                                <type>addressObjectType</type>
+                                <element>1304</element>
+                            </type>
+                            <value>{{ tourist.addressObjectDecomposed.flat }}</value>
+                        </housing>
+                    {% endif %}
+                    {% if tourist.addressObjectDecomposed.corpus %}
+                        <housing>
+                            <type>
+                                <type>addressObjectType</type>
+                                <element>1203</element>
+                            </type>
+                            <value>{{ tourist.addressObjectDecomposed.corpus }}</value>
+                        </housing>
+                    {% endif %}
+                    {% if tourist.addressObjectDecomposed.structure %}
+                        <housing>
+                            <type>
+                                <type>addressObjectType</type>
+                                <element>1204</element>
+                            </type>
+                            <value>{{ tourist.addressObjectDecomposed.structure }}</value>
+                        </housing>
+                    {% endif %}
                 </russianAddress>
             {% else %}
                 <ns1:foreignAddress>
                     <country>
                         <type>Country</type>
                         <element>{{ get_country(tourist.addressObjectDecomposed.countryTld).code3 }}</element>
+                        <value>{{ get_country(tourist.addressObjectDecomposed.countryTld).name }}</value>
                     </country>
                 </ns1:foreignAddress>
             {% endif %}
@@ -130,11 +159,63 @@
     {% if package.arrivalTime %}
         <ns1:registrationDate>{{ package.arrivalTime|date('Y-m-d') }}</ns1:registrationDate>
     {% endif %}
-
+    {% set hotel = package.roomType.hotel %}
     <ns1:hotelInfo>
         <ns1:organization>
+            <uid>{{ organization.id }}</uid>
             <inn>{{ organization.inn }}</inn>
             <name>{{ organization.name }}</name>
+            <address>
+                <address>
+                    {% if hotel.countryTld %}
+                        {% if hotel.countryTld == 'ru' %}
+                            <russianAddress>
+                                {% if hotel.regionId and hotel.cityId and hotel.street %}
+                                    <addressObjectString>{{ get_region(hotel.regionId).name|replace({'область' : 'обл'}) }}
+                                        $${{ get_city(hotel.cityId).name }}
+                                        $$${{ hotel.street|capitalize }}
+                                    </addressObjectString>
+                                {% endif %}
+                                {% if hotel.house %}
+                                    <housing>
+                                        <type>
+                                            <type>addressObjectType</type>
+                                            <element>1202</element>
+                                        </type>
+                                        <value>{{ hotel.house }}</value>
+                                    </housing>
+                                {% endif %}
+                                {% if hotel.flat %}
+                                    <housing>
+                                        <type>
+                                            <type>addressObjectType</type>
+                                            <element>1304</element>
+                                        </type>
+                                        <value>{{ hotel.flat }}</value>
+                                    </housing>
+                                {% endif %}
+                                {% if hotel.corpus %}
+                                    <housing>
+                                        <type>
+                                            <type>addressObjectType</type>
+                                            <element>1203</element>
+                                        </type>
+                                        <value>{{ hotel.corpus }}</value>
+                                    </housing>
+                                {% endif %}
+                            </russianAddress>
+                        {% else %}
+                            <foreignAddress>
+                                <country>
+                                    <type>Country</type>
+                                    <element>{{ get_country(hotel.countryTld).code3 }}</element>
+                                    <value>{{ get_country(hotel.countryTld).name }}</value>
+                                </country>
+                            </foreignAddress>
+                        {% endif %}
+                    {% endif %}
+                </address>
+            </address>
         </ns1:organization>
     </ns1:hotelInfo>
 

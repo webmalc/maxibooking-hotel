@@ -338,7 +338,7 @@ class RoomRepository extends AbstractBaseRepository
             is_array($floor) ? $floor : $floor = [$floor];
             $qb->field('floor')->in($floor);
         }
-        
+
         //Is enabled
         if ($isEnabled !== null) {
             $qb->field('isEnabled')->equals($isEnabled);
@@ -396,6 +396,7 @@ class RoomRepository extends AbstractBaseRepository
      * @param bool $includeWithoutStatuses
      * @param bool $isOnlyEnabled
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getNumberOfRoomsByRoomTypeIds($statusIds = null, $includeWithoutStatuses = true, $isOnlyEnabled = false)
     {
@@ -409,14 +410,14 @@ class RoomRepository extends AbstractBaseRepository
         if (!is_null($statusIds)) {
             $qb->addOr($qb->expr()->field('status.id')->in($statusIds));
         }
-        
+
         $roomsQuantityByRoomTypeIds = $qb
             ->map('function() {
                 var roomTypeId = this.roomType.$id;
-                emit(roomTypeId.valueOf(), this);
+                emit(roomTypeId.valueOf(), 1);
             }')
             ->reduce('function(key, values) {
-                return values.length;
+                return Array.sum(values);
             }')
             ->getQuery()
             ->execute()
@@ -428,5 +429,21 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $housingsIds
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getRoomsIdsByHousingsIds(array $housingsIds)
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('housing.id')->in($housingsIds)
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 }

@@ -44,10 +44,14 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
         return $restrictionsRequestInfo;
     }
 
-    public function formatUpdateRoomsRequest($roomData) : array
+    public function formatUpdateRoomsRequest($roomsData) : array
     {
-        return [$this->getXMLRequestInfo($roomData)
-            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL)];
+        $roomRequestInfo = [];
+        foreach ($roomsData as $roomData) {
+            $roomRequestInfo[] = $this->getXMLRequestInfo($roomData)->setUrl(self::AVAILABILITY_AND_RATES_API_URL);
+        }
+
+        return $roomRequestInfo;
     }
 
     public function formatGetOrdersRequest($getOrdersData)

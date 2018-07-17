@@ -4,17 +4,21 @@
 {% set layout = 'tabs' %}
 
 {% block content %}
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': entity, 'base': 'vashotel'} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, 'base': 'vashotel'} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
             {{ form_start(form, {'action': path('vashotel_save'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHChannelManagerBundle::actions.html.twig' %}
+            {% embed 'MBHChannelManagerBundle::actions.html.twig' %}
+                {% block additional_actions %}
+                    {% include '@MBHChannelManager/ChannelManager/confirmCMButton.html.twig' with {channelManagerName: 'vashotel'} %}
+                {% endblock %}
+            {% endembed %}
             {{ form_end(form) }}
 
-            {%  if entity %}
-                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
+            {%  if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs, 'delete_route': 'tariff_delete' } %}
             {%  endif %}
         </div>
     </div>

@@ -1,24 +1,35 @@
-<div id="mbh-results-tariffs">
-    <div class="panel panel-primary spacer-top">
-        <div class="panel-heading">
-            {{ 'views.api.tariffs.tariffs_and_special_offers'|trans({}, 'MBHOnlineBundle') }}
-        </div>
-        <div class="panel-body">
-            <ul>
-                {% set counter = 1 %} {% for tariff in tariffResults %}
-                <li>
-                    <p class="mbh-results-tariffs-label">
-                        {% if (app.request.query.get('tariff') is null and tariff.isDefault and defaultTariff.id is not empty) or (tariff.id == app.request.query.get('tariff')) or (counter == tariffResults|length and not app.request.query.get('tariff') and defaultTariff.id is empty) %}
-                        <input type="radio" disabled checked><span id="mbh-results-tariffs-selected" data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span> {% else %} {% set href = app.request.query.all|merge({'tariff': tariff.id })|url_encode %}
-                        <input type="radio" disabled><a href="?{{ href }}">{{ tariff.fullTitle }}</a> {% endif %} {% if tariff.isDefault %}&nbsp;
-                        <small>{{ 'views.api.tariffs.base_tariff'|trans({}, 'MBHOnlineBundle') }}</small>{% endif %} {% if app.request.query.get('hotel') is same as('') %} - <small>{{ tariff.hotel.fullTitle }}</small>{% endif %}
-                    </p>
-                    {% if tariff.description|nl2br %}
-                    <p class="mbh-results-tariffs-description">{{ tariff.description|raw }}</p>
-                    {% endif %} {% set counter = counter + 1 %}
-                </li>
-                {% endfor %}
-            </ul>
+{% if results is not empty or app.request.query.get('tariff') is not null %}
+    <div id="mbh-results-tariffs">
+        <div class="panel panel-primary spacer-top">
+            <div class="panel-heading">
+                {{ 'views.api.tariffs.tariffs_and_special_offers'|trans({}, 'MBHOnlineBundle') }}
+            </div>
+            <div class="panel-body">
+                <ul>
+                    {% set counter = 1 %} {% for tariff in tariffResults %}
+                        <li>
+                            <p class="mbh-results-tariffs-label">
+                                {% if defaultTariff.id == tariff.id %}
+                                    <input type="radio" disabled checked><span id="mbh-results-tariffs-selected"
+                                                                               data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
+                                {% else %}
+                                    {% set href = app.request.query.all|merge({'tariff': tariff.id })|url_encode %}
+                                    <input type="radio" disabled><a href="?{{ href }}">{{ tariff.fullTitle }}</a>
+                                {% endif %}
+                                {% if tariff.isDefault %}&nbsp;
+                                    <small>{{ 'views.api.tariffs.base_tariff'|trans({}, 'MBHOnlineBundle') }}</small>
+                                {% endif %}
+                                {% if app.request.query.get('hotel') is same as('') %} -
+                                    <small>{{ tariff.hotel.fullTitle }}</small>
+                                {% endif %}
+                            </p>
+                            {% if tariff.description|nl2br %}
+                                <p class="mbh-results-tariffs-description">{{ tariff.description|raw }}</p>
+                            {% endif %} {% set counter = counter + 1 %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
-</div>
+{% endif %}

@@ -2,52 +2,60 @@
     {% set services = true %}
 {% endif %}
 
-{% set menu = [
-    {'route': base, 'title': '<i class="fa fa-info-circle"></i>'~'views.tabs.main_settings'|trans({}, 'MBHChannelManagerBundle')},
-    {'route': base ~ '_room', 'title': '<i class="fa fa-bed"></i>'~'views.tabs.room_types'|trans({}, 'MBHChannelManagerBundle')},
-    {'route': base ~ '_tariff', 'title': '<i class="fa fa-sliders"></i>'~'views.tabs.tariffs'|trans({}, 'MBHChannelManagerBundle')}
-]
-%}
-
-{% if services %}
+{% set menu = [] %}
+{% if  config is null or not config.isReadyToSync() %}
     {% set menu = menu|merge([
-            {'route': base ~ '_service', 'title': '<i class="fa fa-plug"></i>'~'views.tabs.services'|trans({}, 'MBHChannelManagerBundle')}
-        ])
-    %}
+        {'route': 'wizard_info', routeParams: {channelManagerName: base}, icon: 'fa-book', titleTransId: 'views.tabs.instruction'},
+    ]) %}
+    {% set active = active + 1 %}
 {% endif %}
 
-{% if entity and (entity.rooms.count == 0 or entity.tariffs.count == 0 or entity.hotelId is empty) %}
-    <div class="alert alert-danger">
-        <i class="fa fa-exclamation-circle"></i>&nbsp;
-        {{ 'channelmanager.empty.config'|trans({}, 'MBHChannelManagerBundle') }}
-    </div>
+{% set menu = menu|merge([
+    {'route': base, icon: 'fa-info-circle', titleTransId: 'views.tabs.main_settings'},
+    {'route': base ~ '_room', icon: 'fa-bed', titleTransId: 'views.tabs.room_types'},
+    {'route': base ~ '_tariff', icon: 'fa-sliders', titleTransId: 'views.tabs.tariffs'}
+]) %}
+
+{% if services and config and config.isReadyToSync() %}
+    {% set menu = menu|merge([
+        {'route': base ~ '_service', icon: 'fa-plug', titleTransId: 'views.tabs.services'}
+    ]) %}
 {% endif %}
 
-{% if entity %}
-{%  set notifications = mbh_channelmanager_get_notifications(entity) %}
-{% if notifications|length %}
-    <div class="alert alert-warning">
-        {% for entry in notifications %}
-            <p>
-                <i class="fa fa-exclamation-circle"></i>&nbsp;
-                {{ entry|trans }}
-            </p>
-        {% endfor %}
-    </div>
-{% endif %}
+{% if config %}
+    {% if notifications is not defined %}
+        {% set notifications = mbh_channelmanager_get_notifications(config) %}
+    {% endif %}
+
+    {% if notifications|length %}
+        <div class="alert alert-warning">
+            {% for entry in notifications %}
+                <p>
+                    <i class="fa fa-exclamation-circle"></i>&nbsp;
+                    {{ entry|trans }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endif %}
 
 <ul class="nav nav-tabs" role="tablist">
-{% for item in menu %}
-    {% if (entity is null or not entity.isEnabled) and loop.index != 1 %}
-        <li class="disabled">
-            <a href="#" role="tab" data-toggle="tooltip"
-               title="{{ 'views.tabs.must_fill_main_settings'|trans({}, 'MBHChannelManagerBundle') }}">{{ item.title|raw }}</a>
-        </li>
-    {% else  %}
-        <li {% if loop.index == active %}class="active"{% endif %}>
-            <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route) }}"{% endif %}>{{item.title|raw}}</a>
-        </li>
-    {% endif  %}
-{% endfor %}
+    {% for item in menu %}
+        {% set routeParams = item.routeParams is defined ? item.routeParams : {} %}
+        {% set title = (config and config.isReadyToSync() ? '<i class="fa ' ~ item.icon ~ '"></i>' : loop.index ~ '.') ~ item.titleTransId|trans({}, 'MBHChannelManagerBundle') %}
+        {% set isConfiguredByTechSupport = base not in ['booking', 'expedia', 'myallocator', 'ostrovok'] %}
+        {% set isActiveTab = loop.index == active %}
+        {% if not (isActiveTab or (config and config.isReadyToSync())
+            or (is_mb_user() and loop.index in [1, 2] and active in [1, 2] and (isConfiguredByTechSupport or (config and config.hotelId))
+            and not (loop.index == 2 and active == 1 and isConfiguredByTechSupport and (config is empty or config.hotelId is empty)))) %}
+            <li class="disabled">
+                <a href="#" role="tab">{{ title|raw }}</a>
+            </li>
+        {% else %}
+            <li {% if isActiveTab %}class="active"{% endif %}>
+                <a {% if isActiveTab %}href="#home" role="tab" data-toggle="tab"
+                   {% else %}href="{{ path(item.route, routeParams) }}"{% endif %}>{{ title|raw }}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
 </ul>

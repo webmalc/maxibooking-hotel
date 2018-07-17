@@ -35,13 +35,13 @@
     {% endif %}
 
 {% if hotels|length %}
-<form id="mbh-form" method="get" class="well" target="_parent" action="{{ formConfig.resultsUrl }}">
+<form id="mbh-form" method="get" class="well" target="_parent" action="{{ formConfig.getResultsUrl(true) }}">
     {% if hotels|length > 1 %}
     <div class="mbh-form-row form-group">
         <label for="mbh-form-hotel">{{ 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
         <select name="hotel" class="form-control input-sm" id="mbh-form-hotel">
             <option></option>
-            {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.localeTitle(app.request.locale) }}</option>{% endfor %}
+            {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.getFullTitleOrTitle() }}</option>{% endfor %}
         </select>
     </div>
     {% endif %}
@@ -69,17 +69,17 @@
 
     {% if formConfig.roomTypes %}
     {% set choices = formConfig.roomTypeChoices %}
+    {% if choices is empty %}
+        {% set choices = [] %}
+        {% for hotel in hotels %}
+            {% set choices = choices|merge(hotel.roomTypes) %}
+        {% endfor %}
+    {% endif %}
     <div class="mbh-form-row form-group {{ choices|length == 1 ? 'hidden' }}">
         <label for="mbh-form-roomType"> {{ 'views.api.form.room_type'|trans({}, 'MBHOnlineBundle') }}</label>
         <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
             <option></option>
-            {% if choices is empty %}
-                {% set choices = [] %}
-                {% for hotel in hotels %}
-                    {% set choices = choices|merge(hotel.roomTypes) %}
-                {% endfor %}
-            {% endif %}
-            <option value="">- any -</option>
+            <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
             {% for roomType in choices %}
                 <option value="{{ roomType.id }}" {{ choices|length == 1 ? 'selected' }}>{{ roomType.localeTitle(app.request.locale) }}</option>
             {% endfor %}

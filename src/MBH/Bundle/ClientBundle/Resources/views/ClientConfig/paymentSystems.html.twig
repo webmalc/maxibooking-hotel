@@ -1,10 +1,9 @@
-{% extends 'MBHClientBundle:ClientConfig:layout.html.twig' %}
+{% extends "MBHClientBundle:ClientConfig:layoutPaymentSystem.html.twig" %}
 
 {% set small_title = 'client.views.payment_systems.small_title'|trans({}, "MBHClientBundle") %}
 {% set layout = "tabs" %}
 
 {% block content %}
-    {% include 'MBHClientBundle:ClientConfig:tabs.html.twig' with {'active': 2 , 'entity': config} %}
     <div class="tab-content">
         <div class="tab-pane active">
             <table class="table table-striped table-hover table-condensed table-icons table-actions">
@@ -19,7 +18,7 @@
                 {% for paymentSystemName in config.paymentSystems %}
                     <tr>
                         <td class="text-center table-icon"><i class="fa fa-credit-card" aria-hidden="true"></i></td>
-                        <td>{{ paymentSystems[paymentSystemName] }}</td>
+                        <td>{{ paymentSystems[paymentSystemName]|trans }}</td>
                         <td class="table-actions-td text-center">
                             {% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}
                                 <a href='{{ path('client_payment_system_form', {'paymentSystemName': paymentSystemName}) }}' class='btn btn-success btn-xs' title='{{ 'client.views.payment_systems.edit'|trans({},'MBHClientBundle') }}' data-toggle='tooltip'>

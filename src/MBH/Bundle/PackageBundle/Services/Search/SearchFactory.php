@@ -139,4 +139,33 @@ class SearchFactory implements SearchInterface
             }
         }
     }
+
+    /**
+     * @param SearchQuery $query
+     * @param array $tariffs
+     * @return array|SearchResult[]
+     */
+    public function searchBeforeResult(SearchQuery $query, array $tariffs)
+    {
+        usort($tariffs, function (Tariff $tariff1, Tariff $tariff2) {
+            if ($tariff1->getIsDefault()) {
+                return -2;
+            }
+            if ($tariff2->getIsDefault()) {
+                return -2;
+            }
+
+            return $tariff1->getPosition() < $tariff2->getPosition() ? 1 : -1;
+        });
+
+        foreach ($tariffs as $tariff) {
+            $query->tariff = $tariff;
+            $searchResults = $this->search($query);
+            if (!empty($searchResults)) {
+                return $searchResults;
+            }
+        }
+
+        return [];
+    }
 }

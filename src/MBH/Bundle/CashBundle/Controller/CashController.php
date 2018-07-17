@@ -68,7 +68,8 @@ class CashController extends Controller
             'users' => $this->dm->getRepository('MBHUserBundle:User')->findBy(['enabled' => true],
                 ['username' => 'asc']),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-            'typeList' => CashDocumentQueryCriteria::getTypeList()
+            'typeList' => CashDocumentQueryCriteria::getTypeList(),
+            'hotel' => $this->hotel
         ];
     }
 
@@ -172,6 +173,8 @@ class CashController extends Controller
 
         if (!$queryCriteria->end) {
             $queryCriteria->end = new \DateTime('midnight +1 day');
+        } else {
+            $queryCriteria->end->modify('midnight +1 day');
         }
 
         $queryCriteria->filterByRange = empty($request->get('filter')) ? 'paidDate' : $request->get('filter');
@@ -420,7 +423,7 @@ class CashController extends Controller
     {
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $order = $entity->getOrder();
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         if ($entity->getHotel() && !$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()) || !$order->getCreditCard()
             || !$clientConfig || $clientConfig->getPaymentSystems() != 'uniteller'
         ) {

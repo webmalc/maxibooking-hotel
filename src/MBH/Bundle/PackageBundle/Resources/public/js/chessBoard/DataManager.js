@@ -1,7 +1,7 @@
 ///<reference path="ActionManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
 /*global $ */
-var DataManager = (function () {
+var DataManager = /** @class */ (function () {
     function DataManager(accommodations, leftRoomsData, noAccommodationCounts, noAccommodationIntervals, chessBoardManager) {
         this._accommodations = accommodations;
         this._leftRoomCounts = leftRoomsData;

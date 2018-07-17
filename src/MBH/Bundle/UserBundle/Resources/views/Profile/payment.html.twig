@@ -55,11 +55,13 @@
     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
         <div class="container-fluid">
             <ul class="nav navbar-nav">
-                <li>
-                    <button type="submit" class="btn btn-success navbar-btn" id="card-data-modal-button">
-                        <i class="fa fa-credit-card"> </i> Subscribe
-                    </button>
-                </li>
+                {% if not is_russian_client() %}
+                    <li>
+                        <button type="submit" class="btn btn-success navbar-btn" id="card-data-modal-button">
+                            <i class="fa fa-credit-card"> </i> Subscribe
+                        </button>
+                    </li>
+                {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li id='list-export'></li>
@@ -86,7 +88,8 @@
                                         <div class="form-group">
                                             <label>CARD NUMBER</label>
                                             <div class="input-group">
-                                                <input type="tel" class="form-control pristine untouched invalid" name="cardNumber"
+                                                <input type="tel" class="form-control pristine untouched invalid"
+                                                       name="cardNumber"
                                                        placeholder="Valid Card Number" id="cardNumber">
                                                 <span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
                                             </div>
@@ -132,14 +135,17 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <label for="expiration-year" class="text-danger" style="padding-left: 15px;">Invalid expiration date year.</label>
-                                            <label for="expiration-month"  class="text-danger" style="padding-left: 15px;">Invalid expiration date month.</label>
+                                            <label for="expiration-year" class="text-danger"
+                                                   style="padding-left: 15px;">Invalid expiration date year.</label>
+                                            <label for="expiration-month" class="text-danger"
+                                                   style="padding-left: 15px;">Invalid expiration date month.</label>
                                         </div>
                                     </div>
                                     <div class="col-xs-5 col-md-3">
                                         <div class="form-group">
                                             <label for="cardCVC">CV CODE</label>
-                                            <input type="tel" class="untouched pristine invalid form-control" name="cardCVC" placeholder="CVC"
+                                            <input type="tel" class="untouched pristine invalid form-control"
+                                                   name="cardCVC" placeholder="CVC"
                                                    id="cvc">
                                             <label id="cvc-error" class="text-danger" for="cvc">Invalid cv code</label>
                                         </div>
@@ -147,7 +153,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <button class="subscribe btn btn-success btn-lg btn-block" type="button" id="subscribe-button"
+                                        <button class="subscribe btn btn-success btn-lg btn-block" type="button"
+                                                id="subscribe-button"
                                                 disabled="">Start Subscription
                                         </button>
                                     </div>

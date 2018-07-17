@@ -223,7 +223,6 @@
 <div class="show-on-print pull-right">
     <a>{{ 'views.cash.index.cash_balance'|trans({}, 'MBHCashBundle') }}: <strong>{{ total|number_format(2) }}</strong>&nbsp;<i class="{{ currency().icon }}"></i></a>
 </div>
-
 <style>
 .cash-table-item {
 display: none;
@@ -237,14 +236,15 @@ display: none;
     <i class="fa fa-plus"></i> {{ 'views.cash.index.create'|trans({}, 'MBHCashBundle') }}
 </button>
 </li>
-    {% if is_russian_client() %}
+    {% if is_russian_client() and hotel.organization %}
         <li>
             <div class="dropup">
                 <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true">
                     <i class="fa fa-upload"></i> {{ 'mbhcashbundle.view.cash.index.1c_export'|trans }} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ path('cash_1c_export') }}" target="_blank">{{ 'mbhcashbundle.view.cash.index.upload_clearing'|trans }}</a></li> <li><a href="{{ path('cash_1c_export', {method: 'cashless'}) }}" target="_blank">{{ 'views.cash.index.upload_all'|trans({}, 'MBHCashBundle') }}</a></li>
+                    <li><a href="{{ path('cash_1c_export') }}" target="_blank">{{ 'mbhcashbundle.view.cash.index.upload_clearing'|trans }}</a></li>
+                    <li><a href="{{ path('cash_1c_export', {method: 'cashless'}) }}" target="_blank">{{ 'views.cash.index.upload_all'|trans({}, 'MBHCashBundle') }}</a></li>
                 </ul>
             </div>
         </li>

@@ -9,7 +9,7 @@ views.cash.index.note: Note
 views.cash.index.reservation: Order
 views.cash.index.income: Income
 views.cash.index.expense: Expense
-views.cash.index.saldo: Saldo
+views.cash.index.saldo: Balance
 views.cash.index.is_paid: Paid
 views.cash.index.user: User
 views.cash.index.is_updated: Updated
@@ -24,18 +24,18 @@ views.cash.jsonButtons.are_you_sure_confirm_payment: 'Confirm the payment of <b>
 views.cash.jsonButtons.confirm: Confirm
 views.cash.jsonButtons.edit_record: 'Edit entry'
 views.cash.jsonButtons.delete_record: 'Delete entry'
-views.cash.layout.cash: Cashdesk
+views.cash.layout.cash: Transactions
 views.cash.index.show_no_paid: 'Include unpaid'
-views.cash.index.show_not_confirmed: 'Show unconfirmed only'
-views.cash.index.show_deleted: 'Include deleted'
-views.cash.index.byDay: 'By date'
+views.cash.index.show_not_confirmed: 'Display Not confirmed payments only'
+views.cash.index.show_deleted: 'Include previously deleted'
+views.cash.index.byDay: 'Sum up by dates'
 views.cash.index.result: 'Total sum'
 views.cash.index.type: 'Order number'
 cashDocument.method.cash: Cash
-cashDocument.method.cashless: Non-cash
-cashDocument.method.electronic: Electronic
+cashDocument.method.cashless: 'Bank transfer'
+cashDocument.method.electronic: 'Online (Bank cards, PayPal, etc.)'
 views.cash.edit.order_document: 'Order document'
 views.cash.index.doc: Document
-views.cash.index.cash_balance: 'Cashdesk balance'
+views.cash.index.cash_balance: 'Transactions Balance'
 views.cash.index.create: Create
 views.cash.index.upload_all: 'Export all'

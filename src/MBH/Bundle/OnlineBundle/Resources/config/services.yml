@@ -24,3 +24,28 @@ services:
         arguments: ['@mbh.client_manager', '%mbh.online.form%']
         tags:
             {name: form.type}
+
+    mbh.online.search_order:
+        class: MBH\Bundle\OnlineBundle\Lib\SearchForm
+        arguments: ['@service_container']
+
+    mbh.payment_types_type:
+        class: MBH\Bundle\OnlineBundle\Form\PaymentTypesType
+        arguments: ['%mbh.online.form%']
+        tags:
+            {name: form.type}
+
+    mbh.site_form:
+        class: MBH\Bundle\OnlineBundle\Form\SiteForm
+        arguments: ['@doctrine.odm.mongodb.document_manager']
+        tags:
+            {name: form.type}
+
+    mbh.site_manager:
+        class: MBH\Bundle\OnlineBundle\Services\SiteManager
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.document_fields_manager'
+            - '@translator'
+            - '@mbh.warnings_compiler'
+            - '@mbh.billing.api'

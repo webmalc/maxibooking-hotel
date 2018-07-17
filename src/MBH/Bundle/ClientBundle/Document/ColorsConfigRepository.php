@@ -19,9 +19,8 @@ class ColorsConfigRepository extends DocumentRepository
 
         if (!$config) {
             $config = new ColorsConfig();
-            $dm = $this->getDocumentManager();
-            $dm->persist($config);
-            $dm->flush();
+            $this->dm->persist($config);
+            $this->dm->flush();
         }
 
         return $config;

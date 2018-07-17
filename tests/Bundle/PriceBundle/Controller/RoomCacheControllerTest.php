@@ -9,6 +9,7 @@
 namespace Tests\Bundle\PriceBundle\Controller;
 
 
+use MBH\Bundle\BaseBundle\Lib\Test\Traits\HotelIdTestTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
@@ -16,15 +17,15 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class RoomCacheControllerTest extends WebTestCase
 {
+    use HotelIdTestTrait;
+
     private $currentDateForSearchRooms;
-    private $hotelId;
     private $roomTypeCache;
     private $tariffs;
 
     private static $amountRoomCacheDefault;
 
     private const BASE_URL = '/price/room_cache/';
-    private const NAME_TEST_HOTEL = 'Отель Волга';
     private const SPECIAL_TARIFFS = 'Special tariff';
 
     private const FORM_NAME_GENERATION = 'mbh_bundle_pricebundle_room_cache_generator_type';
@@ -739,20 +740,6 @@ class RoomCacheControllerTest extends WebTestCase
         $dm = $this->getDocumentManager();
 
         return $dm->getRepository('MBHPriceBundle:RoomCache');
-    }
-
-    /**
-     * @return mixed
-     */
-    private function getHotelId(): string
-    {
-        if (empty($this->hotelId)) {
-            $dm = $this->getDocumentManager();
-            $this->hotelId = $dm->getRepository('MBHHotelBundle:Hotel')
-                ->findOneBy(['fullTitle' => self::NAME_TEST_HOTEL])
-                ->getId();
-        }
-        return $this->hotelId;
     }
 
     /**

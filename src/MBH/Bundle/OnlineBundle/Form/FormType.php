@@ -3,13 +3,11 @@
 namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -17,10 +15,13 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use MBH\Bundle\OnlineBundle\Document\FormConfig;
 
-class FormType extends AbstractType
+class FormType extends AbstractType implements DecorationTypeInterface
 {
+    use DecorationTypeTrait;
+
+    const PREFIX = 'mbh_bundle_onlinebundle_form_type';
+
     private $clientManager;
     private $paymentTypes;
 
@@ -155,58 +156,24 @@ class FormType extends AbstractType
                 'help' => 'form.formType.is_request_tourist_patronymic.help',
                 'required' => false,
                 'group' => 'form.formType.parameters',
-            ])
-            ->add('isFullWidth', CheckboxType::class, [
-                'group' => 'form.formType.css',
-                'label' => 'form.formType.frame_width.is_full_width.label',
-                'required' => false,
-                'help' => 'form.formType.frame_width.is_full_width.help'
-            ])
-            ->add('frameWidth', IntegerType::class, [
-                'label' => 'form.formType.frame_width.label',
-                'group' => 'form.formType.css',
-                'required' => true,
-                'help' => 'form.formType.frame_width.help'
-            ])
-            ->add('frameHeight', IntegerType::class, [
-                'label' => 'form.formType.frame_height.label',
-                'group' => 'form.formType.css',
-                'required' => true,
-                'help' => 'form.formType.frame_height.help'
-            ])
-            ->add(
+            ]);
+
+        $builder
+            ->add($this->isFullWidth($builder))
+            ->add($this->frameWidth($builder))
+            ->add($this->frameHeight($builder))
+            ->add($this->css($builder))
+            ->add($this->isHorizontal($builder))
+            ->add($this->cssLibraries($builder))
+            ->add($this->theme($builder));
+
+        $builder->add(
                 'paymentTypes',
-                InvertChoiceType::class,
+                PaymentTypesType::class,
                 [
                     'group' => 'form.formType.payment',
-                    'choices' => $this->paymentTypes,
-                    'choice_label' => function ($value) {
-                        return 'payment_types.' . $value;
-                    },
                     'label' => 'form.formType.payment_type',
-                    'multiple' => true,
                     'help' => 'form.formType.reservation_payment_types_with_online_form'
-                ]
-            )
-            ->add(
-                'css',
-                TextareaType::class,
-                [
-                    'group' => 'form.formType.css',
-                    'label' => 'form.formType.css_label',
-                    'required' => false,
-                    'help' => 'form.formType.css_help',
-                    'attr' => ['rows' => 60]
-                ]
-            )
-            ->add(
-                'isHorizontal',
-                CheckboxType::class,
-                [
-                    'group' => 'form.formType.css',
-                    'label' => 'form.formType.is_horizontal.label',
-                    'required' => false,
-                    'help' => 'form.formType.is_horizontal.help',
                 ]
             )
             ->add('js',
@@ -230,35 +197,6 @@ class FormType extends AbstractType
                 ]
             );
         }
-
-        $builder->add(
-            'cssLibraries',
-            ChoiceType::class,
-            [
-                'group' => 'form.formType.css',
-                'choices' => FormConfig::getCssLibrariesList(),
-                'required' => false,
-                'label' => 'form.formType.label.css_libraries',
-                'help' => 'form.formType.help.css_libraries',
-                'choice_attr' => function ($value) {
-                    return [
-                        'title' => $value,
-                    ];
-                },
-                'multiple' => true
-            ]
-        )
-            ->add(
-                'theme',
-                ChoiceType::class,
-                [
-                    'group' => 'form.formType.css',
-                    'choices' => FormConfig::getThemes(),
-                    'required' => false,
-                    'label' => 'form.formType.theme_label',
-                    'help' => 'https://bootswatch.com'
-                ]
-            );
     }
 
     public function finishView(FormView $view, FormInterface $form, array $options)
@@ -282,6 +220,6 @@ class FormType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'mbh_bundle_onlinebundle_form_type';
+        return self::PREFIX;
     }
 }

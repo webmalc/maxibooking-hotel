@@ -50,6 +50,7 @@ class ChessBoardDataBuilder
     /** @var $accommodationManipulator PackageAccommodationManipulator */
     private $accommodationManipulator;
     private $pageNumber;
+    private $clientConfig;
 
     private $isRoomTypesInit = false;
     private $roomTypes;
@@ -59,7 +60,6 @@ class ChessBoardDataBuilder
     private $packageAccommodationsData = [];
     private $isAvailableRoomTypesInit = false;
     private $availableRoomTypes;
-    const ROOM_COUNT_ON_PAGE = 30;
 
     /**
      * @param DocumentManager $dm
@@ -80,6 +80,7 @@ class ChessBoardDataBuilder
         $this->helper = $helper;
         $this->accommodationManipulator = $accommodationManipulator;
         $this->translator = $translator;
+        $this->clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
     /**
@@ -482,39 +483,50 @@ class ChessBoardDataBuilder
      */
     public function getRoomsByRoomTypeIds()
     {
+        $username = $this->container->get('security.token_storage')->getToken()->getUsername();
+        $numberOfRooms = $this->clientConfig->getFrontSettings()->getRoomsInChessboard($username);
         if (!$this->isRoomsByRoomTypeIdsInit) {
-
             $roomTypes = $this->getRoomTypeIds();
-            $skipValue = ($this->pageNumber - 1) * self::ROOM_COUNT_ON_PAGE;
+            $skipValue = ($this->pageNumber - 1) * $numberOfRooms;
 
-            $roomsByRoomTypeIds = $this->dm->getRepository('MBHHotelBundle:Room')
-                ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, $skipValue,
-                    self::ROOM_COUNT_ON_PAGE, true, true, ['fullTitle' => 'asc']);
+            $allRooms = $this->dm->getRepository('MBHHotelBundle:Room')
+                ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null,
+                    null, false, true, ['fullTitle' => 'asc'])->toArray();
 
-            $sortedRoomsByRoomTypeIds = [];
-            foreach ($roomsByRoomTypeIds as $roomTypeId => $roomsByRoomTypeId) {
-                $rooms = $roomsByRoomTypeId;
-                usort($rooms, function ($first, $second) {
-                    /** @var Room $first */
-                    /** @var Room $second */
-                    $firstRoomIntName = $this->helper->getFirstNumberFromString($first->getName());
-                    $secondRoomIntName = $this->helper->getFirstNumberFromString($second->getName());
+            usort($allRooms, function(Room $room1, Room $room2) {
+                if ($room1->getRoomType() !== $room2->getRoomType()) {
+                    return $room1->getRoomType()->getName() > $room2->getRoomType()->getName() ? 1 : -1;
+                }
 
-                    if (!$firstRoomIntName && is_numeric($secondRoomIntName)) {
-                        return 1;
-                    } elseif (is_numeric($firstRoomIntName) && !$secondRoomIntName) {
-                        return -1;
-                    } elseif (!$firstRoomIntName && !$secondRoomIntName) {
-                        return $first->getName() > $second->getName() ? 1 : -1;
-                    }
+                $firstRoomIntName = $this->helper->getFirstNumberFromString($room1->getName());
+                $secondRoomIntName = $this->helper->getFirstNumberFromString($room2->getName());
 
-                    return $firstRoomIntName > $secondRoomIntName ? 1 : -1;
-                });
-                $sortedRoomsByRoomTypeIds[$roomTypeId] = $rooms;
+                if (!$firstRoomIntName && is_numeric($secondRoomIntName)) {
+                    return 1;
+                } elseif (is_numeric($firstRoomIntName) && !$secondRoomIntName) {
+                    return -1;
+                } elseif (!$firstRoomIntName && !$secondRoomIntName) {
+                    return $room1->getName() > $room2->getName() ? 1 : -1;
+                }
 
-                $this->roomsByRoomTypeIds = $sortedRoomsByRoomTypeIds;
+                return $firstRoomIntName > $secondRoomIntName ? 1 : -1;
+            });
+
+            $roomsByRoomTypeIds = [];
+            /** @var Room $room */
+            foreach ($allRooms as $index => $room) {
+                $numberOfRoom = $index + 1;
+                if ($numberOfRooms !== 0 && $numberOfRoom > $skipValue + $numberOfRooms) {
+                    break;
+                }
+                if ($skipValue < $numberOfRoom) {
+                    isset($roomsByRoomTypeIds[$room->getRoomType()->getId()])
+                        ? $roomsByRoomTypeIds[$room->getRoomType()->getId()][] = $room
+                        : $roomsByRoomTypeIds[$room->getRoomType()->getId()] = [$room];
+                }
             }
 
+            $this->roomsByRoomTypeIds = $roomsByRoomTypeIds;
             $this->isRoomsByRoomTypeIdsInit = true;
         }
 
@@ -575,11 +587,12 @@ class ChessBoardDataBuilder
      * Lazy loading of available room types
      *
      * @return RoomType[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getAvailableRoomTypes()
     {
         if (!$this->isAvailableRoomTypesInit) {
-            $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+            $isDisableableOn = $this->container->get('mbh.client_config_manager')->fetchConfig()->isDisableableOn();
             $filterCollection = $this->dm->getFilterCollection();
             if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
                 $filterCollection->enable('disableable');
@@ -622,11 +635,6 @@ class ChessBoardDataBuilder
             $this->roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
                 ->fetch($this->hotel, $this->getRoomTypeIds())
                 ->toArray();
-            usort($this->roomTypes, function ($a, $b) {
-                /** @var RoomType $a */
-                /** @var RoomType $b */
-                return ($a->getId() < $b->getId()) ? -1 : 1;
-            });
 
             $this->isRoomTypesInit = true;
         }

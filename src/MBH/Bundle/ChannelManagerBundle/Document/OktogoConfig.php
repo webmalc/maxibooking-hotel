@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -41,6 +42,7 @@ class OktogoConfig extends Base implements BaseInterface
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+    use ConfigTrait;
 
     /**
      * @Gedmo\Versioned

@@ -1,0 +1,38 @@
+{% include 'MBHClientBundle:PaymentSystem/newRbk:event.js.twig' %}
+var mbhNewRbkIframe = {
+  urlPostMessage : '{{ referer }}',
+  typePostMessage: '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\NewRbk::TYPE_POST_MSG') }}',
+  addListener    : function() {
+    mbhNewRbk_Event.finished.create();
+    var self = this;
+    window.addEventListener("message", function(e) {
+      if (e.origin != self.urlPostMessage) {
+          {#// что-то прислали с неизвестного домена - проигнорируем..#}
+        return;
+      }
+      if (e.data.type !== self.typePostMessage) {
+        return;
+      }
+      if (e.data.data == 'finished') {
+        mbhNewRbk_Event.finished.dispatch();
+      }
+    });
+  },
+  sendMsg        : function(form) {
+    var self = this;
+    $.post(form.action, $(form).serialize()).done(function(data) {
+      if (data.status == true) {
+        window.parent.postMessage({type: self.typePostMessage, data: data.data}, self.urlPostMessage);
+      }
+        {% if app.environment == 'dev' %}
+      if (data.status == false) {
+        console.error(data.data);
+      }
+        {% endif %}
+    })
+  }
+};
+
+window.addEventListener('load', function(ev) {
+  mbhNewRbkIframe.addListener();
+});

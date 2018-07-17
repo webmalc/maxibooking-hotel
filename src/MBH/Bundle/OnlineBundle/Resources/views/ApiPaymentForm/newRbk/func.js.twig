@@ -1,0 +1,95 @@
+{#{% wrapinline %}#}
+{% autoescape %}
+{% include 'MBHClientBundle:PaymentSystem/newRbk:for_iframe.js.twig' %}
+var mbhIframe = {
+  idFormPayment    : 'go-form',
+  initEvent        : false,
+  addFormPayment   : function(data) {
+    var html = '<form id="' + this.idFormPayment +
+        '" method="post" action="{{ url('online_form_api_newrbk_generate_invoice') }}">' +
+        '<div class="form-group form-group-sm"> ' +
+        '<label for="total" class="col-form-label col-form-label-sm">{{ 'api.payment_form.pay_order.total' | trans }}</label>' +
+        '<div class="form-field">' +
+        '<input type="number" class="form-control input-sm" name="total" min="1" step="0.01" max="' + data.total + '" ' +
+        '{% if entity.isEnabledShowAmount %}value="' + data.total + '" {% endif %} required>' +
+        '</div></div>' +
+        '<input type="hidden" name="packageId" value="' + data.packageId + '">' +
+        '<div class="form-group">' +
+        '<input type="submit" value="{{ 'api.payment_form.pay_order.submit' | trans }}" class="btn btn-success btn-block">' +
+        '</div>'
+    ;
+    html += '</form>';
+
+    return html;
+  },
+  addEventForForm  : function() {
+    if (this.initEvent === false) {
+      {#var self = this;#}
+      formPayment = document.getElementById(this.idFormPayment);
+      formPayment.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        mbhNewRbkIframe.sendMsg(this);
+      })
+    }
+  },
+  idFormSearch     : '{{ formId }}',
+  idDivResultSearch: '{{ idDivResultSearch }}',
+  updateResultDiv  : function(type, data) {
+    var $divResult = $('#' + this.idDivResultSearch);
+    $divResult.removeClass();
+    if (type == false) {
+      $divResult.find('.panel-body')
+        .removeClass()
+        .addClass('panel-body')
+        .html('');
+    } else {
+      var $panelBody = $divResult.addClass('panel panel-' + type).find('.panel-body');
+
+      if (type !== 'info') {
+        $panelBody.addClass('bg-' + type);
+      }
+
+      $panelBody.html(data);
+    }
+  }
+};
+
+window.onload = function(e) {
+
+  if (typeof $ === 'undefined') {
+    console.error('no jquery');
+    return;
+  }
+
+  var $form = $('#' + mbhIframe.idFormSearch);
+
+  $form.submit(function(e) {
+    e.preventDefault();
+    $.post(this.action, $(this).serialize())
+      .done(function(data) {
+        if (typeof data.error !== 'undefined') {
+          mbhIframe.updateResultDiv('danger', data.error);
+        } else {
+          if (data.needIsPaid) {
+            mbhIframe.updateResultDiv('info', mbhIframe.addFormPayment(data.data));
+            mbhIframe.addEventForForm();
+          } else {
+            mbhIframe.updateResultDiv('success', data.data);
+          }
+        }
+      }).error(function(error) {
+        console.log(error);
+      });
+  });
+
+  $form.change(function(e) {
+    mbhIframe.updateResultDiv(false);
+  });
+  
+  document.addEventListener('mbh_payment_finished', function() {
+    mbhIframe.updateResultDiv('success', 'Оплачено!');
+  });
+};
+{% endautoescape %}
+{#{% endwrapinline %}#}

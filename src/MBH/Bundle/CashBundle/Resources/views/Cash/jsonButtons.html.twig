@@ -15,13 +15,13 @@
                     </a>
             {% endif %}
             {% if is_granted('ROLE_CASH_CONFIRM') or entity.isConfirmed is empty %}
-            <a href='{{ path('cash_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title={{ 'views.cash.jsonButtons.edit_record'|trans({}, 'MBHCashBundle') }} data-toggle='tooltip'>
+            <a href='{{ path('cash_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='{{ 'views.cash.jsonButtons.edit_record'|trans({}, 'MBHCashBundle') }}' data-toggle='tooltip'>
                 <i class='fa fa-pencil-square-o'></i>
             </a>
             {% endif %}
         {% endif %}
         {% if is_granted('ROLE_CASH_DELETE') and (is_granted('ROLE_CASH_CONFIRM') or entity.isConfirmed is empty) %}
-            <a href='{{ path('cash_delete', { 'id': entity.id}) }}' class='btn btn-danger btn-xs delete-link ' title={{ 'views.cash.jsonButtons.delete_record'|trans({}, 'MBHCashBundle') }} data-toggle='tooltip'>
+            <a href='{{ path('cash_delete', { 'id': entity.id}) }}' class='btn btn-danger btn-xs delete-link' title='{{ 'views.cash.jsonButtons.delete_record'|trans({}, 'MBHCashBundle') }}' data-toggle='tooltip'>
                 <i class='fa fa-trash-o'></i>
             </a>
         {% endif %}

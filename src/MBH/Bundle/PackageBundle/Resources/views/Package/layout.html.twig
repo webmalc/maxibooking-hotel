@@ -1,7 +1,9 @@
 {% extends "MBHPackageBundle::layout.html.twig" %}
 
 {% set title =  "package.layout.reservation"|trans({}, "MBHPackageBundle")  %}
-{% set title_url = path('package') %}
+{% if title_url is not defined %}
+    {% set title_url = path('package') %}
+{% endif %}
 
 {% block body %}
     {{ parent() }}

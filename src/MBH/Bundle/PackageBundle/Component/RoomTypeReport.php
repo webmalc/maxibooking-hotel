@@ -74,28 +74,29 @@ class RoomTypeReport
 
         $result = new RoomTypeReportResult();
 
-        $result->total = [
-            'rooms' => count($rooms),
-            'open' => 0,
-            'reserve' => 0,
-            'tourists' => 0,
-            'guests' => 0,
-        ];
+        $result->setAmountRooms(count($rooms));
+
+        $now = $criteria->getDate();
 
         /** @var Package[] $supposeAccommodations */
-        $supposeAccommodations = $this->dm->getRepository('MBHPackageBundle:Package')->findBy([
-            'roomType.id' => ['$in' => $roomTypeIDs],
-            'accommodation' => ['$exists' => false],
-            'isCheckOut' => false,
-            'begin' => ['$lte' => new \DateTime('midnight')]
-        ], [], $result->total['rooms']);
+        $supposeAccommodations = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->findBy(
+                [
+                    'roomType.id'    => ['$in' => $roomTypeIDs],
+                    'accommodations' => ['$exists' => false],
+                    'isCheckOut'     => false,
+                    'begin'          => ['$lte' => (clone $now)],
+                ],
+                [],
+                $result->getTotal()[RoomTypeReportResult::TOTAL_ROOMS]
+            );
 
         $supposeAccommodationTotal = count($supposeAccommodations);
         foreach($supposeAccommodations as $package) {
             $result->supposeAccommodations[$package->getRoomType()->getId()][] = $package;
         }
 
-        $now = new \DateTime('midnight');
+
         foreach($rooms as $room) {
             /** @var Package $package */
             $package = $packageRepository->getPackageByAccommodation($room, $now);
@@ -108,20 +109,20 @@ class RoomTypeReport
 
                 if($package) {
                     $result->packages[$room->getId()] = $package;
-                    $result->total['tourists'] += count($package->getTourists());
-                    $result->total['guests'] += $package->getAdults() + $package->getChildren();
+                    $result->plusForTourist(count($package->getTourists()));
+                    $result->plusForGuests($package->getAdults() + $package->getChildren());
 
                     if($roomStatus == Package::ROOM_STATUS_OPEN) {
-                        $result->total['open']++;
+                        $result->plusOneForOpen();
                     } else {
-                        $result->total['reserve']++;
+                        $result->plusOneForReserve();
                     }
                 } else {
                     if($supposeAccommodationTotal) {
                         $supposeAccommodationTotal--;
-                        $result->total['reserve']++;
+                        $result->plusOneForReserve();
                     }else {
-                        $result->total['open']++;
+                        $result->plusOneForOpen();
                     }
                 }
             }

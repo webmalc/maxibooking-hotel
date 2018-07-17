@@ -3,10 +3,13 @@
     <head>
         <meta charset="utf-8">
         <title>Pdf</title>
-    </head>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-    <body>
-        <style>
+        <style type="text/css">
+            html {
+                padding: 10mm;
+            }
+            body {
+                margin: 0;
+            }
             body{
                 font-family: "Open Sans"; /*Arial*/
                 font-size: 16px;
@@ -38,6 +41,9 @@
                 text-transform: uppercase;
             }
         </style>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
         <div class="document">
             {% block document %}{% endblock %}
         </div>

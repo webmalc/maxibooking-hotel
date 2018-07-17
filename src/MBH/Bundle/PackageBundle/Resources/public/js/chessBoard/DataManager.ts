@@ -292,7 +292,7 @@ class DataManager {
         return this._accommodations[id]
     }
 
-    private updatePackagesData() {
+    public updatePackagesData() {
         let self = this;
         let filterData = ChessBoardManager.getFilterData($('#accommodation-report-filter'));
         $.ajax({

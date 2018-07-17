@@ -3,52 +3,45 @@
 <head>
     <meta charset="utf-8">
     <title>Pdf</title>
-</head>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
-      rel='stylesheet' type='text/css'>
-<body>
-<style>
-    body {
-        font-family: "Open Sans"; /*Arial*/
-        font-size: 16px;
-    }
+    <style type="text/css">
+        body {
+            font-family: "Open Sans"; /*Arial*/
+            font-size: 16px;
+        }
 
-    .document {
-        padding-top: 0px;
-        width: 900px;
-        margin: 0 auto;
-    }
+        .document {
+            padding-top: 0px;
+            width: 900px;
+            margin: 0 auto;
+        }
 
-    .ib {
-        display: inline-block;
-    }
+        .ib {
+            display: inline-block;
+        }
 
-    .area {
-        border-bottom: solid #000000 1px;
-    }
+        .area {
+            border-bottom: solid #000000 1px;
+        }
 
-    .left {
-        float: left;
-    }
+        .left {
+            float: left;
+        }
 
-    .right {
-        float: right;
-    }
+        .right {
+            float: right;
+        }
 
-    .center {
-        text-align: center;
-    }
+        .center {
+            text-align: center;
+        }
 
-    .indent {
-        text-indent: 1.5em;
-    }
+        .indent {
+            text-indent: 1.5em;
+        }
 
-    .upper {
-        text-transform: uppercase;
-    }
-</style>
-<div class="document">
-    <style>
+        .upper {
+            text-transform: uppercase;
+        }
         .header {
             width: 100%;
             border-bottom: solid 2px;
@@ -89,7 +82,130 @@
             margin-left: 81px;
             font-size: 14px
         }
+        .description {
+            width: 900px;
+        }
+
+        .description .text {
+            font-size: 14px;
+            float: left;
+            line-height: 1.3;
+        }
+
+        .description .square {
+            font-size: 14px;
+            text-align: center;
+            padding-top: 10px;
+            border: solid;
+            height: 80px;
+            width: 120px;
+            float: right;
+        }
+
+        .description .agree {
+            font-style: italic;
+            font-size: 15px;
+            float: left;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+
+        .description .agree .fields {
+            display: inline-block;
+        }
+
+        .description .agree .fields div {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .description .agree div:last-child {
+            margin-right: 0px;
+        }
+        .bottom .permission {
+            float: left;
+            width: 395px;
+        }
+
+        .bottom .permission-table {
+            padding: 10px;
+            width: 390px;
+        }
+
+        .bottom .permission-table td {
+            padding: 5px;
+        }
+
+        .bottom .permission-table .field {
+            font-size: 15px;
+        }
+
+        .bottom .permission-table .field .title {
+            float: left;
+            width: 40%;
+        }
+
+        .bottom .permission-table .field .title div:first-child {
+            text-transform: uppercase;
+        }
+
+        .bottom .permission-table .field .title div:last-child {
+            font-size: 13px;
+        }
+
+        .bottom .permission-table .field .area {
+            height: 30px;
+            margin-left: 41%;
+        }
+
+        .bottom .permission {
+            width: 900px;
+        }
+
+        .bottom .permission-table {
+            padding: 10px;
+            width: 900px;
+            border-top: solid 2px #000000;
+        }
+
+        .bottom .permission-table td {
+            padding: 5px;
+        }
+
+        .bottom .permission-table .field {
+            font-size: 15px;
+        }
+
+        .bottom .permission-table .field .title {
+            float: left;
+            width: 40%;
+        }
+
+        .bottom .permission-table .field .title div:first-child {
+            text-transform: uppercase;
+        }
+
+        .bottom .permission-table .field .title div:last-child {
+            font-size: 13px;
+        }
+
+        .bottom .permission-table .field .area {
+            height: 30px;
+            margin-left: 41%;
+        }
+        .signature {
+            border: solid 2px;
+            float: right;
+            width: 200px;
+            padding: 5px;
+            font-size: 14px;
+        }
     </style>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
+          rel='stylesheet' type='text/css'>
+<body>
+</head>
+<div class="document">
 
     {% set organization = null %}
     {% set tourist = null %}
@@ -140,7 +256,7 @@
                         </td>
                         <td style="width: 20%">
                             {% if hotel.logoImage %}
-                                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80'))) }}">
+                                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('scaler'))) }}">
                             {% endif %}
                         </td>
                     </tr>
@@ -238,8 +354,8 @@
                                 <div class="title">
                                     <div>Pass №</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.passport'|trans }} №</div>
-                                </div>
-                                <div class="area" style="height: 38px !important;">{% if tourist and tourist.documentRelation and tourist.documentRelation.number and tourist.documentRelation.series %} {{ tourist.documentRelation.series }} {{ tourist.documentRelation.number }} {% endif %}</div>
+                                </div>and tourist.documentRelation.series
+                                <div class="area" style="height: 38px !important;">{% if tourist and tourist.documentRelation %} {% if tourist.documentRelation.series %} {{ tourist.documentRelation.series }}{% endif %} {% if tourist.documentRelation.number %}{{ tourist.documentRelation.number }}{% endif %} {% endif %}</div>
                             </div>
                         </td>
                         <td colspan="6">
@@ -372,54 +488,11 @@
                     </tbody>
                 </table>
 
-                <style>
-                    .description {
-                        width: 900px;
-                    }
-
-                    .description .text {
-                        font-size: 14px;
-                        float: left;
-                        line-height: 1.3;
-                    }
-
-                    .description .square {
-                        font-size: 14px;
-                        text-align: center;
-                        padding-top: 10px;
-                        border: solid;
-                        height: 80px;
-                        width: 120px;
-                        float: right;
-                    }
-
-                    .description .agree {
-                        font-style: italic;
-                        font-size: 15px;
-                        float: left;
-                        font-weight: bold;
-                        margin-top: 30px;
-                    }
-
-                    .description .agree .fields {
-                        display: inline-block;
-                    }
-
-                    .description .agree .fields div {
-                        display: inline-block;
-                        margin-right: 5px;
-                    }
-
-                    .description .agree div:last-child {
-                        margin-right: 0px;
-                    }
-                </style>
-
                 <div class="description">
                     <div class="text">
                         You will find in your room the list of services that our hotel provides. <br>
-                        <strong>The checking-out time at the hotel is {{ arrivalTimeDefault }}:00. The checking time in
-                            the hotel is {{ departureTimeDefault }}:00.</strong><br>
+                        <strong>The checking-out time at the hotel is {{ departureTimeDefault }}:00. The checking time in
+                            the hotel is {{ arrivalTimeDefault }}:00.</strong><br>
                         The smoking is allowed only in designated places. <br>
                         The management is not responsible for your money and valuables not deposited in the hotel's
                         safe.
@@ -477,84 +550,6 @@
                     </div>
                     <div style="clear: both"></div>
                 </div>
-
-
-                <style>
-                    .bottom .permission {
-                        float: left;
-                        width: 395px;
-                    }
-
-                    .bottom .permission-table {
-                        padding: 10px;
-                        width: 390px;
-                    }
-
-                    .bottom .permission-table td {
-                        padding: 5px;
-                    }
-
-                    .bottom .permission-table .field {
-                        font-size: 15px;
-                    }
-
-                    .bottom .permission-table .field .title {
-                        float: left;
-                        width: 40%;
-                    }
-
-                    .bottom .permission-table .field .title div:first-child {
-                        text-transform: uppercase;
-                    }
-
-                    .bottom .permission-table .field .title div:last-child {
-                        font-size: 13px;
-                    }
-
-                    .bottom .permission-table .field .area {
-                        height: 30px;
-                        margin-left: 41%;
-                    }
-                </style>
-
-
-                <style>
-                    .bottom .permission {
-                        width: 900px;
-                    }
-
-                    .bottom .permission-table {
-                        padding: 10px;
-                        width: 900px;
-                        border-top: solid 2px #000000;
-                    }
-
-                    .bottom .permission-table td {
-                        padding: 5px;
-                    }
-
-                    .bottom .permission-table .field {
-                        font-size: 15px;
-                    }
-
-                    .bottom .permission-table .field .title {
-                        float: left;
-                        width: 40%;
-                    }
-
-                    .bottom .permission-table .field .title div:first-child {
-                        text-transform: uppercase;
-                    }
-
-                    .bottom .permission-table .field .title div:last-child {
-                        font-size: 13px;
-                    }
-
-                    .bottom .permission-table .field .area {
-                        height: 30px;
-                        margin-left: 41%;
-                    }
-                </style>
 
                 <div style="border-top: dashed 1px #000000; margin: 20px 0px"></div>
 
@@ -665,15 +660,6 @@
                             </tbody>
                         </table>
 
-                        <style>
-                            .signature {
-                                border: solid 2px;
-                                float: right;
-                                width: 200px;
-                                padding: 5px;
-                                font-size: 14px;
-                            }
-                        </style>
                         <div style="font-size: 14px;">
                             Я,____________________________________________________________в соответствии с ФЗ № 152-ФЗ от 27.07.2006, даю {% if organization %}{{ organization.name }}{% endif %} согласие на обработку персональных данных, а именно: сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передачу (предоставление), обезличивание, удаление сроком на 14 (четырнадцать) месяцев. Порядок отзыва настоящего согласия мне понятен.
                         </div>

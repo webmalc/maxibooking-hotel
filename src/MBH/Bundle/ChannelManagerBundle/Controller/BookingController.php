@@ -9,7 +9,6 @@ use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\BookingRoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\BookingType;
-use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManager;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -36,13 +35,18 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     {
         $config = $this->hotel->getBookingConfig();
 
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'booking');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+        
         $form = $this->createForm(
             BookingType::class,
             $config
         );
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
@@ -78,11 +82,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     {
         $config = $this->hotel->getBookingConfig();
         if ($config) {
-            $this->get('mbh.channelmanager')->pullOrders('booking', ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS);
-            $this->addFlash(
-                'warning',
-                $this->get('translator')->trans('controller.bookingController.packages_sync_start')
-            );
+            $this->get('mbh.channelmanager')->pullOrdersInBackground('booking', true);
+            $this->addFlash('warning', 'controller.bookingController.packages_sync_start');
         }
 
         return $this->redirect($this->generateUrl('booking'));
@@ -113,8 +114,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($config);
             $this->dm->flush();
 
-            $this->get('mbh.channelmanager.booking')->syncServices($config);
-            $this->get('mbh.channelmanager')->updateInBackground();
+//            $this->get('mbh.channelmanager.booking')->syncServices($config);
+//            $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
@@ -122,7 +123,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         }
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
@@ -182,7 +183,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('booking_room'));
+            $redirectRouteName = $config->isReadyToSync() ? 'booking_room' : 'booking_tariff';
+
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [
@@ -204,6 +207,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getBookingConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -229,12 +233,12 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
-
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('booking_tariff'));
-        }
+            $redirectRouteName = $inGuide ? 'booking_all_packages_sync' : 'booking_tariff';
 
+            return $this->redirectToRoute($redirectRouteName);
+        }
 
         return [
             'config' => $config,
@@ -259,7 +263,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         }
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'logs' => $this->logs($config)
         ];
     }

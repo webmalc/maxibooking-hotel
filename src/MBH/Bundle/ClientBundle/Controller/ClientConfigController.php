@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Form\NotificationConfigType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ColorsConfig;
@@ -13,15 +12,16 @@ use MBH\Bundle\ClientBundle\Document\Payanyway;
 use MBH\Bundle\ClientBundle\Document\Paypal;
 use MBH\Bundle\ClientBundle\Document\Rbk;
 use MBH\Bundle\ClientBundle\Document\RNKB;
-use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Stripe;
-use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
-use MBH\Bundle\ClientBundle\Service\Notice;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -43,7 +43,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function indexAction()
     {
-        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $entity = $this->get('mbh.client_config_manager')->fetchConfig();
         $form = $this->createForm(ClientConfigType::class, $entity);
 
         return [
@@ -61,10 +61,11 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Template("MBHClientBundle:ClientConfig:index.html.twig")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Exception
      */
     public function saveAction(Request $request)
     {
-        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $entity = $this->get('mbh.client_config_manager')->fetchConfig();
 
         if (!$entity) {
             $entity = new ClientConfig();
@@ -76,13 +77,18 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            if (!is_null($previousTimeZone) && $previousTimeZone != $entity->getTimeZone()) {
+            if (!is_null($previousTimeZone)
+                && $previousTimeZone != $entity->getTimeZone()
+                && (empty($this->getUser()) || $this->getUser()->getUsername() !== 'mb')) {
                 $entity->setTimeZone($previousTimeZone);
                 $this->addFlash('warning',
                     $this->get('translator')->trans('controller.clientConfig.change_time_zone_contact_support',
-                        ['%supportEmail%' => $this->getParameter('support')['email']]))
-                ;
+                        ['%supportEmail%' => $this->getParameter('support')['email']]));
             }
+
+            $this->get('mbh.site_manager')
+                ->createOrUpdateForHotel($this->hotel, $this->get('mbh.client_manager')->getClient());
+
             $this->dm->persist($entity);
             $this->dm->flush();
 
@@ -101,6 +107,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     /**
      * @Route("/payment_systems", name="client_payment_systems", options={"expose"=true})
      * @Template()
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @return array
      */
     public function paymentSystemsAction()
@@ -153,16 +160,14 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
     /**
      * Payment system configuration page
-     * @Route("/payment_system_form", name="client_payment_system_form")
+     * @Route("/payment_system_form/{paymentSystemName}", name="client_payment_system_form")
      * @Method("GET")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
      * @Template()
-     * @param Request $request
      * @return array
      */
-    public function paymentSystemFormAction(Request $request)
+    public function paymentSystemFormAction($paymentSystemName = null)
     {
-        $paymentSystemName = $request->query->get('paymentSystemName');
         $form = $this->createForm(ClientPaymentSystemType::class, $this->clientConfig, [
             'entity' => $this->clientConfig,
             'paymentSystemName' => $paymentSystemName
@@ -188,7 +193,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function paymentSystemSaveAction(Request $request)
     {
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $config = $this->get('mbh.client_config_manager')->fetchConfig();
         $paymentSystemName = $request->query->get('paymentSystemName');
 
         $form = $this->createForm(ClientPaymentSystemType::class, $config, [
@@ -202,11 +207,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         if ($form->isValid()) {
             switch ($paymentSystemName) {
                 case 'robokassa':
-                    $robokassa = new Robokassa();
-                    $robokassa->setRobokassaMerchantLogin($form->get('robokassaMerchantLogin')->getData())
-                        ->setRobokassaMerchantPass1($form->get('robokassaMerchantPass1')->getData())
-                        ->setRobokassaMerchantPass2($form->get('robokassaMerchantPass2')->getData());
-                    $config->setRobokassa($robokassa);
+                    $config->setRobokassa(RobokassaHelper::instance($form));
                     break;
                 case 'payanyway':
                     $payanyway = new Payanyway();
@@ -221,14 +222,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $config->setMoneymail($moneymail);
                     break;
                 case 'uniteller':
-                    $uniteller = new Uniteller();
-                    $uniteller
-                        ->setUnitellerShopIDP($form->get('unitellerShopIDP')->getData())
-                        ->setUnitellerPassword($form->get('unitellerPassword')->getData())
-                        ->setIsWithFiscalization($form->get('isUnitellerWithFiscalization')->getData())
-                        ->setTaxationRateCode($form->get('taxationRateCode')->getData())
-                        ->setTaxationSystemCode($form->get('taxationSystemCode')->getData());
-                    $config->setUniteller($uniteller);
+                    $config->setUniteller(UnitellerHelper::instance($form));
                     break;
                 case 'rbk':
                     $rbk = new Rbk();
@@ -256,6 +250,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                         ->setPublishableToken($form->get('stripePubToken')->getData())
                         ->setSecretKey($form->get('stripeSecretKey')->getData());
                     $config->setStripe($stripe);
+                    break;
+                case 'newRbk':
+                    $config->setNewRbk(NewRbkHelper::instance($form));
                     break;
                 default:
                     throw new Exception('Incorrect name of payment system!');
@@ -301,7 +298,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     public function changeRoomTypeEnableableModeAction($disableMode, $route)
     {
         $disableModeBool = $disableMode == 'true';
-        $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableModeBool);
+        $this->get('mbh.client_config_manager')->changeDisableableMode($disableModeBool);
 
         return $this->redirectToRoute($route);
     }

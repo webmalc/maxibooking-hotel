@@ -1,0 +1,14 @@
+var mbhNewRbk_Event = {
+  finished: {
+    event: null,
+    dispatch: function() {
+      if (this.event === null) {
+        this.create()
+      }
+      document.dispatchEvent(this.event)
+    },
+    create: function() {
+      this.event = new CustomEvent('mbh_payment_finished');
+    }
+  }
+};

@@ -14,9 +14,9 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
     public function load(ObjectManager $manager)
     {
         $data = [
-            NotificationType::OWNER_ALL => $this->getAllOwnerTypes(),
-            NotificationType::OWNER_STUFF => $this->getStuffOwnerTypes(),
-            NotificationType::OWNER_CLIENT => $this->getClientOwnerTypes(),
+            NotificationType::OWNER_ALL => self::getAllOwnerTypes(),
+            NotificationType::OWNER_STUFF => self::getStuffOwnerTypes(),
+            NotificationType::OWNER_CLIENT => self::getClientOwnerTypes(),
         ];
 
         foreach ($data as $owner => $types) {
@@ -24,7 +24,6 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
         }
 
         $manager->flush();
-
     }
 
     public function getOrder()
@@ -46,25 +45,27 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
         }
     }
 
-    private function getAllOwnerTypes(): array
+    public static function getAllOwnerTypes(): array
     {
         return [
             NotificationType::ONLINE_ORDER_TYPE,
             NotificationType::ONLINE_PAYMENT_CONFIRM_TYPE,
-            NotificationType::ARRIVAL_TYPE
+            NotificationType::ARRIVAL_TYPE,
+            NotificationType::ERROR
         ];
     }
 
-    private function getStuffOwnerTypes(): array
+    public static function getStuffOwnerTypes(): array
     {
         return [
             NotificationType::CHANNEL_MANAGER_TYPE,
             NotificationType::UNPAID_TYPE,
             NotificationType::TASK_TYPE,
+            NotificationType::CHANNEL_MANAGER_CONFIGURATION_TYPE
         ];
     }
 
-    private function getClientOwnerTypes(): array
+    public static function getClientOwnerTypes(): array
     {
         return [
             NotificationType::CASH_DOC_CONFIRMATION_TYPE,

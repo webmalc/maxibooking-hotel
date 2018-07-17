@@ -10,6 +10,7 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
     /**
      * Get roomTypes with > 1 package
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getWithPackages()
     {
@@ -54,7 +55,7 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
      * @param array|null $hotelIds
      * @return array|RoomType[]
      */
-    public function getByHotelsAndIds(array $roomTypeIds = null, array $hotelIds = null)
+    public function getByIdsAndHotelsIds(array $roomTypeIds = null, array $hotelIds = null)
     {
         $qb = $this->createQueryBuilder();
 

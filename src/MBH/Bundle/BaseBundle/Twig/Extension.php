@@ -1,10 +1,11 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
-use MBH\Bundle\BaseBundle\Service\Address;
-use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal;
+use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Organization;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
@@ -209,6 +210,17 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * Заменяет больше двух побелов одним
+     *
+     * @param string $str
+     * @return string
+     */
+    public function clearAdjacentWhitespace(string $str): string
+    {
+        return preg_replace('/\s{2,}/',' ', $str);
+    }
+
+    /**
      * @return array
      */
     public function getFilters()
@@ -222,7 +234,8 @@ class Extension extends \Twig_Extension
             'convertMongoDate' => new \Twig_SimpleFilter('convertMongoDate', [$this, 'convertMongoDate']),
             'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
-            'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate'])
+            'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate']),
+            'clear_adjacent_whitespace' => new \Twig_SimpleFilter('clear_adjacent_whitespace', [$this, 'clearAdjacentWhitespace']),
         ];
     }
 
@@ -276,11 +289,18 @@ class Extension extends \Twig_Extension
      */
     public function getSettingsDataForFrontend()
     {
+        $session = $this->container->get('session');
+        $language = $session->get('_locale')
+            ? $session->get('_locale')
+            : $this->container->getParameter('locale');
+
         $data = [
             'allowed_guides' => $this->container->get('mbh.guides_data_service')->getAllowedGuides(),
             'client_country' => $this->getClient()->getCountry(),
-            'front_token' => $this->container->getParameter('billing_front_token'),
-            'billing_host' => $this->container->getParameter('billing_url') . '/',
+            'front_token'    => $this->container->getParameter('billing_front_token'),
+            'billing_host'   => $this->container->getParameter('billing_url') . '/',
+            'behavior_menu'  => $this->container->getParameter('mbh.menu.behaviors.now'),
+            'language' => $language
         ];
 
         return json_encode($data);
@@ -293,17 +313,30 @@ class Extension extends \Twig_Extension
             $supportEmail = $this->isRussianClient()
                 ? $supportData['clients_support_email_ru']
                 : $supportData['clients_support_email_com'];
+            $supportMainEmail = $supportData['support_main_email'][$this->container->getParameter('locale')];
+
             $this->twigData = [
                 'demo_user_token' => UserData::SANDBOX_USER_TOKEN,
                 'clients_support_email' => $supportEmail,
-                'support_phone' => $supportData['russian_support_phone']
+                'support_phone' => $supportData['russian_support_phone'],
+                'support_main_email' => $supportMainEmail
             ];
 
             $this->isTwigDataInit = true;
         }
+
         return $this->twigData;
     }
 
+    /**
+     * @param Base $document
+     * @param string $fieldName
+     * @return string
+     */
+    public function getFieldTitleByName(Base $document, string $fieldName)
+    {
+        return $this->container->get('mbh.document_fields_manager')->getFieldName(get_class($document), $fieldName);
+    }
 
     /**
      * @param AddressInterface $obj
@@ -323,6 +356,45 @@ class Extension extends \Twig_Extension
     {
         $address = $this->container->get('mbh.address');
         return $address->getImperialStreetStr($obj);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMBUser()
+    {
+        /** @var User $user */
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        return $user instanceof User && $user->getUsername() === UserData::MB_USER_USERNAME;
+    }
+
+    public function getMethodsForTemplate(): string
+    {
+        return json_encode($this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper')->methodsOfEntity());
+    }
+
+    /**
+     * @param string|null $type
+     * @param string|null $name
+     * @return string
+     */
+    public function getGuideArticleUrl(string $type = null, string $name = null)
+    {
+        $url = 'https://support.maxi-booking.com/hc/' . ($this->isRussianClient() ? 'ru' : 'com' );
+        if (!is_null($type) && !is_null($name)) {
+            $articlesByTypes = $this->container->getParameter('guides_site')['articles'];
+            if (!isset($articlesByTypes[$type])) {
+                throw new \InvalidArgumentException('Incorrect type of articles:' . $type);
+            }
+            if (!isset($articlesByTypes[$type][$name])) {
+                throw new \InvalidArgumentException('Incorrect name of article:' . $name);
+            }
+
+            $url .= '/articles/' . $articlesByTypes[$type][$name];
+        }
+
+        return $url;
     }
 
     /**
@@ -349,6 +421,10 @@ class Extension extends \Twig_Extension
             'get_imperial_city'       => new \Twig_SimpleFunction('get_imperial_city', [$this, 'getImperialAddressCity'], ['is_safe' => ['html']]),
             'get_imperial_street'     => new \Twig_SimpleFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], ['is_safe' => ['html']]),
             'get_twig_data'           => new \Twig_SimpleFunction('get_twig_data', [$this, 'getTwigData'], ['is_safe' => ['html']]),
+            'get_field_name'          => new \Twig_SimpleFunction('get_field_name', [$this, 'getFieldTitleByName'], ['is_safe' => ['html']]),
+            'is_mb_user'              => new \Twig_SimpleFunction('is_mb_user', [$this, 'isMBUser'], ['is_safe' => ['html']]),
+            'get_properties'          => new \Twig_SimpleFunction('get_properties', [$this, 'getMethodsForTemplate'], ['is_safe' => ['html']]),
+            'get_guide_article_url'   => new \Twig_SimpleFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -375,5 +451,29 @@ class Extension extends \Twig_Extension
         return [
             'wrapinline' => new TwigWrapInLineTokenParser(),
         ];
+    }
+
+    public function getTests()
+    {
+        return [
+            'instanceofMortal'       => new \Twig_SimpleTest('instanceofMortal', [$this, 'isInstanceofMortal']),
+            'instanceofOrganization' => new \Twig_SimpleTest('instanceofOrganization', [$this, 'isInstanceofOrganization']),
+        ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInstanceofMortal($obj): bool
+    {
+        return $obj instanceof Mortal;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInstanceofOrganization($obj): bool
+    {
+        return $obj instanceof Organization;
     }
 }

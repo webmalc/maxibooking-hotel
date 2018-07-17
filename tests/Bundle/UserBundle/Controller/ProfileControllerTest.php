@@ -210,7 +210,35 @@ class ProfileControllerTest extends WebTestCase
 
     }
 
+    public function testAuthenticationWithInvalidToken()
+    {
+        $this->setApiToken();
+
+        $this->client = self::createClient([], []);
+
+        $this->client->request('GET', self::CHANGE_PASSWORD_URL_USER_PROFILE . '?apiKey=InvalidToken');
+
+        $this->assertStatusCode(
+            401,
+            $this->client
+        );
+    }
+
     public function testChangePassWithToken()
+    {
+        $this->setApiToken();
+
+        $this->client = self::createClient([], []);
+
+        $this->client->request('GET', self::CHANGE_PASSWORD_URL_USER_PROFILE . '?apiKey=' . self::API_TOKEN);
+
+        $this->assertStatusCode(
+            302,
+            $this->client
+        );
+    }
+
+    private function setApiToken(): void
     {
         /** @var User $user */
         $user = $this->dm->getRepository('MBHUserBundle:User')
@@ -221,15 +249,6 @@ class ProfileControllerTest extends WebTestCase
                     ->setToken(self::API_TOKEN)
             );
         $this->dm->flush();
-
-        $this->client = self::createClient([], []);
-
-        $this->client->request('GET', self::CHANGE_PASSWORD_URL_USER_PROFILE . '?apiKey=' . self::API_TOKEN);
-
-        $this->assertStatusCode(
-            302,
-            $this->client
-        );
     }
 
     private function getDocumentManager()

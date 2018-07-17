@@ -1,0 +1,86 @@
+{# содержимое идет в json, поэтому двойные кавычки внутри html тегов нужно экранировать #}
+{% macro render(entity, operations, methods) %}
+    {% set td_currenty %}
+        <div class='text-center{{ entity.isConfirmed is empty and entity.isPaid ? ' not-confirmed-entry' }}{{ entity.deletedAt ? ' deleted-entry' }}{{ entity.isPaid is empty ? ' not-paid-entry' }}'>
+            <i class='{{ currency().icon }}'></i>
+        </div>
+    {% endset %}
+
+    {% set td_editCashDocument %}
+        {% if not entity.deletedAt %}
+            <a class='cash-number text-center' href='{{ path('cash_edit', { 'id': entity.id }) }}' rel='main'>{{ entity.number }}</a>
+        {% else %}
+            <div class='cash-number text-center'>{{ entity.number }}</div>
+        {% endif %}
+    {% endset %}
+
+    {% set td_order_edit %}
+        {% if entity.order and entity.order.packages|length %}
+            <a href=\"{{ path('package_order_edit', {id: entity.order.id, packageId: (entity.order.packages|first).id}) }}\">
+                {{ entity.order.id }}
+            </a>
+        {% endif %}
+    {% endset %}
+
+    {% set noteIsSet = false %}
+    {% set noteHtmlAttr  = '' %}
+    {% set noteHtmlTagI = '' %}
+    {% set noteText = '' %}
+
+    {% if entity.note %}
+        {% set noteIsSet = true %}
+        {% set noteText =  entity.note|nl2br|replace({"\n":' ', "\r":' ', "'": '', "\t": ' '}) %}
+        {% set noteHtmlAttr = " title='" ~ noteText ~ "' data-toggle='tooltip'" %}
+        {% set noteHtmlTagI = "<i class='fa fa-info'></i>" %}
+    {% endif %}
+
+    {% set td_in %}
+        {% if entity.operation not in ['fee', 'out'] %}
+            <div class='text-right total'>
+                <span class='text-success'{{ noteIsSet ? (noteHtmlAttr ~ ' data-html=true') | raw }}>
+                    {{ entity.total|number_format(2) }}
+                </span>
+                {{ noteIsSet ? noteHtmlTagI | raw }}
+            </div>
+        {% endif %}
+    {% endset %}
+
+    {% set td_out %}
+        {% if entity.operation in ['fee', 'out'] %}
+            <div class='text-right total'>
+                <span class='text-danger'{{ noteIsSet ? noteHtmlAttr | raw }}>
+                    {{ entity.total|number_format(2) }}
+                </span>
+                {{ noteIsSet ? noteHtmlTagI | raw }}
+            </div>
+        {% endif %}
+    {% endset %}
+
+    {% set td_datePaid %}
+        <div class='text-center'>
+            {% if entity.isPaid %}
+                {{ entity.paidDate|date('d.m.Y') }}
+            {% else %}
+                <span class='label label-danger'>
+                    {{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}
+                </span>
+            {% endif %}
+        </div>
+    {% endset %}
+
+    "{{ td_currenty }}",
+    "{{ td_editCashDocument }}",
+    "{{ td_order_edit }}",
+    "{{ td_in }}",
+    "{{ td_out }}",
+    "{{ operations[entity.operation]|trans }}<br><small>{{ methods[entity.method]|trans({}, 'MBHCashBundle') }}</small>",
+    "{% if entity.article %}<span data-toggle='tooltip' title='{{ entity.article.title }}'>{{ entity.article.code }}</span>{% endif %}",
+    "{{ entity.payer ? entity.payer.shortName : '' }}",
+    "{{ entity.documentDate|date('d.m.Y') }}",
+    "{{ td_datePaid }}",
+    "{% if entity.createdBy %}<div class='text-center'>{{ entity.createdBy }}</div>{% endif %}",
+    "{{ entity.deletedAt ? entity.documentDate|date('d.m.Y') }}",
+    "{{ noteText }}",
+    "{% include 'MBHCashBundle:Cash:jsonButtons.html.twig' with {'entity': entity} %}"
+
+{% endmacro %}

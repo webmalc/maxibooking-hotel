@@ -72,7 +72,7 @@ class ChessBoardController extends BaseController
             'titleSubPadding' => 0,
             'titleSubFontSize' => 15,
             'leftRoomsAndNoAccFontSize' => 20,
-        ]
+        ],
     ];
 
     /**
@@ -86,24 +86,36 @@ class ChessBoardController extends BaseController
     {
         $filterData = $this->getFilterData($request);
 
-        $builder = $this->get('mbh.package.report_data_builder')
-            ->init($this->hotel, $filterData['begin'], $filterData['end'],
-                $filterData['roomTypeIds'], $filterData['housing'], $filterData['floor'], null,
-                $filterData['pageNumber']);
+        $builder = $this
+            ->get('mbh.package.report_data_builder')
+            ->init(
+                $this->hotel,
+                $filterData['begin'],
+                $filterData['end'],
+                $filterData['roomTypeIds'],
+                $filterData['housing'],
+                $filterData['floor'],
+                null,
+                $filterData['pageNumber']
+            );
 
-        $form = $this->createForm(SearchType::class, null, [
-            'security' => $this->container->get('mbh.hotel.selector'),
-            'dm' => $this->dm,
-            'hotel' => $this->hotel,
-            'roomManager' => $this->get('mbh.hotel.room_type_manager')
-        ]);
+        $form = $this->createForm(
+            SearchType::class,
+            null,
+            [
+                'security' => $this->container->get('mbh.hotel.selector'),
+                'dm' => $this->dm,
+                'hotel' => $this->hotel,
+                'roomManager' => $this->get('mbh.hotel.room_type_manager'),
+            ]
+        );
 
         $stylesFileNumber = $request->cookies->get('chessboardSizeNumber') ?? 1;
 
         $rightsChecker = $this->get('security.authorization_checker');
         $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $displayDisabledRoomType = !$clientConfig->isIsDisableableOn();
+        $clientConfig = $this->clientConfig;
+        $displayDisabledRoomType = !$clientConfig->isDisableableOn();
         $canBookWithoutPayer = $clientConfig->isCanBookWithoutPayer();
 
         $tourist = new Tourist();
@@ -112,9 +124,10 @@ class ChessBoardController extends BaseController
         $tourist->setCitizenshipTld(Country::RUSSIA_TLD);
         $tourist->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
         $colorSettings = $this->dm->getRepository('MBHClientBundle:ColorsConfig')->fetchConfig();
+        $numberOfRooms = $clientConfig->getFrontSettings()->getRoomsInChessboard($this->getUser()->getUsername());
 
         return [
-            'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),
+            'pageCount' => $numberOfRooms != 0 ? ceil($builder->getRoomCount() / $numberOfRooms) : 1,
             'pageNumber' => $filterData['pageNumber'],
             'searchForm' => $form->createView(),
             'beginDate' => $filterData['begin'],
@@ -134,16 +147,21 @@ class ChessBoardController extends BaseController
             'canCreatePackage' => $canCreatePackage,
             'canBookWithoutPayer' => $canBookWithoutPayer ? 'true' : 'false',
             'displayDisabledRoomType' => $displayDisabledRoomType,
-            'touristForm' => $this->createForm(TouristType::class, null,
-                ['genders' => $this->container->getParameter('mbh.gender.types')])->createView(),
+            'touristForm' => $this->createForm(
+                TouristType::class,
+                null,
+                ['genders' => $this->container->getParameter('mbh.gender.types')]
+            )->createView(),
             'documentForm' => $this->createForm(DocumentRelationType::class, $tourist)
                 ->createView(),
-            'addressForm' => $this->createForm(AddressObjectDecomposedType::class,
-                $tourist->getAddressObjectDecomposed())
+            'addressForm' => $this->createForm(
+                AddressObjectDecomposedType::class,
+                $tourist->getAddressObjectDecomposed()
+            )
                 ->createView(),
             'sizes' => self::SIZE_CONFIGS,
             'stylesFileNumber' => $stylesFileNumber,
-            'colors' => $colorSettings->__toArray()
+            'colors' => $colorSettings->__toArray(),
         ];
     }
 
@@ -158,7 +176,7 @@ class ChessBoardController extends BaseController
     public function getPackageAction(Package $package)
     {
         return [
-            'package' => $package
+            'package' => $package,
         ];
     }
 
@@ -189,8 +207,14 @@ class ChessBoardController extends BaseController
                 $this->dm->flush();
                 $messageFormatter->addSuccessRemoveAccommodationMessage($accommodation, $package);
             } else {
-                $this->updateAccommodation($package, $accommodation, $updatedRoom, $updatedBeginDate,
-                    $updatedEndDate, $messageFormatter);
+                $this->updateAccommodation(
+                    $package,
+                    $accommodation,
+                    $updatedRoom,
+                    $updatedBeginDate,
+                    $updatedEndDate,
+                    $messageFormatter
+                );
             }
         } else {
             $this->addAccommodation($updatedBeginDate, $updatedEndDate, $updatedRoom, $package, $messageFormatter);
@@ -226,8 +250,10 @@ class ChessBoardController extends BaseController
 
         // If the date or end of the placement has changed, but this is not the first or the last placement
         if (($isBeginDateChanged && !$isFirstAccommodation) || ($isEndDateChanged && !$isLastAccommodation)) {
-            throw new \Exception($this->get('translator')
-                ->trans('controller.chessboard.accommodation_update.not_first_or_last_accommodation_change'));
+            throw new \Exception(
+                $this->get('translator')
+                    ->trans('controller.chessboard.accommodation_update.not_first_or_last_accommodation_change')
+            );
         }
 
         $isPackageChanged = false;
@@ -245,8 +271,14 @@ class ChessBoardController extends BaseController
         }
 
         if ($isPackageChanged) {
-            $this->updatePackageWithAccommodation($oldPackage, $package, $accommodation, $updatedBeginDate,
-                $updatedEndDate, $messageFormatter);
+            $this->updatePackageWithAccommodation(
+                $oldPackage,
+                $package,
+                $accommodation,
+                $updatedBeginDate,
+                $updatedEndDate,
+                $messageFormatter
+            );
         } else {
             $rightsChecker = $this->get('security.authorization_checker');
             if (!($rightsChecker->isGranted('ROLE_PACKAGE_ACCOMMODATION')
@@ -362,7 +394,9 @@ class ChessBoardController extends BaseController
         $intermediateDateString = $request->request->get('begin');
         $roomId = $request->request->get('roomId');
         if ($intermediateDateString == '') {
-            throw new \Exception($translator->trans('controller.chessboard.accommodation_divide.error.empty_date_string'));
+            throw new \Exception(
+                $translator->trans('controller.chessboard.accommodation_divide.error.empty_date_string')
+            );
         }
         $intermediateDate = $helper::getDateFromString($intermediateDateString);
 
@@ -416,6 +450,20 @@ class ChessBoardController extends BaseController
     }
 
     /**
+     * @Route("/change_number_of_rooms/{numberOfRooms}", name="change_number_of_rooms", options={"expose"=true})
+     * @Method("GET")
+     * @param int $numberOfRooms
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function changeNumberOfRoomsOnPage(int $numberOfRooms)
+    {
+        $this->clientConfig->getFrontSettings()->setRoomsInChessboard($numberOfRooms, $this->getUser()->getUsername());
+        $this->dm->flush();
+
+        return $this->redirectToRoute('chess_board_home');
+    }
+
+    /**
      * @param Request $request
      * @return string
      */
@@ -423,7 +471,8 @@ class ChessBoardController extends BaseController
     {
         $filterData = $this->getFilterData($request);
         $builder = $this->get('mbh.package.report_data_builder')
-            ->init($this->hotel,
+            ->init(
+                $this->hotel,
                 $filterData['begin'],
                 $filterData['end'],
                 $filterData['roomTypeIds'],
@@ -467,10 +516,14 @@ class ChessBoardController extends BaseController
         return [
             'begin' => $beginDate,
             'end' => $endDate,
-            'roomTypeIds' => $this->helper->getDataFromMultipleSelectField(isset($data['filter_roomType']) ? $data['filter_roomType'] : null),
-            'housing' => $this->helper->getDataFromMultipleSelectField(isset($data['housing']) ? $data['housing'] : null),
+            'roomTypeIds' => $this->helper->getDataFromMultipleSelectField(
+                isset($data['filter_roomType']) ? $data['filter_roomType'] : null
+            ),
+            'housing' => $this->helper->getDataFromMultipleSelectField(
+                isset($data['housing']) ? $data['housing'] : null
+            ),
             'floor' => $this->helper->getDataFromMultipleSelectField(isset($data['floor']) ? $data['floor'] : null),
-            'pageNumber' => isset($data['page']) ? $data['page'] : 1
+            'pageNumber' => isset($data['page']) ? $data['page'] : 1,
         ];
     }
 }

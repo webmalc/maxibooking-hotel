@@ -13,7 +13,6 @@
 //warning #4284fd
 
 body {
-  overflow-y: hidden !important;
   padding-bottom: 0 !important;
 }
 
@@ -246,7 +245,7 @@ body {
     text-decoration: line-through;
   }
   #header-title {
-    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
     border-left: 1px solid #ddd;
     position: absolute;
     z-index: 250;
@@ -371,7 +370,6 @@ body {
 
   }
   .tile .title {
-    border-top: 1px solid #ddd;
     border-right: 1px solid #e3e3e3;
     font-size: @titleSubFontSize;
     font-weight: bold;
@@ -394,7 +392,7 @@ body {
     text-align: left;
     display: table-cell;
     vertical-align: middle;
-    width: @roomTypeColumnWidth;
+    width: @roomTypeColumnWidth - 1;
     a:hover {
       cursor: default;
     }
@@ -667,5 +665,37 @@ body {
   width: 60%;
   .slider-selection {
     background: #BABABA;
+  }
+}
+
+#accommodation-report-filter {
+  display: flex;
+  flex-wrap: wrap;
+
+  .hide-field-button, .change-days-button {
+    display: flex;
+    justify-content: center;
+  }
+
+  .hide-field-button:before, .change-days-button:not(.fa-caret-right):before {
+    width: 20px;
+  }
+  .fa-caret-right.change-days-button {
+    margin-left: 10px;
+  }
+
+  .input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .form-block {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+@media (min-width: 769px){
+  #disable-button-wrapper {
+    margin-top: 13px;
   }
 }

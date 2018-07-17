@@ -5,13 +5,13 @@ namespace MBH\Bundle\BaseBundle\Service\Messenger;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @ODM\Document(collection="BookingConfig")
+ * @ODM\Document()
  * Class NotifierErrorCounter
  * @package MBH\Bundle\BaseBundle\Service\Messenger
  */
 class NotifierErrorCounter
 {
-    const NUMBER_OF_IGNORED_NOTIFICATIONS = 20;
+    const NUMBER_OF_IGNORED_NOTIFICATIONS = 10;
     /**
      * @var string
      * @ODM\Field(type="string")

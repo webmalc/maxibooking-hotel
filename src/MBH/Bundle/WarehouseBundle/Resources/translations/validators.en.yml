@@ -1,4 +1,4 @@
 validator.warehouse.cat.notchosen: 'Category is not selected'
 validator.warehouse.record.negative: 'Amount cannot be less than 0'
-validator.warehouse.record.wrongOperation: 'Wron operation'
-validator.warehouse.record.negativeSum: 'Sum cannot be below 0'
+validator.warehouse.record.wrongOperation: 'This operation does not exist'
+validator.warehouse.record.negativeSum: 'Sum cannot be less than 0'

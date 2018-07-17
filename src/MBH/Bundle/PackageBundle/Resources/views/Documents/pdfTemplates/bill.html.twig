@@ -3,44 +3,42 @@
 <head>
     <meta charset="utf-8">
     <title>Pdf</title>
-</head>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-<body>
-<style>
-    body{
-        font-family: "Open Sans"; /*Arial*/
-        font-size: 16px;
-    }
-    .document{
-        padding-top: 0px;
-        width: 900px;
-        margin: 0 auto;
-    }
-    .ib{
-        display: inline-block;
-    }
-    .area {
-        border-bottom: solid #000000 1px;
-    }
-    .left {
-        float: left;
-    }
-    .right {
-        float: right;
-    }
-    .center {
-        text-align: center;
-    }
-    .indent {
-        text-indent: 1.5em;
-    }
-    .upper {
-        text-transform: uppercase;
-    }
-</style>
-<div class="document">
-    <style>
-        /* Header */
+    <style type="text/css">
+        body {
+            font-family: "Open Sans"; /*Arial*/
+            font-size: 16px;
+        }
+        table { page-break-inside:auto }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        thead {display:table-header-group;}
+        tfoot { display:table-footer-group }
+
+        .document{
+            padding-top: 0px;
+            width: 900px;
+            /*margin: 0 auto;*/
+        }
+        .ib{
+            display: inline-block;
+        }
+        .area {
+            border-bottom: solid #000000 1px;
+        }
+        .left {
+            float: left;
+        }
+        .right {
+            float: right;
+        }
+        .center {
+            text-align: center;
+        }
+        .indent {
+            text-indent: 1.5em;
+        }
+        .upper {
+            text-transform: uppercase;
+        }
         .header .title {
             float: left;
             padding-top: 20px;
@@ -65,11 +63,21 @@
         }
         .services {
             margin-top: 10px;
+            border-collapse: collapse;
+        }
+
+        .services th,
+        .services td {
+            border: 1px solid black;
         }
         .services td {
             padding: 3px;
         }
     </style>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div class="document">
     <!-- Header -->
     {% set hotel = null %}
     {% if package.roomType and package.roomType.hotel %}
@@ -82,13 +90,12 @@
         </div>
         {% if hotel and hotel.logoImage %}
             <div class="logo">
-                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80'))) }}">
+                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('scaler'))) }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>
     </div>
     <hr>
-
 
     <div class="main">
         <table border="0" width="100%">
@@ -111,15 +118,16 @@
         </table>
 
         <!-- Services -->
-        <table border="1" width="100%" cellpadding="0" cellspacing="0" class="services">
+        <table width="100%" cellpadding="0" cellspacing="0" class="services">
             <thead>
             <tr>
                 <th style="width: 30px;">№</th>
                 <th style="width: 200px;">{{ "package.pdf.services_name"|trans({}, "MBHPackageBundle") }}</th>
                 <th style="width: 30px;">{{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</th>
                 <th style="width: 30px;">{{ "package.pdf.unit"|trans({}, "MBHPackageBundle") }}</th>
-                <th style="width: 100px;">{{ "package.pdf.price"|trans({}, "MBHPackageBundle") }}</th>
-                <th style="width: 100px;">{{ "package.pdf.sum"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 80px;">{{ "package.pdf.price"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 30px;">Скидка</th>
+                <th style="width: 90px;">{{ "package.pdf.sum"|trans({}, "MBHPackageBundle") }}</th>
             </tr>
             </thead>
             <tbody>
@@ -127,23 +135,35 @@
             {% set packages = package.order.packages %}
 
             {% set counter = 0 %}
+            {% set newPackages = false %}
+            {% set countData = 0 %}
             {% for package in packages %}
+                {% set newPackages = true %}
                 {% for date,data in package.pricesByDateByPrice %}
                     {% set counter = counter + 1 %}
+                    {% set countData = countData + 1 %}
                     <tr>
                         <td align="center">{{ counter }}</td>
                         <td>
-                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace({'_': '.'}) }}
+                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date }}
                             {% if package.roomType and package.roomType.fullTitle %}
                                 ({{ package.roomType.fullTitle }})
                             {% endif %}
                         </td>
                         <td align="center">{{ data.nights }}</td>
                         <td align="center">{{ "package.pdf.night"|trans({}, "MBHPackageBundle") }}</td>
-                        <td align="right">{{ data.price|number_format(2) }}</td>
-                        <td align="right">{{ package.packagePrice|number_format(2) }}</td>
+                        <td align="right">{{ data.fullPrice != false ? data.fullPrice|number_format(2) : '' }}</td>
+                        {% if newPackages and countData == 1 %}
+                            <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">
+                                {{ package.discount }}{{ package.getIsPercentDiscount ? '%' }}
+                            </td>
+                            <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                        {% endif %}
+
                     </tr>
                 {% endfor %}
+                {% set newPackages = false %}
+                {% set countData = 0 %}
             {% endfor %}
 
             {% for serviceGroup in packageServicesByType %}
@@ -154,6 +174,7 @@
                     <td align="center">{{ serviceGroup.actuallyAmount }}</td>
                     <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
                     <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                    <td align="right"></td>
                     <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
                 </tr>
             {% endfor %}
@@ -171,7 +192,6 @@
         <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ counter }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text|trans }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
-
         <table border="1" width="100%" cellpadding="0" cellspacing="0" class="cash" style="margin-top: 30px">
             <thead>
             <tr>
@@ -182,21 +202,16 @@
             </tr>
             </thead>
             <tbody>
-            {% set counter = 0 %}
-            {% set paidTotal = 0 %}
+            {% set paidTotal = order.paid %}
             {% for cashDocument in package.order.cashDocuments %}
-                {% if cashDocument.isPaid %}
-                    {% set counter = counter + 1 %}
+                {% if cashDocument.isPaid and cashDocument.operation != constant('MBH\\Bundle\\CashBundle\\Document\\CashDocument::OPERATION_FEE') %}
                     <tr>
-                        <td align="center">{{ counter }}</td>
+                        <td align="center">{{ loop.index }}</td>
                         <td align="center">{{ cashDocument.paidDate|date('d.m.Y') }}</td>
                         <td align="center">{{ ('cashDocument.method.' ~ cashDocument.method)|trans({}, 'MBHCashBundle') }}</td>
                         <td align="right">{{ cashDocument.operation in ['fee', 'out'] ? '-' : '+' }}{{ cashDocument.total|number_format(2) }}</td>
                     </tr>
-                    {% if cashDocument.operation in ['fine', 'in'] %}
-                        {% set paidTotal = paidTotal + cashDocument.total %}
-                    {% else %}
-                    {% endif %}
+
                 {% endif %}
             {% endfor %}
             </tbody>
@@ -217,7 +232,6 @@
             <p>{{ "package.pdf.count_paid_total"|trans({}, "MBHPackageBundle") }} {{ paidTotal|number_format(2) }} {{ currency().text|trans }}<br>
                 <strong>{{ paidTotal|num2str|capitalize }}</strong></p>
         {% endif %}
-
         <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0">
             <thead>
             </thead>
@@ -230,8 +244,6 @@
             </tr>
             </tbody>
         </table>
-
-
         <div style="margin-top: 70px">
             <div class="ib">{{ 'mbhpackagebundle.view.documents.pdftemplates.dezhurniy_administrator'|trans }}</div>
             <div class="ib" style="border-bottom: 1px solid #000; width: 300px;"></div>

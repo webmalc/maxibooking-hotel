@@ -45,8 +45,12 @@
                     <select multiple
                             id="sales-channels-report-filter-room-types" class="form-control input-sm">
                         <option></option>
-                        {% for roomType in roomTypes %}
-                            <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+                        {% for hotelId, hotelRoomsData in roomTypesByHotels %}
+                            <optgroup label="{{ hotelRoomsData['hotel'].getName() }}">
+                                {% for roomType in hotelRoomsData['rooms'] %}
+                                    <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+                                {% endfor %}
+                            </optgroup>
                         {% endfor %}
                     </select>
                 </div>

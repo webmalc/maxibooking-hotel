@@ -1,30 +1,8 @@
-{
-    "draw" : "{{ draw }}",
-    "recordsTotal": "{{ recordsFiltered }}",
-    "totalIn": "{{ totalIn|number_format(2) }}",
-    "totalOut": "{{ totalOut|number_format(2) }}",
-    "noConfirmedTotalIn": "{{ noConfirmedTotalIn|number_format(2) }}",
-    "noConfirmedTotalOut": "{{ noConfirmedTotalOut|number_format(2) }}",
-    "total": "{{ total|number_format(2) }}",
-    "recordsFiltered": "{{ recordsFiltered }}",
-    "data": [
-        {% for entity in entities %}
-            [
-                "<div class='text-center {{ entity.isConfirmed is empty and entity.isPaid ? 'not-confirmed-entry' }} {{ entity.deletedAt ? 'deleted-entry' }} {{ entity.isPaid is empty ? 'not-paid-entry' }}'><i class='{{ currency().icon }}'></i></div>",
-                "<a class='cash-number text-center' href='{{ path('cash_edit', { 'id': entity.id }) }}' rel='main'>{{ entity.number }}</a>",
-                "{{ entity.order and entity.order.packages|length ? ('<a href='~ path('package_order_edit', {id: entity.order.id, packageId: (entity.order.packages|first).id}) ~ '>' ~ entity.order.id ~ '</a>')|raw : '' }}",
-                "<div class='text-right total'>{% if entity.operation not in ['fee', 'out'] %}<span class='text-success' {% if entity.note %}title='{{ entity.note|nl2br|replace({"\n":' ', "\r":' ', "'": '', "\t": ' '}) }}' data-html=true data-toggle='tooltip'{% endif %}>{{ entity.total|number_format(2) }}</span> {% if entity.note %}<i class='fa fa-info'></i>{% endif %}{% endif %}</div>",
-                "<div class='text-right total'>{% if entity.operation in ['fee', 'out'] %}<span class='text-danger' {% if entity.note %}title='{{ entity.note|nl2br|replace({"\n":' ', "\r":' ', "'": '', "\t": ' '}) }}' data-toggle='tooltip'{% endif %}>{{ entity.total|number_format(2) }}</span> {% if entity.note %}<i class='fa fa-info'></i>{% endif %}{% endif %}</div>",
-                "{{ operations[entity.operation]|trans }}<br><small>{{ methods[entity.method]|trans({}, 'MBHCashBundle') }}</small>",
-                "{% if entity.article %}<span data-toggle='tooltip' title='{{ entity.article.title }}'>{{ entity.article.code }}</span>{% endif %}",
-                "{{ entity.payer ? entity.payer.shortName : '' }}",
-                "{{ entity.documentDate|date('d.m.Y') }}",
-                "<div class='text-center'>{% if entity.isPaid %} {{ entity.paidDate|date('d.m.Y') }} {% else %} <span class='label label-danger'>{{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}</span>{% endif %}</div>",
-                "<div class='text-center'>{{ entity.createdBy }}</div>",
-                "{{ entity.deletedAt ? entity.documentDate|date('d.m.Y') }}",
-                "{{ entity.note|replace({"\n":' ', "\r":' ', "'": '', "\t": ' '}) }}",
-                "{% include 'MBHCashBundle:Cash:jsonButtons.html.twig' with {'entity': entity} %}"
-            ]{% if loop.index != entities.count(true) %},{% endif %}
-        {% endfor %}
-    ]
-}
+{% extends 'MBHCashBundle:Cash:jsonCommon.json.twig' %}
+{% import 'MBHCashBundle:Cash:macrosHtml.html.twig' as html %}
+{% block data %}
+{% for entity in entities %}
+[{{ html.render(entity,operations,methods) }}
+]{% if loop.index != entities.count(true) %},{% endif %}
+{% endfor %}
+{% endblock data %}

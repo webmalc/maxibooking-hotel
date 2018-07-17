@@ -622,7 +622,7 @@ class Oktogo extends Base
             //prices
             $total = 0;
             $tariff = $rateId = null;
-            $pricesByDate = $packagePrices = [];
+            $packagePrices = [];
             foreach ($room->price as $priceItem) {
 
                 $price = $priceItem->attributes();
@@ -648,7 +648,6 @@ class Oktogo extends Base
                 $total += (float)$priceItem;
                 $date = $helper->getDateFromString((string)$price->date, 'Y-m-d');
 
-                $pricesByDate[$date->format('d_m_Y')] = (float)$priceItem;
                 $packagePrices[] = new PackagePrice($date, (float)$priceItem, $tariff);
             }
 
@@ -674,7 +673,6 @@ class Oktogo extends Base
                 ->setAdults((int)$room->numberofguests - $countChildren)
                 ->setChildren($countChildren)
                 ->setIsSmoking(($special['smoking_type'] == 'Smoking') ? true : false)
-                ->setPricesByDate($pricesByDate)
                 ->setPrices($packagePrices)
                 ->setPrice($packageTotal)
                 ->setOriginalPrice((float)$total)

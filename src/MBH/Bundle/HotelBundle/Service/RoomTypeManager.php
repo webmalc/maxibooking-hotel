@@ -41,7 +41,7 @@ class RoomTypeManager
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $this->useCategories = $this->config && $this->config ->getUseRoomTypeCategory();
+        $this->useCategories = $this->config && $this->config->getUseRoomTypeCategory();
     }
 
     /**
@@ -78,15 +78,13 @@ class RoomTypeManager
         $roomType
             ->setHotel($hotel)
             ->setFullTitle($billingRoom->getName())
-            //TODO: Узнать про кол-во мест
             ->setPlaces(2)
-            ->setAdditionalPlaces(0)
-        ;
+            ->setAdditionalPlaces(0);
 
         $this->dm->persist($roomType);
 
         if ($withRooms) {
-            for ($i = 1; $i <= $billingRoom->getRooms(); $i ++) {
+            for ($i = 1; $i <= $billingRoom->getRooms(); $i++) {
                 $room = (new Room())
                     ->setRoomType($roomType)
                     ->setHotel($hotel)
@@ -106,5 +104,25 @@ class RoomTypeManager
     public function findRoom($id)
     {
         return $this->getRepository()->find($id);
+    }
+
+    /**
+     * Get room types sorted by keys ['hotel', 'rooms']
+     *
+     * @return array
+     */
+    public function getSortedByHotels()
+    {
+        $roomTypes = $this->getRooms();
+        $result = [];
+
+        /** @var RoomTypeInterface $roomType */
+        foreach ($roomTypes as $roomType) {
+            isset($result[$roomType->getHotel()->getId()])
+                ? $result[$roomType->getHotel()->getId()]['rooms'][] = $roomType
+                : $result[$roomType->getHotel()->getId()] = ['hotel' => $roomType->getHotel(), 'rooms' => [$roomType]];
+        }
+
+        return $result;
     }
 }
