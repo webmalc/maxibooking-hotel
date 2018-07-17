@@ -79,7 +79,7 @@ mbh_task:
     type:     annotation
 
 _liip_imagine:
-    resource: "@LiipImagineBundle/Resources/config/routing.xml"
+    resource: "@LiipImagineBundle/Resources/config/routing.yaml"
 
 mbh_vega:
     resource: "@MBHVegaBundle/Controller/"
