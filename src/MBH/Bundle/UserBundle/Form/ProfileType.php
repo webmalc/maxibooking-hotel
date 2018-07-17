@@ -13,6 +13,11 @@ use Symfony\Component\Validator\Constraints\Regex;
 
 class ProfileType extends AbstractType
 {
+    private $defaultLocale;
+
+    public function __construct($defaultLocale) {
+        $this->defaultLocale = $defaultLocale;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -42,6 +47,9 @@ class ProfileType extends AbstractType
                 ->add('locale', LanguageType::class, [
                     'label' => 'form.userType.locale',
                     'group' => 'form.userType.general_info',
+                    'data' => $builder->getData() && $builder->getData()->getLocale()
+                        ? $builder->getData()->getLocale()
+                        : $this->defaultLocale
                 ])
             ;
     }

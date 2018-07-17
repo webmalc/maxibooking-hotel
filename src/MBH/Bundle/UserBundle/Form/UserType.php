@@ -3,17 +3,13 @@
 namespace MBH\Bundle\UserBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Form\LanguageType;
-use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\LocaleType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -31,11 +27,11 @@ class UserType extends AbstractType
     private $isNew;
     private $roles;
     private $translator;
-    /** @var  DocumentManager */
-    private $dm;
+    private $defaultLocale;
 
-    public function __construct(TranslatorInterface $translator) {
+    public function __construct(TranslatorInterface $translator, $defaultLocale) {
         $this->translator = $translator;
+        $this->defaultLocale = $defaultLocale;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -170,6 +166,9 @@ class UserType extends AbstractType
             ->add('locale', LanguageType::class, [
                 'label' => 'form.userType.locale',
                 'group' => 'form.userType.general_info',
+                'data' => $builder->getData() && $builder->getData()->getLocale()
+                    ? $builder->getData()->getLocale()
+                    : $this->defaultLocale
             ])
         ;
 
