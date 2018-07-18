@@ -564,6 +564,27 @@ class Helper
     }
 
     /**
+     * @param $callback
+     * @param string $filter
+     * @return mixed
+     */
+    public function getWithoutFilter($callback, $filter = 'softdeleteable')
+    {
+        $dm = $this->container->get('doctrine.odm.mongodb.document_manager');
+        if ($dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->disable($filter);
+        }
+
+        $result = $callback();
+
+        if (!$dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->enable($filter);
+        }
+
+        return $result;
+    }
+
+    /**
      * @param $fieldData
      * @return array
      */

@@ -18,29 +18,30 @@
 {% set subtrahend = (tableCellHeight / 5)|round %}
 {% set minuend = tableCellHeight - subtrahend %}
 {% set numberOfRoomsOptions = [0, 20,30, 50] %}
+{% set changedNumberOfDays = 7 %}
 
 {% block scripts %}
     {{ parent() }}
     {% javascripts filter='uglifyjs2'
-    '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
-    '@MBHBaseBundle/Resources/public/vendor/touch-punch.js'
-    'assets/vendor/admin-lte/plugins/bootstrap-slider/bootstrap-slider.js'
-    '@MBHPackageBundle/Resources/public/js/tourist.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
+        '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
+        '@MBHBaseBundle/Resources/public/vendor/touch-punch.js'
+        'assets/vendor/admin-lte/plugins/bootstrap-slider/bootstrap-slider.js'
+        '@MBHPackageBundle/Resources/public/js/tourist.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
 
-    <script type="text/javascript" src="{{ asset_url }}"></script>
+        <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
 
 {% block styles %}
     {{ parent() }}
     {% stylesheets filter='cssrewrite, uglifycss'
-    '@MBHPackageBundle/Resources/public/css/*'
-    'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
+        '@MBHPackageBundle/Resources/public/css/*'
+        'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
     {% set halfMinuend = (minuend / 2)|round %}
     {% set quarterMinuend = (minuend / 4)|round %}
@@ -177,26 +178,32 @@
             background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['danger_add'] }} 5px, {{ colors['danger_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .danger.tile-coming {
             background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['danger_add'] }} 3px, {{ colors['danger_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .success.tile-coming-out {
             background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['success_add'] }} 5px, {{ colors['success_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .success.tile-coming {
             background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['success_add'] }} 3px, {{ colors['success_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .warning.tile-coming-out {
             background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['warning_add'] }} 5px, {{ colors['warning_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .warning.tile-coming {
             background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['warning_add'] }} 3px, {{ colors['warning_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .ui-resizable-w.early-checkin-block {
             border-right-color: #000 !important;
         }
@@ -239,11 +246,18 @@
            value="{{ endDate|date('d.m.Y') }}">
 
     <form method="get" id="accommodation-report-filter" class="form-inline filter-form" role="form">
-        <div class="input" style="display: inline-flex; justify-content: center; align-items: center;">
-            <i class="fa fa-calendar" title='{{ 'chessboard_manager.dates.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
+        <div class="input">
+            <i class="fa fa-caret-left fa-2x change-days-button" data-number-of-days="{{ changedNumberOfDays }}" data-change-type="subtract"
+               title='{{ 'chessboard_manager.change_dates_button.subtract'|trans({'%numberOfDays%': changedNumberOfDays}) }}'
+               data-toggle='tooltip'></i>&nbsp;
             <input type="text" name="filter_begin" id="accommodation-report-filter-begin"
                    class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm"
                    data-date-format="dd.mm.yyyy" value="{{ beginDate|date('d.m.Y') }}">
+            &nbsp;
+            <i class="fa fa-caret-right fa-2x change-days-button"
+               data-number-of-days="{{ changedNumberOfDays }}" data-change-type="add"
+               title='{{ 'chessboard_manager.change_dates_button.add'|trans({'%numberOfDays%': changedNumberOfDays}) }}'
+               data-toggle='tooltip'></i>&nbsp;
         </div>
         <div class="input hidden">
             - &nbsp;
@@ -252,7 +266,7 @@
                    data-date-format="dd.mm.yyyy" value="{{ endDate|date('d.m.Y') }}">
         </div>
         <div class="input">
-            <i class="fa fa-bed" title='{{ 'chessboard_manager.room_type.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
+            <i class="fa fa-bed hide-field-button" title='{{ 'chessboard_manager.room_type.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
             <select name="filter_roomType[]" multiple
                     data-placeholder="{{ 'chessboard_manager.room_type.title'|trans }}"
                     id="accommodation-report-filter-roomType"
@@ -266,7 +280,7 @@
         </div>
         {% if housings|length %}
             <div class="input">
-                <i class="fa fa-home" title='{{ 'chessboard_manager.housing.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
+                <i class="fa fa-home hide-field-button" title='{{ 'chessboard_manager.housing.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
                 <select name="housing[]" multiple data-placeholder="{{ 'chessboard_manager.housing.title'|trans }}"
                         id="accommodation-report-filter-housing"
                         class="accommodation-report-filter form-control input-sm">
@@ -281,7 +295,7 @@
 
         {% if floors|length %}
             <div class="input">
-                <i class="fa fa-home" title='{{ 'chessboard_manager.floor.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
+                <i class="fa fa-home hide-field-button" title='{{ 'chessboard_manager.floor.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
                 <select name="floor[]" multiple data-placeholder="{{ 'chessboard_manager.floor.title'|trans }}"
                         id="accommodation-report-filter-floor"
                         class="accommodation-report-filter form-control input-sm">

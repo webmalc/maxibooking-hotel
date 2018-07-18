@@ -574,3 +574,24 @@ body {
 #ex1Slider .slider-selection {
   background: #BABABA;
 }
+#accommodation-report-filter {
+  display: flex;
+  flex-wrap: wrap;
+}
+#accommodation-report-filter .hide-field-button,
+#accommodation-report-filter .change-days-button {
+  display: flex;
+  justify-content: center;
+}
+#accommodation-report-filter .hide-field-button:before,
+#accommodation-report-filter .change-days-button:not(.fa-caret-right):before {
+  width: 20px;
+}
+#accommodation-report-filter .fa-caret-right.change-days-button {
+  margin-left: 10px;
+}
+#accommodation-report-filter .input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

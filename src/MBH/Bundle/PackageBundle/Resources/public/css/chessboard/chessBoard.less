@@ -668,3 +668,26 @@ body {
     background: #BABABA;
   }
 }
+
+#accommodation-report-filter {
+  display: flex;
+  flex-wrap: wrap;
+
+  .hide-field-button, .change-days-button {
+    display: flex;
+    justify-content: center;
+  }
+
+  .hide-field-button:before, .change-days-button:not(.fa-caret-right):before {
+    width: 20px;
+  }
+  .fa-caret-right.change-days-button {
+    margin-left: 10px;
+  }
+
+  .input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
