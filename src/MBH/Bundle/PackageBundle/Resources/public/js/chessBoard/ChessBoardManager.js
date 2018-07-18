@@ -1392,10 +1392,11 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.prototype.hangOnHideFieldButtonClick = function () {
         var _this = this;
         var changeVisibilityFunc = function (element) {
-            var $select2Container = $(element.parentNode).find('span.select2-container');
-            var isVisible = $select2Container.css('display') !== 'none';
-            var filterButton = document.getElementById('filter-button');
-            _this.setImportantStyle($select2Container, 'display', isVisible ? 'none' : 'inline-block');
+            var $select2Elements = $(element.parentNode).find('span.select2-container select');
+            var isVisible = $select2Elements.eq(0).css('display') !== 'none';
+            $select2Elements.each(function (index, selectElement) {
+                _this.setImportantStyle($(selectElement), 'display', isVisible ? 'none' : 'inline-block');
+            });
             element.style.color = !isVisible ? 'inherit' : 'red';
         };
         var $hideFieldButtons = $('.hide-field-button');

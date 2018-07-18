@@ -1584,10 +1584,11 @@ class ChessBoardManager {
 
     private hangOnHideFieldButtonClick() {
         const changeVisibilityFunc = (element) => {
-            const $select2Container = $(element.parentNode).find('span.select2-container');
-            const isVisible = $select2Container.css('display') !== 'none';
-            const filterButton = document.getElementById('filter-button');
-            this.setImportantStyle($select2Container, 'display', isVisible ? 'none' : 'inline-block');
+            const $select2Elements = $(element.parentNode).find('span.select2-container select');
+            const isVisible = $select2Elements.eq(0).css('display') !== 'none';
+            $select2Elements.each((index, selectElement) => {
+                this.setImportantStyle($(selectElement), 'display', isVisible ? 'none' : 'inline-block');
+            });
             element.style.color = !isVisible ? 'inherit' : 'red';
         };
 
