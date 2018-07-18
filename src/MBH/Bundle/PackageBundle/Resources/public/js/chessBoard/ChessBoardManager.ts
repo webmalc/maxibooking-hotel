@@ -9,7 +9,6 @@ declare let currentStyleConfigNumber;
 declare let colors;
 declare let subtrahend;
 declare let isMobileDevice;
-declare let isLowWidth;
 
 class ChessBoardManager {
     private static PACKAGE_FONT_SIZE_WIDTH = 8;
@@ -165,7 +164,7 @@ class ChessBoardManager {
         let dateElements = $('.date, .leftRooms');
         const $document = $(document);
         if (canCreatePackage) {
-            const eventName = isMobileDevice ? 'contextmenu' : 'mousedown';
+            const eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
             dateElements.on(eventName, function (event) {
                 chessBoardContentBlock.style.overflow = 'hidden';
                 event.preventDefault();
@@ -801,7 +800,7 @@ class ChessBoardManager {
             let intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             let $element = $(element);
             self.addResizable($element, intervalData);
-            if (isMobileDevice) {
+            if (isMobileDevice()) {
                 let touchTime;
                 let isTouchEnd = false;
                 $element.on('touchstart', () => {
@@ -1444,7 +1443,7 @@ class ChessBoardManager {
         const chessboardStyles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
         const chessboardWidth = parseInt(chessboardStyles.width, 10);
 
-        return chessboardWidth - (!isMobileDevice ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
+        return chessboardWidth - (!isMobileDevice() ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
     }
 
     private static getIntervalOutOfTableSide(intervalData) {
