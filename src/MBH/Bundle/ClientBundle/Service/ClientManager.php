@@ -70,12 +70,16 @@ class ClientManager
         $roomCachesByDate = $roomCacheRepository
             ->fetch($date, $date, null, [], null)
             ->toArray();
-        $roomCachesByDate = array_unique(array_merge($modifiedRoomCaches, $roomCachesByDate), SORT_REGULAR);
+        $roomCachesByDate = array_merge($modifiedRoomCaches, $roomCachesByDate);
 
         $numberOfExistedRooms = 0;
+        $roomCachesIds = [];
         /** @var RoomCache $roomCache */
         foreach ($roomCachesByDate as $roomCache) {
-            $numberOfExistedRooms += $roomCache->getTotalRooms();
+            if (!in_array($roomCache->getId(), $roomCachesIds)) {
+                $roomCachesIds[] = $roomCache->getId();
+                $numberOfExistedRooms += $roomCache->getTotalRooms();
+            }
         }
 
         return $numberOfExistedRooms > $this->getAvailableNumberOfRooms();

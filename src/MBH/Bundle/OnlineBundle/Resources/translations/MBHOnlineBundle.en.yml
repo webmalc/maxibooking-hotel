@@ -4,6 +4,7 @@ views.api.form.check_in_date: Check-in
 views.api.form.check_out_date: Check-out
 views.api.form.nights_amount: Nights
 views.api.form.room_type: 'Room type'
+views.api.form.room_type.choices.any: Any
 views.api.form.adults: Adults
 views.api.form.children: Children
 views.api.form.find_room: 'Find room'

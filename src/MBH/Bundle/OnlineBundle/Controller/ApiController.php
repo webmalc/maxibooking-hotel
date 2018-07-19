@@ -15,6 +15,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -362,7 +363,6 @@ class ApiController extends Controller
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
         $query->setSave(true);
-        $isViewTariff = false;
 
         if (!empty($request->get('children-ages')) && $query->children > 0 && $formConfig->isIsDisplayChildrenAges()) {
             $query->setChildrenAges($request->get('children-ages'));
@@ -373,17 +373,6 @@ class ApiController extends Controller
             $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         }
         foreach ($hotels as $hotel) {
-            if (is_null($query->tariff) && !$isViewTariff) {
-                $defaultTariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
-                    ['hotel.id' => $hotel->getId(), 'isDefault' => true, 'isOnline' => true, 'isEnabled' => true]
-                );
-                if (empty($defaultTariff)) {
-                    $query->tariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
-                        ['hotel.id' => $hotel->getId(), 'isOnline' => true, 'isEnabled' => true]
-                    );
-                }
-                $isViewTariff = true;
-            }
             foreach ($hotel->getRoomTypes() as $roomType) {
                 $query->addAvailableRoomType($roomType->getId());
             }
@@ -396,9 +385,18 @@ class ApiController extends Controller
             $results = [];
             $tariffResults = [];
         } else {
-            $results = $this->get('mbh.package.search')->search($query);
+            $search = $this->get('mbh.package.search');
+            $tariffResults = $search->searchTariffs($query);
 
-            $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
+            if (!empty($query->tariff)) {
+                $results = $search->search($query);
+                $defaultTariff = $query->tariff instanceof Tariff ? $query->tariff : $this->dm->find('MBHPriceBundle:Tariff', $query->tariff);
+            } else {
+                $results = $search->searchBeforeResult($query, $tariffResults);
+                if (!empty($results)) {
+                    $defaultTariff = current($results)->getTariff();
+                }
+            }
         }
 
         $hotels = $services = [];

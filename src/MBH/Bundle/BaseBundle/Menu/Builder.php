@@ -839,20 +839,25 @@ class Builder
                 ],
             ],
         ];
+        $parent = $this->createItem($webSite);
 
-        $siteSettings = [
-            'site_settings' => [
-                'options'    => [
-                    'route' => 'site_settings',
-                    'label' => 'menu.communication.label.site_settings',
-                ],
-                'attributes' => [
-                    'icon' => 'fa fa-cog',
-                ],
-            ],
-        ];
+        $menuItems = [];
 
-        $onlineForm = [
+        if ($this->config->isMBSiteEnabled()) {
+            $menuItems[] = [
+                'site_settings' => [
+                    'options'    => [
+                        'route' => 'site_settings',
+                        'label' => 'menu.communication.label.site_settings',
+                    ],
+                    'attributes' => [
+                        'icon' => 'fa fa-cog',
+                    ],
+                ],
+            ];
+        }
+
+        $menuItems[] = [
             'online_form' => [
                 'options'    => [
                     'route' => 'online_form',
@@ -862,7 +867,7 @@ class Builder
             ],
         ];
 
-        $paymentForm = [
+        $menuItems[] = [
             'payment_form' => [
                 'options'    => [
                     'route' => 'online_payment_form',
@@ -872,7 +877,7 @@ class Builder
             ],
         ];
 
-        $onlinePolls = [
+        $menuItems[] = [
             'online_polls' => [
                 'options'    => [
                     'route' => 'online_poll_config',
@@ -882,7 +887,7 @@ class Builder
             ],
         ];
 
-        $paymentSystem = [
+        $menuItems[] = [
             'payment_systems' => [
                 'options'    => [
                     'route' => 'client_payment_systems',
@@ -892,17 +897,7 @@ class Builder
             ],
         ];
 
-        $parent = $this->createItem($webSite);
-
-        return $parent->setChildren(
-            $this->getItemsInArray([
-                $siteSettings,
-                $onlinePolls,
-                $paymentSystem,
-                $onlineForm,
-                $paymentForm,
-            ])
-        );
+        return $parent->setChildren($this->getItemsInArray($menuItems));
     }
 
     /**

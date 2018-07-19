@@ -6,6 +6,9 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
+use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
@@ -38,17 +41,20 @@ class SiteManager
     private $documentFieldsManager;
     private $translator;
     private $warningsCompiler;
+    private $billingApi;
 
     public function __construct(
         DocumentManager $dm, 
         DocumentFieldsManager $documentFieldsManager, 
         TranslatorInterface $translator,
-        WarningsCompiler $warningsCompiler
+        WarningsCompiler $warningsCompiler,
+        BillingApi $billingApi
     ) {
         $this->dm = $dm;
         $this->documentFieldsManager = $documentFieldsManager;
         $this->translator = $translator;
         $this->warningsCompiler = $warningsCompiler;
+        $this->billingApi = $billingApi;
     }
 
     /**
@@ -149,6 +155,56 @@ class SiteManager
     public function getSiteConfig()
     {
         return $this->dm->getRepository('MBHOnlineBundle:SiteConfig')->findOneBy([]);
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param Client $client
+     * @return SiteConfig
+     */
+    public function createOrUpdateForHotel(Hotel $hotel, Client $client)
+    {
+        $config = $this->getSiteConfig();
+        if (is_null($config)) {
+            $config = new SiteConfig();
+            $this->dm->persist($config);
+            $config->addHotel($hotel);
+
+            $siteDomain = '';
+            if ($this->checkSiteDomain($client->getLogin())) {
+                $siteDomain = $client->getLogin();
+            } elseif ($client->getCity()) {
+                $domainWithCityName = $client->getLogin() . '-' . $this->billingApi->getCityById($client->getCity(), 'en')->getName();
+                if ($this->checkSiteDomain($domainWithCityName)) {
+                    $siteDomain = $domainWithCityName;
+                }
+            }
+
+            if (empty($siteDomain)) {
+                $siteDomain = $client->getLogin() . rand(0, 1000000);
+            }
+
+            $config->setSiteDomain($siteDomain);
+            $clientSite = (new WebSite())
+                ->setUrl($this->compileSiteAddress($siteDomain))
+                ->setClient($client->getLogin());
+            $this->billingApi->addClientSite($clientSite);
+        }
+
+        $this->updateSiteFormConfig($config, $this->fetchFormConfig(), []);
+
+        return $config;
+    }
+
+    /**
+     * @param string $siteDomain
+     * @return bool
+     */
+    public function checkSiteDomain(string $siteDomain)
+    {
+        $sitesResult = $this->billingApi->getSitesByUrlResult($this->compileSiteAddress($siteDomain));
+
+        return $sitesResult->isSuccessful() && empty($sitesResult->getData());
     }
 
     /**

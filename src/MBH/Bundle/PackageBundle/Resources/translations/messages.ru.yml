@@ -738,6 +738,7 @@ csv.form.package_services_price: 'Стоимость услуг'
 csv.form.price: 'Общая сумма'
 csv.form.createdAt: 'Дата создания'
 csv.form.createdBy: Создал
+csv.form.note: Комментарий
 csv.form.modal_title: 'Генерация документа'
 csv.form.modal_close: Закрыть
 csv.form.modal_generate: Сгенерировать
@@ -895,6 +896,7 @@ report.filling.filling_table.number_of_places: мест
 report.filling.filling.dates: Даты
 report.filling.filling.room_types: 'Тип номера'
 report.filling.filling.room_status: 'Статус комнаты'
+report.filling.filling.room_status.without_status: 'Без статуса'
 report.filling.filling.only_enabled: 'Только влюченные?'
 report.polls_view.number_of_order: Заказ
 report.polls_view.hotel: Отель

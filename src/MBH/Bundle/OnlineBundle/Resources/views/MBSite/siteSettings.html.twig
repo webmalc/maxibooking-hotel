@@ -13,7 +13,6 @@
         <div class="box-body">
             {{ form_start(form, {'action': path('site_settings'), 'attr': {'class': 'form-horizontal'}}) }}
             {% set groups = {'form.main.group': form.children|keys} %}
-            {{ form_row(form.isEnabled) }}
             {{ form_row(form.siteDomain) }}
             <div class="default-service form-group form-inline">
                 {{ form_label(form.keyWords) }}

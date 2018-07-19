@@ -300,6 +300,37 @@ class ClientConfig extends Base
     protected $languages = [];
 
     /**
+     * @var FrontSettings
+     * @ODM\EmbedOne(targetDocument="FrontSettings")
+     */
+    protected $frontSettings;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isMBSiteEnabled = true;
+
+    /**
+     * @return bool
+     */
+    public function isMBSiteEnabled(): ?bool
+    {
+        return $this->isMBSiteEnabled;
+    }
+
+    /**
+     * @param bool $isMBSiteEnabled
+     * @return ClientConfig
+     */
+    public function setIsMBSiteEnabled(bool $isMBSiteEnabled): ClientConfig
+    {
+        $this->isMBSiteEnabled = $isMBSiteEnabled;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getLanguages(): ?array
@@ -317,12 +348,6 @@ class ClientConfig extends Base
 
         return $this;
     }
-
-    /**
-     * @var FrontSettings
-     * @ODM\EmbedOne(targetDocument="FrontSettings")
-     */
-    protected $frontSettings;
 
     /**
      * @return FrontSettings

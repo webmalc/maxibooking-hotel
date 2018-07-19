@@ -12,9 +12,7 @@ use MBH\Bundle\ClientBundle\Document\Payanyway;
 use MBH\Bundle\ClientBundle\Document\Paypal;
 use MBH\Bundle\ClientBundle\Document\Rbk;
 use MBH\Bundle\ClientBundle\Document\RNKB;
-use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Stripe;
-use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
@@ -84,6 +82,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                         ['%supportEmail%' => $this->getParameter('support')['email']]))
                 ;
             }
+            $this->get('mbh.site_manager')
+                ->getSiteConfig()
+                ->setIsEnabled($entity->isMBSiteEnabled());
             $this->dm->persist($entity);
             $this->dm->flush();
 

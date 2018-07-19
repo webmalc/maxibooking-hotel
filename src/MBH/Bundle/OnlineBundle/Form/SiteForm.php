@@ -52,13 +52,6 @@ class SiteForm extends AbstractType
 
         //ФОРМА ОТРИСОВЫВАЕТСЯ В ШАБЛОНЕ ВРУЧНУЮ!
         $builder
-            ->add('isEnabled', CheckboxType::class, [
-                'label' => 'site_form.is_enabled.label',
-                'required' => false,
-                'attr' => [
-                    'class' => 'box-full-visibility-checkbox'
-                ],
-            ])
             ->add('siteDomain', TextType::class, [
                 'label' => 'Адрес',
                 'required' => true,

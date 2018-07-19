@@ -33,21 +33,22 @@ class MBSiteController extends BaseController
     public function siteSettingsAction(Request $request)
     {
         $siteManager = $this->get('mbh.site_manager');
-        $config = $siteManager->getSiteConfig();
-        $form = $this->createForm(SiteForm::class, $config);
-        $form->handleRequest($request);
+        $siteConfig = $siteManager->getSiteConfig();
         $formConfig = $siteManager->fetchFormConfig();
+
         $clientManager = $this->get('mbh.client_manager');
         $clientSite = $clientManager->getClientSite();
 
+        $form = $this->createForm(SiteForm::class, $siteConfig);
+        $form->handleRequest($request);
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                /** @var SiteConfig $config */
-                $config = $form->getData();
-                $this->dm->persist($config);
+                /** @var SiteConfig $siteConfig */
+                $siteConfig = $form->getData();
+                $this->dm->persist($siteConfig);
 
                 $client = $clientManager->getClient();
-                $newSiteAddress = $siteManager->compileSiteAddress($config->getSiteDomain());
+                $newSiteAddress = $siteManager->compileSiteAddress($siteConfig->getSiteDomain());
 
                 if (is_null($clientSite)) {
                     $clientSite = (new WebSite());
@@ -55,7 +56,7 @@ class MBSiteController extends BaseController
 
                 $isSuccess = true;
                 if ($clientSite->getUrl() !== $newSiteAddress
-                    || $config->getIsEnabled() !== $clientSite->getIs_enabled()) {
+                    || $siteConfig->getIsEnabled() !== $clientSite->getIs_enabled()) {
                     $clientSite
                         ->setUrl($newSiteAddress)
                         ->setClient($client->getLogin());
@@ -73,7 +74,7 @@ class MBSiteController extends BaseController
                     }
                 }
                 if ($isSuccess) {
-                    $siteManager->updateSiteFormConfig($config, $formConfig, $request->get($form->getName())['paymentTypes']);
+                    $siteManager->updateSiteFormConfig($siteConfig, $formConfig, $request->get($form->getName())['paymentTypes']);
                     $this->dm->flush();
                     $this->addFlash('success', 'mb_site_controller.site_config_saved');
                 }
@@ -84,7 +85,7 @@ class MBSiteController extends BaseController
 
         return [
             'form' => $form->createView(),
-            'hotelsSettings' => $siteManager->getHotelsSettingsInfo($config)
+            'hotelsSettings' => $siteManager->getHotelsSettingsInfo($siteConfig)
         ];
     }
 
