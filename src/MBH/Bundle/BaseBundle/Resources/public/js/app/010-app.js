@@ -95,22 +95,41 @@ mbh.alert = {
 };
 
 mbh.datatablesOptions = {
-    dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-    buttons: [{
-            extend: 'excel',
-            text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
-            className: 'btn btn-default btn-sm',
-            exportOptions: {
-                stripNewlines: false
-            }
+    dom: "12<'row dataTable-mobile_button-and-search'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+      buttons       : {
+        dom    : {
+          container: {
+            className: 'dt-buttons hidden-xs'
+          }
         },
-        {
-            extend: 'pdf',
-            text: '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
+        buttons: [
+          {
+            extend       : 'excel',
+            text         : '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
+            className    : 'btn btn-default btn-sm',
+            exportOptions: {
+              stripNewlines: false
+            }
+          },
+          {
+            extend   : 'pdf',
+            text     : '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
             className: 'btn btn-default btn-sm'
-        }
-    ]
+          }
+        ]
+      }
 };
+
+if (isMobileDevice()) {
+  mbh.datatablesOptions.pageLength = 10;
+  mbh.datatablesOptions.language = {
+      "paginate": {
+        "previous": "<",
+        "next"    : ">"
+      }
+    }
+}
+
 
 mbh.highchartsOptions = {
     lang: {
@@ -200,7 +219,8 @@ var deleteLink = function() {
         $('.datepicker').datepicker({
             language: "ru",
             todayHighlight: true,
-            autoclose: true
+            autoclose: true,
+            disableTouchKeyboard: true
         });
     });
 };

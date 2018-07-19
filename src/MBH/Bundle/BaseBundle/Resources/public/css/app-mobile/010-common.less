@@ -1,0 +1,157 @@
+@media (max-width: 767px) {
+  .content-header {
+    #main-breadcrumb {
+      margin-top: -8px;
+      margin-bottom: 5px;
+    }
+  }
+
+  .content {
+    padding-top: 0px;
+  }
+
+  header.main-header {
+    top: unset !important;
+    position: relative !important;
+  }
+
+  .content-wrapper.main-container {
+    padding-top: 0;
+  }
+
+  .sidebar-open .content-wrapper,
+  .sidebar-open .main-footer  {
+    -webkit-transform: unset;
+    transform: unset;
+  }
+
+  aside.main-sidebar {
+    z-index: 1000;
+    top:100px;
+    padding-top: 0;
+    width: 100%;
+    left: -100%;
+    transform: translateX(0px);
+    transition-property: left;
+    transition-duration: 500ms;
+  }
+
+  .sidebar-open {
+    aside.main-sidebar {
+      left: 0;
+
+      &::after {
+        content: "MaxiBooking";
+        font-size: 10px;
+        color: #408dbc;
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        margin-top: 15px;
+      }
+    }
+
+  }
+
+  body.hidden-logo {
+    header {
+      position: fixed !important;
+      top: 0 !important;
+
+      a.logo {
+        display: none;
+        .logo-mini {
+          display: none;
+        }
+      }
+    }
+
+    aside.main-sidebar {
+      top:50px;
+    }
+
+    .content-wrapper.main-container {
+      padding-top: 100px;
+    }
+  }
+
+  form {
+    select,
+    input[type="text"] {
+      width: 100% !important;
+      min-width: unset !important;
+    }
+  }
+
+  ul[role="tablist"] li {
+    width: 100%;
+    border-bottom: 0.5px solid #3c8dbc;
+
+    &:not(.active) {
+      background: #9c9c9c7d;
+    }
+  }
+
+  /** кнопки действий*/
+  #actions {
+    position: relative;
+    margin-right: -25px;
+    margin-left: -33px;
+    ul:not(.dropdown-menu) {
+      margin: 0px -10px;
+      > li {
+        button {
+          width: 100%;
+          margin-right: 0px;
+        }
+      }
+    }
+  }
+
+  .dataTable-mobile_button-and-search {
+    display: flex;
+    div {
+      &:last-of-type {
+        width: 100%;
+      }
+    }
+
+    .dataTables_filter {
+      label {
+        display: flex;
+        align-items: center;
+        input {
+          width: 100%!important;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .navbar_tad-a_hotel {
+    width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .dataTable-mobile_button-and-search {
+    .dataTables_length {
+      label {
+        font-size: 0;
+        select {
+          width: 56px !important;
+        }
+        &:hover {
+          font-size: inherit;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 374px) {
+  .navbar_tad-a_hotel {
+    width: 100px;
+  }
+}

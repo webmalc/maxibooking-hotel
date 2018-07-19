@@ -78,6 +78,12 @@
                 {% endstylesheets %}
                 <link rel="stylesheet" href="{{ asset('assets/vendor/admin-lte/plugins/iCheck/all.css') }}">
             {% endblock %}
+
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHBaseBundle/Resources/public/css/app-mobile/*'
+            %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
         </head>
 
         <body class="hold-transition {{ loginPage is defined ? 'login-page' : 'skin-blue sidebar-mini fixed' }}">

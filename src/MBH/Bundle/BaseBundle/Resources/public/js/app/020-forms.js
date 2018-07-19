@@ -401,7 +401,8 @@ var docReadyForms = function () {
         language: "ru",
         todayHighlight: true,
         autoclose: true,
-        format: 'dd.mm.yyyy'
+        format: 'dd.mm.yyyy',
+        disableTouchKeyboard: true
     });
 
     //Datepicker configuration

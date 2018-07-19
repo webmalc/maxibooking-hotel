@@ -58,7 +58,8 @@ var docReadyTourists = function () {
     $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday').datepicker({
         language: "ru",
         autoclose: true,
-        startView: 2
+        startView: 2,
+        disableTouchKeyboard: true
     });
 
     var $guestForm = $('form[name=mbh_bundle_packagebundle_package_order_tourist_type]');
