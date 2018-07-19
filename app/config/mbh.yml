@@ -373,10 +373,6 @@ parameters:
     mbh.languages:
         - en
         - ru
-#        - de
-#        - fr
-#        - gr
-#        - tr
 
     mbh.warehouse.operations:
         in: "mbh.warehouse.operations.in"
