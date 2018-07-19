@@ -1,3 +1,6 @@
-function isMobileDevice() {
-  return /Mobi/.test(navigator.userAgent);
-}
+var isMobileDevice = (function() {
+  var isMobile = /Mobi/.test(navigator.userAgent);
+  return function() {
+    return isMobile;
+  }
+})();
