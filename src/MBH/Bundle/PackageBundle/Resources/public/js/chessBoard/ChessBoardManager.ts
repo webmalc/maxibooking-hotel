@@ -9,7 +9,7 @@ declare let currentStyleConfigNumber;
 declare let colors;
 declare let subtrahend;
 declare let isMobileDevice;
-declare let isLowWidth;
+declare let maxSliderSize;
 
 class ChessBoardManager {
     private static PACKAGE_FONT_SIZE_WIDTH = 8;
@@ -116,6 +116,7 @@ class ChessBoardManager {
             self.updateTable();
         });
         self.handleSizeSlider();
+        self.onChangeScaleClick();
         document.getElementById('packageModalConfirmButton').onclick = function () {
             let data = ActionManager.getDataFromUpdateModal();
             let packageId = data.packageId;
@@ -144,18 +145,16 @@ class ChessBoardManager {
         let rangePicker = $reportFilter.find('.daterangepicker-input').data('daterangepicker');
         rangePicker.setStartDate(this.tableStartDate);
         rangePicker.setEndDate(this.tableEndDate);
+        this.hangChangeNumberOfDaysButtonClick();
 
         $reportFilter.find('#filter-button').click(function () {
             $reportFilter.submit();
         });
 
         this.onAddGuestClick();
+        this.hangOnHideFieldButtonClick();
 
-        if (isMobileDevice()) {
-            window.onscroll = function() {
-                // ChessBoardManager.onWindowYScrollForMobiles(getComputedStyle(chessBoardContentBlock).top);
-            };
-        } else {
+        if (!isMobileDevice()) {
             //Фиксирование верхнего и левого блоков таблицы
             chessBoardContentBlock.onscroll = function () {
                 ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
@@ -166,10 +165,8 @@ class ChessBoardManager {
         //Создание брони
         let dateElements = $('.date, .leftRooms');
         const $document = $(document);
-
-
         if (canCreatePackage) {
-            const eventName = isMobileDevice ? 'contextmenu' : 'mousedown';
+            const eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
             dateElements.on(eventName, function (event) {
                 chessBoardContentBlock.style.overflow = 'hidden';
                 event.preventDefault();
@@ -240,11 +237,24 @@ class ChessBoardManager {
         $slider.slider({tooltip: 'hide', reverseed: true});
         $slider.on('slideStop', () => {
             let sliderValue = $('#ex1').slider('getValue');
-            if (this.currentSizeConfigNumber !== sliderValue) {
-                ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
-                this.currentSizeConfigNumber = sliderValue;
-                window.location.reload();
-            }
+            this.changeScale(sliderValue);
+        });
+    }
+
+    private changeScale(sliderValue) {
+        if (this.currentSizeConfigNumber !== sliderValue && sliderValue >= 0 && sliderValue <= maxSliderSize) {
+            ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
+            this.currentSizeConfigNumber = sliderValue;
+            window.location.reload();
+        }
+    }
+
+    private onChangeScaleClick() {
+        $('.reduce-scale-button, .increase-scale-button').on(this.getClickEventType(), (event) => {
+            const sliderValue = $('#ex1').slider('getValue');
+            const buttonClassList = event.target.classList;
+            const newSliderValue = buttonClassList.contains('increase-scale-button') ? (sliderValue + 1) : (sliderValue - 1);
+            this.changeScale(newSliderValue);
         });
     }
 
@@ -365,15 +375,6 @@ class ChessBoardManager {
         headerTitle.style.left = chessBoardContentBlock.scrollLeft + 'px';
     }
 
-    protected static onWindowYScrollForMobiles(startTopOffset) {
-        let monthsAndDates = document.getElementById('months-and-dates');
-        monthsAndDates.style.top = document.body.scrollTop + 'px';
-
-        let headerTitle = document.getElementById('header-title');
-        headerTitle.style.top = document.body.scrollTop + 'px';
-        headerTitle.style.left = document.body.scrollLeft + 'px';
-    }
-
     protected getPackageLengthRestriction(startDate, isLeftMouseShift, tableStartDate, tableEndDate) {
         'use strict';
         if (isLeftMouseShift) {
@@ -381,6 +382,30 @@ class ChessBoardManager {
         }
 
         return tableEndDate.diff(startDate, 'days') * styleConfigs[this.currentSizeConfigNumber].tableCellWidth;
+    }
+
+    private hangChangeNumberOfDaysButtonClick() {
+        const getNewDate = function (changeButton, $dateField) {
+            const changeDaysFormat = parseInt(changeButton.getAttribute('data-number-of-days'), 10);
+            const isAddition = changeButton.getAttribute('data-change-type') === 'add';
+            const date = moment($dateField.val(), 'DD.MM.YYYY');
+
+            return isAddition ? date.add(changeDaysFormat, 'days') : date.subtract(changeDaysFormat, 'days');
+        };
+
+        $('.change-days-button').on(this.getClickEventType(), function () {
+            const $rangePicker = $('.daterangepicker-input').data('daterangepicker');
+            const $beginDateField = $('#accommodation-report-filter-begin');
+            const $endDateField = $('#accommodation-report-filter-end');
+
+            const beginDate = getNewDate(this, $beginDateField);
+            const endDate = getNewDate(this, $endDateField);
+
+            $beginDateField.val(beginDate.format('DD.MM.YYYY'));
+            $endDateField.val(endDate.format('DD.MM.YYYY'));
+            $rangePicker.setStartDate(beginDate.toDate());
+            $rangePicker.setEndDate(endDate.toDate());
+        });
     }
 
     public addAccommodationElements() {
@@ -790,7 +815,7 @@ class ChessBoardManager {
             let intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             let $element = $(element);
             self.addResizable($element, intervalData);
-            if (isMobileDevice) {
+            if (isMobileDevice()) {
                 let touchTime;
                 let isTouchEnd = false;
                 $element.on('touchstart', () => {
@@ -820,7 +845,7 @@ class ChessBoardManager {
             $element.find('.remove-package-button').on('click touchstart', function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
-            $element.find('.divide-package-button').on('click touchstart', (event) => {
+            $element.find('.divide-package-button').on('click', (event) => {
                 self.canMoveAccommodation = false;
                 let $scissorIcon = $(event.target);
                 if (intervalData.viewPackage) {
@@ -849,7 +874,7 @@ class ChessBoardManager {
                         line.style.left = defaultLeftValue + 'px';
                         element.appendChild(line);
 
-                        $element.on('mousemove touchmove', function (event) {
+                        $element.on('mousemove', function (event) {
                             let offset = event.clientX - packageLeftCoordinate;
                             let griddedOffset;
                             if (isAccommodationAbroadTable) {
@@ -868,7 +893,8 @@ class ChessBoardManager {
                             }
 
                             line.style.left = griddedOffset + 'px';
-                            $element.on('click touchstart', function () {
+                            $element.off('click');
+                            $element.on('click', function () {
                                 $element.off('mousemove touchmove');
                                 $('.dividing-line').remove();
                                 self.divide(this, griddedOffset);
@@ -1432,7 +1458,7 @@ class ChessBoardManager {
         const chessboardStyles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
         const chessboardWidth = parseInt(chessboardStyles.width, 10);
 
-        return chessboardWidth - (!isMobileDevice ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
+        return chessboardWidth - (!isMobileDevice() ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
     }
 
     private static getIntervalOutOfTableSide(intervalData) {
@@ -1565,5 +1591,32 @@ class ChessBoardManager {
                 time = 0;
             }
         }, 1000);
+    }
+
+    private getClickEventType() {
+        return isMobileDevice() ? 'touchstart' : 'click';
+    }
+
+    private hangOnHideFieldButtonClick() {
+        const changeVisibilityFunc = (element) => {
+            const $select2Elements = $(element.parentNode).find('span.select2-container, select');
+            const isVisible = $select2Elements.eq(0).css('display') !== 'none';
+            $select2Elements.each((index, selectElement) => {
+                this.setImportantStyle($(selectElement), 'display', isVisible ? 'none' : 'inline-block');
+            });
+            element.style.color = !isVisible ? 'inherit' : 'red';
+        };
+
+        const $hideFieldButtons = $('.hide-field-button');
+        if (isMobileDevice()) {
+            $hideFieldButtons.each((index, element) => {
+                changeVisibilityFunc(element);
+            });
+        }
+        $hideFieldButtons.on(this.getClickEventType(), (event) => {
+            changeVisibilityFunc(event.target);
+            //prevent touch on filter button after element is hidden
+            event.preventDefault();
+        });
     }
 }

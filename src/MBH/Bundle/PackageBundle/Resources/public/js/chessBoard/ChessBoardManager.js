@@ -79,6 +79,7 @@ var ChessBoardManager = /** @class */ (function () {
             self.updateTable();
         });
         self.handleSizeSlider();
+        self.onChangeScaleClick();
         document.getElementById('packageModalConfirmButton').onclick = function () {
             var data = ActionManager.getDataFromUpdateModal();
             var packageId = data.packageId;
@@ -104,16 +105,13 @@ var ChessBoardManager = /** @class */ (function () {
         var rangePicker = $reportFilter.find('.daterangepicker-input').data('daterangepicker');
         rangePicker.setStartDate(this.tableStartDate);
         rangePicker.setEndDate(this.tableEndDate);
+        this.hangChangeNumberOfDaysButtonClick();
         $reportFilter.find('#filter-button').click(function () {
             $reportFilter.submit();
         });
         this.onAddGuestClick();
-        if (isMobileDevice()) {
-            window.onscroll = function () {
-                // ChessBoardManager.onWindowYScrollForMobiles(getComputedStyle(chessBoardContentBlock).top);
-            };
-        }
-        else {
+        this.hangOnHideFieldButtonClick();
+        if (!isMobileDevice()) {
             //Фиксирование верхнего и левого блоков таблицы
             chessBoardContentBlock.onscroll = function () {
                 ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
@@ -124,7 +122,7 @@ var ChessBoardManager = /** @class */ (function () {
         var dateElements = $('.date, .leftRooms');
         var $document = $(document);
         if (canCreatePackage) {
-            var eventName = isMobileDevice ? 'contextmenu' : 'mousedown';
+            var eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
             dateElements.on(eventName, function (event) {
                 chessBoardContentBlock.style.overflow = 'hidden';
                 event.preventDefault();
@@ -191,11 +189,23 @@ var ChessBoardManager = /** @class */ (function () {
         $slider.slider({ tooltip: 'hide', reverseed: true });
         $slider.on('slideStop', function () {
             var sliderValue = $('#ex1').slider('getValue');
-            if (_this.currentSizeConfigNumber !== sliderValue) {
-                ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
-                _this.currentSizeConfigNumber = sliderValue;
-                window.location.reload();
-            }
+            _this.changeScale(sliderValue);
+        });
+    };
+    ChessBoardManager.prototype.changeScale = function (sliderValue) {
+        if (this.currentSizeConfigNumber !== sliderValue && sliderValue >= 0 && sliderValue <= maxSliderSize) {
+            ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
+            this.currentSizeConfigNumber = sliderValue;
+            window.location.reload();
+        }
+    };
+    ChessBoardManager.prototype.onChangeScaleClick = function () {
+        var _this = this;
+        $('.reduce-scale-button, .increase-scale-button').on(this.getClickEventType(), function (event) {
+            var sliderValue = $('#ex1').slider('getValue');
+            var buttonClassList = event.target.classList;
+            var newSliderValue = buttonClassList.contains('increase-scale-button') ? (sliderValue + 1) : (sliderValue - 1);
+            _this.changeScale(newSliderValue);
         });
     };
     ChessBoardManager.setCookie = function (name, value, options) {
@@ -295,19 +305,31 @@ var ChessBoardManager = /** @class */ (function () {
         headerTitle.style.top = chessBoardContentBlock.scrollTop + 'px';
         headerTitle.style.left = chessBoardContentBlock.scrollLeft + 'px';
     };
-    ChessBoardManager.onWindowYScrollForMobiles = function (startTopOffset) {
-        var monthsAndDates = document.getElementById('months-and-dates');
-        monthsAndDates.style.top = document.body.scrollTop + 'px';
-        var headerTitle = document.getElementById('header-title');
-        headerTitle.style.top = document.body.scrollTop + 'px';
-        headerTitle.style.left = document.body.scrollLeft + 'px';
-    };
     ChessBoardManager.prototype.getPackageLengthRestriction = function (startDate, isLeftMouseShift, tableStartDate, tableEndDate) {
         'use strict';
         if (isLeftMouseShift) {
             return startDate.diff(tableStartDate, 'days') * styleConfigs[this.currentSizeConfigNumber].tableCellWidth;
         }
         return tableEndDate.diff(startDate, 'days') * styleConfigs[this.currentSizeConfigNumber].tableCellWidth;
+    };
+    ChessBoardManager.prototype.hangChangeNumberOfDaysButtonClick = function () {
+        var getNewDate = function (changeButton, $dateField) {
+            var changeDaysFormat = parseInt(changeButton.getAttribute('data-number-of-days'), 10);
+            var isAddition = changeButton.getAttribute('data-change-type') === 'add';
+            var date = moment($dateField.val(), 'DD.MM.YYYY');
+            return isAddition ? date.add(changeDaysFormat, 'days') : date.subtract(changeDaysFormat, 'days');
+        };
+        $('.change-days-button').on(this.getClickEventType(), function () {
+            var $rangePicker = $('.daterangepicker-input').data('daterangepicker');
+            var $beginDateField = $('#accommodation-report-filter-begin');
+            var $endDateField = $('#accommodation-report-filter-end');
+            var beginDate = getNewDate(this, $beginDateField);
+            var endDate = getNewDate(this, $endDateField);
+            $beginDateField.val(beginDate.format('DD.MM.YYYY'));
+            $endDateField.val(endDate.format('DD.MM.YYYY'));
+            $rangePicker.setStartDate(beginDate.toDate());
+            $rangePicker.setEndDate(endDate.toDate());
+        });
     };
     ChessBoardManager.prototype.addAccommodationElements = function () {
         var wrapper = $('#calendarWrapper');
@@ -669,7 +691,7 @@ var ChessBoardManager = /** @class */ (function () {
             var intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             var $element = $(element);
             self.addResizable($element, intervalData);
-            if (isMobileDevice) {
+            if (isMobileDevice()) {
                 var touchTime_1;
                 var isTouchEnd_1 = false;
                 $element.on('touchstart', function () {
@@ -700,7 +722,7 @@ var ChessBoardManager = /** @class */ (function () {
             $element.find('.remove-package-button').on('click touchstart', function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
-            $element.find('.divide-package-button').on('click touchstart', function (event) {
+            $element.find('.divide-package-button').on('click', function (event) {
                 self.canMoveAccommodation = false;
                 var $scissorIcon = $(event.target);
                 if (intervalData.viewPackage) {
@@ -726,7 +748,7 @@ var ChessBoardManager = /** @class */ (function () {
                             : (hasLeftArrow_1 ? tableCellWidth_1 - self.arrowWidth : tableCellWidth_1);
                         line_1.style.left = defaultLeftValue_1 + 'px';
                         element.appendChild(line_1);
-                        $element.on('mousemove touchmove', function (event) {
+                        $element.on('mousemove', function (event) {
                             var offset = event.clientX - packageLeftCoordinate_1;
                             var griddedOffset;
                             if (isAccommodationAbroadTable_1) {
@@ -745,7 +767,8 @@ var ChessBoardManager = /** @class */ (function () {
                                 griddedOffset = accommodationWidth_1 - tableCellWidth_1 + (hasLeftArrow_1 ? self.arrowWidth : 0);
                             }
                             line_1.style.left = griddedOffset + 'px';
-                            $element.on('click touchstart', function () {
+                            $element.off('click');
+                            $element.on('click', function () {
                                 $element.off('mousemove touchmove');
                                 $('.dividing-line').remove();
                                 self.divide(this, griddedOffset);
@@ -1258,7 +1281,7 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.prototype.getTableWidth = function () {
         var chessboardStyles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
         var chessboardWidth = parseInt(chessboardStyles.width, 10);
-        return chessboardWidth - (!isMobileDevice ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
+        return chessboardWidth - (!isMobileDevice() ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
     };
     ChessBoardManager.getIntervalOutOfTableSide = function (intervalData) {
         var tableBeginDate = ChessBoardManager.getTableStartDate();
@@ -1375,6 +1398,31 @@ var ChessBoardManager = /** @class */ (function () {
                 time = 0;
             }
         }, 1000);
+    };
+    ChessBoardManager.prototype.getClickEventType = function () {
+        return isMobileDevice() ? 'touchstart' : 'click';
+    };
+    ChessBoardManager.prototype.hangOnHideFieldButtonClick = function () {
+        var _this = this;
+        var changeVisibilityFunc = function (element) {
+            var $select2Elements = $(element.parentNode).find('span.select2-container, select');
+            var isVisible = $select2Elements.eq(0).css('display') !== 'none';
+            $select2Elements.each(function (index, selectElement) {
+                _this.setImportantStyle($(selectElement), 'display', isVisible ? 'none' : 'inline-block');
+            });
+            element.style.color = !isVisible ? 'inherit' : 'red';
+        };
+        var $hideFieldButtons = $('.hide-field-button');
+        if (isMobileDevice()) {
+            $hideFieldButtons.each(function (index, element) {
+                changeVisibilityFunc(element);
+            });
+        }
+        $hideFieldButtons.on(this.getClickEventType(), function (event) {
+            changeVisibilityFunc(event.target);
+            //prevent touch on filter button after element is hidden
+            event.preventDefault();
+        });
     };
     ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH = 8;
     ChessBoardManager.POPOVER_MIN_WIDTH = 250;

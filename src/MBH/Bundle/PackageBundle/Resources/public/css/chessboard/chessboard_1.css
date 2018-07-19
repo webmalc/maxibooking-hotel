@@ -198,7 +198,7 @@ body {
   text-decoration: line-through;
 }
 #accommodation-chessBoard-content #header-title {
-  border-bottom: 1px solid #ddd;
+  border-top: 1px solid #ddd;
   border-left: 1px solid #ddd;
   position: absolute;
   z-index: 250;
@@ -323,7 +323,6 @@ body {
   color: #999;
 }
 #accommodation-chessBoard-content .tile .title {
-  border-top: 1px solid #ddd;
   border-right: 1px solid #e3e3e3;
   font-size: 13px;
   font-weight: bold;
@@ -346,7 +345,7 @@ body {
   text-align: left;
   display: table-cell;
   vertical-align: middle;
-  width: 180px;
+  width: 179px;
 }
 #accommodation-chessBoard-content .tile .title-sub a:hover {
   cursor: default;
@@ -573,4 +572,34 @@ body {
 }
 #ex1Slider .slider-selection {
   background: #BABABA;
+}
+#accommodation-report-filter {
+  display: flex;
+  flex-wrap: wrap;
+}
+#accommodation-report-filter .hide-field-button,
+#accommodation-report-filter .change-days-button {
+  display: flex;
+  justify-content: center;
+}
+#accommodation-report-filter .hide-field-button:before,
+#accommodation-report-filter .change-days-button:not(.fa-caret-right):before {
+  width: 20px;
+}
+#accommodation-report-filter .fa-caret-right.change-days-button {
+  margin-left: 10px;
+}
+#accommodation-report-filter .input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#accommodation-report-filter .form-block {
+  display: flex;
+  flex-wrap: wrap;
+}
+@media (min-width: 769px) {
+  #disable-button-wrapper {
+    margin-top: 13px;
+  }
 }
