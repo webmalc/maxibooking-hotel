@@ -5,15 +5,27 @@ var mbhBehaviorMenu = {
     return additionalSettings.behavior_menu;
   },
   action             : function() {
-    if (this.getStatus() === 'custom'){
-      this.onLoad();
-      this.addListener();
+    if (this.initSidebarAccordion()) {
+      if (this.getStatus() === 'custom'){
+        this.onLoad();
+        this.addListener();
+      }
     }
+  },
+  initSidebarAccordion: function () {
+    if (this.getSidebarAccordion() === null) {
+      return false;
+    }
+
+    return true;
   },
   getSidebarAccordion: function () {
     if (this.divSidebarAccordion === null) {
-      this.divSidebarAccordion = document.querySelector('aside[class="main-sidebar"]').
-          querySelector('.sidebar-accordion');
+      var div = document.querySelector('aside[class="main-sidebar"]');
+      if (div === null) {
+        return null;
+      }
+      this.divSidebarAccordion = div.querySelector('.sidebar-accordion');
     }
 
     return this.divSidebarAccordion;

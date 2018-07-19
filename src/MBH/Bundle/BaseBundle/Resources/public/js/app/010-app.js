@@ -181,10 +181,6 @@ $('#work-shift-lock').on('click', function(e) {
     mbh.alert.show($this.attr('href'), header, text, buttonText, buttonIcon, buttonClass);
 });
 
-function isMobileDevice() {
-    return /Mobi/.test(navigator.userAgent);
-}
-
 var deleteLink = function() {
     'use strict';
     $('.delete-link').on('click', function(event) {
@@ -267,7 +263,6 @@ var deleteLink = function () {
     });
 };*/
 
-
 $(document).ready(function() {
     'use strict';
 
@@ -329,17 +324,19 @@ $(document).ready(function() {
     closePopovers();
 
     //sidebar
-    (function() {
+    if (!isMobileDevice()) {
+      (function() {
         'use strict';
 
         $('.sidebar-toggle').click(function() {
-            if ($('body').hasClass('sidebar-collapse')) {
-                localStorage.setItem('sidebar-collapse', 'open');
-            } else {
-                localStorage.setItem('sidebar-collapse', 'close');
-            }
+          if ($('body').hasClass('sidebar-collapse')) {
+            localStorage.setItem('sidebar-collapse', 'open');
+          } else {
+            localStorage.setItem('sidebar-collapse', 'close');
+          }
         });
-    }());
+      }());
+    }
 
     //dashboard
     (function() {

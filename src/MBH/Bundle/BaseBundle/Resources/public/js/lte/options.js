@@ -1,3 +1,3 @@
 var AdminLTEOptions = {
-    sidebarExpandOnHover: false,
-}
+  sidebarExpandOnHover: false
+};

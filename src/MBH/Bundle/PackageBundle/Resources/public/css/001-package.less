@@ -181,7 +181,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .box-header_when-mobile {
     //margin-bottom: 7px;
     .box-tools {
@@ -225,6 +225,10 @@
     }
   }
 
+  //.sidebar-open #actions {
+  //  left: -230px;
+  //}
+
   section.content {
     .nav-tabs-custom {
       #package-tabs li {
@@ -236,26 +240,44 @@
         }
       }
       div.tab-content {
+
+        /** вообще сделал hidden-xs*/
         .created-info {
           ul {
             display: flex;
-            li>a {
-              white-space: nowrap;
+            width: 100%;
+            li {
+              float: none;
+              overflow: hidden;
+              &>a {
+                white-space: nowrap;
+                overflow: overlay;
+                padding: 10px 10px;
+              }
             }
+
           }
         }
       }
 
-      /** кнопки в футере*/
+      form {
+        margin-bottom: -43px;
+      }
+
+      /** кнопки действий*/
       #actions {
+        position: relative;
+        margin-right: -25px;
+        margin-left: -33px;
         ul:not(.dropdown-menu) {
           //display: flex;
-          margin: 0px -15px;
+          margin: 0px -10px;
           > li {
-            display: inline-block;
-            width: 25%;
+            //display: inline-block;
+            //width: 25%;
             button {
               width: 100%;
+              margin-right: 0px;
             }
           }
         }

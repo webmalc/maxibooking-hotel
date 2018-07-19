@@ -592,7 +592,6 @@ var actionWhenXS = {
   afterLoadPage: function() {
     if (isMobileDevice()) {
       this.hideBox();
-      this.scroll();
     }
   },
   hideBox      : function() {
@@ -600,10 +599,17 @@ var actionWhenXS = {
     $('#package-table-links-widget').addClass('collapsed-box');
   },
   scroll: function() {
-    var elem = document.querySelector('section.content .tab-content');
+    var elem = document.querySelector('#home');
 
     if (elem !== null) {
-      elem.scrollIntoView();
+      var loc = elem.getBoundingClientRect();
+      /* 55 на случай если есть сообщение в #message*/
+      window.scrollTo(0,loc.top - 55);
+    }
+  },
+  scrollWhenChangeTabs: function() {
+    if (isMobileDevice()) {
+      this.scroll();
     }
   }
 };
@@ -635,6 +641,7 @@ $(document).ready(function() {
           window.history.pushState(null, null, href);
         }
         $('.tab-content').replaceWith(content);
+        actionWhenXS.scrollWhenChangeTabs();
         docReadyForms();
         docReadyTables();
         docReadyTourists();
