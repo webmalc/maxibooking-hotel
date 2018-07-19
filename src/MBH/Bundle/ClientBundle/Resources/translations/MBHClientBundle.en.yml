@@ -5,12 +5,12 @@ client.tabs.payment_system: 'Payment systems'
 views.documentTempalte.index: 'Document templates'
 views.documentTempalte.new: 'New document template'
 views.documentTempalte.edit: Edit
-documentTempalte.title: Title
+documentTempalte.title: Name
 documentTempalte.enabled: Active
 client.viwes.clientConfig.paymentSystem.urlNotification: 'Notification URL'
 client.viwes.clientConfig.paymentSystem.urlSuccesPayment: 'Payment successful URL'
 client.viwes.clientConfig.paymentSystem.urlFailedPayment: 'Payment unsuccessful URL'
-client.views.clientConfig.index.name: Title
+client.views.clientConfig.index.name: Name
 client.views.clientConfig.index.hotel: Hotel
 client.views.clientConfig.index.allhotel: 'All hotels'
 client.views.clientConfig.index.organization: Company

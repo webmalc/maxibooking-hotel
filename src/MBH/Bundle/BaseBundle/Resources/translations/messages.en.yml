@@ -38,7 +38,7 @@ mailer.online.user.poll.append: 'We will be glad to see you again!'
 mailer.online.user.poll.link: 'Rate the quality of service'
 mailer.base.address: 'Hotel management system'
 mailer.base.estimate_our_service: 'Rate our service'
-mailer.base.generated_mail: 'This message has been generated automatically by MaxiBooking.'
+mailer.base.generated_mail: 'This message has been created automatically by MaxiBooking'
 mailer.reportArrival.expectedGuest: 'Expected guests'
 mailer.reportArrival.duty: Debt
 mailer.reportArrival.number: Number
@@ -72,8 +72,8 @@ mailer.order.not_paid: 'Not payed'
 mailer.order.pure_payment: 'Partly paid'
 mailer.order.transfer: Transfer
 mailer.order.guests: Guests
-mailer.order.arrival_time: 'Check in time'
-mailer.order.departure_time: 'Check out time'
+mailer.order.arrival_time: 'Check-in time'
+mailer.order.departure_time: 'Check-out time'
 mailer.order.comments: Note
 mailer.closedTasks.subject: 'Closed tasks'
 mailer.closedTasks.text: 'Closed tasks:'
@@ -83,7 +83,7 @@ mailer.closedTasks.performer: Executor
 mailer.closedTasks.closed: Closed
 mailer.userArrival.greet: 'Hello, {name}!'
 mailer.userArrival.reminder: 'We are reminding you that a room in our hotel has been booked for you for TOMORROW {begin}. Please, contact us in case the arrival time has changed.'
-mailer.userArrival.reminder2: 'Information about amenities in your room, check in terms and additional services in our hotel can be found on our website.'
+mailer.userArrival.reminder2: 'Information about amenities in your room, check-in terms and additional services available at our hotel can be found on our website.'
 mailer.userArrival.about_hotel: 'About hotel'
 mailer.userArrival.numbers_servies: 'Rooms & Amenities'
 mailer.userArrival.trip_schema: 'Driving directions'
@@ -196,8 +196,8 @@ menu.communication.label.online_payment_form: 'Payments Settings'
 menu.communication.label.polls: 'Reviews Settings'
 menu.communication.label.invite: 'Visa invitation'
 menu.communication.label.hundred_one_hotels: 101Hotels
-menu.help.noarrival: 'Reservations with no check in'
-menu.help.nodepart: 'Reservations with no check out'
+menu.help.noarrival: 'Reservations that have not yet checked-in'
+menu.help.nodepart: 'Reservations that have not yet checked-out'
 show: Show
 entity.new.title: 'New special offer'
 entity.list.title: List
@@ -206,13 +206,13 @@ form.fullTitle: Name
 form.title: 'Short Name'
 form.description: Description
 form.title.help: 'Name within MaxiBooking'
-form.begin: 'Period beginning'
-form.end: 'Period ending'
+form.begin: 'Starting Date'
+form.end: 'End Date'
 form.group.config: Settings
 isEnabled: 'Active?'
 document.saved: 'Entry successfully saved'
 position: Position
-position.help: 'Position of rate when showing in the list'
+position.help: 'Rate`s sorting position on Booking Rates overview page'
 configuration: Settings
 app.resources.twigBundle.translations.error: Error
 basebundle.menu.tasks: 'Duties and Tasks'
@@ -274,8 +274,8 @@ facilities.keys: 'Electronic locks'
 facilities.metro: 'The proximity of the underground'
 facilities.disability: 'Access for low-mobility citizens'
 facilities.blind: 'Access for blind citizens'
-facilities.maleroom: 'Men''s room'
-facilities.femaleroom: 'Women''s room'
+facilities.maleroom: 'Male Dormitory Room'
+facilities.femaleroom: 'Female Dormitory Room'
 facilities.ruby: Suite
 facilities.bed: 'Single bed'
 facilities.double-bed: 'Double bed'
@@ -372,13 +372,13 @@ notifier.config.label.online_order: 'Online reservation'
 mbhbasebundle.view.pdftemplates.organization.yed: Unit
 mbhbasebundle.view.navbar.summa: sum
 mbhbasebundle.view.pdftemplates.organization.bankpoluchatelya: 'Recipient''s bank'
-mbhbasebundle.view.pdftemplates.organization.kpp: 'Registry Number'
+mbhbasebundle.view.pdftemplates.organization.kpp: 'Company number'
 mbhbasebundle.view.mailer.order.nalichnymivotele: 'Paid with cash in hotel'
 mbhbasebundle.view.pdftemplates.organization.poluchatelʹ: Recipient
 mbhbasebundle.view.pdftemplates.individual.korr: 'IBAN/ABA/IFSC/Routing code'
 mbhbasebundle.view.pdftemplates.individual.summa: Sum
 mbhbasebundle.view.pdftemplates.individual.data: Date
-mbhbasebundle.view.pdftemplates.individual.inn: TIN
+mbhbasebundle.view.pdftemplates.individual.inn: 'Tax number'
 mbhbasebundle.view.pdftemplates.organization.itog: Total
 mbhbasebundle.view.pdftemplates.organization.kol: Quantity
 mbhbasebundle.view.pdftemplates.organization.tel: tel.
@@ -387,7 +387,7 @@ mbhbasebundle.view.pdftemplates.individual.bik: 'SWIFT / BIC'
 mbhbasebundle.view.pdftemplates.organization.nds: VAT
 mbhbasebundle.view.pdftemplates.organization.zakaz: Order
 mbhbasebundle.view.pdftemplates.organization.vo: in
-mbhbasebundle.view.pdftemplates.organization.inn: TIN
+mbhbasebundle.view.pdftemplates.organization.inn: 'Tax number'
 mbhbasebundle.view.pdftemplates.organization.tsena: Price
 mbhbasebundle.view.pdftemplates.organization.kol.vo: Quantity
 mbhbasebundle.view.pdftemplates.individual.vsego: Total
@@ -400,7 +400,7 @@ mbhbasebundle.view.pdftemplates.organization.bukhgalter: Accountant
 mbhbasebundle.view.navbar.pereytivkassu: 'Proceed to Transactions'
 mbhbasebundle.view.pdftemplates.organization.raboty: services
 mbhbasebundle.view.pdftemplates.organization.nasummu: 'for total sum of'
-mbhbasebundle.view.pdftemplates.individual.kpp: 'Registry Number'
+mbhbasebundle.view.pdftemplates.individual.kpp: 'Company number'
 mbhbasebundle.view.pdftemplates.individual.adresplatelʹshchika: 'payer''s address'
 mbhbasebundle.view.pdftemplates.organization.schetnaoplatu: 'Invoice for payment'
 mbhbasebundle.view.pdftemplates.organization.postavshchik: Provider
@@ -431,8 +431,8 @@ mbhbasebundle.view.pdftemplates.organization.usl: cond.
 mailer.reportArrival.number_of_adults: 'Number of adults'
 mailer.reportArrival.number_of_children: 'Number of children'
 mailer.order.total_paid: 'Total Paid'
-mailer.order.arrival: 'Check in'
-mailer.order.departure: 'Check out'
+mailer.order.arrival: Check-in
+mailer.order.departure: Check-out
 debt: Debt
 partially_paid: Partly
 paid: Paid
@@ -469,7 +469,7 @@ exception.hotel_relation_delete.message.roomTypeCategory: 'This hotel cannot be 
 exception.hotel_relation_delete.message.serviceCategory: 'This hotel cannot be deleted as it contains service categories (%total%).'
 exception.hotel_relation_delete.message.ingredientCategory: 'This hotel cannot be deleted as it contains ingredient categories (%total%).'
 exception.hotel_relation_delete.message.dishMenuCategory: 'This hotel cannot be deleted as it contains dishes categories (%total%).'
-exception.hotel_relation_delete.message.restriction: 'This hotel cannot be deleted as it contains conditions and restrictions (%total%).'
+exception.hotel_relation_delete.message.restriction: 'Information about the hotel cannot be deleted as it contains data on reservations` Terms and conditions'
 exception.hotel_relation_delete.message.record: 'This hotel cannot be deleted as there are records on income and expenses for this hotel (%total%).'
 exception.roomType_relation_delete.message.priceCache: 'This room type cannot be deleted as it contains room prices (%total%).'
 exception.hotel_relation_delete.message.room: 'This hotel cannot be deleted as it contains room (%total%).'
@@ -486,14 +486,14 @@ exception.room_relation_delete.message.package: 'This room cannot be deleted as 
 exception.user_relation_delete.message.task: 'This user cannot be deleted as there are tasks assigned to this user (%total%).'
 exception.tariff_relation_delete.message.roomCache: 'This rate cannot be deleted as it is currently being used in Rooms for Sale (%total%).'
 exception.promotion_relation_delete.message.tariff: 'This sale cannot be deleted as it is used as a default sale for a rate'
-exception.wareCategory_relation_delete.message.wareItem: 'This commodity category cannot be deleted as it contains commodities (%total%).'
+exception.wareCategory_relation_delete.message.wareItem: 'Items category cannot be deleted as it contains items (%total%).'
 exception.packageSource_relation_delete.message.order: 'This booking source cannot be deleted as there is associated order (%total%).'
 exception.ingredientCategory_relation_delete.message.ingredient: 'This ingredient category cannot be deleted as it contains ingredients (%total%).'
 exception.tourist_relation_delete.message.cashDocument: 'This guest cannot be deleted as there are associated payment documents (%total%).'
 exception.user_relation_delete.message.workShift: 'This user cannot be deleted as there are he must close the shift (%total%).'
 exception.group_relation_delete.message.user: 'This user group cannot be deleted as it contains users (%total%).'
 exception.tariff_relation_delete.message.priceCache: 'This rate cannot be deleted as it is used in room prices (%total%).'
-exception.tariff_relation_delete.message.restriction: 'This rate cannot be deleted as it is used in conditions and restrictions (%total%).'
+exception.tariff_relation_delete.message.restriction: 'This Rate cannot be deleted as it is used in other rates Terms and Conditions'
 exception.tariff_relation_delete.message.package: 'This rate cannot be deleted as it is used in current reservations (%total%).'
 exception.tariff_relation_delete.message.parentTariff: 'This rate cannot be deleted as it is used as a parent rate for another rate (%total%).'
 exception.serviceCategory_relation_message.service: 'This service category cannot be deleted as it contains services (%total%).'
@@ -513,7 +513,7 @@ basebundle.menu.reports: Reports
 basebundle.menu.number_unsettled_armor: 'Not checked in total'
 bed: bed
 beds: beds
-migration.card: 'Migration card'
+migration.card: 'Arrival-Departure Record Card'
 visa: Visa
 security.not_access: 'No access rights'
 crud.add: Add
@@ -555,7 +555,7 @@ basebundle.menu.users: Users
 basebundle.menu.sources: Sources
 basebundle.menu.parammeters: Parameters
 basebundle.menu.type_of_task: 'Task types'
-basebundle.menu.warehouse: Stock
+basebundle.menu.warehouse: Stockroom
 basebundle.menu.interaction: Interactions
 basebundle.menu.vashotel: VashHotel
 basebundle.menu.estimates: Rates
@@ -574,7 +574,7 @@ basebundle.menu.number_of_rooms: 'Number of rooms'
 basebundle.menu.number_and_price: 'Rooms and rates'
 basebundle.menu.room_in_sales: 'Room availability'
 basebundle.menu.visa_invations: 'Visa invitations'
-basebundle.menu.reasond_of_removal: 'Deletion reasons'
+basebundle.menu.reasond_of_removal: 'Cancellation reason'
 basebundle.menu.templates_of_document: 'Document templates'
 basebundle.menu.additional_channels: 'Additional channels'
 basebundle.menu.visa_invitation: 'Visa invitations'
@@ -586,7 +586,7 @@ form.clientConfigType.notification.label: 'Notifications list for clients'
 notifier.config.label.unpaid: 'Non payment'
 notifier.config.label.task: Tasks
 dashboard.messages.roomType.priceCache: 'Main rates prices are not set for the following periods'
-forms.export_type.main_group: 'Generated document settings'
+forms.export_type.main_group: 'Document`s settings'
 notifier.config.title.cash_confirm: 'Pyment document confirmation notification'
 notifier.config.title.arrival: 'Arrival notification'
 notifier.config.title.feedback: 'Rate inquiry'
@@ -608,19 +608,19 @@ mbh.hotel.themes.spa: SPA/Wellness
 currency.rub.text: RUR
 mbh.package.arrivals.work: Work
 mbh.package.arrivals.service: Official
-mbh.services.calcTypes.day_percent: 'Per service (% from 1 night price)'
+mbh.services.calcTypes.day_percent: 'Per Service as a percentage of the price per night'
 currency.rub.small: kop.
 mbh.package.arrivals.study: Study
 currency.uah.small: kop.
 mbh.cash.operations.out: Expense
-mbh.cash.operations.in: Receipt
+mbh.cash.operations.in: Income
 mbh.task.statuses.closed.title: Closed
 mbh.task.statuses.process.title: 'In progress'
 mbh.task.statuses.open.title: Open
 mbh.package.arrivals.other: Other
 mbh.package.arrivals.residence: Transit
 mbh.package.arrivals.private: Private
-mbh.services.calcTypes.not_applicable: 'Per service'
+mbh.services.calcTypes.not_applicable: 'Per Service'
 mbh.package.arrivals.business: Work
 mbh.package.arrivals.tourism: Tourism
 currency.uah.text: UAH
@@ -628,7 +628,7 @@ mbh.package.statuses.online.title: Online
 mbh.package.statuses.offline.title: Regular
 mbh.weekdays.fri: Friday
 mbh.weekdays.sat: Saturday
-mbh.services.calcTypes.per_night: 'For a night'
+mbh.services.calcTypes.per_night: 'Per Night'
 mbh.weekdays.thu: Thursday
 mbh.weekdays.wed: Wednesday
 mbh.weekdays.tue: Tuesday
@@ -638,7 +638,7 @@ currency.kzt.small: tiyin
 currency.kzt.text: KZT
 mbh.package.arrivals.humanitarian: Humanitarian
 mbh.mailer.subject.text: 'Messages from MaxiBooking'
-mbh.services.calcTypes.per_stay: 'For the whole stay'
+mbh.services.calcTypes.per_stay: 'One-time charge per reservation'
 menu.label.reports.dynamic_sales: 'Sales Dynamics'
 mbh.hotel.types.guest_house: 'Guest house'
 mbh.warehouse.operations.in: Receipt
@@ -647,7 +647,7 @@ mbh.organization.types.contragents: Partners
 mbh.gender.types.unknown: Unspecified
 mbh.gender.types.female: Female
 mbh.gender.types.male: Male
-mbh.cash.operations.fee: Comission
+mbh.cash.operations.fee: Commission
 mbh.hotel.themes.beach: Beach/Shore
 mbh.hotel.themes.ski: Mountains/Skiing
 mbh.hotel.themes.sport: Sport
@@ -663,7 +663,7 @@ mbh.hotel.types.sanatorium: Sanatorium
 mbh.hotel.types.pension: Pension
 mbh.hotel.themes.city: City
 mbh.hotel.types.apartments: Apartments
-mbh.warehouse.operations.out: Expense
+mbh.warehouse.operations.out: Dispatch
 mbh.hotel.themes.nature: Nature/Wildlife
 mbh.hotel.themes.country_holidays: 'Countryside rest'
 mbh.hotel.types.recreation_center: 'Recreation center'
@@ -698,7 +698,7 @@ support_modal.articles.hotel_creation: 'Hotel creation'
 support_modal.articles.tariffs: 'Rate creation'
 support_modal.articles.package_info: 'Filling in the information about the reservation'
 support_modal.interactive_halper: 'Interactive help'
-support_modal.header_text: 'Help materials'
+support_modal.header_text: 'Knowledge Base'
 welcome_modal.welcome5_continuation: 'Knowledge base'
 welcome_modal.header_text: 'Welcome to'
 welcome_modal.welcome2: 'To log in, please use the username and password sent in the email. You should save this email, so you can refer to it later.'

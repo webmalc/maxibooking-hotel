@@ -92,7 +92,7 @@ views.roomType.editRoom.edit_bed_for_room_type: 'Edit bed for room type'
 views.roomType.editRoom.delete: Delete
 views.roomType.generateRooms.beds_generation_for_room_type: 'Bed generation for room type'
 views.roomType.generateRooms.rooms_generation_for_room_type: 'Room generation for room type'
-views.roomType.generateRooms.generate_rooms: 'Generate rooms'
+views.roomType.generateRooms.generate_rooms: 'Create Rooms'
 views.roomType.generateRooms.cancel: Cancel
 views.roomType.generateRooms.delete: Delete
 views.roomType.index.new_room_type: 'New room type'
@@ -102,8 +102,8 @@ views.roomType.index.create_rooms_for_room_type: 'Create rooms for room type'
 views.roomType.index.add: Add
 views.roomType.index.bed: Bed
 views.roomType.index.room: Room
-views.roomType.index.generate_rooms_for_room_type: 'Generate room numbers for room type <%name%>'
-views.roomType.index.generate: Generate
+views.roomType.index.generate_rooms_for_room_type: 'Create Rooms for Room type <%name%>'
+views.roomType.index.generate: Create
 views.roomType.index.delete_room_type: 'Delete room type'
 views.roomType.index.delete: Delete
 views.roomType.index.room_fund: Rooms

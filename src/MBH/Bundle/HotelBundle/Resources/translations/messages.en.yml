@@ -61,7 +61,7 @@ form.roomTypeGenerateRoomsType.last_room_number: To
 form.roomTypeGenerateRoomsType.prefix: Abbreviation
 form.roomTypeGenerateRoomsType.prefix_example: 'Abbreviation (Example: HTL-12)'
 form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: 'Incorrect dates for generation'
-form.roomTypeGenerateRoomsType.too_many_generation_numbers: 'Too many entries to generate'
+form.roomTypeGenerateRoomsType.too_many_generation_numbers: 'Too many entries. Please reduce the number of entries to proceed'
 form.roomTypeGenerateRoomsType.housing: Building
 form.roomTypeGenerateRoomsType.floor: Floor
 form.roomTypeType.name: Name
@@ -94,9 +94,9 @@ form.roomTypeType.room_space: 'Room size (m2)'
 form.roomTypeType.help.empty_facilities: 'Hotel facilites used'
 controller.hotelController.record_created_success: 'Entry successfully added'
 controller.hotelController.record_edited_success: 'Entry successfully edited'
-controller.roomTypeController.rooms_generation_success: 'Rooms successfully generated'
+controller.roomTypeController.rooms_generation_success: 'Rooms successfully created'
 controller.roomTypeController.record_edited_success: 'Entry successfully edited'
-controller.TaskTypeController.rooms_generation_success: 'Rooms successfully generated'
+controller.TaskTypeController.rooms_generation_success: 'Rooms successfully created'
 controller.TaskTypeController.record_edited_success: 'Entry successfully edited'
 controller.hotelController.task_created_notall: 'Not all the tasks have been added/changed. Please, close all the opened tasks of this type and try again.'
 controller.hotelController.task_created_failed: 'Unable to create any tasks'
@@ -153,8 +153,8 @@ form.roomTypeCategory.desc: Description
 form.roomTypeCategory.desc_help: 'Room type description for reservation online'
 mbhhotelbundle.form.dailytasktype.dney: Days
 mbhhotelbundle.form.dailytasktype.vyberite.uslugu: 'Select a service'
-mbhhotelbundle.form.roomtypetaskstype.zadachi.sozdavayemyye.pri.zayezde.gostya: 'Tasks created on check in'
-mbhhotelbundle.form.roomtypetaskstype.pri.vyyezde.gostya: 'On check out'
+mbhhotelbundle.form.roomtypetaskstype.zadachi.sozdavayemyye.pri.zayezde.gostya: 'Tasks created on check-in'
+mbhhotelbundle.form.roomtypetaskstype.pri.vyyezde.gostya: 'On Check-out'
 form.hotelExtendedType.international_street_name.label: 'Int. transcription <br>(if different)'
 form.hotelExtendedType.international_street_name.help: 'International transcription of the Street name'
 form.hotelExtendedType.zip_code: 'Postal code'
@@ -178,7 +178,7 @@ form.contact_info_type.full_name.label: 'Contact Name'
 form.contact_info_type.full_name.help: 'Full name'
 form.contact_info_type.email.label: 'Email address'
 form.contact_info_type.email.help: 'Contact Email'
-form.hotel_contact_information.contact_info.group: 'Contact details for clients'
+form.hotel_contact_information.contact_info.group: 'Contact details'
 form.hotel_images.image_file.label: Image
 form.hotel_images.image_file.help: 'Pictures for the website<br>Maximum size 2 Mb, 80x90 px, file types: png, jpg, gif.'
 form.hotel_images.image_is_default.label: 'Main Image?'

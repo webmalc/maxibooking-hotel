@@ -6,13 +6,13 @@ form.clientConfigType.sms_notification: 'SMS notification?'
 form.clientConfigType.notice_unpaid: 'Unpaid notification'
 form.clientConfigType.is_notice_unpaid: 'Send a notification about unpaid reservation after X days'
 form.clientConfigType.search_dates: 'Additional dates in search results'
-form.clientConfigType.search_dates_desc: 'Number of additional days prior and after the preferred check in and check out day included in the search form'
+form.clientConfigType.search_dates_desc: 'Number of additional days for search options'
 form.clientConfigType.is_disabled_room_type_category: 'Room type groups'
 form.clientConfigType.is_enabled_work_shift: 'Work shifts'
 form.clientConfigType.instant_search: 'Quick search'
 form.clientConfigType.instant_search_help: 'Search immediately on data input?'
 form.clientConfigType.default_notice_doc: Host
-form.clientConfigType.default_notice_doc_desc: 'Default host of foreign citizens'
+form.clientConfigType.default_notice_doc_desc: 'Default contact person for foreign guests'
 form.clientConfigType.is_sms_notification_turned_on: 'Do you want to send SMS notifications to guests?'
 form.clientPaymentSystemType.payment_system: 'Payment system'
 form.clientPaymentSystemType.robokassa_service: RoboKassa
@@ -44,7 +44,7 @@ mailer.notice.unpaid.order.list: 'List of reservations with overdue payments'
 form.clientConfigType.search_tariffs: 'Number of rates'
 form.clientConfigType.search_tariffs_desc: 'Default number of rates shown in the form'
 form.clientConfigType.add_start_date: 'Start date'
-mbhclientbundle.form.documenttemplatetype.nazvaniye: Title
+mbhclientbundle.form.documenttemplatetype.nazvaniye: Name
 mbhclientbundle.form.documenttemplatetype.shablon: Template
 mbhclientbundle.form.documenttemplatetype.oriyentatsiya: Orientation
 mbhclientbundle.form.documenttemplatetype.organizatsiya: Company
@@ -76,7 +76,7 @@ form.clientConfigType.round.help: 'Fractional part rounding. If you put 0 there 
 form.clientConfigType.begin_date_offset.label: 'Start date offset'
 form.clientConfigType.begin_date_offset.help: 'The offset of the start date in the search form'
 form.clientConfigType.number_of_days_for_payment.label: 'Reservation payment period'
-form.clientConfigType.number_of_days_for_payment.help: 'Period of time after which the resevation payment is considered overdue'
+form.clientConfigType.number_of_days_for_payment.help: 'Number of days for payment (period after which payment will be considered overdue)'
 form.clientConfigType.currency_ratio_fix.help: 'The coefficient by which the price is multiplied  when converted to another currency'
 form.clientConfigType.default_adults_quantity.label: 'Number of adults'
 form.clientConfigType.default_adults_quantity.help: 'Number of adults in the search form'
