@@ -9,6 +9,7 @@ declare let currentStyleConfigNumber;
 declare let colors;
 declare let subtrahend;
 declare let isMobileDevice;
+declare let maxSliderSize;
 
 class ChessBoardManager {
     private static PACKAGE_FONT_SIZE_WIDTH = 8;
@@ -115,6 +116,7 @@ class ChessBoardManager {
             self.updateTable();
         });
         self.handleSizeSlider();
+        self.onChangeScaleClick();
         document.getElementById('packageModalConfirmButton').onclick = function () {
             let data = ActionManager.getDataFromUpdateModal();
             let packageId = data.packageId;
@@ -235,11 +237,24 @@ class ChessBoardManager {
         $slider.slider({tooltip: 'hide', reverseed: true});
         $slider.on('slideStop', () => {
             let sliderValue = $('#ex1').slider('getValue');
-            if (this.currentSizeConfigNumber !== sliderValue) {
-                ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
-                this.currentSizeConfigNumber = sliderValue;
-                window.location.reload();
-            }
+            this.changeScale(sliderValue);
+        });
+    }
+
+    private changeScale(sliderValue) {
+        if (this.currentSizeConfigNumber !== sliderValue && sliderValue >= 0 && sliderValue <= maxSliderSize) {
+            ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
+            this.currentSizeConfigNumber = sliderValue;
+            window.location.reload();
+        }
+    }
+
+    private onChangeScaleClick() {
+        $('.reduce-scale-button, .increase-scale-button').on(this.getClickEventType(), (event) => {
+            const sliderValue = $('#ex1').slider('getValue');
+            const buttonClassList = event.target.classList;
+            const newSliderValue = buttonClassList.contains('increase-scale-button') ? (sliderValue + 1) : (sliderValue - 1);
+            this.changeScale(newSliderValue);
         });
     }
 
@@ -1584,7 +1599,7 @@ class ChessBoardManager {
 
     private hangOnHideFieldButtonClick() {
         const changeVisibilityFunc = (element) => {
-            const $select2Elements = $(element.parentNode).find('span.select2-container select');
+            const $select2Elements = $(element.parentNode).find('span.select2-container, select');
             const isVisible = $select2Elements.eq(0).css('display') !== 'none';
             $select2Elements.each((index, selectElement) => {
                 this.setImportantStyle($(selectElement), 'display', isVisible ? 'none' : 'inline-block');

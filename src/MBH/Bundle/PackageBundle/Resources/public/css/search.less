@@ -51,11 +51,15 @@
     padding: 20px 0px;
 }
 
-#accommodation-report-filter {
+#package-search-form {
   display: flex;
   flex-wrap: wrap;
 
-  .change-days-button {
+  #add-guest {
+    margin-left: 5px;
+  }
+
+  .fa-custom-style {
     display: flex;
     justify-content: center;
   }
@@ -65,6 +69,19 @@
     margin-left: 8px;
   }
 
+  .filter-form {
+    div.input {
+      margin: 0;
+      padding: 0;
+    }
+
+  }
+
+  .findGuest {
+    min-width: 250px !important;
+  }
+
+  .group-human-input,
   .input {
     display: flex;
     justify-content: center;
@@ -102,5 +119,13 @@
       flex-wrap: wrap;
     }
 
+    div:last-child {
+      margin-top: 5px;
+    }
+
+    .order-data {
+      display: flex;
+      align-items: center;
+    }
   }
 }

@@ -79,6 +79,7 @@ var ChessBoardManager = /** @class */ (function () {
             self.updateTable();
         });
         self.handleSizeSlider();
+        self.onChangeScaleClick();
         document.getElementById('packageModalConfirmButton').onclick = function () {
             var data = ActionManager.getDataFromUpdateModal();
             var packageId = data.packageId;
@@ -188,11 +189,23 @@ var ChessBoardManager = /** @class */ (function () {
         $slider.slider({ tooltip: 'hide', reverseed: true });
         $slider.on('slideStop', function () {
             var sliderValue = $('#ex1').slider('getValue');
-            if (_this.currentSizeConfigNumber !== sliderValue) {
-                ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
-                _this.currentSizeConfigNumber = sliderValue;
-                window.location.reload();
-            }
+            _this.changeScale(sliderValue);
+        });
+    };
+    ChessBoardManager.prototype.changeScale = function (sliderValue) {
+        if (this.currentSizeConfigNumber !== sliderValue && sliderValue >= 0 && sliderValue <= maxSliderSize) {
+            ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
+            this.currentSizeConfigNumber = sliderValue;
+            window.location.reload();
+        }
+    };
+    ChessBoardManager.prototype.onChangeScaleClick = function () {
+        var _this = this;
+        $('.reduce-scale-button, .increase-scale-button').on(this.getClickEventType(), function (event) {
+            var sliderValue = $('#ex1').slider('getValue');
+            var buttonClassList = event.target.classList;
+            var newSliderValue = buttonClassList.contains('increase-scale-button') ? (sliderValue + 1) : (sliderValue - 1);
+            _this.changeScale(newSliderValue);
         });
     };
     ChessBoardManager.setCookie = function (name, value, options) {
@@ -1392,7 +1405,7 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.prototype.hangOnHideFieldButtonClick = function () {
         var _this = this;
         var changeVisibilityFunc = function (element) {
-            var $select2Elements = $(element.parentNode).find('span.select2-container select');
+            var $select2Elements = $(element.parentNode).find('span.select2-container, select');
             var isVisible = $select2Elements.eq(0).css('display') !== 'none';
             $select2Elements.each(function (index, selectElement) {
                 _this.setImportantStyle($(selectElement), 'display', isVisible ? 'none' : 'inline-block');
