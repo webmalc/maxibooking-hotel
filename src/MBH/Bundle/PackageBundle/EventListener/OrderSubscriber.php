@@ -84,16 +84,22 @@ class OrderSubscriber implements EventSubscriber
             $dm->persist($entity);
             $dm->flush();
 
+            $packageIntervalDates = [];
             foreach($entity->getPackages() as $package) {
+                $packageIntervalDates[] = $package->getBegin();
+                $packageIntervalDates[] = $package->getEnd();
                 if ($package->getSpecial()) {
                     $dm = $args->getDocumentManager();
                     $dm->getRepository('MBHPriceBundle:Special')->recalculate($package->getSpecial(), $package);
                 }
             }
 
-            $this->_removeCache();
+            if (!empty($packageIntervalDates)) {
+                list($minDate, $maxDate) = $this->container->get('mbh.helper')->getMinAndMaxDates($packageIntervalDates);
+                $this->container->get('mbh.channelmanager')->updateRoomsInBackground($minDate, $maxDate);
+            }
 
-            $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
+            $this->_removeCache();
         }
 
         //Calc paid

@@ -3,7 +3,6 @@
 namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\UserBundle\Document\User;
@@ -170,15 +169,10 @@ class FormType extends AbstractType implements DecorationTypeInterface
 
         $builder->add(
                 'paymentTypes',
-                InvertChoiceType::class,
+                PaymentTypesType::class,
                 [
                     'group' => 'form.formType.payment',
-                    'choices' => $this->paymentTypes,
-                    'choice_label' => function ($value) {
-                        return 'payment_types.' . $value;
-                    },
                     'label' => 'form.formType.payment_type',
-                    'multiple' => true,
                     'help' => 'form.formType.reservation_payment_types_with_online_form'
                 ]
             )

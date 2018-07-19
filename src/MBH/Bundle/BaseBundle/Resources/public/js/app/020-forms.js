@@ -1179,6 +1179,7 @@ function setTipText(formName, inputId) {
 
     $('#tips-tip-text').val(text);
 }
+
 function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $updateButton, filterDataCallback, drawCallback) {
     var process = false;
     $table.dataTable({
@@ -1274,6 +1275,20 @@ function handleAddingNewBillingEntity() {
     });
 }
 
+function handleMultiLanguageFields() {
+    var changeMultiLanguagesFieldsVisibility = function(language, $fieldsGroup) {
+        var $multiLanguagesFields = $fieldsGroup ? $fieldsGroup.find('.multi-languages-field') : $('.multi-languages-field');
+        var $displayField = $multiLanguagesFields.filter('[data-language="' + language +'"]');
+        $displayField.show();
+        $multiLanguagesFields.not($displayField).hide();
+    };
+    $('.multi-language-select-option').click(function () {
+        var $fieldsGroup = $(this).closest('.form-group').parent();
+        changeMultiLanguagesFieldsVisibility(this.getAttribute('data-language'), $fieldsGroup);
+    });
+    changeMultiLanguagesFieldsVisibility(mbh.language);
+}
+
 $(document).ready(function () {
     'use strict';
     docReadyForms();
@@ -1285,4 +1300,5 @@ $(document).ready(function () {
     initAddTipModal();
     runGuides();
     handleAddingNewBillingEntity();
+    handleMultiLanguageFields();
 });

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\EmptyCachePeriod;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
@@ -40,14 +41,19 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @Method("GET")
      * @Security("is_granted('ROLE_PRICE_CACHE_VIEW')")
      * @Template()
+     * @throws \Exception
      */
     public function indexAction()
     {
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $getRoomTypeCallback = function () {
             return $this->manager->getRooms($this->hotel);
         };
         $roomTypes = $this->get('mbh.helper')->getFilteredResult($this->dm, $getRoomTypeCallback, $isDisableableOn);
+        $emptyPeriodWarnings = $this->get('mbh.warnings_compiler')->getEmptyCacheWarningsAsStrings($this->hotel, 'price');
+        if (!empty($emptyPeriodWarnings)) {
+            $this->addFlash('warning', join('<br>', $emptyPeriodWarnings));
+        }
 
         return [
             'roomTypes' => $roomTypes,
@@ -63,6 +69,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @Method("GET")
      * @Security("is_granted('ROLE_PRICE_CACHE_VIEW')")
      * @Template()
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function tableAction(Request $request)
     {
@@ -91,7 +98,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             'hotel' => $this->hotel
         ];
 
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $inputRoomTypeIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
         $roomTypesCallback = function () use ($inputRoomTypeIds) {
             return $this->manager->getRooms($this->hotel, $inputRoomTypeIds);
@@ -155,6 +162,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $availableTariffs = $this->helper->toIds(
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
         );
+        $dates = [];
 
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
@@ -190,6 +198,8 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                     if ($validator->validate($newPriceCache)) {
                         $this->dm->persist($newPriceCache);
                     }
+
+                    $dates[] = $newPriceCache->getDate();
                 }
             }
         }
@@ -234,12 +244,19 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 $this->dm->persist($newPriceCache);
                 $priceCache->setCancelDate(new \DateTime(), true);
             }
+
+            $dates[] = $newPriceCache->getDate();
         }
+
         $this->dm->flush();
 
         $this->addFlash('success', 'price.roomcachecontroller.change_successfully_saved');
 
-        $this->get('mbh.channelmanager')->updatePricesInBackground();
+        if (!empty($dates)) {
+            list($minDate, $maxDate) = $this->helper->getMinAndMaxDates($dates);
+            $this->get('mbh.channelmanager')->updatePricesInBackground($minDate, $maxDate);
+        }
+
         $this->get('mbh.cache')->clear('price_cache');
 
         return $this->redirect($this->generateUrl('price_cache_overview', [
@@ -369,7 +386,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 $childrenPrices
             );
 
-            $this->get('mbh.channelmanager')->updatePricesInBackground();
+            $this->get('mbh.channelmanager')->updatePricesInBackground($data['begin'], $data['end']);
             $this->get('mbh.cache')->clear('price_cache');
 
             $session->getFlashBag()->set('success', $this->container->get('translator')->trans('price.roomcachecontroller.data_successfully_generate'));

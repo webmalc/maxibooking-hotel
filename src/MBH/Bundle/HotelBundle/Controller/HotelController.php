@@ -19,6 +19,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -102,7 +103,7 @@ class HotelController extends Controller
     /**
      * Creates a new entity.
      *
-     * @Route("/create", name="hotel_create")
+     * @Route("/new", name="hotel_create")
      * @Method("POST")
      * @Security("is_granted('ROLE_HOTEL_NEW')")
      * @Template("MBHHotelBundle:Hotel:new.html.twig")
@@ -118,6 +119,8 @@ class HotelController extends Controller
 
         if ($form->isValid()) {
             $this->get('mbh.hotel.hotel_manager')->create($entity);
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
             $this->addFlash('success', 'controller.hotelController.record_created_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
@@ -146,9 +149,12 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.hotelController.record_edited_success');
+
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
 
@@ -187,6 +193,8 @@ class HotelController extends Controller
             'logo_image_delete_url' => $logoImageDeleteUrl,
             'logo_image_download_url' => $logoDownloadUrl
         ]);
+
+        $this->get('mbh.site_manager')->addFormErrorsForFieldsMandatoryForSite($entity, $form, 'hotel_edit');
 
         return [
             'entity' => $entity,
@@ -262,9 +270,13 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
 
+
         $form = $this->createForm(HotelExtendedType::class, $entity, [
             'config' => $this->container->getParameter('mbh.hotel'),
         ]);
+
+        $this->get('mbh.site_manager')->addFormErrorsForFieldsMandatoryForSite($entity, $form, 'hotel_edit_extended');
+
         return [
             'entity' => $entity,
             'form' => $form->createView(),
@@ -296,7 +308,6 @@ class HotelController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->dm->persist($entity);
             $this->dm->flush();
 
             $this->addFlash('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'));
@@ -329,19 +340,22 @@ class HotelController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['settlement', 'street']);
+
             if ($hotel->getStreet() && !$hotel->getInternationalStreetName()) {
                 $hotel->setInternationalStreetName(Helper::translateToLat($hotel->getStreet()));
             }
+
             $this->dm->persist($hotel);
             $this->dm->flush();
 
-            $this->addFlash(
-                'success',
-                $this->get('translator')->trans('controller.hotelController.record_edited_success')
-            );
+            $this->addFlash('success', 'controller.hotelController.record_edited_success');
 
             return $this->afterSaveRedirect('hotel', $hotel->getId(), [], '_contact_information');
         }
+
+        $this->get('mbh.site_manager')->addFormErrorsForFieldsMandatoryForSite($hotel, $form, 'hotel_contact_information');
 
         return [
             'entity' => $hotel,
@@ -365,6 +379,8 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(HotelImageType::class);
+
+        $this->get('mbh.site_manager')->addFormErrorsForFieldsMandatoryForSite($hotel, $form, 'hotel_images');
 
         $form->handleRequest($request);
         if ($form->isValid()) {

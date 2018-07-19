@@ -53,6 +53,10 @@ var ChessBoardManager = /** @class */ (function () {
                 $(this).children('div').hide();
             }
         });
+        var $numberOfRoomsSelect = $('#nuber-of-rooms-select');
+        $numberOfRoomsSelect.on("select2:select", function () {
+            window.location.href = Routing.generate('change_number_of_rooms', { numberOfRooms: $numberOfRoomsSelect.val() });
+        });
         $('.pagination-sm').find('a').each(function () {
             var filterData = $('#accommodation-report-filter').serialize() + '&page=' + $(this).text();
             var route = Routing.generate('chess_board_home') + '?' + filterData;
@@ -104,16 +108,20 @@ var ChessBoardManager = /** @class */ (function () {
             $reportFilter.submit();
         });
         this.onAddGuestClick();
-        //Фиксирование верхнего и левого блоков таблицы
-        chessBoardContentBlock.onscroll = function () {
-            ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
-        };
+        if (!isMobileDevice()) {
+            //Фиксирование верхнего и левого блоков таблицы
+            chessBoardContentBlock.onscroll = function () {
+                ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
+            };
+        }
         var templatePackageElement = ChessBoardManager.getTemplateElement();
         //Создание брони
         var dateElements = $('.date, .leftRooms');
+        var $document = $(document);
         if (canCreatePackage) {
-            dateElements.mousedown(function (event) {
-                var startXPosition = event.pageX;
+            dateElements.on("touchstart mousedown", function (event) {
+                var isMouseDownEvent = event.type.toLowerCase() === 'mousedown';
+                var startXPosition = isMouseDownEvent ? event.pageX : event.originalEvent.touches[0].pageX;
                 var startLeftScroll = chessBoardContentBlock.scrollLeft;
                 var newPackage = templatePackageElement.cloneNode(true);
                 newPackage.classList.add('success');
@@ -126,9 +134,12 @@ var ChessBoardManager = /** @class */ (function () {
                 newPackage.style.zIndex = '999';
                 newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth - (self.arrowWidth * 2) + 'px';
                 var newPackageStartXOffset = parseInt(newPackage.style.left, 10);
-                document.onmousemove = function (event) {
+                $document.on('touchmove mousemove', function (event) {
+                    if (event.type === 'touchemove') {
+                        event.preventDefault();
+                    }
                     var scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
-                    var mouseXOffset = startXPosition - event.pageX;
+                    var mouseXOffset = startXPosition - (isMouseDownEvent ? event.pageX : event.originalEvent.touches[0].pageX);
                     var isLeftMouseShift = mouseXOffset > 0;
                     var packageLengthRestriction = self.getPackageLengthRestriction(startDate, isLeftMouseShift, self.tableStartDate, self.tableEndDate);
                     var griddedOffset = self.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
@@ -146,16 +157,15 @@ var ChessBoardManager = /** @class */ (function () {
                     }
                     newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
                     newPackage.style.width = packageWidth + 'px';
-                };
-                document.onmouseup = function () {
-                    document.onmousemove = null;
-                    this.onmouseup = null;
+                });
+                $document.on('mouseup touchend', function () {
+                    $document.unbind('mousemove touchmove mouseup touchend');
                     if ((newPackage.style.width) && self.isPackageLocationCorrect(newPackage) && newPackage.id) {
                         var packageData = self.getPackageData($(newPackage));
                         self.saveNewPackage(packageData);
                     }
                     self.updateTable();
-                };
+                });
                 this.ondragstart = function () {
                     return false;
                 };
@@ -333,8 +343,8 @@ var ChessBoardManager = /** @class */ (function () {
         var packageWidth = packageCellCount * config.tableCellWidth - this.distanceBetweenAccommodationElements;
         var packageDiv = templatePackageElement.cloneNode(true);
         packageDiv.id = packageItem.id;
-        var description = document.createElement('div');
         var packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
+        var description = document.createElement('div');
         var descriptionText = packageName ? packageName.substr(0, packageCellCount * 5) : '';
         packageDiv.setAttribute('data-description', descriptionText);
         packageDiv.setAttribute('data-package-id', packageItem.packageId);
@@ -357,24 +367,26 @@ var ChessBoardManager = /** @class */ (function () {
             + '<br><b>' + Translator.trans("chessboard_manager.package_tooltip.is_checkout") + ': </b>' + Translator.trans((packageItem.isCheckOut ? 'package.yes' : 'package.no'));
         description.setAttribute('data-content', descriptionPopoverContent);
         var $packageDiv = $(packageDiv);
-        packageDiv.onmousemove = function () {
-            var isElementInPopoverWindow = packageDiv.parentNode.classList.contains('popover-package-container');
-            if (!isElementInPopoverWindow) {
-                $packageDiv.find('.package-action-buttons').show();
-                var $descriptionElement = $(this).find('.package-description');
-                if ($descriptionElement.length > 0) {
-                    var popoverId = $descriptionElement.attr('aria-describedby');
-                    if (popoverId == null) {
-                        $('.popover').popover('hide');
-                        $descriptionElement.popover('show');
+        if (isMobileDevice()) {
+            packageDiv.onmousemove = function () {
+                var isElementInPopoverWindow = packageDiv.parentNode.classList.contains('popover-package-container');
+                if (!isElementInPopoverWindow) {
+                    $packageDiv.find('.package-action-buttons').show();
+                    var $descriptionElement = $(this).find('.package-description');
+                    if ($descriptionElement.length > 0) {
+                        var popoverId = $descriptionElement.attr('aria-describedby');
+                        if (popoverId == null) {
+                            $('.popover').popover('hide');
+                            $descriptionElement.popover('show');
+                        }
                     }
                 }
-            }
-        };
-        packageDiv.onmouseleave = function () {
-            $packageDiv.find('.package-action-buttons').hide();
-            $packageDiv.find('.package-description').popover('hide');
-        };
+            };
+            packageDiv.onmouseleave = function () {
+                $packageDiv.find('.package-action-buttons').hide();
+                $packageDiv.find('.package-description').popover('hide');
+            };
+        }
         if (packageItem.position == 'middle' || packageItem.position == 'left') {
             packageDiv.classList.add('with-right-divider');
             packageDiv.classList.remove('package-with-right-arrow');
@@ -674,7 +686,7 @@ var ChessBoardManager = /** @class */ (function () {
                             : (hasLeftArrow_1 ? tableCellWidth_1 - self.arrowWidth : tableCellWidth_1);
                         line_1.style.left = defaultLeftValue_1 + 'px';
                         element.appendChild(line_1);
-                        element.onmousemove = function (event) {
+                        $element.on('mousemove touchmove', function (event) {
                             var offset = event.clientX - packageLeftCoordinate_1;
                             var griddedOffset;
                             if (isAccommodationAbroadTable_1) {
@@ -693,12 +705,12 @@ var ChessBoardManager = /** @class */ (function () {
                                 griddedOffset = accommodationWidth_1 - tableCellWidth_1 + (hasLeftArrow_1 ? self.arrowWidth : 0);
                             }
                             line_1.style.left = griddedOffset + 'px';
-                            element.onclick = function () {
-                                element.onmousemove = null;
+                            $element.on('click touchstart', function () {
+                                $element.off('mousemove touchmove');
                                 $('.dividing-line').remove();
                                 self.divide(this, griddedOffset);
-                            };
-                        };
+                            });
+                        });
                     }
                 }
             });
@@ -795,7 +807,7 @@ var ChessBoardManager = /** @class */ (function () {
                                 self.actionManager.callUpdatePackageModal($(this), intervalData_1, changedSide, isDivide);
                             }
                         }
-                    },
+                    }
                 });
             }
         });
@@ -1138,8 +1150,8 @@ var ChessBoardManager = /** @class */ (function () {
                         snap: 'calendarRow',
                         start: function () {
                             isDragged = true;
-                        },
-                    }).mousedown(function (event) {
+                        }
+                    }).on('mousedown touchstart', function (event) {
                         if (self.isIntervalAvailable(packageData)) {
                             relocatablePackage = this;
                             $wrapper.append(this);
@@ -1155,14 +1167,14 @@ var ChessBoardManager = /** @class */ (function () {
                             }
                             $popover.popover('hide');
                         }
-                        document.body.onmouseup = function () {
-                            document.body.onmouseup = null;
+                        $(document.body).on('mouseup touchend', function () {
+                            $(document.body).off('mouseup touchend');
                             if (!isDragged && relocatablePackage) {
                                 if (self.isPackageLocationCorrect(relocatablePackage)) {
                                     self.actionManager.callUpdatePackageModal($(relocatablePackage), relocatablePackageData);
                                 }
                             }
-                        };
+                        });
                     });
                 }
             });
@@ -1314,7 +1326,6 @@ var ChessBoardManager = /** @class */ (function () {
         });
         setInterval(function () {
             time++;
-            console.log(time);
             if (time > 30) {
                 ActionManager.showLoadingIndicator();
                 _this.dataManager.updatePackagesData();
@@ -1329,3 +1340,4 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.LATE_CHECKOUT_EARLY_CHECKIN_COLOR = '#65619b';
     return ChessBoardManager;
 }());
+//# sourceMappingURL=ChessBoardManager.js.map

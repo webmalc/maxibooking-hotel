@@ -145,7 +145,7 @@ class Mailer implements \SplObserver, MailerInterface
                 $data['messageType'] ?? null
             );
         } elseif (!$this->canISentToClient($data['messageType'])) {
-            throw new MailerNotificationException("There is no recipient client according mailer restrictions");
+            $this->logger->alert("There is no recipient client according mailer restrictions");
         }
 
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
@@ -239,7 +239,6 @@ class Mailer implements \SplObserver, MailerInterface
             throw new MailerNotificationException($error);
         }
 
-
         $recipients = $this->dm->getRepository('MBHUserBundle:User')->getRecipients($messageType);
         //TODO: Check this!
         /** @var \Traversable|array $recipients */
@@ -258,7 +257,7 @@ class Mailer implements \SplObserver, MailerInterface
 
         if (!count($recipients)) {
             $error = 'Failed to send email. There is not a single recipient.';
-            throw new MailerNotificationException($error);
+            $this->logger->alert($error);
         }
 
         return $recipients;
@@ -306,10 +305,6 @@ class Mailer implements \SplObserver, MailerInterface
 
         return $data;
     }
-
-
-
-
 
     /**
      * Send an email to a user to confirm the account creation.
@@ -367,7 +362,7 @@ class Mailer implements \SplObserver, MailerInterface
             return true;
         }
         /** @var ClientConfig $clientConfig */
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         if ($notificationType) {
             $result = $clientConfig->isNotificationTypeExists($notificationType);
         }

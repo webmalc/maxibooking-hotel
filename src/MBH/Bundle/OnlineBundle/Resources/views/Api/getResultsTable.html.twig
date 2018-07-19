@@ -29,6 +29,7 @@
                         </tr>
                         </thead>
 
+                        {% set isSingleResult = results|length == 1 %}
                         {% for result in results %}
                             <tbody>
                             <tr class="{{ cycle(['odd', 'even'], loop.index0) }}">
@@ -102,8 +103,6 @@
                                         </ul>
 
                                     {% endfor %}
-
-
                                 </td>
                                 <td class="mbh-center">
                                     {% set maxConfig = formConfig.maxPackages %}
@@ -113,13 +112,13 @@
                                         {% set max = result.roomsCount %}
                                     {% endif %}
                                     <select class="mbh-results-packages-count select2 {{ max == 1 ? 'hidden' }}">
-                                        <option value="0" selected="selected">0</option>
+                                        <option value="0" {% if not isSingleResult %} selected="selected" {% endif %}>0</option>
                                         {% for i in 1..max %}
-                                            <option value="{{ i }}">{{ i }}</option>
+                                            <option {% if isSingleResult and i == 1 %} selected="selected" {% endif %} value="{{ i }}">{{ i }}</option>
                                         {% endfor %}
                                     </select>
                                     {% if max == 1  %}
-                                        <input type="checkbox" class="mbh-results-packages-count" value="1">
+                                        <input type="checkbox" {% if isSingleResult %}checked{% endif %} class="mbh-results-packages-count" value="1">
                                     {% endif %}
                                 </td>
                             </tr>

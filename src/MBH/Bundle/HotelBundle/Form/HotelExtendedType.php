@@ -87,13 +87,6 @@ class HotelExtendedType extends AbstractType
                 'choices' => $this->smokingPolicyOptions
             ])
         ;
-
-//        $builder->add('vega_address_id', NumberType::class, [
-//            'label' => 'form.hotelExtendedType.vega_address_id',
-//            'help' => 'form.hotelExtendedType.vega_address_id_help',
-//            'group' => 'form.hotelExtendedType.integration',
-//            'required' => false
-//        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

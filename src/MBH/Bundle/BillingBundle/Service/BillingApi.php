@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BillingBundle\Service;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BaseBundle\Lib\Exception;
@@ -18,6 +19,7 @@ use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Lib\Model\Service;
 use MBH\Bundle\BillingBundle\Lib\Model\AuthorityOrgan;
 use MBH\Bundle\BillingBundle\Lib\Model\City;
+use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\UserBundle\Document\User;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
@@ -42,6 +44,7 @@ class BillingApi
     const ORDERS_ENDPOINT_SETTINGS = ['endpoint' => 'orders', 'model' => PaymentOrder::class, 'returnArray' => false];
     const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
     const PAYER_COMPANY_ENDPOINT_SETTINGS = ['endpoint' => 'companies', 'model' => Company::class, 'returnArray' => false];
+    const SITES_ENDPOINT_SETTINGS = ['endpoint' => 'client-websites', 'model' => WebSite::class, 'returnArray' => false];
 
     const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s\Z';
     const BILLING_DATETIME_FORMAT_WITH_MICROSECONDS = 'Y-m-d\TH:i:s.u\Z';
@@ -209,6 +212,53 @@ class BillingApi
         }
 
         return $this->clientCompanies;
+    }
+
+    /**
+     * @return null|WebSite
+     */
+    public function getClientSite()
+    {
+        $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint'], $this->billingLogin);
+        try {
+            $response = $this->sendGet($url);
+            return $this->serializer->deserialize($response->getBody(), self::SITES_ENDPOINT_SETTINGS['model'], 'json');
+        } catch (ClientException $exception) {
+            return null;
+        }
+    }
+
+    /**
+     * @param WebSite $clientSite
+     * @return Result
+     */
+    public function addClientSite(WebSite $clientSite)
+    {
+        $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint']);
+
+        return $this->sendPostAndHandleResult($url, $this->serializer->normalize($clientSite));
+    }
+
+    /**
+     * @param WebSite $clientSite
+     * @return Result
+     */
+    public function updateClientSite(WebSite $clientSite)
+    {
+        $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint'], $this->billingLogin);
+
+        return $this->updateEntity($url, $this->serializer->normalize($clientSite), self::SITES_ENDPOINT_SETTINGS['model']);
+    }
+
+    /**
+     * @param string $siteUrl
+     * @return Result
+     */
+    public function getSitesByUrlResult(string $siteUrl)
+    {
+        $queryParams = ['search' => $siteUrl];
+
+        return $this->getEntities(self::SITES_ENDPOINT_SETTINGS, $queryParams);
     }
 
     /**
@@ -389,7 +439,6 @@ class BillingApi
         ]);
     }
 
-
     /**
      * @param $clientIp
      * @param $userAgent
@@ -432,7 +481,7 @@ class BillingApi
             return $requestResult;
         }
 
-            $decodedResponse = json_decode((string)$response->getBody(), true);
+        $decodedResponse = json_decode((string)$response->getBody(), true);
         if ($decodedResponse['status'] !== true) {
             $requestResult->setIsSuccessful(false);
         }
@@ -449,8 +498,8 @@ class BillingApi
     private function tryDeserializeObject(ResponseInterface $response, Result $requestResult, $modelType)
     {
         try {
-            $client = $this->serializer->deserialize($response->getBody(), $modelType, 'json');
-            $requestResult->setData($client);
+            $data = $this->serializer->deserialize($response->getBody(), $modelType, 'json');
+            $requestResult->setData($data);
         } catch (\Exception $exception) {
             $this->logger->error('Error by deserialization of client: "' . $exception->getMessage() . '"');
             $requestResult->setIsSuccessful(false);
@@ -471,7 +520,7 @@ class BillingApi
         if ($response->getStatusCode() == 400) {
             $requestResult->setErrors(json_decode((string)$response->getBody(), true));
         } else {
-            $this->logErrorResponse($response, $url, $requestData);
+            $this->logErrorResponse((string)$response->getBody(), $url, $requestData);
         }
 
         return $requestResult;
@@ -520,7 +569,7 @@ class BillingApi
         }
 
         $decodedResponse = json_decode($response->getBody(), true);
-        if ($decodedResponse['next'] && !$endpointSettings['returnArray']) {
+        if (!$endpointSettings['returnArray'] && $decodedResponse['next']) {
             $entities = array_merge($this->getEntitiesByUrl($decodedResponse['next'], $endpointSettings['model']));
         }
 
@@ -696,15 +745,15 @@ class BillingApi
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param $errorMessage
      * @param string $url
      * @param array $requestData
      */
-    private function logErrorResponse(ResponseInterface $response, string $url, array $requestData): void
+    private function logErrorResponse($errorMessage, string $url, array $requestData): void
     {
         $this->logger->err('Exception was thrown by requesting ' . ' by url ' . $url
             . '. Request data: ' . json_encode($requestData)
-            . '. Response: ' . (string)$response->getBody()
+            . '. Response: ' . $errorMessage
         );
     }
 
@@ -714,7 +763,8 @@ class BillingApi
      */
     private function logErrorAndThrowException($exception, $url): void
     {
-        $this->logErrorResponse($exception->getResponse(), $url, []);
+        $message = $exception->getResponse() ? (string)$exception->getResponse()->getBody : $exception->getMessage();
+        $this->logErrorResponse($message, $url, []);
         throw new \RuntimeException('Can not get data by url ' . $url);
     }
 }

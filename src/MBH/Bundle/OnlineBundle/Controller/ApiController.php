@@ -15,6 +15,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -202,13 +203,11 @@ class ApiController extends Controller
      */
     public function successUrlAction()
     {
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-
-        if (!$config || !$config->getSuccessUrl()) {
+        if (!$this->clientConfig || !$this->clientConfig->getSuccessUrl()) {
             throw $this->createNotFoundException();
         }
 
-        return $this->redirect($config->getSuccessUrl());
+        return $this->redirect($this->clientConfig->getSuccessUrl());
     }
 
     /**
@@ -218,13 +217,11 @@ class ApiController extends Controller
      */
     public function failUrlAction()
     {
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-
-        if (!$config || !$config->getFailUrl()) {
+        if (!$this->clientConfig || !$this->clientConfig->getFailUrl()) {
             throw $this->createNotFoundException();
         }
 
-        return $this->redirect($config->getFailUrl());
+        return $this->redirect($this->clientConfig->getFailUrl());
     }
 
     /**
@@ -240,7 +237,7 @@ class ApiController extends Controller
     {
         /** @var DocumentManager $dm */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->clientConfig;
         $logger = $this->get('mbh.online.logger');
         $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP'.$request->getClientIp(
             ).'. Post data: '.implode(
@@ -366,7 +363,6 @@ class ApiController extends Controller
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
         $query->setSave(true);
-        $isViewTariff = false;
 
         if (!empty($request->get('children-ages')) && $query->children > 0 && $formConfig->isIsDisplayChildrenAges()) {
             $query->setChildrenAges($request->get('children-ages'));
@@ -377,17 +373,6 @@ class ApiController extends Controller
             $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         }
         foreach ($hotels as $hotel) {
-            if (is_null($query->tariff) && !$isViewTariff) {
-                $defaultTariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
-                    ['hotel.id' => $hotel->getId(), 'isDefault' => true, 'isOnline' => true, 'isEnabled' => true]
-                );
-                if (empty($defaultTariff)) {
-                    $query->tariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
-                        ['hotel.id' => $hotel->getId(), 'isOnline' => true, 'isEnabled' => true]
-                    );
-                }
-                $isViewTariff = true;
-            }
             foreach ($hotel->getRoomTypes() as $roomType) {
                 $query->addAvailableRoomType($roomType->getId());
             }
@@ -400,9 +385,18 @@ class ApiController extends Controller
             $results = [];
             $tariffResults = [];
         } else {
-            $results = $this->get('mbh.package.search')->search($query);
+            $search = $this->get('mbh.package.search');
+            $tariffResults = $search->searchTariffs($query);
 
-            $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
+            if (!empty($query->tariff)) {
+                $results = $search->search($query);
+                $defaultTariff = $query->tariff instanceof Tariff ? $query->tariff : $this->dm->find('MBHPriceBundle:Tariff', $query->tariff);
+            } else {
+                $results = $search->searchBeforeResult($query, $tariffResults);
+                if (!empty($results)) {
+                    $defaultTariff = current($results)->getTariff();
+                }
+            }
         }
 
         $hotels = $services = [];
@@ -449,7 +443,7 @@ class ApiController extends Controller
         $translator = $this->get('translator');
         foreach ($this->getParameter('mbh.hotel')['facilities'] as $facilityVal) {
             foreach ($facilityVal as $key => $val) {
-                $facilityArray[$key] = $translator->trans($val);
+                $facilityArray[$key] = $translator->trans($val['title']);
             }
         }
 
@@ -527,7 +521,7 @@ class ApiController extends Controller
         return [
             'config' => $this->container->getParameter('mbh.online.form'),
             'formConfig' => $formConfig,
-            'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig(),
+            'clientConfig' => $this->clientConfig,
             'request' => $requestJson,
             'paymentSystems' => $this->getParameter('mbh.payment_systems')
         ];
@@ -537,12 +531,16 @@ class ApiController extends Controller
      * Create packages
      * @Route("/results/packages/create", name="online_form_packages_create", options={"expose"=true})
      * @Method("POST")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
     public function createPackagesAction(Request $request)
     {
 //        $this->addAccessControlAllowOriginHeaders();
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $requestJson = json_decode($request->getContent());
 
         //Create packages
@@ -582,9 +580,7 @@ class ApiController extends Controller
         $message .= $translator->trans('controller.apiController.your_order_number').$order->getId().'. ';
         $message .= $packageStr.': '.implode(', ', $packages).'.';
 
-        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-
-        if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystems()) {
+        if ($requestJson->paymentType == 'in_hotel' || !$this->clientConfig || !$this->clientConfig->getPaymentSystems()) {
             $form = false;
         } elseif (in_array($requestJson->paymentType, ['by_receipt_full', 'by_receipt_half', 'by_receipt_first_day'])) {
             $form = $this->container->get('twig')->render('@MBHClient/PaymentSystem/invoice.html.twig', [
@@ -605,7 +601,7 @@ class ApiController extends Controller
                                 'MBHOnlineBundle'
                             ),
                         ],
-                        $clientConfig->getFormData($order->getCashDocuments()[0], $paymentSystem)
+                        $this->clientConfig->getFormData($order->getCashDocuments()[0], $paymentSystem)
                     ),
                 ]
             );

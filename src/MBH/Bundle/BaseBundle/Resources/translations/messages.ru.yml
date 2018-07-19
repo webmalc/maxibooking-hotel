@@ -291,6 +291,7 @@ list: Список
 migration.card: 'Миграционная карта'
 visa: Виза
 form.facilitiesType.label: Удобства
+form.facilitiesType.help: 'Для изменения описания удобств перейдите по <a target="_blank" href="%href%">ссылке</a>'
 form.facilitiesType.placeholder: 'Выберите удобства'
 entry.actions.delete: 'Удалить запись'
 entry.actions.delete.confirmation: 'Вы действительно хотите удалить запись «%doc%»?'
@@ -299,6 +300,10 @@ entry.actions.copy: 'Копировать запись'
 form.languageType.label: Язык
 languages.en: Английский
 languages.ru: Русский
+languages.de: Немецкий
+languages.fr: Французкий
+languages.gr: Греческий
+languages.tr: Турецкий
 security.not_access: 'Нет прав доступа'
 crud.add: Добавить
 crud.create: Создать
@@ -378,6 +383,8 @@ menu.communication.label.your_hotel: ВашОтель
 menu.communication.label.onlineform: 'Онлайн модуль'
 menu.communication.label.online_payment_form: 'Платежный модуль'
 menu.communication.label.polls: 'Настройка отзывов'
+menu.communication.label.site_settings: 'Настройки сайта'
+menu.communication.label.mb_site: Сайт
 menu.communication.label.invite: 'Визовое приглашение'
 menu.communication.label.hundred_one_hotels: '101 Отель'
 menu.hotel_new.label: 'Создать новый отель'
@@ -723,3 +730,5 @@ support_modal.sandbox_button.text: 'Демо-версия'
 
 
 modal.close_button: Закрыть
+site_manager.empty_room_caches_warning: '%roomTypeName%: Не выставлены номера в продаже на периоды: %periods%'
+site_manager.empty_price_caches_warning: '%roomTypeName%: Для тарифа "%tariffName%" не выставлены цены на периоды: %periods%'

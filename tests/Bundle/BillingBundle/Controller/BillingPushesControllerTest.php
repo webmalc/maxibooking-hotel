@@ -25,7 +25,7 @@ class BillingPushesControllerTest extends WebTestCase
 
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         /** @var ClientConfigRepository $clientConfigRepo */
-        $clientConfigRepo = $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig');
+        $clientConfigRepo = $dm->getRepository('MBHClientBundle:ClientConfig');
 
         $clientConfig = $clientConfigRepo->fetchConfig();
         $clientConfig->setIsCacheValid(true);

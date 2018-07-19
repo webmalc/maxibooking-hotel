@@ -569,20 +569,17 @@ class Helper
      */
     public function getDataFromMultipleSelectField($fieldData)
     {
-        if (!empty($fieldData) && is_array($fieldData)) {
-            return  array_values(array_diff($fieldData, array('', null, false)));
+        if (!is_array($fieldData)) {
+            $fieldData = [$fieldData];
         }
 
-        return [];
+        return array_values(array_diff($fieldData, ['', null, false]));
     }
 
     public function getTimeZone(?ClientConfig $clientConfig = null)
     {
         if (is_null($clientConfig)) {
-            $clientConfig = $this->container
-                ->get('doctrine.odm.mongodb.document_manager')
-                ->getRepository('MBHClientBundle:ClientConfig')
-                ->fetchConfig();
+            $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         }
 
         if (is_null($clientConfig) || empty($clientConfig->getTimeZone())) {
@@ -643,11 +640,7 @@ class Helper
     public function getDefaultDatesOfSettlement()
     {
         /** @var ClientConfig $clientConfig */
-        $clientConfig = $this->container
-            ->get('doctrine_mongodb.odm.default_document_manager')
-            ->getRepository('MBHClientBundle:ClientConfig')
-            ->fetchConfig();
-
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         $calculationBegin = $clientConfig->getBeginDate() ?? new \DateTime('first day of January ' . date('Y'));
         $calculationEnd = (clone $calculationBegin)->add(new \DateInterval('P6M'));
 
@@ -723,5 +716,33 @@ class Helper
     public function startsWith($haystack, $needle)
     {
         return substr($haystack, 0, strlen($needle)) === $needle;
+    }
+
+    /**
+     * @param array $array
+     * @param array $keys
+     * @return array
+     */
+    public function getFromArrayByKeys(array $array, array $keys)
+    {
+        return array_intersect_key($array, array_flip($keys));
+    }
+
+    /**
+     * @param \DateTime[] $dates
+     * @return array[$minDate, $maxDate]
+     * @throws \InvalidArgumentException
+     */
+    public function getMinAndMaxDates(array $dates)
+    {
+        if (empty($dates)) {
+            throw new \InvalidArgumentException('Passed array of dates can not be empty!');
+        }
+
+        usort($dates, function(\DateTime $date1, \DateTime $date2) {
+            return $date1 > $date2 ? 1 : -1;
+        });
+
+        return [$dates[0], end($dates)];
     }
 }

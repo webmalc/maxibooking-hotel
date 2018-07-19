@@ -13,6 +13,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -798,5 +799,39 @@ class Calculation
         }
 
         return $packagePrice;
+    }
+
+    /**
+     * @param array $roomTypes
+     * @param array $tariffsIds
+     * @param int $periodLengthInDays
+     * @return array
+     */
+    public function getMinPricesForRooms(array $roomTypes, array $tariffsIds, int $periodLengthInDays)
+    {
+        $minPrices = [];
+        foreach ($roomTypes as $roomType) {
+            $begin = new \DateTime('midnight');
+            $end = new \DateTime('midnight +' . $periodLengthInDays . 'days');
+            /** @var PriceCache $priceCacheWithMinPrice */
+            $priceCacheWithMinPrice = $this->dm
+                ->getRepository('MBHPriceBundle:PriceCache')
+                ->getWithMinPrice($roomType, $begin, $end, $tariffsIds);
+
+            if (is_null($priceCacheWithMinPrice)) {
+                $minPrices[$roomType->getId()] = ['hasPrices' => false];
+            } else {
+                $minPriceDate = $priceCacheWithMinPrice->getDate();
+                $tariff = $priceCacheWithMinPrice->getTariff();
+                $priceForSingle = $this->calcPrices($roomType, $tariff, $minPriceDate, $minPriceDate, 1, 0, $tariff->getDefaultPromotion());
+                if (!$priceForSingle || !isset($priceForSingle['1_0'])) {
+                    $minPrices[$roomType->getId()] = ['hasPrices' => false];
+                } else {
+                    $minPrices[$roomType->getId()] = ['hasPrices' => true, 'price' => $priceForSingle['1_0']['total']];
+                }
+            }
+        }
+
+        return $minPrices;
     }
 }

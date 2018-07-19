@@ -941,7 +941,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
 
                     $data['rate'] = $tariffId;
 
-                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                         $info = false;
 
                         if (isset($priceCaches[$roomTypeId][$tariffDoc->getId()][$day->format('d.m.Y')])) {
@@ -1072,7 +1072,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                 foreach ($roomTypes as $roomTypeId => $roomType) {
                     $data['rate'] = $tariffId;
 
-                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                         $info = false;
                         $restriction = null;
 

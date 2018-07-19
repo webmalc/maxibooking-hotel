@@ -138,3 +138,4 @@ views.corpus.corpus: Корпус
 views.corpus: Корпус
 view.create_task_type_categoty: 'Новая категория'
 views.roomTypeCaterory.layout.index: 'Группы номеров'
+views.facility.list.title: Удобства

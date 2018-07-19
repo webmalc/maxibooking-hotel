@@ -1,4 +1,4 @@
-views.tasktype.index.name: Title
+views.tasktype.index.name: Name
 views.tasktype.index.status: Status
 views.tasktype.index.default_role: 'Default executor'
 views.tasktype.index.created: Created
@@ -65,8 +65,8 @@ views.hotel.extended.copy_coordinates_like_this: 'Copy coordinates (For example:
 views.hotel.extended.yandex_maps: 'Yandex maps'
 views.hotel.extended.right_click_on_hotel_on_map: 'Click hotel location with right mouse button and select "What''s here?" to open the left panel with detailed information about the location and coordinates.'
 views.hotel.extended.yandex_copy_coordinates_like_this: 'Copy the coordianes'
-views.hotel.index.name: Title
-views.hotel.index.prefix: 'Legal name'
+views.hotel.index.name: Name
+views.hotel.index.prefix: Abbreviation
 views.hotel.index.sale_dates: 'Sales dates'
 views.hotel.index.chosen_by_default: Default
 views.hotel.index.edit_record: Edit
@@ -92,7 +92,7 @@ views.roomType.editRoom.edit_bed_for_room_type: 'Edit bed for room type'
 views.roomType.editRoom.delete: Delete
 views.roomType.generateRooms.beds_generation_for_room_type: 'Bed generation for room type'
 views.roomType.generateRooms.rooms_generation_for_room_type: 'Room generation for room type'
-views.roomType.generateRooms.generate_rooms: 'Generate rooms'
+views.roomType.generateRooms.generate_rooms: 'Create Rooms'
 views.roomType.generateRooms.cancel: Cancel
 views.roomType.generateRooms.delete: Delete
 views.roomType.index.new_room_type: 'New room type'
@@ -102,14 +102,14 @@ views.roomType.index.create_rooms_for_room_type: 'Create rooms for room type'
 views.roomType.index.add: Add
 views.roomType.index.bed: Bed
 views.roomType.index.room: Room
-views.roomType.index.generate_rooms_for_room_type: 'Generate room numbers for room type <%name%>'
-views.roomType.index.generate: Generate
+views.roomType.index.generate_rooms_for_room_type: 'Create Rooms for Room type <%name%>'
+views.roomType.index.generate: Create
 views.roomType.index.delete_room_type: 'Delete room type'
 views.roomType.index.delete: Delete
 views.roomType.index.room_fund: Rooms
 views.roomType.index.beds: Beds
-views.roomType.index.name: Title
-views.roomType.index.housing: Housing
+views.roomType.index.name: Name
+views.roomType.index.housing: Building
 views.roomType.index.floor: Floor
 views.roomType.index.status: Status
 views.roomType.layout.rooms: Rooms
@@ -121,20 +121,21 @@ views.roomType.roomListButtons.delete_record: Delete
 views.roomType.help.empty_facilities: 'Use room amenities from room type'
 views.hotel.index.confirm_delete: 'Are you sure you want to delete hotel "%hotelname%"?'
 views.task.layout.tasks: Tasks
-views.corpus.name: Title
-views.corpus.internal_name: 'Internal title'
+views.corpus.name: Name
+views.corpus.internal_name: 'Short Name'
 views.corpus.city: City
-views.corpus.settlement: 'Town (settlement)'
+views.corpus.settlement: Province
 views.corpus.address: Address
 views.corpus.street: Street
 views.corpus.house: House
 views.corpus.flat: Apartment
-views.corpus.corpus: Wing
-views.corpus: Wing
+views.corpus.corpus: Building
+views.corpus: Building
 view.create_task_type_categoty: 'New category'
 views.roomTypeCaterory.layout.index: 'Room category'
 views.hotel.contact_info.editing_number: 'Editing #'
 views.hotel.images.editing_number: 'Editing #'
 mbhhotelbundle.view.hotel.index.da: 'Yes'
-views.hotel.tabs.images: Photos
+views.hotel.tabs.images: Pictures
 views.hotel.tabs.contact_info: 'Contact info'
+views.facility.list.title: Amenities

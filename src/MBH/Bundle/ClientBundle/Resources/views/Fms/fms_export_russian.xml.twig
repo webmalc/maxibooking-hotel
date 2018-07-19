@@ -11,20 +11,26 @@
                 <element>{{ tourist.sex == 'female' ? 'F' : 'M' }}</element>
             </gender>
             <birthDate>{{ tourist.birthday|date('d.m.Y') }}</birthDate>
-            <citizenship>
-                <type>Citizenship</type>
-                <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
-            </citizenship>
-            <birthPlace>
-                <country>
-                    <type>Country</type>
-                    <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
-                </country>
-                <place>{{ tourist.birthplace.mainRegion }}</place>
-                <place2>{{ tourist.birthplace.district }}</place2>
-                <place3>{{ tourist.birthplace.city }}</place3>
-                <place4>{{ tourist.birthplace.settlement }}</place4>
-            </birthPlace>
+            {% if tourist.citizenshipTld %}
+                <citizenship>
+                    <type>Citizenship</type>
+                    <element>{{ get_country(tourist.citizenshipTld).code3 }}</element>
+                </citizenship>
+            {% endif %}
+            {% if tourist.birthplace %}
+                <birthPlace>
+                    {% if tourist.birthplace.countryTld %}
+                        <country>
+                            <type>Country</type>
+                            <element>{{ get_country(tourist.birthplace.countryTld).code3 }}</element>
+                        </country>
+                    {% endif %}
+                    <place>{{ tourist.birthplace.mainRegion }}</place>
+                    <place2>{{ tourist.birthplace.district }}</place2>
+                    <place3>{{ tourist.birthplace.city }}</place3>
+                    <place4>{{ tourist.birthplace.settlement }}</place4>
+                </birthPlace>
+            {% endif %}
         </person>
         <document>
             <type>
@@ -55,8 +61,13 @@
     {% if tourist.addressObjectDecomposed %}
         <f5:livingAddress>
             <russianAddress>
-                {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
-                <addressObjectString>{{ get_region(tourist.addressObjectDecomposed.regionId).name|replace({'область' : 'обл'}) }}$${{ tourist.addressObjectDecomposed.city }} г$$${{ tourist.addressObjectDecomposed.street|capitalize }} ул</addressObjectString>
+                {% if tourist.addressObjectDecomposed.regionId %}
+                    {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
+                    <addressObjectString>{{ get_region(tourist.addressObjectDecomposed.regionId).name|replace({'область' : 'обл'}) }}
+                        $${{ tourist.addressObjectDecomposed.city }}
+                        г$$${{ tourist.addressObjectDecomposed.street|capitalize }} ул
+                    </addressObjectString>
+                {% endif %}
                 <housing>
                     <type>
                         <type>addressObjectType</type>

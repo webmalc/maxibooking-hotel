@@ -1,6 +1,6 @@
 ///<reference path="DataManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
-var ActionManager = (function () {
+var ActionManager = /** @class */ (function () {
     function ActionManager(dataManager) {
         this.dataManager = dataManager;
     }

@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
+use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
@@ -54,9 +55,10 @@ class HotelManager
     /**
      * @param BillingProperty $billingProperty
      * @param bool $isDefault
+     * @param Client $client
      * @return Hotel
      */
-    public function createByBillingProperty(BillingProperty $billingProperty, bool $isDefault)
+    public function createByBillingProperty(BillingProperty $billingProperty, bool $isDefault, Client $client)
     {
         $hotel = (new Hotel())
             ->setFullTitle($billingProperty->getName())
@@ -67,6 +69,9 @@ class HotelManager
             $hotel->setAboutLink($billingProperty->getUrl());
         }
 
+        $this->container
+            ->get('mbh.site_manager')
+            ->createOrUpdateForHotel($hotel, $client);
         $this->dm->persist($hotel);
 
         return $hotel;

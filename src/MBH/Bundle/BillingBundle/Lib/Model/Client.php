@@ -255,7 +255,7 @@ class Client
     /**
      * @return string
      */
-    public function getDisabledAt(): ?string
+    public function getDisabled_at(): ?string
     {
         return $this->disabled_at;
     }

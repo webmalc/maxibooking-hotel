@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
+use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
 use MBH\Bundle\HotelBundle\Document\RoomViewType;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Form\AbstractType;
@@ -45,16 +46,34 @@ class RoomTypeType extends AbstractType
                         }
                         return $qb;
                     }
-                ])
-            ;
+                ]);
         }
+
+        $isRoomTypeExists = !empty($builder->getData()->getId());
+        if ($isRoomTypeExists) {
+            $builder
+                ->add('fullTitle', MultiLanguagesType::class, [
+                    'fields_options' => [
+                        'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus'],
+                        'label' => 'form.roomTypeType.name',
+                        'required' => false
+                    ],
+                    'field_type' => TextType::class,
+                    'group' => 'form.roomTypeType.general_info',
+                    'data' => $builder->getData(),
+                    'mapped' => false
+                ]);
+        } else {
+            $builder
+                ->add('fullTitle', TextType::class, [
+                    'label' => 'form.roomTypeType.name',
+                    'required' => true,
+                    'group' => 'form.roomTypeType.general_info',
+                    'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus']
+                ]);
+        }
+
         $builder
-            ->add('fullTitle', TextType::class, [
-                'label' => 'form.roomTypeType.name',
-                'required' => true,
-                'group' => 'form.roomTypeType.general_info',
-                'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus']
-            ])
             ->add('title', TextType::class, [
                 'label' => 'form.roomTypeType.inner_name',
                 'required' => false,
@@ -67,12 +86,16 @@ class RoomTypeType extends AbstractType
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
             ])
-            ->add('description', TextareaType::class, [
-                'label' => 'form.roomTypeType.description',
-                'help' => 'form.roomTypeType.online_reservation_room_description',
-                'required' => false,
+            ->add('description', MultiLanguagesType::class, [
                 'group' => 'form.roomTypeType.general_info',
-                'attr' => ['class' => 'big roomTypeTypeEditor tinymce']
+                'fields_options' => [
+                    'attr' => ['class' => 'big roomTypeTypeEditor tinymce'],
+                    'label' => 'form.roomTypeType.description',
+                    'required' => false,
+                    'help' => 'form.roomTypeType.online_reservation_room_description',
+                ],
+                'data' => $builder->getData(),
+                'mapped' => false
             ])
             ->add('color', TextType::class, [
                 'label' => 'form.roomTypeType.color',
@@ -123,14 +146,14 @@ class RoomTypeType extends AbstractType
                 'label' => 'form.roomTypeType.main_places',
                 'group' => 'form.roomTypeType.places',
                 'required' => true,
-                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
+                'attr' => ['class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_main_places_amount'
             ])
             ->add('additionalPlaces', TextType::class, [
                 'label' => 'form.roomTypeType.additional_places',
                 'group' => 'form.roomTypeType.places',
                 'required' => true,
-                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
+                'attr' => ['class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_additional_places_amount'
             ]);
 
@@ -149,8 +172,7 @@ class RoomTypeType extends AbstractType
                     'value' => true,
                     'required' => false,
                     'help' => 'form.roomTypeType.isIndividualAdditionalPricesDesc'
-                ])
-            ;
+                ]);
         }
 
         $builder
@@ -160,8 +182,7 @@ class RoomTypeType extends AbstractType
                 'value' => true,
                 'required' => false,
                 'help' => 'form.roomTypeType.is_room_included_in_search'
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
