@@ -25,6 +25,7 @@ use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use MBH\Bundle\ClientBundle\Service\Notice;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -79,7 +80,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            if (!is_null($previousTimeZone) && $previousTimeZone != $entity->getTimeZone()) {
+            if (!is_null($previousTimeZone)
+                && $previousTimeZone != $entity->getTimeZone()
+                && (empty($this->getUser()) || $this->getUser()->getUsername() !== 'mb')) {
                 $entity->setTimeZone($previousTimeZone);
                 $this->addFlash('warning',
                     $this->get('translator')->trans('controller.clientConfig.change_time_zone_contact_support',

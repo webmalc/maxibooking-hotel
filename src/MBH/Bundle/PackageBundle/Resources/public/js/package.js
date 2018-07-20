@@ -148,18 +148,21 @@ var initRemovePackageButton = function() {
   var $formContainer = $('#delete-modal-form-container');
   var $deleteModalButton = $('#package-delete-modal-button');
 
-  $('.booking-delete-link, .order-booking-delete-link').unbind('click');
-  $('.booking-delete-link, .order-booking-delete-link').on('click', function(e) {
-    var orderId = this.getAttribute('data-order-id');
-    var isRemoveFromOrderInterface = orderId !== null;
-    console.log(orderId);
-    e.preventDefault();
+    $('.booking-delete-link, .order-booking-delete-link').unbind('click');
+    $('.booking-delete-link, .order-booking-delete-link').on('click', function (e) {
+        var orderId = this.getAttribute('data-order-id');
+        var isRemoveFromOrderInterface = orderId !== null;
+        e.preventDefault();
 
     var isRemovePackage = this.classList.contains('booking-delete-link');
     var urlName = isRemovePackage ? 'package_delete' : 'order_delete';
     var entityId = $(this).data('id');
 
-    $formContainer.html(mbh.loader.html);
+        var entityTitle = this.getAttribute('data-title');
+        var titleTransId = isRemovePackage ? 'package.remove_package' : 'package.remove_order';
+        $('#modal_delete_package .modal-title').html(Translator.trans(titleTransId, {'title' : entityTitle}));
+
+        $formContainer.html(mbh.loader.html);
 
     $.ajax({
       url     : Routing.generate(urlName, {'id': entityId}),

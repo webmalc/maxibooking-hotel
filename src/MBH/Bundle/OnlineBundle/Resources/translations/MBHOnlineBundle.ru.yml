@@ -4,6 +4,7 @@ views.api.form.check_in_date: 'Дата заезда'
 views.api.form.check_out_date: 'Дата выезда'
 views.api.form.nights_amount: 'Количество ночей'
 views.api.form.room_type: 'Тип номера'
+views.api.form.room_type.choices.any: Любой
 views.api.form.adults: Взрослые
 views.api.form.children: Дети
 views.api.form.children_ages.label: 'Возраста детей'

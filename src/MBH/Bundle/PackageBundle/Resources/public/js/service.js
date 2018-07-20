@@ -155,7 +155,7 @@ var docReadyServices = function() {
                     if ($(this).attr('data-category') !== catId && $(this).val() !== '') {
                         $(this).remove();
                     }
-                })
+                });
 
                 serviceSelect.select2('destroy');
                 serviceSelect.select2({
@@ -270,11 +270,13 @@ var docReadyServices = function() {
         }
     }).fnDraw();
 
-    $serviceFilterForm.find('input, select').on('change switchChange.bootstrapSwitch', function() {
+    var redraw = function() {
         if (!processing || 1) {
             $serviceTable.dataTable().fnDraw();
         }
-    });
+    };
+    $serviceFilterForm.find('input:not(.datepicker), select').on('change switchChange.bootstrapSwitch', redraw);
+    $serviceFilterForm.find('input.datepicker').on('changeDate clearDate', redraw);
 };
 
 $(document).ready(function() {

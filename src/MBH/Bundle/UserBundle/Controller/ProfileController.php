@@ -188,6 +188,7 @@ class ProfileController extends Controller
      * @Route("/payer", name="user_payer")
      * @param Request $request
      * @return array
+     * @throws Exception
      */
     public function payerAction(Request $request)
     {
@@ -236,15 +237,16 @@ class ProfileController extends Controller
      * @Route("/payments_list_json", name="payments_list_json", options={"expose"=true})
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function paymentsListAction(Request $request)
     {
         $formData = $request->request->get('form');
-        $beginDate = isset($formData['begin'])
+        $beginDate = isset($formData['begin']) && !empty($formData['begin'])
             ? $this->helper->getDateFromString($formData['begin'])
             : new \DateTime('midnight - 300 days');
 
-        $endDate = isset($formData['end'])
+        $endDate = isset($formData['end']) && !empty($formData['end'])
             ? $this->helper->getDateFromString($formData['end'])
             : new \DateTime('midnight');
 
@@ -308,10 +310,10 @@ class ProfileController extends Controller
      */
     public function payOrderModalAction($orderId)
     {
-        $errors = $this->get('mbh.client_payer_manager')->getErrorsCausedByUnfilledDataForPayment();
-        if (!empty($errors)) {
-            return ['errors' => $errors];
-        }
+//        $errors = $this->get('mbh.client_payer_manager')->getErrorsCausedByUnfilledDataForPayment();
+//        if (!empty($errors)) {
+//            return ['errors' => $errors];
+//        }
 
         $billingApi = $this->get('mbh.billing.api');
         $order = $billingApi->getClientOrderById($orderId);

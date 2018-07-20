@@ -8,6 +8,7 @@ namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 
 use MBH\Bundle\PackageBundle\Document\Tourist as TouristBase;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 
 /**
@@ -17,7 +18,7 @@ use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-class Mortal extends Common implements DataOfMortalInterface
+class Mortal extends Common implements DataOfMortalInterface, AddressInterface
 {
     use TraitAddress;
     use TraitDataOfMortal;

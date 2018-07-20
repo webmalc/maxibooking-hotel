@@ -75,6 +75,7 @@ class BillingPayerFormHandler extends FormDataHandler
     /**
      * @param $payerData
      * @return BillingPayerFormHandler
+     * @throws \Exception
      */
     public function setInitData($payerData)
     {
@@ -148,10 +149,17 @@ class BillingPayerFormHandler extends FormDataHandler
      */
     private function getMandatoryFields($payerData)
     {
+        if ($this->isRussianPayer && $this->payerType === self::NATURAL_ENTITY_ID) {
+            return [];
+        }
+
         $fieldsByCategories = array_keys($this->getBillingFieldsByFormFields());
 
         if ($this->IsRussianLegalPayerWithProxyBase($payerData)) {
             $fieldsByCategories = array_diff($fieldsByCategories, ['proxy', 'proxyDate']);
+        }
+        if ($this->isRussianPayer && $this->payerType === self::LEGAL_ENTITY_ID) {
+            $fieldsByCategories = array_diff($fieldsByCategories, ['kpp']);
         }
 
         return $fieldsByCategories;
@@ -171,6 +179,7 @@ class BillingPayerFormHandler extends FormDataHandler
         if ($this->IsRussianLegalPayerWithProxyBase($payerData)) {
             $extraFields = array_merge($extraFields, ['proxy', 'proxyDate']);
         }
+
 
         return array_diff_key($payerData, array_flip($extraFields));
     }

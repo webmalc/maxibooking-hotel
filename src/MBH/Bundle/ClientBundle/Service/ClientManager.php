@@ -3,8 +3,10 @@
 namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
@@ -21,8 +23,8 @@ class ClientManager
     const SESSION_CLIENT_FIELD = 'client';
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
     const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
-    const INSTALLATION_PAGE_RU = 'https://demo.maxi-booking.ru/';
-    const INSTALLATION_PAGE_COM = 'https://demo.maxi-booking.com/';
+    const INSTALLATION_PAGE_RU = 'https://login.maxi-booking.ru/';
+    const INSTALLATION_PAGE_COM = 'https://login.maxi-booking.com/';
 
     private $dm;
     private $session;
@@ -30,8 +32,9 @@ class ClientManager
     private $logger;
     private $client;
     private $kernel;
+    private $helper;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel, Helper $helper)
     {
         $this->dm = $dm;
         $this->session = $session;
@@ -39,6 +42,7 @@ class ClientManager
         $this->logger = $logger;
         $this->client = $client;
         $this->kernel = $kernel;
+        $this->helper = $helper;
     }
 
     /**
@@ -66,12 +70,16 @@ class ClientManager
         $roomCachesByDate = $roomCacheRepository
             ->fetch($date, $date, null, [], null)
             ->toArray();
-        $roomCachesByDate = array_unique(array_merge($modifiedRoomCaches, $roomCachesByDate), SORT_REGULAR);
+        $roomCachesByDate = array_merge($modifiedRoomCaches, $roomCachesByDate);
 
         $numberOfExistedRooms = 0;
+        $roomCachesIds = [];
         /** @var RoomCache $roomCache */
         foreach ($roomCachesByDate as $roomCache) {
-            $numberOfExistedRooms += $roomCache->getTotalRooms();
+            if (!in_array($roomCache->getId(), $roomCachesIds)) {
+                $roomCachesIds[] = $roomCache->getId();
+                $numberOfExistedRooms += $roomCache->getTotalRooms();
+            }
         }
 
         return $numberOfExistedRooms > $this->getAvailableNumberOfRooms();
@@ -83,6 +91,7 @@ class ClientManager
      * @param array $rawNewRoomCachesData
      * @param array $rawUpdatedRoomCaches
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getDaysWithExceededLimitNumberOfRoomsInSell(
         \DateTime $begin,
@@ -252,6 +261,31 @@ class ClientManager
     public function isRussianClient()
     {
         return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getNumberOfDaysBeforeDisable()
+    {
+        $clientOrdersResult = $this->billingApi->getClientOrdersSortedByExpiredData($this->client);
+        if ($clientOrdersResult->isSuccessful()) {
+            $clientOrders = $clientOrdersResult->getData();
+            if (!empty($clientOrders)) {
+                /** @var PaymentOrder $lastOrder */
+                $lastOrder = $clientOrders[0];
+                $currentDateTime = new \DateTime();
+
+                $daysBeforeDisable = $this->helper
+                    ->getDifferenceInDaysWithSign($currentDateTime, $lastOrder->getExpiredDateAsDateTime());
+                if ($lastOrder->getExpiredDateAsDateTime() > $currentDateTime
+                    && $lastOrder->getStatus() !== PaymentOrder::STATUS_PAID && $daysBeforeDisable >= 0) {
+                    return $daysBeforeDisable;
+                }
+            }
+        }
+
+        return null;
     }
 
     private function getDefaultClientData()

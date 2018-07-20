@@ -80,7 +80,7 @@ class HundredOneHotels extends Base
                 true
             );
 
-            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                 foreach ($roomTypes as $serviceRoomTypeId => $roomTypeInfo) {
                     /** @var RoomType $roomType */
                     $roomType = $roomTypeInfo['doc'];
@@ -151,7 +151,7 @@ class HundredOneHotels extends Base
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
-            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                 /** @var \DateTime $day */
                 foreach ($roomTypes as $serviceRoomTypeId => $roomTypeInfo) {
                     /** @var RoomType $roomType */
@@ -255,7 +255,7 @@ class HundredOneHotels extends Base
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
-            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                 /** @var \DateTime $day */
                 foreach ($roomTypes as $serviceRoomTypeId => $roomTypeInfo) {
                     /** @var RoomType $roomType */
