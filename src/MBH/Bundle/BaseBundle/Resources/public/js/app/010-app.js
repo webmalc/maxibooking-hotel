@@ -289,18 +289,18 @@ var deleteLink = function () {
 
 $(document).ready(function() {
     'use strict';
-    if (isLowWidthDevice()) {
-        var $logoBlock = $('header.main-header > .logo');
-        var logoBlockHeight = parseInt($logoBlock.css('height'), 10);
-        $(window).scroll(function () {
-            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            if (scrollTop > logoBlockHeight) {
-                $logoBlock.hide();
-            } else {
-                $logoBlock.show();
-            }
-        });
-    }
+    // if (isLowWidthDevice()) {
+    //     var $logoBlock = $('header.main-header > .logo');
+    //     var logoBlockHeight = parseInt($logoBlock.css('height'), 10);
+    //     $(window).scroll(function () {
+    //         var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    //         if (scrollTop > logoBlockHeight) {
+    //             $logoBlock.hide();
+    //         } else {
+    //             $logoBlock.show();
+    //         }
+    //     });
+    // }
 
     var workShiftMenu = $('#work-shift-menu');
     if (workShiftMenu.length == 1) {

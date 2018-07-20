@@ -163,6 +163,7 @@
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
+          flex-direction: column;
 
           margin-top: 1px;
           border: 0.5px solid #e0e0e0;
@@ -182,6 +183,17 @@
           &.danger {
             background: #f2dede;
           }
+
+          td {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: unset;
+            div {
+              text-align: center;
+            }
+          }
         }
       }
     }
@@ -200,6 +212,13 @@
       div {
         &:last-of-type {
           width: 100%;
+        }
+
+        @media (max-width: 350px) {
+          &.col-sm-6 {
+            padding-left: 3px;
+            padding-right: 3px;
+          }
         }
       }
 
