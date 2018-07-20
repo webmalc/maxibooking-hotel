@@ -199,7 +199,7 @@ knp_snappy:
     pdf:
         enabled:    true
         binary:     "%wkhtmltopdf_path%"
-        options:    []
+        options: []
     image:
         enabled:    true
         binary:     /usr/local/bin/h

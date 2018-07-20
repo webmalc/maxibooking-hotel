@@ -1,0 +1,59 @@
+{% set idDivResultSearch = 'result-search' %}
+
+{% spaceless %}
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Maxibooking</title>
+        {#<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />#}
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"/>
+        {% if entity and entity.theme %}
+            <link rel="stylesheet" href="{{ entity.theme }}">
+        {% endif %}
+
+        {% if entity and entity.cssLibraries is defined and entity.cssLibraries is iterable %}
+            {% for link in entity.cssLibraries %}
+                <link rel="stylesheet" href="{{ link }}">
+            {% endfor %}
+        {% endif %}
+        <script src="//code.jquery.com/jquery-2.2.4.min.js"
+                integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+                crossorigin="anonymous"></script>
+        <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"
+                integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc="
+                crossorigin="anonymous"></script>
+    </head>
+    {% if entity %}
+        {% if entity.css %}
+            <style>
+                {{ entity.css|raw }}
+            </style>
+        {% endif %}
+        {% if entity.js %}
+            <script>
+                window.addEventListener('load', function(ev) {
+                    {{ entity.js|raw }}
+                });
+            </script>
+        {% endif %}
+    {% endif %}
+    <body style="background-color: transparent;">
+    {% form_theme form '@MBHOnline/ApiPaymentForm/Form/block.html.twig' %}
+    {{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'form-horizontal well', 'id': formId}}) }}
+    {{ form_widget(form) }}
+    {% if app.getEnvironment == 'prod' and entity.enabledReCaptcha %}
+        <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+    {% endif %}
+    {{ form_end(form) }}
+    <div id="{{ idDivResultSearch | raw }}">
+        <div class="panel-body"></div>
+    </div>
+    <script>
+      {% include '@MBHOnline/ApiPaymentForm/' ~ paymentSystem ~ '/func.js.twig' %}
+    </script>
+    </body>
+
+    </html>
+{% endspaceless %}

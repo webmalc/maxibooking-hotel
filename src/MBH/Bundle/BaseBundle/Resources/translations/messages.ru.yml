@@ -60,7 +60,7 @@ mbhbasebundle.view.partials.datepickerperiodselect.zavtra: Завтра
 mbhbasebundle.view.partials.datepickerperiodselect.nedelya: Неделя
 mbhbasebundle.view.partials.datepickerperiodselect.mesyats: Месяц
 mbhbasebundle.view.navbar.svernutʹmenyu: 'Свернуть меню'
-mbhbasebundle.view.navbar.kassa: Касса
+mbhbasebundle.view.navbar.kassa: Расчеты
 mbhbasebundle.view.navbar.dokument: 'Документ '
 mbhbasebundle.view.navbar.nepodtverzhden: 'Не подтвержден'
 mbhbasebundle.view.navbar.smena: 'Смена '
@@ -93,8 +93,8 @@ twig.extension.september: сент
 twig.extension.october: окт
 twig.extension.november: нояб
 twig.extension.december: дек
-landscape: книжная
-portrait: альбомная
+landscape: альбомная
+portrait: книжная
 controller.baseController.delete_record_success: 'Запись успешно удалена'
 controller.baseController.document_is_deleted: 'Документ уже удален!'
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Нельзя удалить запись с существующими бронями'
@@ -238,6 +238,7 @@ exception.roomType_relation_delete.message.room: 'Невозможно удал�
 exception.roomType_relation_delete.message.priceCache: 'Невозможно удалить тип комнат, так как существует связанная с ним информация о ценах на комнаты (%total%).'
 exception.roomType_relation_delete.message.roomCache: 'Невозможно удалить тип комнат, так как для него существует информация о номерах в продаже (%total%).'
 exception.roomType_relation_delete.message.package: 'Невозможно удалить тип комнат, так как существуют связанные с ним брони (%total%).'
+exception.roomType_relation_delete.message.special: 'Невозможно удалить тип комнат, так как он указан в спецпредложениях (%total%).'
 exception.room_relation_delete.message.task: 'Невозможно удалить данные о комнате, так как для неё существуют записи о задачах (%total%).'
 exception.room_relation_delete.message.package: 'Невозможно удалить данные о комнате, так как существуют связанные с ней брони (%total%).'
 exception.user_relation_delete.message.task: 'Невозможно удалить данного пользователя, так как он отмечен исполнителем для задачи (%total%).'
@@ -249,7 +250,9 @@ exception.tariff_relation_delete.message.priceCache: 'Невозможно уд�
 exception.tariff_relation_delete.message.restriction: 'Невозможно удалить тариф, так как он используется для ограничений тарифов (%total%).'
 exception.tariff_relation_delete.message.roomCache: 'Невозможно удалить тариф, так как он используется в текущих номерах в продаже (%total%).'
 exception.tariff_relation_delete.message.package: 'Невозможно удалить тариф, так как он используется в текущих бронях (%total%).'
+exception.tariff_relation_delete.message.special: 'Невозможно удалить тариф, так как он используется в спецпредложениях (%total%).'
 exception.tariff_relation_delete.message.parentTariff: 'Невозможно удалить тариф, так как он используется как родительский для другого тарифа (%total%).'
+exception.tariff_relation_delete.message.mergingTariff: 'Невозможно удалить тариф, так как он используется как тариф для комбинирования (%total%).'
 exception.serviceCategory_relation_message.service: 'Невозможно удалить категорию услуг, так как она используется в существующих услугах (%total%).'
 exception.promotion_relation_delete.message.tariff: 'Невозможно удалить текущую акцию, так как она испольуется как стандартная для тарифа'
 exception.promotion_relation_delete.message.package: 'Невозможно удалить текущую акцию, так как она испольуется в брони (%total%).'
@@ -313,33 +316,41 @@ per_l: л.
 per_ml: мл.
 menu.header.navigation: Навигация
 menu.header.settings: Настройки
-menu.label.broni: Брони
-menu.label.podbor: Подбор
-menu.label.portie: Портье
+menu.label.navigation: 'Обзор номеров'
+menu.label.hotel_services: 'Службы отеля'
+menu.label.web_site: 'Интернет сайт'
+menu.label.analytics: Аналитика
+menu.label.users_and_roles: 'Пользователи и права'
+menu.label.profile: 'Личный кабинет'
+menu.label.payment_systems: 'Платежные системы'
+menu.label.broni: 'Список броней'
+menu.label.podbor: 'Создать бронь'
+menu.label.portie: 'Прием и размещение'
 menu.label.portie.nomfond: 'Номерной фонд'
 menu.label.portie.shah: Шахматка
 menu.label.portie.arrdep: Заезд/Выезд
-menu.label.nomandprice: 'Номера и цены'
+menu.label.nomandprice: 'Цены и предложения'
 menu.label.nomandprice.tariff: Тарифы
-menu.label.nomandprice.overview: Обзор
+menu.label.nomandprice.overview: 'Проверочный отчет'
 menu.label.nomandprice.roomsell: 'Номера в продаже'
 menu.label.nomandprice.prices: Цены
 menu.label.nomandprice.restriction: 'Условия и ограничения'
-menu.label.nomandprice.services: Услуги
+menu.label.nomandprice.services: 'Дополнительные услуги'
 menu.label.nomandprice.promotions: Акции
 menu.label.task: Задачи
 menu.label.cash: Касса
 menu.label.warehouse: Склад
-menu.label.restaurant: Ресторан
+menu.label.restaurant: 'Заказы ресторана'
+menu.label.financial_analytics: 'Финансовая аналитика'
 menu.label.reports: Отчеты
-menu.label.reports.services: Услуги
+menu.label.reports.services: 'Дополнительные услуги'
 menu.label.reports.clients: Гости
-menu.label.reports.organizations: Организация
+menu.label.reports.organizations: Организации
 menu.label.reports.filling: Заполняемость
-menu.label.reports.managers: Менеджеры
+menu.label.reports.managers: 'Отчеты по менеджерам'
 menu.label.reports.invite: 'Визовые приглашения'
-menu.label.reports.analystics: Аналитика
-menu.label.reports.polls: Оценки
+menu.label.reports.analystics: 'Графики продаж'
+menu.label.reports.polls: 'Отзывы гостей'
 menu.label.reports.dynamic_sales: 'Динамика продаж'
 menu.label.reports.daily_report: 'Денежные средства'
 menu.label.reports.windows: Окна
@@ -351,23 +362,24 @@ menu.settings.label.housing: Корпуса
 menu.settings.label.room_types: 'Номерной фонд'
 menu.room_type_category: 'Группы номеров'
 menu.settings.label.restaurant: Ресторан
-menu.settings.label.restaurant.ingredients: Ингредиенты
-menu.settings.label.restaurant.dishmenu: 'Меню блюд'
-menu.settings.label.restaurant.tables: 'Управление столиками'
+menu.settings.label.restaurant.ingredients: 'Ресторан - Ингредиенты'
+menu.settings.label.restaurant.dishmenu: 'Ресторан - Меню блюд'
+menu.settings.label.restaurant.tables: 'Ресторан - Cтолики'
 menu.configs.config: Настройки
 menu.configs.users: Пользователи
 menu.configs.groups: Группы
-menu.configs.sources: Источники
+menu.configs.sources: 'Источники продаж'
 menu.configs.delete_reasons: 'Причины удаления'
 menu.configs.templates: 'Шаблоны документов'
 menu.configs.parameters: Параметры
-menu.configs.tasktype: 'Типы задач'
-menu.configs.warehouse: Склад
+menu.configs.tasktype: 'Обслуживание номеров'
+menu.configs.warehouse: 'Номенклатура склада'
 menu.communication.label: Взаимодействие
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.your_hotel: ВашОтель
 menu.communication.label.onlineform: 'Онлайн модуль'
-menu.communication.label.polls: Оценки
+menu.communication.label.online_payment_form: 'Платежный модуль'
+menu.communication.label.polls: 'Настройка отзывов'
 menu.communication.label.invite: 'Визовое приглашение'
 menu.communication.label.hundred_one_hotels: '101 Отель'
 menu.hotel_new.label: 'Создать новый отель'
@@ -432,7 +444,7 @@ basebundle.menu.tables: Столы
 basebundle.menu.users: Пользователи
 basebundle.menu.groups: Группы
 basebundle.menu.sources: Источники
-basebundle.menu.reasond_of_removal: 'Причины удаления'
+basebundle.menu.reasond_of_removal: 'Причниы аннуляции'
 basebundle.menu.templates_of_document: 'Шаблоны документов'
 basebundle.menu.parammeters: Параметры
 basebundle.menu.type_of_task: 'Типы задач'

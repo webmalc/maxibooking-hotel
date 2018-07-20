@@ -36,6 +36,10 @@ form.clientPaymentSystemType.successUrlDesc: 'Redirection URL for successful pay
 form.clientPaymentSystemType.failUrlDesc: 'Redirection URL for unsuccessful payments'
 form.clientPaymentSystemType.payment_system_group: 'Payment system'
 form.clientPaymentSystemType.payment_system_group_links: Links
+form.clientPaymentSystemType.newRbk_ApiKey: 'Api Key'
+form.clientPaymentSystemType.newRbk_WebhookApi: 'Webhook key'
+form.clientPaymentSystemType.newRbk_ShopId: 'Shop ID'
+form.clientPaymentSystemType.newRbk_LifetimeInvoice: 'Lifetime Invoice'
 mailer.notice.unpaid.order.list: 'List of reservations with overdue payments'
 form.clientConfigType.search_tariffs: 'Number of rates'
 form.clientConfigType.search_tariffs_desc: 'Default number of rates shown in the form'

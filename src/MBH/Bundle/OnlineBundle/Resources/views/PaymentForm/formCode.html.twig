@@ -1,0 +1,44 @@
+{% extends 'MBHOnlineBundle:PaymentForm:layout.html.twig' %}
+{% set active = 2 %}
+
+{% block content %}
+    {% include '@MBHOnline/PaymentForm/tabs.html.twig' %}
+    <div class="tab-content">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ 'views.form.index.site_embed_form_code'|trans({}, 'MBHOnlineBundle') }}</h3>
+            </div>
+
+            <div class="panel-body">
+                {% set code1 %}
+                {% spaceless %}
+                    <div id="{{ wrapperId }}">
+                        <a href="https://maxi-booking.com/">
+                            {{ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') }}
+                        </a>
+                    </div>
+                {% endspaceless %}
+                {% endset %}
+                {% set code3 %}
+                    <script src="{{ url('online_payment_form_load_js', {configId: config.id}) }}"></script>
+                {% endset %}
+                <div class="row spacer-bottom">
+                    <div class="col-md-3">
+                        <small>{{ 'views.form.index.to_form_place'|trans({}, 'MBHOnlineBundle') }}</small>
+                    </div>
+                    <div class="col-md-9">
+                        <span class="text-success">{{ code1|escape }}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small>
+                    </div>
+                    <div class="col-md-9" style="overflow: auto">
+                        <span class="text-success">{{ code3|escape }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -35,20 +35,20 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
             ])
-            ->add('type', InvertChoiceType::class, [
-                'label' => 'form.hotelExtendedType.hotel_type',
-                'group' => 'form.hotelExtendedType.parameters',
-                'required' => false,
-                'choices' => (isset($options['config']['types'])) ? $options['config']['types'] : [],
-                'multiple' => true
-            ])
-            ->add('theme', InvertChoiceType::class, [
-                'label' => 'form.hotelExtendedType.hotel_theme',
-                'group' => 'form.hotelExtendedType.parameters',
-                'required' => false,
-                'choices' => (isset($options['config']['themes'])) ? $options['config']['themes'] : [],
-                'multiple' => true
-            ])
+//            ->add('type', InvertChoiceType::class, [
+//                'label' => 'form.hotelExtendedType.hotel_type',
+//                'group' => 'form.hotelExtendedType.parameters',
+//                'required' => false,
+//                'choices' => (isset($options['config']['types'])) ? $options['config']['types'] : [],
+//                'multiple' => true
+//            ])
+//            ->add('theme', InvertChoiceType::class, [
+//                'label' => 'form.hotelExtendedType.hotel_theme',
+//                'group' => 'form.hotelExtendedType.parameters',
+//                'required' => false,
+//                'choices' => (isset($options['config']['themes'])) ? $options['config']['themes'] : [],
+//                'multiple' => true
+//            ])
             ->add('facilities', FacilitiesType::class, [
                 'label' => 'form.hotelExtendedType.hotel_amenities',
                 'group' => 'form.hotelExtendedType.parameters',
@@ -63,13 +63,13 @@ class HotelExtendedType extends AbstractType
                 'required' => false,
                 'multiple' => true
             ])
-            ->add('isInvoiceAccepted', CheckboxType::class, [
-                    'group' => 'form.hotelExtendedType.accepted_payment_types',
-                    'label' => 'form.hotelExtendedType.is_invoice_accepted.label',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.hotelExtendedType.is_invoice_accepted.help'
-                ])
+//            ->add('isInvoiceAccepted', CheckboxType::class, [
+//                    'group' => 'form.hotelExtendedType.accepted_payment_types',
+//                    'label' => 'form.hotelExtendedType.is_invoice_accepted.label',
+//                    'value' => true,
+//                    'required' => false,
+//                    'help' => 'form.hotelExtendedType.is_invoice_accepted.help'
+//                ])
             //TODO: Необходимы данные на разных языках
             ->add('checkinoutPolicy', TextareaType::class, [
                 'label' => 'form.hotelExtendedType.check_in_out_policy.label',
@@ -87,13 +87,6 @@ class HotelExtendedType extends AbstractType
                 'choices' => $this->smokingPolicyOptions
             ])
         ;
-
-//        $builder->add('vega_address_id', NumberType::class, [
-//            'label' => 'form.hotelExtendedType.vega_address_id',
-//            'help' => 'form.hotelExtendedType.vega_address_id_help',
-//            'group' => 'form.hotelExtendedType.integration',
-//            'required' => false
-//        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

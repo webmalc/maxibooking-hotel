@@ -1,5 +1,5 @@
 ///<reference path="DataManager.ts"/>
-var ChessBoardManager = (function () {
+var ChessBoardManager = /** @class */ (function () {
     function ChessBoardManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals) {
         this.canMoveAccommodation = true;
         this.currentSizeConfigNumber = currentStyleConfigNumber;
@@ -14,6 +14,7 @@ var ChessBoardManager = (function () {
         this.templateRemoveButton = ChessBoardManager.getTemplateRemoveButton();
         this.tableStartDate = ChessBoardManager.getTableStartDate();
         this.tableEndDate = ChessBoardManager.getTableEndDate();
+        this.updateChessboardDataWithoutActions();
     }
     ChessBoardManager.deletePackageElement = function (packageId) {
         var packageElement = document.getElementById(packageId);
@@ -52,6 +53,10 @@ var ChessBoardManager = (function () {
                 $(this).children('div').hide();
             }
         });
+        var $numberOfRoomsSelect = $('#nuber-of-rooms-select');
+        $numberOfRoomsSelect.on("select2:select", function () {
+            window.location.href = Routing.generate('change_number_of_rooms', { numberOfRooms: $numberOfRoomsSelect.val() });
+        });
         $('.pagination-sm').find('a').each(function () {
             var filterData = $('#accommodation-report-filter').serialize() + '&page=' + $(this).text();
             var route = Routing.generate('chess_board_home') + '?' + filterData;
@@ -74,6 +79,7 @@ var ChessBoardManager = (function () {
             self.updateTable();
         });
         self.handleSizeSlider();
+        self.onChangeScaleClick();
         document.getElementById('packageModalConfirmButton').onclick = function () {
             var data = ActionManager.getDataFromUpdateModal();
             var packageId = data.packageId;
@@ -99,19 +105,27 @@ var ChessBoardManager = (function () {
         var rangePicker = $reportFilter.find('.daterangepicker-input').data('daterangepicker');
         rangePicker.setStartDate(this.tableStartDate);
         rangePicker.setEndDate(this.tableEndDate);
+        this.hangChangeNumberOfDaysButtonClick();
         $reportFilter.find('#filter-button').click(function () {
             $reportFilter.submit();
         });
         this.onAddGuestClick();
-        //Фиксирование верхнего и левого блоков таблицы
-        chessBoardContentBlock.onscroll = function () {
-            ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
-        };
+        this.hangOnHideFieldButtonClick();
+        if (!isMobileDevice()) {
+            //Фиксирование верхнего и левого блоков таблицы
+            chessBoardContentBlock.onscroll = function () {
+                ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
+            };
+        }
         var templatePackageElement = ChessBoardManager.getTemplateElement();
         //Создание брони
         var dateElements = $('.date, .leftRooms');
+        var $document = $(document);
         if (canCreatePackage) {
-            dateElements.mousedown(function (event) {
+            var eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
+            dateElements.on(eventName, function (event) {
+                chessBoardContentBlock.style.overflow = 'hidden';
+                event.preventDefault();
                 var startXPosition = event.pageX;
                 var startLeftScroll = chessBoardContentBlock.scrollLeft;
                 var newPackage = templatePackageElement.cloneNode(true);
@@ -125,9 +139,10 @@ var ChessBoardManager = (function () {
                 newPackage.style.zIndex = '999';
                 newPackage.style.width = styleConfigs[self.currentSizeConfigNumber].tableCellWidth - (self.arrowWidth * 2) + 'px';
                 var newPackageStartXOffset = parseInt(newPackage.style.left, 10);
-                document.onmousemove = function (event) {
+                $(document).on('touchmove mousemove', function (event) {
+                    var isMouseMoveEvent = event.type === 'mousemove';
                     var scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
-                    var mouseXOffset = startXPosition - event.pageX;
+                    var mouseXOffset = startXPosition - (isMouseMoveEvent ? event.pageX : event.originalEvent.touches[0].pageX);
                     var isLeftMouseShift = mouseXOffset > 0;
                     var packageLengthRestriction = self.getPackageLengthRestriction(startDate, isLeftMouseShift, self.tableStartDate, self.tableEndDate);
                     var griddedOffset = self.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
@@ -145,16 +160,16 @@ var ChessBoardManager = (function () {
                     }
                     newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
                     newPackage.style.width = packageWidth + 'px';
-                };
-                document.onmouseup = function () {
-                    document.onmousemove = null;
-                    this.onmouseup = null;
+                });
+                $(document).on('mouseup touchend', function () {
+                    chessBoardContentBlock.style.overflow = 'auto';
+                    $document.unbind('mousemove  mouseup touchend');
                     if ((newPackage.style.width) && self.isPackageLocationCorrect(newPackage) && newPackage.id) {
                         var packageData = self.getPackageData($(newPackage));
                         self.saveNewPackage(packageData);
                     }
                     self.updateTable();
-                };
+                });
                 this.ondragstart = function () {
                     return false;
                 };
@@ -174,11 +189,23 @@ var ChessBoardManager = (function () {
         $slider.slider({ tooltip: 'hide', reverseed: true });
         $slider.on('slideStop', function () {
             var sliderValue = $('#ex1').slider('getValue');
-            if (_this.currentSizeConfigNumber !== sliderValue) {
-                ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
-                _this.currentSizeConfigNumber = sliderValue;
-                window.location.reload();
-            }
+            _this.changeScale(sliderValue);
+        });
+    };
+    ChessBoardManager.prototype.changeScale = function (sliderValue) {
+        if (this.currentSizeConfigNumber !== sliderValue && sliderValue >= 0 && sliderValue <= maxSliderSize) {
+            ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
+            this.currentSizeConfigNumber = sliderValue;
+            window.location.reload();
+        }
+    };
+    ChessBoardManager.prototype.onChangeScaleClick = function () {
+        var _this = this;
+        $('.reduce-scale-button, .increase-scale-button').on(this.getClickEventType(), function (event) {
+            var sliderValue = $('#ex1').slider('getValue');
+            var buttonClassList = event.target.classList;
+            var newSliderValue = buttonClassList.contains('increase-scale-button') ? (sliderValue + 1) : (sliderValue - 1);
+            _this.changeScale(newSliderValue);
         });
     };
     ChessBoardManager.setCookie = function (name, value, options) {
@@ -285,6 +312,25 @@ var ChessBoardManager = (function () {
         }
         return tableEndDate.diff(startDate, 'days') * styleConfigs[this.currentSizeConfigNumber].tableCellWidth;
     };
+    ChessBoardManager.prototype.hangChangeNumberOfDaysButtonClick = function () {
+        var getNewDate = function (changeButton, $dateField) {
+            var changeDaysFormat = parseInt(changeButton.getAttribute('data-number-of-days'), 10);
+            var isAddition = changeButton.getAttribute('data-change-type') === 'add';
+            var date = moment($dateField.val(), 'DD.MM.YYYY');
+            return isAddition ? date.add(changeDaysFormat, 'days') : date.subtract(changeDaysFormat, 'days');
+        };
+        $('.change-days-button').on(this.getClickEventType(), function () {
+            var $rangePicker = $('.daterangepicker-input').data('daterangepicker');
+            var $beginDateField = $('#accommodation-report-filter-begin');
+            var $endDateField = $('#accommodation-report-filter-end');
+            var beginDate = getNewDate(this, $beginDateField);
+            var endDate = getNewDate(this, $endDateField);
+            $beginDateField.val(beginDate.format('DD.MM.YYYY'));
+            $endDateField.val(endDate.format('DD.MM.YYYY'));
+            $rangePicker.setStartDate(beginDate.toDate());
+            $rangePicker.setEndDate(endDate.toDate());
+        });
+    };
     ChessBoardManager.prototype.addAccommodationElements = function () {
         var wrapper = $('#calendarWrapper');
         var templatePackageElement = ChessBoardManager.getTemplateElement();
@@ -304,6 +350,9 @@ var ChessBoardManager = (function () {
         wrapper.append(packages);
         this.addListeners('.package');
         this.updateAccommodationsWithNeighbors();
+        if (isMobileDevice()) {
+            $('.package .package-action-buttons').show();
+        }
     };
     ChessBoardManager.getTemplateElement = function () {
         var templateDiv = document.createElement('div');
@@ -332,8 +381,8 @@ var ChessBoardManager = (function () {
         var packageWidth = packageCellCount * config.tableCellWidth - this.distanceBetweenAccommodationElements;
         var packageDiv = templatePackageElement.cloneNode(true);
         packageDiv.id = packageItem.id;
-        var description = document.createElement('div');
         var packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
+        var description = document.createElement('div');
         var descriptionText = packageName ? packageName.substr(0, packageCellCount * 5) : '';
         packageDiv.setAttribute('data-description', descriptionText);
         packageDiv.setAttribute('data-package-id', packageItem.packageId);
@@ -356,24 +405,26 @@ var ChessBoardManager = (function () {
             + '<br><b>' + Translator.trans("chessboard_manager.package_tooltip.is_checkout") + ': </b>' + Translator.trans((packageItem.isCheckOut ? 'package.yes' : 'package.no'));
         description.setAttribute('data-content', descriptionPopoverContent);
         var $packageDiv = $(packageDiv);
-        packageDiv.onmousemove = function () {
-            var isElementInPopoverWindow = packageDiv.parentNode.classList.contains('popover-package-container');
-            if (!isElementInPopoverWindow) {
-                $packageDiv.find('.package-action-buttons').show();
-                var $descriptionElement = $(this).find('.package-description');
-                if ($descriptionElement.length > 0) {
-                    var popoverId = $descriptionElement.attr('aria-describedby');
-                    if (popoverId == null) {
-                        $('.popover').popover('hide');
-                        $descriptionElement.popover('show');
+        if (!isMobileDevice()) {
+            packageDiv.onmousemove = function () {
+                var isElementInPopoverWindow = packageDiv.parentNode.classList.contains('popover-package-container');
+                if (!isElementInPopoverWindow) {
+                    $packageDiv.find('.package-action-buttons').show();
+                    var $descriptionElement = $(this).find('.package-description');
+                    if ($descriptionElement.length > 0) {
+                        var popoverId = $descriptionElement.attr('aria-describedby');
+                        if (popoverId == null) {
+                            $('.popover').popover('hide');
+                            $descriptionElement.popover('show');
+                        }
                     }
                 }
-            }
-        };
-        packageDiv.onmouseleave = function () {
-            $packageDiv.find('.package-action-buttons').hide();
-            $packageDiv.find('.package-description').popover('hide');
-        };
+            };
+            packageDiv.onmouseleave = function () {
+                $packageDiv.find('.package-action-buttons').hide();
+                $packageDiv.find('.package-description').popover('hide');
+            };
+        }
         if (packageItem.position == 'middle' || packageItem.position == 'left') {
             packageDiv.classList.add('with-right-divider');
             packageDiv.classList.remove('package-with-right-arrow');
@@ -413,7 +464,8 @@ var ChessBoardManager = (function () {
         if (hasButtons && !packageItem.isLocked) {
             if (packageItem.updateAccommodation
                 && packageEndDate.diff(packageStartDate, 'days') > 1
-                && !this.isAbroadRightTableSide(packageEndDate)) {
+                && !this.isAbroadRightTableSide(packageEndDate)
+                && !isMobileDevice()) {
                 $(packageDiv).find('.package-action-buttons').append(this.templateDivideButton.cloneNode(true));
             }
             if (packageItem.removePackage && (packageItem.position == 'full' || packageItem.position == 'right')) {
@@ -639,21 +691,44 @@ var ChessBoardManager = (function () {
             var intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             var $element = $(element);
             self.addResizable($element, intervalData);
-            $element.dblclick(function () {
-                if (intervalData.viewPackage) {
-                    self.dataManager.getPackageDataRequest(intervalData.packageId);
-                }
-            });
-            $element.find('.remove-package-button').click(function () {
+            if (isMobileDevice()) {
+                var touchTime_1;
+                var isTouchEnd_1 = false;
+                $element.on('touchstart', function () {
+                    if (isTouchEnd_1 && touchTime_1 && moment().diff(touchTime_1) < 500) {
+                        if (intervalData.viewPackage) {
+                            self.dataManager.getPackageDataRequest(intervalData.packageId);
+                        }
+                        touchTime_1 = null;
+                    }
+                    else {
+                        touchTime_1 = new moment();
+                        isTouchEnd_1 = false;
+                    }
+                });
+                $element.on('touchend', function () {
+                    if (touchTime_1) {
+                        isTouchEnd_1 = true;
+                    }
+                });
+            }
+            else {
+                $element.dblclick(function () {
+                    if (intervalData.viewPackage) {
+                        self.dataManager.getPackageDataRequest(intervalData.packageId);
+                    }
+                });
+            }
+            $element.find('.remove-package-button').on('click touchstart', function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
-            $element.find('.divide-package-button').click(function (event) {
+            $element.find('.divide-package-button').on('click', function (event) {
                 self.canMoveAccommodation = false;
-                var scissorIcon = event.target;
+                var $scissorIcon = $(event.target);
                 if (intervalData.viewPackage) {
-                    scissorIcon.onclick = function () {
+                    $scissorIcon.on('click touchstart', function () {
                         self.updatePackagesData();
-                    };
+                    });
                     var accommodationWidth_1 = parseInt(element.style.width, 10);
                     var tableCellWidth_1 = styleConfigs[self.currentSizeConfigNumber].tableCellWidth;
                     if (accommodationWidth_1 > tableCellWidth_1 && accommodationWidth_1 <= tableCellWidth_1 * 2) {
@@ -673,7 +748,7 @@ var ChessBoardManager = (function () {
                             : (hasLeftArrow_1 ? tableCellWidth_1 - self.arrowWidth : tableCellWidth_1);
                         line_1.style.left = defaultLeftValue_1 + 'px';
                         element.appendChild(line_1);
-                        element.onmousemove = function (event) {
+                        $element.on('mousemove', function (event) {
                             var offset = event.clientX - packageLeftCoordinate_1;
                             var griddedOffset;
                             if (isAccommodationAbroadTable_1) {
@@ -692,12 +767,13 @@ var ChessBoardManager = (function () {
                                 griddedOffset = accommodationWidth_1 - tableCellWidth_1 + (hasLeftArrow_1 ? self.arrowWidth : 0);
                             }
                             line_1.style.left = griddedOffset + 'px';
-                            element.onclick = function () {
-                                element.onmousemove = null;
+                            $element.off('click');
+                            $element.on('click', function () {
+                                $element.off('mousemove touchmove');
                                 $('.dividing-line').remove();
                                 self.divide(this, griddedOffset);
-                            };
-                        };
+                            });
+                        });
                     }
                 }
             });
@@ -764,7 +840,7 @@ var ChessBoardManager = (function () {
                     scroll: true,
                     drag: function (event, ui) {
                         element.style.zIndex = 200;
-                        if (!self.isIntervalAvailable(intervalData, isDivide) || !self.canMoveAccommodation) {
+                        if (!self.isIntervalAvailable(intervalData, event, isDivide) || !self.canMoveAccommodation) {
                             ui.position.left = ui.originalPosition.left;
                             ui.position.top = ui.originalPosition.top;
                         }
@@ -806,6 +882,7 @@ var ChessBoardManager = (function () {
             return 'x, y';
         }
         else if (intervalData.updateAccommodation
+            //Если интервал не имеет размещения, но имеет права на создание размещения(просмотр брони)
             || (intervalData.updateAccommodation == undefined) && intervalData.viewPackage) {
             return 'y';
         }
@@ -1137,8 +1214,8 @@ var ChessBoardManager = (function () {
                         start: function () {
                             isDragged = true;
                         }
-                    }).mousedown(function (event) {
-                        if (self.isIntervalAvailable(packageData)) {
+                    }).on('mousedown touchstart', function (event) {
+                        if (self.isIntervalAvailable(packageData, event)) {
                             relocatablePackage = this;
                             $wrapper.append(this);
                             this.style.position = 'absolute';
@@ -1146,21 +1223,22 @@ var ChessBoardManager = (function () {
                             relocatablePackageData = self.dataManager.getNoAccommodationIntervalById(this.id);
                             var intervalStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
                             this.style.left = self.getPackageLeftOffset(intervalStartDate, this) + 'px';
-                            this.style.top = self.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
+                            var pageY = event.type === 'touchstart' ? event.originalEvent.touches[0].pageY : event.pageY;
+                            this.style.top = self.getNearestTableLineTopOffset(pageY - document.body.scrollTop)
                                 + document.body.scrollTop - wrapperTopOffset + subtrahend / 2 + 'px';
                             if (!self.isPackageLocationCorrect(relocatablePackage)) {
                                 relocatablePackage.classList.add('red-package');
                             }
                             $popover.popover('hide');
                         }
-                        document.body.onmouseup = function () {
-                            document.body.onmouseup = null;
+                        $(document.body).on('mouseup touchend', function () {
+                            $(document.body).off('mouseup touchend');
                             if (!isDragged && relocatablePackage) {
                                 if (self.isPackageLocationCorrect(relocatablePackage)) {
                                     self.actionManager.callUpdatePackageModal($(relocatablePackage), relocatablePackageData);
                                 }
                             }
-                        };
+                        });
                     });
                 }
             });
@@ -1172,7 +1250,7 @@ var ChessBoardManager = (function () {
             }
         });
     };
-    ChessBoardManager.prototype.isIntervalAvailable = function (packageData, isDivide) {
+    ChessBoardManager.prototype.isIntervalAvailable = function (packageData, event, isDivide) {
         if (isDivide === void 0) { isDivide = false; }
         if (packageData.isLocked) {
             ActionManager.callUnblockModal(packageData.packageId);
@@ -1201,8 +1279,9 @@ var ChessBoardManager = (function () {
         return packageCellCount * styleConfigs[this.currentSizeConfigNumber].tableCellWidth;
     };
     ChessBoardManager.prototype.getTableWidth = function () {
-        var styles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
-        return parseInt(styles.width, 10) - styleConfigs[this.currentSizeConfigNumber].headerWidth;
+        var chessboardStyles = getComputedStyle(document.getElementById('accommodation-chessBoard-content'));
+        var chessboardWidth = parseInt(chessboardStyles.width, 10);
+        return chessboardWidth - (!isMobileDevice() ? styleConfigs[this.currentSizeConfigNumber].headerWidth : 0);
     };
     ChessBoardManager.getIntervalOutOfTableSide = function (intervalData) {
         var tableBeginDate = ChessBoardManager.getTableStartDate();
@@ -1304,10 +1383,51 @@ var ChessBoardManager = (function () {
         editButton.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>';
         return editButton;
     };
+    ChessBoardManager.prototype.updateChessboardDataWithoutActions = function () {
+        var _this = this;
+        var time = 0;
+        $(document).on('click', function () {
+            time = 0;
+        });
+        setInterval(function () {
+            time++;
+            if (time > 30) {
+                ActionManager.showLoadingIndicator();
+                _this.dataManager.updatePackagesData();
+                ActionManager.hideLoadingIndicator();
+                time = 0;
+            }
+        }, 1000);
+    };
+    ChessBoardManager.prototype.getClickEventType = function () {
+        return isMobileDevice() ? 'touchstart' : 'click';
+    };
+    ChessBoardManager.prototype.hangOnHideFieldButtonClick = function () {
+        var _this = this;
+        var changeVisibilityFunc = function (element) {
+            var $select2Elements = $(element.parentNode).find('span.select2-container, select');
+            var isVisible = $select2Elements.eq(0).css('display') !== 'none';
+            $select2Elements.each(function (index, selectElement) {
+                _this.setImportantStyle($(selectElement), 'display', isVisible ? 'none' : 'inline-block');
+            });
+            element.style.color = !isVisible ? 'inherit' : 'red';
+        };
+        var $hideFieldButtons = $('.hide-field-button');
+        if (isMobileDevice()) {
+            $hideFieldButtons.each(function (index, element) {
+                changeVisibilityFunc(element);
+            });
+        }
+        $hideFieldButtons.on(this.getClickEventType(), function (event) {
+            changeVisibilityFunc(event.target);
+            //prevent touch on filter button after element is hidden
+            event.preventDefault();
+        });
+    };
+    ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH = 8;
+    ChessBoardManager.POPOVER_MIN_WIDTH = 250;
+    ChessBoardManager.SCROLL_BAR_WIDTH = 16;
+    ChessBoardManager.LATE_CHECKOUT_EARLY_CHECKIN_COLOR = '#65619b';
     return ChessBoardManager;
 }());
-ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH = 8;
-ChessBoardManager.POPOVER_MIN_WIDTH = 250;
-ChessBoardManager.SCROLL_BAR_WIDTH = 16;
-ChessBoardManager.LATE_CHECKOUT_EARLY_CHECKIN_COLOR = '#65619b';
 //# sourceMappingURL=ChessBoardManager.js.map

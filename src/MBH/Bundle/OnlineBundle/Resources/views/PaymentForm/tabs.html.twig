@@ -1,0 +1,22 @@
+{% set menu = [
+    {
+        'route': 'online_payment_form_edit',
+        'title': '<i class="fa fa-cog"></i> '~'views.form.index.settings'|trans({}, 'MBHOnlineBundle')
+    },
+    {
+        'route': 'payment_form_code',
+        'title': '<i class="fa fa-code"></i> '~'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle')
+    }
+] %}
+{% spaceless %}
+<ul class="nav nav-tabs" role="tablist">
+    {% for item in menu %}
+        <li {% if loop.index == active %}class="active"{% endif %}>
+            <a {% if loop.index == active %}role="tab" data-toggle="tab"
+               {% else %}href="{{ path(item.route, {'id' : config.id}) }}"{% endif %}>
+                {{ item.title|raw }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+{% endspaceless %}

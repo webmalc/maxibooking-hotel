@@ -3,53 +3,49 @@
 <head>
     <meta charset="utf-8">
     <title>Pdf</title>
-</head>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
-      rel='stylesheet' type='text/css'>
-<body>
-<style>
-    body {
-        font-family: "Open Sans"; /*Arial*/
-        font-size: 16px;
-    }
+    <style type="text/css">
+        body {
+            font-family: "Open Sans"; /*Arial*/
+            font-size: 16px;
+        }
+        table { page-break-inside:auto }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        thead { display:table-header-group;}
+        tfoot { display:table-footer-group }
 
-    .document {
-        padding-top: 0px;
-        width: 900px;
-        margin: 0 auto;
-    }
+        .document {
+            padding-top: 0px;
+            width: 900px;
+            margin: 0 auto;
+        }
 
-    .ib {
-        display: inline-block;
-    }
+        .ib {
+            display: inline-block;
+        }
 
-    .area {
-        border-bottom: solid #000000 1px;
-    }
+        .area {
+            border-bottom: solid #000000 1px;
+        }
 
-    .left {
-        float: left;
-    }
+        .left {
+            float: left;
+        }
 
-    .right {
-        float: right;
-    }
+        .right {
+            float: right;
+        }
 
-    .center {
-        text-align: center;
-    }
+        .center {
+            text-align: center;
+        }
 
-    .indent {
-        text-indent: 1.5em;
-    }
+        .indent {
+            text-indent: 1.5em;
+        }
 
-    .upper {
-        text-transform: uppercase;
-    }
-</style>
-<div class="document">
-    <style>
-        /* Header */
+        .upper {
+            text-transform: uppercase;
+        }
         .header .title {
             float: left;
             padding-top: 10px;
@@ -87,7 +83,40 @@
         .table td {
             padding: 3px;
         }
+        .ta table {
+            margin-left: 1.5em;
+            width: 890px;
+        }
+        .signatures {
+            border: 0;
+            width: 100%;
+        }
+
+        .signatures .area {
+            border-bottom: 1px solid #000;
+            height: 80px;
+        }
+        .services {
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+
+        .services th,
+        .services td {
+            border: 1px solid black;
+        }
+        .services td {
+            padding: 3px;
+        }
     </style>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
+          rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div class="document">
+    {% if entity is not defined %}
+        {% set entity = package %}
+    {% endif %}
     {% set hotel = null %}
     {% set tourist = null %}
     {% set documentRelation = null %}
@@ -117,7 +146,7 @@
         </div>
         {% if hotel and hotel.logoImage %}
             <div class="logo">
-                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80'))) }}">
+                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('scaler'))) }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>
@@ -128,33 +157,43 @@
     <div class="main">
         <p class="indent">
             <strong>{{ entity.address.name|transToLat }}</strong> {{ "package.pdf.with_an_address"|trans({}, "MBHPackageBundle") }}
-            {% if entity.address and entity.address.countryTld and entity.address.cityId and entity.address.street %}
-            {{ get_country(entity.address.countryTld).name }}, {% if entity.address.regionId %} {{ get_region(tourist.addressObjectDecomposed.regionId).name|transToLat }}, {% endif %} {{ get_city(entity.address.cityId).name|transToLat }} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}{% if entity.address.settlement is defined %}, {{ entity.address.settlement|transToLat }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.street|transToLat }},
-            {% if entity.address.house %} {{ entity.address.house }}{% endif %}{% if entity.address.corpus %}, {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.corpus|transToLat }}{% endif %}{% if entity.address.flat %}, {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.flat }}{% endif %}{% else %}_________________________________________{% endif %}
+                {% if entity.address and entity.address.countryTld and entity.address.cityId and entity.address.street %}
+                    {{ get_country(entity.address.countryTld).name }},
+                        {% if entity.address.regionId and tourist.addressObjectDecomposed.regionId %}
+                            {{ get_region(tourist.addressObjectDecomposed.regionId).name|transToLat }},
+                        {% endif %}
+                            {{ get_city(entity.address.cityId).name|transToLat }} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}
+                        {% if entity.address.settlement is defined %},
+                            {{ entity.address.settlement|transToLat }}
+                        {% endif %},
+                            {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.street|transToLat }},
+                    {% if entity.address.house %}
+                        {{ entity.address.house }}
+                    {% endif %}
+                    {% if entity.address.corpus %},
+                        {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.corpus|transToLat }}
+                    {% endif %}
+                    {% if entity.address.flat %},
+                        {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.flat }}
+                    {% endif %}
+                {% else %}_________________________________________{% endif %}
             ,
             {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if entity.address.inn is defined %}{{ entity.address.inn }}{% else %}________________________{% endif %}
             , {{ "package.pdf.notifies_customers"|trans({}, "MBHPackageBundle") }}
         </p>
 
-
-        <style>
-            .ta table {
-                margin-left: 1.5em;
-                width: 890px;
-            }
-        </style>
         <div class="ta">
             <table border="0">
                 <tbody>
                 <tr>
                     <td style="width: 80px">Full name</td>
                     <td style="width: 60%;">
-                        <div class="area">&nbsp{% if tourist %}{{ tourist.fullName|transToLat }}{% endif %}</div>
+                        <div class="area">{% if tourist %}{{ tourist.fullName|transToLat }}{% endif %}</div>
                     </td>
                     <td style="width: 100px">Date of birth</td>
-                    <td>
-                        <div class="area">
-                            &nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
+                    <td class="area">
+                        <div>
+                            {% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
                     </td>
                 </tr>
                 </tbody>
@@ -163,8 +202,8 @@
                 <tbody>
                 <tr>
                     <td style="width: 20px">Address</td>
-                    <td>
-                        <div class="area">&nbsp
+                    <td class="area">
+                        <div>
                             {% if tourist and tourist.addressObjectDecomposed %}
                                 {% if tourist.addressObjectDecomposed.countryTld %}
                                     {{ get_country(tourist.addressObjectDecomposed.countryTld).name }}{% if tourist.addressObjectDecomposed.regionId %}, {{ get_region(tourist.addressObjectDecomposed.regionId).name|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.city %}, {{ tourist.addressObjectDecomposed.city|transToLat }} city{% endif %}{% if tourist.addressObjectDecomposed.street %}, str. {{ tourist.addressObjectDecomposed.street|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
@@ -181,21 +220,21 @@
                 <tbody>
                 <tr>
                     <td>Document</td>
-                    <td style="width: 55%">
-                        <div class="area">
-                            &nbsp{% if documentRelation and documentRelation.type %}{{ documentTypes[documentRelation.type] }}{% endif %}</div>
+                    <td style="width: 55%" class="area">
+                        <div>
+                            {% if documentRelation and documentRelation.type %}{{ documentTypes[documentRelation.type] }}{% endif %}</div>
                     </td>
 
                     <td>Series</td>
-                    <td style="width: 15%">
-                        <div class="area">
-                            &nbsp{% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</div>
+                    <td style="width: 15%" class="area">
+                        <div>
+                            {% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</div>
                     </td>
 
                     <td>№</td>
-                    <td style="width: 15%">
-                        <div class="area">
-                            &nbsp{% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% endif %}</div>
+                    <td style="width: 15%" class="area">
+                        <div>
+                            {% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% endif %}</div>
                     </td>
                 </tr>
                 </tbody>
@@ -204,10 +243,10 @@
                 <tbody>
                 <tr>
                     <td style="width: 70px">Issued by</td>
-                    <td>
-                        <div class="area">
-                            &nbsp
-                            {% if documentRelation and documentRelation.authority %}
+                    <td class="area">
+                        <div>
+
+                            {% if documentRelation and documentRelation.authority is defined%}
                                 {{ documentRelation.authority|transToLat }}{% if documentRelation and documentRelation.issued %},
                                 {{ documentRelation.issued|date('d.m.Y') }}
                             {% endif %}
@@ -227,62 +266,70 @@
         </p>
 
         <!-- Services -->
-        <table border="1" cellpadding="0" cellspacing="0" class="table">
+        <table cellpadding="0" cellspacing="0" class="services">
             <thead>
             <tr>
-                <th style="width: 30px;">№
+                <th style="width: 30px;">#
                 </td>
                 <th style="width: 100px;">Services</th>
                 <th style="width: 30px;">Qty
                 </td>
                 <th style="width: 30px;">Unit
                 </td>
-                <th style="width: 100px;">Price
+                <th style="width: 80px;">Price
                 </td>
-                <th style="width: 100px;">Amount
+                <th style="width: 30px;">Discount</th>
+                <th style="width: 90px;">Amount
                 </td>
             </tr>
             </thead>
             <tbody>
-            {% if formParams.hasFull is defined and formParams.hasFull %}
-                {% set packages = entity.order.packages %}
-            {% else %}
-                {% set packages = [entity] %}
-            {% endif %}
+            {% set packages = package.order.packages %}
 
             {% set counter = 0 %}
+            {% set newPackages = false %}
+            {% set countData = 0 %}
             {% for package in packages %}
+                {% set newPackages = true %}
                 {% for date,data in package.pricesByDateByPrice %}
                     {% set counter = counter + 1 %}
+                    {% set countData = countData + 1 %}
                     <tr>
                         <td align="center">{{ counter }}</td>
                         <td>
-                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace({'_': '.'}) }}
-                            {% if package.roomType and package.roomType.internationalTitle %}
-                                ({{ package.roomType.internationalTitle }})
+                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date }}
+                            {% if package.roomType and package.roomType.fullTitle %}
+                                ({{ package.roomType.fullTitle }})
                             {% endif %}
                         </td>
                         <td align="center">{{ data.nights }}</td>
                         <td align="center">nights</td>
-                        <td align="right">{{ data.price|number_format(2) }}</td>
-                        <td align="right">{{ (data.nights * data.price)|number_format(2) }}</td>
+                        <td align="right">{{ data.fullPrice != false ? data.fullPrice|number_format(2) : '' }}</td>
+                        {% if newPackages and countData == 1 %}
+                            <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">
+                                {{ package.discount }}{{ package.getIsPercentDiscount ? '%' }}
+                            </td>
+                            <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                        {% endif %}
+
                     </tr>
                 {% endfor %}
+                {% set newPackages = false %}
+                {% set countData = 0 %}
             {% endfor %}
 
-            {% if formParams.hasServices is defined and formParams.hasServices %}
-                {% for serviceGroup in packageServicesByType %}
-                    {% set counter = counter + 1 %}
-                    <tr>
-                        <td align="center">{{ counter }}</td>
-                        <td>{{ serviceGroup.byService.internationalTitle }}</td>
-                        <td align="center">{{ serviceGroup.actuallyAmount }}</td>
-                        <td align="center">pcs.</td>
-                        <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
-                        <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
-                    </tr>
-                {% endfor %}
-            {% endif %}
+            {% for serviceGroup in packageServicesByType %}
+                {% set counter = counter + 1 %}
+                <tr>
+                    <td align="center">{{ counter }}</td>
+                    <td>{{ serviceGroup.byService.name }}</td>
+                    <td align="center">{{ serviceGroup.actuallyAmount }}</td>
+                    <td align="center">pcs.</td>
+                    <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                    <td align="right"></td>
+                    <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
 
@@ -336,17 +383,6 @@
                  {#src="{{ hotel.organization.stamp }}">#}
         {#{% endif %}#}
 
-        <style>
-            .signatures {
-                border: 0;
-                width: 100%;
-            }
-
-            .signatures .area {
-                border-bottom: 1px solid #000;
-                height: 80px;
-            }
-        </style>
     </div>
 </div>
 </body>
