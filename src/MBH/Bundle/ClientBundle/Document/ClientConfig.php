@@ -296,8 +296,9 @@ class ClientConfig extends Base
     /**
      * @var array
      * @ODM\Field(type="collection")
+     * @Assert\NotBlank()
      */
-    protected $languages = [];
+    protected $languages = ['ru'];
 
     /**
      * @var FrontSettings

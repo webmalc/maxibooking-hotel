@@ -119,8 +119,10 @@ class HotelController extends Controller
 
         if ($form->isValid()) {
             $this->get('mbh.hotel.hotel_manager')->create($entity);
-            $this->get('mbh.form_data_handler')
-                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
+            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
+                $this->get('mbh.form_data_handler')
+                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
+            }
             $this->addFlash('success', 'controller.hotelController.record_created_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
@@ -149,8 +151,10 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->get('mbh.form_data_handler')
-                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
+            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
+                $this->get('mbh.form_data_handler')
+                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
+            }
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.hotelController.record_edited_success');

@@ -7,12 +7,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 class ClientConfigManager
 {
     private $dm;
+    private $defaultLanguage;
 
     private $clientConfig;
     private $isClientConfigInit = false;
 
-    public function __construct(DocumentManager $dm) {
+    public function __construct(DocumentManager $dm, string $defaultLanguage) {
         $this->dm = $dm;
+        $this->defaultLanguage = $defaultLanguage;
     }
 
     /**
@@ -39,11 +41,25 @@ class ClientConfigManager
 
     /**
      * @param $isCacheValid
+     * @return \MBH\Bundle\ClientBundle\Document\ClientConfig
      */
     public function changeCacheValidity($isCacheValid)
     {
         $config = $this->fetchConfig();
         $config->setIsCacheValid($isCacheValid);
         $this->dm->flush();
+
+        return $config;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSingleLanguage()
+    {
+        $config = $this->fetchConfig();
+        $languages = $config->getLanguages();
+
+        return count($languages) === 0 || (count($languages) === 1 && current($languages) === $this->defaultLanguage);
     }
 }

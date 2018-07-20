@@ -97,7 +97,7 @@ class RestrictionControllerTest extends WebTestCase
 
         $this->assertEquals(['3', '5', '3'], $this->getResultFromTable());
 
-        $this->getContainer()->get('mbh.client_config_manager')->changeDisableableMode(true);
+        $this->getContainer()->get('mbh.client_config_manager')->changeDisableableMode(false);
         $roomType->setIsEnabled(true);
 
         $this->assertEquals(['2', '3', '6', '5', '3'], $this->getResultFromTable());

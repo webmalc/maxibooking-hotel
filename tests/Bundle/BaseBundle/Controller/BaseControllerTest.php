@@ -36,6 +36,7 @@ class BaseControllerTest extends WebTestCase
         'fos_user_resetting_check_email',   //not found
         'restaurant_table_save',            //need params
         'site_hotel_settings',              //need params
+        'save_list',                        //need params
     ];
 
     private const ROUTES_WITH_OWN_TEST = [
