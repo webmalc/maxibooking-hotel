@@ -39,6 +39,7 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
             $clients = array_filter($installedClientsResult->getData(), function (Client $client) use ($helper) {
                 return $client->getStatus() === Client::CLIENT_ACTIVE_STATUS
                     || ($client->getStatus() === Client::CLIENT_DISABLED_STATUS
+                        && !is_null($client->getDisabledAtAsDateTime())
                         && $helper->getDifferenceInDaysWithSign($client->getDisabledAtAsDateTime(), new \DateTime()) > 10);
             });
 
