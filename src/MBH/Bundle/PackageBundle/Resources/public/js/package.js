@@ -169,7 +169,11 @@ var initRemovePackageButton = function() {
       type    : 'GET',
       success : function(response) {
         $formContainer.html(response);
-        $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+
+        if (isMobileDevice()) {
+          $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+        }
+
       }, error: function() {
         $formContainer.html(mbh.error.html);
       }
@@ -204,8 +208,6 @@ var initRemovePackageButton = function() {
 
 var docReadyPackages = function() {
   'use strict';
-
-  var isMobile = isMobileDevice();
 
   initRemovePackageButton();
 
@@ -247,7 +249,7 @@ var docReadyPackages = function() {
   });
 
   //package filter select 2
-  if (!isMobile) {
+  if (!isMobileDevice()) {
     (function() {
 
       var format = function(icon) {
@@ -274,7 +276,7 @@ var docReadyPackages = function() {
     'language': {}
   };
 
-  if (isMobile) {
+  if (isMobileDevice()) {
     customOptionForDataTable = {
       pageLength: 10,
       language  : {
@@ -560,9 +562,12 @@ var docReadyPackages = function() {
     $body.empty();
   });
 
-  $('#mbh_bundle_packagebundle_package_accommodation_type_accommodation').select2({
-    templateResult: select2TemplateResult.appendIcon
-  });
+  if (isMobileDevice()) {
+    $('#mbh_bundle_packagebundle_package_accommodation_type_accommodation').select2({
+      templateResult: select2TemplateResult.appendIcon
+    });
+
+  }
 
   discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'),
       $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'));
