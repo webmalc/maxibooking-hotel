@@ -23,6 +23,8 @@ class ClientPayerManager
 
     private $clientPayerCompany;
     private $isClientPayerCompanyInit = false;
+    private $clientPayer;
+    private $isClientPayerInit = false;
 
     public function __construct(BillingPayerFormHandler $payerFormHandler, ClientManager $clientManager, Serializer $serializer, BillingApi $billingApi, BillingResponseHandler $responseHandler)
     {
@@ -37,6 +39,7 @@ class ClientPayerManager
      * @param array $formPayerData
      * @return array
      * @throws Exception
+     * @throws \Exception
      */
     public function saveClientPayerAndReturnErrors(array $formPayerData): array
     {
@@ -119,6 +122,20 @@ class ClientPayerManager
         }
 
         return $this->clientPayerCompany;
+    }
+
+    /**
+     * @return null|object
+     */
+    public function getClientPayer()
+    {
+        if (!$this->isClientPayerInit) {
+            $client = $this->clientManager->getClient();
+            $this->clientPayer = $this->billingApi->getClientPayer($client);
+            $this->isClientPayerInit = true;
+        }
+
+        return $this->clientPayer;
     }
 
     /**

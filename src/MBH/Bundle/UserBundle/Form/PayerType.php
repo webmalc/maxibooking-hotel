@@ -4,11 +4,14 @@ namespace MBH\Bundle\UserBundle\Form;
 
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\ClientPayer;
 use MBH\Bundle\BillingBundle\Lib\Model\Company;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler;
 use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\ClientBundle\Service\ClientManager;
+use MBH\Bundle\UserBundle\Service\ClientPayerManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -18,24 +21,30 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PayerType extends AbstractType
 {
     private $fmsDictionaries;
+    private $clientManager;
+    private $clientPayerManager;
 
-    public function __construct(FMSDictionaries $fmsDictionaries) {
+    public function __construct(FMSDictionaries $fmsDictionaries, ClientPayerManager $clientPayerManager, ClientManager $clientManager) {
         $this->fmsDictionaries = $fmsDictionaries;
+        $this->clientManager = $clientManager;
+        $this->clientPayerManager = $clientPayerManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         /** @var Client $client */
-        $client = $options['client'];
-        $clientRuPayerData = !is_null($client->getRu()) ? $client->getRu() : null;
+        $client = $this->clientManager->getClient();
+
+        /** @var ClientPayer $clientRuPayerData */
+        $clientRuPayerData = $this->clientPayerManager->getClientPayer();
 
         /** @var Company $company */
-        $company = $options['company'];
+//        $company = $this->clientPayerManager->getClientPayerCompany();
+        $company = null;
         $hasCompany = !is_null($company);
         $countryTld = isset($client) ? $client->getCountry() : Country::RUSSIA_TLD;
 
@@ -107,13 +116,13 @@ class PayerType extends AbstractType
                 'required' => false,
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.series.label',
-                'data' => $clientRuPayerData ? $clientRuPayerData['passport_serial'] : ''
+                'data' => $clientRuPayerData ? $clientRuPayerData->getPassportSerial() : ''
             ])
             ->add('number', TextType::class, [
                 'required' => false,
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.number.label',
-                'data' => $clientRuPayerData ? $clientRuPayerData['passport_number'] : ''
+                'data' => $clientRuPayerData ? $clientRuPayerData->getPassport_number() : ''
             ])
             ->add('issueDate', DateType::class, [
                 'required' => false,
@@ -123,7 +132,7 @@ class PayerType extends AbstractType
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.issue_date.label',
                 'data' => $clientRuPayerData
-                    ? BillingApi::getDateByBillingFormat($clientRuPayerData['passport_date'])
+                    ? $clientRuPayerData->getPassportDateAsDateTime()
                     : new \DateTime('midnight')
             ])
             ->add('registration_address', TextType::class, [
@@ -140,13 +149,13 @@ class PayerType extends AbstractType
                 ],
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.issue_by.label',
-                'data' => $clientRuPayerData ? $clientRuPayerData['passport_issued_by'] : ''
+                'data' => $clientRuPayerData ? $clientRuPayerData->getPassport_issued_by() : ''
             ])
             ->add('financeInn', TextType::class, [
                 'required' => false,
                 'group' => 'form.payer_type.financial_information.label',
                 'label' => 'form.payer_type.inn.label',
-                'data' => $clientRuPayerData ? $clientRuPayerData['inn'] : ''
+                'data' => $clientRuPayerData ? $clientRuPayerData->getInn() : ''
             ])
             ->add('organizationName', TextType::class, [
                 'required' => false,
@@ -297,14 +306,6 @@ class PayerType extends AbstractType
                 'data' => $hasCompany && !is_null($company->getWorld()) ? $company->getWorld()['swift'] : ''
             ])
         ;
-    }
-
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults([
-            'client' => null,
-            'company' => null
-        ]);
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)

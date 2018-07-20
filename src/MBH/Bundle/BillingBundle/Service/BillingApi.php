@@ -8,6 +8,7 @@ use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientAuth;
+use MBH\Bundle\BillingBundle\Lib\Model\ClientPayer;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\Company;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
@@ -42,6 +43,7 @@ class BillingApi
     const ORDERS_ENDPOINT_SETTINGS = ['endpoint' => 'orders', 'model' => PaymentOrder::class, 'returnArray' => false];
     const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
     const PAYER_COMPANY_ENDPOINT_SETTINGS = ['endpoint' => 'companies', 'model' => Company::class, 'returnArray' => false];
+    const CLIENT_PAYER_ENDPOINT_SETTINGS = ['endpoint' => 'client-payer', 'model' => ClientPayer::class, 'returnArray' => false];
 
     const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s\Z';
     const BILLING_DATETIME_FORMAT_WITH_MICROSECONDS = 'Y-m-d\TH:i:s.u\Z';
@@ -60,8 +62,6 @@ class BillingApi
     private $loadedEntities = [];
     private $clientServices;
     private $isClientServicesInit = false;
-    private $clientCompanies;
-    private $isClientCompaniesInit = false;
 
     public function __construct(Logger $logger, KernelInterface $kernel, Serializer $serializer, $locale, TokenStorage $tokenStorage, string $billingToken, $billingHost)
     {
@@ -202,13 +202,26 @@ class BillingApi
      */
     public function getClientCompanies(Client $client)
     {
-        if (!$this->isClientCompaniesInit) {
-            $queryData = ['client' => $client->getId()];
-            $this->clientCompanies = $this->getEntities(self::PAYER_COMPANY_ENDPOINT_SETTINGS, $queryData)->getData();
-            $this->isClientCompaniesInit = true;
-        }
+        $queryData = ['client' => $client->getId()];
 
-        return $this->clientCompanies;
+        return $this->getEntities(self::PAYER_COMPANY_ENDPOINT_SETTINGS, $queryData)->getData();
+    }
+
+    /**
+     * @param Client $client
+     * @return null|object
+     */
+    public function getClientPayer(Client $client)
+    {
+        $url = $this->getBillingUrl(self::CLIENT_PAYER_ENDPOINT_SETTINGS['endpoint'], $client->getLogin());
+
+        try {
+            $response = $this->sendGet($url);
+            return $this->serializer
+                ->deserialize((string)$response->getBody(), self::CLIENT_PAYER_ENDPOINT_SETTINGS['model'], 'json');
+        } catch (RequestException $exception) {
+            return null;
+        }
     }
 
     /**
