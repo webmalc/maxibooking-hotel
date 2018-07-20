@@ -97,6 +97,7 @@ services:
       calls:
         - [attach, ["@mbh.system.messenger"]]
         - [attach, ["@mbh.mailer"]]
+        - [attach, ["@sentry_messenger"]]
       arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.notifier.mailer:

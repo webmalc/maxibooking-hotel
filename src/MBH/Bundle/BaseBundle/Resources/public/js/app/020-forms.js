@@ -1282,11 +1282,22 @@ function handleMultiLanguageFields() {
         $displayField.show();
         $multiLanguagesFields.not($displayField).hide();
     };
-    $('.multi-language-select-option').click(function () {
-        var $fieldsGroup = $(this).closest('.form-group').parent();
-        changeMultiLanguagesFieldsVisibility(this.getAttribute('data-language'), $fieldsGroup);
-    });
-    changeMultiLanguagesFieldsVisibility(mbh.language);
+
+    var $languageOptions = $('.multi-language-select-option');
+    if ($languageOptions.length > 0) {
+        changeMultiLanguagesFieldsVisibility(mbh.language);
+        $languageOptions.click(function () {
+            var $fieldsGroup = $(this).closest('.form-group').parent();
+            changeMultiLanguagesFieldsVisibility(this.getAttribute('data-language'), $fieldsGroup);
+        });
+    }
+}
+
+//to prevent opening of keyboard
+function makeDateRangepickerReadonlyForMobileDevices() {
+    if (isMobileDevice()) {
+        $('.daterangepicker-input').attr('readonly', true);
+    }
 }
 
 $(document).ready(function () {
@@ -1300,5 +1311,6 @@ $(document).ready(function () {
     initAddTipModal();
     runGuides();
     handleAddingNewBillingEntity();
+    makeDateRangepickerReadonlyForMobileDevices();
     handleMultiLanguageFields();
 });

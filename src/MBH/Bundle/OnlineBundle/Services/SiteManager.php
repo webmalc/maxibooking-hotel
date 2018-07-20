@@ -132,7 +132,7 @@ class SiteManager
     public function addFormErrorsForFieldsMandatoryForSite($document, FormInterface $form, string $routeName)
     {
         $siteConfig = $this->getSiteConfig();
-        if ($siteConfig->getIsEnabled()) {
+        if ($siteConfig && $siteConfig->getIsEnabled()) {
             $documentClass = get_class($document);
             $siteDataCorrectness = $this->getDocumentFieldsCorrectnessTypesByRoutesNames($document);
             if (isset($siteDataCorrectness['fieldsData'][$routeName]['empty'])) {

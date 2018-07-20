@@ -341,13 +341,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     protected $organization;
 
     /**
-     * @var int
-     * @ODM\Integer
-     * @Assert\Type(type="numeric")
-     */
-    protected $vegaAddressId;
-
-    /**
      * @ODM\Field(type="string")
      * @var string
      * @Gedmo\Translatable
@@ -1314,22 +1307,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     public function setOrganization(Organization $organization = null)
     {
         $this->organization = $organization;
-    }
-
-    /**
-     * @return int
-     */
-    public function getVegaAddressId()
-    {
-        return $this->vegaAddressId;
-    }
-
-    /**
-     * @param int $vegaAddressId
-     */
-    public function setVegaAddressId($vegaAddressId)
-    {
-        $this->vegaAddressId = $vegaAddressId;
     }
 
     public function jsonSerialize()

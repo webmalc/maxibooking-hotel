@@ -19,7 +19,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -119,8 +118,10 @@ class HotelController extends Controller
 
         if ($form->isValid()) {
             $this->get('mbh.hotel.hotel_manager')->create($entity);
-            $this->get('mbh.form_data_handler')
-                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
+            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
+                $this->get('mbh.form_data_handler')
+                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
+            }
             $this->addFlash('success', 'controller.hotelController.record_created_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
@@ -149,8 +150,10 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->get('mbh.form_data_handler')
-                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
+            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
+                $this->get('mbh.form_data_handler')
+                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
+            }
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.hotelController.record_edited_success');
@@ -468,19 +471,23 @@ class HotelController extends Controller
      * @Route("/{id}/delete", name="hotel_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_HOTEL_DELETE')")
-     * @param $id
+     * @param Hotel $hotel
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \MBH\Bundle\PackageBundle\Lib\DeleteException
      */
-    public function deleteAction($id)
+    public function deleteAction(Hotel $hotel)
     {
-        $hotel = $this->dm->find('MBHHotelBundle:Hotel', $id);
         $relatedDocumentsData = $this->helper->getRelatedDocuments($hotel);
+
         foreach ($relatedDocumentsData as $relatedDocumentData) {
             /** @var Relationship $relationship */
             $relationship = $relatedDocumentData['relation'];
             $quantity = $relatedDocumentData['quantity'];
-            if (!in_array($relationship->getDocumentClass(), [Tariff::class, ServiceCategory::class, Service::class]) && $quantity > 0) {
+            if (!in_array($relationship->getDocumentClass(), [ServiceCategory::class, Service::class])
+                && $quantity > 0
+                //If there are tariffs in addition to the main
+                && ($relationship->getDocumentClass() !== Tariff::class || $relatedDocumentData['quantity'] > 1)
+            ) {
                 $messageId = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
                 $flashMessage = $this->get('translator')->trans($messageId, ['%total%' =>  $quantity]);
                 $this->addFlash('danger', $flashMessage);
@@ -491,9 +498,11 @@ class HotelController extends Controller
 
         $hotelMainTariff = $this->dm
             ->getRepository('MBHPriceBundle:Tariff')
-            ->findOneBy(['isDefault' => true, 'hotel.id' => $id]);
+            ->findOneBy(['isDefault' => true, 'hotel.id' => $hotel->getId()]);
 
-        $this->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
+        if (!empty($hotelMainTariff)) {
+            $this->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
+        }
 
         foreach ($hotel->getServices() as $service) {
             $this->dm->remove($service);
@@ -505,7 +514,7 @@ class HotelController extends Controller
         }
         $this->dm->flush();
 
-        $response = $this->deleteEntity($id, 'MBHHotelBundle:Hotel', 'hotel');
+        $response = $this->deleteEntity($hotel->getId(), 'MBHHotelBundle:Hotel', 'hotel');
 
         return $response;
     }
