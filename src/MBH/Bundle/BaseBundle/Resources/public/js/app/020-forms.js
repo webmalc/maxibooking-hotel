@@ -1293,6 +1293,13 @@ function handleMultiLanguageFields() {
     }
 }
 
+//to prevent opening of keyboard
+function makeDateRangepickerReadonlyForMobileDevices() {
+    if (isMobileDevice()) {
+        $('.daterangepicker-input').attr('readonly', true);
+    }
+}
+
 $(document).ready(function () {
     'use strict';
     docReadyForms();
@@ -1304,5 +1311,6 @@ $(document).ready(function () {
     initAddTipModal();
     runGuides();
     handleAddingNewBillingEntity();
+    makeDateRangepickerReadonlyForMobileDevices();
     handleMultiLanguageFields();
 });

@@ -4,59 +4,45 @@
     <meta charset="utf-8">
     <title>Pdf</title>
     <style type="text/css">
-        html {
-            padding: 10mm;
-        }
         body {
-            margin: 0;
+            font-family: "Open Sans"; /*Arial*/
+            font-size: 16px;
         }
-    </style>
-</head>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
-      rel='stylesheet' type='text/css'>
-<body>
-<style>
-    body {
-        font-family: "Open Sans"; /*Arial*/
-        font-size: 16px;
-    }
 
-    .document {
-        padding-top: 0px;
-        width: 900px;
-        margin: 0 auto;
-    }
+        .document {
+            padding-top: 0px;
+            width: 900px;
+            margin: 0 auto;
+        }
 
-    .ib {
-        display: inline-block;
-    }
+        .ib {
+            display: inline-block;
+        }
 
-    .area {
-        border-bottom: solid #000000 1px;
-    }
+        .area {
+            border-bottom: solid #000000 1px;
+        }
 
-    .left {
-        float: left;
-    }
+        .left {
+            float: left;
+        }
 
-    .right {
-        float: right;
-    }
+        .right {
+            float: right;
+        }
 
-    .center {
-        text-align: center;
-    }
+        .center {
+            text-align: center;
+        }
 
-    .indent {
-        text-indent: 1.5em;
-    }
+        .indent {
+            text-indent: 1.5em;
+        }
 
-    .upper {
-        text-transform: uppercase;
-    }
-</style>
-<div class="document">
-    <style>
+        .upper {
+            text-transform: uppercase;
+        }
+
         body {
             font-size: 15px;
         }
@@ -77,7 +63,16 @@
         .right-block div {
             margin: 5px 0px;
         }
+
+        .center-block div {
+            margin: 3px 0px;
+        }
     </style>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
+          rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div class="document">
     {% for tourist in package.allTourists %}
         {% if loop.index != 1 %}
             <div style="page-break-after: always;"></div>
@@ -228,13 +223,6 @@
                 <div style="clear: both"></div>
             </div>
         </div>
-
-
-        <style>
-            .center-block div {
-                margin: 3px 0px;
-            }
-        </style>
 
         <div class="center-block">
             <div>

@@ -72,6 +72,7 @@ var ActionManager = /** @class */ (function () {
                 ActionManager.showResultPrices($row);
             });
         });
+        editBody.find('.search-room-select').prop('disabled', true);
         editModal.find('input.modalPackageId').val(packageData.id);
         editModal.modal('show');
         editModal.on('shown.bs.modal', function () {

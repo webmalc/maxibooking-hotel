@@ -123,7 +123,8 @@ abstract class Common
         if (!($entity instanceof $sourceName)) {
             $msg = 'Class must be an instance of ';
             $msg .= $sourceName . ', ';
-            $msg .= 'instance of ' . get_class($entity) .' given';
+            $given = $entity !== null ? 'instance of ' . get_class($entity) : 'null';
+            $msg .= $given .' given';
 
             throw new \TypeError($msg);
         }
@@ -141,6 +142,11 @@ abstract class Common
             if (in_array('money', $param)) {
                 if ($this->entity->$methodName() !== null) {
                     $value = Helper::numFormat($this->entity->$methodName());
+                }
+            } elseif (in_array('date', $param)) {
+                $data = $this->entity->$methodName();
+                if ($data !== null && $data instanceof \DateTime) {
+                    $value = $data->format('d.m.Y');
                 }
             }
 

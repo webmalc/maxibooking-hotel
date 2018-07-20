@@ -83,6 +83,12 @@ class Cash
            . $this->container->get('translator')->trans('mailer.order.prepend_text', ['%paymentSum%' => $sumString])
             . '</span>';
 
+
+        $getHotelName = function() use ($order) {
+            return $order->getFirstHotel()->getName();
+        };
+        $hotelName = $this->container->get('mbh.helper')->getWithoutFilter($getHotelName);
+
         $message
             ->setRecipients([$order->getPayer()])
             ->setFrom('system')
@@ -94,7 +100,7 @@ class Cash
             ->setSubject('mailer.order.subject_text')
             ->setHeaderText('mailer.order.header_text')
             ->setTranslateParams([
-                '%hotelName%' => $order->getFirstHotel()->getName(),
+                '%hotelName%' => $hotelName,
                 '%sum%' => $sumString
             ])
             ->setAdditionalData([
