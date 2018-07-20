@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 class ProgramNotPaidSource extends AbstractDashboardSource
 {
+    const WARNING_DISPLAYS_IN_DAYS = 3;
     const TYPE = 'danger';
 
     private $clientManager;
@@ -33,7 +34,7 @@ class ProgramNotPaidSource extends AbstractDashboardSource
     {
         $messages = [];
         $numberOfDaysBeforeDisable = $this->clientManager->getNumberOfDaysBeforeDisable();
-        if (!is_null($numberOfDaysBeforeDisable)) {
+        if (!is_null($numberOfDaysBeforeDisable) && $numberOfDaysBeforeDisable <= self::WARNING_DISPLAYS_IN_DAYS) {
             $messages[] = $this->translator->trans('program_not_paid.error_messages', [
                 '%days%' => $numberOfDaysBeforeDisable,
                 '%payment_url%' => $this->router->generate('user_payment')

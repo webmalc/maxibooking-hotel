@@ -59,6 +59,8 @@ services:
             - '@mbh.billing.logger'
             - '%client%'
             - '@kernel'
+            - '@mbh.helper'
+
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:
