@@ -388,9 +388,6 @@ var docReadyPackages = function() {
       }
     },
     'order'       : [[2, 'desc']],
-    'columnDefs'  : [
-      {className: 'hidden-xs', 'targets': [0, 2, 4, 5, 6, 7]}
-    ],
     'aoColumns'   : [
       {'bSortable': false}, // icon
       null, // prefix
@@ -602,9 +599,9 @@ var actionWhenXS = {
     var elem = document.querySelector('#home');
 
     if (elem !== null) {
-      // var loc = elem.getBoundingClientRect();
-      // window.scrollTo(0,loc.top);
-      elem.scrollIntoView(true);
+      var loc = elem.getBoundingClientRect();
+      /* 55 на случай если есть сообщение в #message*/
+      window.scrollTo(0,loc.top - 55);
     }
   },
   scrollWhenChangeTabs: function() {
