@@ -23,7 +23,7 @@ class HotelType extends FormWithMultiLangFields
         $builder = $this->addMultiLangField($builder, TextType::class, 'fullTitle', [
             'group' => 'form.hotelType.general_info',
             'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel'],
-            'label' => 'form.hotelType.name',
+            'label' => 'form.hotelType.name'
         ]);
 
         $builder
@@ -51,6 +51,7 @@ class HotelType extends FormWithMultiLangFields
             'attr' => ['class' => 'tinymce'],
             'label' => 'form.hotelType.description',
             'group' => 'form.hotelType.general_info',
+            'required' => false
         ]);
 
         $builder

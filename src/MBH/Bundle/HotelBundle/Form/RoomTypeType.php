@@ -76,6 +76,7 @@ class RoomTypeType extends FormWithMultiLangFields
             'attr' => ['class' => 'big roomTypeTypeEditor tinymce'],
             'label' => 'form.roomTypeType.description',
             'group' => 'form.roomTypeType.general_info',
+            'required' => false,
         ]);
 
         $builder

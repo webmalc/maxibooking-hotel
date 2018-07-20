@@ -19,7 +19,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -472,17 +471,23 @@ class HotelController extends Controller
      * @Route("/{id}/delete", name="hotel_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_HOTEL_DELETE')")
+     * @param Hotel $hotel
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \MBH\Bundle\PackageBundle\Lib\DeleteException
      */
     public function deleteAction(Hotel $hotel)
     {
         $relatedDocumentsData = $this->helper->getRelatedDocuments($hotel);
+
         foreach ($relatedDocumentsData as $relatedDocumentData) {
             /** @var Relationship $relationship */
             $relationship = $relatedDocumentData['relation'];
             $quantity = $relatedDocumentData['quantity'];
-            if (!in_array($relationship->getDocumentClass(), [Tariff::class, ServiceCategory::class, Service::class]) && $quantity > 0) {
+            if (!in_array($relationship->getDocumentClass(), [ServiceCategory::class, Service::class])
+                && $quantity > 0
+                //If there are tariffs in addition to the main
+                && ($relationship->getDocumentClass() !== Tariff::class || $relatedDocumentData['quantity'] > 1)
+            ) {
                 $messageId = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
                 $flashMessage = $this->get('translator')->trans($messageId, ['%total%' =>  $quantity]);
                 $this->addFlash('danger', $flashMessage);
@@ -495,7 +500,9 @@ class HotelController extends Controller
             ->getRepository('MBHPriceBundle:Tariff')
             ->findOneBy(['isDefault' => true, 'hotel.id' => $hotel->getId()]);
 
-        $this->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
+        if (!empty($hotelMainTariff)) {
+            $this->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
+        }
 
         foreach ($hotel->getServices() as $service) {
             $this->dm->remove($service);

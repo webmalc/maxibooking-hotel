@@ -19,12 +19,11 @@ abstract class FormWithMultiLangFields extends AbstractType
     {
         $isDocumentExists = !empty($builder->getData()->getId());
         if (!$isDocumentExists || $this->clientConfigManager->hasSingleLanguage()) {
-            $builder->add($fieldName, $fieldType, array_merge($fieldOptions,[
-                'required' => true,
-            ]));
+            $builder->add($fieldName, $fieldType, $fieldOptions);
         } else {
             $group = $fieldOptions['group'];
             unset($fieldOptions['group']);
+            unset($fieldOptions['required']);
 
             $builder->add($fieldName, MultiLanguagesType::class, [
                 'mapped' => false,
