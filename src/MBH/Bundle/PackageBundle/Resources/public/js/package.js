@@ -299,7 +299,7 @@ var docReadyPackages = function() {
     'language'    : customOptionForDataTable.language,
     pageLength    : customOptionForDataTable.pageLength,
     searchDelay   : 350,
-    dom           : '12<"row package-table_button-and-search"<"col-sm-6"Bl><"col-sm-6"f>><"row"<tr>><"row"<"col-sm-5"i><"col-sm-7"p>>',
+    dom           : '12<"row"<"col-sm-6"Bl><"col-sm-6"f>><"row"<tr>><"row"<"col-sm-5"i><"col-sm-7"p>>',
     buttons       : {
       dom    : {
         container: {
@@ -602,9 +602,9 @@ var actionWhenXS = {
     var elem = document.querySelector('#home');
 
     if (elem !== null) {
-      var loc = elem.getBoundingClientRect();
-      /* 55 на случай если есть сообщение в #message*/
-      window.scrollTo(0,loc.top - 55);
+      // var loc = elem.getBoundingClientRect();
+      // window.scrollTo(0,loc.top);
+      elem.scrollIntoView(true);
     }
   },
   scrollWhenChangeTabs: function() {

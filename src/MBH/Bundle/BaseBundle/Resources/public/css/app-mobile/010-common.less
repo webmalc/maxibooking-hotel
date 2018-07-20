@@ -1,22 +1,48 @@
 @media (max-width: 767px) {
+  body {
+    padding-bottom: 0;
+  }
+
+  .tab-pane {
+    all: unset;
+  }
+
   .content-header {
-    #main-breadcrumb {
-      margin-top: -8px;
-      margin-bottom: 5px;
+    padding: 0px 15px 0 15px;
+  }
+
+  .content-wrapper.main-container {
+    padding-top: 3px;
+  }
+
+  section.content {
+    padding-top: 0px;
+    >.box.box-default {
+      border-top: unset;
+      margin-bottom: unset;
     }
   }
 
-  .content {
-    padding-top: 0px;
+  .box-header_when-mobile {
+    .box-tools {
+      height: 100%;
+      width: 100%;
+      button {
+        margin-left: 10px;
+        margin-top: -5px;
+        width: 100%;
+        height: 100%;
+        .fa {
+          float: right;
+          margin-right: 10px;
+        }
+      }
+    }
   }
 
   header.main-header {
     top: unset !important;
     position: relative !important;
-  }
-
-  .content-wrapper.main-container {
-    padding-top: 0;
   }
 
   .sidebar-open .content-wrapper,
@@ -75,11 +101,24 @@
     }
   }
 
+  /* это точно используется в package-search*/
+  .filter-form {
+    select {
+      width: 100% !important;
+    }
+  }
+
   form {
+    .input-xxs,
     select,
     input[type="text"] {
       width: 100% !important;
       min-width: unset !important;
+    }
+
+    // отдельно для поля Найти гостя. а может и не только, поэтому здесь
+    select + span.select2 {
+      width: 100% !important;
     }
   }
 
@@ -96,7 +135,7 @@
   #actions {
     position: relative;
     margin-right: -25px;
-    margin-left: -33px;
+    margin-left: -25px;
     ul:not(.dropdown-menu) {
       margin: 0px -10px;
       > li {
@@ -108,24 +147,87 @@
     }
   }
 
-  .dataTable-mobile_button-and-search {
-    display: flex;
-    div {
-      &:last-of-type {
-        width: 100%;
+  table {
+    width: 100% !important;
+    &:not(.mobile-style-success) {
+      tfoot,
+      thead {
+        display: none;
       }
-    }
 
-    .dataTables_filter {
-      label {
+      tbody {
         display: flex;
-        align-items: center;
-        input {
-          width: 100%!important;
+        flex-direction: column;
+
+        tr {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+
+          margin-top: 1px;
+          border: 0.5px solid #e0e0e0;
+
+          &:nth-of-type(odd) {
+            background: #e0e0e0;
+          }
+          &.success {
+            background: #dff0d8;
+          }
+          &.info {
+            background: #d9edf7;
+          }
+          &.warning {
+            background: #fcf8e3;
+          }
+          &.danger {
+            background: #f2dede;
+          }
         }
       }
     }
   }
+
+  .dataTables_wrapper {
+    div.row>.col-sm-12 {
+      padding-right: unset;
+      padding-left: unset;
+    }
+
+    /** здесь допушение, что первый див это поиск*/
+    div.row:nth-of-type(1) {
+      display: flex;
+
+      div {
+        &:last-of-type {
+          width: 100%;
+        }
+      }
+
+      .dataTables_filter {
+        label {
+          display: flex;
+          align-items: center;
+          input {
+            width: 100%!important;
+          }
+        }
+      }
+      @media (max-width: 560px) {
+        .dataTables_length {
+          label {
+            font-size: 0;
+            select {
+              width: 56px !important;
+            }
+            &:hover {
+              font-size: inherit;
+            }
+          }
+        }
+      }
+    }
+  }
+
 }
 
 @media (max-width: 560px) {
@@ -134,24 +236,22 @@
     white-space: nowrap;
     overflow: hidden;
   }
-
-  .dataTable-mobile_button-and-search {
-    .dataTables_length {
-      label {
-        font-size: 0;
-        select {
-          width: 56px !important;
-        }
-        &:hover {
-          font-size: inherit;
-        }
-      }
-    }
-  }
 }
 
 @media (max-width: 374px) {
+  /* название текущего отеля на маленьких зкранах */
   .navbar_tad-a_hotel {
     width: 100px;
+  }
+}
+
+@media (max-width: 351px) {
+  /* пагинация страниц на маленьких экранах */
+  .dataTables_wrapper {
+    .col-sm-7 {
+      .pagination > li > a {
+        padding: 6px 10px;
+      }
+    }
   }
 }

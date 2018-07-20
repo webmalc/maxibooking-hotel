@@ -172,6 +172,17 @@ var docReadyServices = function() {
     var $serviceFilterForm = $('#service-filter'),
         $serviceTable = $('#service-table'),
         processing = false;
+
+    var valueDataTable = {service: null, category: null};
+
+    if (isMobileDevice()) {
+      valueDataTable.service = $('#select-service').val();
+      valueDataTable.category = $('#select-category').val();
+    } else {
+      valueDataTable.service = $('#select-service').select2('val');
+      valueDataTable.category = $('#select-category').select2('val');
+    }
+
     $serviceTable.dataTable({
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
@@ -191,8 +202,8 @@ var docReadyServices = function() {
             "method": 'post',
             "data": function(d) {
                 d = $.extend(d, $serviceFilterForm.serializeObject());
-                d.service = $('#select-service').select2('val');
-                d.category = $('#select-category').select2('val');
+                d.service = valueDataTable.service;
+                d.category = valueDataTable.category;
             },
             beforeSend: function() {
                 processing = true;
