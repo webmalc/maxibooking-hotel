@@ -271,23 +271,6 @@ var docReadyPackages = function() {
 
   //package datatable
 
-  var customOptionForDataTable = {
-    pageLength: 50,
-    'language': {}
-  };
-
-  if (isMobileDevice()) {
-    customOptionForDataTable = {
-      pageLength: 10,
-      language  : {
-        "paginate": {
-          "previous": "<",
-          "next"    : ">"
-        }
-      }
-    };
-  }
-
   var pTable = $('#package-table').on('init.dt', function() {
     var timeout = 0;
     var $input = $('.dataTables_filter input');
@@ -301,8 +284,8 @@ var docReadyPackages = function() {
     });
 
   }).dataTable({
-    'language'    : customOptionForDataTable.language,
-    pageLength    : customOptionForDataTable.pageLength,
+    'language'    : mbh.datatablesOptions.language,
+    pageLength    : mbh.datatablesOptions.pageLength,
     searchDelay   : 350,
     dom           : '12<"row"<"col-sm-6"Bl><"col-sm-6"f>><"row"<tr>><"row"<"col-sm-5"i><"col-sm-7"p>>',
     buttons       : {

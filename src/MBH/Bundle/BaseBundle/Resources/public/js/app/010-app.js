@@ -120,14 +120,18 @@ mbh.datatablesOptions = {
       }
 };
 
+if (mbh.datatablesOptions.language === undefined) {
+    mbh.datatablesOptions.language = {};
+}
 if (isMobileDevice()) {
   mbh.datatablesOptions.pageLength = 10;
-  mbh.datatablesOptions.language = {
-      "paginate": {
+  mbh.datatablesOptions.language.paginate = {
         "previous": "<",
         "next"    : ">"
-      }
     }
+} else {
+    mbh.datatablesOptions.pageLength = 50;
+    mbh.datatablesOptions.language.paginate = {};
 }
 
 

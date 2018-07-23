@@ -14,15 +14,21 @@
 
     .filter-form_group-date-select {
       margin-top: -20px;
-      margin-left: 28px;
+      margin-left: 20px;
     }
     #package-filter-dates,
-    .select2-container--default {
+    .select2-container--default,
+    .datepicker-period-select {
+      min-width: unset!important;
+      max-width: unset!important;
       width: 100% !important;
     }
     .filter-form_input {
       width: 100%;
       margin-bottom: 3px;
+      > i.fa::before {
+        margin-left: unset;
+      }
     }
   }
 }

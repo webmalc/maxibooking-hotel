@@ -435,28 +435,30 @@ var docReadyForms = function () {
     }).attr("autocomplete", "off");
 
     //datepicker select
-    (function () {
-        var select = $('select.datepicker-period-select'),
-            begin = $('.begin-datepicker'),
-            end = $('.end-datepicker'),
-            setDates = function () {
-                var period = begin.val() + '-' + end.val();
-                if (!select.val()) {
-                    select.val(period);//.trigger('change');
-                    return;
-                }
-                var dates = select.val().split('-');
-                begin.val(dates[0]);
-                end.val(dates[1]).trigger('change');
-            };
+    if (!isMobileDevice()) {
+        (function () {
+            var select = $('select.datepicker-period-select'),
+                begin = $('.begin-datepicker'),
+                end = $('.end-datepicker'),
+                setDates = function () {
+                    var period = begin.val() + '-' + end.val();
+                    if (!select.val()) {
+                        select.val(period);//.trigger('change');
+                        return;
+                    }
+                    var dates = select.val().split('-');
+                    begin.val(dates[0]);
+                    end.val(dates[1]).trigger('change');
+                };
 
-        if (!select.length || !begin.length || !end.length) {
-            return;
-        }
-        $('.datepicker-period-select').css('width', '130px');
-        select.on('change', setDates);
-        setDates();
-    }());
+            if (!select.length || !begin.length || !end.length) {
+                return;
+            }
+            $('.datepicker-period-select').css('width', '130px');
+            select.on('change', setDates);
+            setDates();
+        }());
+    }
 
     new RangeInputs($('.begin-datepicker'), $('.end-datepicker'));
 
