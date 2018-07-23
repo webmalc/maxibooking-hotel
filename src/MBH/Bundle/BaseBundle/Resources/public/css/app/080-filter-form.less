@@ -1,0 +1,57 @@
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+
+  #package-filter-dates {
+    width: 150px;
+  }
+
+  input.datepicker {
+    max-width: 84px !important;
+  }
+
+  //.fa-custom-style {
+  //  display: flex;
+  //  justify-content: center;
+  //}
+  //
+  //.fa-custom-style:before {
+  //  width: 20px;
+  //  margin-left: 8px;
+  //}
+
+  .filter-form_group-date {
+    display: flex !important;
+    flex-wrap: wrap;
+
+    #package-filter-begin,
+    #package-filter-end {
+      background: white;
+    }
+  }
+
+  .filter-form_group-human-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .filter-form_input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    > i.fa {
+      display: flex;
+      justify-content: center;
+
+      &::before {
+        width: 20px;
+        margin-left: 8px;
+      }
+    }
+  }
+  .group-date-select {
+    margin-left: 5px;
+  }
+}
