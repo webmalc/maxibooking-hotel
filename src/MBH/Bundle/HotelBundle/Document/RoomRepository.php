@@ -413,4 +413,63 @@ class RoomRepository extends AbstractBaseRepository
 
         return $result;
     }
+
+    /**
+     * @param array $roomTypeIds
+     * @param bool $grouped
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchRawAllRoomsByRoomType(array $roomTypeIds = [], bool $grouped = false)
+    {
+        $qb = $this->createQueryBuilder();
+        if (\count($roomTypeIds)) {
+            $qb->field('roomType.id')->in($roomTypeIds);
+        }
+        $rawRooms = $qb
+            ->field('isEnabled')->equals(true)
+            ->select(['id', 'fullTitle', 'roomType'])
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        if ($grouped) {
+            foreach ($rawRooms as $rawRoom) {
+                $groupedRooms[(string)$rawRoom['roomType']['$id']][] = $rawRoom;
+            }
+            return $groupedRooms;
+        }
+
+        return $rawRooms;
+    }
+
+    /**
+     * @param Hotel|null $hotel
+     * @param null $roomTypes
+     * @param null $housing
+     * @param null $floor
+     * @param null $skip
+     * @param null $limit
+     * @param null $isEnabled
+     * @param array|null $sort
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchRaw(
+        Hotel $hotel = null,
+        $roomTypes = null,
+        $housing = null,
+        $floor = null,
+        $skip = null,
+        $limit = null,
+        $isEnabled = null,
+        array $sort = null
+    )
+    {
+        $qb = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit, $isEnabled, $sort);
+
+        return $qb->hydrate(false)->getQuery()->execute()->toArray();
+    }
+
 }

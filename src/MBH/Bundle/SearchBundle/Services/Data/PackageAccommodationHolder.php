@@ -41,16 +41,24 @@ class PackageAccommodationHolder implements DataHolderInterface
         return $this->data[$hash][$roomTypeId] ?? [];
     }
 
+    /**
+     * @param DataFetchQueryInterface $fetchQuery
+     * @param array $data
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     public function set(DataFetchQueryInterface $fetchQuery, array $data): void
     {
         $hash = $fetchQuery->getHash();
         $accommodationGroupedByRoomType = [];
 
         foreach ($data as $packageAccommodation) {
-            $roomId = (string)$packageAccommodation['accommodation']['$id'];
-            $roomTypeId = $this->sharedDataFetcher->getRoomTypeIdOfRoomId($roomId);
-            $accommodationDateKey = $this->createAccommodationDateKey($packageAccommodation['begin'], $packageAccommodation['end']);
-            $accommodationGroupedByRoomType[$roomTypeId][$accommodationDateKey][] = $packageAccommodation;
+            $roomId = $packageAccommodation['accommodation']['$id'] ?? null;
+            if (null !== $roomId) {
+                $roomTypeId = $this->sharedDataFetcher->getRoomTypeIdOfRoomId((string)$roomId);
+                $accommodationDateKey = $this->createAccommodationDateKey($packageAccommodation['begin'], $packageAccommodation['end']);
+                $accommodationGroupedByRoomType[$roomTypeId][$accommodationDateKey][] = $packageAccommodation;
+            }
+
         }
 
         $this->data[$hash] = $accommodationGroupedByRoomType;

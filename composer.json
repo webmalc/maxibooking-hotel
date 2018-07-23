@@ -6,8 +6,14 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "autoload": {
-    "psr-4": { "": "src/" },
-    "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
+    "psr-4": {
+      "": "src/",
+      "Tests\\": "tests/"
+    },
+    "classmap": [
+      "app/AppKernel.php",
+      "app/AppCache.php"
+    ]
   },
   "require": {
     "php": ">=7.1.0",
@@ -52,7 +58,9 @@
     "php-amqplib/rabbitmq-bundle": "^1.12",
     "phobetor/rabbitmq-supervisor-bundle": "^1.5",
     "vich/uploader-bundle": "^1.4",
-    "twig/twig": "^2.5"
+    "twig/twig": "^2.5",
+    "phpunit/phpunit": "<7",
+    "snc/redis-bundle": "^2.1"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

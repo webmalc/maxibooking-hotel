@@ -2,7 +2,7 @@
 namespace MBH\Bundle\BaseBundle\Lib\Test;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase as Base;
-use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BaseBundle\Lib\Test\Traits\AssocArrayTestCaseTrait;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -12,6 +12,9 @@ use Symfony\Component\DomCrawler\Form;
 
 abstract class WebTestCase extends Base
 {
+
+    use AssocArrayTestCaseTrait;
+
     /**
      * @var Client
      */

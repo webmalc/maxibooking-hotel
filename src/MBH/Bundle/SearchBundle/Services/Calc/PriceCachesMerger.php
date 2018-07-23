@@ -26,6 +26,12 @@ class PriceCachesMerger
     }
 
 
+    /**
+     * @param CalcQuery $calcQuery
+     * @return array
+     * @throws PriceCachesMergerException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     public function getMergedPriceCaches(CalcQuery $calcQuery): array
     {
         $rawPriceTariffCaches = $this->getPriceTariffPriceCaches($calcQuery);
@@ -54,6 +60,12 @@ class PriceCachesMerger
         throw new PriceCachesMergerException('There is not enough price caches even after merging.'. $calcQuery->getTariff()->getName().' '.$calcQuery->getRoomType()->getFullTitle());
     }
 
+    /**
+     * @param array $priceCaches
+     * @param int $duration
+     * @return bool
+     * @throws PriceCachesMergerException
+     */
     private function checkCachesCount(array $priceCaches, int $duration): bool
     {
         if (\count($priceCaches) > $duration) {
@@ -63,6 +75,11 @@ class PriceCachesMerger
         return \count($priceCaches) === $duration;
     }
 
+    /**
+     * @param array $mainCaches
+     * @param array $auxiliaryCaches
+     * @return array
+     */
     private function mergePriceCaches(array $mainCaches, array $auxiliaryCaches): array
     {
         $merged = $mainCaches + $auxiliaryCaches;
@@ -108,6 +125,11 @@ class PriceCachesMerger
         return [];
     }
 
+    /**
+     * @param CalcQuery $calcQuery
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     private function getBaseTariffPriceCaches(CalcQuery $calcQuery): array
     {
         if (!$calcQuery->getTariff()->getIsDefault()) {

@@ -90,7 +90,6 @@ class SearchController extends Controller
      * @param SearchConditions $conditions
      * @param null|string $grouping
      * @return JsonResponse
-     * @throws GroupingFactoryException
      */
     public function getAsyncResultsAction(SearchConditions $conditions, ?string $grouping = null): JsonResponse
     {
@@ -103,6 +102,8 @@ class SearchController extends Controller
             $answer = new JsonResponse($json, 200, [], true);
         } catch (AsyncResultReceiverException $exception) {
             $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage()], 204);
+        } catch (\Psr\SimpleCache\InvalidArgumentException|GroupingFactoryException $exception) {
+            $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage(), 500]);
         }
 
         return $answer;
@@ -121,6 +122,21 @@ class SearchController extends Controller
         $conditions = new SearchConditions();
         $conditions->setBegin($begin)->setEnd($end)->setAdults($adults)->setChildren($children)->setChildrenAges($childrenAges);
         $form = $this->createForm(SearchConditionsType::class, $conditions);
+
         return $this->render('@MBHSearch/Search/client.html.twig', ['form' => $form->createView()]);
+    }
+
+    public function searcherAction(): Response
+    {
+//        $begin = new \DateTime('10.09.2018');
+//        $end = new \DateTime('17.09.2018');
+//        $adults = 2;
+//        $children = 1;
+//        $childrenAges = [3];
+//        $conditions = new SearchConditions();
+//        $conditions->setBegin($begin)->setEnd($end)->setAdults($adults)->setChildren($children)->setChildrenAges($childrenAges);
+        $form = $this->createForm(SearchConditionsType::class);
+
+        return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $form->createView()]);
     }
 }

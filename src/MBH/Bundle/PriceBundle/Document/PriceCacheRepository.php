@@ -150,4 +150,33 @@ class PriceCacheRepository extends DocumentRepository
 
         return $result;
     }
+
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     * @param string $roomTypeId
+     * @param string $tariffId
+     * @param bool $categories
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchRaw(
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        string $roomTypeId,
+        string $tariffId,
+        $categories = false
+    )
+    {
+        $qb = $this->fetchQueryBuilder($begin, $end, null, [$roomTypeId], [$tariffId], $categories);
+
+        return $qb->field('isEnabled')->equals(true)->hydrate(false)->sort(['date' => 'asc'])->getQuery()->execute()->toArray();
+    }
+
+    public function fetchRawPeriod(\DateTime $begin, \DateTime $end, array $roomTypeIds = [], array $tariffIds = [], bool $isUseCategory)
+    {
+        $qb = $this->fetchQueryBuilder($begin, $end, null, $roomTypeIds, $tariffIds, $isUseCategory);
+
+        return $qb->field('isEnabled')->equals(true)->hydrate(false)->sort(['date' => 'asc'])->getQuery()->execute()->toArray();
+    }
 }

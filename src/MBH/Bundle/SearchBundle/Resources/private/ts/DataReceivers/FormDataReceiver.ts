@@ -3,7 +3,6 @@ class FormDataReceiver implements DataReceiverInterface {
     private readonly formName: string;
     private $children: JQuery;
     private $childrenAgeHolder: JQuery;
-    private $childrenAges: JQuery[] = [];
     private agesTemplate:string;
 
     constructor(formName: string) {
@@ -16,7 +15,7 @@ class FormDataReceiver implements DataReceiverInterface {
     }
 
     private bindHandlers(): void {
-        this.$children.on('change', (e) => {
+        this.$children.on('change', () => {
             this.updateChildrenAges();
         })
     }

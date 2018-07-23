@@ -1,5 +1,7 @@
 <?php
 
+use MBH\Bundle\SearchBundle\MBHSearchBundle;
+use Snc\RedisBundle\SncRedisBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
@@ -24,7 +26,7 @@ class AppKernel extends Kernel
             new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
             new Dinhkhanh\MongoDBAclBundle\MongoDBAclBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
-            new JMS\DiExtraBundle\JMSDiExtraBundle($this),
+            new JMS\DiExtraBundle\JMSDiExtraBundle(),
             new JMS\AopBundle\JMSAopBundle(),
             new JMS\TranslationBundle\JMSTranslationBundle(),
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
@@ -33,6 +35,7 @@ class AppKernel extends Kernel
             new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
             new Phobetor\RabbitMqSupervisorBundle\RabbitMqSupervisorBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
+            new SncRedisBundle(),
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),
@@ -49,6 +52,7 @@ class AppKernel extends Kernel
             new MBH\Bundle\OnlineBookingBundle\MBHOnlineBookingBundle(),
             new MBH\Bundle\WarehouseBundle\MBHWarehouseBundle(),
             new MBH\Bundle\RestaurantBundle\MBHRestaurantBundle(),
+            new MBHSearchBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

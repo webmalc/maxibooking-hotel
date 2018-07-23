@@ -272,3 +272,16 @@ vich_uploader:
         upload_image:
             uri_prefix:         /upload/images
             upload_destination: '%kernel.root_dir%/../web/upload/images'
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: '%mbh_redis%'
+        search_results:
+            type: predis
+            alias: results
+            dsn: '%mbh_redis%'
+            options:
+                prefix: 'search_results_'

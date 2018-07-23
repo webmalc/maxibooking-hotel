@@ -110,6 +110,11 @@ class SearchLimitChecker
     }
 
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @throws SearchLimitCheckerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     public function checkRoomTypePopulationLimit(SearchQuery $searchQuery): void
     {
         $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
@@ -124,6 +129,12 @@ class SearchLimitChecker
         }
     }
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return array
+     * @throws SearchLimitCheckerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     public function checkRoomCacheLimit(SearchQuery $searchQuery): array
     {
         $roomCacheQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
@@ -161,8 +172,12 @@ class SearchLimitChecker
     }
 
 
-
-    public function checkWindows(Result $result)
+    /**
+     * @param Result $result
+     * @throws SearchLimitCheckerException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function checkWindows(Result $result): void
     {
         if ($this->clientConfig->getSearchWindows()) {
             //** TODO: Уточнить если форс */

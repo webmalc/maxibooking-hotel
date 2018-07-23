@@ -48,14 +48,16 @@ class PackageRepository extends DocumentRepository
         return $this->getBuilderBySpecial($special, $exclude)->getQuery()->count();
     }
 
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param RoomType|null $roomType
      * @param bool $group
      * @param Package|null $exclude
-     * @param Cache $cache
+     * @param Cache|null $cache
      * @return array|mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function fetchWithVirtualRooms(
         \DateTime $begin,
@@ -78,6 +80,7 @@ class PackageRepository extends DocumentRepository
 
         if ($group) {
             $result = [];
+            /** @var Package $package */
             foreach ($packages as $package) {
                 $roomType = $package->getRoomType();
                 $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
@@ -368,7 +371,7 @@ class PackageRepository extends DocumentRepository
         $departure = true
     )
     {
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
         $qb->field('accommodation')->exists(true)
             ->field('accommodation')->notEqual(null);
 
@@ -1201,5 +1204,71 @@ class PackageRepository extends DocumentRepository
             ->field('order.id')->in($ordersIds)
             ->getQuery()
             ->execute();
+    }
+
+    /**
+     * @param \DateTime $searchBegin
+     * @param \DateTime $searchEnd
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getRawAccommodationByPeriod(\DateTime $searchBegin, \DateTime $searchEnd)
+    {
+        $result = $this->createQueryBuilder()
+            ->field('begin')->lt($searchEnd)
+            ->field('end')->gt($searchBegin)
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        return $result;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType|null $roomType
+     * @param bool $group
+     * @param Package|null $exclude
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchWithVirtualRoomsRaw(
+        \DateTime $begin,
+        \DateTime $end,
+        RoomType $roomType = null,
+        bool $group = false,
+        Package $exclude = null
+    )
+    {
+        $qb = $this->fetchWithVirtualRoomsQB($begin, $end, $roomType, $exclude);
+
+        return $qb->select(['virtualRoom', 'begin', 'end'])->hydrate(false)->getQuery()->execute()->toArray();
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType|null $roomType
+     * @param Package|null $exclude
+     * @return Builder
+     */
+    private function fetchWithVirtualRoomsQB(\DateTime $begin, \DateTime $end, RoomType $roomType = null, Package $exclude = null){
+        $qb = $this->createQueryBuilder()
+            ->field('begin')->lte($end)
+            ->field('end')->gte($begin)
+            ->field('virtualRoom')->notEqual(null)
+            ->field('deletedAt')->equals(null);
+
+        if ($roomType) {
+            $qb->field('roomType.id')->equals($roomType->getId());
+        }
+
+        if ($exclude) {
+            $qb->field('id')->notEqual($exclude->getId());
+        }
+
+        return $qb;
     }
 }

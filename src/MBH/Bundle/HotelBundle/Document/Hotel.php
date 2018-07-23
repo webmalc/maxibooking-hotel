@@ -335,6 +335,15 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     protected $vegaAddressId;
 
     /**
+     * @var bool
+     * @ODM\Integer
+     * @ODM\Boolean
+     * @Assert\Type(type="boolean")
+     * @Assert\NotNull
+     */
+    protected $isSearchActive;
+
+    /**
      * @ODM\Field(type="string")
      * @var string
      * @ODM\Index()
@@ -1597,4 +1606,21 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isSearchActive(): bool
+    {
+        return (bool)$this->isSearchActive;
+    }
+
+    public function setIsSearchActive(bool $isSearchActive)
+    {
+        $this->isSearchActive = $isSearchActive;
+
+        return $this;
+    }
+
+
 }

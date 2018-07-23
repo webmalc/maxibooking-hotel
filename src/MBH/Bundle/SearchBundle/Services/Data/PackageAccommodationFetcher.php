@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Services\Data;
 
 
 use MBH\Bundle\PackageBundle\Document\PackageAccommodationRepository;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\SearchBundle\Lib\Data\DataFetchQueryInterface;
 use Symfony\Component\Cache\Simple\AbstractCache;
 
@@ -12,11 +13,11 @@ class PackageAccommodationFetcher extends AbstractDataFetcher
 {
 
     /**
-     * @var PackageAccommodationRepository
+     * @var PackageRepository
      */
     private $repository;
 
-    public function __construct(DataHolderInterface $holder, SharedDataFetcherInterface $sharedDataFetcher, PackageAccommodationRepository $repository, AbstractCache $cache)
+    public function __construct(DataHolderInterface $holder, SharedDataFetcherInterface $sharedDataFetcher, PackageRepository $repository, AbstractCache $cache)
     {
 
         parent::__construct($holder, $sharedDataFetcher, $cache);

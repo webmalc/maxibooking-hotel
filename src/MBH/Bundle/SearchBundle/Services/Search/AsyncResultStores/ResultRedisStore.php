@@ -27,6 +27,10 @@ class ResultRedisStore implements AsyncResultStoreInterface
         $this->cache = $cache;
     }
 
+    /**
+     * @param ResultCacheablesInterface $searchResult
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function store(ResultCacheablesInterface $searchResult): void
     {
         $hash = $searchResult->getSearchHash();

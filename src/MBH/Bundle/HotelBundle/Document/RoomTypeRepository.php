@@ -95,4 +95,46 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
 
     }
 
+    public function fetchRaw(array $roomTypeIds, array $hotelIds): array
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $qb = $this->createQueryBuilder();
+
+        // hotel
+        if (\is_array($hotelIds) && !empty($hotelIds)) {
+            $qb->field('hotel.id')->in($hotelIds);
+        }
+        // roomTypes
+        if (!empty($roomTypeIds) && \is_array($roomTypeIds)) {
+            $qb->field('id')->in($roomTypeIds);
+        }
+        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
+
+        return $qb->hydrate(false)->getQuery()->toArray();
+    }
+
+    /**
+     * @param array $categoryIds
+     * @param array $hotelIds
+     * @return array
+     */
+    public function fetchRawWithCategory(array $categoryIds, array $hotelIds): array
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $qb = $this->createQueryBuilder();
+
+        // hotel
+        if (\is_array($hotelIds) && !empty($hotelIds)) {
+            $qb->field('hotel.id')->in($hotelIds);
+        }
+        // roomTypes
+        if (!empty($categoryIds) && \is_array($categoryIds)) {
+            $qb->field('category.id')->in($categoryIds);
+        }
+        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
+
+        return  $qb->hydrate(false)->getQuery()->toArray();
+
+    }
+
 }

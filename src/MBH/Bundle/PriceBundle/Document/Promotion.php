@@ -164,10 +164,13 @@ class Promotion extends Base implements ConditionsInterface
 
     /**
      * @param int $discount
+     * @return Promotion
      */
     public function setDiscount($discount)
     {
         $this->discount = $discount;
+
+        return $this;
     }
 
     /**

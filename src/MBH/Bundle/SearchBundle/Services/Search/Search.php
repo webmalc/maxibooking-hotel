@@ -142,7 +142,7 @@ class Search
     private function createSearchConditions(array $data): SearchConditions
     {
 
-        $hash = uniqid(\AppKernel::DEFAULT_CLIENT, true);
+        $hash = uniqid('azovsky', true);
         $conditions = $this->conditionsCreator->createSearchConditions($data);
         $conditions->setSearchHash($hash);
         $this->saveQueryStat($conditions);

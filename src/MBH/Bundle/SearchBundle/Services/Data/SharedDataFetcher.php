@@ -63,6 +63,11 @@ class SharedDataFetcher implements SharedDataFetcherInterface
         throw new SharedFetcherException('There is no RoomType in RoomTypeHolder!');
     }
 
+    /**
+     * @param string $roomId
+     * @return string
+     * @throws SharedFetcherException
+     */
     public function getRoomTypeIdOfRoomId(string $roomId): string
     {
         foreach ($this->rooms as $room) {

@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Service\Cache;
@@ -257,5 +258,62 @@ class TariffRepository extends DocumentRepository
         $qb = $this->getFilteredQueryBuilder($filter);
 
         return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @param array $hotelIds
+     * @param array|null $tariffsIds
+     * @param bool $isEnabled
+     * @param bool $isOnline
+     * @return array
+     * @throws MongoDBException
+     */
+    public function fetchRaw(array $hotelIds = [], ?array $tariffsIds = [], bool $isEnabled = true, bool $isOnline = false): array
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $qb = $this->createQueryBuilder();
+        // hotel
+        if (!empty($hotelIds)) {
+            $qb->field('hotel.id')->in($hotelIds);
+        }
+        // tariffs
+        if (!empty($tariffsIds) && \is_array($tariffsIds)) {
+            $qb->field('id')->in($tariffsIds);
+        }
+        //enabled
+        if ($isEnabled) {
+            $qb->field('isEnabled')->equals(true);
+        }
+        //online
+        if ($isOnline) {
+            $qb->field('isOnline')->equals(true);
+        }
+
+        return $qb->hydrate(false)->getQuery()->toArray();
+    }
+
+    /**
+     * @param string $hotelId
+     * @param null $online
+     * @return mixed
+     * @throws MongoDBException
+     */
+    public function fetchRawBaseTariffId(string $hotelId, $online = null)
+    {
+        $qb = $this->createQueryBuilder();
+        $qb
+            ->field('isDefault')->equals(true)
+            ->field('hotel.id')->equals($hotelId)
+            ->limit(1);
+        if (null !== $online) {
+            $qb
+                ->field('isOnline')->equals((bool)$online);
+        }
+        return $qb->select('id')
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray()
+            ;
     }
 }

@@ -13,7 +13,6 @@ class SearchControllerTest extends SearchWebTestCase
      */
     public function testSyncSearchAction(iterable $requestData, bool $result): void
     {
-
         $this->client->request(
             'POST',
             '/search/sync/json',

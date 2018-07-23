@@ -39,6 +39,14 @@ class Searcher
     }
 
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return Result
+     * @throws SearcherException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     public function search(SearchQuery $searchQuery): Result
     {
 

@@ -145,6 +145,21 @@ class RoomType extends Base implements RoomTypeInterface
      */
     protected $additionalPlaces = 0;
 
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer(name="maxInfants")
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage="validator.document.roomType.places_amount_less_zero",
+     *      max=6
+     * )
+     */
+    protected $maxInfants = 2;
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -419,6 +434,27 @@ class RoomType extends Base implements RoomTypeInterface
     {
         return $this->isHostel;
     }
+
+
+    /**
+     * @return int
+     */
+    public function getMaxInfants(): int
+    {
+        return $this->maxInfants;
+    }
+
+    /**
+     * @param int $maxInfants
+     * @return RoomType
+     */
+    public function setMaxInfants(int $maxInfants): RoomType
+    {
+        $this->maxInfants = $maxInfants;
+
+        return $this;
+    }
+
 
     /**
      * Set isHostel

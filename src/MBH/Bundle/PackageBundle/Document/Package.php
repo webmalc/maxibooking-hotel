@@ -36,14 +36,14 @@ class Package extends Base implements \JsonSerializable
     use BlameableDocument;
     use DeleteReasonTrait;
 
-    const ROOM_STATUS_OPEN = 'open';
-    const ROOM_STATUS_WAIT = 'wait'; //Не заехал
-    const ROOM_STATUS_WAIT_TODAY = 'wait_today'; // Заезжет сегодня
-    const ROOM_STATUS_IN_TODAY = 'in_today'; // Заехал сегодня
-    const ROOM_STATUS_WILL_OUT = 'will_out'; // Выезд
-    const ROOM_STATUS_OUT_TODAY = 'out_today'; // Выезд сегодня
-    const ROOM_STATUS_OUT_TOMORROW = 'out_tomorrow'; // Выезд завтра
-    const ROOM_STATUS_NOT_OUT = 'not_out'; // Не выехал
+    public const ROOM_STATUS_OPEN = 'open';
+    public const ROOM_STATUS_WAIT = 'wait'; //Не заехал
+    public const ROOM_STATUS_WAIT_TODAY = 'wait_today'; // Заезжет сегодня
+    public const ROOM_STATUS_IN_TODAY = 'in_today'; // Заехал сегодня
+    public const ROOM_STATUS_WILL_OUT = 'will_out'; // Выезд
+    public const ROOM_STATUS_OUT_TODAY = 'out_today'; // Выезд сегодня
+    public const ROOM_STATUS_OUT_TOMORROW = 'out_tomorrow'; // Выезд завтра
+    public const ROOM_STATUS_NOT_OUT = 'not_out'; // Не выехал
 
     /**
      * @var Order

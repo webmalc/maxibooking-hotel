@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Form;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -73,6 +74,25 @@ class SearchConditionsType extends AbstractType
                     'class' => $options['room_type_key'],
                     'required' => false,
                     'multiple' => true,
+                    'error_bubbling' => true,
+                    'group_by' => function($choiceRoomCategory) {
+                        /** @var RoomTypeCategory $choiceRoomCategory */
+                        return $choiceRoomCategory->getHotel()->getName();
+                    },
+                    'query_builder' => function (DocumentRepository $dr) {
+                        $hotelIds = $dr
+                            ->getDocumentManager()
+                            ->getRepository(Hotel::class)
+                            ->createQueryBuilder()
+                            ->field('isSearchActive')->equals(true)
+                            ->distinct('id')
+                            ->getQuery()
+                            ->execute()
+                            ->toArray()
+                        ;
+
+                        return $dr->createQueryBuilder()->field('hotel.id')->in($hotelIds)->sort('fullTitle', 'asc');
+                    }
 
                 ]
             )

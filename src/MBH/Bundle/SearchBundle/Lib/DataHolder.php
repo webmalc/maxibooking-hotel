@@ -11,6 +11,7 @@ use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodationRepository;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PriceBundle\Document\PriceCacheRepository;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCacheRepository;
@@ -53,8 +54,8 @@ class DataHolder
     /** @var PriceCacheRepository */
     private $priceCacheRepository;
 
-    /** @var PackageAccommodationRepository */
-    private $packageAccommodationRepository;
+    /** @var PackageRepository */
+    private $packageRepository;
 
     /** @var SearchConditionsRepository */
     private $searchConditionsRepository;
@@ -88,7 +89,7 @@ class DataHolder
      * @param ClientConfigRepository $configRepository
      * @param RoomCacheRepository $roomCacheRepository
      * @param RoomRepository $roomRepository
-     * @param PackageAccommodationRepository $accommodationRepository
+     * @param PackageRepository $packageRepository
      * @param PriceCacheRepository $priceCacheRepository
      * @param SearchConditionsRepository $conditionsRepository
      */
@@ -99,7 +100,7 @@ class DataHolder
         ClientConfigRepository $configRepository,
         RoomCacheRepository $roomCacheRepository,
         RoomRepository $roomRepository,
-        PackageAccommodationRepository $accommodationRepository,
+        PackageRepository $packageRepository,
         PriceCacheRepository $priceCacheRepository,
         SearchConditionsRepository $conditionsRepository
     )
@@ -112,7 +113,7 @@ class DataHolder
         $this->isUseCategory = $configRepository->fetchConfig()->getUseRoomTypeCategory();
         $this->roomCacheRepository = $roomCacheRepository;
         $this->roomRepository = $roomRepository;
-        $this->packageAccommodationRepository = $accommodationRepository;
+        $this->packageRepository = $packageRepository;
         $this->priceCacheRepository = $priceCacheRepository;
         $this->searchConditionsRepository = $configRepository;
     }
@@ -342,10 +343,10 @@ class DataHolder
     }
 
 
-    /*************************************
-     * Accommodation block.
+    /**
      * @param SearchQuery $searchQuery
      * @return array
+     * @throws MongoDBException
      */
     public function getNecessaryAccommodationRooms(SearchQuery $searchQuery): array
     {
@@ -356,7 +357,7 @@ class DataHolder
             if (!($this->roomsGroupedByRoomType[$hash] ?? null)) {
                 $this->roomsGroupedByRoomType[$hash] = $this->getAllRoomsByRoomType();
             }
-            $allAccommodations = $this->packageAccommodationRepository->getRawAccommodationByPeriod($conditions->getMaxBegin(), $conditions->getMaxEnd());
+            $allAccommodations = $this->packageRepository->getRawAccommodationByPeriod($conditions->getMaxBegin(), $conditions->getMaxEnd());
             $this->setAccommodationsRooms($allAccommodations, $searchQuery);
 
             return $this->getAccommodationRooms($searchQuery);
@@ -398,10 +399,13 @@ class DataHolder
         $hash = $searchQuery->getSearchHash();
         $accommodationGroupedByRoomType = [];
         foreach ($packageAccommodations as $accommodation) {
-            $roomId = (string)$accommodation['accommodation']['$id'];
-            $roomTypeId = $this->getRoomTypeIdByRoom($roomId, $hash);
-            $accommodationDateKey = $this->getAccommodationDateKey($accommodation['begin'], $accommodation['end']);
-            $accommodationGroupedByRoomType[$roomTypeId][$accommodationDateKey][] = $accommodation;
+            $roomId = $accommodation['accommodation']['$id'] ?? null;
+            if (null !== $roomId) {
+                $roomTypeId = $this->getRoomTypeIdByRoom((string)$roomId, $hash);
+                $accommodationDateKey = $this->getAccommodationDateKey($accommodation['begin'], $accommodation['end']);
+                $accommodationGroupedByRoomType[$roomTypeId][$accommodationDateKey][] = $accommodation;
+            }
+
         }
 
         $this->accommodationsGroupedByRoomType[$hash] = $accommodationGroupedByRoomType;
@@ -412,11 +416,17 @@ class DataHolder
         return $this->roomRepository->fetchRawAllRoomsByRoomType([], true);
     }
 
+    /**
+     * @param string $needleRoomId
+     * @param string $hash
+     * @return string
+     * @throws DataHolderException
+     */
     private function getRoomTypeIdByRoom(string $needleRoomId, string $hash): string
     {
         $groupedRooms = $this->roomsGroupedByRoomType[$hash];
         if (!$groupedRooms) {
-            throw new DataHolderException('There is no sure grouped Rooms dadta!');
+            throw new DataHolderException('There is no sure grouped Rooms data!');
         }
         foreach ($groupedRooms as $roomTypeId => $rooms) {
             $roomsIds = array_map('\strval', array_column($rooms, '_id'));
@@ -478,6 +488,12 @@ class DataHolder
 
     }
 
+    /**
+     * @param CalcQuery $calcQuery
+     * @param string $searchingTariffId
+     * @return array|null
+     * @throws Exceptions\CalcHelperException
+     */
     private function getPriceCaches(CalcQuery $calcQuery, string $searchingTariffId): ?array
     {
         $hash = $calcQuery->getConditionHash();
@@ -528,6 +544,13 @@ class DataHolder
         return $key;
     }
 
+    /**
+     * @param CalcQuery $calcQuery
+     * @param string $searchingTariffId
+     * @return mixed
+     * @throws Exceptions\CalcHelperException
+     * @throws MongoDBException
+     */
     private function getRawPriceCachesWithNoCondition(CalcQuery $calcQuery, string $searchingTariffId)
     {
         $begin = $calcQuery->getSearchBegin();
@@ -544,6 +567,11 @@ class DataHolder
             );
     }
 
+    /**
+     * @param CalcQuery $calcQuery
+     * @return array
+     * @throws DataHolderException
+     */
     private function getAllPeriodPriceCaches(CalcQuery $calcQuery): array
     {
         $begin = $calcQuery->getConditionMaxBegin();
@@ -563,6 +591,14 @@ class DataHolder
         return $this->priceCacheRepository->fetchRawPeriod($begin, $end, $roomTypeIds ??  [], $tariffIds ?? [], $isUseCategory);
     }
 
+    /**
+     * @param string $hash
+     * @param string $conditionsId
+     * @return SearchConditions
+     * @throws DataHolderException
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     */
     public function getConditions(string $hash, string $conditionsId): SearchConditions
     {
         /** @var SearchConditions $searchConditions */

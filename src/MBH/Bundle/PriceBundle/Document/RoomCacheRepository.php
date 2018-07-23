@@ -9,22 +9,59 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class RoomCacheRepository extends DocumentRepository
 {
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param RoomType $roomType
-     * @param Cache $memcached
+     * @param Tariff|null $tariff
+     * @param Cache|null $memcached
      * @return int
      */
     public function getMinTotal(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null, Cache $memcached = null): int
     {
         if ($memcached) {
-            $cache = $memcached->get('room_cache_min_total', func_get_args());
+            $cache = $memcached->get('room_cache_min_total', \func_get_args());
             if ($cache !== false) {
                 return $cache;
             }
         }
 
+        $qb = $this->getMinTotalQB($begin, $end, $roomType, $tariff);
+
+        $roomCache = $qb->getQuery()->getSingleResult();
+        $result = $roomCache ? $roomCache->getTotalRooms() : 0;
+        if ($memcached) {
+            $memcached->set($result, 'room_cache_min_total', \func_get_args());
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @param Tariff|null $tariff
+     * @return int
+     */
+    public function getMinTotalRaw(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null)
+    {
+        $qb = $this->getMinTotalQB($begin, $end, $roomType, $tariff);
+        $roomCache = $qb->select('totalRooms')->hydrate(false)->getQuery()->getSingleResult();
+
+        return $roomCache ? $roomCache['totalRooms'] : 0;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @param Tariff|null $tariff
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    private function getMinTotalQB(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null)
+    {
         $qb = $this->createQueryBuilder()
             ->field('date')->gte($begin)->lte($end)
             ->field('roomType.id')->equals($roomType->getId())
@@ -36,13 +73,7 @@ class RoomCacheRepository extends DocumentRepository
             $qb->field('tariff')->equals(null);
         }
 
-        $roomCache = $qb->getQuery()->getSingleResult();
-        $result = $roomCache ? $roomCache->getTotalRooms() : 0;
-        if ($memcached) {
-            $memcached->set($result, 'room_cache_min_total', func_get_args());
-        }
-
-        return $result;
+        return $qb;
     }
 
     /**
@@ -171,5 +202,21 @@ class RoomCacheRepository extends DocumentRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param string $roomTypeId
+     * @param string $tariffId
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchRaw(\DateTime $begin, \DateTime $end, string $roomTypeId = null): array
+    {
+        $rawRoomTypeId = $roomTypeId ? [$roomTypeId] : [];
+        $qb = $this->fetchQueryBuilder($begin, $end, null, $rawRoomTypeId, false);
+
+        return $qb->hydrate(false)->getQuery()->execute()->toArray();
     }
 }
