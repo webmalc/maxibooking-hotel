@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\UserBundle\Service;
 
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\ClientPayer;
 use MBH\Bundle\BillingBundle\Lib\Model\Company;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
@@ -25,9 +25,18 @@ class ClientPayerManager
     private $isClientPayerCompanyInit = false;
     private $clientPayer;
     private $isClientPayerInit = false;
+    private $clientRuCompany;
+    private $isClientRuCompanyInit = false;
+    private $clientWorldCompany;
+    private $isClientWorldCompanyInit = false;
 
-    public function __construct(BillingPayerFormHandler $payerFormHandler, ClientManager $clientManager, Serializer $serializer, BillingApi $billingApi, BillingResponseHandler $responseHandler)
-    {
+    public function __construct(
+        BillingPayerFormHandler $payerFormHandler,
+        ClientManager $clientManager,
+        Serializer $serializer,
+        BillingApi $billingApi,
+        BillingResponseHandler $responseHandler
+    ) {
         $this->payerFormHandler = $payerFormHandler;
         $this->clientManager = $clientManager;
         $this->serializer = $serializer;
@@ -38,7 +47,6 @@ class ClientPayerManager
     /**
      * @param array $formPayerData
      * @return array
-     * @throws Exception
      * @throws \Exception
      */
     public function saveClientPayerAndReturnErrors(array $formPayerData): array
@@ -53,28 +61,61 @@ class ClientPayerManager
 
         if ($this->payerFormHandler->isNaturalEntityPayer()) {
             if ($this->payerFormHandler->isRussianPayer()) {
-                $client->setRu($payerDataByBillingKeys);
+                $clientPayer = $this->getClientPayer();
+                $this->serializer->denormalize(
+                    $payerDataByBillingKeys,
+                    ClientPayer::class,
+                    null,
+                    [AbstractNormalizer::OBJECT_TO_POPULATE => $clientPayer]
+                );
+                $requestResult = $this->billingApi->updateBillingEntity($clientPayer, BillingApi::CLIENT_PAYER_ENDPOINT_SETTINGS, $client);
+
                 $client->setAddress($payerDataByBillingKeys['address']);
                 unset($payerDataByBillingKeys['address']);
             } else {
-                $this->serializer->denormalize($payerDataByBillingKeys, Client::class, null, [AbstractNormalizer::OBJECT_TO_POPULATE => $client]);
+                $this->serializer->denormalize(
+                    $payerDataByBillingKeys,
+                    Client::class,
+                    null,
+                    [AbstractNormalizer::OBJECT_TO_POPULATE => $client]
+                );
             }
-
-            $requestResult = $this->clientManager->updateClient($client);
+            if (!isset($requestResult) || $requestResult->isSuccessful()) {
+                $requestResult = $this->clientManager->updateClient($client);
+            }
         } else {
             /** @var Company $company */
-            $company = $this->getClientPayerCompany();
+            $company = $this->getClientCompany();
             $companyId = !is_null($company) ? $company->getId() : null;
             $company = $this->serializer->denormalize($payerDataByBillingKeys, Company::class, $company);
-            $company->setClient($client->getLogin());
-            if ($this->payerFormHandler->isRussianPayer()) {
-                $company->setRu(array_intersect_key($payerDataByBillingKeys, array_flip(Company::getRuPaymentFields())));
-            } else {
-                $company->setWorld(array_intersect_key($payerDataByBillingKeys, array_flip(Company::getWorldPaymentFields())));
-            }
-
             $company->setId($companyId);
-            $requestResult = !is_null($companyId) ? $this->updateClientPayerCompany($company) : $this->createClientPayerCompany($company);
+            $company->setClient($client->getLogin());
+
+            $requestResult = !is_null($companyId)
+                ? $this->updateClientPayerCompany($company)
+                : $this->createClientPayerCompany($company);
+            if ($requestResult->isSuccessful()) {
+                $company = $requestResult->getData();
+                if ($this->payerFormHandler->isRussianPayer()) {
+                    $payerCompany = $this->getClientRuCompany();
+                    $endpointSettings = BillingApi::RU_PAYER_COMPANY;
+                } else {
+                    $payerCompany = $this->getClientWorldCompany();
+                    $endpointSettings = BillingApi::WORLD_PAYER_COMPANY;
+                }
+
+                $payerCompany = $this->serializer->denormalize(
+                    $payerDataByBillingKeys,
+                    $endpointSettings['model'],
+                    null,
+                    [AbstractNormalizer::OBJECT_TO_POPULATE => $payerCompany]
+                );
+                $payerCompany->setCompany($company->getId());
+
+                $requestResult = !is_null($payerCompany->getId())
+                    ? $this->billingApi->updateBillingEntity($payerCompany, $endpointSettings, $company->getId())
+                    : $this->billingApi->createBillingEntityBySettings($payerCompany, $endpointSettings);
+            }
         }
 
         $billingFieldsByFormFields = array_flip($this->payerFormHandler->getBillingFieldsByFormFields());
@@ -83,11 +124,19 @@ class ClientPayerManager
             $client->setCountry($formPayerData['country']);
             $requestResult = $this->clientManager->updateClient($client);
             if (!$requestResult->isSuccessful()) {
-                $requestErrors = [BillingResponseHandler::NON_FIELD_ERRORS => [$this->responseHandler->getUnexpectedErrorText()]];
+                $requestErrors = [
+                    BillingResponseHandler::NON_FIELD_ERRORS => [
+                        $this->responseHandler->getUnexpectedErrorText(),
+                    ],
+                ];
             }
         }
 
-        return $this->payerFormHandler->fillArrayByKeys($requestErrors, $billingFieldsByFormFields, [BillingResponseHandler::NON_FIELD_ERRORS]);
+        return $this->payerFormHandler->fillArrayByKeys(
+            $requestErrors,
+            $billingFieldsByFormFields,
+            [BillingResponseHandler::NON_FIELD_ERRORS]
+        );
     }
 
     /**
@@ -105,23 +154,56 @@ class ClientPayerManager
      */
     public function updateClientPayerCompany(Company $company)
     {
-        return $this->billingApi->updateClientPayerCompany($company);
+        return $this->billingApi->updateBillingEntity($company, BillingApi::PAYER_COMPANY_ENDPOINT_SETTINGS);
     }
 
     /**
      * @return Company|null
      */
-    public function getClientPayerCompany() {
+    public function getClientCompany()
+    {
         if (!$this->isClientPayerCompanyInit) {
             $client = $this->clientManager->getClient();
             $clientCompanies = $this->billingApi->getClientCompanies($client);
 
-            $this->clientPayerCompany =  empty($clientCompanies) ? null : current($clientCompanies);
-
+            $this->clientPayerCompany = empty($clientCompanies) ? null : current($clientCompanies);
             $this->isClientPayerCompanyInit = true;
         }
 
         return $this->clientPayerCompany;
+    }
+
+    /**
+     * @return null|object
+     */
+    public function getClientRuCompany()
+    {
+        if (!$this->isClientRuCompanyInit) {
+            $company = $this->getClientCompany();
+            if (!is_null($company)) {
+                $this->clientRuCompany = $this->billingApi->getClientPayerCompany($company);
+            }
+
+            $this->isClientRuCompanyInit = true;
+        }
+
+        return $this->clientRuCompany;
+    }
+
+    /**
+     * @return null|object
+     */
+    public function getClientWorldCompany()
+    {
+        if (!$this->isClientWorldCompanyInit) {
+            $company = $this->getClientCompany();
+            if (!is_null($company)) {
+                $this->clientWorldCompany = $this->billingApi->getClientPayerCompany($company, false);
+            }
+            $this->isClientWorldCompanyInit = true;
+        }
+
+        return $this->clientWorldCompany;
     }
 
     /**
@@ -150,7 +232,7 @@ class ClientPayerManager
             $errors[] = 'form.client_contacts_type.phone.label';
         }
 
-        $clientCompany = $this->getClientPayerCompany();
+        $clientCompany = $this->getClientCompany();
         $isRussianClient = $client->getCountry() === 'ru';
 
         if (is_null($clientCompany)) {

@@ -17,8 +17,6 @@ class Company
     private $postal_code;
     private $account_number;
     private $bank;
-    private $ru;
-    private $world;
 
     /**
      * @return mixed
@@ -192,62 +190,11 @@ class Company
     }
 
     /**
-     * @return mixed
-     */
-    public function getRu()
-    {
-        return $this->ru;
-    }
-
-    /**
-     * @param mixed $ru
-     * @return Company
-     */
-    public function setRu($ru)
-    {
-        $this->ru = $ru;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getWorld()
-    {
-        return $this->world;
-    }
-
-    /**
-     * @param mixed $world
-     * @return Company
-     */
-    public function setWorld($world)
-    {
-        $this->world = $world;
-
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public static function getWorldPaymentFields()
     {
         return ['swift'];
-    }
-
-    /**
-     * @param $fieldName
-     * @return string
-     */
-    public function getRuPayerCompanyData($fieldName)
-    {
-        if (!in_array($fieldName, self::getRuPaymentFields())) {
-            throw new \OutOfRangeException('There is no field with name "' . $fieldName . '"');
-        }
-
-        return !is_null($this->getRu()) ? $this->getRu()[$fieldName] : '';
     }
 
     /**

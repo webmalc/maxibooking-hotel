@@ -188,7 +188,7 @@ class ProfileController extends Controller
      * @Route("/payer", name="user_payer")
      * @param Request $request
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function payerAction(Request $request)
     {

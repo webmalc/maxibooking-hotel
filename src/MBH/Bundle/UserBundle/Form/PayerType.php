@@ -6,6 +6,8 @@ use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientPayer;
 use MBH\Bundle\BillingBundle\Lib\Model\Company;
+use MBH\Bundle\BillingBundle\Lib\Model\RuCompany;
+use MBH\Bundle\BillingBundle\Lib\Model\WorldCompany;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler;
 use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
@@ -43,8 +45,11 @@ class PayerType extends AbstractType
         $clientRuPayerData = $this->clientPayerManager->getClientPayer();
 
         /** @var Company $company */
-//        $company = $this->clientPayerManager->getClientPayerCompany();
-        $company = null;
+        $company = $this->clientPayerManager->getClientCompany();
+        /** @var RuCompany $ruCompany */
+        $ruCompany = $this->clientPayerManager->getClientRuCompany();
+        /** @var WorldCompany $worldCompany */
+        $worldCompany = $this->clientPayerManager->getClientWorldCompany();
         $hasCompany = !is_null($company);
         $countryTld = isset($client) ? $client->getCountry() : Country::RUSSIA_TLD;
 
@@ -131,8 +136,8 @@ class PayerType extends AbstractType
                 'attr' => ['class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'],
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.issue_date.label',
-                'data' => $clientRuPayerData
-                    ? $clientRuPayerData->getPassportDateAsDateTime()
+                'data' => $clientRuPayerData && $clientRuPayerData->getPassport_date()
+                    ? BillingApi::getDateByBillingFormat($clientRuPayerData->getPassport_date())
                     : new \DateTime('midnight')
             ])
             ->add('registration_address', TextType::class, [
@@ -173,7 +178,7 @@ class PayerType extends AbstractType
                     'ИП' => 'ip',
                     'ЗАО' => 'zao'
                 ],
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('form') : ''
+                'data' => $ruCompany ? $ruCompany->getForm() : ''
             ])
             ->add('orgAddress', TextType::class, [
                 'required' => false,
@@ -211,19 +216,19 @@ class PayerType extends AbstractType
                 'required' => false,
                 'label' => 'form.payer_type.organization.inn.label',
                 'group' => 'form.payer_type.organization.group',
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('inn') : ''
+                'data' => $ruCompany ? $ruCompany->getInn() : ''
             ])
             ->add('ogrn', TextType::class, [
                 'required' => false,
                 'label' => 'form.payer_type.organization.ogrn.label',
                 'group' => 'form.payer_type.organization.group',
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('ogrn') : ''
+                'data' => $ruCompany ? $ruCompany->getOgrn() : ''
             ])
             ->add('kpp', TextType::class, [
                 'required' => false,
                 'group' => 'form.payer_type.organization.group',
                 'label' => 'form.payer_type.organization.kpp.label',
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('kpp') : ''
+                'data' => $ruCompany ? $ruCompany->getKpp() : ''
             ])
 //            ->add('position', TextType::class, [
 //                'required' => false,
@@ -234,19 +239,19 @@ class PayerType extends AbstractType
                 'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.surname.label',
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('boss_lastname') : ''
+                'data' => $ruCompany ? $ruCompany->getBoss_lastname() : ''
             ])
             ->add('name', TextType::class, [
                 'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.name.label',
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('boss_firstname') : ''
+                'data' => $ruCompany ? $ruCompany->getBoss_firstname() : ''
             ])
             ->add('patronymic', TextType::class, [
                 'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.patronymic.label',
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('boss_patronymic') : ''
+                'data' => $ruCompany ? $ruCompany->getBoss_patronymic() : ''
             ])
             ->add('base', ChoiceType::class, [
                 'required' => false,
@@ -256,13 +261,13 @@ class PayerType extends AbstractType
                     'Устава' => 'charter',
                     'Доверенности' => 'proxy'
                 ],
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('boss_operation_base') : ''
+                'data' => $ruCompany ? $ruCompany->getBoss_operation_base() : ''
             ])
             ->add('proxy', TextType::class, [
                 'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.number_of_power_of_attorney.label',
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('proxy_number') : ''
+                'data' => $ruCompany ? $ruCompany->getProxy_number() : ''
             ])
             ->add('proxyDate', DateType::class, [
                 'required' => false,
@@ -271,8 +276,8 @@ class PayerType extends AbstractType
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'],
-                'data' => $hasCompany && $company->getRu() && $company->getRuPayerCompanyData('proxy_date')
-                    ? BillingApi::getDateByBillingFormat($company->getRuPayerCompanyData('proxy_date'))
+                'data' => $ruCompany && $ruCompany->getProxy_date()
+                    ? BillingApi::getDateByBillingFormat($ruCompany->getProxy_date())
                     : new \DateTime('midnight')
             ])
             ->add('checkingAccount', TextType::class, [
@@ -291,19 +296,19 @@ class PayerType extends AbstractType
                 'required' => false,
                 'group' => 'form.payer_type.bank.group',
                 'label' => 'form.payer_type.bank.bik.label',
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('bik') : ''
+                'data' => $ruCompany ? $ruCompany->getBik() : ''
             ])
             ->add('correspondentAccount', TextType::class, [
                 'required' => false,
                 'group' => 'form.payer_type.bank.group',
                 'label' => 'form.payer_type.bank.correspondent_account.label',
-                'data' => $hasCompany ? $company->getRuPayerCompanyData('corr_account') : ''
+                'data' => $ruCompany ? $ruCompany->getCorr_account() : ''
             ])
             ->add('swift', TextType::class, [
                 'required' => false,
                 'group' => 'form.payer_type.bank.group',
                 'label' => 'form.payer_type.foreign_bank.swift.label',
-                'data' => $hasCompany && !is_null($company->getWorld()) ? $company->getWorld()['swift'] : ''
+                'data' => $worldCompany ? $worldCompany->getSwift() : ''
             ])
         ;
     }

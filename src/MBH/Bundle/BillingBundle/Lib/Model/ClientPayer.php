@@ -100,14 +100,6 @@ class ClientPayer
     }
 
     /**
-     * @return bool|\DateTime
-     */
-    public function getPassportDateAsDateTime()
-    {
-        return BillingApi::getDateByBillingFormat($this->getPassport_date());
-    }
-
-    /**
      * @param mixed $passport_date
      * @return ClientPayer
      */
