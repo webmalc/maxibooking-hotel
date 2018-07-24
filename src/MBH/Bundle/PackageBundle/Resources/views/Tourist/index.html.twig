@@ -14,13 +14,12 @@
                        data-toggle='tooltip'></i>
                     <div class="filter-form_input">
                         {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }}
+                        <span class="filter-form_separator"></span>
                         {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
                     </div>
                 </div>
             </div>
-            <div class="filter-form_input">
-                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
-            </div>
+            {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
             <div class="filter-form_input">
                 <i class="fa fa-male" title="{{ 'tourist.index.foreign_citizens'|trans }}"
                    data-toggle="tooltip"></i>

@@ -2,8 +2,12 @@
   display: flex;
   flex-wrap: wrap;
 
-  #package-filter-dates {
-    width: 150px;
+  //#package-filter-dates {
+  //  width: 150px;
+  //}
+
+  .filter-form_separator::after {
+    content: "—";
   }
 
   input.datepicker {
@@ -21,32 +25,50 @@
     //}
 
     > div > .filter-form_input {
-      &::after {
-        content: "—";
-      }
+      //&::after {
+      //  content: "—";
+      //}
       input.datepicker {
         &:first-child {
           margin-right: .3em;
         }
 
         &:last-child {
-          order: 2;
+          //order: 2;
           margin-left: .3em;
         }
       }
     }
   }
 
+  .filter-form_group-select-in-service,
   .filter-form_group-human-input {
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
+  .filter-form_group-select-in-service {
+    div.filter-form_input {
+      &:first-child {
+        margin-right: .3em;
+      }
+      &:last-child {
+        margin-left: .3em;
+      }
+    }
+  }
+
   .filter-form_input {
     display: flex;
     justify-content: center;
     align-items: center;
+
+   //@media (min-width: 768px) {
+   //  & + .filter-form_input {
+   //    margin-top: 3px;
+   //  }
+   //}
 
     > i.fa {
       display: flex;
