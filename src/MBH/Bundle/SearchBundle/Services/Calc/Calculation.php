@@ -157,13 +157,22 @@ class Calculation
         return $price;
     }
 
+    /**
+     * @param array $rawPriceCache
+     * @param CalcQuery $calcQuery
+     * @param int $mainChildren
+     * @param Promotion|null $promotion
+     * @return float|int
+     * @throws CalcHelperException
+     * @throws CalculationException
+     */
     private function getMainChildrenPrice(array $rawPriceCache, CalcQuery $calcQuery, int $mainChildren, Promotion $promotion = null)
 
     {
         $price = 0;
         $childPrice = $rawPriceCache['price'];
         if ($calcQuery->isChildPrices()) {
-            $childPrice = $rawPriceCache['childPrice'];
+            $childPrice = $rawPriceCache['childPrice'] ?? null;
             if (null === $childPrice) {
                 throw new CalculationException('No required child price found!');
             }

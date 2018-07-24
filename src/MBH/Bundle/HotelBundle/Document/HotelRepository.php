@@ -18,7 +18,8 @@ class HotelRepository extends DocumentRepository
      */
     public function getLastHotel()
     {
-        $qb = $this->createQueryBuilder()->sort('createdAt', 'desc')->limit(1)->getQuery()->getSingleResult()->execute();
+        $qb = $this->createQueryBuilder()->sort('createdAt', 'desc')->limit(1)->getQuery()->getSingleResult()->execute(
+        );
 
         return $qb ?? null;
     }
@@ -47,5 +48,19 @@ class HotelRepository extends DocumentRepository
         }
 
         return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getSearchActiveIds(): array
+    {
+        return $this->createQueryBuilder()
+            ->field('isSearchActive')->equals(true)
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 }

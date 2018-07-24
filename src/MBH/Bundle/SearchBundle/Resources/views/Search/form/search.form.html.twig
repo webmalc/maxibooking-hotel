@@ -33,6 +33,23 @@
     <i class="fa fa-bed" title='{{ 'form.searchType.room_type'|trans() }}'
        data-toggle='tooltip'></i>&nbsp{{ form_widget(form.roomTypes) }}
 </div>
+
+{% if is_granted('ROLE_FORCE_BOOKING') %}
+    <div class="input">
+        <i class="fa fa-exclamation-circle" title='{{ 'form.searchType.forceBooking'|trans() }}'
+           data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.isForceBooking) }}
+    </div>
+{% endif %}
+
+{% set clientConfig = client_config() %}
+{% if not clientConfig or not clientConfig.isInstantSearch %}
+    <div class="input">
+        <button class="btn btn-primary" id="searcher-submit-button">
+            <i class="fa fa-search"></i> Найти
+        </button>
+    </div>
+{% endif %}
+
 <div class="hide">
     {{ form_end(form) }}
 </div>
@@ -40,10 +57,7 @@
 
 
 
-{#<div class="input">#}
-    {#<i class="fa fa-bed" title='{{ 'form.searchType.room_type'|trans() }}'#}
-       {#data-toggle='tooltip'></i>&nbsp{{ form_widget(form.roomType) }}#}
-{#</div>#}
+
 {#<div class="input">#}
     {#<i class="fa fa-file-text-o" title='{{ 'form.searchType.order'|trans() }}'#}
        {#data-toggle='tooltip'></i>&nbsp{{ form_widget(form.order) }}#}
@@ -71,12 +85,3 @@
         {#</a>#}
     {#</small>#}
 {#</div>#}
-{#{% set clientConfig = client_config() %}#}
-            {#{% if not clientConfig or not clientConfig.isInstantSearch %}#}
-                {#<div class="input">#}
-                    {#<button class="btn btn-primary" id="search-submit-button">#}
-                        {#<i class="fa fa-search"></i> Найти#}
-                    {#</button>#}
-                {#</div>#}
-            {#{% endif %}#}
-

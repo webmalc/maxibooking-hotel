@@ -3,7 +3,7 @@ class Writer {
 
     private data: object = {};
 
-    public searchStatus: {[index:string]: boolean} = {state: false};
+    public searchStatus: {[index:string]: string} = {state: 'new'};
 
     private statusVue;
 
@@ -17,45 +17,15 @@ class Writer {
     private init() {
         this.searchVueInit();
         this.showSearchStatusInit();
-        this.testVueJs();
-    }
-
-    private testVueJs(): void {
-        Vue.component('testing', {
-            template: '<div><input  v-model="text" @input="$emit(\'reread\', \'alala\'); console($event)"><span>{{text}}</span></div>',
-            data: function   () {
-                return {
-                    text: 'newText'
-                }
-            },
-            methods: {
-                console: function (event) {
-                    console.log(event);
-                }
-            }
-        });
-        new Vue({
-            el: '#test',
-            template: '<span>{{value}}<testing @reread="console($event); concatinate($event)"></testing></span>',
-            data: {
-                value: 'Value!'
-            },
-            methods: {
-                console: function (event) {
-                    console.log(event);
-                },
-                concatinate: function (event) {
-                    this.value = this.value + event;
-                }
-            }
-
-        })
     }
 
     private showSearchStatusInit(): void {
         this.statusVue = new Vue({
-            el: '#search-status',
-            template: '<span v-if="status.state">Идет поиск...</span><span v-else>поиск не идет.</span>',
+            el: '#package-searcher-results-wrapper',
+            template: `<div  v-if="status.state === 'new' " class="bg-gray color-palette alert"> <i class="fa fa-search"> </i> Введите  данные для поиска </div>
+                       <div  v-else-if="status.state === 'noResults' " class="alert alert-warning"> <i class="fa fa-exclamation-circle"></i> По вашему запросу ничего не найдено</div>
+                       <div  v-else-if="status.state === 'error' " class="alert alert-danger"> <i class="fa fa-exclamation-circle"></i> Произошла ошибка при запросе в базу данных!</div>
+                       <div  v-else-if="status.state === 'process' " class="alert alert-warning"> <i class="fa fa-spinner fa-spin"></i> Подождите...</div>`,
             data: {
                 status: this.searchStatus
             }
@@ -165,7 +135,7 @@ class Writer {
 
         });
         this.rootApp = new Vue({
-            el: '#vue_results',
+            el: '#search_results',
             template: '<span><room-type v-for="(data, key) in rawData" :roomType="data.roomType" :searchResults="data.results" :key="key" ></room-type></span>',
             data: {rawData: this.data},
         });
@@ -175,12 +145,12 @@ class Writer {
         console.log('Search started');
         this.data = {};
         this.rootApp.rawData = this.data;
-        this.searchStatus.state = true;
+        this.searchStatus.state = 'process';
     }
 
-    public showStopSearch(): void {
+    public showStopSearch(state: string): void {
         console.log('Search stopped');
-        this.searchStatus.state = false;
+        this.searchStatus.state = state;
     }
 
     public drawResults(data): void {

@@ -7,5 +7,5 @@
 let writer = new Writer();
 
 const formDataReceiver = new FormDataReceiver('search_conditions');
-new AsyncSearcher('async_search', writer, formDataReceiver);
-new SyncSearcher('sync_search', writer, formDataReceiver);
+// new AsyncSearcher('async_search', writer, formDataReceiver);
+new SyncSearcher('searcher-submit-button', writer, formDataReceiver);

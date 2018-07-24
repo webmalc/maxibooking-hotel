@@ -20,18 +20,14 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SearchConditionsType extends AbstractType
 {
-    /** @var bool */
-    private $isUseCategory;
-
-    public function __construct(ClientConfigRepository $configRepository)
-    {
-        $this->isUseCategory = $configRepository->fetchConfig()->getUseRoomTypeCategory();
-    }
-
 
     /**
      * @param FormBuilderInterface $builder
@@ -50,8 +46,8 @@ class SearchConditionsType extends AbstractType
                     'format' => 'dd.MM.yyyy',
                     'widget' => 'single_text',
                     'attr' => [
-                        'class' => 'datepicker'
-                    ]
+                        'class' => 'datepicker',
+                    ],
                 ]
             )
             ->add(
@@ -61,40 +57,15 @@ class SearchConditionsType extends AbstractType
                     'format' => 'dd.MM.yyyy',
                     'widget' => 'single_text',
                     'attr' => [
-                        'class' => 'datepicker'
-                    ]
+                        'class' => 'datepicker',
+                    ],
                 ]
             )
             ->add('adults', IntegerType::class)
             ->add('children', IntegerType::class)
             ->add(
                 'roomTypes',
-                DocumentType::class,
-                [
-                    'class' => $options['room_type_key'],
-                    'required' => false,
-                    'multiple' => true,
-                    'error_bubbling' => true,
-                    'group_by' => function($choiceRoomCategory) {
-                        /** @var RoomTypeCategory $choiceRoomCategory */
-                        return $choiceRoomCategory->getHotel()->getName();
-                    },
-                    'query_builder' => function (DocumentRepository $dr) {
-                        $hotelIds = $dr
-                            ->getDocumentManager()
-                            ->getRepository(Hotel::class)
-                            ->createQueryBuilder()
-                            ->field('isSearchActive')->equals(true)
-                            ->distinct('id')
-                            ->getQuery()
-                            ->execute()
-                            ->toArray()
-                        ;
-
-                        return $dr->createQueryBuilder()->field('hotel.id')->in($hotelIds)->sort('fullTitle', 'asc');
-                    }
-
-                ]
+                RoomTypesType::class
             )
             ->add(
                 'hotels',
@@ -102,7 +73,7 @@ class SearchConditionsType extends AbstractType
                 [
                     'class' => Hotel::class,
                     'required' => false,
-                    'multiple' => true
+                    'multiple' => true,
                 ]
             )
             ->add(
@@ -128,6 +99,10 @@ class SearchConditionsType extends AbstractType
                     'required' => false,
                 ]
             )
+            ->add('isForceBooking', CheckboxType::class, [
+                'label' => 'form.searchType.forceBooking',
+                'required' => false,
+            ])
             ->add(
                 'childrenAges',
                 CollectionType::class,
@@ -141,13 +116,13 @@ class SearchConditionsType extends AbstractType
                         'empty_data' => 12,
                         'compound' => false,
                         'attr' => [
-                            'class' => 'plain-html'
-                        ]
+                            'class' => 'plain-html',
+                        ],
                     ],
                     'prototype' => true,
                     'allow_add' => true,
                     'allow_delete' => true,
-                    'by_reference' => false
+                    'by_reference' => false,
                 ]
             )
             ->add(
@@ -169,8 +144,8 @@ class SearchConditionsType extends AbstractType
             ->setDefaults(
                 [
                     'data_class' => SearchConditions::class,
-                    'csrf_protection' => false,
-                    'room_type_key' => $this->isUseCategory ? RoomTypeCategory::class : RoomType::class
+                    'csrf_protection' => false
+
                 ]
             );
     }

@@ -128,14 +128,14 @@ class SearchController extends Controller
 
     public function searcherAction(): Response
     {
-//        $begin = new \DateTime('10.09.2018');
-//        $end = new \DateTime('17.09.2018');
-//        $adults = 2;
-//        $children = 1;
-//        $childrenAges = [3];
-//        $conditions = new SearchConditions();
-//        $conditions->setBegin($begin)->setEnd($end)->setAdults($adults)->setChildren($children)->setChildrenAges($childrenAges);
-        $form = $this->createForm(SearchConditionsType::class);
+        $initSearchConditions = new SearchConditions();
+        $initSearchConditions
+            ->setBegin(new \DateTime('midnight 17-09-2018'))
+            ->setEnd(new \DateTime('midnight 24-09-2018' ))
+            ->setAdults(1)
+            ->setChildren(0)
+            ->setChildrenAges([]);
+        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions);
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $form->createView()]);
     }

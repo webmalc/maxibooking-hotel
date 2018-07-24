@@ -17,9 +17,9 @@ class SyncSearcher extends Searcher {
             });
             const data = await ajax;
             this.drawResults(data);
-            this.onStopSearch({status: 'success'});
+            this.onStopSearch({status: 'success', message: data});
         } catch (e) {
-            this.onStopSearch(e);
+            this.onStopSearch({status: 'error', message: e});
         }
 
 

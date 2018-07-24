@@ -442,6 +442,10 @@ class CalcQuery
         return $this->roomType->getId();
     }
 
+    /**
+     * @return bool
+     * @throws CalcHelperException
+     */
     public function isChildPrices(): bool
     {
         if ($this->isUseCategory) {

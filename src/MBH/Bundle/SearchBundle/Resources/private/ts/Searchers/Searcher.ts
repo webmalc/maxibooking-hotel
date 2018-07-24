@@ -27,7 +27,15 @@ abstract class Searcher {
 
     protected onStopSearch(requestResults: any): void {
         console.log(requestResults);
-        this.writer.showStopSearch();
+        let message;
+        if(requestResults.status === 'error'){
+            message = 'error';
+        }
+        if(requestResults.status === 'success' && !Object.keys(requestResults.message.results).length) {
+            message = 'noResults';
+        }
+
+        this.writer.showStopSearch(message);
     }
 
     protected drawResults(data): void {
