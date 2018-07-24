@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="filter-form_input">
-                <select name="filter" id="filter">
+                <select name="filter" id="filter" class="form-control">
                     <option value="paidDate">{{ 'views.cash.index.filter.byPaidDate'|trans({}, 'MBHCashBundle') }}</option>
                     <option value="documentDate">{{ 'views.cash.index.filter.byDocumentDate'|trans({}, 'MBHCashBundle') }}</option>
                     <option value="deletedAt">{{ 'views.cash.index.filter.byDeletedDate'|trans({}, 'MBHCashBundle') }}</option>
@@ -32,7 +32,7 @@
             <div class="filter-form_input">
                 <i class="fa fa-money" title='{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}'
                    data-toggle='tooltip'></i>
-                <select name="methods" id="method"
+                <select name="methods" id="method" class="form-control"
                         data-placeholder="{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}">
                     <option></option>
                     {% for type, name in methods %}
@@ -62,7 +62,7 @@
             <div class="filter-form_input">
                 <i class="fa fa-user" title='{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}'
                    data-toggle='tooltip'></i>
-                <select class="not-remember" name="user" id="user" data-placeholder="{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}">
+                <select class="not-remember form-control" name="user" id="user" data-placeholder="{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}">
                     <option></option>
                     {% for user in users %}
                         <option value="{{ user.username }}" {{ app.request.get('user') == user.username ? 'selected' }}>{{ user.fullName(true) }}</option>
@@ -71,7 +71,7 @@
             </div>
             <div class="filter-form_input">
                 <i class="fa fa-paper-plane" title="{{ 'views.cash.index.type'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"></i>
-                <select id="cash-type" name="type">
+                <select id="cash-type" name="type" class="form-control">
                     <option></option>
                     {% for type in typeList %}
                         <option value="{{ type }}">{{ ('cashDocumentCriteria.type.' ~ type)|trans }}</option>
@@ -93,12 +93,12 @@
                 </div>
                 <div class="filter-form_input">
                     <i class="fa fa-trash-o" title="{{ 'views.cash.index.show_deleted'|trans({}, 'MBHCashBundle') }}"
-                       data-toggle="tooltip"></i>&nbsp;
+                       data-toggle="tooltip"></i>
                     <input type="checkbox" name="deleted" id="deleted-checkbox" value="1">
                 </div>
                 <div class="filter-form_input">
                     <i class="fa fa-calendar" title="{{ 'views.cash.index.byDay'|trans({}, 'MBHCashBundle') }}"
-                       data-toggle="tooltip"></i>&nbsp;
+                       data-toggle="tooltip"></i>
                     <input type="checkbox" name="by_day" id="by_day" value="1">
                 </div>
             </div>

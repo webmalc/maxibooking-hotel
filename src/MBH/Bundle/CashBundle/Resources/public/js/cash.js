@@ -124,6 +124,8 @@ $(document).ready(function () {
         };
 
     var dataTableOptions = {
+        language    : mbh.datatablesOptions.language,
+        pageLength  : mbh.datatablesOptions.pageLength,
         "processing": true,
         "serverSide": true,
         "ordering": true,
