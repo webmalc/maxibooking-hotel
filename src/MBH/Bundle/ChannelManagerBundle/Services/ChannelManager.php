@@ -457,6 +457,7 @@ class ChannelManager
             $configType = $this->getConfigFullName($channelManagerName);
             $config = new $configType;
             $config->setHotel($hotel);
+            $this->dm->persist($config);
         }
 
         //TODO: Может быть расширить кол-во необходимых данных
@@ -466,8 +467,8 @@ class ChannelManager
 
         $config->setReadinessConfirmed(true);
 
-        $this->dm->persist($config);
         $this->dm->flush();
+        $this->dm->refresh($hotel);
 
         return true;
     }

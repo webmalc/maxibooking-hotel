@@ -359,7 +359,7 @@ class Extension extends \Twig_Extension
                 throw new \InvalidArgumentException('Incorrect type of articles:' . $type);
             }
             if (!isset($articlesByTypes[$type][$name])) {
-                throw new \InvalidArgumentException('Incorrect name of article:', $name);
+                throw new \InvalidArgumentException('Incorrect name of article:' . $name);
             }
 
             $url .= '/articles/' . $articlesByTypes[$type][$name];

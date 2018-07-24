@@ -182,13 +182,13 @@ class ChannelManagerController extends Controller
         }
 
         $channelManagerService = $this->get('mbh.channelmanager');
-        $config = $channelManagerService->getConfigForHotel($this->hotel, $channelManagerName);
         $confirmationResult = $channelManagerService->confirmReadinessOfCM($this->hotel, $channelManagerName);
 
         if ($confirmationResult) {
             $this->addFlash('success', 'channel_manager.confirmation.success');
 
             $channelManagerHumanName = $channelManagerService->getServiceHumanName($channelManagerName);
+            $config = $channelManagerService->getConfigForHotel($this->hotel, $channelManagerName);
             $this->get('mbh.messages_store')
                 ->sendCMConfirmationMessage($config, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
         }

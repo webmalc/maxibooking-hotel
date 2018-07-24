@@ -32,7 +32,6 @@ class CMWizardManager
 
     const CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT = [
         'hundred_one_hotels',
-        'ostrovok',
         'vashotel'
     ];
     const HOTEL_ADDRESS_FIELDS = [];
