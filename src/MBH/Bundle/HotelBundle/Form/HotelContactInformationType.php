@@ -4,10 +4,13 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Form\LanguageType;
+use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -39,20 +42,28 @@ class HotelContactInformationType extends AbstractType
                 ],
                 'help' => $cityHelp
             ])
-            ->add('settlement', TextType::class, [
-                'label' => 'form.hotelExtendedType.settlement',
+            ->add('settlement', MultiLanguagesType::class, [
                 'group' => 'form.hotelExtendedType.address',
-                'required' => false,
+                'data' => $builder->getData(),
+                'fields_options' => [
+                    'label' => 'form.hotelExtendedType.settlement',
+                    'required' => false,
+                ],
+                'field_type' => TextType::class,
             ])
             ->add('zipCode', TextType::class, [
                 'label' => 'form.hotelExtendedType.zip_code',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
             ])
-            ->add('street', TextType::class, [
-                'label' => 'form.hotelExtendedType.street',
+            ->add('street', MultiLanguagesType::class, [
                 'group' => 'form.hotelExtendedType.address',
-                'required' => false
+                'data' => $builder->getData(),
+                'fields_options' => [
+                    'label' => 'form.hotelExtendedType.street',
+                    'required' => false,
+                ],
+                'field_type' => TextType::class,
             ])
             ->add('internationalStreetName', TextType::class, [
                 'group' => 'form.hotelExtendedType.address',
@@ -136,6 +147,11 @@ class HotelContactInformationType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Hotel::class,
         ]);
+    }
+
+    public function finishView(FormView $view, FormInterface $form, array $options)
+    {
+        $view->children['contactInformation']->vars['embedded'] = true;
     }
 
     public function getBlockPrefix()

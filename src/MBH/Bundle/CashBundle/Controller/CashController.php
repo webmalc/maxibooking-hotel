@@ -423,7 +423,7 @@ class CashController extends Controller
     {
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $order = $entity->getOrder();
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         if ($entity->getHotel() && !$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()) || !$order->getCreditCard()
             || !$clientConfig || $clientConfig->getPaymentSystems() != 'uniteller'
         ) {

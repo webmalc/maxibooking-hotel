@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\Form\AbstractType;
@@ -186,6 +187,17 @@ class ClientConfigType extends AbstractType
                 'required' => false,
                 'label' => 'form.clientConfigType.currency_ratio_fix.label',
                 'help' => 'form.clientConfigType.currency_ratio_fix.help'
+            ])
+            ->add('languages', LanguageType::class, [
+                'label' => 'form.clientConfigType.languages.label',
+                'group' => 'form.clientConfigType.main_group',
+                'multiple' => true,
+                'required' => false
+            ])
+            ->add('isMBSiteEnabled', CheckboxType::class, [
+                'label' => 'form.clientConfigType.is_mb_site_enabled.label',
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false
             ])
             ->add(
                 'can_book_without_payer',
