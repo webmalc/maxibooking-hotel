@@ -195,3 +195,7 @@ view.pay_order_modal.unfilled_data_message: 'Перед проведением �
 interactive_login_listener.error_by_client_confirmation: 'Произошла непредвиденная ошибка. Пожалуйста, обратитесь в службу поддержки по адресу: "%supportEmail%"'
 on_request_listener.mb_not_paid_error: 'У вас истек срок оплаты очередного заказа на использование программы Maxibooking. Для возобновления использования программы оплатите заказ из списка на вкладке "Оплата".'
 client_payer_manager.payer_data: 'данные о плательщике'
+view.payment_result_page.title.fail: 'Произошла ошибка при оплате'
+view.payment_result_page.title.succcess: 'Оплата прошло успешно'
+view.payment_result_page.button.text.fail: 'Попробовать еще раз'
+view.payment_result_page.button.text.success: 'ОК'

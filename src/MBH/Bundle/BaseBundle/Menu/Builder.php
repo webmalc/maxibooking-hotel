@@ -712,7 +712,7 @@ class Builder
             $myAllLocator = [
                 'myallocator' => [
                     'options'    => [
-                        'route' => 'channels',
+                        'route' => 'myallocator',
                         'label' => 'menu.communication.label.advanced',
                     ],
                     'attributes' => ['icon' => 'fa fa-cloud-download'],

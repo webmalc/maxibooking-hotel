@@ -123,7 +123,6 @@ channelManager.hotels.notification.edit: 'Hotels.com order %order% changed. Rese
 channelManager.hotels.notification.delete: 'Hotels.com order %order% deleted. Reservation numbers: %packages%'
 channelManager.hotels.notification.error.subject: 'Hotels.com error'
 channelManager.hotels.notification.error: 'Hotels.com order processing error. Information: %info%'
-channelmanager.orders_not_fetched.error: 'Upload the information about already created reservations on Booking.com by pressing the button'
 views.channelmanager.actions.sync_all: Load
 channelManager.commonCM.notification.error: 'Error while proccessing the order %channelManagerName%. Information: %info%'
 channelManager.commonCM.notification.error.subject: 'Error %channelManagerName%'

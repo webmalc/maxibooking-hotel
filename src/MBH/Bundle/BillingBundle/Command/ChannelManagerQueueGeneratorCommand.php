@@ -40,7 +40,7 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
                 return $client->getStatus() === Client::CLIENT_ACTIVE_STATUS
                     || ($client->getStatus() === Client::CLIENT_DISABLED_STATUS
                         && !is_null($client->getDisabledAtAsDateTime())
-                        && $helper->getDifferenceInDaysWithSign($client->getDisabledAtAsDateTime(), new \DateTime()) > 10);
+                        && $helper->getDifferenceInDaysWithSign($client->getDisabledAtAsDateTime(), new \DateTime()) < 15);
             });
 
             $clientLoginList = array_map(function (Client $client) {

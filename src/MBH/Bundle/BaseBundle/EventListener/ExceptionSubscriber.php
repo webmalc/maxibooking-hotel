@@ -57,6 +57,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getException();
         $user = $this->tokenStorage->getToken();
         if (!$exception instanceof AccessDeniedException && !$exception instanceof NotFoundHttpException && $this->kernel->getEnvironment() === 'prod') {
+            $user = $this->tokenStorage->getToken();
             $message = $this->exceptionNotifier::createMessage();
             $messageText = "Произошла ошибка у \"" . $this->kernel->getClient()
                 . '. Пользователь: ' . (!empty($user) ? $user->getUsername() : 'без пользователя')

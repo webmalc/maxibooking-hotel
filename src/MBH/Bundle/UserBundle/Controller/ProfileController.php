@@ -328,12 +328,12 @@ class ProfileController extends Controller
 
     /**
      * @Route("/client_successful_payment", name="client_successful_payment", options={"expose"=true})
-     * @Template()
+     * @Template("@MBHUser/Profile/paymentResultPage.html.twig")
      * @return array
      */
     public function paymentSuccessfulPageAction()
     {
-        return [];
+        return ['success' => true];
     }
 
     private function addBillingErrorFlash()

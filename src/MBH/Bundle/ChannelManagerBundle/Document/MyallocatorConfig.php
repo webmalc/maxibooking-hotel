@@ -124,6 +124,7 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
     {
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setReadinessConfirmed(false);
     }
     
     /**
@@ -280,5 +281,13 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
         $this->currencyDefaultRatio = $currencyDefaultRatio;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMainSettingsFilled()
+    {
+        return $this->getIsEnabled() && !empty($this->getToken());
     }
 }

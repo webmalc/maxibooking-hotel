@@ -2,38 +2,18 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class VashotelType extends AbstractType
+class VashotelType extends ChannelManagerConfigType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        parent::buildForm($builder, $options);
+
         $builder
-            ->add(
-                'isEnabled',
-                CheckboxType::class,
-                [
-                    'label' => 'form.vashotelType.in_included',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.vashotelType.should_we_use_in_channel_manager'
-                ]
-            )
-            ->add(
-                'hotelId',
-                TextType::class,
-                [
-                    'label' => 'form.vashotelType.hotel_id',
-                    'required' => true,
-                    'attr' => ['placeholder' => '1567'],
-                    'help' => 'form.vashotelType.vashotel_ru_settings_hotel_id'
-                ]
-            )
             ->add(
                 'password',
                 TextType::class,
@@ -49,10 +29,10 @@ class VashotelType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(
-            array(
-                'data_class' => 'MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig',
-            )
+        $resolver->setDefaults([
+                'data_class' => VashotelConfig::class,
+                'channelManagerName' => 'VashHotel.ru'
+            ]
         );
     }
 
