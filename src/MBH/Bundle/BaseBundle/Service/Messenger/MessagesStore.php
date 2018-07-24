@@ -104,16 +104,16 @@ class MessagesStore
     private function getCmConnectionData(ChannelManagerConfigInterface $config, string $channelManagerHumanName)
     {
         $mailConnectionData = [
-            'Система бронирования' => $channelManagerHumanName,
-            'Название отеля' => $config->getHotel()->getName(),
+            'messages_store.channel_manager_name' => $channelManagerHumanName,
+            'messages_store.hotel_name' => $config->getHotel()->getName(),
         ];
 
         if ($this->cMWizardManager->isConfiguredByTechSupport($config->getName())) {
-            $mailConnectionData['ID отеля'] = $config->getHotelId();
+            $mailConnectionData['messages_store.hotel_id'] = $config->getHotelId();
         }
 
-        if (in_array($config->getName(), ['ostrovok', 'hundred_one_hotels'])) {
-            $mailConnectionData['Адрес отеля'] = $this->cMWizardManager->getChannelManagerHotelAddress($config->getHotel());
+        if (in_array($config->getName(), ['hundred_one_hotels'])) {
+            $mailConnectionData['messages_store.hotel_address'] = $this->cMWizardManager->getChannelManagerHotelAddress($config->getHotel());
             /** @var HundredOneHotelsConfig $config */
             if ($config->getName() === 'hundred_one_hotels' && $config->getApiKey()) {
                 $mailConnectionData['API key'] = $config->getApiKey();
@@ -123,7 +123,7 @@ class MessagesStore
         /** @var VashotelConfig $config */
         if ($config->getName() === 'vashotel' && $config->getPassword()) {
 
-            $mailConnectionData['Ваш пароль'] = $config->getPassword();
+            $mailConnectionData['messages_store.your_password'] = $config->getPassword();
         }
 
         return $mailConnectionData;

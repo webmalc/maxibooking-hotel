@@ -460,7 +460,6 @@ class ChannelManager
             $this->dm->persist($config);
         }
 
-        //TODO: Может быть расширить кол-во необходимых данных
         if ($isConfiguredByTechSupport && empty($config->getHotelId())) {
             throw new \RuntimeException('Mandatory data is not specified');
         }

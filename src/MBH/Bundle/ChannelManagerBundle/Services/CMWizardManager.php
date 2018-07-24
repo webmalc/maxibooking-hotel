@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class CMWizardManager
 {
@@ -17,17 +18,20 @@ class CMWizardManager
     private $fieldsManager;
     private $tokenStorage;
     private $billingApi;
+    private $translator;
 
     public function __construct(
         ChannelManager $channelManager,
         DocumentFieldsManager $fieldsManager,
         TokenStorage $tokenStorage,
-        BillingApi $billingApi
+        BillingApi $billingApi,
+        TranslatorInterface $translator
     ) {
         $this->channelManager = $channelManager;
         $this->fieldsManager = $fieldsManager;
         $this->tokenStorage = $tokenStorage;
         $this->billingApi = $billingApi;
+        $this->translator = $translator;
     }
 
     const CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT = [
@@ -71,13 +75,17 @@ class CMWizardManager
     {
         $result = [];
         if ($this->isConfiguredByTechSupport($channelManagerName)) {
-            $result[] = 'Название отеля, отображаемое в ' . $channelManagerHumanName . ': "' . $hotel->getName() . '"';
+            $result[] = $this->translator->trans('cm_wizard_manager.hotel_name_notification.text', [
+                '%channelManagerName%' => $channelManagerHumanName,
+                '%hotelName%' => $hotel->getName()
+            ]);
         }
         
         if (in_array($channelManagerName, ['ostrovok', 'hundred_one_hotels']) && empty($this->getUnfilledFields($hotel))) {
-            $result[] = 'Адрес отеля, отображаемый в '
-                . $channelManagerHumanName
-                . ': "' . $this->getChannelManagerHotelAddress($hotel);
+            $result[] = $this->translator->trans('cm_wizard_manager.hotel_address_notification.text', [
+                '%channelManagerName%' => $channelManagerHumanName,
+                '%hotelAddress%' => $this->getChannelManagerHotelAddress($hotel)
+            ]);
         }
         
         return $result;

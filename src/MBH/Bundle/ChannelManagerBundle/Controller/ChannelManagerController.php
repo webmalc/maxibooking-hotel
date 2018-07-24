@@ -149,8 +149,7 @@ class ChannelManagerController extends Controller
                 $form->handleRequest($request);
                 $this->dm->persist($config);
                 $this->dm->flush();
-                //TODO: Дополнить
-                $this->addFlash('success', 'Данные подключения отправлены в тех.поддержку.');
+                $this->addFlash('success', 'channel_manager.confirmation_flash.success');
 
                 $this->get('mbh.messages_store')
                     ->sendCMConnectionDataMessage($config, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
