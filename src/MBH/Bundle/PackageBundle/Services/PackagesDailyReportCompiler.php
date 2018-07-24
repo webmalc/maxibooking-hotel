@@ -90,6 +90,7 @@ class PackagesDailyReportCompiler
         $table = $this->report->addReportTable($forEmail);
         $table->addClass('daily-report-table');
         $table->addClass('text-center');
+        $table->addClass('custom-mobile-style');
         $this->addTitleRows($table, $hotels, $begin, $end);
 
         $cashDocCriteria = new CashDocumentQueryCriteria();

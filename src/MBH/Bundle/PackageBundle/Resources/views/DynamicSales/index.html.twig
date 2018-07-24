@@ -6,36 +6,37 @@
     <script src="https://code.highcharts.com/stock/highstock.js"></script>
     <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'dynamic-sales-widget'} %}
-    <form id="dynamic-sale-filter" class="form-inline filter-form " role="form">
-        <div class="input">
-            <i class="fa fa-calendar" title='{{ 'dynamic.sales.dates'|trans({},'MBHPackageBundle') }}' data-toggle='tooltip'></i>&nbsp
+    <form id="dynamic-sale-filter" class="form-inline filter-form" role="form">
+        <div class="filter-form_input">
+            <i class="fa fa-calendar" title='{{ 'dynamic.sales.dates'|trans({},'MBHPackageBundle') }}' data-toggle='tooltip'></i>
             <input type="text" name="begin" id="dynamic-sales-filter-begin"
                    class="dynamic-sales-filter not-set-date form-control input-sm" data-date-format="dd.mm.yyyy"
                    value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
         </div>
 
-        <div class="input">
+        <div class="filter-form_input">
             <i class="fa fa-calendar" title='{{ 'dynamic.sales.dates'|trans({},'MBHPackageBundle') }}'
-               data-toggle='tooltip'></i>&nbsp
+               data-toggle='tooltip'></i>
             <input type="text" name="begin2" id="dynamic-sales-filter-begin2"
                    class="dynamic-sales-filter not-set-date form-control input-sm" data-date-format="dd.mm.yyyy"
                    value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
         </div>
 
-        <div class="input">
+        <div class="filter-form_input">
             <i class="fa fa-calendar" title='{{ 'dynamic.sales.dates'|trans({},'MBHPackageBundle') }}'
-               data-toggle='tooltip'></i>&nbsp
+               data-toggle='tooltip'></i>
             <input type="text" name="begin2" id="dynamic-sales-filter-begin3"
                    class="dynamic-sales-filter not-set-date form-control input-sm" data-date-format="dd.mm.yyyy"
                    value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
         </div>
 
-        <div class="input">
+        <div class="filter-form_input">
             <i class="fa fa-bed" title='{{ 'dynamic.sales.type.room'|trans({},'MBHPackageBundle') }}'
-               data-toggle='tooltip'></i>&nbsp <select name="roomType" multiple
-                                                       data-placeholder="{{ 'dynamic.sales.type.room'|trans({},'MBHPackageBundle') }}"
-                                                       id="dynamic-sales-filter-roomType"
-                                                       class="dynamic-sale-filter-filter form-control input-sm">
+               data-toggle='tooltip'></i>
+            <select name="roomType" multiple
+                       data-placeholder="{{ 'dynamic.sales.type.room'|trans({},'MBHPackageBundle') }}"
+                       id="dynamic-sales-filter-roomType"
+                       class="dynamic-sale-filter-filter form-control input-sm">
                 <option value="total">{{ 'dynamic_sales.room_type_options.total'|trans({}, "MBHPackageBundle")}}</option>
                 {% for roomType in roomTypes %}
                     <option value="{{ roomType.id }}"
@@ -44,19 +45,20 @@
             </select>
         </div>
 
-        <div class="input">
+        <div class="filter-form_input">
             <i class="fa fa-eye" title='{{ 'dynamic.sales.show.title'|trans({},'MBHPackageBundle') }}'
-               data-toggle='tooltip'></i>&nbsp <select name="dynamicSales" multiple
-                                                       data-placeholder="{{ 'dynamic.sales.show.title'|trans({},'MBHPackageBundle') }}"
-                                                       id="dynamic-sales-show-filter-roomType"
-                                                       class="dynamic-sale-filter-filter form-control input-sm">
+               data-toggle='tooltip'></i>
+            <select name="dynamicSales" multiple
+                       data-placeholder="{{ 'dynamic.sales.show.title'|trans({},'MBHPackageBundle') }}"
+                       id="dynamic-sales-show-filter-roomType"
+                       class="dynamic-sale-filter-filter form-control input-sm">
                 <option></option>
                 {% for dynamicSalesShownOption in optionsShowDynamicSales %}
                     <option value="{{ dynamicSalesShownOption }}">{{ ('dynamic.sales.day.' ~ dynamicSalesShownOption)|trans({},'MBHPackageBundle') }}</option>
                 {% endfor %}
             </select>
         </div>
-        <div class="input">
+        <div class="filter-form_input">
             <button class="btn btn-primary" id="dynamic-sales-submit-button"><i
                         class="fa fa-search"></i> {{ 'package.dynamic.sale.search'|trans({},'MBHPackageBundle') }}
             </button>

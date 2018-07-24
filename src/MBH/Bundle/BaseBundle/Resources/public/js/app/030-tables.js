@@ -126,6 +126,9 @@ function setVerticalScrollable($scrollableElements, wrapper) {
 }
 
 function setScrollable(wrapper) {
+    if (isMobileDevice()) {
+        return;
+    }
     var $verticalScrollable = $('.vertical-scrollable');
     var $horizontalScrollable = $('.horizontal-scrollable');
     var $table = $horizontalScrollable.parent().parent().parent();
