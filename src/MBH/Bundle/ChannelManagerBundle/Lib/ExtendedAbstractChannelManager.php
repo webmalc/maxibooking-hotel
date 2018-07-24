@@ -54,8 +54,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                     $this->log('response for update prices request:');
                     $this->log($sendResult);
                 }
-                //prevent concurrent connections
-                sleep(2);
             }
         }
 
@@ -87,8 +85,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                     $this->log('response for update rooms request:');
                     $this->log($sendResult);
                 }
-                //prevent concurrent connections
-                sleep(2);
             }
         }
 
@@ -122,8 +118,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                     $this->log('response for update restrictions request:');
                     $this->log($sendResult);
                 }
-                //prevent concurrent connections
-                sleep(2);
             }
         }
 

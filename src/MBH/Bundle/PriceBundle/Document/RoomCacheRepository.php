@@ -195,10 +195,19 @@ class RoomCacheRepository extends DocumentRepository
      * @param \DateTime $end
      * @param array $selectedFields
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getRawExistedRoomCaches(\DateTime $begin, \DateTime $end, array $selectedFields = [])
     {
-        $qb = $this->fetchQueryBuilder($begin, $end, null, [], null);
+        $roomTypeIds = $this->dm
+            ->getRepository('MBHHotelBundle:RoomType')
+            ->createQueryBuilder()
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $qb = $this->fetchQueryBuilder($begin, $end, null, $roomTypeIds, null);
         if (count($selectedFields) > 0) {
             $qb->select($selectedFields);
         }

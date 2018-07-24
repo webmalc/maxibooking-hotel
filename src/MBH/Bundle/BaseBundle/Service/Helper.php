@@ -52,7 +52,7 @@ class Helper
 
         $timezone = $timezone ?? date_default_timezone_get();
 
-        return \DateTime::createFromFormat($format.' H:i:s', $date.' 00:00:00', new \DateTimeZone($timezone));
+        return \DateTime::createFromFormat($format . ' H:i:s', $date . ' 00:00:00', new \DateTimeZone($timezone));
     }
 
     /**
@@ -389,6 +389,7 @@ class Helper
         }
         $out[] = $this->morph(intval($rub), $unit[1][0], $unit[1][1], $unit[1][2]); // rub
         $out[] = $kop . ' ' . $this->morph($kop, $unit[0][0], $unit[0][1], $unit[0][2]); // kop
+
         return trim(preg_replace('/ {2,}/', ' ', join(' ', $out)));
     }
 
@@ -530,11 +531,11 @@ class Helper
     {
         $bundles = new \SplObjectStorage();
         $kernelDir = $this->container->get('kernel')->getRootDir();
-        $finder = Finder::create()->directories()->name('*')->in($kernelDir.'/../src/MBH/Bundle')->depth(0);
+        $finder = Finder::create()->directories()->name('*')->in($kernelDir . '/../src/MBH/Bundle')->depth(0);
         $kernel = $this->container->get('kernel');
         foreach ($finder as $dir) {
             /** @var \SplFileInfo $dir */
-            $dir->isDir() ? $bundles->attach($kernel->getBundle('MBH'.$dir->getBasename())) : null;
+            $dir->isDir() ? $bundles->attach($kernel->getBundle('MBH' . $dir->getBasename())) : null;
         }
 
         return $bundles;
@@ -564,16 +565,37 @@ class Helper
     }
 
     /**
+     * @param $callback
+     * @param string $filter
+     * @return mixed
+     */
+    public function getWithoutFilter($callback, $filter = 'softdeleteable')
+    {
+        $dm = $this->container->get('doctrine.odm.mongodb.document_manager');
+        if ($dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->disable($filter);
+        }
+
+        $result = $callback();
+
+        if (!$dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->enable($filter);
+        }
+
+        return $result;
+    }
+
+    /**
      * @param $fieldData
      * @return array
      */
     public function getDataFromMultipleSelectField($fieldData)
     {
-        if (!empty($fieldData) && is_array($fieldData)) {
-            return  array_values(array_diff($fieldData, array('', null, false)));
+        if (!is_array($fieldData)) {
+            $fieldData = [$fieldData];
         }
 
-        return [];
+        return array_values(array_diff($fieldData, ['', null, false]));
     }
 
     public function getTimeZone(?ClientConfig $clientConfig = null)
@@ -631,7 +653,7 @@ class Helper
      */
     public function isXMLValid($xmlString)
     {
-        $result = simplexml_load_string($xmlString, 'SimpleXmlElement', LIBXML_NOERROR+LIBXML_ERR_FATAL+LIBXML_ERR_NONE);
+        $result = simplexml_load_string($xmlString, 'SimpleXmlElement', LIBXML_NOERROR + LIBXML_ERR_FATAL + LIBXML_ERR_NONE);
 
         return $result->__toString() !== '';
     }
@@ -727,7 +749,7 @@ class Helper
 
     /**
      * @param \DateTime[] $dates
-     * @return array
+     * @return array[$minDate, $maxDate]
      * @throws \InvalidArgumentException
      */
     public function getMinAndMaxDates(array $dates)
@@ -736,10 +758,21 @@ class Helper
             throw new \InvalidArgumentException('Passed array of dates can not be empty!');
         }
 
-        usort($dates, function(\DateTime $date1, \DateTime $date2) {
+        usort($dates, function (\DateTime $date1, \DateTime $date2) {
             return $date1 > $date2 ? 1 : -1;
         });
 
         return [$dates[0], end($dates)];
+    }
+
+    /**
+     * If date > date2 than return negative int
+     * @param \DateTime $date
+     * @param \DateTime $date2
+     * @return int
+     */
+    public function getDifferenceInDaysWithSign(\DateTime $date, \DateTime $date2)
+    {
+        return (int)($date->diff($date2)->format("%r%a"));
     }
 }

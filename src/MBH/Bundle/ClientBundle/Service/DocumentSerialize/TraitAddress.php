@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait TraitAddress
 {
-    public function __construct(ContainerInterface $container, BillingApi $billingApi)
+    public function __construct(ContainerInterface $container = null, BillingApi $billingApi = null)
     {
         parent::__construct($container);
         $this->billing = $billingApi;
@@ -142,5 +142,34 @@ trait TraitAddress
         $method = end($temp);
 
         return $this->address !== null && $this->address->$method() !== null ? $this->address->$method() : '';
+    }
+
+    public function getName(): string
+    {
+        return $this->returnValue(__METHOD__);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryTld(): string
+    {
+        return $this->returnValue(__METHOD__);
+    }
+
+    /**
+     * @return string
+     */
+    public function getRegionId(): string
+    {
+        return $this->returnValue(__METHOD__);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCityId(): string
+    {
+        return $this->returnValue(__METHOD__);
     }
 }

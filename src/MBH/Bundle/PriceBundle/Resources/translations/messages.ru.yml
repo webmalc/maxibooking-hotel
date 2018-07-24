@@ -165,8 +165,6 @@ mbhpricebundle.form.pricecachegeneratortype.tcena_detskogo_dop_mesta: 'Цена 
 mbhpricebundle.form.pricecachegeneratortype.price_one_place_accomodation: 'Цена 1-местного размещения'
 mbhpricebundle.form.pricecachegeneratortype.remember: 'Запомнить?'
 mbhpricebundle.form.pricecachegeneratortype.remember_to_reuse: 'Запомнить для повторного использования'
-mbhpricebundle.form.pricecachegeneratortype.beginning_period_should_be_less_than_end_period: 'Начало периода должно быть меньше конца периода.'
-mbhpricebundle.form.pricecachegeneratortype.period_can_not_be_more_than_year: 'Период не может быть больше года.'
 mbhpricebundle.form.pricecachegeneratortype.price_adult_extra_places: 'Цена взрослого доп. места'
 mbhpricebundle.form.pricecachegeneratortype.tsena: Цена
 mbhpricebundle.form.pricecachegeneratortype.tsenazacheloveka: 'Цена за человека?'

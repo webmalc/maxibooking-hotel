@@ -28,26 +28,38 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = new \DateTime();
-
-        $container = $this->getContainer();
-        $clients = $container->get('mbh.service.client_list_getter')->getClientsList();
         $certainClient = $input->getOption('client');
-        if ($certainClient) {
-            $clients = array_intersect($clients, [$certainClient]);
+
+        $installedClientsResult = $this->getContainer()
+            ->get('mbh.billing.api')
+            ->getInstalledClients();
+
+        if ($installedClientsResult->isSuccessful()) {
+            $helper = $this->getContainer()->get('mbh.helper');
+            $clients = array_filter($installedClientsResult->getData(), function (Client $client) use ($helper) {
+                return $client->getStatus() === Client::CLIENT_ACTIVE_STATUS
+                    || ($client->getStatus() === Client::CLIENT_DISABLED_STATUS
+                        && !is_null($client->getDisabledAtAsDateTime())
+                        && $helper->getDifferenceInDaysWithSign($client->getDisabledAtAsDateTime(), new \DateTime()) < 15);
+            });
+
+            $clientLoginList = array_map(function (Client $client) {
+                return $client->getLogin();
+            }, $clients);
+        } else {
+            $clientLoginList = $this->getContainer()
+                ->get('mbh.service.client_list_getter')
+                ->getClientsList();
         }
 
-        $inActiveClientsResult = $this->getContainer()->get('mbh.billing.api')->getInActiveClients();
-        if ($inActiveClientsResult->isSuccessful()) {
-            $inActiveClientsNames = array_map(function (Client $client) {
-                return $client->getLogin();
-            }, $inActiveClientsResult->getData());
-            $clients = array_diff($clients, $inActiveClientsNames);
+        if ($certainClient) {
+            $clientLoginList = array_intersect($clientLoginList, [$certainClient]);
         }
 
         $kernel = $this->getContainer()->get('kernel');
         $producer = $this->getContainer()->get('old_sound_rabbit_mq.task_command_runner_producer');
 
-        foreach ($clients as $client) {
+        foreach ($clientLoginList as $client) {
             $command = new Command(
                 'mbh:channelmanager:pull',
                 [],
@@ -59,9 +71,8 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
         }
 
         $time = $start->diff(new \DateTime());
-        $output->writeln(count($clients).' clients were handled.');
-        $output->writeln(implode(' ', $clients));
+        $output->writeln(count($clientLoginList).' clients were handled.');
+        $output->writeln(implode(' ', $clientLoginList));
         $output->writeln('Command complete. Elapsed time: ' . $time->format('%H:%I:%S'));
     }
-
 }

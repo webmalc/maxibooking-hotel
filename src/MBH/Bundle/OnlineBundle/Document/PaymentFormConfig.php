@@ -63,7 +63,7 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
-    private $enabledReCaptcha = true;
+    private $enabledReCaptcha = false;
 
     /**
      * @var bool
@@ -73,6 +73,15 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
      * @Assert\Type(type="boolean")
      */
     private $fieldUserNameIsVisible = false;
+
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $enabledShowAmount = false;
 
     /**
      * @var string
@@ -97,6 +106,22 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     {
         $this->hotels = $hotels;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabledShowAmount(): bool
+    {
+        return $this->enabledShowAmount;
+    }
+
+    /**
+     * @param bool $enabledShowAmount
+     */
+    public function setEnabledShowAmount(bool $enabledShowAmount): void
+    {
+        $this->enabledShowAmount = $enabledShowAmount;
     }
 
     /**

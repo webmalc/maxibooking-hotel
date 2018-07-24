@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BillingBundle\Lib\Model;
 
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class Client
@@ -9,6 +10,7 @@ class Client
     const CLIENT_DATA_RECEIPT_DATETIME = 'client-data-receipt-time';
     const DEFAULT_MAXIBOOKING_DOMAIN_NAME = 'maxi-booking.ru';
     const CLIENT_ACTIVE_STATUS = 'active';
+    const CLIENT_DISABLED_STATUS = 'disabled';
     const SCHEME = 'https://';
 
     /** @var  int */
@@ -269,6 +271,14 @@ class Client
         $this->disabled_at = $disabled_at;
 
         return $this;
+    }
+
+    /**
+     * @return bool|\DateTime
+     */
+    public function getDisabledAtAsDateTime()
+    {
+        return !empty($this->disabled_at) ? BillingApi::getDateByBillingFormat($this->disabled_at) : null;
     }
 
     /**

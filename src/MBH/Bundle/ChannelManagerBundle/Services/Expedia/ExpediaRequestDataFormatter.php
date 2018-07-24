@@ -16,6 +16,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 {
     const EXPEDIA_MIN_STAY = 1;
     const EXPEDIA_MAX_STAY = 28;
+    const MAX_NUMBER_OF_UPDATES = 3000;
     const AVAILABILITY_AND_RATES_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/AR/2011/06';
     const BOOKING_RETRIEVAL_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BR/2014/01';
     const CONFIRM_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BC/2007/09';
@@ -53,6 +54,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
      * @return mixed
+     * @throws \Exception
      */
     public function formatPriceRequestData(
         $begin,
@@ -67,9 +69,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $priceCalculator = $this->container->get('mbh.calculation');
         $localCurrency = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getCurrency();
 
-        $numberOfRoomType = 0;
+        $numberOfUpdates = 0;
         foreach ($requestDataArray as $roomTypeId => $pricesByTariffs) {
-            $numberOfRoomType++;
             foreach ($pricesByTariffs as $tariffId => $pricesByDates) {
                 $tariffData = $serviceTariffs[$tariffId];
                 if (isset($tariffData['derivationRules']['rateDerivationRules'])
@@ -118,14 +119,23 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                                 $perOccupancyElement->addAttribute('occupancy', $price['adults']);
                             }
                         }
+
+                        if ($numberOfUpdates + count($priceList) >= self::MAX_NUMBER_OF_UPDATES) {
+                            $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                                'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+                            $numberOfUpdates = 0;
+                            $xmlElements = [];
+                        }
                     }
                     $xmlElements[] = $xmlRoomTypeData;
+                    $numberOfUpdates += count($priceList);
                 }
             }
+        }
 
+        if ($numberOfUpdates > 0) {
             $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
                 'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
-            $xmlElements = [];
         }
 
         return $pricesRequestData;
@@ -138,14 +148,19 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param $roomTypes
      * @param ChannelManagerConfigInterface $config
      * @return mixed
+     * @throws \Exception
      */
     public function formatRoomRequestData($begin, $end, $roomTypes, ChannelManagerConfigInterface $config)
     {
+        $roomsRequestData = [];
         $xmlElements = [];
+        $numberOfUpdates = 0;
         $requestDataArray = $this->getRoomData($begin, $end, $roomTypes, $config);
         $cmHelper = $this->container->get('mbh.channelmanager.helper');
+
         foreach ($requestDataArray as $roomTypeId => $roomQuotasByDates) {
-            $periodsData = $cmHelper->getPeriodsFromDayEntities($begin, $end, $roomQuotasByDates, ['getLeftRooms'], self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);
+            $periodsData =
+                $cmHelper->getPeriodsFromDayEntities($begin, $end, $roomQuotasByDates, ['getLeftRooms'], self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);
             foreach ($periodsData as $periodData) {
                 $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
                 $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
@@ -167,12 +182,24 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 $inventoryElement = $roomTypeElement->addChild('Inventory');
                 $inventoryElement->addAttribute('totalInventoryAvailable',
                     $roomCache && $roomCache->getLeftRooms() > 0 ? $roomCache->getLeftRooms() : 0);
+                if (($numberOfUpdates + 1) >= self::MAX_NUMBER_OF_UPDATES) {
+                    $roomsRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                        'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+                    $xmlElements = [];
+                    $numberOfUpdates = 0;
+                }
+
+                $numberOfUpdates++;
                 $xmlElements[] = $xmlRoomTypeData;
             }
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config,
-            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+        if ($numberOfUpdates > 0) {
+            $roomsRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+        }
+
+        return $roomsRequestData;
     }
 
     /**
@@ -213,6 +240,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
      * @return mixed
+     * @throws \Exception
      */
     public function formatRestrictionRequestData(
         $begin,
@@ -223,6 +251,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     ) {
         $restrictionRequestData = [];
         $xmlElements = [];
+        $numberOfUpdates = 0;
         $comparePropertyMethods = ['getMinStay', 'getMaxStay', 'getClosedOnArrival', 'getClosedOnDeparture', 'getClosed'];
         $requestDataArray = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $cmHelper = $this->container->get('mbh.channelmanager.helper');
@@ -262,25 +291,34 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
                     $restrictionsElement = $ratePlanElement->addChild('Restrictions');
                     if (!$hasDerivationRules || $tariffData['derivationRules']['deriveClosedToArrival'] === false) {
+                        $numberOfUpdates++;
                         $restrictionsElement->addAttribute('closedToArrival', $restrictionData['isClosedToArrival']);
                     }
                     if (!$hasDerivationRules || $tariffData['derivationRules']['deriveClosedToDeparture'] === false) {
+                        $numberOfUpdates++;
                         $restrictionsElement->addAttribute('closedToDeparture', $restrictionData['isClosedToDeparture']);
                     }
                     if (!$hasDerivationRules || $tariffData['derivationRules']['deriveLengthOfStayRestriction'] === false) {
                         $restrictionsElement->addAttribute('minLOS', $restrictionData['minStay']);
                         $restrictionsElement->addAttribute('maxLOS', $restrictionData['maxStay']);
+                        $numberOfUpdates += 2;
                     }
 
+                    $maxNumberOfRestrictionUpdateUnits = 4;
+                    if (($numberOfUpdates + $maxNumberOfRestrictionUpdateUnits) >= self::MAX_NUMBER_OF_UPDATES) {
+                        $restrictionRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+                        $numberOfUpdates = 0;
+                        $xmlElements = [];
+                    }
                     $xmlElements[] = $xmlRoomTypeData;
                 }
             }
+        }
 
-            if (!empty($xmlElements)) {
-                $restrictionRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
-                    'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
-                $xmlElements = [];
-            }
+        if ($numberOfUpdates > 0) {
+            $restrictionRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
         }
 
         return $restrictionRequestData;

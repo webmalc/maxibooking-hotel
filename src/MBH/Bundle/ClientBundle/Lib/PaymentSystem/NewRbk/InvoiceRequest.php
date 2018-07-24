@@ -169,7 +169,7 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
     }
 
     /**
-     * cart формируется если сумма package равна сумму платежа ($total)
+     * cart формируется если включена "фискализацией платежа" и сумма package равна сумму платежа ($total)
      *
      * @param Cart[] $cart
      */
@@ -177,15 +177,8 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
     {
         $cart = [];
 
-        if ($needCart) {
-
-            $taxCode = (integer) $newRbk->getTaxationRateCode();
-
-            $dataForTaxMode = [];
-
-            if (isset(TaxMode::TAXATION_RATE_CODE[(string) $taxCode])) {
-                $dataForTaxMode = ['rate' => TaxMode::TAXATION_RATE_CODE[(string) $taxCode]];
-            }
+        if ($newRbk->isWithFiscalization() && $needCart) {
+            $dataForTaxMode = ['rate' => $newRbk->getTaxationRateCode()];
 
             $taxMode = TaxMode::create($dataForTaxMode);
 

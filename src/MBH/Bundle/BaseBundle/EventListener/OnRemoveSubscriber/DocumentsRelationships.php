@@ -96,7 +96,8 @@ class DocumentsRelationships
                 new Relationship(Room::class, 'roomType', 'exception.roomType_relation_delete.message.room'),
                 //new Relationship(PriceCache::class, 'roomType', 'exception.roomType_relation_delete.message.priceCache'),
                 //new Relationship(RoomCache::class, 'roomType', 'exception.roomType_relation_delete.message.roomCache'),
-                new Relationship(Package::class, 'roomType', 'exception.roomType_relation_delete.message.package')
+                new Relationship(Package::class, 'roomType', 'exception.roomType_relation_delete.message.package'),
+                new Relationship(Special::class, 'roomTypes', 'exception.roomType_relation_delete.message.special', true),
             ],
             Room::class => [
                 new Relationship(Task::class, 'room', 'exception.room_relation_delete.message.task'),

@@ -294,6 +294,35 @@ class ClientConfig extends Base
     protected $isCacheValid = false;
 
     /**
+     * @var FrontSettings
+     * @ODM\EmbedOne(targetDocument="FrontSettings")
+     */
+    protected $frontSettings;
+
+    /**
+     * @return FrontSettings
+     */
+    public function getFrontSettings(): ?FrontSettings
+    {
+        if (empty($this->frontSettings)) {
+            $this->frontSettings = new FrontSettings();
+        }
+
+        return $this->frontSettings;
+    }
+
+    /**
+     * @param FrontSettings $frontSettings
+     * @return ClientConfig
+     */
+    public function setFrontSettings(FrontSettings $frontSettings): ClientConfig
+    {
+        $this->frontSettings = $frontSettings;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isCacheValid(): ?bool
@@ -776,7 +805,11 @@ class ClientConfig extends Base
 
         $doc = $this->getPaymentSystemDocByName($paymentSystemName);
         $url = $url ?? $this->getSuccessUrl();
-        if (!$doc || $cashDocument->getOperation() != 'in' || $cashDocument->getMethod() != 'electronic' || $cashDocument->getIsPaid()) {
+        if (!$doc
+            || $cashDocument->getOperation() != CashDocument::OPERATION_IN
+            || $cashDocument->getMethod() != CashDocument::METHOD_ELECTRONIC
+            || $cashDocument->getIsPaid()
+        ) {
             return [];
         }
 
@@ -784,7 +817,11 @@ class ClientConfig extends Base
     }
 
     /**
-     * @inheritdoc
+     * @param Request $request
+     * @param $paymentSystemName
+     * @param ClientConfig $config
+     * @return CheckResultHolder
+     * @throws Exception
      */
     public function checkRequest(Request $request, $paymentSystemName, ClientConfig $config)
     {

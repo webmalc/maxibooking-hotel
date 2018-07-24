@@ -2,7 +2,7 @@
 
 var toggler = function(id) {
     $("#" + id).toggle();
-}
+};
 
 var closePopovers = function() {
     'use strict';
@@ -43,21 +43,21 @@ var getHashVars = function() {
 var dangerTr = function() {
     'use strict';
     $('span.danger-tr').closest('tr').addClass('danger');
-}
+};
 
 mbh.loader = {
     html: '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>'+ Translator.trans("package.processing") +'...</div>',
     acceptTo: function($container) {
         $container.html(this.html);
     }
-}
+};
 
 mbh.error = {
     html: '<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>'+ Translator.trans("010-app.error_occured") +'.</div>',
     acceptTo: function($container) {
         $container.html(this.html);
     }
-}
+};
 
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),
@@ -185,6 +185,10 @@ function isMobileDevice() {
     return /Mobi/.test(navigator.userAgent);
 }
 
+function isLowWidthDevice() {
+    return document.documentElement.clientWidth < 768;
+}
+
 var deleteLink = function() {
     'use strict';
     $('.delete-link').on('click', function(event) {
@@ -270,6 +274,18 @@ var deleteLink = function () {
 
 $(document).ready(function() {
     'use strict';
+    if (isLowWidthDevice()) {
+        var $logoBlock = $('header.main-header > .logo');
+        var logoBlockHeight = parseInt($logoBlock.css('height'), 10);
+        $(window).scroll(function () {
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            if (scrollTop > logoBlockHeight) {
+                $logoBlock.hide();
+            } else {
+                $logoBlock.show();
+            }
+        });
+    }
 
     var workShiftMenu = $('#work-shift-menu');
     if (workShiftMenu.length == 1) {
@@ -286,7 +302,7 @@ $(document).ready(function() {
 
     //scrolling height
     (function() {
-        if (!$('.scrolling').length) {
+        if (!$('.scrolling').length || isLowWidthDevice()) {
             return null;
         }
         var height = function() {

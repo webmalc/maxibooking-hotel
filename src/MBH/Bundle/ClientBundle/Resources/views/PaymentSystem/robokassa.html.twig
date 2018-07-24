@@ -6,7 +6,9 @@
     <input type="hidden" name="Encoding" value="utf-8">
     <input type="hidden" name="Shp_id" value="{{ data.orderIdRaw|default('') }}">
     <input type="hidden" name="Culture" value="ru">
-
+    {% if data.receipt is defined %}
+        <input type="hidden" name="Receipt" value="{{ data.receipt }}">
+    {% endif %}
     {% if data.test is defined and data.test %}
         <input type="hidden" name="IsTest" value="1">
     {% endif %}
