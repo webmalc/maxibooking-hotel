@@ -37,6 +37,7 @@ class BaseControllerTest extends WebTestCase
         'restaurant_table_save',            //need params
         'site_hotel_settings',              //need params
         'save_list',                        //need params
+        'site_settings'
     ];
 
     private const ROUTES_WITH_OWN_TEST = [

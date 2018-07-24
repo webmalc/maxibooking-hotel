@@ -43,10 +43,6 @@ class ChannelManagerControllerTest extends WebTestCase
         $instructionBlock = $crawler->filter('#channel-manager-instruction');
         $this->assertEquals(1, $instructionBlock->count());
 
-        $missedDataAlerts = $crawler->filter('.alert.alert-danger');
-//        TODO: Изменить, когда будет известно сколько данных требуется для каждого канала
-        $this->assertEquals(intval($hasForm), $missedDataAlerts->count());
-
         $this->assertEquals(0, $crawler->filter('#connection-request-sent-message')->count());
         $expectedMessage = $this
             ->getContainer()
