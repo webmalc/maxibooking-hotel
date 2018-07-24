@@ -13,10 +13,10 @@
                     <i class="fa fa-calendar" title="{{ 'views.cash.index.period'|trans({}, 'MBHCashBundle') }}"
                        data-toggle='tooltip'></i>
                     <div class="filter-form_input">
-                        <input type="text" id="begin" name="begin" class="datepicker begin-datepicker form-control input-sm"
+                        <input type="text" id="begin" name="begin" class="datepicker begin-datepicker form-control"
                                data-date-format="dd.mm.yyyy" value="{{ "-1 week"|date("d.m.Y") }}">
                         &nbsp—&nbsp
-                        <input type="text" id="end" name="end" class="datepicker end-datepicker form-control input-sm"
+                        <input type="text" id="end" name="end" class="datepicker end-datepicker form-control"
                                data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
                     </div>
                 </div>
@@ -78,27 +78,29 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="filter-form_input">
-                <i class="fa fa-check"
-                   title="{{ 'views.cash.index.show_not_confirmed'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
-                ></i>
-                <input type="checkbox" name="show_no_confirmed" id="show_no_confirmed" value="1">
-            </div>
-            <div class="filter-form_input">
-                <i class="{{ currency().icon }}"
-                   title="{{ 'views.cash.index.show_no_paid'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
-                ></i>
-                <input type="checkbox" name="show_no_paid" id="show_no_paid" value="1">
-            </div>
-            <div class="filter-form_input">
-                <i class="fa fa-trash-o" title="{{ 'views.cash.index.show_deleted'|trans({}, 'MBHCashBundle') }}"
-                          data-toggle="tooltip"></i>&nbsp;
-                <input type="checkbox" name="deleted" id="deleted-checkbox" value="1">
-            </div>
-            <div class="filter-form_input">
-                <i class="fa fa-calendar" title="{{ 'views.cash.index.byDay'|trans({}, 'MBHCashBundle') }}"
-                          data-toggle="tooltip"></i>&nbsp;
-                <input type="checkbox" name="by_day" id="by_day" value="1">
+            <div class="filter-form_group-checkbox">
+                <div class="filter-form_input">
+                    <i class="fa fa-check"
+                       title="{{ 'views.cash.index.show_not_confirmed'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
+                    ></i>
+                    <input type="checkbox" name="show_no_confirmed" id="show_no_confirmed" value="1">
+                </div>
+                <div class="filter-form_input">
+                    <i class="{{ currency().icon }}"
+                       title="{{ 'views.cash.index.show_no_paid'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
+                    ></i>
+                    <input type="checkbox" name="show_no_paid" id="show_no_paid" value="1">
+                </div>
+                <div class="filter-form_input">
+                    <i class="fa fa-trash-o" title="{{ 'views.cash.index.show_deleted'|trans({}, 'MBHCashBundle') }}"
+                       data-toggle="tooltip"></i>&nbsp;
+                    <input type="checkbox" name="deleted" id="deleted-checkbox" value="1">
+                </div>
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title="{{ 'views.cash.index.byDay'|trans({}, 'MBHCashBundle') }}"
+                       data-toggle="tooltip"></i>&nbsp;
+                    <input type="checkbox" name="by_day" id="by_day" value="1">
+                </div>
             </div>
         </form>
         {% endblock content %}
