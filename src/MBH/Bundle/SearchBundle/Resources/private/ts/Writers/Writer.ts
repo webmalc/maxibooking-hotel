@@ -35,41 +35,54 @@ class Writer {
     private searchVueInit(): void {
         Vue.component('tariff', {
             props: ['tariff'],
-            template: '<span>{{tariff.name}}. </span>'
+            template: '<td>{{tariff.name}}</td>'
         });
 
+        Vue.component('package-link', {
+            props: ['link', 'roomsCount'],
+            template: `<td class="text-center">
+                            <a :href="link" class="btn btn-success btn-xs package-search-book" :title="'Бронировать номер. Всего номеров: ' + roomsCount" >
+                            <span class="package-search-book-reservation-text">Бронировать</span>
+                            </a>
+                        </td>`
+        });
+        Vue.component('count', {
+            props: ['count'],
+            template: `<td>
+                        <select class="form-control quantity-select input-xxs">
+                            <option :value="count">{{ count }}</option>
+                        </select>
+                       </td>`
+        });
         Vue.component('prices', {
             props: ['prices', 'defaultPriceIndex'],
-            template: `<span>
-                        <select v-model="selected" @change="$emit('price-index-update', selected)">
-                            <option v-for="(price, key) in prices" :value="key">{{price.adults}}_{{price.children}} - {{rounded(price.total)}} </option>
+            template: `<td class="text-center">
+                     <select v-model="selected" @change="$emit('price-index-update', selected)" class="form-control plain-html input-sm search-tourists-select">
+                            <option v-for="(price, key) in prices" :value="key"><span>{{price.adults}} взр.</span><span v-if="price.children">+{{price.children}} реб.</span></option>
                         </select>
-                    </span>`,
-            methods: {
-                rounded: function (price: number) {
-                    return Number(price).toFixed(1);
-                }
-            },
+                    </td>`
+            ,
             data: function () {
                 return {
                     selected: this.defaultPriceIndex
                 }
             }
         });
-        Vue.component('package-link', {
-            props: ['link'],
-            template: '<a :href="link">Тыц на бронь</a>'
+        Vue.component('total-price', {
+            props: ['prices'],
+            template: `<td class="text-right"><ul class="package-search-prices"></ul></td>`
         });
-
-        Vue.component('search-result', {
+        Vue.component('result', {
             props: ['result'],
-            template: `<li>
-            <span>{{result.begin}}-{{result.end}}.  Тариф - 
-                <tariff :tariff="result.tariff"></tariff>
-                <prices :prices="result.prices" :defaultPriceIndex="currentPriceIndex" @price-index-update="priceIndexUpdate($event)"></prices>
-            </span>
-                <package-link :link="getLink()"></package-link>
-            </li>`,
+            template: `<tr>
+                    <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
+                    <td>{{result.begin}}-{{result.end}}<br><small>x ночей</small></td>
+                    <td is="tariff" :tariff="result.tariff"><br><small>Свободно номеров</small></td>
+                    <td is="count" :count="3"></td>
+                    <td is="prices" :prices="result.prices" :defaultPriceIndex="currentPriceIndex" @price-index-update="priceIndexUpdate($event)"></td>
+                    <td is="total-price" :prices="result.prices[currentPriceIndex]"></td>
+                    <td is="package-link" :link="getLink()" :roomsCount="3" data-toggle="tooltip"></td>
+            </tr>`,
             methods:  {
                 getLink: function () {
                     const begin: string = this.result.begin;
@@ -91,6 +104,9 @@ class Writer {
                 },
                 priceIndexUpdate: function (index) {
                     this.currentPriceIndex = index;
+                },
+                rounded: function (price: number) {
+                    return Number(price).toFixed(1);
                 }
             },
             data: function () {
@@ -100,11 +116,15 @@ class Writer {
             }
 
         });
-        Vue.component('results-by-date', {
-            props: ['dates', 'results'],
-            template: '<li>{{dates}}<ul><li is="search-result" v-for="(result, key) in sortedByPrice" :key="key" :result="result"></li></ul></li>',
+        Vue.component('room-type', {
+            props: ['roomType', 'results'],
+            template: `<tbody>
+                           <tr class="mbh-grid-header1 info"><td colspan="8">{{roomType.name}}: {{roomType.hotelName}}</td></tr>
+                           <tr is="result" v-for="(result, key) in sortedResultsByPrice" :key="key" :result="result"></tr>
+                       </tbody>
+                        `,
             computed: {
-                sortedByPrice: function () {
+                sortedResultsByPrice: function () {
                     this.results.sort(function (resultA, resultB) {
                         if (typeof resultA.prices[0] !== 'object' || typeof resultB.prices[0] !== 'object') {
                             return;
@@ -128,16 +148,28 @@ class Writer {
                 },
 
             }
-        });
-        Vue.component('room-type', {
-            props: ['roomType', 'searchResults'],
-            template: '<ul>{{roomType.name}}: {{roomType.hotelName}} - <li is="results-by-date" v-for="(results, key) in searchResults" :key="key" :results="results" :dates="key"></li></ul>',
 
         });
         this.rootApp = new Vue({
             el: '#search_results',
-            template: '<span><room-type v-for="(data, key) in rawData" :roomType="data.roomType" :searchResults="data.results" :key="key" ></room-type></span>',
+            template: `<table v-if="Object.keys(rawData).length !== 0" class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
+                        <thead>
+                            <tr>
+                                <th class="td-xxs"></th>
+                                <th class="td-md">Даты</th>
+                                <th>Тариф</th>
+                                <th class="td-sm">Количество</th>
+                                <th class="td-sm">Гости</th>
+                                <th class="td-md">Цена</th>
+                                <th class="td-md"></th>
+                            </tr>
+                        </thead>
+                        <tbody is="room-type" v-for="(data, key) in rawData" :roomType="data.roomType" :results="data.results" :key="key"></tbody>
+                        </table>
+`,
+            /*template: '<span><room-type v-for="(data, key) in rawData" :roomType="data.roomType" :searchResults="data.results" :key="key" ></room-type></span>',*/
             data: {rawData: this.data},
+
         });
     }
 

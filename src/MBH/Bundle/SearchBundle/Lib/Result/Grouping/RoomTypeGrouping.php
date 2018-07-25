@@ -20,7 +20,8 @@ class RoomTypeGrouping implements GroupingInterface
             /** @var Result[] $groupedResults */
             return [
                 'roomType' => $groupedResults[0]->getResultRoomType(),
-                'results' => $this->groupByDateTime($groupedResults)
+//                'results' => $this->groupByDateTime($groupedResults)
+                'results' => $groupedResults
 
             ];
         }, $groupedByRoomTypeId);
