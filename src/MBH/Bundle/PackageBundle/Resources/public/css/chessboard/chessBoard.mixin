@@ -694,6 +694,7 @@ body {
     flex-wrap: wrap;
   }
 }
+
 @media (min-width: 769px){
   #disable-button-wrapper {
     margin-top: 13px;

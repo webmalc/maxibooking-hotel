@@ -139,24 +139,31 @@
       > li {
         button {
           width: 100%;
-          margin-right: 0px;
+          margin-right: 0;
         }
       }
     }
   }
-}
-
-@media (max-width: 560px) {
   .navbar_tad-a_hotel {
-    width: 170px;
     white-space: nowrap;
     overflow: hidden;
   }
 }
 
-@media (max-width: 374px) {
-  /* название текущего отеля на маленьких зкранах */
+@media (max-width: 450px) {
   .navbar_tad-a_hotel {
-    width: 100px;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 375px) {
+  .navbar_tad-a_hotel {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 350px) {
+  .navbar_tad-a_hotel {
+    max-width: 110px;
   }
 }

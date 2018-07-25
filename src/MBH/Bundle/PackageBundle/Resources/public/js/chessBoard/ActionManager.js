@@ -49,6 +49,7 @@ var ActionManager = /** @class */ (function () {
         var self = this;
         var editBody = $('#package-new-results');
         editBody.html(searchData);
+        // console.log(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
         editBody.find('thead th:nth-child(4)').remove();
@@ -78,6 +79,20 @@ var ActionManager = /** @class */ (function () {
         editModal.on('shown.bs.modal', function () {
             $('.findGuest').mbhGuestSelectPlugin();
         });
+        var tableResult = editBody.find('#package-search-special-wrapper');
+        console.log(tableResult);
+        // tableResult.readmore({
+        //     moreLink: '<div class="more-link"><a href="#">'+tableResult.attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
+        //     lessLink: '<div class="less-link"><a href="#">'+tableResult.attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
+        //     collapsedHeight: 0
+        //   });
+        setTimeout(function () {
+            tableResult.readmore({
+                moreLink: '<div class="more-link"><a href="#">' + tableResult.attr('data-more') + ' <i class="fa fa-caret-right"></i></a></div>',
+                lessLink: '<div class="less-link"><a href="#">' + tableResult.attr('data-less') + ' <i class="fa fa-caret-up"></i></a></div>',
+                collapsedHeight: isMobileDevice() ? 0 : 100
+            });
+        }, 400);
     };
     ActionManager.showResultPrices = function ($row) {
         if ($row.hasClass('info')) {
@@ -336,7 +351,7 @@ var ActionManager = /** @class */ (function () {
                 return {
                     message: Translator.trans('action_manager.modal.need_changepackage_end.title') + '. '
                         + Translator.trans('action_manager.modal.have_not_rights') + '.',
-                    resolved: false
+                    resolved: false,
                 };
             }
         }
@@ -474,4 +489,3 @@ var ActionManager = /** @class */ (function () {
     };
     return ActionManager;
 }());
-//# sourceMappingURL=ActionManager.js.map
