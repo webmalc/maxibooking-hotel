@@ -371,7 +371,7 @@ var docReadyForms = function () {
 
     //Select2 configuration
     if (isMobileDevice()) {
-        $('select').each(function() {
+        $('select:not(.not-change-if-mobile)').each(function() {
           var placeholder = $(this).data('placeholder');
 
           if (placeholder !== undefined) {

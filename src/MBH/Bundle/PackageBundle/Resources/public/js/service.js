@@ -157,11 +157,18 @@ var docReadyServices = function() {
                     }
                 });
 
-                serviceSelect.select2('destroy');
-                serviceSelect.select2({
+                if (isMobileDevice()) {
+                  if (serviceSelect.children('option').length === 0) {
+                    serviceSelect[0].innerHTML = '<option disabled selected>Не найдено</option>';
+                  }
+                } else {
+                  serviceSelect.select2('destroy');
+                  serviceSelect.select2({
                     allowClear: true,
                     width: 'element'
-                });
+                  });
+                }
+
                 serviceSelect.prop('disabled', false);
 
             };
@@ -185,13 +192,22 @@ var docReadyServices = function() {
 
     $serviceTable.dataTable({
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-        buttons: [
-            {
-                extend: 'excel',
-                text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
+        language   : mbh.datatablesOptions.language,
+        pageLength : mbh.datatablesOptions.pageLength,
+          buttons       : {
+            dom    : {
+              container: {
+                className: 'dt-buttons hidden-xs'
+              }
+            },
+            buttons: [
+              {
+                extend   : 'excel',
+                text     : '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
                 className: 'btn btn-default btn-sm'
-            }
-        ],
+              }
+            ]
+          },
         "processing": true,
         "serverSide": true,
         "searching": false,

@@ -352,6 +352,7 @@ class SalesChannelsReportCompiler
     {
         $table = $this->report->addReportTable();
         $table->addClass('sales-channels-report-table');
+        $table->addClass('custom-mobile-style');
 
         $roomTypeTitleRow = $table->addRow();
         $roomTypeTitleRow->addClass($tableTitleClass);

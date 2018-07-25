@@ -27,7 +27,7 @@
 
                 <div class="filter-form_input">
                     <select id="package-filter-dates" name="package-filter-dates-type"
-                            class="package-filter form-control input-sm">
+                            class="package-filter form-control">
                         <option value="begin">{{ 'package.index.check_in'|trans({}, 'MBHPackageBundle') }}</option>
                         <option value="end">{{ 'package.index.check_out'|trans({}, 'MBHPackageBundle') }}</option>
                         <option value="accommodation">{{ 'package.index.accommodation'|trans({}, 'MBHPackageBundle') }}</option>
@@ -37,9 +37,8 @@
                     <div class="filter-form_input">
                         <i class="fa fa-plug" title='{{ "package.service.index.filter"|trans({}, "MBHPackageBundle") }}'
                            data-toggle='tooltip'></i>
-                        <select name="category" id="select-category" id="filter"
+                        <select name="category" id="select-category" id="filter" class="form-control not-change-if-mobile"
                                 data-placeholder="{{ 'service.index.category'|trans }}">
-                            <option></option>
                             {% for group, catsList in categories %}
                                 <optgroup label="{{ group }}">
                                     {% for key, cat in catsList %}
@@ -51,7 +50,7 @@
                     </div>
                     <span class="filter-form_separator"></span>
                     <div class="filter-form_input">
-                        <select name="service" id="select-service" id="filter"
+                        <select name="service" id="select-service" id="filter" class="form-control"
                                 data-placeholder="{{ 'service.index.all_categories'|trans }}">
                             <option></option>
                             {% for key, service in services %}
@@ -63,9 +62,8 @@
                 <div class="filter-form_input">
                     <i class="fa fa-bed" title='{{ "package.service.index.filter.room_types"|trans({}, "MBHPackageBundle") }}'
                        data-toggle='tooltip'></i>
-                    <select name="roomTypes" id="select-roomtype" multiple
+                    <select name="roomTypes" id="select-roomtype" multiple class="form-control not-change-if-mobile"
                             data-placeholder="{{ 'package.service.index.filter.room_types'|trans({}, "MBHPackageBundle") }}">
-                        <option></option>
                         {% for hotelId, hotelRoomsData in roomTypesByHotels %}
                             <optgroup label="{{ hotelRoomsData['hotel'].getName() }}">
                                 {% for roomType in hotelRoomsData['rooms'] %}
@@ -79,9 +77,8 @@
                 <div class="filter-form_input">
                     <i class="fa fa-home" title='{{ "package.service.index.filter.housings"|trans({}, "MBHPackageBundle") }}'
                        data-toggle='tooltip'></i>
-                    <select name="housings" id="select-housing" multiple
+                    <select name="housings" id="select-housing" multiple class="form-control not-change-if-mobile"
                             data-placeholder="{{ 'package.service.index.filter.housings'|trans({}, "MBHPackageBundle") }}">
-                        <option></option>
                         {% for hotelId, hotelHousingsData in housingsByHotels %}
                             <optgroup label="{{ hotelHousingsData['hotel'].getName() }}">
                                 {% for housing in hotelHousingsData['housings'] %}
