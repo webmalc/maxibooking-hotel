@@ -208,6 +208,7 @@ class ClientManager
      */
     public function getClient()
     {
+        return $this->getDefaultClientData();
         $dataReceiptTime = $this->session->get(Client::CLIENT_DATA_RECEIPT_DATETIME);
         $currentDateTime = new \DateTime();
         $config = $this->clientConfigManager->fetchConfig();

@@ -53,6 +53,8 @@ class OrderManager implements Searchable
      * @var \Symfony\Component\Validator\Validator;
      */
     protected $validator;
+    /** @var \Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface  */
+    protected $flashBag;
 
     public function __construct(ContainerInterface $container)
     {
@@ -63,7 +65,6 @@ class OrderManager implements Searchable
         $this->flashBag = $container->get('session')
             ->getFlashBag();
     }
-
 
     /**
      * @param Package $old
@@ -237,11 +238,30 @@ class OrderManager implements Searchable
             $service->setBegin(null)->setEnd(null)->setUpdatedAt(new \DateTime());
             $this->dm->persist($service);
         }
+
+        $this->recalculateServicesCausedOfChangeNumberOfTourists($package);
         $this->dm->flush();
         if (count($services)) {
             $this->flashBag->add('warning', 'controller.packageController.record_edited_success_services');
         }
+
         return $package;
+    }
+
+    /**
+     * @param Package $package
+     */
+    private function recalculateServicesCausedOfChangeNumberOfTourists(Package $package)
+    {
+        $servicesPrice = 0;
+        foreach ($package->getServices() as $packageService) {
+            if ($packageService->isRecalcCausedByTouristsNumberChange()) {
+                $packageService->setPersons($package->getAdults() + $package->getChildren());
+            }
+            $servicesPrice += $packageService->calcTotal();
+        }
+
+        $package->setServicesPrice($servicesPrice);
     }
 
     /**

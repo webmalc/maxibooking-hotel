@@ -126,7 +126,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'packageSources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
-            'count' => $count
+            'count' => $count,
         ];
     }
 
@@ -228,6 +228,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $response->setStatusCode(200);
             $response->headers->set('Content-Type', 'text/csv; charset=windows-1251');
             $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+
             return $response;
         }
 
@@ -338,6 +339,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'success',
             $this->get('translator')->trans('controller.packageController.record_edited_success')
         );
+
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
 
@@ -494,6 +496,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                     dump($e);
                 };
+
                 return [];
             }
         } catch (\Exception $e) {
@@ -565,7 +568,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     $data['communicationLanguage']
                 );
                 $package->addTourist($tourist);
-
                 $this->dm->persist($package);
                 $this->dm->flush();
 
@@ -656,10 +658,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $this->dm->persist($packageService);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set(
-                    'success',
-                    $this->get('translator')->trans('controller.packageController.service_added_success')
-                );
+                $this->addFlash('success', 'controller.packageController.service_added_success');
 
                 return $this->afterSaveRedirect('package', $package->getId(), [], '_service');
             }
