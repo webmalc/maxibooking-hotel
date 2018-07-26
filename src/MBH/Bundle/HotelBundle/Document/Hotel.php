@@ -25,7 +25,6 @@ use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 

@@ -61,6 +61,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Template("MBHClientBundle:ClientConfig:index.html.twig")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Exception
      */
     public function saveAction(Request $request)
     {
@@ -82,12 +83,12 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                 $entity->setTimeZone($previousTimeZone);
                 $this->addFlash('warning',
                     $this->get('translator')->trans('controller.clientConfig.change_time_zone_contact_support',
-                        ['%supportEmail%' => $this->getParameter('support')['email']]))
-                ;
+                        ['%supportEmail%' => $this->getParameter('support')['email']]));
             }
+
             $this->get('mbh.site_manager')
-                ->getSiteConfig()
-                ->setIsEnabled($entity->isMBSiteEnabled());
+                ->createOrUpdateForHotel($this->hotel, $this->get('mbh.client_manager')->getClient());
+
             $this->dm->persist($entity);
             $this->dm->flush();
 
