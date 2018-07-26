@@ -8,21 +8,26 @@
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'special-filter-widget'} %}
         {% block content %}
             {{ form_start(form, {attr: {class: 'form-inline remember filter-form icon-label-form', id: 'special-filter-form'}}) }}
-            <div class="form-group">
-                <label><i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.tariff.index.daty'|trans }}' data-toggle='tooltip'></i></label>
-                {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
-                {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+            <div class="filter-form_group-date">
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.tariff.index.daty'|trans }}' data-toggle='tooltip'></i>
+                    <div class="filter-form_input">
+                        {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }}
+                        <span class="filter-form_separator"></span>
+                        {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label><i class="fa fa-sliders" title="{{ 'mbhpricebundle.view.special.index.tarif'|trans }} " data-toggle="tooltip"></i></label>
+            <div class="filter-form_input">
+                <i class="fa fa-sliders" title="{{ 'mbhpricebundle.view.special.index.tarif'|trans }} " data-toggle="tooltip"></i>
                 {{ form_widget(form.tariff) }}
             </div>
-            <div class="form-group">
-                <label><i class="fa fa-bed" title="{{ 'mbhpricebundle.view.special.index.tip.nomera'|trans }} " data-toggle="tooltip"></i></label>
+            <div class="filter-form_input">
+                <i class="fa fa-bed" title="{{ 'mbhpricebundle.view.special.index.tip.nomera'|trans }} " data-toggle="tooltip"></i>
                 {{ form_widget(form.roomType) }}
             </div>
-            <div class="form-group">
-                <label><i class="fa fa-check" title="{{ 'mbhpricebundle.view.tariff.index.show_disabled'|trans }}" data-toggle="tooltip"></i></label>
+            <div class="filter-form_input">
+                <i class="fa fa-check" title="{{ 'mbhpricebundle.view.tariff.index.show_disabled'|trans }}" data-toggle="tooltip"></i>
                 {{ form_widget(form.isEnabled) }}
             </div>
             {{ form_widget(form._token) }}
