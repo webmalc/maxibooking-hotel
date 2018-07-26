@@ -2,3 +2,14 @@
 
 {% set title = 'views.roomType.layout.rooms'|trans({}, 'MBHHotelBundle') %}
 {% set title_url = path('room_type') %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='?uglifyjs2'
+        '@MBHHotelBundle/Resources/public/js/room-type/*'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
