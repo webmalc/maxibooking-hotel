@@ -634,8 +634,8 @@ mbh.weekdays.wed: Wednesday
 mbh.weekdays.tue: Tuesday
 mbh.weekdays.mon: Monday
 mbh.weekdays.sun: Sunday
-currency.kzt.small: ¢
-currency.kzt.text: $
+currency.kzt.small: tiyin
+currency.kzt.text: KZT
 mbh.package.arrivals.humanitarian: Humanitarian
 mbh.mailer.subject.text: 'Messages from MaxiBooking'
 mbh.services.calcTypes.per_stay: 'For the whole stay'
