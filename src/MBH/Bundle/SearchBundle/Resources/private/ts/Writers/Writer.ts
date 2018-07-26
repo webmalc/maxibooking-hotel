@@ -1,5 +1,10 @@
+///<reference path="../../../../../../../../node_modules/@types/accounting/index.d.ts"/>
+///<reference path="../../../../../../../../node_modules/@types/bootstrap/index.d.ts"/>
+
+declare let moment: any;
 
 class Writer {
+
 
     private data: object = {};
 
@@ -34,15 +39,15 @@ class Writer {
 
     private searchVueInit(): void {
         Vue.component('tariff', {
-            props: ['tariff'],
-            template: '<td>{{tariff.name}}</td>'
+            props: ['tariff', 'freeRooms'],
+            template: '<td>{{tariff.name}}<br><small><span class="package-search-book-count">Свободно номеров: {{freeRooms}}</span></small></td>'
         });
 
         Vue.component('package-link', {
             props: ['link', 'roomsCount'],
             template: `<td class="text-center">
-                            <a :href="link" class="btn btn-success btn-xs package-search-book" :title="'Бронировать номер. Всего номеров: ' + roomsCount" >
-                            <span class="package-search-book-reservation-text">Бронировать</span>
+                            <a v-if="roomsCount > 0" :href="link" target="_blank" class="btn btn-success btn-xs package-search-book" :title="'Бронировать номер. Всего номеров: ' + roomsCount" >
+                            <i class="fa fa-book"></i><span class="package-search-book-reservation-text"> Бронировать</span>
                             </a>
                         </td>`
         });
@@ -68,21 +73,81 @@ class Writer {
                 }
             }
         });
+
+        Vue.component('day-price', {
+            props: ['dayPrices'],
+            template: `<small>
+                            <i v-popover class="fa fa-question-circle" data-container="body" data-toggle="popover"
+                                data-placement="left" data-html="true"
+                                :data-content="detail"
+                                ></i>
+                        </small>`
+            ,
+            computed: {
+                detail: function  () {
+                    let html: string = '';
+                    for (let dayPrice of this.dayPrices) {
+                        html += `${dayPrice['day']} - ${dayPrice['price']} - <i class='fa fa-sliders'></i> ${dayPrice['tariff']['name']}<br>`;
+                    }
+
+                    return `<small>${html}</small>`;
+                }
+            },
+            directives: {
+                popover: {
+                    inserted: function (el) {
+                        $(el).popover();
+                    }
+                }
+            }
+        });
         Vue.component('total-price', {
-            props: ['prices'],
-            template: `<td class="text-right"><ul class="package-search-prices"></ul></td>`
+            props: ['price', 'tariffName'],
+            template: `<td class="text-right"><ul class="package-search-prices">
+                      <li>{{rounded(price.total)}}
+                        <small is="day-price"  :dayPrices="price.dayPrices"></small>
+                      </li>
+                    </ul>
+                    <small><i class="fa fa-sliders"></i> {{tariffName}}</small>
+                    </td>`,
+            methods: {
+                rounded: function (price: number) {
+                    return accounting.formatMoney(price, "", 2, ",", ".");
+                }
+            }
         });
         Vue.component('result', {
             props: ['result'],
             template: `<tr>
                     <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
-                    <td>{{result.begin}}-{{result.end}}<br><small>x ночей</small></td>
-                    <td is="tariff" :tariff="result.tariff"><br><small>Свободно номеров</small></td>
-                    <td is="count" :count="3"></td>
+                    <td>{{begin}}-{{end}}<br><small>{{night}} ночей</small></td>
+                    <td is="tariff" :tariff="result.tariff" :freeRooms="minRooms"></td>
+                    <td is="count" :count="minRooms"></td>
                     <td is="prices" :prices="result.prices" :defaultPriceIndex="currentPriceIndex" @price-index-update="priceIndexUpdate($event)"></td>
-                    <td is="total-price" :prices="result.prices[currentPriceIndex]"></td>
-                    <td is="package-link" :link="getLink()" :roomsCount="3" data-toggle="tooltip"></td>
+                    <td is="total-price" :price="result.prices[currentPriceIndex]" :tariffName="result.tariff.name"></td>
+                    <td is="package-link" :link="getLink()" :roomsCount="minRooms" data-toggle="tooltip" @click.native="$emit('booking')"></td>
             </tr>`,
+            computed: {
+                begin: function () {
+                    let begin = moment(this.result.begin, 'DD.MM.YYYY');
+
+                    return begin.format('DD MMM');
+                },
+                end: function () {
+                    let end = moment(this.result.end, 'DD.MM.YYYY');
+
+                    return end.format('DD MMM');
+                },
+                night: function () {
+                    const begin = moment.utc(this.result.begin, 'DD.MM.YYYY');
+                    const end = moment.utc(this.result.end, 'DD.MM.YYYY');
+
+                    return moment.duration(end.diff(begin)).days();
+                },
+                minRooms: function ()  {
+                    return this.result.minRooms;
+                }
+            },
             methods:  {
                 getLink: function () {
                     const begin: string = this.result.begin;
@@ -104,14 +169,11 @@ class Writer {
                 },
                 priceIndexUpdate: function (index) {
                     this.currentPriceIndex = index;
-                },
-                rounded: function (price: number) {
-                    return Number(price).toFixed(1);
                 }
             },
             data: function () {
                 return {
-                    currentPriceIndex: 0
+                    currentPriceIndex: 0,
                 }
             }
 
@@ -120,9 +182,16 @@ class Writer {
             props: ['roomType', 'results'],
             template: `<tbody>
                            <tr class="mbh-grid-header1 info"><td colspan="8">{{roomType.name}}: {{roomType.hotelName}}</td></tr>
-                           <tr is="result" v-for="(result, key) in sortedResultsByPrice" :key="key" :result="result"></tr>
+                           <tr @booking="booking" is="result" v-for="(result, key) in sortedResultsByPrice" :key="key" :result="result"></tr>
                        </tbody>
                         `,
+            methods: {
+                booking: function  () {
+                    for(let index in this.results) {
+                        this.results[index].minRooms--;
+                    }
+                }
+            },
             computed: {
                 sortedResultsByPrice: function () {
                     this.results.sort(function (resultA, resultB) {

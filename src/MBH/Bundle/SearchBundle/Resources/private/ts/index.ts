@@ -3,6 +3,8 @@
 ///<reference path="DataReceivers/FormDataReceiver.ts"/>
 ///<reference path="vuejs.d.ts"/>
 ///<reference path="Writers/Writer.ts"/>
+///<reference path="../../../../../../../node_modules/moment/moment.d.ts"/>
+
 
 let writer = new Writer();
 
