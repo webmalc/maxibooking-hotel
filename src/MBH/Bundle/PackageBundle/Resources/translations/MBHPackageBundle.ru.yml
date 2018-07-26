@@ -269,6 +269,8 @@ package.service.nights_amount: 'Количество суток'
 package.service.nights: Суток
 package.service.guests_amount: Гостей
 package.service.guests: Гостей
+package.service.total_guests: 'Гостей в брони'
+package.service.tourists: 'Оформлено гостей в брони'
 package.service.amount: Количество
 package.service.short_amount: Кол.
 package.service.package: Бронь

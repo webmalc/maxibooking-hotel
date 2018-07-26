@@ -12,6 +12,12 @@ $(document).ready(function () {
             } else {
                dates.hide();
             }
+            var $recalcByGuests = $('.recalc-caused-by-guests').closest('div.form-group');
+            if (type.val() === "per_night" || type.val() === "per_stay") {
+                $recalcByGuests.show();
+            } else {
+                $recalcByGuests.hide();
+            }
         };
         toggle();
         type.change(toggle);
