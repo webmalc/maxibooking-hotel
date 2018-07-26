@@ -14,7 +14,8 @@ class IntroType extends AbstractType
     {
         $builder
             ->add('hotelId', TextType::class, [
-                'label' => 'ID отеля'
+                'label' => 'ID отеля',
+                'required' => true
             ]);
     }
 

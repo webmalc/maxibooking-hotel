@@ -43,7 +43,7 @@
     {% for item in menu %}
         {% set routeParams = item.routeParams is defined ? item.routeParams : {} %}
         {% set title = (config and config.isReadyToSync() ? '<i class="fa ' ~ item.icon ~ '"></i>' : loop.index ~ '.') ~ item.titleTransId|trans({}, 'MBHChannelManagerBundle') %}
-        {% set isConfiguredByTechSupport = base not in ['booking', 'expedia', 'myallocator'] %}
+        {% set isConfiguredByTechSupport = base not in ['booking', 'expedia', 'myallocator', 'ostrovok'] %}
         {% set isActiveTab = loop.index == active %}
         {% if not (isActiveTab or (config and config.isReadyToSync())
             or (is_mb_user() and loop.index in [1, 2] and active in [1, 2] and (isConfiguredByTechSupport or (config and config.hotelId))

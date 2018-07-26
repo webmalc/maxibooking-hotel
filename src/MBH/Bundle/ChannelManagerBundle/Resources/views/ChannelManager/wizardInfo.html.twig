@@ -62,7 +62,7 @@
 
             {% embed '@MBHBase/Actions/base_list.html.twig' %}
                 {% block left %}
-                    {% if channelManagerName in ['booking', 'expedia', 'myallocator'] %}
+                    {% if channelManagerName in ['booking', 'expedia', 'myallocator', 'ostrovok'] %}
                         {% include '@MBHChannelManager/ChannelManager/confirmCMButton.html.twig' %}
                     {% endif %}
                 {% endblock %}

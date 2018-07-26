@@ -457,17 +457,17 @@ class ChannelManager
             $configType = $this->getConfigFullName($channelManagerName);
             $config = new $configType;
             $config->setHotel($hotel);
+            $this->dm->persist($config);
         }
 
-        //TODO: Может быть расширить кол-во необходимых данных
         if ($isConfiguredByTechSupport && empty($config->getHotelId())) {
             throw new \RuntimeException('Mandatory data is not specified');
         }
 
         $config->setReadinessConfirmed(true);
 
-        $this->dm->persist($config);
         $this->dm->flush();
+        $this->dm->refresh($hotel);
 
         return true;
     }

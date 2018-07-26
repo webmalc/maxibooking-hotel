@@ -8,11 +8,9 @@ use Symfony\Component\Routing\Route;
 class BaseControllerTest extends WebTestCase
 {
     const EXCLUDED_ROUTES = [
+        'mb_site_main_settings',
         'fos_user_security_logout',
-        'reservation_report_table',
-        'sales_channels_report_table',
         'export_to_kontur',
-        'dynamic_sales_table',
         'add_tip',
         'user_tariff',
         'fos_user_profile_edit',
@@ -37,9 +35,15 @@ class BaseControllerTest extends WebTestCase
         'work_shift_ajax_close',            //need params
         'fos_user_resetting_check_email',   //not found
         'restaurant_table_save',            //need params
+        'site_hotel_settings',              //need params
+        'save_list',                        //need params
+        'site_settings'
     ];
 
     private const ROUTES_WITH_OWN_TEST = [
+        'reservation_report_table',
+        'sales_channels_report_table',
+        'dynamic_sales_table',
         'restriction_overview',
         'restriction_generator',
         'restriction_overview_table',

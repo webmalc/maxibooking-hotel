@@ -59,7 +59,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             $user = $this->tokenStorage->getToken();
             $message = $this->exceptionNotifier::createMessage();
             $messageText = "Произошла ошибка у \"" . $this->kernel->getClient()
-                . " Пользователь " . (!is_null($user) ? $user->getUsername() : 'без пользователя')
+                . '. Пользователь: ' . (!empty($user) ? $user->getUsername() : 'без пользователя')
                 . ". \"\n Сообщение \"" . $exception->getMessage()
                 . "\".\n Стек:" . $exception->getTraceAsString();
             $message

@@ -72,13 +72,7 @@ class HousingType extends AbstractType
                 'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.flat',
                 'translation_domain' => 'MBHHotelBundle'
-            ])
-            ->add('vega_address_id', NumberType::class, [
-                'label' => 'form.hotelExtendedType.vega_address_id',
-                'help' => 'form.hotelExtendedType.vega_address_id_help',
-                'group' => 'views.form.corpus.group.config',
-                'required' => false
-        ]);
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -72,10 +72,7 @@ class Cash
         $notifier = $this->container->get('mbh.notifier.mailer');
         $message = $notifier::createMessage();
 
-        $clientConfig = $this->container
-            ->get('doctrine.odm.mongodb.document_manager')
-            ->getRepository('MBHClientBundle:ClientConfig')
-            ->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
 
         $localCurrency = $clientConfig->getCurrency();
 
@@ -85,6 +82,12 @@ class Cash
         $prependText = '<span style="font-size: 18px">'
            . $this->container->get('translator')->trans('mailer.order.prepend_text', ['%paymentSum%' => $sumString])
             . '</span>';
+
+
+        $getHotelName = function() use ($order) {
+            return $order->getFirstHotel()->getName();
+        };
+        $hotelName = $this->container->get('mbh.helper')->getWithoutFilter($getHotelName);
 
         $message
             ->setRecipients([$order->getPayer()])
@@ -97,7 +100,7 @@ class Cash
             ->setSubject('mailer.order.subject_text')
             ->setHeaderText('mailer.order.header_text')
             ->setTranslateParams([
-                '%hotelName%' => $order->getFirstHotel()->getName(),
+                '%hotelName%' => $hotelName,
                 '%sum%' => $sumString
             ])
             ->setAdditionalData([

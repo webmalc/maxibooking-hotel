@@ -69,18 +69,18 @@ class DocumentFieldsManager
             return $isTranslated ? $this->translator->trans($transId) : $transId;
         }
 
-        throw new \InvalidArgumentException('Name of the field name "' . $fieldName . '" of the document ' . $documentName . ' is not found!');
+        throw new \InvalidArgumentException('Field "' . $fieldName . '" of the document ' . $documentName . ' is not found!');
     }
 
     /**
-     * @param array $fieldNames
+     * @param array $fieldsDataByNames
      * @param $document
      * @return array
      */
-    public function getFieldsByCorrectnessStatuses(array $fieldNames, $document)
+    public function getFieldsByCorrectnessStatuses(array $fieldsDataByNames, $document)
     {
         $checkedFields = [self::EMPTY_FIELD_STATUS => [], self::CORRECT_FIELD_STATUS => []];
-        foreach ($fieldNames as $field) {
+        foreach ($fieldsDataByNames as $field) {
             $fieldData = $this->accessor->getValue($document, $field);
             $isFieldEmpty = $this->isFieldEmpty($fieldData);
 

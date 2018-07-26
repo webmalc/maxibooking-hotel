@@ -68,40 +68,46 @@
     {% endif %}
 
     <script>
-        if (document.getElementById('mbh_client_document_template_content')) {
+      if (document.getElementById('mbh_client_document_template_content')) {
 
-            tinymce.init({
-                selector: '#mbh_client_document_template_content',
-                theme: 'modern',
-                language_url: '{{ url_lang }}',
-                skin_url: '/assets/vendor/tinymce/skins/lightgray',
-                plugins_url: '/assets/vendor/tinymce/skins/lightgray',
-                entity_encoding: 'raw',
-                resize: 'both',
-                fix_list_elements: false,
-                protect: [/\{\%.*?\%\}/g],
-                height: 300,
-                fullpage_default_title: 'PDF',
-                fullpage_default_encoding: '{{ injection|replace({"\n": "", "  ": ""})|raw }}',
-                plugins: '{{ plugins|join(' ') }} mbh_data codemirror',
-                toolbar: '{{ toolbar|join(' | ') }} | mbh_toggle_border mbh_rotate',
-                menu: {
-                        file   : {title : 'File'  , items : 'newdocument'},
-                        edit   : {title : 'Edit'  , items : 'undo redo | cut copy paste pastetext | selectall'},
-                        insert : {title : 'Insert', items : 'link media | template hr'},
-                        view   : {title : 'View'  , items : 'visualaid'},
-                        format : {title : 'Format', items : 'bold italic underline strikethrough superscript subscript | formats | removeformat'},
-                        table  : {title : 'Table' , items : 'inserttable tableprops deletetable | cell row column'},
-                        tools  : {title : 'Tools' , items : 'code'}
-                    },
-                contextmenu: 'mbh_table_add statement_mbh mbh_table_property | mbh_all_data mbh_table_entity | link image | inserttable tableprops | cell row column deletetable',
-                codemirror: {
-                    path: '/assets/vendor/codemirror/',
-                    pathSource: '{{ path('document_templates_tinymce_codemirror') }}',
-                    saveCursorPosition: false
-                }
-            });
-        }
+        tinymce.init({
+          selector       : '#mbh_client_document_template_content',
+          theme          : 'modern',
+          language_url   : '{{ url_lang }}',
+          skin_url       : '/assets/vendor/tinymce/skins/lightgray',
+          plugins_url    : '/assets/vendor/tinymce/skins/lightgray',
+          entity_encoding: 'raw',
+
+          resize                   : 'both', force_br_newlines: true,
+          force_p_newlines         : false,
+          forced_root_block        : '',
+          fix_list_elements        : false,
+          protect                  : [/\{\%.*?\%\}/g],
+          height                   : 300,
+          fullpage_default_title   : 'PDF',
+          fullpage_default_encoding: '{{ injection|replace({"\n": "", "  ": ""})|raw }}',
+          plugins                  : '{{ plugins|join(' ') }} mbh_data codemirror',
+          toolbar                  : '{{ toolbar|join(' | ') }} | mbh_toggle_border mbh_rotate',
+          menu                     : {
+            file  : {title: 'File', items: 'newdocument'},
+            edit  : {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
+            insert: {title: 'Insert', items: 'link media | template hr'},
+            view  : {title: 'View', items: 'visualaid'},
+            format: {
+              title: 'Format',
+              items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'
+            },
+            table : {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
+            tools : {title: 'Tools', items: 'code'}
+          },
+          contextmenu              : 'mbh_table_add statement_mbh mbh_table_property | mbh_all_data mbh_table_entity | link image | inserttable tableprops | cell row column deletetable',
+          codemirror               : {
+            path              : '/assets/vendor/codemirror/',
+            pathSource        : '{{ path('document_templates_tinymce_codemirror') }}',
+            saveCursorPosition: false
+          }
+        });
+      }
     </script>
 {% endblock %}
 

@@ -12,19 +12,20 @@ class LocaleSubscriber implements EventSubscriberInterface
 {
     /** @var string  */
     private $defaultLocale;
-    private $translatableListener;
     private $translator;
+    private $languages;
 
     /**
      * LocaleListener constructor.
      * @param string $defaultLocale
-     * @param TranslatableListener $translatableListener
+     * @param TranslatorInterface $translator
+     * @param array $languages
      */
-    public function __construct($defaultLocale = 'ru', TranslatableListener $translatableListener, TranslatorInterface $translator)
+    public function __construct($defaultLocale = 'ru', TranslatorInterface $translator, array $languages)
     {
         $this->defaultLocale = $defaultLocale;
-        $this->translatableListener = $translatableListener;
         $this->translator = $translator;
+        $this->languages = $languages;
     }
 
     /**
@@ -38,10 +39,11 @@ class LocaleSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $locale = $request->getSession()->get('_locale', $this->defaultLocale);
+        $locale = $request->get('locale') && in_array($request->getLocale(), $this->languages)
+            ? $request->get('locale')
+            : $request->getSession()->get('_locale', $this->defaultLocale);
         $request->setLocale($locale);
         $this->translator->setLocale($locale);
-        $this->translatableListener->setDefaultLocale($this->defaultLocale);
     }
 
     public static function getSubscribedEvents()

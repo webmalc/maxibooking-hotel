@@ -93,6 +93,4 @@ class UnpaidOrderTest extends WebTestCase
         $this->assertEquals(count($this->notice_service->unpaidOrder()),
             count($this->getUnpaidOrder()));
     }
-
 }
-?>

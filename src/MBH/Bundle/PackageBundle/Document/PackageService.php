@@ -190,7 +190,33 @@ class PackageService extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isCustomPrice = false;
-    
+
+    /**
+     * @var bool
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="bool")
+     */
+    protected $recalcCausedByTouristsNumberChange = false;
+
+    /**
+     * @return bool
+     */
+    public function isRecalcCausedByTouristsNumberChange(): ?bool
+    {
+        return $this->recalcCausedByTouristsNumberChange;
+    }
+
+    /**
+     * @param bool $recalcCausedByTouristsNumberChange
+     * @return PackageService
+     */
+    public function setRecalcCausedByTouristsNumberChange(bool $recalcCausedByTouristsNumberChange): PackageService
+    {
+        $this->recalcCausedByTouristsNumberChange = $recalcCausedByTouristsNumberChange;
+
+        return $this;
+    }
+
     /**
      * @return int
      * @throws \Exception

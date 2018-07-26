@@ -80,7 +80,7 @@ vegabundle.resources.views.Kvartira: Apartment
 vegabundle.resources.views.Visa: Visa
 vegabundle.resources.views.Pasport-RF: 'Russian passport'
 vegabundle.resources.views.Passport-Ig: 'Foreign citizen ID'
-vegabundle.resources.views.Document-Ud-Lichnost: 'ID document and general information (name, birth date, photo)'
+vegabundle.resources.views.Document-Ud-Lichnost: 'ID document (Name, ID number, Date of Birth, Photo)'
 vegabundle.service.krasnodarsky: Krasnodar
 vegabundle.service.kry: region
 vegabundle.service.karelia: Kareliya

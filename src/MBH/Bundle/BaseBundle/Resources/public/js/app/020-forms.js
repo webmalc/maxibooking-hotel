@@ -1179,6 +1179,7 @@ function setTipText(formName, inputId) {
 
     $('#tips-tip-text').val(text);
 }
+
 function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $updateButton, filterDataCallback, drawCallback) {
     var process = false;
     $table.dataTable({
@@ -1274,6 +1275,31 @@ function handleAddingNewBillingEntity() {
     });
 }
 
+function handleMultiLanguageFields() {
+    var changeMultiLanguagesFieldsVisibility = function(language, $fieldsGroup) {
+        var $multiLanguagesFields = $fieldsGroup ? $fieldsGroup.find('.multi-languages-field') : $('.multi-languages-field');
+        var $displayField = $multiLanguagesFields.filter('[data-language="' + language +'"]');
+        $displayField.show();
+        $multiLanguagesFields.not($displayField).hide();
+    };
+
+    var $languageOptions = $('.multi-language-select-option');
+    if ($languageOptions.length > 0) {
+        changeMultiLanguagesFieldsVisibility(mbh.language);
+        $languageOptions.click(function () {
+            var $fieldsGroup = $(this).closest('.form-group').parent();
+            changeMultiLanguagesFieldsVisibility(this.getAttribute('data-language'), $fieldsGroup);
+        });
+    }
+}
+
+//to prevent opening of keyboard
+function makeDateRangepickerReadonlyForMobileDevices() {
+    if (isMobileDevice()) {
+        $('.daterangepicker-input').attr('readonly', true);
+    }
+}
+
 $(document).ready(function () {
     'use strict';
     docReadyForms();
@@ -1285,4 +1311,6 @@ $(document).ready(function () {
     initAddTipModal();
     runGuides();
     handleAddingNewBillingEntity();
+    makeDateRangepickerReadonlyForMobileDevices();
+    handleMultiLanguageFields();
 });

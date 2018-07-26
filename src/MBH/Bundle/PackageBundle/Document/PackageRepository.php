@@ -443,6 +443,7 @@ class PackageRepository extends DocumentRepository
      * @param \DateTime $creationBegin
      * @param \DateTime $creationEnd
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getDistributionByDaysOfWeek(
         \DateTime $begin,

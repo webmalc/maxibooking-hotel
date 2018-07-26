@@ -1,106 +1,106 @@
-form.roomTypeCategory.name: Title
+form.roomTypeCategory.name: Name
 form.hotelExtendedType.city: City
-form.hotelExtendedType.settlement: Settlement
+form.hotelExtendedType.settlement: Province
 form.hotelExtendedType.street: Street
 form.hotelExtendedType.house: House
 form.hotelExtendedType.corpus: Building
 form.hotelExtendedType.flat: Apartment
-form.hotelExtendedType.location: Location
+form.hotelExtendedType.location: 'GPS Coordinates'
 form.hotelExtendedType.address: Address
 form.hotelExtendedType.placeholder_location: 'Oak st., Springfield, Essex'
 form.hotelExtendedType.latitude: Latitude
-'form.hotelExtendedType.gps_coordinates_latitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': 'Hotel GPS latitude coordinate.<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">View hotel coordinates.</a>'
-'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': 'Hotel GPS longitude coordinate.<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">View hotel coordinates.</a>'
-form.hotelExtendedType.gps_coordinates_latitude: 'Hotel GPS latitude coordinate.'
-form.hotelExtendedType.know_hotel_coordinates: 'View hotel coordinates.'
+'form.hotelExtendedType.gps_coordinates_latitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': 'GPS latitude coordinates<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">View coordinates</a>'
+'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': 'GPS longitude coordinates<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">View coordinates</a>'
+form.hotelExtendedType.gps_coordinates_latitude: 'GPS latitude coordinates'
+form.hotelExtendedType.know_hotel_coordinates: 'View coordinates'
 form.hotelExtendedType.longitude: Longitude
 form.hotelExtendedType.how_many_stars_hotel: 'Star rating (1-5)'
 form.hotelExtendedType.parameters: Parameters
 form.hotelExtendedType.integration: Integration
 form.hotelExtendedType.hotel_type: 'Hotel type'
 form.hotelExtendedType.hotel_theme: 'Hotel theme'
-form.hotelExtendedType.hotel_amenities: 'Hotel facilities'
-form.hotelType.name: Title
-form.hotelType.general_info: 'General information'
+form.hotelExtendedType.hotel_amenities: Amenities
+form.hotelType.name: 'Hotel Name'
+form.hotelType.general_info: 'General Information'
 form.taskType.general_info: 'Add task'
 form.taskType.general_info_edit: 'Edit type'
 form.hotelType.placeholder_my_hotel: 'My hotel'
-form.hotelType.inner_name: 'Internal name'
-form.hotelType.international_title: 'International title'
+form.hotelType.inner_name: 'Short Name'
+form.hotelType.international_title: 'Int. transcription <br>(if different)'
 form.hotelType.placeholder_hotel: Hоtel
-form.hotelType.maxibooking_inner_name: 'Title only visible inside MaxiBooking system'
-form.hotelType.prefix: 'Legal name'
+form.hotelType.maxibooking_inner_name: 'Name within MaxiBooking'
+form.hotelType.prefix: Abbreviation
 form.hotelType.description: Description
-form.hotelType.document_use_name: 'Title used in documents'
+form.hotelType.document_use_name: 'Abbreviation name to be used in documents'
 form.hotelType.sale_days_amount: 'Sale days'
 form.hotelType.settings: Settings
 form.hotelType.how_long_sale_opened_since_today: 'For how long this sale is active from today'
 form.hotelType.hostel: 'Hostel?'
-form.hotelType.hostel_hotel_or_not: 'Enable if you are renting beds, not rooms.'
+form.hotelType.hostel_hotel_or_not: 'Activate if you are renting individual beds, not rooms'
 form.hotelType.is_default: 'Default?'
 form.hotelType.logo: Logo
-form.hotelType.is_default_maxibooking: 'Default when entering MaxiBooking'
+form.hotelType.is_default_maxibooking: 'Selected by default at login'
 form.roomType.name: 'Room type name'
 form.roomType.general_info: 'General information'
-form.roomType.inner_name: 'Internal name'
+form.roomType.inner_name: 'Short Name'
 form.roomType.placeholder_27_with_repair: '27 (renewed)'
-form.roomType.maxibooking_inner_name: 'Title only visible inside MaxiBooking system'
-form.roomType.is_included: 'Enabled?'
+form.roomType.maxibooking_inner_name: 'Name within MaxiBooking'
+form.roomType.is_included: 'Active?'
 form.roomType.settings: Settings
 form.roomType.is_room_included_in_search: 'Include room in search?'
 form.roomType.room_type: 'Room type'
 form.roomType.status: Status
-form.roomType.facilities: Facilities
-form.roomType.housing: Wing
+form.roomType.facilities: Amenities
+form.roomType.housing: Building
 form.roomType.floor: Floor
 form.roomTypeGenerateRoomsType.first_bed_number: 'First bed number'
 form.roomTypeGenerateRoomsType.first_room_number: From
 form.roomTypeGenerateRoomsType.field_must_be_number: 'This field only supports digital values'
 form.roomTypeGenerateRoomsType.last_bed_number: 'Last bed number'
 form.roomTypeGenerateRoomsType.last_room_number: To
-form.roomTypeGenerateRoomsType.prefix: Prefix
-form.roomTypeGenerateRoomsType.prefix_example: 'Prefix for the room number (Example: HTL-12)'
+form.roomTypeGenerateRoomsType.prefix: Abbreviation
+form.roomTypeGenerateRoomsType.prefix_example: 'Abbreviation (Example: HTL-12)'
 form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: 'Incorrect dates for generation'
-form.roomTypeGenerateRoomsType.too_many_generation_numbers: 'Too many entries to generate'
-form.roomTypeGenerateRoomsType.housing: Wing
+form.roomTypeGenerateRoomsType.too_many_generation_numbers: 'Too many entries. Please reduce the number of entries to proceed'
+form.roomTypeGenerateRoomsType.housing: Building
 form.roomTypeGenerateRoomsType.floor: Floor
-form.roomTypeType.name: Title
+form.roomTypeType.name: Name
 form.roomTypeType.general_info: 'General information'
-form.roomTypeType.comfort_plus: 'Comfort plus'
-form.roomTypeType.inner_name: 'Internal title'
-form.roomTypeType.international_title: 'International title'
-form.roomTypeType.comport_plus_rooms_in_new_housing: 'Comfort plus. Rooms in the new wing'
+form.roomTypeType.comfort_plus: 'Superior Double Room'
+form.roomTypeType.inner_name: 'Short Name'
+form.roomTypeType.international_title: 'Int. transcription <br>(if different)'
+form.roomTypeType.comport_plus_rooms_in_new_housing: 'Superior Double Room, New Building'
 form.roomTypeType.description: Description
-form.roomTypeType.color: Color
-form.roomTypeType.online_reservation_room_description: 'Room type description for online reservation'
-form.roomTypeType.chess_room_type_color: 'Room type color in Reservation Calendar'
+form.roomTypeType.color: Colour
+form.roomTypeType.online_reservation_room_description: 'Room Type description for the Website'
+form.roomTypeType.chess_room_type_color: 'Colour of the Room Type in the Calendar'
 form.roomTypeType.image: Image
 form.roomTypeType.main_places: 'Number of beds'
 form.roomTypeType.settings: Settings
 form.roomTypeType.places: Beds
 form.roomTypeType.prices: 'Price formation'
-form.roomTypeType.isChildPrices: 'Price for children'
-form.roomTypeType.isChildPricesDesc: 'Use a different price for children taking main beds?'
-form.roomTypeType.isIndividualAdditionalPrices: 'Individual prices for additional beds?'
-form.roomTypeType.isIndividualAdditionalPricesDesc: 'Use different prices for each additional bed?'
+form.roomTypeType.isChildPrices: 'Prices for Children'
+form.roomTypeType.isChildPricesDesc: 'Would you like to set different prices for main beds for Adults and Children?'
+form.roomTypeType.isIndividualAdditionalPrices: 'Individual Prices for each Additional bed'
+form.roomTypeType.isIndividualAdditionalPricesDesc: 'Would you like to set different prices for each Additional bed?'
 form.roomTypeType.room_main_places_amount: 'Number of main beds in a room'
 form.roomTypeType.additional_places: 'Additional beds'
 form.roomTypeType.room_additional_places_amount: 'Number of additional beds in a room'
-form.roomTypeType.is_included: 'Enabled?'
+form.roomTypeType.is_included: 'Active?'
 form.roomTypeType.category: Category
 form.roomTypeType.facilities: Amenities
-form.roomTypeType.is_room_included_in_search: 'Include room type in search?'
-form.roomTypeType.room_space: 'Room space (m2)'
+form.roomTypeType.is_room_included_in_search: 'Include room type in Calendar / Available rooms search?'
+form.roomTypeType.room_space: 'Room size (m2)'
 form.roomTypeType.help.empty_facilities: 'Hotel facilites used'
 controller.hotelController.record_created_success: 'Entry successfully added'
 controller.hotelController.record_edited_success: 'Entry successfully edited'
-controller.roomTypeController.rooms_generation_success: 'Rooms successfully generated'
+controller.roomTypeController.rooms_generation_success: 'Rooms successfully created'
 controller.roomTypeController.record_edited_success: 'Entry successfully edited'
-controller.TaskTypeController.rooms_generation_success: 'Rooms successfully generated'
+controller.TaskTypeController.rooms_generation_success: 'Rooms successfully created'
 controller.TaskTypeController.record_edited_success: 'Entry successfully edited'
 controller.hotelController.task_created_notall: 'Not all the tasks have been added/changed. Please, close all the opened tasks of this type and try again.'
 controller.hotelController.task_created_failed: 'Unable to create any tasks'
-form.taskType.title: Title
+form.taskType.title: Name
 form.taskType.category: Category
 form.taskType.default_user_group: 'Default executor group'
 form.taskType.roomStatus: 'Room status'
@@ -111,7 +111,7 @@ form.task.rooms: Rooms
 form.task.priority: Priority
 form.task.tourist: Tourist
 form.task.date: 'Date and time'
-form.task.housing: Wing
+form.task.housing: Building
 form.task.floor: Floor
 form.task.roles: Group
 form.task.general_room: 'Room type'
@@ -135,11 +135,11 @@ task.filter.task.closed: Closed
 views.form.corpus.group.main: 'General information'
 views.form.corpus.group.address: Address
 views.form.corpus.group.config: Settings
-controller.corpus.updated_success: 'Wing successfully saved'
-controller.corpus.created_success: 'Wing successfully added'
+controller.corpus.updated_success: 'Building successfully saved'
+controller.corpus.created_success: 'Building successfully added'
 form.taskTypeCategory.general_info: 'Add task category'
-form.taskTypeCategory.title: 'Internal title'
-form.taskTypeCategory.fullTitle: Title
+form.taskTypeCategory.title: 'Short Name'
+form.taskTypeCategory.fullTitle: Name
 views.task.index.creation: Create
 views.task.index.performance: Fulfillment
 views.task.index.dates: Dates
@@ -147,51 +147,51 @@ form.searchTask.performance: Fulfillment
 form.searchTask.creation: Create
 mailer.new_task.subject: 'New task has been assigned to you'
 mailer.new_task.text: 'Task "%taskType%" has been assigned to you'
-form.roomTypeCategory.inner_name: 'Internal title'
-form.roomTypeCategory.is_enabled: 'Enabled?'
+form.roomTypeCategory.inner_name: 'Short Name'
+form.roomTypeCategory.is_enabled: 'Active?'
 form.roomTypeCategory.desc: Description
 form.roomTypeCategory.desc_help: 'Room type description for reservation online'
 mbhhotelbundle.form.dailytasktype.dney: Days
 mbhhotelbundle.form.dailytasktype.vyberite.uslugu: 'Select a service'
-mbhhotelbundle.form.roomtypetaskstype.zadachi.sozdavayemyye.pri.zayezde.gostya: 'Tasks created on check in'
-mbhhotelbundle.form.roomtypetaskstype.pri.vyyezde.gostya: 'On check out'
-form.hotelExtendedType.international_street_name.label: 'International title'
-form.hotelExtendedType.international_street_name.help: 'International street name'
-form.hotelExtendedType.zip_code: 'Zip code'
+mbhhotelbundle.form.roomtypetaskstype.zadachi.sozdavayemyye.pri.zayezde.gostya: 'Tasks created on check-in'
+mbhhotelbundle.form.roomtypetaskstype.pri.vyyezde.gostya: 'On Check-out'
+form.hotelExtendedType.international_street_name.label: 'Int. transcription <br>(if different)'
+form.hotelExtendedType.international_street_name.help: 'International transcription of the Street name'
+form.hotelExtendedType.zip_code: 'Postal code'
 form.hotelExtendedType.all_rooms_non_smoking: 'All rooms are non-smoking'
 form.hotelExtendedType.non_smoking_room: 'Non-smoking public areas'
 form.hotelExtendedType.all_public_areas_non_smoking: 'Smoking is not allowed in public places'
 form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms: 'Smoking is allowed in special places only'
-form.hotelExtendedType.accepted_payment_types: 'Payment method'
+form.hotelExtendedType.accepted_payment_types: 'Payment methods'
 form.hotelExtendedType.accepted_card_type.label: 'Card type'
 form.hotelExtendedType.accepted_card_type.help: 'Accepted card types'
-form.hotelExtendedType.is_invoice_accepted.label: Invoices
-form.hotelExtendedType.is_invoice_accepted.help: 'Accept invoices as payment'
-form.hotelExtendedType.check_in_out_policy.label: 'Check in/out policies'
-form.hotelExtendedType.check_in_out_policy.help: 'Policies required on check in and check out'
-form.hotelExtendedType.smoking_policy.label: 'Smoking policies'
+form.hotelExtendedType.is_invoice_accepted.label: Vouchers
+form.hotelExtendedType.is_invoice_accepted.help: 'Accept vouchers as payments'
+form.hotelExtendedType.check_in_out_policy.label: 'Check-in/out policies'
+form.hotelExtendedType.check_in_out_policy.help: 'Check-in / Check-out policies'
+form.hotelExtendedType.smoking_policy.label: 'Smoking policy'
 form.hotelExtendedType.check_in_out_policy.placeholder: 'Valid credit or debit card must be provided on check in'
-form.contact_info_type.available_languages.label: 'Communication language'
+form.contact_info_type.available_languages.label: 'Communication languages'
 form.contact_info_type.phone.label: 'Phone number'
 form.contact_info_type.phone.help: 'Contact phone number'
-form.contact_info_type.full_name.label: Name
+form.contact_info_type.full_name.label: 'Contact Name'
 form.contact_info_type.full_name.help: 'Full name'
-form.contact_info_type.email.label: Email
+form.contact_info_type.email.label: 'Email address'
 form.contact_info_type.email.help: 'Contact Email'
-form.hotel_contact_information.contact_info.group: 'Client support contacts'
+form.hotel_contact_information.contact_info.group: 'Contact details'
 form.hotel_images.image_file.label: Image
-form.hotel_images.image_file.help: 'Hotel photo for a web form.<br>Maximum size 2 Mb, 80x90 px, file types: png, jpg, gif.'
-form.hotel_images.image_is_default.label: 'Default?'
-form.hotel_images.image_is_default.help: 'Is this image default for the hotel?'
+form.hotel_images.image_file.help: 'Pictures for the website<br>Maximum size 2 Mb, 80x90 px, file types: png, jpg, gif.'
+form.hotel_images.image_is_default.label: 'Main Image?'
+form.hotel_images.image_is_default.help: 'Would you like to select this Picture as the Main Image?'
 form.hotelType.isSmoking.label: 'Allow smoking?'
 form.hotelType.isSmoking.help: 'Is smoking allowed in the room?'
 form.roomType.is_smoking.label: 'Allow smoking?'
 form.roomType_generator.is_smoking.label: 'Smoking?'
 form.roomType.is_smoking.help: 'Is smoking allowed in the room?'
 form.roomType.room_view_types.label: 'Window view'
-form.roomTypeType.inner_name.help: 'Title only visible inside MaxiBooking system'
+form.roomTypeType.inner_name.help: 'Name within MaxiBooking'
 form.roomTypeType.image.help: 'Room type image for online reservations'
-views.hotel.form.RoomTypeType.name_form_using_within: 'Internal title'
+views.hotel.form.RoomTypeType.name_form_using_within: 'Short Name'
 views.hotel.form.RoomTypeType.image_type_number_for_online_booking: 'Room type image for online reservations'
 controller.hotelController.success_delete_photo: 'Image successfully deleted'
 controller.roomController.success_room_creation: 'Room successfully added'
@@ -210,7 +210,7 @@ mbhhotelbundle.taskData.clean_room: 'Clean the room'
 mbhhotelbundle.taskData.entity_was_cleaned: 'Entry successfully added'
 mbhhotelbundle.roomTypeController.entity_was_created_successfully: 'Entry successfully added'
 mbhhotelbundle.roomTypeController.image_was_deleded_successfully: 'Image successfully deleted'
-mbhhotelbundle.roomTypeController.photo_was_created_successfully: 'Photo successfully added'
+mbhhotelbundle.roomTypeController.photo_was_created_successfully: 'Picture successfully uploaded'
 views.task.index.ne_zadano: 'Not selected'
 views.task.index.entity_was_deleted: 'Entry deleted'
 views.task.index.vse: All
@@ -222,7 +222,7 @@ views.task.index.before_two: before
 views.hotel.index.list: List
 views.hotel.roomType.editAutoTasks.add: Add
 views.hotel.roomType.editTabs.public_information_and_setting: 'General information and settings'
-views.hotel.roomType.editTabs.photo: Photos
+views.hotel.roomType.editTabs.photo: Pictures
 views.hotel.roomType.editTabs.tasks: Tasks
 views.hotel.roomType.new.public_information_and_setting: 'General settings'
 views.hotel.roomType.index.list: List
@@ -232,25 +232,25 @@ views.hotel.form.hotelType.upload_file: 'Maximum size 2 Mb, 80x90 px, file types
 views.hotel.form.hotelType.see_image: 'View image'
 views.hotel.form.hotelType.delete: Delete
 form.notice_stay_place_xls_type.not_specified: 'Not specified'
-form.hotelExtendedType.hotel_description_links.poll_link.label: Polls
+form.hotelExtendedType.hotel_description_links.poll_link.label: Feedback
 form.hotel_logo.group: 'Logo settings'
-form.hotel_logo.image_file.help: 'Hotel logo'
+form.hotel_logo.image_file.help: 'Hotel Logo'
 mbhhotelbundle.view.roomtypecategory.index.net: 'no'
 mbhhotelbundle.view.roomtypecategory.index.da: 'Yes'
-mbhhotelbundle.view.roomtype.editimages.glavnaya.fotografiya: 'Main photo'
-mbhhotelbundle.view.roomtypecategory.index.nazvaniye: Title
-mbhhotelbundle.view.roomtypecategory.index.vklyuchena: Enabled
+mbhhotelbundle.view.roomtype.editimages.glavnaya.fotografiya: 'Main Image'
+mbhhotelbundle.view.roomtypecategory.index.nazvaniye: Name
+mbhhotelbundle.view.roomtypecategory.index.vklyuchena: Active
 mbhhotelbundle.view.roomtypecategory.index.tipy.nomerov: 'Room types'
 form.hotelExtendedType.vega_address_id: 'ID for Vega'
 form.hotelExtendedType.vega_address_id_help: 'ID for Vega'
-form.hotelExtendedType.hotel_description_links.group: 'Hotel URL address'
-form.hotelExtendedType.hotel_description_links.about_link.label: 'About hotel'
+form.hotelExtendedType.hotel_description_links.group: 'URL links (for additional websites)'
+form.hotelExtendedType.hotel_description_links.about_link.label: Description
 form.hotelExtendedType.hotel_description_links.contacts_link.label: Contacts
 form.hotelExtendedType.hotel_description_links.map_link.label: 'Driving directions'
-form.hotelExtendedType.hotel_description_links.rooms_link.label: 'Rooms and services'
-form.hotelType.package_arrival_time.label: 'Check in time'
-form.hotelType.package_departure_time.label: 'Check out time'
-hotel_images.main_image: 'Main photo'
+form.hotelExtendedType.hotel_description_links.rooms_link.label: 'Rooms & Amenities'
+form.hotelType.package_arrival_time.label: 'Standard Check-in time'
+form.hotelType.package_departure_time.label: 'Standard Check-out time'
+hotel_images.main_image: 'Main Image'
 hotel_images.remove_image: 'Delete image'
 building: Building
 rules: 'Accommodation rules'
@@ -260,14 +260,14 @@ furniture: Furniture
 food: Food
 amenity: Amenities
 technical: Equipment
-mbhhotelbundle.roomTypeData.single.place: 'Standard Single Room'
-mbhhotelbundle.roomTypeData.three.place: Triple
+mbhhotelbundle.roomTypeData.single.place: 'Deluxe King Room'
+mbhhotelbundle.roomTypeData.three.place: Suite
 views.hotel.notFound.error: error
 views.hotel.new.creating: Create
 views.hotel.roomType.editImages.do_default: Tasks
 views.hotel.roomType.new.photo: Images
 controller.hotelController.success_main_image_set: 'This image is set as default for this hotel'
-hotel_images.set_image_main: 'Make this image default for this hotel'
+hotel_images.set_image_main: 'Select this Picture as the Main Image'
 controller.roomTypeController.success_set_main_photo: 'Imagade was successfully set as default'
 mbhhotelbundle.roomTypeController.photo_was_change_default_successfully: 'Imagade was successfully set as default'
 views.hotel.roomType.editImages.delete_picture: 'Delete image'
@@ -276,3 +276,7 @@ views.hotel.form.hotelType.delete_modal_text: 'Are you sure you want to delete t
 views.hotel.roomType.editImages.edit.priority: Priority
 views.hotel.roomType.editImages.edit.priority.save: 'Save priority'
 views.hotel.roomType.editImages.edit.priority.close: Close
+views.facility.list.description_title: Description
+views.facility.list.facility_title: Amenity
+facility_controller.facility_description.save_table.success: 'Changes successfully saved'
+views.facility.list.save_changes_button.title: 'Save changes'

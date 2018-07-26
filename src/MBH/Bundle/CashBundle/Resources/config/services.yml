@@ -14,12 +14,12 @@ services:
 
     mbh.new_cash_document_type:
         class: MBH\Bundle\CashBundle\Form\NewCashDocumentType
-        arguments: ['@translator', '@doctrine.odm.mongodb.document_manager', '%mbh.cash.methods%', '%mbh.cash.operations%', '@mbh.client_manager']
+        arguments: ['@translator', '@doctrine.odm.mongodb.document_manager', '%mbh.cash.methods%', '%mbh.cash.operations%', '@mbh.client_manager', '@mbh.client_config_manager']
         tags:
             - {name: form.type}
 
     mbh.cash_document_type:
         class: MBH\Bundle\CashBundle\Form\CashDocumentType
-        arguments: ['@translator', '@doctrine.odm.mongodb.document_manager', '%mbh.cash.methods%', '%mbh.cash.operations%']
+        arguments: ['@translator', '@doctrine.odm.mongodb.document_manager', '%mbh.cash.methods%', '%mbh.cash.operations%', '@mbh.client_config_manager']
         tags:
             - {name: form.type}

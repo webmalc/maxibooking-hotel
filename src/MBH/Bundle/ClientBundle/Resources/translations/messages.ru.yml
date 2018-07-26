@@ -87,6 +87,8 @@ form.clientConfigType.begin_date_offset.help: 'Смещение начально
 form.clientConfigType.number_of_days_for_payment.label: 'Период оплаты брони'
 form.clientConfigType.number_of_days_for_payment.help: 'Период от создания брони до момента, когда отсутствие оплаты означает, что она просрочена'
 form.clientConfigType.currency_ratio_fix.label: 'Коэффициент корректировки курса валюты'
+form.clientConfigType.languages.label: 'Языки в онлайн-форме'
+form.clientConfigType.is_mb_site_enabled.label: 'Включен сайт?'
 form.clientConfigType.currency_ratio_fix.help: 'Коэффициент, на который умножается цена при преобразовании в другую валюту'
 form.clientConfigType.is_book_without_payer.label: 'Бронировать без плательщика?'
 form.clientConfigType.is_book_without_payer.help: 'Разрешено ли создавать заказы без указания плательщика?'
@@ -129,3 +131,4 @@ form.colors_type.unplaced_color.help: 'Цвет ячеек таблицы, от�
 views.payment_systems.invoice.download_button.text: 'Скачать счет'
 mbh.payment_systems.by_invoice: 'По счету'
 views.uniteller.pay_button.text: 'Оплатить %amount% %currency%'
+program_not_paid.error_messages: 'Оплаченный период использования программой подходит к концу. Дней до блокировки аккаунта: %days%. Пожалуйста, оплатите программу в <a target="_blank" href="%payment_url%">личном кабинете</a>.'

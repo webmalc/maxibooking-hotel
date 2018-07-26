@@ -113,11 +113,9 @@ class ChessBoardController extends BaseController
         $stylesFileNumber = $request->cookies->get('chessboardSizeNumber') ?? 1;
 
         $rightsChecker = $this->get('security.authorization_checker');
-        $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted(
-            'ROLE_SEARCH'
-        ) ? 'true' : 'false';
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $displayDisabledRoomType = !$clientConfig->isIsDisableableOn();
+        $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
+        $clientConfig = $this->clientConfig;
+        $displayDisabledRoomType = !$clientConfig->isDisableableOn();
         $canBookWithoutPayer = $clientConfig->isCanBookWithoutPayer();
 
         $tourist = new Tourist();
