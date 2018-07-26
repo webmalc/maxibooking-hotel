@@ -13,3 +13,11 @@
     {% endjavascripts %}
 
 {% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHHotelBundle/Resources/public/css/room-type/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}

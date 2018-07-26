@@ -1,0 +1,31 @@
+@media (max-width: 767px) {
+  .content-wrapper.main-container {
+    section.content {
+
+      div.nav-tabs-custom {
+        margin-bottom: unset;
+        div.tab-content {
+          padding-bottom: unset;
+        }
+      }
+
+      div.btn-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+    #actions {
+      .container-fluid {
+        display: flex;
+        flex-direction: column;
+        ul:first-child {
+          order: 2;
+        }
+        div:last-child {
+          text-align: center;
+        }
+      }
+    }
+  }
+}
