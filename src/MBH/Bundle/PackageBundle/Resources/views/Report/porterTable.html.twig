@@ -5,10 +5,10 @@
 {% else %}
 
     <div class="box box-default box-solid">
-        <div class="box-header with-border">
+        <div class="box-header with-border box-header_when-mobile">
             <h3 class="box-title">
                 {{ ('report.porter.' ~ type ~ '.table')|trans({}, 'MBHPackageBundle') }}
-                ({{ begin|mbh_format }} - {{ end|mbh_format }})
+                ({{ begin|mbh_format }}- {{ end|mbh_format }})
             </h3>
 
             <div class="box-tools pull-right">
