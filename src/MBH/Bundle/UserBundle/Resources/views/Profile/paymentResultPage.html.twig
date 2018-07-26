@@ -8,10 +8,10 @@
         </h1>
     </div>
     <div class="text-center">
-        <button class="btn btn-primary btn-lg" onclick='window.location.href = "{{ path('user_payment')}}"'>
+        <a class="btn btn-primary btn-lg" target="_top" href="{{ path('user_payment')}}">
             {% set buttonTextId = success ? 'view.payment_result_page.button.text.success' : 'view.payment_result_page.button.text.fail' %}
             {{ buttonTextId|trans }}
-        </button>
+        </a>
     </div>
 </div>
 </div>
