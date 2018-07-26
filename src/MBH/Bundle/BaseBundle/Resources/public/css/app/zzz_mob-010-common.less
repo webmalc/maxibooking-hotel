@@ -8,7 +8,7 @@
   }
 
   .content-header {
-    padding: 0px 15px 0 15px;
+    padding: 0 15px 0 15px;
   }
 
   .content-wrapper.main-container {
@@ -48,6 +48,21 @@
   header.main-header {
     top: unset !important;
     position: relative !important;
+
+    nav[role="navigation"] {
+      > div.navbar-custom-menu > ul.nav {
+        > li.notifications-menu {
+          overflow: hidden;
+          > a {
+            text-overflow: ellipsis;
+          }
+        }
+
+        > li > a {
+          padding: 15px 10px;
+        }
+      }
+    }
   }
 
   .sidebar-open .content-wrapper,

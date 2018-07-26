@@ -10,17 +10,17 @@
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'room-overview-filter-widget' } %}
     <form id="room-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
-            <div class="input">
-                <i class="fa fa-calendar" title='{{ 'price.views.overview.index.date'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp
-                <input type="text" id="room-overview-filter-begin" class="datepicker mbh-daterangepicker room-overview-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="">
+            <div class="filter-form_input">
+                <i class="fa fa-calendar" title='{{ 'price.views.overview.index.date'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>
+                <input type="text" id="room-overview-filter-begin" class="datepicker mbh-daterangepicker room-overview-filter begin-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="">
             </div>
             <div class="input hidden">
-                - &nbsp
                 <input type="text" id="room-overview-filter-end" class="datepicker mbh-daterangepicker room-overview-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="">
             </div>
 
-            <div class="input">
-                <i class="fa fa-bed" title='{{ 'price.views.overview.index.type'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'price.views.overview.index.type'|trans({},'MBHPriceBundle') }}" id="room-overview-filter-roomType" class="room-overview-filter form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-bed" title='{{ 'price.views.overview.index.type'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>
+                <select multiple data-placeholder="{{ 'price.views.overview.index.type'|trans({},'MBHPriceBundle') }}" id="room-overview-filter-roomType" class="room-overview-filter form-control">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
@@ -28,8 +28,9 @@
                 </select>
             </div>
 
-            <div class="input">
-                <i class="fa fa-sliders" title='{{ 'price.views.overview.index.rate'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'price.views.overview.index.rate'|trans({},'MBHPriceBundle') }}" id="room-overview-filter-tariff" class="room-overview-filter form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-sliders" title='{{ 'price.views.overview.index.rate'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>
+                <select multiple data-placeholder="{{ 'price.views.overview.index.rate'|trans({},'MBHPriceBundle') }}" id="room-overview-filter-tariff" class="room-overview-filter form-control">
                         <option></option>
                         {% for tariff in tariffs %}
                             <option value="{{ tariff.id }}" {% if (tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length) or (app.request.get('tariffs') is empty and tariff.isDefault) %}selected{% endif %}>{{ tariff.name }}</option>
