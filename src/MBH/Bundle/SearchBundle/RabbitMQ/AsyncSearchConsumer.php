@@ -43,6 +43,16 @@ class AsyncSearchConsumer implements ConsumerInterface
     }
 
 
+    /**
+     * @param AMQPMessage $msg
+     * @return mixed|void
+     * @throws AsyncSearchConsumerException
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     public function execute(AMQPMessage $msg)
     {
         $body = json_decode($msg->getBody(), true);

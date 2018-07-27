@@ -134,7 +134,13 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
 
         return  $qb->hydrate(false)->getQuery()->toArray();
+    }
 
+    public function findAllWithHotels(): array
+    {
+        $qb = $this->createQueryBuilder();
+
+        return $qb->field('hotel')->prime(true)->getQuery()->toArray();
     }
 
 }

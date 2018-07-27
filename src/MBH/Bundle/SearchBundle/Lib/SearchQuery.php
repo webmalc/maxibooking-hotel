@@ -81,7 +81,7 @@ class SearchQuery
 
 
     /**
-     * @return mixed
+     * @return \DateTime
      */
     public function getBegin()
     {
@@ -89,7 +89,7 @@ class SearchQuery
     }
 
     /**
-     * @param mixed $begin
+     * @param \DateTime $begin
      * @return SearchQuery
      */
     public function setBegin($begin): SearchQuery
@@ -100,7 +100,7 @@ class SearchQuery
     }
 
     /**
-     * @return mixed
+     * @return \DateTime
      */
     public function getEnd()
     {
@@ -108,7 +108,7 @@ class SearchQuery
     }
 
     /**
-     * @param mixed $end
+     * @param \DateTime $end
      * @return SearchQuery
      */
     public function setEnd($end): SearchQuery

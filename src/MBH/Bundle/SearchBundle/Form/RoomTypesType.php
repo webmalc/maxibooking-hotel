@@ -5,9 +5,7 @@ namespace MBH\Bundle\SearchBundle\Form;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\HotelRepository;
@@ -89,12 +87,21 @@ class RoomTypesType extends AbstractType
                     return $choiceView->data === 'fakeData';
                 }));
                 if (!$isAllRoomsExists) {
-                    $hotelId = $this->hotelRepository->findOneBy(['fullTitle' => $hotelName])->getId();
+                    $hotelId = $this->hotelRepository->findOneBy(['title' => $hotelName])->getId();
                     $choiceView = new ChoiceView('fakeData', 'allrooms_'.$hotelId, 'Все номера');
                     array_unshift($choices[$hotelName]->choices, $choiceView);
                 }
 
             }
+            uasort($choices, function($hotelNameA, $hotelNameB) {
+                /** @var Hotel $hotelA */
+                $hotelA = $this->hotelRepository->findOneBy(['title' => $hotelNameA->label]);
+                /** @var Hotel $hotelB */
+                $hotelB = $this->hotelRepository->findOneBy(['title' => $hotelNameB->label]);
+
+                return $hotelB->getIsDefault() <=> $hotelA->getIsDefault();
+            });
+            $view->vars['choices'] = $choices;
         }
     }
 
@@ -115,9 +122,9 @@ class RoomTypesType extends AbstractType
                     ->getRepository(Hotel::class)
                     ->getSearchActiveIds();
 
-                return $dr->createQueryBuilder()->field('hotel.id')->in($hotelIds)->sort('fullTitle', 'asc');
-            }
-
+                return $dr->createQueryBuilder()->field('hotel.id')->in($hotelIds)->sort('title', 'asc');
+            },
+            'choice_label' => 'name'
         ]);
     }
 

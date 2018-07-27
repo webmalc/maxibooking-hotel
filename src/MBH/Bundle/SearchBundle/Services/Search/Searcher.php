@@ -43,9 +43,14 @@ class Searcher
      * @param SearchQuery $searchQuery
      * @return Result
      * @throws SearcherException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function search(SearchQuery $searchQuery): Result
     {

@@ -34,6 +34,10 @@ class SearchController extends Controller
      * @param Request $request
      * @param null|string $grouping
      * @return Response
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function syncSearchAction(Request $request, ?string $grouping = null): Response
     {
@@ -126,6 +130,9 @@ class SearchController extends Controller
         return $this->render('@MBHSearch/Search/client.html.twig', ['form' => $form->createView()]);
     }
 
+    /**
+     * @return Response
+     */
     public function searcherAction(): Response
     {
         $initSearchConditions = new SearchConditions();

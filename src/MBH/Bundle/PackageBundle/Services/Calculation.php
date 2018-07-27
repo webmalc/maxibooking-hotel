@@ -345,7 +345,7 @@ class Calculation
                     continue 2;
                 }
 
-                if ($isIndividualAdditionalPrices and ($addsChildren + $addsAdults) > 1) {
+                if ($isIndividualAdditionalPrices && ($addsChildren + $addsAdults) > 1) {
                     $addsPrice = 0;
                     $additionalCalc = function ($num, $prices, $price, $offset = 0) {
                         $result = 0;

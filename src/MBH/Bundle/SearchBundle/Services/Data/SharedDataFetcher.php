@@ -26,7 +26,7 @@ class SharedDataFetcher implements SharedDataFetcherInterface
     public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository, RoomRepository $roomRepository)
     {
         $this->tariffs = $tariffRepository->findAll();
-        $this->roomTypes = $roomTypeRepository->findAll();
+        $this->roomTypes = $roomTypeRepository->findAllWithHotels();
         $this->rooms = $roomRepository->findAll();
     }
 

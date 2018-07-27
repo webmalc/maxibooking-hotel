@@ -13,6 +13,8 @@ class ChildrenAgesSameAsChildren extends Constraint
 {
     public $message = 'The children ages num not same as children num';
 
+    public $wrongAdultsCountMessage = 'The children are present, but there are no adults';
+
     /**
      * @return string
      */

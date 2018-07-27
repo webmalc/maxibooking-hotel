@@ -7,9 +7,11 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PackageBundle\Lib\SearchCalculateEvent;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
@@ -24,6 +26,7 @@ use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
 class SearchResultComposer
@@ -46,6 +49,9 @@ class SearchResultComposer
      */
     private $accommodationRoomSearcher;
 
+    /** @var EventDispatcherInterface  */
+    private $dispatcher;
+
     /**
      * SearchResultComposer constructor.
      * @param RoomTypeManager $roomManager
@@ -55,7 +61,7 @@ class SearchResultComposer
      * @param SharedDataFetcher $sharedDataFetcher
      * @param AccommodationRoomSearcher $roomSearcher
      */
-    public function __construct(RoomTypeManager $roomManager, Calculation $calculation, SearchLimitChecker $limitChecker, RoomCacheFetcher $roomCacheFetcher, SharedDataFetcher $sharedDataFetcher, AccommodationRoomSearcher $roomSearcher)
+    public function __construct(RoomTypeManager $roomManager, Calculation $calculation, SearchLimitChecker $limitChecker, RoomCacheFetcher $roomCacheFetcher, SharedDataFetcher $sharedDataFetcher, AccommodationRoomSearcher $roomSearcher, EventDispatcherInterface $dispatcher)
     {
         $this->roomManager = $roomManager;
         $this->calculation = $calculation;
@@ -63,9 +69,21 @@ class SearchResultComposer
         $this->roomCacheFetcher = $roomCacheFetcher;
         $this->sharedDataFetcher = $sharedDataFetcher;
         $this->accommodationRoomSearcher = $roomSearcher;
+        $this->dispatcher = $dispatcher;
     }
 
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return Result
+     * @throws SearchResultComposerException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function composeResult(SearchQuery $searchQuery): Result
     {
         $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
@@ -90,6 +108,7 @@ class SearchResultComposer
         // В дальнейшем цены могут содержать разное кол-во детей и взрослых (инфантов)
         //
         //*/
+
         $prices = $this->getPrices($searchQuery, $roomType, $tariff, $actualAdults, $actualChildren);
         $combinations = array_keys($prices);
         $resultPrices = [];
@@ -155,8 +174,45 @@ class SearchResultComposer
     }
 
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @param RoomType $roomType
+     * @param Tariff $tariff
+     * @param int $actualAdults
+     * @param int $actualChildren
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $actualAdults, int $actualChildren): array
     {
+        $event = new SearchCalculateEvent();
+        $eventData = [
+            'roomType' => $roomType,
+            'tariff' => $tariff,
+            'begin' => $searchQuery->getBegin(),
+            'end' => (clone $searchQuery->getEnd())->modify('-1 day'),
+            'adults' => $searchQuery->getAdults(),
+            'children' => $searchQuery->getChildren(),
+            'promotion' => null,
+            'special' => null,
+            'isUseCategory' => $this->roomManager->useCategories,
+            'childrenAges' => $searchQuery->getChildrenAges()
+        ];
+        $event->setEventData($eventData);
+        $this->dispatcher->dispatch(SearchCalculateEvent::SEARCH_CALCULATION_NAME, $event);
+        $prices = $event->getPrices();
+        if (null !== $prices) {
+            if (false === $prices) {
+                throw new CalculationException('No price for subcsriber');
+            }
+
+            return $prices;
+        }
+
         $conditions = $searchQuery->getSearchConditions();
         $calcQuery = new CalcQuery();
         $calcQuery
@@ -185,6 +241,12 @@ class SearchResultComposer
     }
 
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return int
+     * @throws SearchResultComposerException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     private function getMinCacheValue(SearchQuery $searchQuery): int
     {
         $roomCacheFetchQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);

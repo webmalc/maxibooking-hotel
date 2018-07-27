@@ -103,7 +103,7 @@ services:
 
     mbh_search.result_composer:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
-        arguments: ['@mbh.hotel.room_type_manager', '@mbh_search.calculation', '@mbh_search.search_limit_checker', '@mbh_search.room_cache_fetcher', '@mbh_search.shared_data_fetcher', '@mbh_search.accommodation_room_searcher']
+        arguments: ['@mbh.hotel.room_type_manager', '@mbh_search.calculation', '@mbh_search.search_limit_checker', '@mbh_search.room_cache_fetcher', '@mbh_search.shared_data_fetcher', '@mbh_search.accommodation_room_searcher', '@event_dispatcher']
 
 # async receive results
     mbh_search.asycn_search:

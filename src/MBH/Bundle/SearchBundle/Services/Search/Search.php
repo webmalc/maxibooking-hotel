@@ -76,8 +76,12 @@ class Search
      * @param array $data
      * @param bool $isHideRestrictedResults
      * @return Result[]
-     *\ @throws SearchConditionException
+     * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function searchSync(array $data, bool $isHideRestrictedResults = true): array
     {

@@ -46,6 +46,7 @@ class AsyncSearcher extends Searcher {
             } while (!error && count < this.requestThreshold);
             if (!error) {
                 console.log('Stop async receive by threshold.');
+                this.onStopSearch({status: "error"});
             }
         } catch (e) {
             this.onStopSearch(ajax);

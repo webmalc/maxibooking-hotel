@@ -20,6 +20,14 @@ class ChildrenAgesSameAsChildrenValidator extends ConstraintValidator
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }
+
+        $adults = (int)$object->getAdults();
+        if ($adults === 0 && $children > 0) {
+            $this->context
+                ->buildViolation($constraint->wrongAdultsCountMessage)
+                ->addViolation()
+            ;
+        }
     }
 
 }
