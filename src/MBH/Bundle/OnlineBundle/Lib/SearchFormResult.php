@@ -125,6 +125,6 @@ class SearchFormResult implements \JsonSerializable
             $msg = 'unknown error';
         }
 
-        $logger->logger($msg);
+        $logger->info($msg);
     }
 }
