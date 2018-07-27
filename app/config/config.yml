@@ -15,7 +15,7 @@ framework:
     serializer:
         enabled: true
     #esi:             ~
-    translator:      { fallback: ["%locale%", en, ru] }
+    translator:      { fallback: ["%locale%", ru, en] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -79,14 +79,14 @@ assetic:
     filters:
         cssrewrite: ~
         uglifycss:
-            bin: /usr/local/bin/uglifycss
+            bin: /usr/bin/uglifycss
             node: /usr/bin/node
         uglifyjs2:
-            bin: /usr/local/bin/uglifyjs
+            bin: /usr/bin/uglifyjs
             node: /usr/bin/node
         less:
             node: /usr/bin/node
-            node_paths: [/usr/local/lib/node_modules/]
+            node_paths: [/usr/lib/node_modules/]
             apply_to: ".less$"
         scssphp:
             formatter: 'Leafo\ScssPhp\Formatter\Compressed'
@@ -199,11 +199,7 @@ knp_snappy:
     pdf:
         enabled:    true
         binary:     "%wkhtmltopdf_path%"
-        options:
-            margin-left : 0
-            margin-top : 0
-            margin-bottom : 0
-            margin-right : 0
+        options: []
     image:
         enabled:    true
         binary:     /usr/local/bin/h

@@ -192,11 +192,7 @@ class ProfileController extends Controller
      */
     public function payerAction(Request $request)
     {
-        $payerCompany = $this->get('mbh.client_payer_manager')->getClientPayerCompany();
-        $form = $this->createForm(PayerType::class, null, [
-            'client' => $this->get('mbh.client_manager')->getClient(),
-            'company' => $payerCompany
-        ]);
+        $form = $this->createForm(PayerType::class);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -328,12 +324,12 @@ class ProfileController extends Controller
 
     /**
      * @Route("/client_successful_payment", name="client_successful_payment", options={"expose"=true})
-     * @Template()
+     * @Template("@MBHUser/Profile/paymentResultPage.html.twig")
      * @return array
      */
     public function paymentSuccessfulPageAction()
     {
-        return [];
+        return ['success' => true];
     }
 
     private function addBillingErrorFlash()

@@ -2,47 +2,29 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
-use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
+use MBH\Bundle\BaseBundle\Form\FormWithMultiLangFields;
 use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class HotelType extends AbstractType
+class HotelType extends FormWithMultiLangFields
 {
-    private $languages;
-
     public function __construct(ClientConfigManager $clientConfigManager)
     {
-        $this->languages = $clientConfigManager->fetchConfig()->getLanguages();
+        parent::__construct($clientConfigManager);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $isHotelExists = !empty($builder->getData()->getId());
-        if ($isHotelExists) {
-            $builder->add('fullTitle', MultiLanguagesType::class, [
-                'mapped' => false,
-                'group' => 'form.hotelType.general_info',
-                'data' => $builder->getData(),
-                'fields_options' => [
-                    'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel'],
-                    'label' => 'form.hotelType.name',
-                    'required' => false
-                ],
-                'field_type' => TextType::class,
-            ]);
-        } else {
-            $builder->add('fullTitle', TextType::class, [
-                'label' => 'form.hotelType.name',
-                'group' => 'form.hotelType.general_info',
-                'required' => true,
-                'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel']
-            ]);
-        }
+        $builder = $this->addMultiLangField($builder, TextType::class, 'fullTitle', [
+            'group' => 'form.hotelType.general_info',
+            'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel'],
+            'label' => 'form.hotelType.name'
+        ]);
 
         $builder
             ->add('title', TextType::class, [
@@ -65,17 +47,14 @@ class HotelType extends AbstractType
                 'help' => 'form.hotelType.document_use_name'
             ]);
 
+        $builder = $this->addMultiLangField($builder, TextareaType::class, 'description', [
+            'attr' => ['class' => 'tinymce'],
+            'label' => 'form.hotelType.description',
+            'group' => 'form.hotelType.general_info',
+            'required' => false
+        ]);
+
         $builder
-            ->add('description', MultiLanguagesType::class, [
-                'mapped' => false,
-                'group' => 'form.hotelType.general_info',
-                'data' => $builder->getData(),
-                'fields_options' => [
-                    'attr' => ['class' => 'tinymce'],
-                    'label' => 'form.hotelType.description',
-                    'required' => false
-                ],
-            ])
             ->add('logoImage', HotelLogoImageType::class, [
                 'label' => 'form.hotel_logo.image_file.help',
                 'group' => 'form.hotelType.settings',

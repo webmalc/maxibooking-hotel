@@ -44,7 +44,10 @@ class NoticeUnpaid
         $currentDay = new \DateTime('midnight'); // Current day
 
         // Number of days after which a payment is considered overdue
-        $dateUnpaid = $this->container->get('mbh.client_config_manager')->fetchConfig();
+        $dateUnpaid = $this->container
+            ->get('mbh.client_config_manager')
+            ->fetchConfig()
+            ->getNoticeUnpaid();
 
         // Date. Late payments
         $deadlineDate = $currentDay->modify("-{$dateUnpaid} day");

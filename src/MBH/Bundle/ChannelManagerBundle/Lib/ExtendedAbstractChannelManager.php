@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
+use MBH\Bundle\ChannelManagerBundle\Services\ChannelManager;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -236,12 +237,12 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         );
     }
 
-    public function pullOrders()
+    public function pullOrders($pullOldStatus = ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS)
     {
         $result = true;
 
         /** @var ChannelManagerConfigInterface $config */
-        foreach ($this->getConfig() as $config) {
+        foreach ($this->getConfig($pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS) as $config) {
             $this->log('begin pulling orders for hotel "' . $config->getHotel()->getName() . '" with id "' . $config->getHotel()->getId() . '"');
 
             $requestData = $this->requestDataFormatter->formatGetBookingsData($config);

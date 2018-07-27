@@ -396,6 +396,7 @@ class RoomRepository extends AbstractBaseRepository
      * @param bool $includeWithoutStatuses
      * @param bool $isOnlyEnabled
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getNumberOfRoomsByRoomTypeIds($statusIds = null, $includeWithoutStatuses = true, $isOnlyEnabled = false)
     {

@@ -691,14 +691,8 @@ class Builder
             ],
         ];
 
-        $booking = [];
-        $myAllLocator = [];
-        $ostrovok = [];
-        $vashotel = [];
-        $expedia = [];
-        $hotelInn = [];
 
-        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
+//        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
             $booking = [
                 'booking' => [
                     'options'    => [
@@ -712,7 +706,7 @@ class Builder
             $myAllLocator = [
                 'myallocator' => [
                     'options'    => [
-                        'route' => 'channels',
+                        'route' => 'myallocator',
                         'label' => 'menu.communication.label.advanced',
                     ],
                     'attributes' => ['icon' => 'fa fa-cloud-download'],
@@ -759,7 +753,7 @@ class Builder
                 ],
             ];
 
-        }
+//        }
 
         $parent = $this->createItem($channelManager);
 

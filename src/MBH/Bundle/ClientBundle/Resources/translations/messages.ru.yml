@@ -131,3 +131,4 @@ form.colors_type.unplaced_color.help: 'Цвет ячеек таблицы, от�
 views.payment_systems.invoice.download_button.text: 'Скачать счет'
 mbh.payment_systems.by_invoice: 'По счету'
 views.uniteller.pay_button.text: 'Оплатить %amount% %currency%'
+program_not_paid.error_messages: 'Оплаченный период использования программой подходит к концу. Дней до блокировки аккаунта: %days%. Пожалуйста, оплатите программу в <a target="_blank" href="%payment_url%">личном кабинете</a>.'

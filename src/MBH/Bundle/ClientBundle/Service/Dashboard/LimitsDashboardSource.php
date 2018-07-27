@@ -6,7 +6,6 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -34,6 +33,10 @@ class LimitsDashboardSource extends AbstractDashboardSource
         $this->router = $router;
     }
 
+    /**
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     protected function generateMessages(): array
     {
         $begin = new \DateTime('midnight');

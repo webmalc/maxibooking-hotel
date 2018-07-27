@@ -87,7 +87,7 @@ services:
 
     mbh.room_type_form:
         class: MBH\Bundle\HotelBundle\Form\RoomTypeType
-        arguments: ['@translator.default']
+        arguments: ['@translator.default', '@mbh.client_config_manager']
         tags:
             - { name: form.type}
 

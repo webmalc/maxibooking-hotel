@@ -21,7 +21,7 @@
         {% endif %}
 
         {% if is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL')) and not entity.deletedAt%}
-            <a href='#modal_delete_package' title='{{ "package.jsonButtons.delete_record"|trans({}, "MBHPackageBundle") }}' class='btn btn-danger btn-xs booking-delete-link' data-id='{{ entity.id }}'>
+            <a href='#modal_delete_package' title='{{ "package.jsonButtons.delete_record"|trans({}, "MBHPackageBundle") }}' class='btn btn-danger btn-xs booking-delete-link' data-title='{{ entity.title }}' data-id='{{ entity.id }}'>
                 <i class='fa fa-trash-o'></i>
             </a>
         {% endif %}

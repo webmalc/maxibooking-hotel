@@ -113,6 +113,12 @@ class PackageServiceType extends AbstractType
                 'help' => 'form.packageServiceType.is_displaced.help',
                 'attr' => ['class' => 'toggle-date'],
             ])
+            ->add('recalcCausedByTouristsNumberChange', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.label',
+                'group' => 'form.packageServiceType.add_service',
+                'required' => false,
+                'help' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.help',
+            ])
             ->add('includeArrival', CheckboxType::class, [
                 'label' => 'form.packageServiceType.includeArrival',
                 'value' => true,

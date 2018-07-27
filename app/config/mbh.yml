@@ -4,6 +4,9 @@ parameters:
         russian_support_phone: '8(800) 200-78-30'
         clients_support_email_ru: 'welcome@maxi-booking.ru'
         clients_support_email_com: 'welcome@maxi-booking.com'
+        support_main_email:
+          ru: 'support@maxi-booking.ru'
+          en: 'support@maxi-booking.com'
 
     #currencies
     mbh.currency.data:
@@ -255,11 +258,11 @@ parameters:
         hundred_one_hotels:
           title: '101 Отель'
           service: 'mbh.channelmanager.hundred_one_hotels'
-        oktogo:
-          title: 'Oktogo'
-          service: 'mbh.channelmanager.oktogo'
-          api_username: .maxiBooking_api
-          api_password: qdcmBz9K
+#        oktogo:
+#          title: 'Oktogo'
+#          service: 'mbh.channelmanager.oktogo'
+#          api_username: .maxiBooking_api
+#          api_password: qdcmBz9K
 
     #параметры логов
     mbh.logs.max: 100
@@ -373,10 +376,6 @@ parameters:
     mbh.languages:
         - en
         - ru
-#        - de
-#        - fr
-#        - gr
-#        - tr
 
     mbh.warehouse.operations:
         in: "mbh.warehouse.operations.in"
@@ -389,6 +388,21 @@ parameters:
         268: form.hotelExtendedType.all_public_areas_non_smoking
         900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 
+    guides_site:
+      articles:
+        common:
+          tariffs: 115003866533
+          package_info: 115003945433
+          hotel_creation: 115003827954
+          room_types: 115003861354
+          booking_sync: 115000737314
+          chessboard: 115004129354
+        channel_manager_connections:
+          booking: 115000737314
+          expedia: 115004172253
+          ostrovok: 115000755913
+          hundred_one_hotels: 115000759814
+          vashotel: 115004206894
 #     * Поведение меню:
 #     * - alwaysOpen не в зависимости от выбранного пункта все главные меню открыты
 #     * - custom запоминается последнее открытое меню (на фронтэнде) и в следующий раз открывается именно оно

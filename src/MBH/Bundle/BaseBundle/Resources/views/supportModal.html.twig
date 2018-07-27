@@ -32,19 +32,12 @@
                     </li>
                     <li role="presentation">
                         <a style="background-color: #e7f3e2; font-size: 16px"><i class='fa fa-info-circle'></i>{{ 'support_modal.info_base'|trans}}</a>
-                        {% set articles = [
-                            {'name' : 'support_modal.all_articles'},
-                            {'name': 'support_modal.articles.tariffs', 'articleNum': '115003866533'},
-                            {'name': 'support_modal.articles.package_info', 'articleNum': '115003945433'},
-                            {'name': 'support_modal.articles.hotel_creation', 'articleNum': '115003827954'},
-                            {'name': 'support_modal.articles.room_types', 'articleNum': '115003861354'},
-                            {'name': 'support_modal.articles.booking_sync', 'articleNum': '115000737314'},
-                            {'name': 'support_modal.articles.chessboard', 'articleNum': '115004129354'},
-                        ] %}
+                        {% set articles = ['all_articles', 'tariffs', 'package_info', 'hotel_creation', 'room_types', 'booking_sync', 'chessboard'] %}
                         <ol>
                             {% for article in articles %}
-                                {% set href = 'https://support.maxi-booking.com/hc/' ~ (is_russian_client() ? 'ru' : 'com' ) ~ '/' ~ (article.articleNum is defined ? 'articles/' ~ article.articleNum : '') %}
-                                <li><a target="_blank" href="{{ href }}">{{ article.name|trans }}</a></li>
+                                {% set href = article == 'all_articles' ? get_guide_article_url() : get_guide_article_url('common', article) %}
+                                {% set name = 'support_modal.' ~ (article == 'all_articles' ? '' : 'articles.') ~ article %}
+                                <li><a target="_blank" href="{{ href }}">{{ name|trans }}</a></li>
                             {% endfor %}
                         </ol>
                     </li>

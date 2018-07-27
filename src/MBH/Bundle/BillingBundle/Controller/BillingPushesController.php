@@ -22,7 +22,8 @@ class BillingPushesController extends BaseController
     public function invalidateCacheAction(Request $request)
     {
         $this->get('mbh.billing.logger')->info('Received request for cache invalidation');
-        $this->checkToken($request->get('token'));
+        $requestData = json_decode($request->getContent(), true);
+        $this->checkToken($requestData['token']);
         $this->get('mbh.client_config_manager')->changeCacheValidity(false);
         $this->get('mbh.billing.logger')->info('Cache was invalidated');
 

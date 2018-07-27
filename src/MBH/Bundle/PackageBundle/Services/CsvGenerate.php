@@ -100,6 +100,7 @@ class CsvGenerate
 
         $content = implode("\n", $rows);
         $content = iconv('UTF-8', 'windows-1251//TRANSLIT', $content);
+
         return $content;
     }
 }

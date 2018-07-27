@@ -73,7 +73,7 @@ class RoomsType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'mbh_bundle_channelmanagerbundle_booking_type';
+        return 'mbh_bundle_channelmanagerbundle_rooms_type';
     }
 
 }

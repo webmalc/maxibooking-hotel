@@ -1,0 +1,29 @@
+<h3 class="text-center">{{ 'cm_connection_instructions.part1.header'|trans }}</h3>
+<p>{{ 'cm_connection_instructions.part1.text1'|trans({'%channelManagerName%': channelManagerHumanName}) }}</p>
+<p>{{ 'cm_connection_instructions.part1.text2'|trans|raw }}</p>
+<p>{{ 'cm_connection_instructions.part1.text3'|trans }}</p>
+
+<h3 class="text-center">{{ 'cm_connection_instructions.part2.header'|trans }}</h3>
+<p>{{ 'cm_connection_instructions.part2.text1'|trans }}</p>
+
+{% set numberOfStepsByCMs = {booking: 8, expedia: 5, ostrovok: 6, hundred_one_hotels: 3, vashotel: 2, myallocator: 12} %}
+
+<ol>
+    {% for stepNumber in 1..numberOfStepsByCMs[channelManager] %}
+        <li>{{ ('cm_connection_instructions.part2.' ~ channelManager ~ '.text' ~ stepNumber)|trans|raw }}</li>
+    {% endfor %}
+</ol>
+
+<p>
+    {% if channelManager == 'booking' %}
+        {{ 'cm_connection_instructions.part2.booking.note'|trans|raw }}
+    {% endif %}
+</p>
+
+<h3 class="text-center">{{ 'cm_connection_instructions.part3.header'|trans }}</h3>
+<p>
+    {% if channelManager != 'myallocator' %}
+        {{ 'cm_connection_instructions.part3.text1'|trans({'%connectionLink%': get_guide_article_url('channel_manager_connections', channelManager)})|raw }}
+    {% endif %}
+    {{ 'cm_connection_instructions.part3.text2'|trans({'%supportEmail%': get_twig_data()['support_main_email']})|raw }}
+</p>

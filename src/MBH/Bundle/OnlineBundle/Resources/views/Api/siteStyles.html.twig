@@ -1,7 +1,10 @@
 {% if formConfig.forMbSite %}
+    {% set themeColors = siteConfig.getThemeColors() %}
     <style>
         #mbh-form {
             border-radius: 0;
+            background-color: {{ themeColors['mainlight'] }};
+
         }
         .mbh-form-row.form-group:not(#mbh-form-submit-wrapper) {
             margin: 15px 8px 0 8px;
@@ -19,14 +22,14 @@
             margin-top: 10px;
         }
         .btn-primary, .btn-primary:active, .btn-primary:focus, #mbh-results-wrapper .panel-heading, .btn-info, .btn-info:hover, .btn-info:active {
-            background: #1e1e1e !important;
-            border-color: #1e1e1e  !important;
+            background: {{ themeColors['main'] }} !important;
+            border-color: {{ themeColors['main'] }}  !important;
         }
         .btn-primary {
             font-size: 16px;
         }
         #mbh-results-wrapper .panel-primary {
-            border-color: #1e1e1e;
+            border-color: {{ themeColors['main'] }};
         }
         button#mbh-form-submit {
             padding: 11px;

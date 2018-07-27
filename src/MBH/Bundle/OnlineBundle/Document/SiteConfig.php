@@ -14,6 +14,49 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
  */
 class SiteConfig extends Base
 {
+    const COLORS_BY_THEMES = [
+        'autumn' => [
+            'main' => '#832736',
+            'mainlight' => '#faebd8'
+        ],
+        'black01' => [
+            'main' => '#1e1e1e',
+            'mainlight' => '#ebebeb'
+        ],
+        'black02' => [
+            'main' => '#1e1e1e',
+            'mainlight' => '#ebebeb'
+        ],
+        'blue' => [
+            'main' => '#2b426b',
+            'mainlight' => '#cde5fd'
+        ],
+        'blue01' => [
+            'main' => '#1faaeb',
+            'mainlight' => '#d4f1ff'
+        ],
+        'blue02' => [
+            'main' => '#1faaeb',
+            'mainlight' => '#d4f1ff'
+        ],
+        'brown' => [
+            'main' => '#53230d',
+            'mainlight' => '#faf3d7'
+        ],
+        'fuksia' => [
+            'main' => '#753d62',
+            'mainlight' => '#fbe5e8'
+        ],
+        'green' => [
+            'main' => '#37562d',
+            'mainlight' => '#e1f4c6'
+        ],
+        'sea' => [
+            'main' => '#018788',
+            'mainlight' => '#d8f5fb'
+        ]
+    ];
+
     /**
      * @ODM\Field(type="collection")
      * @var array
@@ -44,8 +87,34 @@ class SiteConfig extends Base
      */
     private $siteDomain;
 
-    public function __construct() {
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    private $colorTheme = 'black01';
+
+    public function __construct()
+    {
         $this->hotels = new ArrayCollection();
+    }
+
+    /**
+     * @return string
+     */
+    public function getColorTheme(): ?string
+    {
+        return $this->colorTheme;
+    }
+
+    /**
+     * @param string $colorTheme
+     * @return SiteConfig
+     */
+    public function setColorTheme(string $colorTheme): SiteConfig
+    {
+        $this->colorTheme = $colorTheme;
+
+        return $this;
     }
 
     /**
@@ -152,5 +221,13 @@ class SiteConfig extends Base
         $this->siteDomain = $siteDomain;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getThemeColors()
+    {
+        return self::COLORS_BY_THEMES[$this->getColorTheme()];
     }
 }

@@ -97,6 +97,7 @@ services:
       calls:
         - [attach, ["@mbh.system.messenger"]]
         - [attach, ["@mbh.mailer"]]
+        - [attach, ["@sentry_messenger"]]
       arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.notifier.mailer:
@@ -482,10 +483,6 @@ services:
     mbh.multi_lang_translator:
         class: MBH\Bundle\BaseBundle\Service\MultiLangTranslator
         arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper']
-    mbh.document_fields_manager:
-        class: MBH\Bundle\BaseBundle\Service\DocumentFieldsManager
-        arguments: ['@translator', '@property_accessor']
-
 
     mbh.menu_builder:
         class: MBH\Bundle\BaseBundle\Menu\Builder
@@ -496,6 +493,21 @@ services:
             - { name: knp_menu.menu_builder, method: mainMenu, alias: base_mainMenu }
             - { name: knp_menu.menu_builder, method: managementMenu, alias: base_managementMenu }
             - { name: knp_menu.menu_builder, method: createHotelMenu, alias: base_createHotelMenu }
+
+    mbh.document_fields_manager:
+        class: MBH\Bundle\BaseBundle\Service\DocumentFieldsManager
+        arguments:
+            - '@translator'
+            - '@property_accessor'
+
+    mbh.messages_store:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\MessagesStore
+        arguments:
+            - '@router'
+            - '%locale%'
+            - '%support%'
+            - '%client%'
+            - '@mbh.cm_wizard_manager'
 
     mbh.data_comparer:
         class: MBH\Bundle\BaseBundle\Service\DataComparer

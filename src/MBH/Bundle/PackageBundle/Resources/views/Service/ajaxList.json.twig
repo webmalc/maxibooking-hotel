@@ -10,6 +10,8 @@
                 "{% if item.service.date %}{% if item.begin %}{{ item.begin|mbh_format }}{% else %}<small><a href='{{ path("package_service", {id: item.package.id}) }}' class='danger'>&lt;{{ 'service.ajax_list.date_is_not_specified'|trans }}&gt;</a></small>{% endif %}{% else %}{{ item.begin|mbh_format }} - {{ item.end|mbh_format }}{% endif %}{% if item.service.time %}<br>{% if item.time %}<small>{{ item.time|date('H:i') }}{% else %}<a href='{{ path("package_service", {id: item.package.id}) }}' class='danger'>&lt;{{ 'service.ajax_list.time_is_not_specified'|trans }}&gt;</a>{% endif %}</small>{% endif %}",
                 "{{ item.service.name }}",
                 "{{ item.calcType == 'per_night' ? item.nights : '' }}",
+                "{{ item.package.numberOfGuests }}",
+                "{{ item.package.tourists.count }}",
                 "{{ item.calcType != 'not_applicable' ? item.persons : '' }}",
                 "{{ item.amount }}",
                 "{% if item.package and item.package.order and item.package.order.payer %} {{ item.package.order.payer.firstName is defined ? item.package.order.payer.lastName ~ ' ' ~ item.package.order.payer.firstName|first ~ '. ' ~ item.package.order.payer.patronymic|first ~ '.' : item.package.order.payer.name }}{% else %} <a href='{{ path("package_service", {id: item.package.id}) }}' class='danger'>&lt;{{ 'service.ajax_list.payer_is_not_specified'|trans }}&gt;</a> {% endif %}",

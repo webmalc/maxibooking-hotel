@@ -3,8 +3,10 @@
 namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
@@ -33,8 +35,9 @@ class ClientManager
     private $client;
     private $kernel;
     private $clientConfigManager;
+    private $helper;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel, ClientConfigManager $clientConfigManager)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel, ClientConfigManager $clientConfigManager, Helper $helper)
     {
         $this->dm = $dm;
         $this->session = $session;
@@ -43,6 +46,7 @@ class ClientManager
         $this->client = $client;
         $this->kernel = $kernel;
         $this->clientConfigManager = $clientConfigManager;
+        $this->helper = $helper;
     }
 
     /**
@@ -91,6 +95,7 @@ class ClientManager
      * @param array $rawNewRoomCachesData
      * @param array $rawUpdatedRoomCaches
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getDaysWithExceededLimitNumberOfRoomsInSell(
         \DateTime $begin,
@@ -230,7 +235,7 @@ class ClientManager
      */
     public function updateClient(Client $client)
     {
-        $clientResponse = $this->billingApi->updateClient($client);
+        $clientResponse = $this->billingApi->updateBillingEntity($client, BillingApi::CLIENTS_ENDPOINT_SETTINGS, $client->getLogin());
         if ($clientResponse->isSuccessful()) {
             $this->updateSessionClientData($client, new \DateTime());
         }
@@ -283,6 +288,31 @@ class ClientManager
     public function isRussianClient()
     {
         return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getNumberOfDaysBeforeDisable()
+    {
+        $clientOrdersResult = $this->billingApi->getClientOrdersSortedByExpiredData($this->client);
+        if ($clientOrdersResult->isSuccessful()) {
+            $clientOrders = $clientOrdersResult->getData();
+            if (!empty($clientOrders)) {
+                /** @var PaymentOrder $lastOrder */
+                $lastOrder = $clientOrders[0];
+                $currentDateTime = new \DateTime();
+
+                $daysBeforeDisable = $this->helper
+                    ->getDifferenceInDaysWithSign($currentDateTime, $lastOrder->getExpiredDateAsDateTime());
+                if ($lastOrder->getExpiredDateAsDateTime() > $currentDateTime
+                    && $lastOrder->getStatus() !== PaymentOrder::STATUS_PAID && $daysBeforeDisable >= 0) {
+                    return $daysBeforeDisable;
+                }
+            }
+        }
+
+        return null;
     }
 
     private function getDefaultClientData()

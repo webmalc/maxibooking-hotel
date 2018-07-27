@@ -808,6 +808,8 @@ controller.chessboard.accommodation_divide.error.empty_date_string: 'Перед�
 controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: 'Ошибка! Недопустимо изменение промежуточного размещения'
 controller.chessboard.payer: Плательщик
 chessboard_manager.dates.title: Даты
+chessboard_manager.change_dates_button.add: '+ %numberOfDays% дней'
+chessboard_manager.change_dates_button.subtract: '- %numberOfDays% дней'
 chessboard_manager.size_slider.title: Масштаб
 chessboard_manager.room_type.title: 'Тип номера'
 chessboard_manager.housing.title: Корпус

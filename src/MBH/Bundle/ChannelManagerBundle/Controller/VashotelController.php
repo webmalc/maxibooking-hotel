@@ -34,12 +34,17 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     {
         $entity = $this->hotel->getVashotelConfig();
 
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($entity, 'vashotel');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+
         $form = $this->createForm(
             VashotelType::class, $entity
         );
 
         return [
-            'entity' => $entity,
+            'config' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
@@ -82,7 +87,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
         }
 
         return [
-            'entity' => $entity,
+            'config' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
@@ -125,11 +130,11 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.vashotelController.settings_saved_success'));
+            $this->addFlash('success', 'controller.vashotelController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('vashotel_room'));
+            $redirectRouteName = $config->isReadyToSync() ? 'vashotel_room' : 'vashotel_tariff';
+
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [

@@ -43,8 +43,9 @@ class Helper
     {
         $c = $this->container;
         $hotel = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Hotel');
+        $hotelOrganization = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\HotelOrganization');
         $mortal = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal');
-        $organization = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Organization');
+        $payerOrganization = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Organization');
         $order = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order');
         $user = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\User');
         $package = $c->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Package');
@@ -54,21 +55,22 @@ class Helper
 
         return [
             'common' => [
-                'hotel'   => $hotel->methods(),
-                'payer'   => [
+                'hotel'        => $hotel->methods(),
+                'organization' => $hotelOrganization->methods(),
+                'payer'        => [
                     'mortal' => $mortal->methods(),
-                    'organ'  => $organization->methods(),
+                    'organ'  => $payerOrganization->methods(),
                 ],
-                'order'   => $order->methods(),
-                'user'    => $user->methods(),
-                'package' => $package->methods(),
+                'order'        => $order->methods(),
+                'user'         => $user->methods(),
+                'package'      => $package->methods(),
             ],
             'table'  => [
-                'cashDocument' => [
+                'cashDocument'    => [
                     'methods' => $cashDocument->methods(),
                     'source'  => 'order.allCashDocuments',
                 ],
-                'tourist'      => [
+                'tourist'         => [
                     'methods' => $mortal->methods(),
                     'source'  => 'package.allTourists',
                 ],
@@ -76,7 +78,7 @@ class Helper
                     'methods' => $serviceGroup->methods(),
                     'source'  => 'order.allServicesByGroup',
                 ],
-                'services' => [
+                'services'        => [
                     'methods' => $service->methods(),
                     'source'  => 'order.allServices',
                 ],

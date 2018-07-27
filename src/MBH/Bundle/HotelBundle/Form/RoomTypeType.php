@@ -5,7 +5,9 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
+use MBH\Bundle\BaseBundle\Form\FormWithMultiLangFields;
 use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
+use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use MBH\Bundle\HotelBundle\Document\RoomViewType;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Form\AbstractType;
@@ -18,14 +20,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class RoomTypeType
  */
-class RoomTypeType extends AbstractType
+class RoomTypeType extends FormWithMultiLangFields
 {
     /** @var  Translator $translator */
     private $translator;
 
-    public function __construct(Translator $translator)
+    public function __construct(Translator $translator, ClientConfigManager $clientConfigManager)
     {
         $this->translator = $translator;
+        parent::__construct($clientConfigManager);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -49,29 +52,11 @@ class RoomTypeType extends AbstractType
                 ]);
         }
 
-        $isRoomTypeExists = !empty($builder->getData()->getId());
-        if ($isRoomTypeExists) {
-            $builder
-                ->add('fullTitle', MultiLanguagesType::class, [
-                    'fields_options' => [
-                        'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus'],
-                        'label' => 'form.roomTypeType.name',
-                        'required' => false
-                    ],
-                    'field_type' => TextType::class,
-                    'group' => 'form.roomTypeType.general_info',
-                    'data' => $builder->getData(),
-                    'mapped' => false
-                ]);
-        } else {
-            $builder
-                ->add('fullTitle', TextType::class, [
-                    'label' => 'form.roomTypeType.name',
-                    'required' => true,
-                    'group' => 'form.roomTypeType.general_info',
-                    'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus']
-                ]);
-        }
+        $builder = $this->addMultiLangField($builder, TextType::class, 'fullTitle', [
+            'group' => 'form.roomTypeType.general_info',
+            'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus'],
+            'label' => 'form.roomTypeType.name',
+        ]);
 
         $builder
             ->add('title', TextType::class, [
@@ -86,17 +71,15 @@ class RoomTypeType extends AbstractType
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
             ])
-            ->add('description', MultiLanguagesType::class, [
-                'group' => 'form.roomTypeType.general_info',
-                'fields_options' => [
-                    'attr' => ['class' => 'big roomTypeTypeEditor tinymce'],
-                    'label' => 'form.roomTypeType.description',
-                    'required' => false,
-                    'help' => 'form.roomTypeType.online_reservation_room_description',
-                ],
-                'data' => $builder->getData(),
-                'mapped' => false
-            ])
+        ;
+        $builder = $this->addMultiLangField($builder, TextareaType::class, 'description', [
+            'attr' => ['class' => 'big roomTypeTypeEditor tinymce'],
+            'label' => 'form.roomTypeType.description',
+            'group' => 'form.roomTypeType.general_info',
+            'required' => false,
+        ]);
+
+        $builder
             ->add('color', TextType::class, [
                 'label' => 'form.roomTypeType.color',
                 'required' => true,

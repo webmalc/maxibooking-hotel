@@ -16,6 +16,7 @@ services:
         - [attach, ["@mbh.dashboard.room_cache"]]
         - [attach, ["@mbh.dashboard.price_cache"]]
         - [attach, ["@mbh.dashboard.limits"]]
+        - [attach, ["@mbh.dashboard.program_not_paid_source"]]
       arguments: ['@doctrine_mongodb']
 
     mbh.dashboard.price_cache:
@@ -35,7 +36,16 @@ services:
             - '@mbh.helper'
             - '@mbh.client_manager'
             - '@router'
-            - '@kernel'
+
+    mbh.dashboard.program_not_paid_source:
+        class: MBH\Bundle\ClientBundle\Service\Dashboard\ProgramNotPaidSource
+        arguments:
+            - '@doctrine_mongodb'
+            - '@validator'
+            - '@translator'
+            - '@mbh.helper'
+            - '@mbh.client_manager'
+            - '@router'
 
     mbh_bundle_client.twig.dashboard_extension:
         class: MBH\Bundle\ClientBundle\Twig\DashboardExtension
@@ -53,6 +63,7 @@ services:
             - '%client%'
             - '@kernel'
             - '@mbh.client_config_manager'
+            - '@mbh.helper'
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:
@@ -79,7 +90,7 @@ services:
 
     mbh.client_config_manager:
         class: MBH\Bundle\ClientBundle\Service\ClientConfigManager
-        arguments: ['@doctrine.odm.mongodb.document_manager']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '%locale%']
 
     MBH\Bundle\ClientBundle\Service\DocumentSerialize\:
         resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/DocumentSerialize/*'

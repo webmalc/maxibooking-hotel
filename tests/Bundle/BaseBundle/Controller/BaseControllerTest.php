@@ -36,6 +36,8 @@ class BaseControllerTest extends WebTestCase
         'fos_user_resetting_check_email',   //not found
         'restaurant_table_save',            //need params
         'site_hotel_settings',              //need params
+        'save_list',                        //need params
+        'site_settings'
     ];
 
     private const ROUTES_WITH_OWN_TEST = [
@@ -116,11 +118,11 @@ class BaseControllerTest extends WebTestCase
         'oktogo_tariff_sync',
         'oktogo_tariff',
         'oktogo_service',
-        'channels',
-        'channels_room',
-        'channels_tariff',
-        'channels_service',
-        'channels_user_unlink',
+        'myallocator',
+        'myallocator_room',
+        'myallocator_tariff',
+        'myallocator_service',
+        'myallocator_user_unlink',
         'ostrovok',
         'ostrovok_room',
         'ostrovok_tariff',

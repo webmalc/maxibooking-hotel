@@ -19,8 +19,9 @@ class MultiLanguagesType extends AbstractType
     private $defaultLang;
     private $propertyAccessor;
 
-    public function __construct(ClientConfigManager $clientConfigManager, MultiLangTranslator $multiLangTranslator, string $defaultLang, PropertyAccessor $propertyAccessor) {
-        $this->languages = $clientConfigManager->fetchConfig()->getLanguages();
+    public function __construct(ClientConfigManager $clientConfigManager, MultiLangTranslator $multiLangTranslator, string $defaultLang, PropertyAccessor $propertyAccessor)
+    {
+        $this->languages = $configLanguages = $clientConfigManager->fetchConfig()->getLanguages();
         $this->multiLangTranslator = $multiLangTranslator;
         $this->defaultLang = $defaultLang;
         $this->propertyAccessor = $propertyAccessor;
@@ -34,12 +35,18 @@ class MultiLanguagesType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $fieldName = $builder->getName();
-        $translationsByLanguages = $this->multiLangTranslator->getTranslationsByLanguages($builder->getData(), $fieldName, $this->languages);
+        $document = $builder->getData();
+        $translationsByLanguages = $this->multiLangTranslator
+            ->getTranslationsByLanguages($document, $fieldName, $this->languages);
 
         foreach ($this->languages as $language) {
-            $data = isset($translationsByLanguages[$language])
-                ? $translationsByLanguages[$language]
-                : null;
+            if (isset($translationsByLanguages[$language])) {
+                $data = $translationsByLanguages[$language];
+            } else {
+                $data = $this->defaultLang === $language
+                    ? $this->propertyAccessor->getValue($document, $fieldName)
+                    : null;
+            }
 
             $fieldType = $options['field_type'];
             $builder
@@ -58,6 +65,7 @@ class MultiLanguagesType extends AbstractType
             $field = $view->children[$language];
             $field->vars['languages'] = $this->languages;
             $field->vars['language'] = $language;
+            $field->vars['defaultLang'] = $this->defaultLang;
         }
     }
 

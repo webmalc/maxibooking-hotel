@@ -25,7 +25,6 @@ use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -339,13 +338,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Organization", mappedBy="hotels")
      */
     protected $organization;
-
-    /**
-     * @var int
-     * @ODM\Integer
-     * @Assert\Type(type="numeric")
-     */
-    protected $vegaAddressId;
 
     /**
      * @ODM\Field(type="string")
@@ -1314,22 +1306,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     public function setOrganization(Organization $organization = null)
     {
         $this->organization = $organization;
-    }
-
-    /**
-     * @return int
-     */
-    public function getVegaAddressId()
-    {
-        return $this->vegaAddressId;
-    }
-
-    /**
-     * @param int $vegaAddressId
-     */
-    public function setVegaAddressId($vegaAddressId)
-    {
-        $this->vegaAddressId = $vegaAddressId;
     }
 
     public function jsonSerialize()

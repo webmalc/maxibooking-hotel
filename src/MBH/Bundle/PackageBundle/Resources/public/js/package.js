@@ -150,12 +150,15 @@ var initRemovePackageButton = function () {
     $('.booking-delete-link, .order-booking-delete-link').on('click', function (e) {
         var orderId = this.getAttribute('data-order-id');
         var isRemoveFromOrderInterface = orderId !== null;
-        console.log(orderId);
         e.preventDefault();
 
         var isRemovePackage = this.classList.contains('booking-delete-link');
         var urlName = isRemovePackage ? 'package_delete' : 'order_delete';
         var entityId = $(this).data('id');
+
+        var entityTitle = this.getAttribute('data-title');
+        var titleTransId = isRemovePackage ? 'package.remove_package' : 'package.remove_order';
+        $('#modal_delete_package .modal-title').html(Translator.trans(titleTransId, {'title' : entityTitle}));
 
         $formContainer.html(mbh.loader.html);
 

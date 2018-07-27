@@ -133,7 +133,8 @@ class Builder implements ContainerAwareInterface
                         'class' => 'booking-delete-link',
                         'data-id' => $package->getId(),
                         'data-toggle' => 'modal',
-                        'data-order-id' => $package->getOrder()->getId()
+                        'data-order-id' => $package->getOrder()->getId(),
+                        'data-title' => $package->getTitle()
                     ])
                     ->setAttributes([
                         'icon' => 'fa fa-trash-o',
@@ -149,7 +150,8 @@ class Builder implements ContainerAwareInterface
                     ->setLinkAttributes([
                         'class' => 'order-booking-delete-link',
                         'data-id' => $package->getOrder()->getId(),
-                        'data-toggle' => 'modal'
+                        'data-toggle' => 'modal',
+                        'data-title' => $package->getOrder()->getName()
                     ])
                     ->setAttributes([
                         'icon' => 'fa fa-trash-o'

@@ -65,6 +65,7 @@ class ApiController extends Controller
         return [
             'formId' => $formId,
             'formConfig' => $formConfig,
+            'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig()
         ];
     }
 
@@ -84,6 +85,7 @@ class ApiController extends Controller
         return [
             'formId' => $formId,
             'formConfig' => $formConfig,
+            'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig()
         ];
     }
 
@@ -652,12 +654,21 @@ class ApiController extends Controller
     }
 
     /**
-     * @Template("@MBHUser/Profile/paymentSuccessfulPage.html.twig")
+     * @Template("@MBHUser/Profile/paymentResultPage.html.twig")
      * @Route("/payment/success", name="successful_payment")
      */
     public function showSuccessfulPaymentPageAction()
     {
-        return [];
+        return ['success' => true];
+    }
+
+    /**
+     * @Template("@MBHUser/Profile/paymentResultPage.html.twig")
+     * @Route("/payment/fail", name="fail_payment")
+     */
+    public function showFailPaymentPageAction()
+    {
+        return ['success' => false];
     }
 
     /**

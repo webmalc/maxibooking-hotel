@@ -1134,13 +1134,13 @@ function initLabelTips() {
 
 function initAddTipModal() {
     if (mbh.canAddTips) {
-        $('input,label').dblclick(function () {
+        $('label').dblclick(function () {
             var $tipsModal = $('#add-tips-modal');
             var $form = $(this).closest('form');
             var formName = $form.attr('name');
             var inputId = this.nodeName === 'input' ? this.id : this.getAttribute('for');
             if (!inputId) {
-                alert('Невозможно добавить подсказку к этому полю. Обратитесь к Дане, пожалуйста.');
+                alert('Невозможно добавить подсказку к этому полю.');
             } else {
                 $tipsModal.find('#tips-form-id').val(formName);
                 $tipsModal.find('#tips-field-id').val(inputId);
@@ -1158,7 +1158,7 @@ function initAddTipModal() {
                             $tipsModal.modal('hide');
                         },
                         error: function () {
-                            alert('Дайте Дане по рукам! Какой-то косяк на серваке!');
+                            alert(mbh.error.html);
                         }
                     });
                 });
@@ -1282,11 +1282,22 @@ function handleMultiLanguageFields() {
         $displayField.show();
         $multiLanguagesFields.not($displayField).hide();
     };
-    $('.multi-language-select-option').click(function () {
-        var $fieldsGroup = $(this).closest('.form-group').parent();
-        changeMultiLanguagesFieldsVisibility(this.getAttribute('data-language'), $fieldsGroup);
-    });
-    changeMultiLanguagesFieldsVisibility(mbh.language);
+
+    var $languageOptions = $('.multi-language-select-option');
+    if ($languageOptions.length > 0) {
+        changeMultiLanguagesFieldsVisibility(mbh.language);
+        $languageOptions.click(function () {
+            var $fieldsGroup = $(this).closest('.form-group').parent();
+            changeMultiLanguagesFieldsVisibility(this.getAttribute('data-language'), $fieldsGroup);
+        });
+    }
+}
+
+//to prevent opening of keyboard
+function makeDateRangepickerReadonlyForMobileDevices() {
+    if (isMobileDevice()) {
+        $('.daterangepicker-input').attr('readonly', true);
+    }
 }
 
 $(document).ready(function () {
@@ -1300,5 +1311,6 @@ $(document).ready(function () {
     initAddTipModal();
     runGuides();
     handleAddingNewBillingEntity();
+    makeDateRangepickerReadonlyForMobileDevices();
     handleMultiLanguageFields();
 });
