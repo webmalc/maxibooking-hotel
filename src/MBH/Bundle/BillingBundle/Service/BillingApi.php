@@ -9,6 +9,7 @@ use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientAuth;
+use MBH\Bundle\BillingBundle\Lib\Model\ClientPayer;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\Company;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
@@ -16,9 +17,11 @@ use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentSystem;
 use MBH\Bundle\BillingBundle\Lib\Model\Region;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
+use MBH\Bundle\BillingBundle\Lib\Model\RuCompany;
 use MBH\Bundle\BillingBundle\Lib\Model\Service;
 use MBH\Bundle\BillingBundle\Lib\Model\AuthorityOrgan;
 use MBH\Bundle\BillingBundle\Lib\Model\City;
+use MBH\Bundle\BillingBundle\Lib\Model\WorldCompany;
 use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\UserBundle\Document\User;
 use Monolog\Logger;
@@ -45,6 +48,9 @@ class BillingApi
     const PAYMENT_SYSTEMS_ENDPOINT_SETTINGS = ['endpoint' => 'payment-systems', 'model' => PaymentSystem::class, 'returnArray' => true];
     const PAYER_COMPANY_ENDPOINT_SETTINGS = ['endpoint' => 'companies', 'model' => Company::class, 'returnArray' => false];
     const SITES_ENDPOINT_SETTINGS = ['endpoint' => 'client-websites', 'model' => WebSite::class, 'returnArray' => false];
+    const CLIENT_PAYER_ENDPOINT_SETTINGS = ['endpoint' => 'client-payer', 'model' => ClientPayer::class, 'returnArray' => false];
+    const RU_PAYER_COMPANY = ['endpoint' => 'companies-ru', 'model' => RuCompany::class, 'returnArray' => false];
+    const WORLD_PAYER_COMPANY = ['endpoint' => 'companies-world', 'model' => WorldCompany::class, 'returnArray' => false];
 
     const BILLING_DATETIME_FORMAT = 'Y-m-d\TH:i:s\Z';
     const BILLING_DATETIME_FORMAT_WITH_MICROSECONDS = 'Y-m-d\TH:i:s.u\Z';
@@ -63,8 +69,6 @@ class BillingApi
     private $loadedEntities = [];
     private $clientServices;
     private $isClientServicesInit = false;
-    private $clientCompanies;
-    private $isClientCompaniesInit = false;
 
     public function __construct(Logger $logger, KernelInterface $kernel, Serializer $serializer, $locale, TokenStorage $tokenStorage, string $billingToken, $billingHost)
     {
@@ -134,27 +138,47 @@ class BillingApi
     }
 
     /**
-     * @param Client $client
+     * @param $updatedEntity
+     * @param array $endpointSettings
+     * @param null $id
      * @return Result
      */
-    public function updateClient(Client $client)
+    public function updateBillingEntity($updatedEntity, array $endpointSettings, $id = null)
     {
-        $url = $this->getBillingUrl(self::CLIENTS_ENDPOINT_SETTINGS['endpoint'], $client->getLogin());
-        $clientData = $this->serializer->normalize($client);
+        if ($id === null) {
+            $id = $updatedEntity->getId();
+        }
+        $url = $this->getBillingUrl($endpointSettings['endpoint'], $id);
+        $data = $this->serializer->normalize($updatedEntity);
 
-        return $this->updateEntity($url, $clientData, Client::class);
+        return $this->updateEntity($url, $data, $endpointSettings['model']);
     }
 
     /**
-     * @param Company $company
+     * @param $entity
+     * @param array $endpointSettings
      * @return Result
      */
-    public function updateClientPayerCompany(Company $company)
+    public function createBillingEntityBySettings($entity, array $endpointSettings)
     {
-        $url = $this->getBillingUrl(self::PAYER_COMPANY_ENDPOINT_SETTINGS['endpoint'], $company->getId());
-        $companyData = $this->serializer->normalize($company);
+        $url = $this->getBillingUrl($endpointSettings['endpoint']);
+        $entityData = $this->serializer->normalize($entity);
+        $requestResult = new Result();
 
-        return $this->updateEntity($url, $companyData, Company::class);
+        try {
+            $response = $this->sendPost($url, $entityData, true);
+        } catch (RequestException $exception) {
+            $requestResult->setIsSuccessful(false);
+
+            $response = $exception->getResponse();
+            $this->handleErrorResponse($response, $requestResult, $url, $entityData);
+
+            return $requestResult;
+        }
+
+        $requestResult = $this->tryDeserializeObject($response, $requestResult, $endpointSettings['model']);
+
+        return $requestResult;
     }
 
     /**
@@ -163,24 +187,7 @@ class BillingApi
      */
     public function createClientPayerCompany(Company $company)
     {
-        $url = $this->getBillingUrl(self::PAYER_COMPANY_ENDPOINT_SETTINGS['endpoint']);
-        $companyData = $this->serializer->normalize($company);
-        $requestResult = new Result();
-
-        try {
-            $response = $this->sendPost($url, $companyData, true);
-        } catch (RequestException $exception) {
-            $requestResult->setIsSuccessful(false);
-
-            $response = $exception->getResponse();
-            $this->handleErrorResponse($response, $requestResult, $url, $companyData);
-
-            return $requestResult;
-        }
-
-        $requestResult = $this->tryDeserializeObject($response, $requestResult, Company::class);
-
-        return $requestResult;
+        return $this->createBillingEntityBySettings($company, self::PAYER_COMPANY_ENDPOINT_SETTINGS);
     }
 
     /**
@@ -205,13 +212,45 @@ class BillingApi
      */
     public function getClientCompanies(Client $client)
     {
-        if (!$this->isClientCompaniesInit) {
-            $queryData = ['client' => $client->getId()];
-            $this->clientCompanies = $this->getEntities(self::PAYER_COMPANY_ENDPOINT_SETTINGS, $queryData)->getData();
-            $this->isClientCompaniesInit = true;
-        }
+        $queryData = ['client' => $client->getId()];
 
-        return $this->clientCompanies;
+        return $this->getEntities(self::PAYER_COMPANY_ENDPOINT_SETTINGS, $queryData)->getData();
+    }
+
+    /**
+     * @param Company $company
+     * @param bool $isRu
+     * @return null|object
+     */
+    public function getClientPayerCompany(Company $company, $isRu = true)
+    {
+        $endpointSettings = $isRu ? self::RU_PAYER_COMPANY : self::WORLD_PAYER_COMPANY;
+
+        $url = $this->getBillingUrl($endpointSettings['endpoint'], $company->getId());
+
+        try {
+            $response = $this->sendGet($url);
+            return $this->serializer->deserialize((string)$response->getBody(), $endpointSettings['model'], 'json');
+        } catch (RequestException $exception) {
+            return null;
+        }
+    }
+
+    /**
+     * @param Client $client
+     * @return null|object
+     */
+    public function getClientPayer(Client $client)
+    {
+        $url = $this->getBillingUrl(self::CLIENT_PAYER_ENDPOINT_SETTINGS['endpoint'], $client->getLogin());
+
+        try {
+            $response = $this->sendGet($url);
+            return $this->serializer
+                ->deserialize((string)$response->getBody(), self::CLIENT_PAYER_ENDPOINT_SETTINGS['model'], 'json');
+        } catch (RequestException $exception) {
+            return null;
+        }
     }
 
     /**

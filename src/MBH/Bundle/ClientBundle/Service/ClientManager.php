@@ -235,7 +235,7 @@ class ClientManager
      */
     public function updateClient(Client $client)
     {
-        $clientResponse = $this->billingApi->updateClient($client);
+        $clientResponse = $this->billingApi->updateBillingEntity($client, BillingApi::CLIENTS_ENDPOINT_SETTINGS, $client->getLogin());
         if ($clientResponse->isSuccessful()) {
             $this->updateSessionClientData($client, new \DateTime());
         }
