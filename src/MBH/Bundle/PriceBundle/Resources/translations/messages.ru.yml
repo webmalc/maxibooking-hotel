@@ -160,6 +160,7 @@ mbhpricebundle.form.pricecachegeneratortype.price_for_people: 'Цена за ч�
 mbhpricebundle.form.pricecachegeneratortype.price_for_children_defaulp_place: 'Цена за детское осн. место'
 mbhpricebundle.form.pricecachegeneratortype.settings: Настройки
 mbhpricebundle.form.pricecachegeneratortype.price: Цены
+mbhpricebundle.form.pricecachegeneratortype.change_sum: 'Укажите сумму'
 mbhpricebundle.form.pricecachegeneratortype.change_sum_or_percent: 'Укажите сумму или процент от цены'
 mbhpricebundle.form.pricecachegeneratortype.price_for_single_accommodation: 'Цена 1-местного размещения'
 mbhpricebundle.form.pricecachegeneratortype.price_for_single_room_bookings: 'Цена при бронировании номера на одного человека.'
