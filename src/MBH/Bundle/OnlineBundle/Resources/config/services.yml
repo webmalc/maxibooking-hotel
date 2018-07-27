@@ -12,3 +12,13 @@ services:
     mbh.online.search_order:
         class: MBH\Bundle\OnlineBundle\Lib\SearchForm
         arguments: ['@service_container']
+
+    mbh.online.search_order_fail.logger:
+            class:     Symfony\Bridge\Monolog\Logger
+            arguments: [app]
+            calls:
+                - [pushHandler, ['@mbh.online.search_order_fail.logger_handler']]
+
+    mbh.online.search_order_fail.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.search_order_fail.log", 200]
