@@ -12,10 +12,10 @@
 
 {% endblock %}
 
-{% block styles %}
-    {{ parent() }}
+{#{% block styles %}#}
+    {#{{ parent() }}#}
 
-    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPriceBundle/Resources/public/css/special/*'%}
-        <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}
+    {#{% stylesheets filter='cssrewrite, uglifycss' '@MBHPriceBundle/Resources/public/css/special/*'%}#}
+        {#<link rel="stylesheet" href="{{ asset_url }}"/>#}
+    {#{% endstylesheets %}#}
+{#{% endblock %}#}
