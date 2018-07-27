@@ -162,6 +162,7 @@ abstract class SearchWebTestCase extends WebTestCase
             ->setSearchHash($searchHash)
             ->setTariffs($searchTariff)
             ->setRoomTypes($searchRoomType)
+            ->setId('fakeId')
         ;
 
         if ($data['adults'] ?? null) {

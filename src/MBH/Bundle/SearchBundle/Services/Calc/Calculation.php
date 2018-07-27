@@ -162,11 +162,8 @@ class Calculation
     {
         $price = 0;
         $childPrice = $rawPriceCache['price'];
-        if ($calcQuery->isChildPrices()) {
+        if (($rawPriceCache['childPrice'] ?? null) && $calcQuery->isChildPrices()) {
             $childPrice = $rawPriceCache['childPrice'];
-            if (null === $childPrice) {
-                throw new CalculationException('No required child price found!');
-            }
         }
         if ($promotion && $childrenDiscount = $promotion->getChildrenDiscount()) {
             $childPrice = $childPrice * (100 - $childrenDiscount) / 100;
@@ -191,7 +188,7 @@ class Calculation
     {
         $addsAdultsPrices = 0;
         if (!$addsAdults) {
-            return $addsAdults;
+            return $addsAdultsPrices;
         }
 
         $additionalPrice = $rawPriceCache['additionalPrice'] ?? null;

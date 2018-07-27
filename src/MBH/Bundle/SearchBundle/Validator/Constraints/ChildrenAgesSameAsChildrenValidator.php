@@ -16,6 +16,7 @@ class ChildrenAgesSameAsChildrenValidator extends ConstraintValidator
         $children = (int)$object->getChildren();
         $ages = \count($object->getChildrenAges());
         if ($children !== $ages) {
+            /** @var ChildrenAgesSameAsChildren $constraint */
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }

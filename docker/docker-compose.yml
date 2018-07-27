@@ -74,6 +74,8 @@ mbh-php-cli:
     - mbh-mongo
     - mbh-rabbitmq
     - mbh-redis
+  ports:
+    - "8181:8181"
 
 mbh-webserver:
   image: phpdockerio/nginx:latest

@@ -5,12 +5,13 @@ namespace Tests\Bundle\SearchBundle\Services\Search;
 
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
@@ -36,7 +37,9 @@ class SearchTest extends SearchWebTestCase
         $conditionData = $this->createConditionData($data);
         $actual = $search->searchSync($conditionData);
         $this->assertCount(2, $search->getRestrictionsErrors());
-        $this->assertContainsOnlyInstancesOf(SearchResult::class, $actual);
+        foreach ($actual as $result) {
+            $this->assertInstanceOf(Result::class, $result);
+        }
 
     }
 
@@ -47,8 +50,9 @@ class SearchTest extends SearchWebTestCase
      */
     public function testSearchAsync(iterable $data): void
     {
+        $expected = $data['expected'];
         $producer = $this->createMock(Producer::class);
-        $producer->expects($this->exactly(4))->method('publish')->willReturnCallback(function (string $message) {
+        $producer->expects($this->exactly($expected['searchCount']/$expected['chunk']))->method('publish')->willReturnCallback(function (string $message) {
             $msg = json_decode($message, true);
             $this->assertNotEmpty($msg['conditionsId']);
             $this->assertContainsOnlyInstancesOf(SearchQuery::class, unserialize($msg['searchQueries']));
@@ -56,15 +60,14 @@ class SearchTest extends SearchWebTestCase
         $this->getContainer()->set('old_sound_rabbit_mq.async_search_producer', $producer);
         $conditionData = $this->createConditionData($data);
         $search = $this->getContainer()->get('mbh_search.search');
-        $search->setAsyncQueriesChunk(2);
+        $search->setAsyncQueriesChunk($expected['chunk']);
         /** @var SearchResultHolder $actual */
         $actual = $search->searchAsync($conditionData);
-
         $this->dm->clear();
         $conditions = $this->dm->find(SearchConditions::class, $actual);
         $this->assertInstanceOf(SearchConditions::class, $conditions);
         $this->assertNotNull($conditions->getSearchHash());
-        $this->assertSame(8, $conditions->getExpectedResultsCount());
+        $this->assertSame($expected['searchCount'], $conditions->getExpectedResultsCount());
     }
 
     public function syncDataProvider()
@@ -82,8 +85,10 @@ class SearchTest extends SearchWebTestCase
                 'additionalBegin' => 0,
                 'additionalEnd' => 0,
                 'expected' => [
-                    'results' => 10-2,
-                    'successResults' => 2
+                    'searchCount' => 10,
+                    'results' => 10-8,
+                    'successResults' => 2,
+                    'chunk' => 2
                 ]
             ]
         ];

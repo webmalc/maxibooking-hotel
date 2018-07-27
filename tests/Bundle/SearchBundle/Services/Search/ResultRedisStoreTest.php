@@ -32,8 +32,8 @@ class ResultRedisStoreTest extends SearchWebTestCase
         $this->assertTrue((bool)$cache->exists($key1));
         $this->assertTrue((bool)$cache->exists($key2));
 
-        $actual1 = json_decode($cache->get($key1));
-        $actual2 = json_decode($cache->get($key2));
+        $actual1 = unserialize($cache->get($key1));
+        $actual2 = unserialize($cache->get($key2));
 
         $this->assertInstanceOf(Result::class, $actual1);
         $this->assertInstanceOf(Result::class, $actual2);
@@ -61,9 +61,9 @@ class ResultRedisStoreTest extends SearchWebTestCase
         $this->assertCount(2, $actualResult1);
         $this->assertCount(1, $actualResult2);
 
-        $actual1 = unserialize(reset($actualResult1));
-        $actual3 = unserialize(reset($actualResult1));
-        $actual2 = unserialize(reset($actualResult2));
+        $actual1 = reset($actualResult1);
+        $actual3 = reset($actualResult1);
+        $actual2 = reset($actualResult2);
 
         foreach ([$actual1, $actual2, $actual3] as $actual) {
             $this->assertInstanceOf(Result::class, $actual);

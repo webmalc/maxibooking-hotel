@@ -4,8 +4,8 @@
 namespace Tests\Bundle\SearchBundle\Services\Search;
 
 
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class SearcherTest extends SearchWebTestCase
@@ -27,9 +27,10 @@ class SearcherTest extends SearchWebTestCase
         $expected = $data['expected'];
         /** @noinspection PhpUndefinedVariableInspection */
         $this->assertCount($expected['resultsCount'], $actual);
-        /** @var SearchResult $actualSearchResult */
+        /** @var Result $actualSearchResult */
         $actualSearchResult = reset($actual);
-        $this->assertEquals($expected['prices']['1_1'], $actualSearchResult->getPrices()['1_1']);
+        $this->assertInstanceOf(Result::class, $actualSearchResult);
+        $this->assertEquals($expected['totalPrice'], $actualSearchResult->getPrices()[0]->getTotal());
     }
 
     public function dataProvider(): iterable
@@ -48,7 +49,7 @@ class SearcherTest extends SearchWebTestCase
                 ],
                 'expected' => [
                     'resultsCount' => 1,
-                    'prices' => ['1_1' => 4400 ]
+                    'totalPrice' => 4400
 
                 ]
 

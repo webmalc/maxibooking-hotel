@@ -11,7 +11,9 @@ use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class RoomTypeGroupingTest extends SearchWebTestCase
 {
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param iterable $data
+     */
     public function testGroup(iterable $data): void
     {
         $source = $data['source'];

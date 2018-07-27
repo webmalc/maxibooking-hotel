@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultCacheablesInterface;
 use Predis\Client;
 use Symfony\Component\Cache\Simple\AbstractCache;
@@ -34,6 +35,12 @@ class ResultRedisStore implements AsyncResultStoreInterface
         $this->cache->set($key, serialize($searchResult));
     }
 
+    /**
+     * @param SearchConditions $conditions
+     * @return Result[]
+     * @throws AsyncResultReceiverException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function receive(SearchConditions $conditions): array
     {
         $results = [];
