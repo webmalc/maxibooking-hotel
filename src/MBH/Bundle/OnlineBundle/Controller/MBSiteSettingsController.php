@@ -36,7 +36,8 @@ class MBSiteSettingsController extends BaseController
             'contract' => $siteConfig->getContract(),
             'currency' => $this->clientConfig->getCurrency(),
             'languages' => $this->clientConfig->getLanguages(),
-            'defaultLang' => $this->getParameter('locale')
+            'defaultLang' => $this->getParameter('locale'),
+            'colorTheme' => $siteConfig->getColorTheme()
         ]);
     }
 }

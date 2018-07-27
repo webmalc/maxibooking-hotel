@@ -11,6 +11,7 @@ use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -79,6 +80,13 @@ class SiteForm extends AbstractType
             ->add('paymentTypes', PaymentTypesType::class, [
                 'mapped' => false,
                 'help' => 'form.formType.reservation_payment_types_with_online_form'
+            ])
+            ->add('colorTheme', ChoiceType::class, [
+                'label' => 'site_config.color_theme.colors.label',
+                'choices' => array_keys(SiteConfig::COLORS_BY_THEMES),
+                'choice_label' => function(string $theme) {
+                    return 'site_config.color_theme.colors.' . $theme;
+                }
             ])
             ->add('hotels', DocumentType::class, [
                 'label' => 'site_form.hotels.label',

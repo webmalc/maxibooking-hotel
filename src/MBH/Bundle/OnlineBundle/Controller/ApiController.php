@@ -65,6 +65,7 @@ class ApiController extends Controller
         return [
             'formId' => $formId,
             'formConfig' => $formConfig,
+            'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig()
         ];
     }
 
@@ -84,6 +85,7 @@ class ApiController extends Controller
         return [
             'formId' => $formId,
             'formConfig' => $formConfig,
+            'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig()
         ];
     }
 
