@@ -63,7 +63,11 @@ class SearchLimitChecker
     }
 
 
-
+    /**
+     * @param SearchQuery $searchQuery
+     * @throws SearchLimitCheckerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     public function checkDateLimit(SearchQuery $searchQuery): void
     {
         $tariffId = $searchQuery->getTariffId();
@@ -129,11 +133,13 @@ class SearchLimitChecker
         }
     }
 
+
     /**
      * @param SearchQuery $searchQuery
      * @return array
      * @throws SearchLimitCheckerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function checkRoomCacheLimit(SearchQuery $searchQuery): array
     {

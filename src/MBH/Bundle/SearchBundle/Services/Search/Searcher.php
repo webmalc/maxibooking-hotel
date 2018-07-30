@@ -65,16 +65,21 @@ class Searcher
 
         $this->searchLimitChecker->checkRoomCacheLimit($searchQuery);
 
-        if (!$this->restrictionChecker->check($searchQuery)) {
-            throw new SearcherException('Violation in restriction.');
+        if (!$searchQuery->isForceBooking()) {
+            if (!$this->restrictionChecker->check($searchQuery)) {
+                throw new SearcherException('Violation in restriction.');
+            }
+
+            $this->searchLimitChecker->checkDateLimit($searchQuery);
+            $this->searchLimitChecker->checkTariffConditions($searchQuery);
+            $this->searchLimitChecker->checkRoomTypePopulationLimit($searchQuery);
         }
 
-        $this->searchLimitChecker->checkDateLimit($searchQuery);
-        $this->searchLimitChecker->checkTariffConditions($searchQuery);
-        $this->searchLimitChecker->checkRoomTypePopulationLimit($searchQuery);
-
         $searchResult = $this->resultComposer->composeResult($searchQuery);
-        $this->searchLimitChecker->checkWindows($searchResult);
+
+        if (!$searchQuery->isForceBooking()) {
+            $this->searchLimitChecker->checkWindows($searchResult);
+        }
 
         return $searchResult;
     }

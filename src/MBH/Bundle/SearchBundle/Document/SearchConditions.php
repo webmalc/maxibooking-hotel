@@ -127,13 +127,6 @@ class SearchConditions extends Base
      */
     private $isOnline = false;
 
-    /** @var bool
-     * @Assert\Type(type="bool")
-     * @ODM\Field(type="bool")
-     *
-     */
-    private $isIgnoreRestrictions = false;
-
     /**
      * @var bool
      * @Assert\Type(type="bool")
@@ -154,6 +147,13 @@ class SearchConditions extends Base
      * @ODM\Field(type="int")
      */
     private $expectedResultsCount = 0;
+
+    /**
+     * @var string
+     * @Assert\Type(type="string")
+     * @ODM\Field(type="string")
+     */
+    private $order;
 
     /**
      * SearchConditions constructor.
@@ -408,18 +408,6 @@ class SearchConditions extends Base
         return $this;
     }
 
-    public function isIgnoreRestrictoins(): bool
-    {
-        return $this->isIgnoreRestrictions;
-    }
-
-    public function setIgnoreRestrictions(): SearchConditions
-    {
-        $this->isIgnoreRestrictions = true;
-
-        return $this;
-    }
-
     /**
      * @return bool
      */
@@ -489,8 +477,24 @@ class SearchConditions extends Base
         return (clone $this->getEnd())->modify("+{$this->getAdditionalEnd()} days");
     }
 
+    /**
+     * @return string
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
 
+    /**
+     * @param string $order
+     * @return SearchConditions
+     */
+    public function setOrder(string $order): SearchConditions
+    {
+        $this->order = $order;
 
+        return $this;
+    }
 
 
 

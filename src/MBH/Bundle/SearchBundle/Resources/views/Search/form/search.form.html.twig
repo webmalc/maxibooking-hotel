@@ -23,15 +23,27 @@
     <i class="fa fa-male" title='{{ 'form.searchType.adults'|trans() }}'
        data-toggle='tooltip'></i>&nbsp{{ form_widget(form.adults, {'attr': {'class': 'input-xxs'}}) }}
 </div>
-<div class="input">
+<div class="input children_age_holder_parent">
     <i class="fa fa-child" title='{{ 'form.searchType.children'|trans() }}'
        data-toggle='tooltip'></i>&nbsp{{ form_widget(form.children, {'attr': {'class': 'input-xxs'}}) }}
-    &nbsp;<i class="fa fa-sort-numeric-asc" id="search-children-ages"
-             title='{{ 'form.searchType.children_ages'|trans() }}'>{{ form_widget(form.childrenAges) }}</i>
+    &nbsp;<i
+            id="search-children-ages-holder"
+            class="fa fa-sort-numeric-asc"
+            title='{{ 'form.searchType.children_ages'|trans() }}'
+            data-toggle="tooltip"
+    >
+    </i>
+    <div class="children_age_holder">{{ form_widget(form.childrenAges) }}</div>
 </div>
+
 <div class="input">
     <i class="fa fa-bed" title='{{ 'form.searchType.room_type'|trans() }}'
        data-toggle='tooltip'></i>&nbsp{{ form_widget(form.roomTypes) }}
+</div>
+
+<div class="input">
+    <i class="fa fa-file-text-o" title='{{ 'form.searchType.order'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp{{ form_widget(form.order) }}
 </div>
 
 {% if is_granted('ROLE_FORCE_BOOKING') %}
@@ -40,6 +52,18 @@
            data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.isForceBooking) }}
     </div>
 {% endif %}
+
+<div class="input">
+    <i class="fa fa-users" title='{{ 'form.searchType.payer'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.tourist) }}&nbsp;
+    <small>
+        <a href="{{ path('tourist_new') }}" id="add-tourist" target="_blank"
+           title='{{ 'form.searchType.payer_add'|trans() }}'
+           data-toggle='tooltip'>
+            <i class="fa fa-plus"></i>
+        </a>
+    </small>
+</div>
 
 {% set clientConfig = client_config() %}
 {% if not clientConfig or not clientConfig.isInstantSearch %}

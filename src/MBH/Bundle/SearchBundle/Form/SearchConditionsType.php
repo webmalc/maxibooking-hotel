@@ -19,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -61,11 +62,61 @@ class SearchConditionsType extends AbstractType
                     ],
                 ]
             )
-            ->add('adults', IntegerType::class)
-            ->add('children', IntegerType::class)
+            ->add(
+                'adults',
+                IntegerType::class,
+                [
+                    'attr' => [
+                        'min' => 0,
+                        'max' => 6,
+                    ],
+                ]
+            )
+            ->add(
+                'children',
+                IntegerType::class,
+                [
+                    'attr' => [
+                        'min' => 0,
+                        'max' => 6,
+                    ],
+                ]
+            )
+            ->add(
+                'childrenAges',
+                CollectionType::class,
+                [
+                    'required' => false,
+                    'entry_type' => ChoiceType::class,
+                    'entry_options' => [
+                        'label' => false,
+                        'placeholder' => false,
+                        'choices' => range(0, 13),
+                        'compound' => false,
+                        'attr' => [
+                            'class' => 'plain-html children_age_select',
+                        ],
+                        'data' => 12
+                    ],
+                    'prototype' => true,
+                    'allow_add' => true,
+                    'allow_delete' => true,
+                    'by_reference' => false,
+                ]
+            )
             ->add(
                 'roomTypes',
                 RoomTypesType::class
+            )
+            ->add(
+                'order', NumberType::class,
+                [
+                    'required' => false,
+                    'label' => false,
+                    'attr' => [
+                        'class' => 'input-xs only-int form-control input-sm'
+                    ]
+                ]
             )
             ->add(
                 'hotels',
@@ -99,32 +150,25 @@ class SearchConditionsType extends AbstractType
                     'required' => false,
                 ]
             )
-            ->add('isForceBooking', CheckboxType::class, [
-                'label' => 'form.searchType.forceBooking',
-                'required' => false,
-            ])
             ->add(
-                'childrenAges',
-                CollectionType::class,
+                'isForceBooking',
+                CheckboxType::class,
                 [
+                    'label' => 'form.searchType.forceBooking',
                     'required' => false,
-                    'entry_type' => ChoiceType::class,
-                    'entry_options' => [
-                        'label' => false,
-                        'placeholder' => false,
-                        'choices' => range(0, 13),
-                        'empty_data' => 12,
-                        'compound' => false,
-                        'attr' => [
-                            'class' => 'plain-html',
-                        ],
-                    ],
-                    'prototype' => true,
-                    'allow_add' => true,
-                    'allow_delete' => true,
-                    'by_reference' => false,
                 ]
             )
+            ->add('tourist', TextType::class, [
+                'label' => 'form.searchType.fio',
+                'required' => false,
+                'mapped' => false,
+                'attr' => [
+                    'placeholder' => 'form.orderTouristType.placeholder_fio',
+                    'style' => 'min-width: 350px !important; width: 350px !important;',
+                    'class' => 'findGuest'
+                ]
+            ])
+
             ->add(
                 'isOnline',
                 CheckboxType::class,
@@ -144,7 +188,7 @@ class SearchConditionsType extends AbstractType
             ->setDefaults(
                 [
                     'data_class' => SearchConditions::class,
-                    'csrf_protection' => false
+                    'csrf_protection' => false,
 
                 ]
             );

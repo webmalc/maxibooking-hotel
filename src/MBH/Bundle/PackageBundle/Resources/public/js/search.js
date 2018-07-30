@@ -37,7 +37,7 @@ $(document).ready(function () {
 
     }());
 
-    $('#add-guest').on('click', function (e) {
+    $('#add-guest, #add-search-guest').on('click', function (e) {
         var guestModal = $('#add-guest-modal'),
             form = guestModal.find('form'),
             button = $('#add-guest-modal-submit'),

@@ -89,6 +89,11 @@ class ResultConditions implements \JsonSerializable
         return $this->conditions->getSearchHash();
     }
 
+    public function getOrder(): ?string
+    {
+        return $this->conditions->getOrder();
+    }
+
 
 
 
@@ -96,12 +101,14 @@ class ResultConditions implements \JsonSerializable
     {
         return [
             'id' => $this->getId(),
-            'begin' => $this->getBegin()->format('d-m-Y'),
-            'end' => $this->getEnd()->format('d-m-Y'),
+            'begin' => $this->getBegin()->format('d.m.Y'),
+            'end' => $this->getEnd()->format('d.m.Y'),
             'adults' => $this->getAdults(),
             'children' => $this->getChildren(),
             'childrenAges' => $this->getChildrenAges(),
-            'hash' => $this->getSearchHash()
+            'hash' => $this->getSearchHash(),
+            'order' => $this->getOrder(),
+            'forceBooking' => $this->isForceBooking()
         ];
     }
 

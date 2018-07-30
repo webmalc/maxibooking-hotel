@@ -52,12 +52,21 @@ class Writer {
                         </td>`
         });
         Vue.component('count', {
-            props: ['count'],
+            props: ['count', 'quantity'],
             template: `<td>
-                        <select class="form-control quantity-select input-xxs">
-                            <option :value="count">{{ count }}</option>
+                        <select v-model="selected" @change="$emit('quantity', selected)" class="form-control quantity-select input-xxs">
+                            <option v-for="value in (1, count)" :value="value">{{ value }}</option>
                         </select>
                        </td>`
+            ,
+            mounted: function () {
+                this.$emit('quantity', this.selected)
+            },
+            data: function () {
+                return {
+                    selected: this.quantity
+                }
+            }
         });
         Vue.component('prices', {
             props: ['prices', 'defaultPriceIndex'],
@@ -118,14 +127,14 @@ class Writer {
         });
         Vue.component('result', {
             props: ['result'],
-            template: `<tr>
+            template: `<tr :class="{success: isAdditionalDate}">
                     <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
                     <td>{{begin}}-{{end}}<br><small>{{night}} ночей</small></td>
                     <td is="tariff" :tariff="result.tariff" :freeRooms="minRooms"></td>
-                    <td is="count" :count="minRooms"></td>
+                    <td is="count" :count="minRooms" :quantity="quantity" @quantity="quantityUpdate($event)"></td>
                     <td is="prices" :prices="result.prices" :defaultPriceIndex="currentPriceIndex" @price-index-update="priceIndexUpdate($event)"></td>
                     <td is="total-price" :price="result.prices[currentPriceIndex]" :tariffName="result.tariff.name"></td>
-                    <td is="package-link" :link="getLink()" :roomsCount="minRooms" data-toggle="tooltip" @click.native="$emit('booking')"></td>
+                    <td is="package-link" :link="getLink()" :roomsCount="minRooms" data-toggle="tooltip" @click.native="$emit('booking', quantity)"></td>
             </tr>`,
             computed: {
                 begin: function () {
@@ -144,9 +153,20 @@ class Writer {
 
                     return moment.duration(end.diff(begin)).days();
                 },
+                isAdditionalDate: function () {
+                    let conditionBegin = this.result.conditions.begin;
+                    let begin = this.result.begin;
+
+                    let conditionEnd = this.result.conditions.end;
+                    let end = this.result.end;
+
+                    return (conditionBegin == begin) && (conditionEnd == end);
+                },
                 minRooms: function ()  {
                     return this.result.minRooms;
                 }
+
+
             },
             methods:  {
                 getLink: function () {
@@ -157,6 +177,8 @@ class Writer {
                     const adults: number = this.result.prices[this.currentPriceIndex].adults;
                     const children: number = this.result.prices[this.currentPriceIndex].children;
                     const childrenAges = this.result.conditions.childrenAges;
+                    const order = this.result.conditions.order;
+                    const forceBooking = this.result.conditions.forceBooking;
                     return Routing.generate('package_new', {
                         begin: begin,
                         end: end,
@@ -165,15 +187,22 @@ class Writer {
                         adults: adults,
                         children: children,
                         childrenAges: childrenAges,
+                        quantity: this.quantity,
+                        order: order,
+                        forceBooking: forceBooking,
                     });
                 },
                 priceIndexUpdate: function (index) {
                     this.currentPriceIndex = index;
+                },
+                quantityUpdate: function (num) {
+                    this.quantity = num;
                 }
             },
             data: function () {
                 return {
                     currentPriceIndex: 0,
+                    quantity: 1
                 }
             }
 
@@ -182,18 +211,18 @@ class Writer {
             props: ['roomType', 'results'],
             template: `<tbody>
                            <tr class="mbh-grid-header1 info"><td colspan="8">{{roomType.name}}: {{roomType.hotelName}}</td></tr>
-                           <tr @booking="booking" is="result" v-for="(result, key) in sortedResultsByPrice" :key="key" :result="result"></tr>
+                           <tr @booking="booking($event)" is="result" v-for="(result, key) in sortedResults" :key="key" :result="result"></tr>
                        </tbody>
                         `,
             methods: {
-                booking: function  () {
+                booking: function  (count) {
                     for(let index in this.results) {
-                        this.results[index].minRooms--;
+                        this.results[index].minRooms = this.results[index].minRooms - count;
                     }
                 }
             },
             computed: {
-                sortedResultsByPrice: function () {
+                sortedResults: function () {
                     this.results.sort(function (resultA, resultB) {
                         if (typeof resultA.prices[0] !== 'object' || typeof resultB.prices[0] !== 'object') {
                             return;
@@ -219,6 +248,7 @@ class Writer {
             }
 
         });
+
         this.rootApp = new Vue({
             el: '#search_results',
             template: `<table v-if="Object.keys(rawData).length !== 0" class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
@@ -236,7 +266,6 @@ class Writer {
                         <tbody is="room-type" v-for="(data, key) in rawData" :roomType="data.roomType" :results="data.results" :key="key"></tbody>
                         </table>
 `,
-            /*template: '<span><room-type v-for="(data, key) in rawData" :roomType="data.roomType" :searchResults="data.results" :key="key" ></room-type></span>',*/
             data: {rawData: this.data},
 
         });

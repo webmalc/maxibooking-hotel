@@ -1,4 +1,20 @@
 #new_search {
   display: flex;
 }
+.children_age_holder_parent {
+  position: relative;
+}
+.children_age_holder {
+  display: none;
+  position: absolute;
+  width: 380px;
+  height: 42px;
+  top: -40px;
+}
+.children_age_holder > div {
+  display: inline-flex;
+}
+.children_age_holder .children_age_select {
+  width: 40px!important;
+}
 /*# sourceMappingURL=search.css.map */
