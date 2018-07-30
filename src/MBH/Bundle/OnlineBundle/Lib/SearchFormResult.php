@@ -113,11 +113,10 @@ class SearchFormResult implements \JsonSerializable
 
     private function loggerFail(): void
     {
-        $logger = $this->container->get('mbh.online.search_order_fail.logger');
+        $logger = $this->container->get('mbh.online.search_order.logger');
 
         if ($this->searchForm !== null) {
             $rawMsg = [];
-            $rawMsg[] = 'configId:' . $this->searchForm->getConfigId() ?? 'no';
             $rawMsg[] = 'numberOrder:' . $this->searchForm->getNumberOrder() ?? 'no';
             $rawMsg[] = 'phoneOrEmail:' . $this->searchForm->getPhoneOrEmail() ?? 'no';
             $msg = implode(';',$rawMsg);
@@ -125,6 +124,6 @@ class SearchFormResult implements \JsonSerializable
             $msg = 'unknown error';
         }
 
-        $logger->info($msg);
+        $logger->info('FAIL_SEARCH;' . $msg);
     }
 }

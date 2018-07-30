@@ -57,7 +57,7 @@ var mbhIframe = {
   }
 };
 
-window.onload = function(e) {
+window.addEventListener('load', function(ev) {
 
   if (typeof $ === 'undefined') {
     console.error('no jquery');
@@ -92,6 +92,6 @@ window.onload = function(e) {
   document.addEventListener('mbh_payment_finished', function() {
     mbhIframe.updateResultDiv('success', 'Оплачено!');
   });
-};
+});
 {% endautoescape %}
 {#{% endwrapinline %}#}

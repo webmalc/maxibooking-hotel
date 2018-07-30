@@ -112,13 +112,37 @@ class ApiPaymentFormController extends Controller
             $msg[] = $err->getMessage();
         }
 
-        return $this->json(
-            [
-                'error' => $msg !== []
-                    ? implode("<br>", $msg)
-                    : $this->container->get('translator')->trans('api.payment_form.search.not_valid_fields')
-            ]
-        );
+        $response =  [
+            'error' => $msg !== []
+                ? implode("<br>", $msg)
+                : $this->container->get('translator')->trans('api.payment_form.search.not_valid_fields')
+        ];
+
+        $this->logger($response, $request);
+
+        return $this->json($response);
+    }
+
+    private function logger(array $responseArray, Request $request): void
+    {
+        $logger = $this->container->get('mbh.online.search_order.logger');
+
+        $logger->info('SEARCH_INVALID-FORM_BEGIN');
+
+        $infoForLogger = 'msg_response=' . json_encode($responseArray, JSON_UNESCAPED_UNICODE);
+        $logger->info($infoForLogger);
+
+        $infoForLogger = 'user-agent=' . $request->headers->get('user-agent');
+        $logger->info($infoForLogger);
+
+        $infoForLogger = 'ip=' . $request->getClientIp();
+        $logger->info($infoForLogger);
+
+        $extra = $request->request->get('mbh_bundle_onlinebundle_order_search_type');
+        $infoForLogger = 'numberOrder='. $extra['numberOrder'] . '; phoneOrEmail='. $extra['phoneOrEmail'];
+        $logger->info($infoForLogger);
+
+        $logger->info('SEARCH_INVALID-FORM_END');
     }
 
     /**

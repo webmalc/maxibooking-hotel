@@ -149,25 +149,13 @@ class SearchForm
 
     public function search(): SearchFormResult
     {
-        /** @var Package $package */
-        $package = $this->dm->getRepository('MBHPackageBundle:Package')
-            ->findOneBy([
-                'numberWithPrefix' => $this->getNumberOrder(),
-            ]);
-
         $result = new SearchFormResult($this->container);
         $result->setSearchForm($this);
 
+        $package = $this->searchPackage();
+
         if ($package === null) {
-
-            $package = $this->dm->getRepository('MBHPackageBundle:Package')
-                ->findOneBy([
-                    'numberWithPrefix' => $this->getNumberOrder() . OrderManager::RELOCATE_SUFFIX,
-                ]);
-
-            if ($package === null) {
-                return $result;
-            }
+            return $result;
         }
 
         $this->order = $package->getOrder();
@@ -228,9 +216,9 @@ class SearchForm
         };
         if ($this->order->getOrganization() !== null) {
             return $check($this->order->getOrganization()->getName());
-        } else {
-            return $check($this->order->getMainTourist()->getFullName());
         }
+
+        return $check($this->order->getMainTourist()->getFullName());
     }
 
     /**
@@ -321,5 +309,26 @@ class SearchForm
     private function dexNumber(string $phone): string
     {
          return substr($phone, -10);
+    }
+
+    /**
+     * @return Package|null
+     */
+    private function searchPackage(): ?Package
+    {
+        /** @var Package $package */
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->findOneBy([
+                'numberWithPrefix' => $this->getNumberOrder(),
+            ]);
+
+        if ($package === null) {
+            $package = $this->dm->getRepository('MBHPackageBundle:Package')
+                ->findOneBy([
+                    'numberWithPrefix' => $this->getNumberOrder() . OrderManager::RELOCATE_SUFFIX,
+                ]);
+        }
+
+        return $package;
     }
 }
