@@ -40,6 +40,21 @@
       div.tab-content {
 
         #home {
+
+          #backdrop-package-load-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            div.alert.alert-warning {
+              margin: auto;
+            }
+          }
+
           & > .well.well-sm.we,
             /** вообще сделал hidden-xs*/
           .created-info {

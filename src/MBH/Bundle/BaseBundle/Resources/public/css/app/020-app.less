@@ -212,7 +212,7 @@ small {
 }
 
 .table-actions-td a {
-  margin-right: 0px;
+  margin-right: 0;
 }
 
 .date-month {
@@ -221,7 +221,7 @@ small {
   &::before {
     content: " ";
   }
-  &::after {
+  &:not(.date-infinity)::after {
     content: ".";
   }
 }

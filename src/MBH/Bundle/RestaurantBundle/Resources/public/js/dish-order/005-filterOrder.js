@@ -5,6 +5,8 @@ $(document).ready(function () {
         $dishOrderTable = $('#dishorder-table');
 
     $dishOrderTable.dataTable({
+        language    : mbh.datatablesOptions.language,
+        pageLength  : mbh.datatablesOptions.pageLength,
         "drawCallback": function (settings) {
             var html;
             if (settings.json.restaurant_order_total) {

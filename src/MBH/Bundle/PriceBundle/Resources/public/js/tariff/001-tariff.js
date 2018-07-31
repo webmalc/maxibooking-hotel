@@ -173,6 +173,8 @@ $(document).ready(function () {
         process = false;
 
     tariffTable.dataTable({
+        language  : mbh.datatablesOptions.language,
+        pageLength: mbh.datatablesOptions.pageLength,
         serverSide: true,
         processing: true,
         ordering: false,

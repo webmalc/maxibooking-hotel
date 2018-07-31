@@ -619,8 +619,8 @@ $(document).ready(function() {
       setPaymentCardVisibility();
       e.preventDefault();
       $('.tab-pane').
-          html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>' +
-              Translator.trans('package.processing') + '...</div>');
+          html('<div id="backdrop-package-load-content"><div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>' +
+              Translator.trans('package.processing') + '...</div></div>');
       tabs.find('li').removeClass('active');
       $(this).closest('li').addClass('active');
       var href = $(this).attr('href');
