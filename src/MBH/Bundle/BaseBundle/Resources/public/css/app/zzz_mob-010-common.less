@@ -26,6 +26,33 @@
         padding-bottom: 0;
       }
     }
+
+    #package-summary, .package-summary {
+      .package-summary-row, .order-summary-row{
+        display: table-row;
+        margin-left: unset;
+      }
+    }
+
+    div.bg-gray.color-palette.alert {
+      display: table;
+      width: 100%;
+      > span {
+        display: table-row;
+        > * {
+          display: table-cell;
+          width: 50%;
+
+          &:first-child {
+            text-align: right;
+          }
+          &:last-child {
+            text-align: left;
+            padding-left: .3em;
+          }
+        }
+      }
+    }
   }
 
   .box-header_when-mobile {
