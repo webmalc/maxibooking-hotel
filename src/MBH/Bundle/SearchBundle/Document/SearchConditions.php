@@ -13,6 +13,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Validator\Constraints\Range;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -122,6 +123,12 @@ class SearchConditions extends Base
      */
     private $tariffs;
 
+    /**
+     * @var Special
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Special")
+     */
+    private $special;
+
     /** @var bool
      * @Assert\Type(type="bool")
      */
@@ -154,6 +161,9 @@ class SearchConditions extends Base
      * @ODM\Field(type="string")
      */
     private $order;
+
+    /** @var bool */
+    private $isSpecialStrict = false;
 
     /**
      * SearchConditions constructor.
@@ -495,6 +505,46 @@ class SearchConditions extends Base
 
         return $this;
     }
+
+
+    /**
+     * @return bool
+     */
+    public function isSpecialStrict(): bool
+    {
+        return $this->isSpecialStrict;
+    }
+
+    /**
+     * @param bool $isSpecialStrict
+     * @return SearchConditions
+     */
+    public function setIsSpecialStrict(bool $isSpecialStrict): SearchConditions
+    {
+        $this->isSpecialStrict = $isSpecialStrict;
+
+        return $this;
+    }
+
+    /**
+     * @return Special
+     */
+    public function getSpecial(): ?Special
+    {
+        return $this->special;
+    }
+
+    /**
+     * @param Special $special
+     * @return SearchConditions
+     */
+    public function setSpecial(Special $special): SearchConditions
+    {
+        $this->special = $special;
+
+        return $this;
+    }
+
 
 
 

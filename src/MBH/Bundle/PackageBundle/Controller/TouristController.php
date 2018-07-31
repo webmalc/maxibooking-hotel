@@ -189,8 +189,8 @@ class TouristController extends Controller
         $addressForm = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
         $form->handleRequest($request);
-        $docForm->submit($request);
-        $addressForm->submit($request);
+        $docForm->handleRequest($request);
+        $addressForm->handleRequest($request);
 
         if ($form->isValid() && $docForm->isValid() && $addressForm->isValid()) {
 
@@ -202,7 +202,7 @@ class TouristController extends Controller
 
             if ($entity->getBirthday() || $entity->getPhone() || $entity->getEmail()) {
                 $pieces = [];
-                !$entity->getBirthday() ?: $entity[] = $entity->getBirthday()->format('d.m.Y');
+                !$entity->getBirthday() ?: $pieces[] = $entity->getBirthday()->format('d.m.Y');
                 !$entity->getPhone() ?: $pieces[] = $entity->getPhone();
                 !$entity->getEmail() ?: $pieces[] = $entity->getEmail();
                 $text .= ' (' . implode(', ', $pieces) . ')';

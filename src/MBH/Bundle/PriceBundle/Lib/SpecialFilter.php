@@ -395,6 +395,11 @@ class SpecialFilter
         $this->roomTypes = $roomTypes;
     }
 
+    public function addRoomType($roomType)
+    {
+        $this->roomTypes[] = $roomType;
+    }
+
     /**
      * @return Promotion
      */

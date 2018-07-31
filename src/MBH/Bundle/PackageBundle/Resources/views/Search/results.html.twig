@@ -241,13 +241,7 @@
                         <td>
                             <span class="special-price"></span>
                         </td>
-                        {#Убираем для азовского "применить спец предложение" и меняем на бронировать.#}
-                        {#<td>#}
-                            {#<a href="" data-id="{{ special.id }}"#}
-                               {#class="search-special-apply btn btn-{{ selectedSpecial ? 'default' : 'primary' }} {{ selectedSpecial ? 'cancel' }} btn-xs">#}
-                                {#<i class="fa fa-search"></i> {{ selectedSpecial ? 'cancel'|trans : 'special.apply'|trans }}#}
-                            {#</a>#}
-                        {#</td>#}
+
                         <td>
                             <a href="" data-id="{{ special.id }}"
                                class="booking-special-apply btn btn-success btn-xs">

@@ -189,7 +189,7 @@ class Writer {
                         childrenAges: childrenAges,
                         quantity: this.quantity,
                         order: order,
-                        forceBooking: forceBooking,
+                        forceBooking: forceBooking
                     });
                 },
                 priceIndexUpdate: function (index) {
@@ -295,5 +295,43 @@ class Writer {
                 this.data[newKey].results = this.data[newKey].results.concat(data[newKey].results);
             }
         }
+    }
+
+    public drawSpecialResults(data): void {
+        let $holder = $('#specials');
+        $holder.empty();
+        $holder.append($(data));
+        let $specialWrapper = $holder.find('#package-new-search-special-wrapper');
+        $specialWrapper.readmore({
+            moreLink: '<div class="more-link"><a href="#">'+$specialWrapper.attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
+            lessLink: '<div class="less-link"><a href="#">'+$specialWrapper.attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
+            collapsedHeight: 230
+        });
+        let $specialTouristSelect = $holder.find('.search-special-tourist-select');
+        let $specialPrice = $holder.find('.special-price');
+        let $specialLinks = $holder.find('a.booking-special-apply');
+        $specialTouristSelect.select2({
+            placeholder: '',
+            allowClear: false,
+            width: 'element'
+        }).on('change.select2', function () {
+            $(this).closest('td').siblings('td').find('span.special-price').html($(this).val());
+        });
+        $.each($specialPrice, function () {
+            $(this).html($(this).closest('td').siblings('td').find('select.search-special-tourist-select').val());
+        });
+        $specialLinks.on('click', function (event) {
+            event.preventDefault();
+            let relatedSelect = $(this).closest('td').siblings('td').find('select.search-special-tourist-select option:selected');
+            let linkAdults = relatedSelect.data('adults');
+            let linkChildren = relatedSelect.data('children');
+            let bookingUrl = Routing.generate('special_booking', {
+                'id': $(this).data('id'),
+                'adults': linkAdults,
+                'children': linkChildren
+            });
+
+            window.open(bookingUrl);
+        });
     }
 }

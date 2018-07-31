@@ -243,6 +243,7 @@ $(document).ready(function () {
         var $searchTouristsSelect = $wrapper.find('.search-tourists-select');
         var $specialTouristSelect = $wrapper.find('.search-special-tourist-select');
         var $specialPrice = $wrapper.find('.special-price');
+        var $specialLinks = $wrapper.find('a.booking-special-apply');
 
         $quantitySelect.select2({
             minimumResultsForSearch: -1
@@ -268,10 +269,10 @@ $(document).ready(function () {
         }).on('change.select2', function () {
             $(this).closest('td').siblings('td').find('span.special-price').html($(this).val());
         });
-        $.each($('.special-price'), function () {
+        $.each($specialPrice, function () {
             $(this).html($(this).closest('td').siblings('td').find('select.search-special-tourist-select').val());
         });
-        $('a.booking-special-apply').on('click', function (event) {
+        $specialLinks.on('click', function (event) {
             event.preventDefault();
             var relatedSelect = $(this).closest('td').siblings('td').find('select.search-special-tourist-select option:selected');
             var linkAdults = relatedSelect.data('adults');

@@ -110,10 +110,17 @@ services:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
         arguments: ['@mbh_search.searcher', '@mbh_search.search_conditions_repository', '@mbh_search.redis_store']
 
+#special searcher
+    mbh_search.special_search:
+        class: MBH\Bundle\SearchBundle\Services\Search\SpecialSearch
+        arguments: ['@mbh_search.special_repository', '@mbh.hotel.room_type_manager', '@mbh_search.room_type_category_repository']
+
 #search limit checker for refactoring
     mbh_search.search_limit_checker:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchLimitChecker
         arguments: ['@mbh_search.client_config_repository', '@doctrine.odm.mongodb.document_manager', '@mbh_search.shared_data_fetcher', '@mbh_search.room_cache_fetcher']
+
+
 
 # repositories
 
@@ -128,6 +135,12 @@ services:
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
         arguments:
             - MBH\Bundle\HotelBundle\Document\RoomType
+
+    mbh_search.room_type_category_repository:
+        class: MBH\Bundle\HotelBundle\Document\RoomTypeCategoryRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\HotelBundle\Document\RoomTypeCategory
 
     mbh_search.room_cache_repository:
         class: MBH\Bundle\PriceBundle\Document\RoomCacheRepository
@@ -146,6 +159,12 @@ services:
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
         arguments:
             - MBH\Bundle\PriceBundle\Document\Tariff
+
+    mbh_search.special_repository:
+        class: MBH\Bundle\PriceBundle\Document\SpecialRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\PriceBundle\Document\Special
 
     mbh_search.client_config_repository:
         class: MBH\Bundle\ClientBundle\Document\ClientConfigRepository
@@ -188,6 +207,8 @@ services:
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
         arguments:
             - MBH\Bundle\SearchBundle\Document\SearchResult
+
+
 
 #
 

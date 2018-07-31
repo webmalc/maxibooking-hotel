@@ -1,0 +1,81 @@
+{% if specials is not empty %}
+    <div id="package-new-search-special-wrapper" data-less="{{ 'hide'|trans }}" data-more="{{ 'show.more'|trans }}">
+        <table class="package-search-special-table table table-striped table-hover table-condensed table-icons table-actions">
+            <thead>
+            <tr class="warning">
+                <th colspan="8">
+                    {{ 'special.title'|trans }} ({{ query.begin|mbh_format }} - {{ query.end|mbh_format }})
+                </th>
+            </tr>
+            <tr>
+                <th class="td-xxs"></th>
+                <th>{{ "specials.title"|trans }}</th>
+                {#<tr>{{ "specials.hotel"|trans }}</tr>#}
+                <th class="td-md">{{ "specials.hotel"|trans }}</th>
+                <th class="td-md">{{ "specials.dates"|trans }}</th>
+                <th class="td-md">{{ "specials.roomTypes"|trans }}</th>
+                <th class="td-md">{{ "specials.tariff"|trans }}</th>
+                <th class="td-sm">{{ "specials.discount"|trans }}</th>
+                {#<th class="td-sm text-center">{{ "specials.sold"|trans }}</th>#}
+                <th class="td-md">Гости</th>
+                <th class="td-sm">Цена</th>
+                <th class="td-sm"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for special in specials %}
+                {% if special.prices is defined and special.prices is not empty %}
+                    {% set sPrice = special.prices.first %}
+                {% endif %}
+                {% if query.special == special %}{% set selectedSpecial = true %}{% else %}{% set selectedSpecial = false %}{% endif %}
+                <tr class="{{ selectedSpecial ? 'success' }}">
+                    <td class="text-center"><i class='fa fa-star'></i></td>
+                    <td><a target="_blank" href="{{ path('special_edit', {'id': special.id}) }}">{{ special }}</a>
+                    </td>
+                    <td>{{ special.hotel.name }}</td>
+                    <td><span title="{{ special.begin|days_diff(query.begin) }}">{{ special.begin|mbh_format }}</span> - <span title="{{ special.end|days_diff(query.end) }}">{{ special.end|mbh_format }}</span> <br />
+
+                    </td>
+                    <td>
+                        <small>{{ special.roomTypes|join(';<br>')|raw }}</small>
+                    </td>
+                    <td>
+                        <small>{{ special.tariffs|join(';<br>')|raw }}</small>
+                    </td>
+                    <td>{{ special.discount|number_format(2) }} {% if not special.isPercent %}{{ currency()['text'] }}{% else %}%{% endif %}</td>
+                    {#<td class="text-center">{{ special.sold }}/{{ special.limit }}</td>#}
+                    <td class="search-special-tourist">
+                        {% if sPrice.prices is defined and sPrice.prices is iterable %}
+                            <select class="form-control plain-html input-sm search-special-tourist-select">
+                                {% for priceTourists, price  in sPrice.prices %}
+                                    {% set arr = priceTourists|split('_') %}
+                                    <option data-adults="{{ arr[0] }}" data-children="{{ arr[1] }}" {% if (query.adults == arr[0]) and (query.children == arr[1]) %}selected{% endif %} value=" {{ price|number_format(2) }}">
+                                        {% if arr[0] > 0 %}{{ arr[0] }} вз.{% endif %}{% if arr[0] > 0 and arr[1] > 0 %}+{% endif %}{% if arr[1] > 0 %}{{ arr[1] }} рб.{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="special-price"></span>
+                    </td>
+                    {#Убираем для азовского "применить спец предложение" и меняем на бронировать.#}
+                    {#<td>#}
+                    {#<a href="" data-id="{{ special.id }}"#}
+                    {#class="search-special-apply btn btn-{{ selectedSpecial ? 'default' : 'primary' }} {{ selectedSpecial ? 'cancel' }} btn-xs">#}
+                    {#<i class="fa fa-search"></i> {{ selectedSpecial ? 'cancel'|trans : 'special.apply'|trans }}#}
+                    {#</a>#}
+                    {#</td>#}
+                    <td>
+                        <a href="" data-id="{{ special.id }}"
+                           class="booking-special-apply btn btn-success btn-xs">
+                            <i class="fa fa-book"></i> Бронировать
+                        </a>
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}

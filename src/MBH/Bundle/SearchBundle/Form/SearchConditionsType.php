@@ -150,6 +150,10 @@ class SearchConditionsType extends AbstractType
                     'required' => false,
                 ]
             )
+            ->add('isSpecialStrict', CheckboxType::class, [
+
+            ])
+
             ->add(
                 'isForceBooking',
                 CheckboxType::class,

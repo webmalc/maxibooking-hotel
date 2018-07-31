@@ -1,3 +1,5 @@
+///<reference path="../../../../../../../../node_modules/@types/bootstrap-switch/index.d.ts"/>
+
 class FormDataReceiver implements DataReceiverInterface {
     private readonly $form: JQuery;
     private readonly formName: string;
@@ -23,9 +25,10 @@ class FormDataReceiver implements DataReceiverInterface {
             this.updateChildrenAges();
             this.checkChildrenAges();
         });
-        this.$addTouristButton.on('click', (e) => {
-            this.initGuestModal(e);
-        });
+        //Выключаем туристов, нужно их выносить во VueJs
+        // this.$addTouristButton.on('click', (e) => {
+        //     this.initGuestModal(e);
+        // });
     }
 
     private initGuestModal(e): void {
@@ -49,7 +52,7 @@ class FormDataReceiver implements DataReceiverInterface {
                     form.trigger('reset');
                     //form.find('select').select2('data', null);
                     guestModal.modal('hide');
-                    form.find('select').select2('data', null);
+                    form.find('select').select2('data');
                     //form.find('input').select2('data', null);
                     return 1;
                 }
@@ -115,28 +118,34 @@ class FormDataReceiver implements DataReceiverInterface {
     public getSearchConditionsData(): SearchDataType {
         let data: SearchDataType;
         data = {
-            begin: String(this.getFormField('begin')),
-            end: String(this.getFormField('end')),
-            adults: Number(this.getFormField('adults')),
-            additionalBegin: Number(this.getFormField('additionalBegin')),
-            additionalEnd: Number(this.getFormField('additionalEnd')),
-            tariffs: this.getFormField('tariffs'),
-            roomTypes: this.getFormField('roomTypes'),
-            hotels: this.getFormField('hotels'),
-            children: Number(this.getFormField('children')),
+            begin: String(this.getFormFieldValue('begin')),
+            end: String(this.getFormFieldValue('end')),
+            adults: Number(this.getFormFieldValue('adults')),
+            additionalBegin: Number(this.getFormFieldValue('additionalBegin')),
+            additionalEnd: Number(this.getFormFieldValue('additionalEnd')),
+            tariffs: this.getFormFieldValue('tariffs'),
+            roomTypes: this.getFormFieldValue('roomTypes'),
+            hotels: this.getFormFieldValue('hotels'),
+            children: Number(this.getFormFieldValue('children')),
             childrenAges: this.getChildrenAges(),
-            order: Number(this.getFormField('order'))
-
+            order: Number(this.getFormFieldValue('order')),
+            isSpecialStrict: this.getFormField('isSpecialStrict').bootstrapSwitch('state'),
         };
 
         return data;
     }
 
-    private getFormField(fieldName: string): number | string | string[] | number[] {
-        let field = this.$form.find(`#${this.formName}_${fieldName}`);
+    private getFormField(fieldName: string): JQuery<HTMLElement> {
+        return this.$form.find(`#${this.formName}_${fieldName}`);
+    }
+
+    private getFormFieldValue(fieldName: string): number | string | string[] | number[] {
+        let field = this.getFormField(fieldName);
 
         return field.val();
     }
+
+
 
     private getChildrenAges() {
         let data: number[] = [];

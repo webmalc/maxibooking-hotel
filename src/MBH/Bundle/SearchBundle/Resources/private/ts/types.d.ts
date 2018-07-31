@@ -10,6 +10,7 @@ interface SearchDataType {
     tariffs?: any,
     hotels?: any,
     order?: number
+    isSpecialStrict?: boolean
 }
 
 interface Routing {

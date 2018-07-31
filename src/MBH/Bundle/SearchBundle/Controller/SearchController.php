@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
@@ -58,6 +59,34 @@ class SearchController extends Controller
 
         return $answer;
     }
+
+    /**
+     * @Route(
+     *     "/specials",
+     *      name="search_specials",
+     *      options={"expose"=true}
+     *     )
+     */
+    public function specialSearchAction(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        try {
+            $conditions = $this->get('mbh_search.search_condition_creator')->createSearchConditions($data);
+        } catch (SearchConditionException $e) {
+            return new JsonResponse('error in conditions', 500);
+        }
+        $specialSearcher = $this->get('mbh_search.special_search');
+        $specials = $specialSearcher->search($conditions);
+
+        return $this->render(
+            '@MBHSearch/Search/specials.html.twig',
+            [
+                'specials' => $specials,
+                'query' => $conditions
+            ]
+        );
+    }
+
 
     /**
      * @Route(
@@ -146,4 +175,5 @@ class SearchController extends Controller
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $form->createView()]);
     }
+
 }

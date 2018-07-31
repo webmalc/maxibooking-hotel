@@ -15,11 +15,29 @@ abstract class Searcher {
     private bindHandlers(): void {
         this.button.on('click', event => {
             event.preventDefault();
+            this.doSpecialSearch();
             this.doSearch();
         })
     }
 
     protected async abstract doSearch(): Promise<void>;
+
+    private async doSpecialSearch(): Promise<void> {
+        let ajax;
+        const special_route = Routing.generate('search_specials');
+        try {
+            ajax = $.ajax({
+                url: special_route,
+                type: "html",
+                data: JSON.stringify(this.getSearchConditions())
+            });
+            const data = await ajax;
+            this.drawSpecialResults(data);
+        } catch (e) {
+            console.error('Ошибка получеия спец предложений однако');
+            console.log(e);
+        }
+    }
 
     protected onStartSearch(): void {
         this.writer.showStartSearch();
@@ -44,17 +62,12 @@ abstract class Searcher {
     }
     protected getSearchConditions() {
         return  this.searchDataReceiver.getSearchConditionsData();
-
-
-        //
-        // let data: SearchDataType;
-        // data = {
-        //     begin: '05.09.2018',
-        //     end: '19.09.2018',
-        //     adults: 2
-        // };
-        //
-        // return data;
     }
+
+    protected drawSpecialResults(data): void {
+        this.writer.drawSpecialResults(data);
+    }
+
+
 
 }
