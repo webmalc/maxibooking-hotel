@@ -38,7 +38,7 @@
               }
             </script>
 
-            {% javascripts
+            {% javascripts filter='uglifyjs2'
                 '@MBHBaseBundle/Resources/public/js/first/*'
             %}
                 <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -90,7 +90,7 @@
 
         {% block scripts %}
 
-            {% javascripts
+            {% javascripts filter='uglifyjs2'
                 '@MBHBaseBundle/Resources/public/js/menu/*'
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
