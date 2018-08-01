@@ -9,6 +9,7 @@ use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TinkoffHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -88,6 +89,7 @@ class ClientPaymentSystemType extends AbstractType
         UnitellerHelper::addFields($builder, $clientConfig, $this->extraData);
         NewRbkHelper::addFields($builder, $clientConfig, $this->extraData);
         RobokassaHelper::addFields($builder, $clientConfig, $this->extraData);
+        TinkoffHelper::addFields($builder, $clientConfig, $this->extraData);
 
         $builder
             ->add(

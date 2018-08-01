@@ -60,6 +60,8 @@ form.clientPaymentSystemType.newRbk_ApiKey: 'Ключ API'
 form.clientPaymentSystemType.newRbk_WebhookApi: 'Ключ Webhook'
 form.clientPaymentSystemType.newRbk_ShopId: 'ID магазина (Shop_ID)'
 form.clientPaymentSystemType.newRbk_LifetimeInvoice: 'Время жизни инвойса'
+form.clientPaymentSystemType.tinkoff_terminalKey: 'Идентификатор терминала'
+
 controller.clientConfig.change_time_zone_contact_support: 'Для изменения временной зоны, пожалуйста, обратитесь в службу тех.поддержки по адресу: "%supportEmail%"'
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'
 form.clientPaymentSystemType.successUrl: 'URL успешной оплаты'

@@ -40,6 +40,8 @@ form.clientPaymentSystemType.newRbk_ApiKey: 'Api Key'
 form.clientPaymentSystemType.newRbk_WebhookApi: 'Webhook key'
 form.clientPaymentSystemType.newRbk_ShopId: 'Shop ID'
 form.clientPaymentSystemType.newRbk_LifetimeInvoice: 'Lifetime Invoice'
+form.clientPaymentSystemType.tinkoff_terminalKey: 'Terminal Key'
+
 mailer.notice.unpaid.order.list: 'List of reservations with overdue payments'
 form.clientConfigType.search_tariffs: 'Number of rates'
 form.clientConfigType.search_tariffs_desc: 'Default number of rates shown in the form'

@@ -172,6 +172,12 @@ class ClientConfig extends Base
     protected $newRbk;
 
     /**
+     * @var NewRbk
+     * @ODM\EmbedOne(targetDocument="Tinkoff")
+     */
+    protected $tinkoff;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
@@ -741,6 +747,21 @@ class ClientConfig extends Base
         $this->rbk = $rbk;
     }
 
+    /**
+     * @return null|Tinkoff
+     */
+    public function getTinkoff(): ?Tinkoff
+    {
+        return $this->tinkoff;
+    }
+
+    /**
+     * @param Tinkoff $tinkoff
+     */
+    public function setTinkoff(Tinkoff $tinkoff): void
+    {
+        $this->tinkoff = $tinkoff;
+    }
 
     /**
      * @param boolean $paymentSystem
