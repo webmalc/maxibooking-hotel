@@ -520,7 +520,7 @@ class RoomTypeControllerTest extends WebTestCase
 
         $roomType->setIsEnabled(false);
 
-        $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode(true);
+        $this->getContainer()->get('mbh.client_config_manager')->changeDisableableMode(true);
         $this->dm->flush($roomType);
 
         $crawler = $this->getListCrawler(self::URL_INDEX);
@@ -611,7 +611,7 @@ class RoomTypeControllerTest extends WebTestCase
     private function setFacilities()
     {
         if (empty($this->facilities)){
-            $facilities = $this->getContainer()->get('mbh.facility_repository')->getAllByGroup();
+            $facilities = $this->getContainer()->get('mbh.facility_repository')->getAllGrouped();
 
             $selectFacilities = [];
 

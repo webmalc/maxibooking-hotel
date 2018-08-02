@@ -42,7 +42,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
     public function indexAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $roomTypesCallback = function () use ($hotel) {
             return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
         };
@@ -98,7 +98,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $roomTypesCallback = function () use ($hotel, $requestRoomTypes, $dm) {
             return $dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $requestRoomTypes);
         };
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         if (!count($roomTypes)) {

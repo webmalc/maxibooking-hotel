@@ -128,7 +128,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'class' => 'spinner--1f delete-prices',
-                    'placeholder' => $pricePlaceHolder
+                    'placeholder' => 'mbhpricebundle.form.pricecachegeneratortype.change_sum'
                 ],
                 'constraints' => [
                     new Range(['min' => -1, 'minMessage' => 'mbhpricebundle.form.pricecachegeneratortype.price_cant_be_less_minus_one']),

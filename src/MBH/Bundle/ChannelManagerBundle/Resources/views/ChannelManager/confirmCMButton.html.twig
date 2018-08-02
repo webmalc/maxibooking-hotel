@@ -1,0 +1,11 @@
+{% set isConfiguredByTechSupport = channelManagerName not in ['booking', 'expedia', 'myallocator', 'ostrovok'] %}
+
+{% if is_mb_user() and (not isConfiguredByTechSupport or (config and not config.isReadinessConfirmed() and config.isMainSettingsFilled())) %}
+    <li>
+        <a id="confirm-config-button"
+           href="{{ path('confirm_cm_config', {'channelManagerName': channelManagerName}) }}"
+           class="btn btn-primary navbar-btn navbar-link-button">
+            <i class="fa fa-check"> </i> {{ 'views.actions.confirm'|trans({}, 'MBHBaseBundle') }}
+        </a>
+    </li>
+{% endif %}

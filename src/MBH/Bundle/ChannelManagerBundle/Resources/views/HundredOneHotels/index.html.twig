@@ -15,6 +15,7 @@
                     {% if config %}
                         <li><button type="button" onclick="location.href = '{{ path('hoh_packages_sync') }}'" class="btn btn-default navbar-btn" data-toggle="tooltip" data-placement="top" title="{{ 'views.expedia.actions.sync_old_orders.title'|trans({}, 'MBHChannelManagerBundle') }}"><i class="fa fa-paper-plane-o"> </i> {{ 'views.expedia.actions.sync_old_orders'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
                     {% endif %}
+                    {% include '@MBHChannelManager/ChannelManager/confirmCMButton.html.twig' with {channelManagerName: 'hundred_one_hotels'} %}
                 {% endblock %}
             {% endembed %}
             {%  if config %}

@@ -269,6 +269,8 @@ package.service.nights_amount: 'Количество суток'
 package.service.nights: Суток
 package.service.guests_amount: Гостей
 package.service.guests: Гостей
+package.service.total_guests: 'Гостей в брони'
+package.service.tourists: 'Оформлено гостей в брони'
 package.service.amount: Количество
 package.service.short_amount: Кол.
 package.service.package: Бронь
@@ -291,6 +293,8 @@ package.service.edit_record: 'Редактирование записи'
 package.editService.edit_service: 'Редактирование услуги '
 package.service.index.show_deleted: 'Показать удаленные'
 package.service.index.filter: Фильтр
+package.service.index.filter.room_types: 'Тип номера'
+package.service.index.filter.housings: Корпус
 package.service.index.period: Период
 package.service.index.byDay: 'По дням'
 package.service.index.result: Итого
@@ -427,7 +431,6 @@ report.porter.arrivals.table: Заезжающие
 report.porter.out.table: Выезд
 report.porter.note: Комментарий
 report.work_shift.small_title: 'Рабочие смены'
-modal.form.delete.reasons.confirmation: 'Точно удалить эту запись?'
 modal.form.delete.reasons.package: 'Причина удаления брони'
 modal.form.delete.reasons.order: 'Причина удаления заказа'
 modal.form.delete.reasons.reason_default: 'Не указана'

@@ -186,7 +186,7 @@ var DataManager = /** @class */ (function () {
                 else {
                     self.handleError();
                 }
-            },
+            }
         });
     };
     DataManager.prototype.deleteAccommodationsByPackageId = function (packageId) {
@@ -299,3 +299,4 @@ var DataManager = /** @class */ (function () {
     };
     return DataManager;
 }());
+//# sourceMappingURL=DataManager.js.map

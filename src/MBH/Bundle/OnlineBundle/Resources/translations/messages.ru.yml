@@ -79,6 +79,7 @@ onlinebundle.resources.views.hotels: Отели
 onlinebundle.resources.views.room_types: 'Типы номеров'
 onlinebundle.resources.views.guests: Гости
 onlinebundle.resources.views.on: Включена
+onlinebundle.resources.views.form.index.for_site: 'Для сайта'
 onlinebundle.resources.views.all_hotels: 'Все отели'
 onlinebundle.resources.da: Да
 onlinebundle.resources.net: Нет
@@ -121,6 +122,22 @@ external_api_controller.error.hotel_with_specified_id_not_exists: 'Отеля с
 external_api_controller.error.specified_room_type_not_contains_in_form_config: 'Тип номера с ID = "%roomTypeId%" не указан в списке типов номеров конфигурации указанной онлайн-формы'
 external_api_controller.error.specified_hotel_not_contains_in_form_config: 'Отель с ID = "%hotelId%" не указан списке отелей конфигурации указанной онлайн-формы'
 external_api_controller.error.room_type_with_specified_id_not_exists: 'Тип комнат с ID = "%roomTypeId%" не существует'
+
+views.mb_site.title: Сайт
+views.mb_site.index.main_settings: Настройки
+views.mb_site.hotel_settings.empty_fields_error: 'Не заполнены обязательные поля: %fields%'
+site_form.is_enabled.label: 'Включен?'
+site_form.key_words.label: 'Ключевые слова'
+site_form.contract.label: Договор
+site_form.pers_data_policy.label: 'Политика обработки персональных данных'
+site_form.hotels.label: Отели
+site_form.hotels.help: 'Отели, данные по которым отображаются на сайте'
+site_form.hotels.hotel_data: 'Данные отеля'
+site_form.hotels.required_fields.price_caches: 'Цены'
+site_form.hotels.required_fields.room_caches: 'Номера в продаже'
+mb_site_controller.site_config_saved: 'Настройки успешно сохранены!'
+site_manager.photos_tab: Изображение
+site_manager.mandatory_field_empty.error: 'Поле "%fieldTitle%" обязательно для заполнения, так как оно используется на сайте'
 analytics_form.is_enabled.label: 'Включена?'
 analytics_form.google_id.label: 'Идентификатор отслеживания'
 analytics_form.yandex_id.label: 'Номер счетчика'
@@ -138,4 +155,15 @@ api.payment_form.result_search.not_found_order: 'Заказ не найден'
 api.payment_form.result_search.order_has_been_paid: 'Заказ уже оплачен'
 api.payment_form.pay_order.total: 'Сумма к оплате'
 api.payment_form.pay_order.submit: 'Оплатить'
-api.payment_form.search.not_valid_fields: 'Номер телефона или e-mail указан не корректно'
+api.payment_form.search.not_valid_fields: 'Номер телефона или e-mail указан некорректно'
+site_config.color_theme.colors.label: 'Цветовая тема'
+site_config.color_theme.colors.autumn: 'Осенняя'
+site_config.color_theme.colors.black01: 'Черная 1'
+site_config.color_theme.colors.black02: 'Черная 2'
+site_config.color_theme.colors.blue: 'Голубая'
+site_config.color_theme.colors.blue01: 'Голубая 2'
+site_config.color_theme.colors.blue02: 'Голубая 3'
+site_config.color_theme.colors.brown: 'Коричневая'
+site_config.color_theme.colors.fuksia: 'Фуксия'
+site_config.color_theme.colors.green: 'Зеленая'
+site_config.color_theme.colors.sea: 'Морская'

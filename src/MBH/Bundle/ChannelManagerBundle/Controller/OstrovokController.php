@@ -7,7 +7,7 @@ use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
-use MBH\Bundle\ChannelManagerBundle\Form\OstrovokType;
+use MBH\Bundle\ChannelManagerBundle\Form\ChannelManagerConfigType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -33,13 +33,20 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
     {
         $entity = $this->hotel->getOstrovokConfig();
 
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($entity, 'ostrovok');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+
         $form = $this->createForm(
-            OstrovokType::class, $entity
+            ChannelManagerConfigType::class, $entity, [
+                'data_class' => OstrovokConfig::class,
+                'channelManagerName' => 'Ostrovok.ru'
+            ]
         );
 
-
         return [
-            'entity' => $entity,
+            'config' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
@@ -52,7 +59,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
      * @Security("is_granted('ROLE_OSTROVOK')")
      * @Template("MBHChannelManagerBundle:Ostrovok:index.html.twig")
      * @param Request $request
-     * @return Response
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function saveAction(Request $request)
     {
@@ -64,29 +71,28 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             $entity->setHotel($hotel);
         }
         $form = $this->createForm(
-            OstrovokType::class, $entity
+            ChannelManagerConfigType::class, $entity, [
+                'data_class' => OstrovokConfig::class,
+                'channelManagerName' => 'Ostrovok.ru'
+            ]
         );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
             $this->get('mbh.channelmanager.ostrovok')->syncServices($entity);
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.ostrovokController.settings_saved_success'));
+            $this->addFlash('success', 'controller.ostrovokController.settings_saved_success');
 
             return $this->redirect($this->generateUrl('ostrovok'));
         }
 
         return [
-            'entity' => $entity,
+            'config' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
@@ -129,12 +135,11 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
+            $this->addFlash('success', 'controller.ostrovokController.settings_saved_success');
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.ostrovokController.settings_saved_success'));
+            $redirectRouteName = $entity->isReadyToSync() ? 'ostrovok_room' : 'ostrovok_tariff';
 
-            return $this->redirect($this->generateUrl('ostrovok_room'));
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [
@@ -213,7 +218,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
         }
 
         return [
-            'doc' => $entity,
+            'config' => $entity,
             'logs' => $this->logs($entity)
         ];
     }

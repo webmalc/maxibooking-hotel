@@ -205,8 +205,8 @@ class PackageSubscriber implements EventSubscriber
         }
         $package = $entity;
         $dm = $args->getDocumentManager();
-        /** @var Package $entity */
 
+        /** @var Package $entity */
         // Set number
         if (empty($package->getNumber())) {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {

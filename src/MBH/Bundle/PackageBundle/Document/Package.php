@@ -562,6 +562,14 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return int
+     */
+    public function getNumberOfGuests()
+    {
+        return $this->getAdults() + $this->getChildren();
+    }
+
+    /**
      * Set begin
      *
      * @param \DateTime $begin
@@ -1040,11 +1048,11 @@ class Package extends Base implements \JsonSerializable
     /**
      * get services for recalculation
      *
-     * @return array
+     * @return PackageService[]
      */
     public function getServicesForRecalc(): array
     {
-        return array_filter($this->services->toArray(), function ($service) {
+        return array_filter($this->services->toArray(), function (PackageService $service) {
             if (!$service->isRecalcWithPackage()) {
                 return false;
             }
@@ -1240,7 +1248,6 @@ class Package extends Base implements \JsonSerializable
         return $this->getPackagePrice(true) / $this->getNights();
     }
 
-
     /**
      * @return array
      */
@@ -1251,15 +1258,16 @@ class Package extends Base implements \JsonSerializable
 
         $result = [];
         $rawResult = [];
-        /** @var PackagePrice $pp */
-        foreach ($this->getPackagePricesWithDiscount() as $pp) {
+
+        foreach ($this->getPrices() as $pp) {
             if ($lastPrice !== $pp->getPrice()) {
                 $count++;
                 $lastPrice = $pp->getPrice();
                 $rawResult[$count] = [
-                    'begin'  => $pp->getDate(),
-                    'price'  => $lastPrice,
-                    'nights' => 1,
+                    'begin'         => $pp->getDate(),
+                    'discountPrice' => $this->discountCalculation($pp),
+                    'nights'        => 1,
+                    'fullPrice'     => $lastPrice,
                 ];
             } else {
                 $rawResult[$count]['nights']++;
@@ -1270,9 +1278,11 @@ class Package extends Base implements \JsonSerializable
             $begin = $r['begin'];
             $end = (clone $r['begin'])->modify('+' . $r['nights'] . ' days');
             $result[$begin->format('d.m.Y') . ' - ' . $end->format('d.m.Y')] = [
-                'price'  => false,
-                'nights' => $r['nights'],
-                'sum'    => $r['price'] * $r['nights'],
+                'price'         => $r['discountPrice'], //для совместимости
+                'fullPrice'     => $r['fullPrice'],
+                'discountPrice' => $r['discountPrice'],
+                'nights'        => $r['nights'],
+                'sum'           => $r['discountPrice'] * $r['nights'],
             ];
         }
 
@@ -1589,13 +1599,8 @@ class Package extends Base implements \JsonSerializable
     {
         if (!$this->isPackagePricesWithDiscountInit) {
             foreach ($this->getPrices() as $price) {
-                $priceFraction = $this->getPackagePrice() != 0 ? $price->getPrice() / $this->getPackagePrice() : 0;
-
                 $clonedPrice = clone $price;
-                $priceWithDiscount = $this->isPercentDiscount
-                    ? $price->getPrice() * (1 - $this->getDiscount(false))
-                    : $price->getPrice() - $this->discount * $priceFraction;
-                $clonedPrice->setPrice($priceWithDiscount);
+                $clonedPrice->setPrice($this->discountCalculation($price));
                 $this->packagePricesWithDiscount[] = $clonedPrice;
             }
             $this->isPackagePricesWithDiscountInit = true;
@@ -1603,7 +1608,6 @@ class Package extends Base implements \JsonSerializable
 
         return $this->packagePricesWithDiscount;
     }
-
 
     /**
      * @param array $prices
@@ -1887,5 +1891,17 @@ class Package extends Base implements \JsonSerializable
             'end' => $this->getEnd()->format('d.m.Y'),
             'services' => $services,
         ];
+    }
+
+    /**
+     * @param PackagePrice $price
+     * @return float
+     */
+    private function discountCalculation(PackagePrice $price): float
+    {
+        $priceFraction = $this->getPackagePrice() != 0 ? $price->getPrice() / $this->getPackagePrice() : 0;
+        return $this->isPercentDiscount
+            ? $price->getPrice() * (1 - $this->getDiscount(false))
+            : $price->getPrice() - $this->discount * $priceFraction;
     }
 }

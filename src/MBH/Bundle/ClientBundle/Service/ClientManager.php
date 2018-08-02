@@ -3,9 +3,12 @@
 namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
+use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
+use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Monolog\Logger;
@@ -19,9 +22,10 @@ class ClientManager
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_payment';
     const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems', 'user_tariff', 'update_tariff_modal'];
     const SESSION_CLIENT_FIELD = 'client';
+    const SESSION_CLIENT_SITE = 'client-site';
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
     const NOT_CONFIRMED_BECAUSE_OF_ERROR = 'not_confirmed_because_of_error';
-    const INSTALLATION_PAGE_RU = 'https://demo.maxi-booking.ru/';
+    const INSTALLATION_PAGE_RU = 'https://login.maxi-booking.ru/';
     const INSTALLATION_PAGE_COM = 'https://login.maxi-booking.com/';
 
     private $dm;
@@ -30,8 +34,10 @@ class ClientManager
     private $logger;
     private $client;
     private $kernel;
+    private $clientConfigManager;
+    private $helper;
 
-    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel)
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi, Logger $logger, $client, KernelInterface $kernel, ClientConfigManager $clientConfigManager, Helper $helper)
     {
         $this->dm = $dm;
         $this->session = $session;
@@ -39,6 +45,8 @@ class ClientManager
         $this->logger = $logger;
         $this->client = $client;
         $this->kernel = $kernel;
+        $this->clientConfigManager = $clientConfigManager;
+        $this->helper = $helper;
     }
 
     /**
@@ -87,6 +95,7 @@ class ClientManager
      * @param array $rawNewRoomCachesData
      * @param array $rawUpdatedRoomCaches
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getDaysWithExceededLimitNumberOfRoomsInSell(
         \DateTime $begin,
@@ -195,30 +204,24 @@ class ClientManager
 
     /**
      * @return Client
+     * @throws \Exception
      */
     public function getClient()
     {
         $dataReceiptTime = $this->session->get(Client::CLIENT_DATA_RECEIPT_DATETIME);
         $currentDateTime = new \DateTime();
-        $configRepository = $this->dm->getRepository('MBHClientBundle:ClientConfig');
-        $config = $configRepository->fetchConfig();
+        $config = $this->clientConfigManager->fetchConfig();
 
         if (is_null($dataReceiptTime)|| !$config->isCacheValid()
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
-            try {
-                /** @var Client $client */
-                $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
-                $configRepository->changeCacheValidity(true);
-            } catch (\Exception $exception) {
-                $client = $this->session->get(self::SESSION_CLIENT_FIELD);
-                $this->logger->err($exception->getMessage());
-            } finally {
-                if (!isset($client) || !$client instanceof Client) {
-                    throw new NotFoundHttpException('Can not get client with login "' . $this->client . '"');
-                }
-                $this->updateSessionClientData($client, $currentDateTime);
+            /** @var Client $client */
+            $client = $this->isDefaultClient() ? $this->getDefaultClientData() : $this->billingApi->getClient();
+            $this->clientConfigManager->changeCacheValidity(true);
+            if (!isset($client) || !$client instanceof Client) {
+                throw new NotFoundHttpException('Can not get client with login "' . $this->client . '"');
             }
+            $this->updateSessionClientData($client, $currentDateTime);
         } else {
             $client = $this->session->get(self::SESSION_CLIENT_FIELD);
         }
@@ -232,7 +235,7 @@ class ClientManager
      */
     public function updateClient(Client $client)
     {
-        $clientResponse = $this->billingApi->updateClient($client);
+        $clientResponse = $this->billingApi->updateBillingEntity($client, BillingApi::CLIENTS_ENDPOINT_SETTINGS, $client->getLogin());
         if ($clientResponse->isSuccessful()) {
             $this->updateSessionClientData($client, new \DateTime());
         }
@@ -251,11 +254,65 @@ class ClientManager
     }
 
     /**
+     * @return WebSite|null
+     */
+    public function getClientSite()
+    {
+        $clientSite = $this->session->get(self::SESSION_CLIENT_SITE);
+        if (empty($clientSite)) {
+            $clientSite = $this->billingApi->getClientSite();
+            $this->session->set(self::SESSION_CLIENT_SITE, $clientSite);
+        }
+
+        return $clientSite;
+    }
+
+    /**
+     * @param WebSite $site
+     * @return Result
+     */
+    public function addOrUpdateSite(WebSite $site)
+    {
+        $result = $site->getId() ? $this->billingApi->updateClientSite($site) : $this->billingApi->addClientSite($site);
+        if ($result->isSuccessful()) {
+            $this->session->set(self::SESSION_CLIENT_SITE, $site);
+        }
+
+        return $result;
+    }
+
+    /**
      * @return bool
+     * @throws \Exception
      */
     public function isRussianClient()
     {
         return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getNumberOfDaysBeforeDisable()
+    {
+        $clientOrdersResult = $this->billingApi->getClientOrdersSortedByExpiredData($this->client);
+        if ($clientOrdersResult->isSuccessful()) {
+            $clientOrders = $clientOrdersResult->getData();
+            if (!empty($clientOrders)) {
+                /** @var PaymentOrder $lastOrder */
+                $lastOrder = $clientOrders[0];
+                $currentDateTime = new \DateTime();
+
+                $daysBeforeDisable = $this->helper
+                    ->getDifferenceInDaysWithSign($currentDateTime, $lastOrder->getExpiredDateAsDateTime());
+                if ($lastOrder->getExpiredDateAsDateTime() > $currentDateTime
+                    && $lastOrder->getStatus() !== PaymentOrder::STATUS_PAID && $daysBeforeDisable >= 0) {
+                    return $daysBeforeDisable;
+                }
+            }
+        }
+
+        return null;
     }
 
     private function getDefaultClientData()

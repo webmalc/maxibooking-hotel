@@ -62,6 +62,7 @@ form.contact_info_type.full_name.help: 'Полное имя контакта'
 form.contact_info_type.email.label: E-mail
 form.contact_info_type.email.help: 'Электронная почта контактного лица'
 form.hotel_contact_information.contact_info.group: 'Контакты службы поддержки клиентов'
+
 form.hotel_images.image_file.label: Изображение
 form.hotel_images.image_file.help: 'Изображение отеля для онлайн бронирования.<br>Максимальный размер файла 2 Мб, 80x90 px, типы файлов: png, jpg, gif.'
 form.hotel_images.image_is_default.label: 'Основное?'
@@ -276,3 +277,7 @@ form.roomTypeCategory.desc_help: 'Описание группы номеров �
 views.hotel.roomType.editImages.edit.priority: 'Настройка приоритета показа'
 views.hotel.roomType.editImages.edit.priority.save: 'Сохранить приоритет'
 views.hotel.roomType.editImages.edit.priority.close: Закрыть
+facility_controller.facility_description.save_table.success: 'Изменения успешно сохранены'
+views.facility.list.facility_title: Удобство
+views.facility.list.description_title: Описание
+views.facility.list.save_changes_button.title: 'Сохранить изменения'

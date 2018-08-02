@@ -38,3 +38,83 @@ assetic:
 
 swiftmailer:
     delivery_address: ['faainttt@gmail.com']
+
+vich_uploader:
+    db_driver: mongodb
+    storage:  file_system
+    mappings:
+        upload_image:
+            namer: vich_uploader.namer_uniqid
+            upload_destination: '%kernel.project_dir%/web/upload/images'
+            uri_prefix:         ''
+
+liip_imagine:
+
+    loaders:
+        default:
+            filesystem:
+                data_root: '%kernel.root_dir%/../web/upload/images'
+
+    cache: default
+    data_loader: default
+
+    filter_sets:
+        cache: ~
+        thumb_50x50:
+            quality: 80
+            filters:
+                thumbnail: { size: [50, 50], mode: outbound, allow_upscale: true }
+        thumb_100x100:
+            quality: 80
+            filters:
+                thumbnail: { size: [100, 100], mode: outbound, allow_upscale: true }
+        thumb_155x155:
+            quality: 80
+            filters:
+                thumbnail: { size: [155, 155], mode: outbound, allow_upscale: true }
+        thumb_130x110:
+            quality: 80
+            filters:
+              thumbnail: { size: [130, 110], mode: outbound, allow_upscale: true }
+        thumb_95x80:
+            quality: 80
+            filters:
+              thumbnail: { size: [95, 80], mode: outbound, allow_upscale: true }
+        thumb_400x200:
+            quality: 80
+            filters:
+              thumbnail: { size: [400, 200], mode: outbound, allow_upscale: true }
+
+        stamp:
+            cache: protected_cached_images
+            quality: 80
+            filters:
+              thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }
+        scaler:
+            quality: 80
+            filters:
+              relative_resize: { scale: 0.5, allow_upscale: true }
+
+        protected_scaler:
+            cache: protected_cached_images
+            quality: 80
+            filters:
+              relative_resize: { scale: 0.5, allow_upscale: true }
+services:
+    mbh.channelmanager.myallocator:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.booking:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.ostrovok:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.hundred_one_hotels:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.expedia:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.vashotel:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock

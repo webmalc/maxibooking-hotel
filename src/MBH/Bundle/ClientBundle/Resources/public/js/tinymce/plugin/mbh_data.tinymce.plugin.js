@@ -52,8 +52,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
     for (var i = 0, len = property.length; i < len; i++) {
       var str = '{{ ' + entity + '.' + property[i] + ' }}';
       if (entity === 'hotel' && property[i] === 'getLogo') {
-        str = '<table><tr><td><div style="width: 95px; height: 80px; background-color: lightgrey;">{{ ' + entity + '.' +
-            property[i] + '|raw }}</div></td></tr></table>';
+        str = '{{ ' + entity + '.' + property[i] + '|raw }}';
       }
       var tempObj = {
         tempStr: str,
@@ -149,7 +148,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
       },
       name  : 'landscape',
       width : 'width: 1769px',
-      height: 'height: 1223px'
+      height: 'height: 1206px'
     };
 
     function changeSelect(change, orientation) {
@@ -227,7 +226,7 @@ tinymce.PluginManager.add('mbh_data', function(editor, url) {
         text: 'Payer',
         menu: [
           {
-            text: 'Organization',
+            text: 'Payer Organization',
             menu: self.getMenu('payer', mbh_property.common.payer.organ)
           },
           {

@@ -7,7 +7,7 @@
 
     {{ form_start(form, {'action': path('document_templates_edit', {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'hotel' } %}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'document_templates' } %}
     {{ form_end(form) }}
 
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}

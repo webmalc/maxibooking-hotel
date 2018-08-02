@@ -143,4 +143,33 @@ trait TraitAddress
 
         return $this->address !== null && $this->address->$method() !== null ? $this->address->$method() : '';
     }
+
+    public function getName(): string
+    {
+        return $this->returnValue(__METHOD__);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryTld(): string
+    {
+        return $this->returnValue(__METHOD__);
+    }
+
+    /**
+     * @return string
+     */
+    public function getRegionId(): string
+    {
+        return $this->returnValue(__METHOD__);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCityId(): string
+    {
+        return $this->returnValue(__METHOD__);
+    }
 }

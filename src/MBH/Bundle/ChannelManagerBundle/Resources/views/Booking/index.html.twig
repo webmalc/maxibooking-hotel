@@ -5,17 +5,7 @@
 
 {% block content %}
 
-    {% if doc and (doc.rooms.count != 0 and doc.tariffs.count != 0 and doc.hotelId is not empty) and not doc.isAllPackagesPulled %}
-        <div class="alert alert-danger">
-            <i class="fa fa-exclamation-circle"></i>&nbsp;
-            {{ 'channelmanager.orders_not_fetched.error'|trans({}, 'MBHChannelManagerBundle') }}
-            <button class="btn btn-primary" onclick="location.href = '{{ path('booking_all_packages_sync') }}'">
-                <i class="fa fa-cloud-download"></i>&nbsp;{{ 'views.channelmanager.actions.sync_all'|trans({}, 'MBHChannelManagerBundle') }}
-            </button>
-        </div>
-    {% endif %}
-
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': doc, 'base': 'booking'} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, 'base': 'booking'} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
@@ -23,7 +13,7 @@
             {{ form_widget(form) }}
             {% embed 'MBHChannelManagerBundle::actions.html.twig' %}
                 {% block additional_actions %}
-                    {% if doc and (doc.rooms.count != 0 and doc.tariffs.count != 0 and doc.hotelId is not empty) %}
+                    {% if config and config.isReadyToSync() %}
                         <li>
                             <div class="dropup">
                                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2"
@@ -46,9 +36,8 @@
                 {% endblock %}
             {% endembed %}
             {{ form_end(form) }}
-
-            {% if doc %}
-                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
             {% endif %}
         </div>
     </div>

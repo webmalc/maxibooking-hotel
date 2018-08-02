@@ -1,6 +1,6 @@
 ///<reference path="DataManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
-var ActionManager = (function () {
+var ActionManager = /** @class */ (function () {
     function ActionManager(dataManager) {
         this.dataManager = dataManager;
     }
@@ -72,6 +72,7 @@ var ActionManager = (function () {
                 ActionManager.showResultPrices($row);
             });
         });
+        editBody.find('.search-room-select').prop('disabled', true);
         editModal.find('input.modalPackageId').val(packageData.id);
         editModal.modal('show');
         editModal.on('shown.bs.modal', function () {

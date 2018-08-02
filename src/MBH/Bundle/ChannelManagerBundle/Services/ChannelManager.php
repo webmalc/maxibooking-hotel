@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -22,6 +23,15 @@ class ChannelManager
     const OLD_PACKAGES_PULLING_NOT_STATUS = 'not';
     const OLD_PACKAGES_PULLING_PARTLY_STATUS ='partly';
     const OLD_PACKAGES_PULLING_ALL_STATUS = 'all';
+
+    const CONFIGS_BY_CM_NAMES = [
+        'booking' => 'BookingConfig',
+        'ostrovok' => 'OstrovokConfig',
+        'vashotel' => 'VashotelConfig',
+        'myallocator' => 'MyallocatorConfig',
+        'expedia' => 'ExpediaConfig',
+        'hundred_one_hotels' => 'HundredOneHotelsConfig'
+    ];
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -363,6 +373,125 @@ class ChannelManager
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $channelManagerName
+     * @param bool $throwException
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
+    public function checkForCMExistence(string $channelManagerName, $throwException = false)
+    {
+        $channelManagerNames = array_keys($this->container->getParameter('mbh.channelmanager.services'));
+
+        $isExists = in_array($channelManagerName, $channelManagerNames);
+
+        if (!$isExists && $throwException) {
+            throw new \InvalidArgumentException('Channel manager ' . $channelManagerName . ' does not exists');
+        }
+
+        return $channelManagerName;
+    }
+
+    /**
+     * @param string $channelManagerName
+     * @return AbstractChannelManagerService|object
+     */
+    public function getServiceIdByName(string $channelManagerName)
+    {
+        $this->checkForCMExistence($channelManagerName, true);
+        $serviceName = $this->container->getParameter('mbh.channelmanager.services')[$channelManagerName]['service'];
+
+        return $this->container->get($serviceName);
+    }
+
+    /**
+     * @param string $channelManagerName
+     * @return string
+     */
+    public function getServiceHumanName(string $channelManagerName)
+    {
+        $this->checkForCMExistence($channelManagerName, true);
+
+        return $this->container->getParameter('mbh.channelmanager.services')[$channelManagerName]['title'];
+    }
+
+    /**
+     * @param ChannelManagerConfigInterface|null $config
+     * @param string $channelManagerName
+     * @return bool|string
+     */
+    public function checkForReadinessOrGetStepUrl(?ChannelManagerConfigInterface $config, string $channelManagerName)
+    {
+        if (is_null($config) || !$config->isReadyToSync()) {
+            $currentStepRouteName = $this->container->get('mbh.cm_wizard_manager')->getCurrentStepUrl($channelManagerName, $config);
+            if ($currentStepRouteName !== $channelManagerName) {
+                $routeParams = $currentStepRouteName === 'wizard_info' ? ['channelManagerName' => $channelManagerName] : [];
+
+                return $this->container->get('router')->generate($currentStepRouteName, $routeParams);
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * @param Hotel $hotel
+     * @param string $channelManagerName
+     * @return bool
+     */
+    public function confirmReadinessOfCM(Hotel $hotel, string $channelManagerName)
+    {
+        $config = $this->getConfigForHotel($hotel, $channelManagerName);
+        $isConfiguredByTechSupport
+            = $this->container->get('mbh.cm_wizard_manager')->isConfiguredByTechSupport($channelManagerName);
+
+        if (is_null($config)) {
+            if ($isConfiguredByTechSupport) {
+                throw new \InvalidArgumentException('Connection request was not sent!');
+            }
+
+            /** @var ChannelManagerConfigInterface $config */
+            $configType = $this->getConfigFullName($channelManagerName);
+            $config = new $configType;
+            $config->setHotel($hotel);
+            $this->dm->persist($config);
+        }
+
+        if ($isConfiguredByTechSupport && empty($config->getHotelId())) {
+            throw new \RuntimeException('Mandatory data is not specified');
+        }
+
+        $config->setReadinessConfirmed(true);
+
+        $this->dm->flush();
+        $this->dm->refresh($hotel);
+
+        return true;
+    }
+
+
+    /**
+     * @param string $channelManagerName
+     * @return string
+     */
+    public function getConfigFullName(string $channelManagerName)
+    {
+        return 'MBH\Bundle\ChannelManagerBundle\Document\\' . self::CONFIGS_BY_CM_NAMES[$channelManagerName];
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param string $channelManagerName
+     * @return ChannelManagerConfigInterface|null
+     */
+    public function getConfigForHotel(Hotel $hotel, string $channelManagerName)
+    {
+        $configGetter = 'get' . self::CONFIGS_BY_CM_NAMES[$channelManagerName];
+
+        return $hotel->$configGetter();
     }
 
     /**

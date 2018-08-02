@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\Extension\OrderedTrait;
 use MBH\Bundle\CashBundle\Document\CashDocumentArticle;
+use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -20,8 +21,8 @@ class NewCashDocumentType extends CashDocumentType
 
     private $clientManager;
 
-    public function __construct(TranslatorInterface $translator, DocumentManager $dm, array $methods, array $operations, ClientManager $clientManager) {
-        parent::__construct($translator, $dm, $methods, $operations);
+    public function __construct(TranslatorInterface $translator, DocumentManager $dm, array $methods, array $operations, ClientManager $clientManager, ClientConfigManager $clientConfigManager) {
+        parent::__construct($translator, $dm, $methods, $operations, $clientConfigManager);
         $this->clientManager = $clientManager;
     }
 

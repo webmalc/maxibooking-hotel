@@ -1,4 +1,4 @@
-form.profileType.enter_new_password: 'Enter the new password'
+form.profileType.enter_new_password: 'Create new password'
 form.userType.authentication_data: 'Authentication data'
 form.userType.new_password: 'New password'
 form.password: Password
@@ -11,7 +11,7 @@ form.userType.roles: Roles
 form.userType.groups: Groups
 form.userType.hotels: Hotels
 form.userType.hotels_user_has_access_to: 'Hotels available to this user'
-form.userType.is_included: 'Enabled?'
+form.userType.is_included: 'Active?'
 form.userType.expires_at: 'Valid until'
 form.userType.surname: 'Last name'
 form.userType.two_factor: 'Two factor authentification?'
@@ -19,7 +19,7 @@ form.userType.general_info: 'General information'
 form.userType.placeholder_surname: Smith
 form.userType.name: 'First name'
 form.userType.patronymic: 'Middle name'
-form.userType.birth_date: 'Birth date'
+form.userType.birth_date: 'Date of Birth'
 form.userType.placeholder_name: John
 form.userType.placeholder_patronymic: Michael
 controller.profileController.profile_saved_success: 'Profile has been updated succesfully'
@@ -29,7 +29,7 @@ controller.group.create_success: 'Group successfully added'
 controller.group.update_success: 'Group successfully updated'
 form.groupType.group.main: 'General information'
 form.groupType.group.roles: Permissions
-form.groupType.name: Title
+form.groupType.name: Name
 form.groupType.name.placeholder: 'Senior manager'
 form.userType.notifications_fieldset: Notifications
 form.userType.notifications: 'Reservations?'
@@ -54,7 +54,7 @@ view.google.check_mail: 'If your Google Authentificator isn''t set up, please ch
 restaurantbundle.controller.manager: Manager
 restaurantbundle.controller.little_manager: 'Junior manager'
 restaurantbundle.controller.servive_staff: 'Service staff'
-restaurantbundle.controller.warehouse: Stock
+restaurantbundle.controller.warehouse: Stockroom
 restaurantbundle.controller.portie: Porter
 restaurantbundle.controller.turagent: 'Tour agent'
 restaurantbundle.controller.buhgalter: Accountant
@@ -94,7 +94,7 @@ view.personal_account.order_status.canceled: Cancelled
 view.personal_account.cancel_button.title: Cancel
 view.personal_account.pay_button.title: Pay
 view.personal_account.tariff.end: End
-view.personal_account.tariff.price: Price
+view.personal_account.tariff.price: 'Price per period'
 view.personal_account.tariff.period: Period
 view.personal_account.orders.sum: Total
 view.personal_account.orders.show: Show
@@ -105,10 +105,10 @@ view.personal_account.orders.payment_status: 'Payment Status'
 view.personal_account.orders.payment_period: 'Payment period'
 view.personal_account.orders.payment_date: 'Payment date'
 view.personal_account.orders.creation_date: 'Creation date'
-view.personal_account.orders.apply_button.title: Apply
+view.personal_account.orders.apply_button.title: Search
 view.personal_account.tariff.current: 'Current tariff'
 view.personal_account.tariff.next: 'Planned rate'
-view.personal_account.tariff.number_of_rooms: 'Number of rooms in the tariff'
+view.personal_account.tariff.number_of_rooms: 'Number of rooms'
 view.personal_account.orders.paid_status.not-paid: 'Not paid'
 view.personal_account.orders.begin_date.title: 'Start date'
 view.personal_account.orders.order_small_title: 'Order №%orderId%'
@@ -142,10 +142,10 @@ form.payer_type.head.group: Director
 form.payer_type.organization.name.label: Name
 form.payer_type.country_group: Country
 form.client_contacts_type.phone.label: Phone
-form.client_contacts_type.email.label: Email
+form.client_contacts_type.email.label: 'Email address'
 form.payer_type.country.label: Country
 form.payer_type.label: 'Payer type'
-form.client_contacts_type.name.label: Name
+form.client_contacts_type.name.label: 'Contact Name'
 form.payer_type.address_group: Address
 form.payer_type.address.label: Address
 form.payer_type.city.label: City

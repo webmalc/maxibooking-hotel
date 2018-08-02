@@ -79,6 +79,8 @@ class CsvGenerate
                         $dataCsv[] = round($entity->getPrice() - $entity->getCalculatedPayment(), 2);
                     } elseif ($method === 'getServicesPrice') {
                         $dataCsv[] = $entity->getServicesPrice() ? $entity->getServicesPrice() : 0;
+                    } elseif ($method === 'getNote') {
+                        $dataCsv[] = $entity->getNote() ? str_replace(["\r", "\n"], '',$entity->getNote()) : '';
                     } else {
                         $call = $entity->$method();
 
@@ -98,6 +100,7 @@ class CsvGenerate
 
         $content = implode("\n", $rows);
         $content = iconv('UTF-8', 'windows-1251//TRANSLIT', $content);
+
         return $content;
     }
 }

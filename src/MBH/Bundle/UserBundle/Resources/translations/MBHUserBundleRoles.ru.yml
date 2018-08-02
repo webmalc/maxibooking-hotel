@@ -22,6 +22,7 @@ ROLE_HOTEL_VIEW: 'Просмотр отелей'
 ROLE_HOTEL_NEW: 'Создание отелей'
 ROLE_HOTEL_EDIT: 'Редактирование отелей'
 ROLE_HOTEL_DELETE: 'Удаление отелей'
+ROLE_UPDATE_FACILITIES: 'Изменение удобств'
 ROLE_GROUP: Группы
 ROLE_GROUP_VIEW: 'Просмотр групп'
 ROLE_GROUP_NEW: 'Создание групп'

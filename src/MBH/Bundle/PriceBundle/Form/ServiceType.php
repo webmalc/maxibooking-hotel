@@ -67,6 +67,14 @@ class ServiceType extends AbstractType
                 'help' => 'mbhpricebundle.form.servicetype.is_displaceable.help',
                 'attr' => ['class' => 'toggle-date'],
             ])
+            ->add('recalcCausedByTouristsNumberChange', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.label',
+                'value' => true,
+                'group' => 'price.form.public_information',
+                'required' => false,
+                'help' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.help',
+                'attr' => ['class' => 'recalc-caused-by-guests'],
+            ])
             ->add('includeArrival', CheckboxType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.includeArrival',
                 'value' => true,

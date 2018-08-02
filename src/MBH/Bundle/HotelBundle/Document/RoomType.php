@@ -8,10 +8,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -48,6 +50,12 @@ class RoomType extends Base implements RoomTypeInterface
 
     use RoomTypeTrait;
     use InternableDocument;
+    use LocalizableTrait;
+
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
 
     /**
      * @var Hotel
@@ -72,6 +80,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      maxMessage="validator.document.roomType.max_name"
      * )
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $fullTitle;
 
@@ -100,6 +109,8 @@ class RoomType extends Base implements RoomTypeInterface
      *      max=1000,
      *      maxMessage="validator.document.roomType.max_description"
      * )
+     * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $description;
 
@@ -790,16 +801,16 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @param UploaderHelper $helper
-     * @param $domain
+     * @param CacheManager $cacheManager
      * @return array
      */
-    public function getRoomTypePhotoData(UploaderHelper $helper, $domain)
+    public function getRoomTypePhotoData(UploaderHelper $helper, CacheManager $cacheManager)
     {
         $imagesData = [];
         /** @var Image $image */
         foreach ($this->getOnlineImages() as $image) {
             $roomTypeImageData = ['isMain' => $image->getIsDefault()];
-            $roomTypeImageData['url'] = 'https://' . $domain . '/' . $helper->asset($image, 'imageFile');
+            $roomTypeImageData['url'] = $cacheManager->getBrowserPath($helper->asset($image, 'imageFile'), 'scaler');
             if ($image->getWidth()) {
                 $roomTypeImageData['width'] = (int)$image->getWidth();
             }
@@ -814,17 +825,17 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @param bool $isFull
-     * @param null $domain
      * @param UploaderHelper|null $helper
+     * @param CacheManager $cacheManager
      * @return array
      */
-    public function getJsonSerialized($isFull = false, $domain = null, UploaderHelper $helper = null)
+    public function getJsonSerialized($isFull = false, UploaderHelper $helper = null, CacheManager $cacheManager = null)
     {
         $data = [
             'id' => $this->getId(),
             'isEnabled' => $this->getIsEnabled(),
             'hotel' => $this->getHotel()->getId(),
-            'title' => $this->getFullTitle(),
+            'title' => $this->getFullTitle() ? $this->getFullTitle() : $this->getInternationalTitle(),
             'internalTitle' => $this->getTitle(),
             'description' => $this->getDescription() ?? '',
             'numberOfPlaces' => $this->getPlaces(),
@@ -842,7 +853,7 @@ class RoomType extends Base implements RoomTypeInterface
                 $comprehensiveData['roomSpace'] = $this->getRoomSpace();
             }
             if (!is_null($helper)) {
-                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($helper, $domain);
+                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($helper, $cacheManager);
             }
             $data = array_merge($data, $comprehensiveData);
         }

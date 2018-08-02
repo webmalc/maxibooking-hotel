@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class PriceCacheRepository extends DocumentRepository
 {
@@ -212,5 +213,30 @@ class PriceCacheRepository extends DocumentRepository
         }
 
         return $result;
+    }
+
+
+    /**
+     * @param RoomType $roomType
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array|null $tariffsIds
+     * @return PriceCache|null|object
+     */
+    public function getWithMinPrice(RoomType $roomType, \DateTime $begin, \DateTime $end, array $tariffsIds = null)
+    {
+        $qb = $this->createQueryBuilder();
+        $qb
+            ->field('date')->gte($begin)->lte($end)
+            ->field('roomType.id')->equals($roomType->getId())
+            ->sort('price')
+            ->field('isEnabled')->equals(true)
+            ->limit(1)
+        ;
+        if (!is_null($tariffsIds)) {
+            $qb->field('tariff.id')->in($tariffsIds);
+        }
+
+        return $qb->getQuery()->getSingleResult();
     }
 }

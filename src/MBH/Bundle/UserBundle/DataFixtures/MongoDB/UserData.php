@@ -14,6 +14,8 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
 {
     const SANDBOX_USERNAME = 'demo';
     const SANDBOX_USER_TOKEN = 'some_token_for_sandbox_user';
+    //TODO: Вернуть на 'mb'
+    const MB_USER_USERNAME = 'mb';
 
     const USERS = [
         'user-admin' => [
@@ -36,7 +38,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
             'password' => 'demo'
         ],
         'user-mb' => [
-            'username' => 'mb',
+            'username' => self::MB_USER_USERNAME,
             'email' => 'mb-error@maxi-booking.com',
             'role' => 'ROLE_SUPER_ADMIN'
         ]

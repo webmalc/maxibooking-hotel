@@ -41,7 +41,7 @@ class TouristRepository extends DocumentRepository
         foreach ($tourists as $tourist) {
             if ($tourist) {
                 $citizenship = $tourist->getCitizenshipTld();
-                if (!$citizenship || ($citizenship && $citizenship !== Country::RUSSIA_TLD)) {
+                if ($citizenship && $citizenship !== Country::RUSSIA_TLD) {
                     $foreignTourists[] = $tourist;
                 }
             }

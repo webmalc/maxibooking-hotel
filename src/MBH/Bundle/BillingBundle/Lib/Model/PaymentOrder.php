@@ -7,6 +7,8 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 
 class PaymentOrder
 {
+    const STATUS_PAID = 'paid';
+
     private $id;
     private $status;
     private $note;

@@ -110,13 +110,13 @@ services:
             - { name: kernel.event_subscriber}
     mbh.user_type:
       class: MBH\Bundle\UserBundle\Form\UserType
-      arguments: ['@translator', '@doctrine_mongodb.odm.default_document_manager']
+      arguments: ['@translator', '%locale%']
       tags:
           - {name: form.type}
 
     mbh.account_payer_type:
         class: MBH\Bundle\UserBundle\Form\PayerType
-        arguments: ['@mbh.fms_dictionaries']
+        arguments: ['@mbh.fms_dictionaries', '@mbh.client_payer_manager', '@mbh.client_manager']
         tags:
             - {name: form.type}
 
@@ -128,3 +128,9 @@ services:
             - '@serializer'
             - '@mbh.billing.api'
             - '@mbh.billing_response_handler'
+
+    mbh.profile_type:
+        class: MBH\Bundle\UserBundle\Form\ProfileType
+        arguments: ['%locale%']
+        tags:
+            - {name: form.type}

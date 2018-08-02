@@ -3,7 +3,10 @@
 namespace MBH\Bundle\PackageBundle\Component;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -16,24 +19,9 @@ class FillingReportGenerator
     use ContainerAwareTrait;
 
     /**
-     * @var Hotel
-     */
-    protected $hotel;
-
-    /**
-     * @param Hotel $hotel
-     * @return $this
-     */
-    public function setHotel(Hotel $hotel)
-    {
-        $this->hotel = $hotel;
-        return $this;
-    }
-
-    /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param array $roomTypes
+     * @param RoomType[] $roomTypes
      * @param $statusOptions
      * @param $isOnlyEnabledRooms
      * @return array
@@ -77,9 +65,11 @@ class FillingReportGenerator
         $priceCachesCallback = function () use ($criteria, $priceCacheRepository) {
             return $priceCacheRepository->findBy($criteria);
         };
+        /** @var PriceCache[] $priceCaches */
         $priceCaches = $this->container->get('mbh.helper')
             ->getFilteredResult($this->container->get('doctrine.odm.mongodb.document_manager'), $priceCachesCallback);
 
+        /** @var Package[] $allPackages */
         $allPackages = $dm->getRepository('MBHPackageBundle:Package')->findBy([
             'end' => ['$gte' => reset($rangeDateList)],
             'begin' => ['$lte' => end($rangeDateList)],
@@ -87,12 +77,29 @@ class FillingReportGenerator
         ]);
 
         $packagesByRoomType = [];
+        $packageIds = [];
+        $ordersIds = [];
+        /** @var Package $package */
         foreach($allPackages as $package) {
             $roomTypeID = $package->getRoomType()->getId();
             if (!isset($packagesByRoomType[$roomTypeID])) {
                 $packagesByRoomType[$roomTypeID] = [];
             }
             $packagesByRoomType[$roomTypeID][] = $package;
+            $packageIds[] = $package->getId();
+            $ordersIds[] = $package->getOrder()->getId();
+        }
+
+        //preload orders and package services
+        $dm->getRepository('MBHPackageBundle:Order')->getByOrdersIds($ordersIds)->toArray();
+        /** @var PackageService[] $packageServices */
+        $packageServices = $dm->getRepository('MBHPackageBundle:PackageService')->findBy(['package.id' => ['$in' => $packageIds]]);
+        $packageServicesByPackageIds = [];
+
+        foreach ($packageServices as $packageService) {
+            isset($packageServicesByPackageIds[$packageService->getPackage()->getId()])
+                ? $packageServicesByPackageIds[$packageService->getPackage()->getId()][] = $packageService
+                : $packageServicesByPackageIds[$packageService->getPackage()->getId()] = [$packageService];
         }
 
         $tableDataByRoomType = [];
@@ -127,7 +134,6 @@ class FillingReportGenerator
                 '$lte' => $end,
             ],
             'roomType.id' => ['$in' => $roomTypeIDs],
-            'hotel.id' => $this->hotel->getId(),
             'tariff' => null
         ]);
 
@@ -221,7 +227,7 @@ class FillingReportGenerator
                 }
 
                 if($packages) {
-                    $filteredPackages = array_filter($packages, function ($package) use($date) {
+                    $filteredPackages = array_filter($packages, function (Package $package) use($date) {
                         return $date >= $package->getBegin() && $date < $package->getEnd();
                     });
 
@@ -239,7 +245,10 @@ class FillingReportGenerator
                         $packageRowData['packagePrice'] += $packagePrice;
 
                         $servicesPrice = 0;
-                        foreach($package->getServices() as $service) {
+                        $packageServicesList = isset($packageServicesByPackageIds[$package->getId()])
+                            ? $packageServicesByPackageIds[$package->getId()]
+                            : [];
+                        foreach($packageServicesList as $service) {
                             if($date >= $service->getBegin() && $date < $service->getEnd()) {
                                 $servicesPrice += $service->calcTotal() / $service->getNights();
                             }
@@ -280,7 +289,7 @@ class FillingReportGenerator
                 }
             }
 
-            $totals['uniqueNotPaidRooms'] = count(array_filter($packages, function($package) use($roomTypeID) {
+            $totals['uniqueNotPaidRooms'] = count(array_filter($packages, function(Package $package) use($roomTypeID) {
                 return $package->getPaidStatus() == 'danger' && $package->getRoomType()->getId() == $roomTypeID;
             }));
 
@@ -362,7 +371,7 @@ class FillingReportGenerator
                 }
                 $totals[$key] += $rowData;
             }
-            $totals['uniqueNotPaidRooms'] = count(array_filter($packages, function($package) {
+            $totals['uniqueNotPaidRooms'] = count(array_filter($packages, function(Package $package) {
                 return $package->getPaidStatus() == 'danger';
             }));
 

@@ -12,10 +12,7 @@ class CalculationFactory
     public static function createCalculation(ContainerInterface $container)
     {
         /** @var ClientConfig $clientConfig */
-        $clientConfig = $container
-            ->get('doctrine_mongodb.odm.default_document_manager')
-            ->getRepository('MBHClientBundle:ClientConfig')
-            ->fetchConfig();
+        $clientConfig = $container->get('mbh.client_config_manager')->fetchConfig();
 
         $calculation = new CalculationRounded($container);
         if (null !== $clientConfig->getPriceRoundSign()) {

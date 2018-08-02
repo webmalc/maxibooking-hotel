@@ -294,10 +294,61 @@ class ClientConfig extends Base
     protected $isCacheValid = false;
 
     /**
+     * @var array
+     * @ODM\Field(type="collection")
+     * @Assert\NotBlank()
+     */
+    protected $languages = ['ru'];
+
+    /**
      * @var FrontSettings
      * @ODM\EmbedOne(targetDocument="FrontSettings")
      */
     protected $frontSettings;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isMBSiteEnabled = true;
+
+    /**
+     * @return bool
+     */
+    public function isMBSiteEnabled(): ?bool
+    {
+        return $this->isMBSiteEnabled;
+    }
+
+    /**
+     * @param bool $isMBSiteEnabled
+     * @return ClientConfig
+     */
+    public function setIsMBSiteEnabled(bool $isMBSiteEnabled): ClientConfig
+    {
+        $this->isMBSiteEnabled = $isMBSiteEnabled;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLanguages(): ?array
+    {
+        return $this->languages;
+    }
+
+    /**
+     * @param array $languages
+     * @return ClientConfig
+     */
+    public function setLanguages(array $languages): ClientConfig
+    {
+        $this->languages = $languages;
+
+        return $this;
+    }
 
     /**
      * @return FrontSettings
@@ -542,7 +593,7 @@ class ClientConfig extends Base
     /**
      * @return bool
      */
-    public function isIsDisableableOn(): bool
+    public function isDisableableOn(): bool
     {
         return $this->isDisableableOn;
     }

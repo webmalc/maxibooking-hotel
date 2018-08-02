@@ -5,8 +5,6 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
-use MBH\Bundle\OnlineBundle\Document\GoogleAnalyticConfig;
-use MBH\Bundle\OnlineBundle\Document\YandexAnalyticConfig;
 use MBH\Bundle\OnlineBundle\Form\AnalyticsForm;
 use MBH\Bundle\OnlineBundle\Form\FormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -30,9 +28,12 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
     public function indexAction()
     {
         $docs = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findAll();
+        $siteConfig = $this->get('mbh.site_manager')->getSiteConfig();
+        $hasEnabledMBSite = !is_null($siteConfig) && $siteConfig->getIsEnabled();
 
         return [
-            'docs' => $docs
+            'docs' => $docs,
+            'hasEnabledMBSite' => $hasEnabledMBSite
         ];
     }
 
@@ -137,9 +138,6 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function analyticsAction(FormConfig $config, Request $request)
     {
-        $config->getGoogleAnalyticConfig() ?: $config->setGoogleAnalyticConfig(new GoogleAnalyticConfig());
-        $config->getYandexAnalyticConfig() ?: $config->setYandexAnalyticConfig(new YandexAnalyticConfig());
-
         $form = $this->createForm(AnalyticsForm::class, $config);
         $form->handleRequest($request);
 

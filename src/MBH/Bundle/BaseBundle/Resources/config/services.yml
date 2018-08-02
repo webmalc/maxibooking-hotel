@@ -97,6 +97,7 @@ services:
       calls:
         - [attach, ["@mbh.system.messenger"]]
         - [attach, ["@mbh.mailer"]]
+        - [attach, ["@sentry_messenger"]]
       arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.notifier.mailer:
@@ -271,7 +272,7 @@ services:
 
     mbh.locale.subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\LocaleSubscriber
-        arguments: ['%kernel.default_locale%', '@gedmo.listener.translatable', '@translator']
+        arguments: ['%kernel.default_locale%',  '@translator', '%mbh.languages%']
         tags:
           - { name: kernel.event_subscriber }
 
@@ -427,7 +428,7 @@ services:
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
-        arguments: ['@translator']
+        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator']
 
     mbh.protected.file.downloader:
         class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
@@ -473,6 +474,16 @@ services:
     mbh.yaml_manager:
         class: MBH\Bundle\BaseBundle\Service\YmlManager
 
+    mbh.multi_languages_type:
+        class: MBH\Bundle\BaseBundle\Form\MultiLanguagesType
+        arguments: ['@mbh.client_config_manager', '@mbh.multi_lang_translator', '%locale%', '@property_accessor']
+        tags:
+            - {name: form.type}
+
+    mbh.multi_lang_translator:
+        class: MBH\Bundle\BaseBundle\Service\MultiLangTranslator
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper']
+
     mbh.menu_builder:
         class: MBH\Bundle\BaseBundle\Menu\Builder
         arguments:
@@ -482,3 +493,30 @@ services:
             - { name: knp_menu.menu_builder, method: mainMenu, alias: base_mainMenu }
             - { name: knp_menu.menu_builder, method: managementMenu, alias: base_managementMenu }
             - { name: knp_menu.menu_builder, method: createHotelMenu, alias: base_createHotelMenu }
+
+    mbh.document_fields_manager:
+        class: MBH\Bundle\BaseBundle\Service\DocumentFieldsManager
+        arguments:
+            - '@translator'
+            - '@property_accessor'
+
+    mbh.messages_store:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\MessagesStore
+        arguments:
+            - '@router'
+            - '%locale%'
+            - '%support%'
+            - '%client%'
+            - '@mbh.cm_wizard_manager'
+
+    mbh.data_comparer:
+        class: MBH\Bundle\BaseBundle\Service\DataComparer
+        arguments: ['@property_accessor']
+
+    mbh.periods_compiler:
+        class: MBH\Bundle\BaseBundle\Service\PeriodsCompiler
+        arguments: ['@mbh.data_comparer']
+
+    mbh.warnings_compiler:
+        class: MBH\Bundle\BaseBundle\Service\WarningsCompiler
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.periods_compiler']

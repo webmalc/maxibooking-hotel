@@ -13,6 +13,8 @@ views.booking.actions.sync_old_desc: 'За 2 недели'
 views.booking.actions.sync_all_old_desc: Все
 views.booking.tariff.cancel: Отмена
 views.channnelmanager.settings: Настройки
+views.channnelmanager.wizard_info.send_request: 'Отправить заявку'
+views.channnelmanager.wizard_info.request_sent: 'Заявка отправлена, ожидайте сообщения тех. поддержки'
 views.oktogo.room.save: Сохранить
 views.oktogo.room.get_room_ids_from_oktogo: 'Получить ID номеров из Oktogo.ru'
 views.oktogo.tariff.save: Сохранить
@@ -27,6 +29,7 @@ views.vashotel.service.service: Сервис
 views.vashotel.service.code: Код
 views.ostrovok.service.service: Сервис
 views.ostrovok.service.code: Код
+views.tabs.instruction: 'Инструкция'
 views.tabs.main_settings: ' Основные настройки'
 views.tabs.room_types: ' Типы номеров'
 views.tabs.tariffs: ' Тарифы'
@@ -98,7 +101,6 @@ channelManager.hotels.notification.error.subject: 'Ошибка Hotels.com'
 channelManager.hotels.notification.error: 'Ошибка при обработке заказа Hotels.com. Информация: %info%'
 channelManager.booking.notification.bottom: 'Внимание! Требуется ручная обработка ситуации. Пожалуйста, свяжитесь с технической поддержкой.'
 channelmanager.empty.config: 'Ошибка синхронизации Channel manager'
-channelmanager.orders_not_fetched.error: 'Загрузите информацию об уже созданных на Booking.com бронях, нажав на кнопку'
 views.channelmanager.actions.sync_all: Загрузить
 views.channelmanager.actions.sync: Синхронизировать
 channelManager.ostrovok.notification.subject.new: 'Новый заказ Ostrovok.ru'

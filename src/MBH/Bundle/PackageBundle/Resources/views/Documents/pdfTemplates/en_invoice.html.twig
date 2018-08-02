@@ -4,13 +4,10 @@
     <meta charset="utf-8">
     <title>pdf</title>
     <style type="text/css">
-        html {
-              padding: 10mm;
-        }
-        body {
-            margin: 0;
-        }
-
+        table { page-break-inside:auto }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        thead {display:table-header-group;}
+        tfoot { display:table-footer-group }
         #en,
         #el {
             width: 935px;
@@ -136,7 +133,7 @@
             background: #DEEAF6;
         }
 
-        .table-3 tbody .final-info td:nth-of-type(-n+2) {
+        .table-3 tbody .final-info td:nth-of-type(-n+3) {
             background: white;
             border: none;
         }
@@ -224,7 +221,22 @@
                 </tr>
             </table>
         </div>
-
+        {% set payerAddress %}
+            {% if payer and payer.addressObjectDecomposed and payer.addressObjectDecomposed.countryTld and payer.addressObjectDecomposed.regionId %}
+                <tr>
+                    <td>Address line:</td>
+                    <td>
+                        {{ get_imperial_street(payer.addressObjectDecomposed) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>City, State, Zip</td>
+                    <td>
+                        {{ get_imperial_city(payer.addressObjectDecomposed) }}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endset %}
         <div class="table-2">
             <table>
                 <tr>
@@ -238,22 +250,6 @@
                 <tr>
                     <td>Name:</td><td>{{ payer.fullName }}</td>
                 </tr>
-                {% set payerAddress %}
-                    {% if payer and payer.addressObjectDecomposed and payer.addressObjectDecomposed.countryTld and payer.addressObjectDecomposed.regionId %}
-                        <tr>
-                            <td>Address line:</td>
-                            <td>
-                                {{ get_imperial_street(payer.addressObjectDecomposed) }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>City, State, Zip</td>
-                            <td>
-                                {{ get_imperial_city(payer.addressObjectDecomposed) }}
-                            </td>
-                        </tr>
-                    {% endif %}
-                {% endset %}
                 {{ payerAddress }}
                 <tr>
                     <td>Tel:</td><td>{{ payer.getPhone() }}</td>
@@ -267,46 +263,73 @@
                     <td>Room Type</td>
                     <td>Number of Nights</td>
                     <td>Nightly Rate</td>
+                    <td>Discount</td>
                     <td>Total</td>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>{{ package.roomType.FullTitle }}</td>
-                    <td>{{ package.Nights }}</td>
-                    <td>{{ (order.price/package.Nights)|number_format(2) }}</td>
-                    <td>{{ order.price|number_format(2) }}</td>
-                </tr>
+                {% set packages = package.order.packages %}
+
+                {% set counter = 0 %}
+                {% set newPackages = false %}
+                {% set countData = 0 %}
+                {% for package in packages %}
+                    {% set newPackages = true %}
+                    {% for date,data in package.pricesByDateByPrice %}
+                        {% set counter = counter + 1 %}
+                        {% set countData = countData + 1 %}
+                        <tr>
+                            <td>
+                                {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date }}
+                                {% if package.roomType and package.roomType.fullTitle %}
+                                    ({{ package.roomType.fullTitle }})
+                                {% endif %}
+                            </td>
+                            <td>{{ data.nights }}</td>
+                            <td style="text-align: center">{{ data.fullPrice != false ? data.fullPrice|number_format(2) : '' }}</td>
+                            {% if newPackages and countData == 1 %}
+                                <td rowspan="{{ package.pricesByDateByPrice|length }}">
+                                    {{ package.discount }}{{ package.getIsPercentDiscount ? '%' }}
+                                </td>
+                                <td rowspan="{{ package.pricesByDateByPrice|length }}">{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                            {% endif %}
+
+                        </tr>
+                    {% endfor %}
+                    {% set newPackages = false %}
+                    {% set countData = 0 %}
+                {% endfor %}
+
                 {% set sumServiceGroupTotal = 0 %}
                 {% if packageServicesByType is not empty %}
                     <tr class="service-group">
                         <td>Additional services</td>
-                        <td colspan="3"></td>
+                        <td colspan="4"></td>
                     </tr>
                     {% for serviceGroup in packageServicesByType %}
                         <tr>
                             <td>{{ serviceGroup.byService.name }}</td>
                             <td>{{ serviceGroup.actuallyAmount }}</td>
                             <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
-                            <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
+                            <td align="right" colspan="2">{{ serviceGroup.total|number_format(2) }}</td>
                         </tr>
                         {% set sumServiceGroupTotal = sumServiceGroupTotal + serviceGroup.total %}
                     {% endfor %}
                 {% endif %}
                 <tr class="final-info">
-                    <td></td><td></td>
+                    <td></td><td></td><td></td>
                     <td>Subtotal</td><td>{{ package.Price|number_format(2) }}</td>
                 </tr>
                 <tr class="final-info">
-                    <td></td><td></td>
+                    <td></td><td></td><td></td>
                     <td>Late Fees</td><td>-</td>
                 </tr>
                 <tr class="final-info">
-                    <td></td><td></td>
+                    <td></td><td></td><td></td>
                     <td>Taxes 0,5%</td><td>{{ order.price*0.05|number_format(2) }}</td>
                 </tr>
                 <tr class="final-info">
-                    <td></td><td></td>
+                    <td></td><td></td><td></td>
                     <td>Total Due</td><td>{{ ((order.price*0.05)+order.price+sumServiceGroupTotal)|number_format(2) }}</td>
                 </tr>
                 </tbody>

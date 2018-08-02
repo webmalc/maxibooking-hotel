@@ -1,4 +1,4 @@
-form.formType.is_turned_on: 'Enabled?'
+form.formType.is_turned_on: 'Active?'
 form.formType.parameters: Parameters
 form.formType.use_online_form: 'Use web form?'
 form.formType.room_types: 'Show room types?'
@@ -6,10 +6,10 @@ form.formType.should_we_use_room_type_field_in_online_form: 'Show "room type" fi
 form.formType.are_there_guests: 'Show guests?'
 form.formType.should_we_use_guests_amount_field_in_online_form: 'Show "number of guests" field in web form?'
 form.formType.should_we_use_nights_field: 'Show "nights" field in online form?'
-form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: 'Show "number of nights" field instead of  "check in date" and "number of nights" fields in web form?'
+form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: 'Display “Check-in date“ and “Number of nights“ fields or “Check-in date“ and “Check-out date“ fields?'
 form.formType.payment: Payment
 form.formType.payment_type: 'Payment options'
-form.formType.reservation_payment_types_with_online_form: 'Payment options available in web form'
+form.formType.reservation_payment_types_with_online_form: 'Payment options available for online reservations on the website'
 controller.apiController.reservation_error_occured_refresh_page_and_try_again: 'An error occured while booking. Please refresh the page and try again.'
 controller.apiController.reservations_made_success: 'A room is successfully booked.'
 controller.apiController.your_reservations_numbers: 'Your reservation numbers are'
@@ -21,10 +21,10 @@ controller.apiController.your_order_number: 'Your order number:'
 controller.formController.settings_saved_success: 'Settings saved successfully'
 form.inviteType.type.single: Single
 form.inviteType.type.twice: Double
-payment_types.in_hotel: 'In hotel'
-payment_types.online_full: '100% prepayment'
-payment_types.online_first_day: 'For first night'
-payment_types.online_half: '50% prepayment'
+payment_types.in_hotel: 'Payment at Check-in'
+payment_types.online_full: 'Online (prepayment 100%)'
+payment_types.online_first_day: 'Online (prepayment for the 1st night)'
+payment_types.online_half: 'Online (prepayment 50%)'
 form.formType.hotels: Hotels
 form.formType.hotels_desc: 'Hotels used in web form'
 form.formType.hotels_placeholder: 'All hotels'
@@ -32,8 +32,8 @@ mbhonlinebundle.form.triproutetype.gostinitsa: Hotel
 mbhonlinebundle.form.triproutetype.gorod: City
 mbhonlinebundle.form.invitedtouristtype.imya: 'First name'
 mbhonlinebundle.form.invitedtouristtype.familiya: 'Last name'
-mbhonlinebundle.form.invitedtouristtype.obrashcheniye: 'Title (Mr. or Mrs.)'
-mbhonlinebundle.form.invitedtouristtype.data.rozhdeniya: 'Birth date'
+mbhonlinebundle.form.invitedtouristtype.obrashcheniye: Title
+mbhonlinebundle.form.invitedtouristtype.data.rozhdeniya: 'Date of Birth'
 mbhonlinebundle.form.invitedtouristtype.mesto.rozhdeniya: 'Birth place'
 mbhonlinebundle.form.invitedtouristtype.grazhdanstvo: Citizenship
 mbhonlinebundle.form.invitedtouristtype.pasport: Document
@@ -73,11 +73,11 @@ form.formType.pers_data_policies_url.help: 'URL link to your personal data proce
 form.formType.room_type_choices_desc: 'Room types available for booking'
 form.formType.room_type_choices: 'Room types'
 form.formType.max_packages.help: 'Maximum amount of bookings available for one order'
-form.formType.is_request_inn.label: 'TIN information'
+form.formType.is_request_inn.label: 'Tax number information'
 form.formType.is_request_inn.kaz.label: TIN
 form.formType.max_packages.label: 'Maximum amount of reservations'
 form.formType.pers_data_policies_url.label: 'Personal data processing policy page'
-form.formType.is_request_inn.help: 'Do you want to ask TIN number in the web form?'
+form.formType.is_request_inn.help: 'Do you wish to add “Tax number“ field for your guests` Tax numbers to online reservation form?'
 form.formType.is_request_inn.kaz.help: 'Do you want to ask TIN in the web form?'
 form.formType.is_request_tourist_document_number.label: 'Document number'
 form.formType.is_request_tourist_document_number.help: 'Do you want to ask ID information in the web form?'
@@ -93,7 +93,7 @@ form.formType.template: Templates
 form.formType.template_label: 'Form templates'
 onlinebundle.resources.views.hotels: Hotels
 onlinebundle.resources.views.guests: Guests
-onlinebundle.resources.views.on: Enabled
+onlinebundle.resources.views.on: Active
 onlinebundle.resources.da: 'Yes'
 onlinebundle.resources.net: 'No'
 views.api.getResultsTable.number_of_adults: Adults
@@ -109,9 +109,9 @@ form.formType.template_help: 'Search form templates'
 onlinebundle.resources.views.room_types: 'Room types'
 invite.form.persons_information: 'Personal information'
 views.api.notification: 'New reservations from online form'
-payment_types.by_receipt_full: 'Payment via bank account (100%)'
-payment_types.by_receipt_half: 'Payment via bank account (50%)'
-payment_types.by_receipt_first_day: 'Payment via bank account (for one night)'
+payment_types.by_receipt_full: 'Bank transfer (prepayment 100%)'
+payment_types.by_receipt_half: 'Bank transfer (prepayment 50%)'
+payment_types.by_receipt_first_day: 'Bank transfer (prepayment for the 1st night)'
 external_api_controller.error.specified_room_type_not_contains_in_form_config: 'Room type with ID = "%roomTypeId%" is not specified in the list of online form settings'
 external_api_controller.error.hotel_with_specified_id_not_exists: 'Hotel with ID = "%hotelId%" does not exist'
 external_api_controller.error.specified_hotel_not_contains_in_form_config: 'Hotel with ID = "%hotelId%" is not specified in the list of online form settings'
@@ -133,6 +133,22 @@ form.payment.formType.enabledShowAmount_help: 'Show recommended amount for payme
 form.online.order_search.button_search: 'Find order'
 api.payment_form.result_search.not_found_order: 'Not found order'
 api.payment_form.result_search.order_has_been_paid: 'Order has been paid'
-api.payment_form.pay_order.total: 'Total'
-api.payment_form.pay_order.submit: 'Pay'
+api.payment_form.pay_order.total: Total
+api.payment_form.pay_order.submit: Pay
 api.payment_form.search.not_valid_fields: 'Field phone/email not valid'
+site_manager.photos_tab: Pictures
+analytics_form.is_enabled.label: 'Active?'
+site_form.hotels.hotel_data: 'Hotel Description'
+site_form.hotels.label: Properties
+site_form.contract.label: Contract
+site_form.key_words.label: Tags
+site_form.is_enabled.label: 'Active?'
+views.mb_site.index.main_settings: Settings
+views.mb_site.title: Website
+views.mb_site.hotel_settings.empty_fields_error: 'Required fields are not filled: %fields%'
+site_form.pers_data_policy.label: 'Privacy Policy'
+site_form.hotels.help: 'Properties shown on the website'
+mb_site_controller.site_config_saved: 'Settings successfully saved!'
+site_manager.mandatory_field_empty.error: 'The field "%fieldTitle%" must be completed'
+analytics_form.google_id.label: 'Tracking ID'
+analytics_form.yandex_id.label: 'Counter number'

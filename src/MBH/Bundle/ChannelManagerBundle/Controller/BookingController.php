@@ -35,13 +35,18 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     {
         $config = $this->hotel->getBookingConfig();
 
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'booking');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+        
         $form = $this->createForm(
             BookingType::class,
             $config
         );
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
@@ -109,8 +114,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($config);
             $this->dm->flush();
 
-            $this->get('mbh.channelmanager.booking')->syncServices($config);
-            $this->get('mbh.channelmanager')->updateInBackground();
+//            $this->get('mbh.channelmanager.booking')->syncServices($config);
+//            $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
@@ -118,7 +123,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         }
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
@@ -178,7 +183,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('booking_room'));
+            $redirectRouteName = $config->isReadyToSync() ? 'booking_room' : 'booking_tariff';
+
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [
@@ -200,6 +207,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getBookingConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -225,12 +233,12 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
-
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('booking_tariff'));
-        }
+            $redirectRouteName = $inGuide ? 'booking_all_packages_sync' : 'booking_tariff';
 
+            return $this->redirectToRoute($redirectRouteName);
+        }
 
         return [
             'config' => $config,
@@ -255,7 +263,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         }
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'logs' => $this->logs($config)
         ];
     }

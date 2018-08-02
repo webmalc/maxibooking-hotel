@@ -75,10 +75,12 @@ class OrderInfo
 
     public function getPayer()
     {
+        $touristFirstNameParts = explode(' ', trim((string)$this->orderData['contact_first_name']));
+
         $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
             (string)$this->orderData['contact_last_name'],
-            (string)$this->orderData['contact_first_name'],
-            null,
+            $touristFirstNameParts[0],
+            isset($touristFirstNameParts[1]) ? $touristFirstNameParts[1] : null,
             null,
             isset($this->orderData['contact_email']) ? (string)$this->orderData['contact_email'] : null,
             isset($this->orderData['contact_phone']) ? (string)$this->orderData['contact_phone'] : null

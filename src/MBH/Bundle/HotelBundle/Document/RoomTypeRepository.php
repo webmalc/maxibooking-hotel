@@ -97,7 +97,7 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
      * @param array|null $hotelIds
      * @return array|RoomType[]
      */
-    public function getByHotelsAndIds(array $roomTypeIds = null, array $hotelIds = null)
+    public function getByIdsAndHotelsIds(array $roomTypeIds = null, array $hotelIds = null)
     {
         $qb = $this->createQueryBuilder();
 

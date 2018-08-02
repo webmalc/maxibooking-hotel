@@ -422,6 +422,7 @@ class RoomRepository extends AbstractBaseRepository
      * @param bool $includeWithoutStatuses
      * @param bool $isOnlyEnabled
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getNumberOfRoomsByRoomTypeIds($statusIds = null, $includeWithoutStatuses = true, $isOnlyEnabled = false)
     {
@@ -454,5 +455,21 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $housingsIds
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getRoomsIdsByHousingsIds(array $housingsIds)
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('housing.id')->in($housingsIds)
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 }

@@ -18,28 +18,31 @@
 {% set subtrahend = (tableCellHeight / 5)|round %}
 {% set minuend = tableCellHeight - subtrahend %}
 {% set numberOfRoomsOptions = [0, 20,30, 50] %}
+{% set changedNumberOfDays = 7 %}
+{% set maxSliderSize = 3 %}
 
 {% block scripts %}
     {{ parent() }}
     {% javascripts filter='uglifyjs2'
-    '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
-    'assets/vendor/admin-lte/plugins/bootstrap-slider/bootstrap-slider.js'
-    '@MBHPackageBundle/Resources/public/js/tourist.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
+        '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
+        '@MBHBaseBundle/Resources/public/vendor/touch-punch.js'
+        'assets/vendor/admin-lte/plugins/bootstrap-slider/bootstrap-slider.js'
+        '@MBHPackageBundle/Resources/public/js/tourist.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
+        '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
 
-    <script type="text/javascript" src="{{ asset_url }}"></script>
+        <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
 
 {% block styles %}
     {{ parent() }}
     {% stylesheets filter='cssrewrite, uglifycss'
-    '@MBHPackageBundle/Resources/public/css/*'
-    'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
+        '@MBHPackageBundle/Resources/public/css/*'
+        'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
     {% set halfMinuend = (minuend / 2)|round %}
     {% set quarterMinuend = (minuend / 4)|round %}
@@ -132,7 +135,7 @@
         .package-with-right-arrow:before,
         .package:not(.near-right-element) > .ui-resizable-e,
         .package:not(.near-left-element) > .ui-resizable-w {
-            border-bottom: {{ halfMinuend - 2 }}px solid transparent !important;
+            border-bottom: {{ halfMinuend }}px solid transparent !important;
             border-top: {{ halfMinuend }}px solid transparent !important;
         }
 
@@ -176,26 +179,32 @@
             background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['danger_add'] }} 5px, {{ colors['danger_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .danger.tile-coming {
             background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['danger_add'] }} 3px, {{ colors['danger_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .success.tile-coming-out {
             background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['success_add'] }} 5px, {{ colors['success_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .success.tile-coming {
             background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['success_add'] }} 3px, {{ colors['success_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .warning.tile-coming-out {
             background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['warning_add'] }} 5px, {{ colors['warning_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .warning.tile-coming {
             background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['warning_add'] }} 3px, {{ colors['warning_add'] }} 5px);
             background-size: 1em 1em;
         }
+
         .ui-resizable-w.early-checkin-block {
             border-right-color: #000 !important;
         }
@@ -223,6 +232,7 @@
         var canBookWithoutPayer = {{ client_config().canBookWithoutPayer ? 'true' : 'false' }};
         var colors = JSON.parse('{{ colors|json_encode|raw }}');
         var subtrahend = {{ subtrahend }};
+        var maxSliderSize = {{ maxSliderSize }};
     </script>
 
     <link rel="stylesheet" href="{{ asset(stylesFile) }}"/>
@@ -238,84 +248,99 @@
            value="{{ endDate|date('d.m.Y') }}">
 
     <form method="get" id="accommodation-report-filter" class="form-inline filter-form" role="form">
-        <div class="input">
-            <i class="fa fa-calendar" title='{{ 'chessboard_manager.dates.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
-            <input type="text" name="filter_begin" id="accommodation-report-filter-begin"
-                   class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm"
-                   data-date-format="dd.mm.yyyy" value="{{ beginDate|date('d.m.Y') }}">
-        </div>
-        <div class="input hidden">
-            - &nbsp;
-            <input type="text" name="filter_end" id="accommodation-report-filter-end"
-                   class="datepicker accommodation-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm"
-                   data-date-format="dd.mm.yyyy" value="{{ endDate|date('d.m.Y') }}">
-        </div>
-        <div class="input">
-            <i class="fa fa-bed" title='{{ 'chessboard_manager.room_type.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
-            <select name="filter_roomType[]" multiple
-                    data-placeholder="{{ 'chessboard_manager.room_type.title'|trans }}"
-                    id="accommodation-report-filter-roomType"
-                    class="accommodation-report-filter form-control input-sm">
-                <option></option>
-                {% for roomType in roomTypes %}
-                    <option value="{{ roomType.id }}"
-                            {% if roomTypesData[roomType.id] is defined and roomTypes|length != roomTypesData|length %}selected{% endif %}>{{ roomType.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        {% if housings|length %}
+        <div class="form-block">
             <div class="input">
-                <i class="fa fa-home" title='{{ 'chessboard_manager.housing.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
-                <select name="housing[]" multiple data-placeholder="{{ 'chessboard_manager.housing.title'|trans }}"
-                        id="accommodation-report-filter-housing"
+                <i class="fa fa-caret-left fa-2x change-days-button" data-number-of-days="{{ changedNumberOfDays }}"
+                   data-change-type="subtract"
+                   title='{{ 'chessboard_manager.change_dates_button.subtract'|trans({'%numberOfDays%': changedNumberOfDays}) }}'
+                   data-toggle='tooltip'></i>&nbsp;
+                <input type="text" name="filter_begin" id="accommodation-report-filter-begin"
+                       class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm"
+                       data-date-format="dd.mm.yyyy" value="{{ beginDate|date('d.m.Y') }}">
+                &nbsp;
+                <i class="fa fa-caret-right fa-2x change-days-button"
+                   data-number-of-days="{{ changedNumberOfDays }}" data-change-type="add"
+                   title='{{ 'chessboard_manager.change_dates_button.add'|trans({'%numberOfDays%': changedNumberOfDays}) }}'
+                   data-toggle='tooltip'></i>&nbsp;
+            </div>
+            <div class="input hidden">
+                - &nbsp;
+                <input type="text" name="filter_end" id="accommodation-report-filter-end"
+                       class="datepicker accommodation-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm"
+                       data-date-format="dd.mm.yyyy" value="{{ endDate|date('d.m.Y') }}">
+            </div>
+            <div class="input">
+                <i class="fa fa-bed hide-field-button" title='{{ 'chessboard_manager.room_type.title'|trans }}'
+                   data-toggle='tooltip'></i>&nbsp;
+                <select name="filter_roomType[]" multiple
+                        data-placeholder="{{ 'chessboard_manager.room_type.title'|trans }}"
+                        id="accommodation-report-filter-roomType"
                         class="accommodation-report-filter form-control input-sm">
                     <option></option>
-                    {% for housing in housings %}
-                        <option value="{{ housing.id }}"
-                                {% if housing.id in app.request.get('housing') %}selected{% endif %}>{{ housing.title }}</option>
+                    {% for roomType in roomTypes %}
+                        <option value="{{ roomType.id }}"
+                                {% if roomTypesData[roomType.id] is defined and roomTypes|length != roomTypesData|length %}selected{% endif %}>{{ roomType.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-        {% endif %}
+            {% if housings|length %}
+                <div class="input">
+                    <i class="fa fa-home hide-field-button" title='{{ 'chessboard_manager.housing.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp;
+                    <select name="housing[]" multiple data-placeholder="{{ 'chessboard_manager.housing.title'|trans }}"
+                            id="accommodation-report-filter-housing"
+                            class="accommodation-report-filter form-control input-sm">
+                        <option></option>
+                        {% for housing in housings %}
+                            <option value="{{ housing.id }}"
+                                    {% if housing.id in app.request.get('housing') %}selected{% endif %}>{{ housing.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
 
-        {% if floors|length %}
+            {% if floors|length %}
+                <div class="input">
+                    <i class="fa fa-home hide-field-button" title='{{ 'chessboard_manager.floor.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp;
+                    <select name="floor[]" multiple data-placeholder="{{ 'chessboard_manager.floor.title'|trans }}"
+                            id="accommodation-report-filter-floor"
+                            class="accommodation-report-filter form-control input-sm">
+                        <option></option>
+                        {% for floor in floors %}
+                            <option value="{{ floor }}"
+                                    {% if floor in app.request.get('floor') %}selected{% endif %}>{{ floor }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
             <div class="input">
-                <i class="fa fa-home" title='{{ 'chessboard_manager.floor.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
-                <select name="floor[]" multiple data-placeholder="{{ 'chessboard_manager.floor.title'|trans }}"
-                        id="accommodation-report-filter-floor"
-                        class="accommodation-report-filter form-control input-sm">
-                    <option></option>
-                    {% for floor in floors %}
-                        <option value="{{ floor }}"
-                                {% if floor in app.request.get('floor') %}selected{% endif %}>{{ floor }}</option>
-                    {% endfor %}
-                </select>
+                <button type="button" class="btn btn-primary navbar-btn"
+                        id="filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
             </div>
-        {% endif %}
-        <div class="input">
-            <button type="button" class="btn btn-primary navbar-btn"
-                    id="filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
         </div>
-        <div style="display: inline-block;margin-top: 13px; margin-right: 5px;">
-            {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'chess_board_home'} %}
-        </div>
-        <div class="input" style="width: 150px;">
-            <i class="fa fa-minus" style="margin-right: 5px"></i>&nbsp;
-            <input style="display: none;" id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0"
-                   data-slider-max="3"
-                   data-slider-step="1" data-slider-value="{{ stylesFileNumber }}"/>
-            <i class="fa fa-plus" style="margin-left: 15px"></i>&nbsp;
+        <div class="form-block">
+            <div id="disable-button-wrapper">
+                {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'chess_board_home'} %}
+            </div>
+            <div class="input" style="width: 150px;">
+                <i class="fa fa-minus reduce-scale-button" style="margin-right: 10px"></i>&nbsp;
+                <input style="display: none;" id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0"
+                       data-slider-max="{{ maxSliderSize }}"
+                       data-slider-step="1" data-slider-value="{{ stylesFileNumber }}"/>
+                <i class="fa fa-plus increase-scale-button" style="margin-left: 10px"></i>&nbsp;
+            </div>
         </div>
     </form>
 
     <input type="hidden" id="pageNumber" value="{{ pageNumber }}">
     {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': pageNumber, 'pages': pageCount, class : 'accommodation-report-pagination'} %}
-
+    <div id="ololo"></div>
     <div id="accommodation-chessBoard-content" class="scrolling">
         <!---------------------------- MONTHS AND DATES ------------------------->
         <div id="header-title" class="tile tile-not-selected tile-free both not-standard-tile"
              style="width:{{ headerWidth }}px;">
-            <div class="title" style="height: {{ headerHeight }}px; background-color: white;">
+            <div class="title" style="height: {{ headerHeight - 1 }}px; background-color: white;">
                 <div class="tableTitleCell">
                     {% set selectedNumberOfRooms = client_config().getFrontSettings().getRoomsInChessboard(app.user.username) %}
                     <select id="nuber-of-rooms-select" style="width: 100%;">
@@ -369,7 +394,7 @@
                     <div class="clearfix">
                         <ul class="calendarDays list-unstyled">
                             <li class="tile tile-not-selected tile-free both not-standard-tile"
-                                style="width:{{ headerWidth }}px; background-color: white;">
+                                style="width:{{ headerWidth - 1 }}px; background-color: white;">
                                 <div class="title">
                                     <strong {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %}
                                             {% if roomTypeData.name|length > titleLength %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ roomTypeData.name }}" {% endif %}
@@ -619,13 +644,15 @@
                         <div class="input">
                             <strong>{{ 'modal.chessBoard.payer'|trans }}</strong>&nbsp;
                             {{ form_widget(searchForm.tourist) }}&nbsp;
-                            <small>
-                                <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
-                                   title='{{ 'form.searchType.payer_add'|trans() }}'
-                                   data-toggle='tooltip'>
-                                    <i class="fa fa-plus"></i>
-                                </a>
-                            </small>
+                            {% if is_granted('ROLE_TOURIST_NEW') %}
+                                <small>
+                                    <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
+                                       title='{{ 'form.searchType.payer_add'|trans() }}'
+                                       data-toggle='tooltip'>
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                </small>
+                            {% endif %}
                         </div>
                         <div id="package-new-results"></div>
                     </div>

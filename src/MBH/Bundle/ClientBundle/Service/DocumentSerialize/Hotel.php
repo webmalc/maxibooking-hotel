@@ -7,6 +7,7 @@
 namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 use MBH\Bundle\HotelBundle\Document\Hotel as HotelBase;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 
 /**
  * Class Hotel
@@ -15,7 +16,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel as HotelBase;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-class Hotel extends Common
+class Hotel extends Common implements AddressInterface
 {
     use TraitAddress;
 
@@ -57,17 +58,21 @@ class Hotel extends Common
     public function getLogo(): string
     {
         $url = '/bundles/mbhbase/images/empty_logo.png';
+        $filter = '';
         if ($this->entity->getLogoImage() !== null) {
-            // должно работать
-            $helper = $this->container->get('Vich\UploaderBundle\Templating\Helper\UploaderHelper');
+            $helper = $this->container->get('vich_uploader.templating.helper.uploader_helper');
             $url = $helper->asset($this->entity->getLogoImage(), 'imageFile');
+            $filter = '|imagine_filter(\'scaler\')';
         } elseif ($this->entity->getLogo() !== null) {
             $url = $this->entity->getPath();
         }
-//        $return = '<img src="' . $url . '" alt="Hotel logo" />';
 
-//        return $url;
-        return '<div style="width: 95px; height: 80px; background-color: lightgrey;"><img src="' . $url . '" alt="Hotel logo" /></div>';
+        $content = "<img style=\"max-width: 95px; max-height: 80px;\" src=\"{{ absolute_url(asset('{$url}'{$filter})) }}\" alt=\"Hotel logo\"/>";
+        /* здесь твиг только для генерации ссылки*/
+        $twig = $this->container->get('twig');
+        $renderedImg = $twig->createTemplate($content)->render(['url' => $url]);
+
+        return $renderedImg;
     }
 
     protected function getSourceClassName()

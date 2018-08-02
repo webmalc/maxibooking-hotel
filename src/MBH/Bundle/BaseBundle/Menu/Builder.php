@@ -70,7 +70,7 @@ class Builder
         $this->currentRoute = $this->container->get('router');
         $this->currentRoute->getContext()->setMethod('GET');
         $this->security = $this->container->get('security.authorization_checker');
-        
+
         $this->setConfig();
     }
 
@@ -691,14 +691,8 @@ class Builder
             ],
         ];
 
-        $booking = [];
-        $myAllLocator = [];
-        $ostrovok = [];
-        $vashotel = [];
-        $expedia = [];
-        $hotelInn = [];
 
-        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
+//        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
             $booking = [
                 'booking' => [
                     'options'    => [
@@ -712,7 +706,7 @@ class Builder
             $myAllLocator = [
                 'myallocator' => [
                     'options'    => [
-                        'route' => 'channels',
+                        'route' => 'myallocator',
                         'label' => 'menu.communication.label.advanced',
                     ],
                     'attributes' => ['icon' => 'fa fa-cloud-download'],
@@ -759,7 +753,7 @@ class Builder
                 ],
             ];
 
-        }
+//        }
 
         $parent = $this->createItem($channelManager);
 
@@ -839,20 +833,25 @@ class Builder
                 ],
             ],
         ];
+        $parent = $this->createItem($webSite);
 
-        $siteSettings = [
-            'site_settings' => [
-                'options'    => [
-                    'route' => '_welcome',
-                    'label' => 'Site Settings',
-                ],
-                'attributes' => [
-                    'icon' => 'fa fa-cog',
-                ],
-            ],
-        ];
+        $menuItems = [];
 
-        $onlineForm = [
+        if ($this->config->isMBSiteEnabled()) {
+            $menuItems[] = [
+                'site_settings' => [
+                    'options'    => [
+                        'route' => 'site_settings',
+                        'label' => 'menu.communication.label.site_settings',
+                    ],
+                    'attributes' => [
+                        'icon' => 'fa fa-cog',
+                    ],
+                ],
+            ];
+        }
+
+        $menuItems[] = [
             'online_form' => [
                 'options'    => [
                     'route' => 'online_form',
@@ -862,7 +861,7 @@ class Builder
             ],
         ];
 
-        $paymentForm = [
+        $menuItems[] = [
             'payment_form' => [
                 'options'    => [
                     'route' => 'online_payment_form',
@@ -872,7 +871,7 @@ class Builder
             ],
         ];
 
-        $onlinePolls = [
+        $menuItems[] = [
             'online_polls' => [
                 'options'    => [
                     'route' => 'online_poll_config',
@@ -882,7 +881,7 @@ class Builder
             ],
         ];
 
-        $paymentSystem = [
+        $menuItems[] = [
             'payment_systems' => [
                 'options'    => [
                     'route' => 'client_payment_systems',
@@ -892,17 +891,7 @@ class Builder
             ],
         ];
 
-        $parent = $this->createItem($webSite);
-
-        return $parent->setChildren(
-            $this->getItemsInArray([
-//                $siteSettings,
-                $onlinePolls,
-                $paymentSystem,
-                $onlineForm,
-                $paymentForm,
-            ])
-        );
+        return $parent->setChildren($this->getItemsInArray($menuItems));
     }
 
     /**

@@ -9,17 +9,20 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
     /** @var \AppKernel  */
     private $kernel;
     private $exceptionNotifier;
+    private $tokenStorage;
 
-    public function __construct(KernelInterface $kernel, Notifier $exceptionNotifier)
+    public function __construct(KernelInterface $kernel, Notifier $exceptionNotifier, TokenStorage $tokenStorage)
     {
         $this->kernel = $kernel;
         $this->exceptionNotifier = $exceptionNotifier;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -52,9 +55,12 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function notifyException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
+        $user = $this->tokenStorage->getToken();
         if (!$exception instanceof AccessDeniedException && !$exception instanceof NotFoundHttpException && $this->kernel->getEnvironment() === 'prod') {
+            $user = $this->tokenStorage->getToken();
             $message = $this->exceptionNotifier::createMessage();
             $messageText = "Произошла ошибка у \"" . $this->kernel->getClient()
+                . '. Пользователь: ' . (!empty($user) ? $user->getUsername() : 'без пользователя')
                 . ". \"\n Сообщение \"" . $exception->getMessage()
                 . "\".\n Стек:" . $exception->getTraceAsString();
             $message

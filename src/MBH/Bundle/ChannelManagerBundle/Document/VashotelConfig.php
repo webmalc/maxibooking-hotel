@@ -137,6 +137,7 @@ class VashotelConfig extends Base implements BaseInterface
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setReadinessConfirmed(false);
     }
 
     /**
@@ -275,5 +276,13 @@ class VashotelConfig extends Base implements BaseInterface
     {
         $this->password = $password;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMainSettingsFilled()
+    {
+        return !empty($this->getHotelId()) && !empty($this->getPassword());
     }
 }
