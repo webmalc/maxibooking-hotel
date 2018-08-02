@@ -22,7 +22,7 @@ class Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isEnabled")
+     * @ODM\Field(type="bool")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

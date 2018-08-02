@@ -240,7 +240,8 @@ class Client
      */
     public function getRoomsLimit()
     {
-        return $this->getRestrictions()['rooms_limit'];
+        return 200;
+//        return $this->getRestrictions()['rooms_limit'];
     }
 
     /**

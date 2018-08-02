@@ -496,9 +496,7 @@ services:
 
     mbh.document_fields_manager:
         class: MBH\Bundle\BaseBundle\Service\DocumentFieldsManager
-        arguments:
-            - '@translator'
-            - '@property_accessor'
+        arguments: ['@translator', '@property_accessor', '@annotation_reader']
 
     mbh.messages_store:
         class: MBH\Bundle\BaseBundle\Service\Messenger\MessagesStore
@@ -520,3 +518,7 @@ services:
     mbh.warnings_compiler:
         class: MBH\Bundle\BaseBundle\Service\WarningsCompiler
         arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.periods_compiler']
+
+    mbh.serializer:
+        class: MBH\Bundle\BaseBundle\Service\MBHSerializer
+        arguments: ['@property_accessor', '@mbh.document_fields_manager', '@doctrine.odm.mongodb.document_manager']

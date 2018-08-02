@@ -131,7 +131,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 /** store query in db */
                 $query->setSave(true);
                 $groupedResult = $search->search($query);
-
             } else {
                 $errors = $form->getErrors();
             }

@@ -12,7 +12,6 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class SearchResult
 {
-
     /**
      * @var \DateTime 
      */
@@ -308,12 +307,28 @@ class SearchResult
         return $this;
     }
 
+    public function getPricesByDate()
+    {
+        return $this->pricesByDate;
+    }
+
+    /**
+     * @param $pricesByDate
+     * @return SearchResult
+     */
+    public function setPricesByDate($pricesByDate)
+    {
+        $this->pricesByDate = $pricesByDate;
+
+        return $this;
+    }
+
     /**
      * @param $adults
      * @param $children
      * @return null|array
      */
-    public function getPricesByDate($adults, $children)
+    public function getPricesByDateForCombination($adults, $children)
     {
         if (isset($this->pricesByDate[$adults . '_' . $children])) {
             return $this->pricesByDate[$adults . '_' . $children];
@@ -329,7 +344,7 @@ class SearchResult
      * @return self
      * @deprecated
      */
-    public function setPricesByDate(array $prices, $adults, $children)
+    public function setPricesByDateForCombination(array $prices, $adults, $children)
     {
         $this->pricesByDate[$adults . '_' . $children] = $prices;
 
@@ -374,7 +389,6 @@ class SearchResult
         return $this;
     }
 
-
     /**
      * @param bool $full
      * @return null|string
@@ -408,11 +422,19 @@ class SearchResult
     }
 
     /**
+     * @return PackagePrice[]
+     */
+    public function getPackagePrices()
+    {
+        return $this->packagePrices;
+    }
+
+    /**
      * @param $adults
      * @param $children
      * @return null|array
      */
-    public function getPackagePrices($adults, $children)
+    public function getPackagePricesForCombination($adults, $children)
     {
         if (isset($this->packagePrices[$adults . '_' . $children])) {
             return $this->packagePrices[$adults . '_' . $children];
@@ -432,9 +454,20 @@ class SearchResult
      * @param int $children
      * @return SearchResult
      */
-    public function setPackagePrices(array $packagePrices, $adults, $children)
+    public function setPackagePricesForCombination(array $packagePrices, $adults, $children)
     {
         $this->packagePrices[$adults . '_' . $children] = $packagePrices;
+
+        return $this;
+    }
+
+    /**
+     * @param $packagePrices
+     * @return SearchResult
+     */
+    public function setPackagePrices($packagePrices)
+    {
+        $this->packagePrices = $packagePrices;
 
         return $this;
     }
@@ -494,7 +527,7 @@ class SearchResult
     }
 
     /**
-     * @return SplObjectStorage
+     * @return \SplObjectStorage
      */
     public function getPriceTariffs()
     {
@@ -504,6 +537,7 @@ class SearchResult
             return $tariffs;
         }
 
+        /** @var PackagePrice $packagePrice */
         foreach (array_values($this->packagePrices)[0] as $packagePrice) {
             $tariffs->attach($packagePrice->getTariff());
         }
@@ -523,7 +557,7 @@ class SearchResult
      * @param Room $virtualRoom
      * @return SearchResult
      */
-    public function setVirtualRoom(Room $virtualRoom): SearchResult
+    public function setVirtualRoom(?Room $virtualRoom): SearchResult
     {
         $this->virtualRoom = $virtualRoom;
         return $this;
@@ -558,7 +592,7 @@ class SearchResult
         $packagePrices = [];
         $originalPrice = 0;
         /** @var PackagePrice $packagePrice */
-        foreach ($this->getPackagePrices($this->getAdults(), $this->getChildren()) as $packagePrice) {
+        foreach ($this->getPackagePricesForCombination($this->getAdults(), $this->getChildren()) as $packagePrice) {
             $packagePrices[] = $packagePrice->getJsonSerialized();
             $originalPrice += $packagePrice->getPriceWithoutPromotionDiscount();
         }

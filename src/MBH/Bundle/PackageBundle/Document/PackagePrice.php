@@ -59,7 +59,7 @@ class PackagePrice
         return $this->date;
     }
 
-    public function __construct(\DateTime $date, $price, Tariff $tariff, Promotion $promotion = null, Special $special = null)
+    public function __construct(\DateTime $date = null, $price = null, Tariff $tariff = null, Promotion $promotion = null, Special $special = null)
     {
         $this->setDate($date)
             ->setPrice($price)
@@ -110,7 +110,7 @@ class PackagePrice
      * @param Tariff $tariff
      * @return PackagePrice
      */
-    public function setTariff(Tariff $tariff)
+    public function setTariff(?Tariff $tariff)
     {
         $this->tariff = $tariff;
 

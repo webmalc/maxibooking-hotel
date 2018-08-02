@@ -312,6 +312,7 @@ mbhpricebundle.form.restrictiongeneratortype.ogranichenie_zaezda_viezda: 'Check-
 mbhpricebundle.form.restrictiongeneratortype.net_viezda: 'No Check-out?'
 mbhpricebundle.form.restrictiongeneratortype.zakrito: 'Closed?'
 mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey: 'Maximum number of guests'
+mbhpricebundle.form.restrictiongeneratortype.min_kolichestvo_gostey: 'Minimum number of guests'
 mbhpricebundle.form.restrictiongeneratortype.ogranichenie_po_kolichestvu_gostey: 'Number of guests limitation'
 mbhpricebundle.form.tariffservicetype.common_group_name: 'General information'
 mbhpricebundle.form.tariffinheritancetype.nasledovatliusloviyaiogranicheniyaotroditelskogotarifa: 'Keep Terms and Conditions of the underlying Rate'
