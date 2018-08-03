@@ -7,14 +7,20 @@
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff;
 
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\Tinkoff;
+use MBH\Bundle\PackageBundle\Document\Order;
+
 class InitRequest extends InitCommon implements \JsonSerializable
 {
     /**
+     * НЕ ИСПОЛЬЗУЕТСЯ
+     *
      * IP-адрес клиента
      * обязательный нет
      * String(40)
      *
-     * @var null|string
+     * @var null
      */
     private $ip;
 
@@ -114,6 +120,39 @@ class InitRequest extends InitCommon implements \JsonSerializable
     private $receipt;
 
     /**
+     * Для генерации ключа
+     *
+     * @var string
+     */
+    private $password;
+
+    public static function create(CashDocument $cashDocument, Tinkoff $tinkoff): self
+    {
+        $self = new self();
+        $self->setOrderId($cashDocument->getId());
+        $self->setDescription($cashDocument);
+        $self->setAmount($cashDocument->getTotal() * 100);
+        $self->setLanguage($tinkoff->getLanguage());
+        $self->setRedirectDueDate($tinkoff->getRedirectDueDate());
+        $self->setTerminalKey($tinkoff->getTerminalKey());
+        $self->setPassword($tinkoff->getSecretKey());
+
+        if ($tinkoff->isWithFiscalization()) {
+            $self->setReceipt(Receipt::create($cashDocument, $tinkoff));
+        }
+
+        return $self;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
      * @param string $terminalKey
      */
     public function setTerminalKey(string $terminalKey): void
@@ -148,31 +187,43 @@ class InitRequest extends InitCommon implements \JsonSerializable
     /**
      * @param null|string $description
      */
-    public function setDescription(?string $description): void
+    public function setDescription(CashDocument $cashDocument): void
     {
-        $this->description = $description;
+        $hotel = $cashDocument->getHotel();
+        // т.к. генерация происходит из онлайн формы, те ордер новый и пакедж только один
+        $package = $cashDocument->getOrder()->getPackages()[0];
+
+        $desc = 'Проживание в "%1$s" c %2$s по %3$s.';
+
+        $this->description =
+            sprintf(
+                $desc,
+                $hotel,
+                $package->getBegin()->format('d.m.Y'),
+                $package->getEnd()->format('d.m.Y')
+                );
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getToken(): ?string
+    public function getToken(): string
     {
-        return $this->token;
+        $param = [
+            'OrderId'     => $this->getOrderId(),
+            'Amount'      => $this->getAmount(),
+            'TerminalKey' => $this->getTerminalKey(),
+            'Language'    => $this->getLanguage(),
+            'Password'    => $this->password,
+        ];
+
+        return $this->returnSha256($param);
     }
 
     /**
-     * @param null|string $token
+     * @return string
      */
-    public function setToken(?string $token): void
-    {
-        $this->token = $token;
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getLanguage(): ?string
+    public function getLanguage(): string
     {
         return $this->language;
     }
@@ -186,19 +237,20 @@ class InitRequest extends InitCommon implements \JsonSerializable
     }
 
     /**
-     * @return \DateTime|null
+     * @return string
      */
-    public function getRedirectDueDate(): ?\DateTime
+    public function getRedirectDueDate(): string
     {
         return $this->redirectDueDate;
     }
 
     /**
-     * @param \DateTime|null $redirectDueDate
+     * @param int $redirectDueDate
      */
-    public function setRedirectDueDate(?\DateTime $redirectDueDate): void
+    public function setRedirectDueDate(int $redirectDueDate): void
     {
-        $this->redirectDueDate = $redirectDueDate;
+        $date = new \DateTime('+'. $redirectDueDate . ' hour');
+        $this->redirectDueDate = $date->format(DATE_ATOM);
     }
 
     /**
@@ -219,7 +271,19 @@ class InitRequest extends InitCommon implements \JsonSerializable
 
     public function jsonSerialize()
     {
-        $data = [];
+        $data = [
+            'TerminalKey' => $this->getTerminalKey(),
+            'Amount' => $this->getAmount(),
+            'OrderId' => $this->getOrderId(),
+            'Description' => $this->getDescription(),
+            'Token' => $this->getToken(),
+            'Language' => $this->getLanguage(),
+            'RedirectDueDate' => $this->getRedirectDueDate(),
+        ];
+
+        if ($this->getReceipt() !== null) {
+            $data['Receipt'] = $this->getReceipt();
+        }
 
         return $data;
     }

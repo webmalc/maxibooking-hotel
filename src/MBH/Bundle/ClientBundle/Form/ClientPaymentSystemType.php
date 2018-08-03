@@ -6,6 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
+use MBH\Bundle\ClientBundle\Form\PaymentSystem\TinkoffType;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
@@ -48,7 +49,12 @@ class ClientPaymentSystemType extends AbstractType
         $invoiceDocument = null;
         $stripePubToken = null;
 
-        $paymentSystemName = $options['paymentSystemName'] ?? $this->extraData->getPaymentSystemsDefault();
+        $paymentSystemName = $options['paymentSystemName'];
+
+        if ($paymentSystemName === null) {
+            $paymentSystemName = $this->extraData->getPaymentSystemsDefault();
+        }
+
         $paymentSystemsChoices = array_filter($this->extraData->getPaymentSystems(), function ($paymentSystemName) use ($clientConfig, $options) {
             return !in_array($paymentSystemName, $clientConfig->getPaymentSystems()) || $paymentSystemName == $options['paymentSystemName'];
         }, ARRAY_FILTER_USE_KEY);
@@ -204,6 +210,7 @@ class ClientPaymentSystemType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => self::COMMON_ATTR_CLASS . ' stripe'],
                 'group' => self::COMMON_GROUP,
+                'validation_groups' => 'stripe'
             ])
             ->add('stripeSecretKey', TextType::class, [
                 'label' => 'form.clientPaymentSystemType.stripe_secret_key.label',
@@ -212,6 +219,7 @@ class ClientPaymentSystemType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => self::COMMON_ATTR_CLASS . ' stripe'],
                 'group' => self::COMMON_GROUP,
+                'validation_groups' => 'stripe',
             ])
             ->add('commission', TextType::class, [
                 'label' => 'form.clientPaymentSystemType.stripe_commission.label',
@@ -225,6 +233,7 @@ class ClientPaymentSystemType extends AbstractType
                     'decimals' => 2
                 ],
                 'group' => self::COMMON_GROUP,
+                'validation_groups' => 'stripe',
             ])
             ->add(
                 'paypalLogin',
@@ -243,11 +252,12 @@ class ClientPaymentSystemType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\ClientBundle\Document\ClientConfig',
-            'entity' => null,
-            'taxationRateCodes' => null,
+            'data_class'         => 'MBH\Bundle\ClientBundle\Document\ClientConfig',
+            'entity'             => null,
+            'taxationRateCodes'  => null,
             'taxationSystemCode' => null,
-            'paymentSystemName' => null
+            'paymentSystemName'  => null,
+//            'validation_groups'  => ['stripe'],
         ]);
     }
 

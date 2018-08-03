@@ -13,6 +13,7 @@ use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\Tinkoff;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -27,6 +28,8 @@ class TinkoffHelper implements HelperInterface
     const NAME_TYPE_TAXATION_RATE_CODE = self::PREFIX . '_TaxationRateCode';
     const NAME_TYPE_TAXATION_SYSTEM_CODE = self::PREFIX . '_TaxationSystemCode';
     const NAME_TYPE_IS_WITH_FISCALIZATION = self::PREFIX . '_IsWithFiscalization';
+    const NAME_TYPE_SECRET_KEY = self::PREFIX . '_SecretKey';
+    const NAME_TYPE_REDIRECT_DUE_DATA = self::PREFIX . '_RedirectDueDate';
 
     public static function instance(FormInterface $form): PaymentSystemInterface
     {
@@ -36,6 +39,8 @@ class TinkoffHelper implements HelperInterface
         $entity->setTaxationSystemCode($form->get(self::NAME_TYPE_TAXATION_SYSTEM_CODE)->getData());
         $entity->setTaxationRateCode($form->get(self::NAME_TYPE_TAXATION_RATE_CODE)->getData());
         $entity->setLanguage($form->get(self::NAME_TYPE_LANGUAGE)->getData());
+        $entity->setSecretKey($form->get(self::NAME_TYPE_SECRET_KEY)->getData());
+        $entity->setRedirectDueDate($form->get(self::NAME_TYPE_REDIRECT_DUE_DATA)->getData());
 
         return $entity;
     }
@@ -57,63 +62,87 @@ class TinkoffHelper implements HelperInterface
                 self::NAME_TYPE_TERMINAL_KEY,
                 TextType::class,
                 [
-                    'label' => self::PREFIX_LABEL . self::NAME_TYPE_TERMINAL_KEY,
-                    'required' => false,
-                    'attr'     => $commonAttr,
-                    'group'    => $commonGroup,
-                    'mapped'   => false,
-                    'data' => $tinkoff->getTerminalKey()
+                    'label'             => self::PREFIX_LABEL . self::NAME_TYPE_TERMINAL_KEY,
+                    'required'          => false,
+                    'attr'              => $commonAttr,
+                    'group'             => $commonGroup,
+                    'mapped'            => false,
+                    'data'              => $tinkoff->getTerminalKey(),
+                ]
+            )
+            ->add(
+                self::NAME_TYPE_SECRET_KEY,
+                TextType::class,
+                [
+                    'label'             => self::PREFIX_LABEL . self::NAME_TYPE_SECRET_KEY,
+                    'required'          => false,
+                    'attr'              => $commonAttr,
+                    'group'             => $commonGroup,
+                    'mapped'            => false,
+                    'data'              => $tinkoff->getSecretKey(),
+                ]
+            )
+            ->add(
+                self::NAME_TYPE_REDIRECT_DUE_DATA,
+                NumberType::class,
+                [
+                    'label'             => self::PREFIX_LABEL . self::NAME_TYPE_REDIRECT_DUE_DATA,
+                    'required'          => false,
+                    'attr'              => $commonAttr,
+                    'group'             => $commonGroup,
+                    'mapped'            => false,
+                    'data'              => $tinkoff->getRedirectDueDate(),
                 ]
             )
             ->add(
                 self::NAME_TYPE_LANGUAGE,
                 InvertChoiceType::class,
                 [
-                    'label'    => self::PREFIX_LABEL . self::NAME_TYPE_LANGUAGE,
-                    'choices'  => ['ru' => 'на русском языке', 'en' => 'на английском языке'],
-                    'mapped'   => false,
-                    'required' => false,
-                    'attr'     => $commonAttr,
-                    'group'    => $commonGroup,
-                    'data'     => $tinkoff->getLanguage(),
+                    'label'             => self::PREFIX_LABEL . self::NAME_TYPE_LANGUAGE,
+                    'choices'           => ['ru' => 'на русском языке', 'en' => 'на английском языке'],
+                    'mapped'            => false,
+                    'required'          => false,
+                    'attr'              => $commonAttr,
+                    'group'             => $commonGroup,
+                    'data'              => $tinkoff->getLanguage(),
                 ]
             )
             ->add(
                 self::NAME_TYPE_TAXATION_RATE_CODE,
                 InvertChoiceType::class,
                 [
-                    'label'    => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
-                    'choices'  => $extraData->getTaxationRateCodes($tinkoff),
-                    'mapped'   => false,
-                    'required' => false,
-                    'attr'     => $commonAttr,
-                    'group'    => $commonGroup,
-                    'data'     => $tinkoff->getTaxationRateCode(),
+                    'label'             => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
+                    'choices'           => $extraData->getTaxationRateCodes($tinkoff),
+                    'mapped'            => false,
+                    'required'          => false,
+                    'attr'              => $commonAttr,
+                    'group'             => $commonGroup,
+                    'data'              => $tinkoff->getTaxationRateCode(),
                 ]
             )
             ->add(
                 self::NAME_TYPE_TAXATION_SYSTEM_CODE,
                 InvertChoiceType::class,
                 [
-                    'label'    => 'form.clientPaymentSystemType.uniteller.taxation_system_code',
-                    'choices'  => $extraData->getTaxationSystemCodes($tinkoff),
-                    'mapped'   => false,
-                    'required' => false,
-                    'attr'     => $commonAttr,
-                    'group'    => $commonGroup,
-                    'data'     => $tinkoff->getTaxationSystemCode(),
+                    'label'             => 'form.clientPaymentSystemType.uniteller.taxation_system_code',
+                    'choices'           => $extraData->getTaxationSystemCodes($tinkoff),
+                    'mapped'            => false,
+                    'required'          => false,
+                    'attr'              => $commonAttr,
+                    'group'             => $commonGroup,
+                    'data'              => $tinkoff->getTaxationSystemCode(),
                 ]
             )
             ->add(
                 self::NAME_TYPE_IS_WITH_FISCALIZATION,
                 CheckboxType::class,
                 [
-                    'mapped'   => false,
-                    'label'    => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
-                    'group'    => $commonGroup,
-                    'data'     => $tinkoff->isWithFiscalization(),
-                    'required' => false,
-                    'attr'     => $commonAttr,
+                    'mapped'            => false,
+                    'label'             => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
+                    'group'             => $commonGroup,
+                    'data'              => $tinkoff->isWithFiscalization(),
+                    'required'          => false,
+                    'attr'              => $commonAttr,
                 ]
             );
     }

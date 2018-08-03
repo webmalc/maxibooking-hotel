@@ -59,4 +59,15 @@ abstract class InitCommon
     {
         return $this->orderId;
     }
+
+    /**
+     * @param array $data
+     * @return string
+     */
+    protected function returnSha256(array $data): string
+    {
+        ksort($data);
+
+        return hash('sha256', implode('',$data));
+    }
 }

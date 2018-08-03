@@ -7,10 +7,14 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 
+use GuzzleHttp\Client;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff\InitRequest;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff\InitResponse;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff\Notification;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -65,6 +69,18 @@ class Tinkoff implements PaymentSystemInterface, TaxMapInterface
      * @var string
      * @ODM\Field(type="string")
      */
+    private $secretKey;
+
+    /**
+     * @var int
+     * @ODM\Field(type="integer")
+     */
+    private $redirectDueDate = 24;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
     protected $taxationRateCode = self::DEFAULT_TAX_RATE;
 
     /**
@@ -72,6 +88,38 @@ class Tinkoff implements PaymentSystemInterface, TaxMapInterface
      * @ODM\Field(type="string")
      */
     protected $taxationSystemCode = self::DEFAULT_TAX_SYSTEM;
+
+    /**
+     * @return int
+     */
+    public function getRedirectDueDate(): int
+    {
+        return $this->redirectDueDate;
+    }
+
+    /**
+     * @param int $redirectDueDate
+     */
+    public function setRedirectDueDate(int $redirectDueDate): void
+    {
+        $this->redirectDueDate = $redirectDueDate;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getSecretKey(): ?string
+    {
+        return $this->secretKey;
+    }
+
+    /**
+     * @param string $secretKey
+     */
+    public function setSecretKey(string $secretKey): void
+    {
+        $this->secretKey = $secretKey;
+    }
 
     /**
      * @return string
@@ -159,17 +207,57 @@ class Tinkoff implements PaymentSystemInterface, TaxMapInterface
 
     public function checkRequest(Request $request, ClientConfig $config): CheckResultHolder
     {
-        // TODO: Implement checkRequest() method.
+        $notification = Notification::parseRequest($request);
+
+        $holder = new CheckResultHolder();
+
+        if ($notification === null) {
+
+            return $holder;
+        }
+
+        if ($notification->compareToken($this)
+            || $notification->isSuccess()
+            || $notification->getStatus() !== Notification::STATUS_CONFIRMED) {
+
+            return $holder;
+        }
+
+        $holder->setDoc($notification->getOrderId());
+        $holder->setText('ok');
+
+        return $holder;
     }
 
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {
-        // TODO: Implement getFormData() method.
+        $init = InitRequest::create($cashDocument,$this);
+
+        $client = new Client();
+
+        $response = InitResponse::parseResponse($client->post(self::URL_API . '/Init', ['json' => $init]));
+
+        if ($response !== null || $response->getErrorCode() !== '0') {
+            /** TODO обработать ошибки */
+//            throw new \Exception('Error at response from tinkoff');
+        }
+//        return ['url' => $response->getPaymentURL()];
+        return ['url' => 'http://localhost:9099/success.php'];
     }
 
     public function getSignature(CashDocument $cashDocument, $url = null)
     {
-        // TODO: Implement getSignature() method.
+//        $param = [
+//            'OrderId'     => $cashDocument->getId(),
+//            'Amount'      => $cashDocument->getTotal(),
+//            'TerminalKey' => $this->getTerminalKey(),
+//            'Language'    => $this->getLanguage(),
+//            'Password'    => $this->getSecretKey(),
+//        ];
+//
+//        ksort($param);
+//
+//        return hash('sha256', implode('',$param));
     }
 
 

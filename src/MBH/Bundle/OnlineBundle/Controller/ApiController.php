@@ -492,11 +492,21 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
+        $emailIsRequired = false;
+        /**
+         * т.к. при фискилизации для генерации урл неодходимо поле email
+         * возможно перенести куда-то в другое место и сделать более универсально
+         */
+        if ($this->clientConfig->getTinkoff() !== null) {
+            $emailIsRequired = $this->clientConfig->getTinkoff()->isWithFiscalization();
+        }
+
         return [
-            'request' => $requestJson,
-            'services' => $services,
-            'hotels' => $hotels,
-            'config' => $formConfig
+            'request'         => $requestJson,
+            'services'        => $services,
+            'hotels'          => $hotels,
+            'config'          => $formConfig,
+            'emailIsRequired' => $emailIsRequired,
         ];
     }
 

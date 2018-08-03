@@ -7,44 +7,9 @@
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff;
 
 
-class InitResponse extends InitCommon
+
+class InitResponse extends Response
 {
-    /**
-     * Успешность операции
-     * Да
-     * bool
-     * 
-     * @var bool
-     */
-    private $success;
-
-    /**
-     * Статус транзакции
-     * обязательный да
-     * String(20)
-     * 
-     * @var string
-     */
-    private $status;
-
-    /**
-     * Уникальный идентификатор транзакции в системе Банка
-     * обязательный да
-     * Number(20)
-     * 
-     * @var int
-     */
-    private $paymentId;
-
-    /**
-     * Код ошибки, «0» - если успешно
-     * обязательный да
-     * String(20)
-     * 
-     * @var string
-     */
-    private $errorCode;
-
     /**
      * Ссылка на страницу оплаты. По умолчанию ссылка доступна в течении 24 часов.
      * обязательный нет
@@ -72,36 +37,20 @@ class InitResponse extends InitCommon
      */
     private $details;
 
-    /**
-     * @return bool
-     */
-    public function isSuccess(): bool
+    public static function parseResponse(\Psr\Http\Message\ResponseInterface $response): ?self
     {
-        return $this->success;
-    }
+        $body = json_decode($response->getBody(), true);
+        if (json_last_error() !== JSON_ERROR_NONE || empty($body)) {
+            return null;
+        }
+        $self = new self();
+        foreach ($body as $key => $value) {
+            if (property_exists(self::class, lcfirst($key))) {
+                $self->$key = $value;
+            }
+        }
 
-    /**
-     * @return string
-     */
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPaymentId(): int
-    {
-        return $this->paymentId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getErrorCode(): string
-    {
-        return $this->errorCode;
+        return $self;
     }
 
     /**

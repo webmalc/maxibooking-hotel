@@ -6,6 +6,9 @@
 
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\Tinkoff;
+
 /**
  * @see https://oplata.tinkoff.ru/landing/develop/documentation
  *
@@ -52,6 +55,36 @@ class Receipt implements \JsonSerializable
      */
     private $taxation;
 
+    public static function create(CashDocument $cashDocument, Tinkoff $tinkoff): self
+    {
+        $payer = $cashDocument->getPayer();
+
+        $receipt = new Receipt();
+        $receipt->setEmail($payer->getEmail());
+        $receipt->setTaxation($tinkoff->getTaxationSystemCode());
+
+        $payerPhone = $payer->getPhone();
+        if ($payerPhone !== null) {
+            $receipt->setPhone($payerPhone);
+        }
+
+        $order = $cashDocument->getOrder();
+        foreach ($order->getPackages() as $package) {
+            $name = 'Проживание в номере "%1$s".';
+
+            $item = new Item();
+            $item->setName(sprintf($name, $package->getRoomType()->getName()));
+            $item->setPrice($package->getPrice() * 100);
+            $item->setQuantity(1);
+            $item->setAmount($package->getPrice() * 100);
+            $item->setTax($tinkoff->getTaxationRateCode());
+
+            $receipt->addItems($item);
+        }
+
+        return $receipt;
+    }
+
     /**
      * @return Item[]
      */
@@ -68,13 +101,13 @@ class Receipt implements \JsonSerializable
         $this->items[] = $item;
     }
 
-//    /**
-//     * @param Item[] $items
-//     */
-//    public function setItems(array $items): void
-//    {
-//        $this->items = $items;
-//    }
+    /**
+     * @param Item[] $items
+     */
+    public function setItems(array $items): void
+    {
+        $this->items = $items;
+    }
 
     /**
      * @return string
