@@ -432,7 +432,7 @@ class Extension extends \Twig_Extension
             'get_field_name'          => new \Twig_SimpleFunction('get_field_name', [$this, 'getFieldTitleByName'], ['is_safe' => ['html']]),
             'is_mb_user'              => new \Twig_SimpleFunction('is_mb_user', [$this, 'isMBUser'], ['is_safe' => ['html']]),
             'get_properties'          => new \Twig_SimpleFunction('get_properties', [$this, 'getMethodsForTemplate'], ['is_safe' => ['html']]),
-            'offset'                  => new \Twig_SimpleFunction('mbh_offset', [$this, 'offset'], ['is_safe' => ['html']])
+            'offset'                  => new \Twig_SimpleFunction('mbh_offset', [$this, 'offset'], ['is_safe' => ['html']]),
             'get_guide_article_url'   => new \Twig_SimpleFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], ['is_safe' => ['html']]),
         ];
     }

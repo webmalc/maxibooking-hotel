@@ -4,11 +4,7 @@
 namespace Tests\Bundle\SearchBundle\Services\Search;
 
 
-use Doctrine\ODM\MongoDB\MongoDBException;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
-use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
@@ -26,8 +22,6 @@ class SearchTest extends SearchWebTestCase
 
     /** @dataProvider syncDataProvider
      * @param iterable $data
-     * @throws MongoDBException
-     * @throws DataHolderException
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
      */
@@ -61,7 +55,6 @@ class SearchTest extends SearchWebTestCase
         $conditionData = $this->createConditionData($data);
         $search = $this->getContainer()->get('mbh_search.search');
         $search->setAsyncQueriesChunk($expected['chunk']);
-        /** @var SearchResultHolder $actual */
         $actual = $search->searchAsync($conditionData);
         $this->dm->clear();
         $conditions = $this->dm->find(SearchConditions::class, $actual);

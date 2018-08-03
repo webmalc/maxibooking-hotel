@@ -15,8 +15,6 @@ use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
@@ -161,8 +159,11 @@ class SearchLimitChecker
     }
 
 
-
-    public function checkWindows(Result $result)
+    /**
+     * @param Result $result
+     * @throws SearchLimitCheckerException
+     */
+    public function checkWindows(Result $result): void
     {
         if ($this->clientConfig->getSearchWindows()) {
             //** TODO: Уточнить если форс */

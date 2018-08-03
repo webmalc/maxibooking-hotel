@@ -16,7 +16,7 @@ class SearcherTest extends SearchWebTestCase
         $searchQueries = $this->createSearchQueries($data['conditions']);
 
         $searcher = $this->getContainer()->get('mbh_search.searcher');
-
+        $errors = [];
         foreach ($searchQueries as $searchQuery) {
             try {
                 $actual[] = $searcher->search($searchQuery);
@@ -30,6 +30,7 @@ class SearcherTest extends SearchWebTestCase
         /** @var Result $actualSearchResult */
         $actualSearchResult = reset($actual);
         $this->assertInstanceOf(Result::class, $actualSearchResult);
+        $this->assertCount(4, $errors['searchError']);
         $this->assertEquals($expected['totalPrice'], $actualSearchResult->getPrices()[0]->getTotal());
     }
 

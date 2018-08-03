@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class Result implements \JsonSerializable, ResultCacheablesInterface
 {
@@ -289,13 +290,13 @@ class Result implements \JsonSerializable, ResultCacheablesInterface
     }
 
 
-    public static function createErrorResult(SearchConditions $conditions, SearchException $exception): Result
+    public static function createErrorResult(SearchQuery $searchQuery, SearchException $exception): Result
     {
         $result = new static();
         $result
             ->setStatus('error')
             ->setError($exception->getMessage())
-            ->setResultConditions((new ResultConditions())->setConditions($conditions));
+            ->setResultConditions((new ResultConditions())->setConditions($searchQuery->getSearchConditions()));
 
         return $result;
     }

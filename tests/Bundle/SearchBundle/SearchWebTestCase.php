@@ -178,7 +178,7 @@ abstract class SearchWebTestCase extends WebTestCase
 
 }
 
-//Data Example
+// Data for Example Do not remove.
 //yield [
 //    [
 //        'beginOffset' => 3,

@@ -8,7 +8,6 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;

@@ -15,7 +15,7 @@ use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 
 class SearchCache
 {
-    const SEARCH_CRITERIA_FIELDS = [
+    public const SEARCH_CRITERIA_FIELDS = [
         'begin',
         'end',
         'adults',
@@ -60,7 +60,7 @@ class SearchCache
      * @param SearchQuery $query
      * @return SearchResultCacheItem
      */
-    public function searchByQuery(SearchQuery $query)
+    public function searchInCache(SearchQuery $query)
     {
         $searchCriteriaArray = $this->fieldsManager
             ->fillByDocumentFieldsWithFieldNameKeys($query, self::SEARCH_CRITERIA_FIELDS);

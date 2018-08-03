@@ -78,6 +78,9 @@ class SearchQuery
     /** @var string */
     private $searchHash;
 
+    /** @var bool */
+    private $isUseCache = false;
+
 
 
     /**
@@ -401,6 +404,24 @@ class SearchQuery
 
         return \count($infants);
     }
+
+    /**
+     * @return bool
+     */
+    public function isUseCache(): bool
+    {
+        return $this->isUseCache;
+    }
+
+    /**
+     * @param bool $isUseCache
+     */
+    public function setIsUseCache(bool $isUseCache): void
+    {
+        $this->isUseCache = $isUseCache;
+    }
+
+
 
     public function getDuration(): int
     {

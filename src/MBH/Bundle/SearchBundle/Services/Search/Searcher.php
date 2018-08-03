@@ -3,8 +3,6 @@
 
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
-
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
@@ -39,6 +37,14 @@ class Searcher
     }
 
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return Result
+     * @throws SearcherException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     public function search(SearchQuery $searchQuery): Result
     {
 
@@ -66,6 +72,9 @@ class Searcher
         return $searchResult;
     }
 
+    /**
+     * @return array|null
+     */
     public function getRestrictionError(): ?array
     {
         return $this->restrictionChecker->getErrors();

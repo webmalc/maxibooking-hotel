@@ -7,7 +7,6 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
@@ -18,16 +17,16 @@ use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
 class Search
 {
-    /** @var int  */
+    /** @var int */
     public const QUERIES_CHUNK_NUM = 20;
 
-    /** @var bool  */
+    /** @var bool */
     public const PRE_RESTRICTION_CHECK = false;
 
     /** @var RestrictionsCheckerService */
     private $restrictionChecker;
 
-    /** @var Searcher */
+    /** @var SearcherInterface */
     private $searcher;
 
     /** @var DocumentManager */
@@ -48,7 +47,7 @@ class Search
     /**
      * Search constructor.
      * @param RestrictionsCheckerService $restrictionsChecker
-     * @param Searcher $searcher
+     * @param SearcherInterface $searcher
      * @param DocumentManager $documentManager
      * @param SearchConditionsCreator $conditionsCreator
      * @param SearchQueryGenerator $queryGenerator
@@ -56,7 +55,7 @@ class Search
      */
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
-        Searcher $searcher,
+        SearcherInterface $searcher,
         DocumentManager $documentManager,
         SearchConditionsCreator $conditionsCreator,
         SearchQueryGenerator $queryGenerator,
@@ -74,25 +73,17 @@ class Search
 
     /**
      * @param array $data
-     * @param bool $isHideRestrictedResults
      * @return Result[]
-     *\ @throws SearchConditionException
+     * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
      */
-    public function searchSync(array $data, bool $isHideRestrictedResults = true): array
+    public function searchSync(array $data): array
     {
         $conditions = $this->createSearchConditions($data);
         $searchQueries = $this->createSearchQueries($conditions);
         $results = [];
         foreach ($searchQueries as $searchQuery) {
-            try {
-                $results[] = $this->searcher->search($searchQuery);
-            } catch (SearchException $e) {
-                $restrictedResult = Result::createErrorResult($conditions, $e);
-                if (!$isHideRestrictedResults) {
-                    $results[] = $restrictedResult;
-                }
-            }
+            $results[] = $this->searcher->search($searchQuery);
         }
 
         return $results;
@@ -202,7 +193,6 @@ class Search
     {
         $this->asyncQueriesChunk = $asyncQueriesChunk;
     }
-
 
 
 }
