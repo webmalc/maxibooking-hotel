@@ -61,7 +61,7 @@ mbh.error = {
 
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),
-    show: function(href, header, text, buttonText, buttonIcon, buttonClass, action, $this) {
+    show: function(href, header, text, buttonText, buttonIcon, buttonClass, action, $this, alertType) {
         $("#entity-delete-button").off('click').on('click', function(e) {
             e.preventDefault();
             if (action) {
@@ -86,6 +86,7 @@ mbh.alert = {
         $('#entity-delete-button-text').html(buttonText);
         $('#entity-delete-button-icon').attr('class', 'fa ' + buttonIcon);
         $('#entity-delete-button').attr('class', 'btn btn-' + buttonClass);
+        this.$alert.addClass('modal-' + alertType);
 
         this.$alert.modal('show');
     },
@@ -203,7 +204,8 @@ var deleteLink = function() {
         var buttonText = $this.attr('data-button') || $('#entity-delete-button-text').attr('data-default');
         var buttonIcon = $this.attr('data-button-icon') || $('#entity-delete-button-icon').attr('data-default');
         var buttonClass = $this.attr('data-button-class') || $('#entity-delete-button').attr('data-default');
-        mbh.alert.show(href, header, text, buttonText, buttonIcon, buttonClass, action, $this);
+        var alertType = $this.attr('data-alert-type') || $this.data('alert-type');
+        mbh.alert.show(href, header, text, buttonText, buttonIcon, buttonClass, action, $this, alertType);
 
         $('.datepicker').datepicker({
             language: "ru",

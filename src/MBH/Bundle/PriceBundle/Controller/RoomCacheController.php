@@ -23,6 +23,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
      * @Method("GET")
      * @Security("is_granted('ROLE_ROOM_CACHE_VIEW')")
      * @Template()
+     * @throws \Exception
      */
     public function indexAction()
     {

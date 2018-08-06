@@ -10,11 +10,7 @@
         <div class="tab-pane active" id="home">
             {{ form_start(form, {'action': path('vashotel_save'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% embed 'MBHChannelManagerBundle::actions.html.twig' %}
-                {% block additional_actions %}
-                    {% include '@MBHChannelManager/ChannelManager/confirmCMButton.html.twig' with {channelManagerName: 'vashotel'} %}
-                {% endblock %}
-            {% endembed %}
+            {% include 'MBHChannelManagerBundle::actions.html.twig' %}
             {{ form_end(form) }}
 
             {%  if config %}

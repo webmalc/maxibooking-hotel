@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ChannelManagerBundle\Lib\CanPullOldOrdersTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
+use MBH\Bundle\ChannelManagerBundle\Lib\IsConnectionSettingsReadTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -30,6 +31,7 @@ class ExpediaConfig extends Base implements BaseInterface
 
     use ConfigTrait;
     use CanPullOldOrdersTrait;
+    use IsConnectionSettingsReadTrait;
 
     /**
      * Hook timestampable behavior
@@ -131,7 +133,6 @@ class ExpediaConfig extends Base implements BaseInterface
         $this->rooms = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
         $this->services = new ArrayCollection();
-        $this->setReadinessConfirmed(false);
     }
 
     /**

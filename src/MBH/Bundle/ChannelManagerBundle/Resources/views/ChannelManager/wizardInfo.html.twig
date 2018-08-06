@@ -38,7 +38,8 @@
         <div class="tab-pane active" id="home">
             {% if hasForm %}
                 {% if config and config.hotelId and config.id %}
-                    <div class="well" id="connection-request-sent-message">
+                    <div class="alert alert-warning alert-dismissable" id="connection-request-sent-message"
+                         style="font-weight: 600;">
                         {{ 'views.channnelmanager.wizard_info.request_sent'|trans({}, 'MBHChannelManagerBundle') }}
                     </div>
                 {% else %}
@@ -62,8 +63,14 @@
 
             {% embed '@MBHBase/Actions/base_list.html.twig' %}
                 {% block left %}
-                    {% if channelManagerName in ['booking', 'expedia', 'myallocator', 'ostrovok'] %}
-                        {% include '@MBHChannelManager/ChannelManager/confirmCMButton.html.twig' %}
+                    {% if not is_cm_configured_by_tech_support(channelManagerName) and (config is empty or not config.isConnectionSettingsRead()) %}
+                        <li>
+                            <a id="next-step"
+                               href="{{ path('read_connection_instruction', {'channelManagerName': channelManagerName}) }}"
+                               class="btn btn-primary navbar-btn navbar-link-button">
+                                {{ 'cm_wizard.buttons.next_step.title'|trans }} <i class="fa fa-arrow-right"> </i>
+                            </a>
+                        </li>
                     {% endif %}
                 {% endblock %}
             {% endembed %}

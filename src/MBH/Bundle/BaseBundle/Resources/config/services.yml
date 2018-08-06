@@ -458,6 +458,17 @@ services:
         calls:
             - [pushHandler, ['@mbh.raven_handler']]
 
+    mbh.slack_messenger:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\SlackMessenger
+        arguments: ['@logger', '@translator', '@kernel']
+
+    mbh.instant_notifier:
+        class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
+        arguments: ['@service_container', '@logger']
+        calls:
+            - [attach, ['@mbh.slack_messenger']]
+            - [attach, ["@mbh.mailer"]]
+
     mbh.raven_handler:
         class: Monolog\Handler\RavenHandler
         arguments: ['@mbh.raven_client']
