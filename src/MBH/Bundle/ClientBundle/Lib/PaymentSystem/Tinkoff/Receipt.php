@@ -8,6 +8,8 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\Tinkoff;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 
 /**
  * @see https://oplata.tinkoff.ru/landing/develop/documentation
@@ -68,18 +70,35 @@ class Receipt implements \JsonSerializable
             $receipt->setPhone($payerPhone);
         }
 
+        $tax = $tinkoff->getTaxationRateCode();
+
         $order = $cashDocument->getOrder();
+        /** @var Package $package */
         foreach ($order->getPackages() as $package) {
             $name = 'Проживание в номере "%1$s".';
 
             $item = new Item();
             $item->setName(sprintf($name, $package->getRoomType()->getName()));
-            $item->setPrice($package->getPrice() * 100);
+            $item->setPrice($package->getPackagePrice(true) * 100);
             $item->setQuantity(1);
-            $item->setAmount($package->getPrice() * 100);
-            $item->setTax($tinkoff->getTaxationRateCode());
+            $item->setAmount($package->getPackagePrice(true) * 100);
+            $item->setTax($tax);
 
             $receipt->addItems($item);
+
+            /** @var PackageService $service */
+            foreach ($package->getServices() as $service) {
+                $quantity = $service->getAmount() * $service->getNights() * $service->getPersons();
+
+                $item = new Item();
+                $item->setName('Услуга: ' . $service->getService()->getName());
+                $item->setPrice($service->getPrice() * 100);
+                $item->setQuantity($quantity);
+                $item->setAmount($quantity * $item->getPrice());
+                $item->setTax($tax);
+
+                $receipt->addItems($item);
+            }
         }
 
         return $receipt;

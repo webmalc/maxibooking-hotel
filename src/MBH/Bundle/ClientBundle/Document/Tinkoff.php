@@ -231,34 +231,21 @@ class Tinkoff implements PaymentSystemInterface, TaxMapInterface
 
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {
-        $init = InitRequest::create($cashDocument,$this);
-
-        $client = new Client();
-
-        $response = InitResponse::parseResponse($client->post(self::URL_API . '/Init', ['json' => $init]));
-
-        if ($response !== null || $response->getErrorCode() !== '0') {
-            /** TODO обработать ошибки */
-//            throw new \Exception('Error at response from tinkoff');
-        }
-//        return ['url' => $response->getPaymentURL()];
-        return ['url' => 'http://localhost:9099/success.php'];
+        return [
+            'cashDocumentId' => $cashDocument->getId(),
+        ];
     }
 
+    /**
+     * Используются две подписи:
+     *  одна для инициализации: src/MBH/Bundle/ClientBundle/Lib/PaymentSystem/Tinkoff/InitRequest.php
+     *  вторая для нотификации src/MBH/Bundle/ClientBundle/Lib/PaymentSystem/Tinkoff/Notification.php
+     *
+     * @param CashDocument $cashDocument
+     * @param null $url
+     * @return void
+     */
     public function getSignature(CashDocument $cashDocument, $url = null)
     {
-//        $param = [
-//            'OrderId'     => $cashDocument->getId(),
-//            'Amount'      => $cashDocument->getTotal(),
-//            'TerminalKey' => $this->getTerminalKey(),
-//            'Language'    => $this->getLanguage(),
-//            'Password'    => $this->getSecretKey(),
-//        ];
-//
-//        ksort($param);
-//
-//        return hash('sha256', implode('',$param));
     }
-
-
 }
