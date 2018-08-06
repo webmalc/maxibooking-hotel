@@ -166,9 +166,11 @@ class SearchConditions extends Base
     }
 
 
-    public function setId($id)
+    public function setId($id): SearchConditions
     {
         $this->id = $id;
+
+        return $this;
     }
     /**
      * @return \DateTime

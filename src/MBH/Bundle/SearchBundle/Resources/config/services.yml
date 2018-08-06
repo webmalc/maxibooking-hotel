@@ -81,17 +81,22 @@ services:
 
 
 #search
-    mbh_search.searcher:
-        class: MBH\Bundle\SearchBundle\Services\Search\Searcher
-        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_limit_checker', '@mbh_search.result_composer', '@validator']
+
+    mbh_search.search_factory:
+        class: MBH\Bundle\SearchBundle\Services\Search\SearchFactory
+        arguments: ['@mbh_search.searcher', '@mbh_search.cache_searcher']
 
     mbh_search.cache_searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\CacheSearcher
         arguments: ['@mbh_search.searcher', '@mbh_search.cache_search']
 
+    mbh_search.searcher:
+        class: MBH\Bundle\SearchBundle\Services\Search\Searcher
+        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_limit_checker', '@mbh_search.result_composer', '@validator']
+
     mbh_search.search:
         class: MBH\Bundle\SearchBundle\Services\Search\Search
-        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.cache_searcher', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer']
+        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_factory', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer']
 
     mbh_search.accommodation_room_searcher:
         class: MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher
@@ -112,7 +117,7 @@ services:
 # async receive results
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
-        arguments: ['@mbh_search.searcher', '@mbh_search.search_conditions_repository', '@mbh_search.redis_store']
+        arguments: ['@mbh_search.search_factory', '@mbh_search.search_conditions_repository', '@mbh_search.redis_store']
 
 #search limit checker for refactoring
     mbh_search.search_limit_checker:
@@ -179,6 +184,12 @@ services:
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
         arguments:
             - MBH\Bundle\SearchBundle\Document\SearchResultHolder
+
+    mbh_search.search_cache_item_repository:
+      class: MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository
+      factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+      arguments:
+      - MBH\Bundle\SearchBundle\Document\SearchResultCacheItem
 #
 
 # Блок работы с данными
@@ -208,8 +219,9 @@ services:
 ##Cache Results
     mbh_search.cache_search:
         class: MBH\Bundle\SearchBundle\Services\Cache\SearchCache
+        arguments: ['@mbh_search.search_cache_item_repository']
 
-##REDIS_Caches
+  ##REDIS_Caches
     mbh_search.redis:
         class: Symfony\Component\Cache\Adapter\RedisAdapter
         factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', createConnection]

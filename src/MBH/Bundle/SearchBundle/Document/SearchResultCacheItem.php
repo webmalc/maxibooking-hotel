@@ -9,6 +9,8 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -44,16 +46,16 @@ class SearchResultCacheItem extends Base
     private $end;
 
     /**
-     * @var mixed
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
+     * @var string
+     * @ODM\Field(type="string")
      */
-    private $tariff;
+    private $tariffId;
 
     /**
-     * @var mixed
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
+     * @var string
+     * @ODM\Field(type="string")
      */
-    private $roomType;
+    private $roomTypeId;
 
     /**
      * @var int
@@ -86,8 +88,8 @@ class SearchResultCacheItem extends Base
     private $childrenAges = [];
 
     /**
-     * @var array
-     * @ODM\Field(type="hash")
+     * @var string
+     * @ODM\Field(type="string")
      */
     private $serializedSearchResult;
 
@@ -132,18 +134,18 @@ class SearchResultCacheItem extends Base
     /**
      * @return mixed
      */
-    public function getTariff()
+    public function getTariffId()
     {
-        return $this->tariff;
+        return $this->tariffId;
     }
 
     /**
-     * @param mixed $tariff
+     * @param string $tariffId
      * @return SearchResultCacheItem
      */
-    public function setTariff($tariff): SearchResultCacheItem
+    public function setTariffId(string $tariffId): SearchResultCacheItem
     {
-        $this->tariff = $tariff;
+        $this->tariffId = $tariffId;
 
         return $this;
     }
@@ -151,18 +153,18 @@ class SearchResultCacheItem extends Base
     /**
      * @return mixed
      */
-    public function getRoomType()
+    public function getRoomTypeId(): string
     {
-        return $this->roomType;
+        return $this->roomTypeId;
     }
 
     /**
-     * @param mixed $roomType
+     * @param string $roomTypeId
      * @return SearchResultCacheItem
      */
-    public function setRoomType($roomType): SearchResultCacheItem
+    public function setRoomTypeId(string $roomTypeId): SearchResultCacheItem
     {
-        $this->roomType = $roomType;
+        $this->roomTypeId = $roomTypeId;
 
         return $this;
     }
@@ -225,25 +227,51 @@ class SearchResultCacheItem extends Base
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function getSerializedSearchResult(): array
+    public function getSerializedSearchResult(): string
     {
         return $this->serializedSearchResult;
     }
 
     /**
-     * @param array $serializedSearchResult
+     * @param string $serializedSearchResult
      * @return SearchResultCacheItem
      */
-    public function setSerializedSearchResult(array $serializedSearchResult): SearchResultCacheItem
+    public function setSerializedSearchResult(string $serializedSearchResult): SearchResultCacheItem
     {
         $this->serializedSearchResult = $serializedSearchResult;
 
         return $this;
     }
 
+    public static function createInstance(Result $result, SerializerInterface $serializer = null, string $format = 'json'): SearchResultCacheItem
+    {
+        $cacheItem = new self();
+        $roomType = $result->getResultRoomType()->getRoomType();
+        $tariff = $result->getResultTariff()->getTariff();
+        $resultConditions = $result->getResultConditions();
+        $adults = $resultConditions->getAdults();
+        $children = $resultConditions->getChildren();
+        $childrenAges = $resultConditions->getChildrenAges();
+        if (null !== $serializer) {
+            $serializedResult = $serializer->serialize($result, $format);
+        } else {
+            $serializedResult = json_encode($result, JSON_UNESCAPED_UNICODE);
+        }
 
+        $cacheItem
+            ->setBegin($result->getBegin())
+            ->setEnd($result->getEnd())
+            ->setRoomTypeId($roomType->getId())
+            ->setTariffId($tariff->getId())
+            ->setAdults($adults)
+            ->setChildren($children)
+            ->setChildrenAges($childrenAges)
+            ->setSerializedSearchResult($serializedResult);
+
+        return $cacheItem;
+    }
 
 
 }

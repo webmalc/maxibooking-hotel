@@ -36,7 +36,6 @@ class CacheSearcherTest extends SearcherTest
 
         foreach ($searchQueries as $searchQuery) {
             /** @var SearchQuery $searchQuery */
-            $searchQuery->setIsUseCache(true);
             $actual[] = $searcher->search($searchQuery);
         }
 
@@ -79,7 +78,6 @@ class CacheSearcherTest extends SearcherTest
 
         foreach ($searchQueries as $searchQuery) {
             /** @var SearchQuery $searchQuery */
-            $searchQuery->setIsUseCache(true);
             $actual[] = $searcher->search($searchQuery);
         }
 

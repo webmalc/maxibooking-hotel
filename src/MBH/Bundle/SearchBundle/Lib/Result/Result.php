@@ -4,7 +4,6 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
@@ -30,7 +29,7 @@ class Result implements \JsonSerializable, ResultCacheablesInterface
     private $resultConditions;
 
     /** @var ResultPrice[] */
-    private $prices;
+    private $prices = [];
 
     /** @var int */
     private $minRoomsCount;
@@ -165,7 +164,7 @@ class Result implements \JsonSerializable, ResultCacheablesInterface
     /**
      * @return int
      */
-    public function getMinRoomsCount(): int
+    public function getMinRoomsCount(): ?int
     {
         return $this->minRoomsCount;
     }
@@ -212,7 +211,7 @@ class Result implements \JsonSerializable, ResultCacheablesInterface
      * @param ResultRoom $virtualRoom
      * @return Result
      */
-    public function setVirtualRoom(ResultRoom $virtualRoom): Result
+    public function setVirtualRoom(?ResultRoom $virtualRoom = null): Result
     {
         $this->virtualRoom = $virtualRoom;
 
@@ -293,11 +292,58 @@ class Result implements \JsonSerializable, ResultCacheablesInterface
     public static function createErrorResult(SearchQuery $searchQuery, SearchException $exception): Result
     {
         $result = new static();
+        $begin = $searchQuery->getBegin();
+        $end = $searchQuery->getEnd();
+        $tariff = new ResultTariff();
+        $tariff
+            ->setId($searchQuery->getTariffId())
+        ;
+        $roomType = new ResultRoomType();
+        $roomType->setId($searchQuery->getRoomTypeId());
+
+
+
         $result
             ->setStatus('error')
             ->setError($exception->getMessage())
-            ->setResultConditions((new ResultConditions())->setConditions($searchQuery->getSearchConditions()));
+            ->setResultConditions(ResultConditions::createInstance($searchQuery->getSearchConditions()))
+            ->setResultTariff($tariff)
+
+        ;
+
 
         return $result;
     }
+
+    public static function createInstance(
+        \DateTime $begin,
+        \DateTime $end,
+        ResultConditions $resultConditions,
+        ResultTariff $tariff,
+        ResultRoomType $roomType,
+        array $resultPrices,
+        int $minRooms,
+        array $accommodationRooms,
+        ResultRoom  $virtualRoom = null
+
+    ): Result
+    {
+        $result = new self();
+
+        $result
+            ->setBegin($begin)
+            ->setEnd($end)
+            ->setResultConditions($resultConditions)
+            ->setMinRoomsCount($minRooms)
+            ->setResultTariff($tariff)
+            ->setResultRoomType($roomType)
+            ->setPrices($resultPrices)
+            ->setAccommodationRooms($accommodationRooms)
+            ->setVirtualRoom($virtualRoom)
+        ;
+
+
+        return $result;
+    }
+
 }

@@ -153,7 +153,7 @@ class ResultDayPrice implements \JsonSerializable
      * @param ResultPromotion $promotion
      * @return ResultDayPrice
      */
-    public function setPromotion(ResultPromotion $promotion): ResultDayPrice
+    public function setPromotion(?ResultPromotion $promotion = null): ResultDayPrice
     {
         $this->promotion = $promotion;
 
@@ -171,6 +171,29 @@ class ResultDayPrice implements \JsonSerializable
             'infants' => $this->getInfants(),
             'promotion' => $this->getPromotion()
         ];
+    }
+
+    public static function createInstance(
+        \DateTime $day,
+        int $adults,
+        int $children,
+        int $infants,
+        float $price,
+        ResultTariff $tariff,
+        ResultPromotion $promotion = null
+    ): ResultDayPrice
+    {
+        $dayPrice = new self();
+        $dayPrice
+            ->setDate($day)
+            ->setAdults($adults)
+            ->setChildren($children)
+            ->setInfants($infants)
+            ->setPrice($price)
+            ->setTariff($tariff)
+            ->setPromotion($promotion);
+
+        return $dayPrice;
     }
 
 

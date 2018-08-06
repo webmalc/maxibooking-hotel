@@ -73,13 +73,8 @@ class SearchResultComposer
             throw new SearchResultComposerException('Can not get Tariff or RoomType');
         }
 
-        $resultRoomType = new ResultRoomType();
-        $resultRoomType->setRoomType($roomType);
-
-
-        $resultTariff = new ResultTariff();
-        $resultTariff->setTariff($tariff);
-
+        $resultRoomType = ResultRoomType::createInstance($roomType);
+        $resultTariff = ResultTariff::createInstance($tariff);
 
         $actualAdults = $searchQuery->getActualAdults();
         $actualChildren = $searchQuery->getActualChildren();
@@ -95,36 +90,31 @@ class SearchResultComposer
         foreach ($combinations as $combination) {
             [$adults, $children] = explode('_', $combination);
             $currentPrice = $prices[$combination];
-            $resultPrice = new ResultPrice();
-            $resultPrice
-                ->setSearchAdults($adults)
-                ->setSearchChildren($children ?? 0)
-                ->setTotal($currentPrice['total']);
+            $resultPrice = ResultPrice::createInstance(
+                $adults,
+                $children ?? 0,
+                $currentPrice['total']);
             $packagePrices = $currentPrice['packagePrices'];
             foreach ($packagePrices as $packagePrice) {
-                $dayPrice = new ResultDayPrice();
                 /** @var PackagePrice $packagePrice */
-                $dayTariff = new ResultTariff();
-                $dayTariff->setTariff($packagePrice->getTariff());
-                $dayPrice
-                    ->setDate($packagePrice->getDate())
-                    ->setTariff($dayTariff)
-                    ->setPrice($packagePrice->getPrice())
-                    ->setAdults($adults)
-                    ->setChildren($children)
-                    ->setInfants($infants);
-
+                $dayTariff = ResultTariff::createInstance($packagePrice->getTariff());
+                $dayPrice = ResultDayPrice::createInstance(
+                    $packagePrice->getDate(),
+                    $adults,
+                    $children,
+                    $infants,
+                    $packagePrice->getPrice(),
+                    $dayTariff);
                 $resultPrice->addDayPrice($dayPrice);
             }
             $resultPrices[] = $resultPrice;
         }
 
-        $resultConditions = new ResultConditions();
         $conditions = $searchQuery->getSearchConditions();
         if (!$conditions || null === $conditions->getId()) {
             throw new SearchResultComposerException('No conditions or conditions id in SearchQuery. Critical search error');
         }
-        $resultConditions->setConditions($conditions);
+        $resultConditions = ResultConditions::createInstance($conditions);
 
         $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
         $resultAccommodationRooms = [];
@@ -139,16 +129,16 @@ class SearchResultComposer
         }
         $minRoomsCount = $this->getMinCacheValue($searchQuery);
 
-        $result = new Result();
-        $result
-            ->setBegin($searchQuery->getBegin())
-            ->setEnd($searchQuery->getEnd())
-            ->setResultTariff($resultTariff)
-            ->setResultRoomType($resultRoomType)
-            ->setResultConditions($resultConditions)
-            ->setMinRoomsCount($minRoomsCount)
-            ->setPrices($resultPrices)
-            ->setAccommodationRooms($resultAccommodationRooms);
+        $result = Result::createInstance(
+            $searchQuery->getBegin(),
+            $searchQuery->getEnd(),
+            $resultConditions,
+            $resultTariff,
+            $resultRoomType,
+            $resultPrices,
+            $minRoomsCount,
+            $resultAccommodationRooms)
+        ;
 
         return $result;
     }

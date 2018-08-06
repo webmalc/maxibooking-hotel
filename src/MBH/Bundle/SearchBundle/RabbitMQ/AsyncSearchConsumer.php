@@ -12,6 +12,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
+use MBH\Bundle\SearchBundle\Services\Search\SearcherInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -31,11 +32,11 @@ class AsyncSearchConsumer implements ConsumerInterface
 
     /**
      * AsyncSearchConsumer constructor.
-     * @param Searcher $searcher
+     * @param SearcherInterface $searcher
      * @param SearchConditionsRepository $conditionsRepository
      * @param AsyncResultStoreInterface $resultStore
      */
-    public function __construct(Searcher $searcher, SearchConditionsRepository $conditionsRepository, AsyncResultStoreInterface $resultStore)
+    public function __construct(SearcherInterface $searcher, SearchConditionsRepository $conditionsRepository, AsyncResultStoreInterface $resultStore)
     {
         $this->searcher = $searcher;
         $this->conditionsRepository = $conditionsRepository;
@@ -57,12 +58,7 @@ class AsyncSearchConsumer implements ConsumerInterface
         foreach ($searchQueries as $searchQuery) {
             /** @var SearchQuery $searchQuery */
             $searchQuery->setSearchConditions($conditions);
-            try {
-                $result = $this->searcher->search($searchQuery);
-            } catch (SearchException $exception) {
-                $result = Result::createErrorResult($searchQuery, $exception);
-            }
-
+            $result = $this->searcher->search($searchQuery);
             $this->resultStore->store($result);
         }
 

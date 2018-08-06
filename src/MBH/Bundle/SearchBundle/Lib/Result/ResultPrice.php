@@ -19,7 +19,7 @@ class ResultPrice implements \JsonSerializable
     private $total;
 
     /** @var ResultDayPrice[] */
-    private $dayPrices;
+    private $dayPrices = [];
 
     /**
      * @return int
@@ -105,6 +105,17 @@ class ResultPrice implements \JsonSerializable
         return $this->dayPrices;
     }
 
+    /**
+     * @param ResultDayPrice[] $dayPrices
+     * @return ResultPrice
+     */
+    public function setDayPrices(array $dayPrices): ResultPrice
+    {
+        $this->dayPrices = $dayPrices;
+
+        return $this;
+    }
+
 
     public function addDayPrice(ResultDayPrice $dayPrice): ResultPrice
     {
@@ -123,5 +134,17 @@ class ResultPrice implements \JsonSerializable
         ];
     }
 
+    public static function createInstance(int $searchAdults, int $searchChildren, int $total, array $dayPrices = []): ResultPrice
+    {
+        $resultPrice = new self();
+        $resultPrice
+            ->setSearchAdults($searchAdults)
+            ->setSearchChildren($searchChildren)
+            ->setTotal($total)
+            ->setDayPrices($dayPrices)
+        ;
+
+        return $resultPrice;
+    }
 
 }

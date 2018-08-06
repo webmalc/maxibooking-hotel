@@ -229,7 +229,7 @@ trait SearchQueryTrait
      */
     public function setTariff(Tariff $tariff)
     {
-        $this->tariff = $tariff;
+        $this->tariffId = $tariff;
 
         return $this;
     }
