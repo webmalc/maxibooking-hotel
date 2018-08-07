@@ -104,6 +104,27 @@ class NotifierMessage
     private $messageType = null;
     /** @var  string */
     private $messageIdentifier;
+    /** @var null string */
+    private $slackChannelUrl = null;
+
+    /**
+     * @return null
+     */
+    public function getSlackChannelUrl()
+    {
+        return $this->slackChannelUrl;
+    }
+
+    /**
+     * @param null $slackChannelUrl
+     * @return NotifierMessage
+     */
+    public function setSlackChannelUrl($slackChannelUrl)
+    {
+        $this->slackChannelUrl = $slackChannelUrl;
+
+        return $this;
+    }
 
     /**
      * @return string

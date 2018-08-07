@@ -3,10 +3,17 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Form\IntroType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -19,19 +26,25 @@ class CMWizardManager
     private $tokenStorage;
     private $billingApi;
     private $translator;
+    private $warningsCompiler;
+    private $helper;
 
     public function __construct(
         ChannelManager $channelManager,
         DocumentFieldsManager $fieldsManager,
         TokenStorage $tokenStorage,
         BillingApi $billingApi,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        WarningsCompiler $warningsCompiler,
+        Helper $helper
     ) {
         $this->channelManager = $channelManager;
         $this->fieldsManager = $fieldsManager;
         $this->tokenStorage = $tokenStorage;
         $this->billingApi = $billingApi;
         $this->translator = $translator;
+        $this->warningsCompiler = $warningsCompiler;
+        $this->helper = $helper;
     }
 
     const CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT = [
@@ -66,32 +79,6 @@ class CMWizardManager
     }
 
     /**
-     * @param Hotel $hotel
-     * @param string $channelManagerName
-     * @param string $channelManagerHumanName
-     * @return array
-     */
-    public function getConnectionInfoMessages(Hotel $hotel, string $channelManagerName, string $channelManagerHumanName)
-    {
-        $result = [];
-        if ($this->isConfiguredByTechSupport($channelManagerName)) {
-            $result[] = $this->translator->trans('cm_wizard_manager.hotel_name_notification.text', [
-                '%channelManagerName%' => $channelManagerHumanName,
-                '%hotelName%' => $hotel->getName()
-            ]);
-        }
-        
-        if (in_array($channelManagerName, ['ostrovok', 'hundred_one_hotels']) && empty($this->getUnfilledFields($hotel))) {
-            $result[] = $this->translator->trans('cm_wizard_manager.hotel_address_notification.text', [
-                '%channelManagerName%' => $channelManagerHumanName,
-                '%hotelAddress%' => $this->getChannelManagerHotelAddress($hotel)
-            ]);
-        }
-        
-        return $result;
-    }
-
-    /**
      * @param string $channelManagerName
      * @param ChannelManagerConfigInterface|null $config
      * @return string
@@ -105,11 +92,11 @@ class CMWizardManager
 
         if (is_null($config)
             || ($this->isConfiguredByTechSupport($channelManagerName) && empty($config->getHotelId()))
-            || (!$this->isConfiguredByTechSupport($channelManagerName) && !$config->isReadinessConfirmed())) {
+            || (!$this->isConfiguredByTechSupport($channelManagerName) && !$config->isConnectionSettingsRead())) {
             return 'wizard_info';
         }
 
-        if (is_null($config) or !$config->isMainSettingsFilled() or !$config->isReadinessConfirmed()) {
+        if (!$config->isMainSettingsFilled()) {
             return $channelManagerName;
         }
 
@@ -119,6 +106,10 @@ class CMWizardManager
 
         if ($config->getTariffs()->isEmpty()) {
             return $channelManagerName . '_tariff';
+        }
+
+        if (!$config->isConfirmedWithDataWarnings()) {
+            return 'cm_data_warnings';
         }
 
         throw new \RuntimeException('It is impossible to determine the current step of channel manager configuration');
@@ -165,6 +156,76 @@ class CMWizardManager
             . ($hotel->getCorpus() ? ('/' . $hotel->getCorpus()) : '');
     }
 
+    /**
+     * @param Hotel $hotel
+     * @param string $channelManagerName
+     * @param string $cacheClass
+     * @return array
+     */
+    public function getLastCachesData(Hotel $hotel, string $channelManagerName, string $cacheClass)
+    {
+        $config = $this->channelManager->getConfigForHotel($hotel, $channelManagerName);
+
+        /** @var RoomType[] $syncRoomTypes */
+        $syncRoomTypes = array_map(function(Room $room) {
+            return $room->getRoomType();
+        }, $config->getRooms()->toArray());
+        $syncRoomTypeIds = $this->helper->toIds($syncRoomTypes);
+
+        /** @var Tariff[] $syncTariffs */
+        $syncTariffs = array_map(function(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff) {
+            return $tariff->getTariff();
+        }, $config->getTariffs()->toArray());
+        $syncTariffIds = $this->helper->toIds($syncTariffs);
+
+        $lastDefinedCaches = [];
+        $lastCacheByRoomTypesAndTariffs =
+            $this->warningsCompiler->getLastCacheByRoomTypesAndTariffs($cacheClass, $syncRoomTypeIds, $syncTariffIds);
+
+        foreach ($syncRoomTypes as $roomType) {
+            foreach ($syncTariffs as $tariff) {
+                $tariffId = $cacheClass === PriceCache::class ? $tariff->getId() : 0;
+                if (isset($lastCacheByRoomTypesAndTariffs[$roomType->getId()][$tariffId])) {
+                    /** @var \DateTime $date */
+                    $date = $lastCacheByRoomTypesAndTariffs[$roomType->getId()][$tariffId]['date'];
+                    $offsetFromNow = $date->diff(new \DateTime('midnight'))->days;
+                    if ($offsetFromNow > 180) {
+                        $status = 'success';
+                    } elseif ($offsetFromNow > 90) {
+                        $status = 'warning';
+                    } else {
+                        $status = 'danger';
+                    }
+                } else {
+                    $date = null;
+                    $status = 'danger';
+                }
+
+                $cacheData = [
+                    'roomType' => $roomType,
+                    'tariff' => $tariff,
+                    'date' => $date,
+                    'status' => $status
+                ];
+
+                $cacheClass === RoomCache::class
+                    ? $lastDefinedCaches[] = $cacheData
+                    : $lastDefinedCaches[$roomType->getId()][] = $cacheData;
+            }
+        }
+
+        return $lastDefinedCaches;
+    }
+
+    public function sendMessageToTechSupportAboutNewConnection(ChannelManagerConfigInterface $config)
+    {
+
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return array
+     */
     private function getUnfilledFields(Hotel $hotel)
     {
         return $this->fieldsManager->getFieldsByCorrectnessStatuses(

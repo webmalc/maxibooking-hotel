@@ -14,7 +14,7 @@ views.booking.actions.sync_all_old_desc: Все
 views.booking.tariff.cancel: Отмена
 views.channnelmanager.settings: Настройки
 views.channnelmanager.wizard_info.send_request: 'Отправить заявку'
-views.channnelmanager.wizard_info.request_sent: 'Заявка отправлена, ожидайте сообщения тех. поддержки'
+views.channnelmanager.wizard_info.request_sent: 'Заявка отправлена, ожидайте сообщения технической поддержки.'
 views.oktogo.room.save: Сохранить
 views.oktogo.room.get_room_ids_from_oktogo: 'Получить ID номеров из Oktogo.ru'
 views.oktogo.tariff.save: Сохранить
@@ -29,7 +29,20 @@ views.vashotel.service.service: Сервис
 views.vashotel.service.code: Код
 views.ostrovok.service.service: Сервис
 views.ostrovok.service.code: Код
-views.tabs.instruction: 'Инструкция'
+views.tabs.instruction: 'Разрешение от "%channelManagerName%"'
+view.tabs.data_warnings: 'Проверка данных'
+view.data_warnings.check_data_text: 'Проверьте данные, которые будут выгружены в систему %channelManagerName%:'
+view.data_warnings.last_defined_room_caches: 'Установлено количество номеров на продажу:'
+view.data_warnings.last_defined_price_caches: 'Заданы цены на номера:'
+view.data_warnings.last_defined_caches: 'до %date%'
+view.data_warnings.tariff: тариф
+view.data_warnings.room_caches_not_defined: 'Не выставлены в продажу номера:'
+view.data_warnings.attention: 'Внимание!'
+view.data_warnings.from_to_date: 'с %begin% по %end%'
+view.data_warnings.last_defined_caches.not_defined: 'Не установлены'
+view.data_warnings.price_caches_not_defined: 'Не заданы цены на номера:'
+view.data_warnings.modal.is_data_checked: 'Данные проверены и можно проводить подключение?'
+view.data_warnings.modal.yes_button.text: 'Да'
 views.tabs.main_settings: ' Основные настройки'
 views.tabs.room_types: ' Типы номеров'
 views.tabs.tariffs: ' Тарифы'

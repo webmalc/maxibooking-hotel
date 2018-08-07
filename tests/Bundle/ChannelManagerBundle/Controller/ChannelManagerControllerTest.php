@@ -37,6 +37,15 @@ class ChannelManagerControllerTest extends WebTestCase
      */
     public function testWizardInfoAction(string $serviceName, bool $hasForm)
     {
+        if (in_array($serviceName, ['hundred_one_hotels', 'vashotel'])) {
+            $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+            $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
+            $hotel->setCityId(12);
+            $hotel->setRegionId(13);
+            $hotel->setCountryTld('ru');
+            $dm->flush();
+        }
+
         $crawler = $this->client->request('GET', '/management/channelmanager/'.$serviceName.'/wizard_info');
         $this->assertEquals($this->client->getResponse()->getStatusCode(), 200);
 
@@ -44,37 +53,25 @@ class ChannelManagerControllerTest extends WebTestCase
         $this->assertEquals(1, $instructionBlock->count());
 
         $this->assertEquals(0, $crawler->filter('#connection-request-sent-message')->count());
-        $expectedMessage = $this
-            ->getContainer()
-            ->get('translator')
-            ->trans('cm_connection_instructions.part1.header');
+        $expectedMessage = 'Чтобы получить разрешение от системы бронирования';
         $this->assertContains($expectedMessage, $instructionBlock->text());
 
         $introFormCrawler = $crawler->filter('form[name="mbhchannel_manager_bundle_intro_type"]');
         $this->assertEquals(intval($hasForm), $introFormCrawler->count());
 
         if ($hasForm) {
-            if ($serviceName === 'hundred_one_hotels') {
-                $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
-                $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
-                $hotel->setCityId(12);
-                $hotel->setRegionId(13);
-                $hotel->setCountryTld('ru');
-                $dm->flush();
-            }
-
             $introForm = $introFormCrawler->form(['mbhchannel_manager_bundle_intro_type[hotelId]' => 123]);
             $crawler = $this->client->submit($introForm);
             $this->assertEquals(0, $crawler->filter('form[name="mbhchannel_manager_bundle_intro_type"]')->count());
             $requestSentMessageBlock = $crawler->filter('#connection-request-sent-message');
             $this->assertContains(
-                'Заявка отправлена, ожидайте сообщения тех. поддержки',
+                'Заявка отправлена, ожидайте сообщения технической поддержки',
                 $requestSentMessageBlock->text()
             );
         } else {
-            $confirmButton = $crawler->filter('#confirm-config-button');
-            $this->assertEquals(1, $confirmButton->count());
-            $this->client->click($confirmButton->link());
+            $nextStepButton = $crawler->filter('#next-step');
+            $this->assertEquals(1, $nextStepButton->count());
+            $this->client->click($nextStepButton->link());
             $indexCrawler = $this->client->followRedirect();
 
             $formName = $this->getIndexFormName($serviceName);
@@ -102,11 +99,6 @@ class ChannelManagerControllerTest extends WebTestCase
             ->form($this->getIndexFormData($serviceName, $formName));
 
         $this->client->submit($indexForm);
-        if ($hasForm) {
-            $crawler = $this->client->followRedirect();
-            $confirmButton = $crawler->filter('#confirm-config-button');
-            $this->client->click($confirmButton->link());
-        }
 
         $this->client->followRedirect();
 
@@ -189,6 +181,12 @@ class ChannelManagerControllerTest extends WebTestCase
             ]
         );
         $this->client->submit($roomsForm);
+
+        $dataWarningsCrawler = $this->client->followRedirect();
+            $this->assertEquals(
+            'http://localhost/management/channelmanager/'.$serviceName.'/'.'data_warnings',
+            $dataWarningsCrawler->getUri()
+        );
     }
 
     /**

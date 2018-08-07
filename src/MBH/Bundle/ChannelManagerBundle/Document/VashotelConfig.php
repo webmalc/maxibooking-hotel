@@ -137,7 +137,6 @@ class VashotelConfig extends Base implements BaseInterface
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->setReadinessConfirmed(false);
     }
 
     /**

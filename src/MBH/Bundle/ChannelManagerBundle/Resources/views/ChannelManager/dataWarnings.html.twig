@@ -1,0 +1,216 @@
+{% extends 'MBHChannelManagerBundle::layout.html.twig' %}
+
+{% set layout = 'tabs' %}
+{% set title = channel_manager_human_name(channelManagerName) %}
+{% set small_title = 'view.tabs.data_warnings'|trans({}, 'MBHChannelManagerBundle') %}
+{% set title_url = path(channelManagerName) %}
+
+{% block content %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 4, 'base': channelManagerName} %}
+
+    <style>
+        ul > li {
+            margin-bottom: 5px;
+        }
+
+        .header-line {
+            margin: 10px 0;
+        }
+    </style>
+
+    <div class="tab-content">
+        <ul class="nav nav-pills nav-stacked">
+            <li>
+                <a style="background-color: #d2d6de; font-size: 16px" class="bold header-line">
+                    {{ 'view.data_warnings.check_data_text'|trans({'%channelManagerName%' : channel_manager_human_name(channelManagerName)}, 'MBHChannelManagerBundle') }}
+                </a>
+
+                <ol style="list-style-type: none; padding-left: 0">
+                    <li class="row" style=" margin-bottom: 5px">
+                        <div class="col-xs-6 col-md-3 text-right bold">
+                            {{ 'view.data_warnings.last_defined_room_caches'|trans({}, 'MBHChannelManagerBundle') }}
+                        </div>
+                        <div class="col-xs-6 col-md-9">
+                        </div>
+                    </li>
+
+                    {% for lastDefinedRoomCache in lastDefinedRoomCaches %}
+                        <li class="row" style=" margin-bottom: 5px">
+                            <div class="col-xs-6 col-md-3 text-right">
+                                &mdash; {{ lastDefinedRoomCache.roomType.name }}:
+                            </div>
+                            <div class="col-xs-6 col-md-9">
+                                {% set class = lastDefinedRoomCache.status %}
+                                {% if lastDefinedRoomCache.status == 'success' %}
+                                    {% set faSign = 'check' %}
+                                    {% set color = 'inherit' %}
+                                {% elseif lastDefinedRoomCache.status == 'danger' %}
+                                    {% set faSign = 'exclamation' %}
+                                    {% set color = 'red' %}
+                                {% else %}
+                                    {% set faSign = 'question' %}
+                                    {% set color = '#f39c12' %}
+                                {% endif %}
+                                <a target="_blank" href="{{ path('room_cache_overview') }}">
+                                    <small class="label label-{{ class }} label-as-badge"><i
+                                                class="fa fa-{{ faSign }}"></i></small>
+                                </a>
+                                <span style="color: {{ color }};">
+                            - {{ lastDefinedRoomCache.date
+                                    ? 'view.data_warnings.last_defined_caches'|trans({'%date%' : lastDefinedRoomCache.date|localizeddate('medium', 'none')}, 'MBHChannelManagerBundle')
+                                    : 'view.data_warnings.last_defined_caches.not_defined'|trans({}, 'MBHChannelManagerBundle') }}
+                                </span>
+                            </div>
+                        </li>
+                    {% endfor %}
+
+                    <li class="row" style="margin-bottom: 5px; margin-top: 5px;">
+                        <div class="col-xs-6 col-md-3 text-right bold">
+                            {{ 'view.data_warnings.last_defined_price_caches'|trans({}, 'MBHChannelManagerBundle') }}
+                        </div>
+                        <div class="col-xs-6 col-md-9">
+                        </div>
+                    </li>
+
+                    {% for lastDefinedPriceCacheForRoom in lastDefinedPriceCaches %}
+                        <li class="row" style=" margin-bottom: 5px">
+                            <div class="col-xs-6 col-md-3 text-right">
+                                &mdash; {{ lastDefinedPriceCacheForRoom|first['roomType'].name }}:
+                            </div>
+                            <div class="col-xs-6 col-md-9">
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    {% for lastDefinedPriceCache in lastDefinedPriceCacheForRoom %}
+                                        {% set class = lastDefinedPriceCache.status %}
+                                        {% if lastDefinedPriceCache.status == 'success' %}
+                                            {% set faSign = 'check' %}
+                                            {% set color = 'inherit' %}
+                                        {% elseif lastDefinedPriceCache.status == 'danger' %}
+                                            {% set faSign = 'exclamation' %}
+                                            {% set color = 'red' %}
+                                        {% else %}
+                                            {% set faSign = 'question' %}
+                                            {% set color = '#f39c12' %}
+                                        {% endif %}
+                                        <li style="color: {{ color }}">
+                                            <a target="_blank" href="{{ path('price_cache_overview') }}">
+                                                <small class="label label-{{ class }} label-as-badge"><i
+                                                            class="fa fa-{{ faSign }}"></i></small>
+                                            </a>
+
+                                            {{ lastDefinedPriceCache.date
+                                            ? 'view.data_warnings.last_defined_caches'|trans({'%date%' : lastDefinedPriceCache.date|localizeddate('medium', 'none')}, 'MBHChannelManagerBundle')
+                                            : 'view.data_warnings.last_defined_caches.not_defined'|trans({}, 'MBHChannelManagerBundle') }}
+                                            ({{ 'view.data_warnings.tariff'|trans({}, 'MBHChannelManagerBundle') }}
+                                            "<strong>{{ lastDefinedPriceCache.tariff.name }}</strong>")
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ol>
+            </li>
+
+            {% set existsRoomCacheEmptyPeriods = emptyRoomCachePeriods is not empty %}
+            {% set existsPriceCacheEmptyPeriods = emptyPriceCachePeriods is not empty %}
+
+            {% if existsRoomCacheEmptyPeriods or existsPriceCacheEmptyPeriods %}
+                <li>
+                    <a style="background-color: #ebcccc; font-size: 16px; color: red;" class="bold header-line">
+                        <small class="label label-danger label-as-badge"><i class="fa fa-exclamation"></i></small>
+                        {{ 'view.data_warnings.attention'|trans({}, 'MBHChannelManagerBundle')}}
+                    </a>
+                </li>
+
+                <ol style="list-style-type: none; padding-left: 0">
+                {% if existsRoomCacheEmptyPeriods %}
+                    <li class="row" style=" margin-bottom: 5px">
+                        <div class="col-xs-6 col-md-3 text-right bold" style="color: red;">
+                            {{ existsPriceCacheEmptyPeriods ? '1.' : '' }}
+                            {{ 'view.data_warnings.room_caches_not_defined'|trans({}, 'MBHChannelManagerBundle')}}
+                        </div>
+                        <div class="col-xs-6 col-md-9">
+                        </div>
+                    </li>
+
+                    {% for emptyRoomCachePeriodForRoom in emptyRoomCachePeriods|first %}
+                        {% set emptyRoomCachePeriodForRoom = emptyRoomCachePeriodForRoom[0] %}
+                        <li class="row bold" style=" margin-bottom: 5px">
+                            <div class="col-xs-6 col-md-3 text-right">
+                                &mdash; {{ emptyRoomCachePeriodForRoom|first.roomType.name }}:
+                            </div>
+                            <div class="col-xs-6 col-md-9">
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    {% for emptyRoomCachePeriod in emptyRoomCachePeriodForRoom %}
+                                        <li>
+                                            {{ 'view.data_warnings.from_to_date'|trans({
+                                                '%begin%': '<span style="color: red;">' ~ emptyRoomCachePeriod.begin|date('d.m.Y') ~ '</span>',
+                                                '%end%': '<span style="color: red;">' ~ emptyRoomCachePeriod.end|date('d.m.Y') ~ '</span>'
+                                            }, 'MBHChannelManagerBundle')|raw}}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+
+                {% if existsPriceCacheEmptyPeriods %}
+                    <li class="row" style=" margin-bottom: 5px">
+                        <div class="col-xs-6 col-md-3 text-right bold" style="color: red;">
+                            {{ existsRoomCacheEmptyPeriods ? '2.' : '' }}
+                            {{ 'view.data_warnings.price_caches_not_defined'|trans({}, 'MBHChannelManagerBundle')}}
+                        </div>
+                        <div class="col-xs-6 col-md-9">
+                        </div>
+                    </li>
+                    {% for emptyPriceCachePeriodsByRooms in emptyPriceCachePeriods|first %}
+                        <li class="row bold" style=" margin-bottom: 5px">
+                            <div class="col-xs-6 col-md-3 text-right">
+                                &mdash; {{ emptyPriceCachePeriodsByRooms|first|first.roomType.name }}:
+                            </div>
+                            <div class="col-xs-6 col-md-9">
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    {% for emptyPriceCachePeriodsByTariffs in emptyPriceCachePeriodsByRooms %}
+                                        <li class="bold">
+                                            {{ 'view.data_warnings.tariff'|trans({}, 'MBHChannelManagerBundle') }}
+                                            "{{ emptyPriceCachePeriodsByTariffs|first.tariff.name }}":
+                                        </li>
+                                        <ul style="list-style-type: none;">
+                                            {% for emptyPriceCachePeriod in emptyPriceCachePeriodsByTariffs %}
+
+                                                <li>
+                                                    {{ 'view.data_warnings.from_to_date'|trans({
+                                                        '%begin%': '<span style="color: red;">' ~ emptyPriceCachePeriod.begin|date('d.m.Y') ~ '</span>',
+                                                        '%end%': '<span style="color: red;">' ~ emptyPriceCachePeriod.end|date('d.m.Y') ~ '</span>'
+                                                    }, 'MBHChannelManagerBundle')|raw}}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </li>
+                    {% endfor %}
+                    </ol>
+                {% endif %}
+            {% endif %}
+        </ul>
+    </div>
+
+    {% embed '@MBHBase/Actions/base_list.html.twig' %}
+        {% block left %}
+            <li>
+                <a id="next-step" data-alert-type="success" data-text="{{ 'view.data_warnings.modal.is_data_checked'|trans({}, 'MBHChannelManagerBundle') }}"
+                   data-button="{{ 'view.data_warnings.modal.yes_button.text'|trans({}, 'MBHChannelManagerBundle') }}" data-button-icon="fa-check-square"
+                   href="{{ path('cm_confirm_with_warnings', {'channelManagerName': channelManagerName}) }}"
+                   class="btn btn-success navbar-btn navbar-link-button delete-link">
+                    <i class="fa fa-check-square"> </i> {{ 'cm_wizard.buttons.complete.title'|trans }}
+                </a>
+            </li>
+        {% endblock %}
+    {% endembed %}
+
+
+
+{% endblock %}

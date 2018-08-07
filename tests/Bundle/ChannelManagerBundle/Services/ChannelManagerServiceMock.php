@@ -69,6 +69,13 @@ class ChannelManagerServiceMock
         ];
     }
 
+    public function propertyList(MyallocatorConfig $config)
+    {
+        return [
+            ['id' => self::FIRST_ROOM_ID, 'name' => 'First']
+        ];
+    }
+
     public function syncServices(ChannelManagerConfigInterface $config)
     {
 

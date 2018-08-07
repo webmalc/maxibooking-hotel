@@ -35,7 +35,7 @@ assetic:
     use_controller: "%use_assetic_controller%"
 
 swiftmailer:
-    delivery_address: ['faainttt@gmail.com']
+    delivery_address: ['mb-error@maxi-booking.ru']
 
 vich_uploader:
     db_driver: mongodb
