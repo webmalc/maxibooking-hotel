@@ -142,7 +142,10 @@ class ActionManager {
             const specialId = element.classList.contains('cancel') ? null : element.getAttribute('data-id');
             const newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
             editModal.modal('hide');
-            self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
+            setTimeout(() => {
+                self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
+            }, 250);
+
         })
     }
 

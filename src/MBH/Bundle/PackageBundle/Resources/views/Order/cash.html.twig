@@ -105,7 +105,7 @@
                                         {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_CASH_CONFIRM') %}
                                             <a data-action='cashDocumentConfirmation'
                                                data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}'
-                                               data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} {{ currency().text }}</b>?'
+                                               data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} {{ currency().text|trans }}</b>?'
                                                data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}'
                                                data-button-icon='fa-check'
                                                href='{{ path('cash_confirm', { 'id': cash.id}) }}'
