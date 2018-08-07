@@ -204,7 +204,7 @@ var deleteLink = function() {
         var buttonText = $this.attr('data-button') || $('#entity-delete-button-text').attr('data-default');
         var buttonIcon = $this.attr('data-button-icon') || $('#entity-delete-button-icon').attr('data-default');
         var buttonClass = $this.attr('data-button-class') || $('#entity-delete-button').attr('data-default');
-        var alertType = $this.attr('data-alert-type') || $this.data('alert-type');
+        var alertType = $this.attr('data-alert-type') || $('#entity-delete-confirmation').data('alert-type');
         mbh.alert.show(href, header, text, buttonText, buttonIcon, buttonClass, action, $this, alertType);
 
         $('.datepicker').datepicker({

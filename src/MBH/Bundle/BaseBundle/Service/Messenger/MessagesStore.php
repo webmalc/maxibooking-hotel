@@ -113,6 +113,7 @@ class MessagesStore
             ->setTranslateParams(['%client%' => $this->client, '%channelManager%' => $channelManagerHumanName])
             ->setSlackChannelUrl(SlackMessenger::CHANNEL_MANAGER_CHANNEL_URL)
             ->setMessageType(NotificationType::TECH_SUPPORT_TYPE)
+            ->setSubject('messages_store.new_connection.subject')
             ->setTemplate('MBHBaseBundle:Mailer:base.html.twig');
 
         $notifier

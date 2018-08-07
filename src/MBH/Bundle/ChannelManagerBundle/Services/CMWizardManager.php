@@ -149,10 +149,10 @@ class CMWizardManager
      */
     public function getChannelManagerHotelAddress(Hotel $hotel)
     {
-        return $this->billingApi->getCityById($hotel->getCityId())->getName()
+        return (!empty($hotel->getCityId()) ? $this->billingApi->getCityById($hotel->getCityId())->getName() : '')
             . ($hotel->getSettlement() ? (', ' . $hotel->getSettlement()) : '')
-            . ' ул. ' . $hotel->getStreet()
-            . ', ' . $hotel->getHouse()
+            . (!empty($hotel->getStreet()) ? ' ул. ' . $hotel->getStreet() : '')
+            . ($hotel->getHouse() ? ', ' . $hotel->getHouse() : '')
             . ($hotel->getCorpus() ? ('/' . $hotel->getCorpus()) : '');
     }
 
@@ -215,11 +215,6 @@ class CMWizardManager
         }
 
         return $lastDefinedCaches;
-    }
-
-    public function sendMessageToTechSupportAboutNewConnection(ChannelManagerConfigInterface $config)
-    {
-
     }
 
     /**

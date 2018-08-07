@@ -71,7 +71,7 @@ view.myallocator.tariff.need_fill_main_settings: 'Необходимо снач�
 view.myallocator.tariff.need_bind_to_mb: 'Channel Manager должен быть прикреплен в МаксиБукинг в Основных настройках'
 view.myallocator.layout.additional_channels: 'Дополнительные каналы'
 view.myallocator.index.cm_bind_tomb: 'Channel Manager был успешно прикреплен к МаксиБукинг'
-view.myallocator.index.remove_user: 'Удалить пользователя'
+view.myallocator.index.remove_user: 'Открепить MyAllocator'
 view.myallocator.index.choose_hotel: 'Выберите соответствующий отель в поле ниже для связи с МаксиБукинг'
 view.myallocator.index.enter_login_and_pass: 'Введите свой логин и пароль для подключения изначального канала к MaxiBooking'
 view.myallocator.room.need_fill_main_settings: 'Необходимо сначала заполнить основные настройки.'

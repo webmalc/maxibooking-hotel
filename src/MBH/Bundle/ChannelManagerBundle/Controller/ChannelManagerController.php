@@ -147,7 +147,7 @@ class ChannelManagerController extends Controller
                 'hotelNameFormRoute' => $this->generateUrl('hotel_edit', ['id' => $this->hotel->getId()]),
             ]);
 
-            if ($request->isMethod('POST')) {
+            if ($request->isMethod('POST') && empty($config->getId())) {
                 if (!empty($config->getId())) {
                     throw new \RuntimeException($configName . ' for hotel with ID="' . $this->hotel->getId() . ' is already exists');
                 }
