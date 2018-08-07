@@ -126,22 +126,22 @@ class InitRequest extends InitCommon implements \JsonSerializable
      */
     private $password;
 
-    public static function create(CashDocument $cashDocument, Tinkoff $tinkoff): self
+    public function generate(CashDocument $cashDocument, Tinkoff $tinkoff): self
     {
-        $self = new self();
-        $self->setOrderId($cashDocument->getId());
-        $self->setDescription($cashDocument);
-        $self->setAmount($cashDocument->getTotal() * 100);
-        $self->setLanguage($tinkoff->getLanguage());
-        $self->setRedirectDueDate($tinkoff->getRedirectDueDate());
-        $self->setTerminalKey($tinkoff->getTerminalKey());
-        $self->setPassword($tinkoff->getSecretKey());
+        $this->setOrderId($cashDocument->getId());
+        $this->setDescription($cashDocument);
+        $this->setAmount($cashDocument->getTotal() * 100);
+        $this->setLanguage($tinkoff->getLanguage());
+        $this->setRedirectDueDate($tinkoff->getRedirectDueDate());
+        $this->setTerminalKey($tinkoff->getTerminalKey());
+        $this->setPassword($tinkoff->getSecretKey());
 
         if ($tinkoff->isWithFiscalization()) {
-            $self->setReceipt(Receipt::create($cashDocument, $tinkoff));
+            $receipt = new Receipt($this->container);
+            $this->setReceipt($receipt->create($cashDocument, $tinkoff));
         }
 
-        return $self;
+        return $this;
     }
 
     /**
@@ -189,19 +189,28 @@ class InitRequest extends InitCommon implements \JsonSerializable
      */
     public function setDescription(CashDocument $cashDocument): void
     {
+        $trans = $this->container->get('translator');
         $hotel = $cashDocument->getHotel();
-        // т.к. генерация происходит из онлайн формы, те ордер новый и пакедж только один
-        $package = $cashDocument->getOrder()->getPackages()[0];
+        // т.к. генерация происходит из онлайн формы, те ордер новый и пакеджы с одной датой
+        $packages = iterator_to_array($cashDocument->getOrder()->getPackages());
 
-        $desc = 'Проживание в "%1$s" c %2$s по %3$s.';
+        if (count($packages) > 1) {
+            $descSuffix = $trans->trans('payment.receipt.common_description.packages');
+        } else {
+            $descSuffix = $trans->trans('payment.receipt.common_description.package');
+        }
+
+        $descSuffix .= implode(' ,', $packages) . '.';
+
+        $desc = $trans->trans('payment.receipt.common_description.hotel_name_and_date') . $descSuffix;
 
         $this->description =
             sprintf(
                 $desc,
                 $hotel,
-                $package->getBegin()->format('d.m.Y'),
-                $package->getEnd()->format('d.m.Y')
-                );
+                $packages[0]->getBegin()->format('d.m.Y'),
+                $packages[0]->getEnd()->format('d.m.Y')
+            );
     }
 
     /**
@@ -249,7 +258,7 @@ class InitRequest extends InitCommon implements \JsonSerializable
      */
     public function setRedirectDueDate(int $redirectDueDate): void
     {
-        $date = new \DateTime('+'. $redirectDueDate . ' hour');
+        $date = new \DateTime('+' . $redirectDueDate . ' hour');
         $this->redirectDueDate = $date->format(DATE_ATOM);
     }
 
@@ -272,12 +281,12 @@ class InitRequest extends InitCommon implements \JsonSerializable
     public function jsonSerialize()
     {
         $data = [
-            'TerminalKey' => $this->getTerminalKey(),
-            'Amount' => $this->getAmount(),
-            'OrderId' => $this->getOrderId(),
-            'Description' => $this->getDescription(),
-            'Token' => $this->getToken(),
-            'Language' => $this->getLanguage(),
+            'TerminalKey'     => $this->getTerminalKey(),
+            'Amount'          => $this->getAmount(),
+            'OrderId'         => $this->getOrderId(),
+            'Description'     => $this->getDescription(),
+            'Token'           => $this->getToken(),
+            'Language'        => $this->getLanguage(),
             'RedirectDueDate' => $this->getRedirectDueDate(),
         ];
 

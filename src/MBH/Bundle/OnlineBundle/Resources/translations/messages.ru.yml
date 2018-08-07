@@ -139,3 +139,8 @@ api.payment_form.result_search.order_has_been_paid: 'Заказ уже опла�
 api.payment_form.pay_order.total: 'Сумма к оплате'
 api.payment_form.pay_order.submit: 'Оплатить'
 api.payment_form.search.not_valid_fields: 'Номер телефона или e-mail указан не корректно'
+payment.receipt.common_description.hotel_name_and_date: 'Проживание в "%1$s" c %2$s по %3$s.'
+payment.receipt.common_description.package: 'Бронь № '
+payment.receipt.common_description.packages: 'Брони № '
+payment.receipt.item_description.package: 'Проживание в номере "%1$s". Бронь № %2$s'
+payment.receipt.item_description.service: 'Услуга: '

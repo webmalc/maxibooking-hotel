@@ -7,8 +7,20 @@
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff;
 
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 abstract class InitCommon
 {
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    public function __construct(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
     /**
      * Идентификатор терминала, выдается Продавцу Банком
      * обязательный да

@@ -216,8 +216,8 @@ class Tinkoff implements PaymentSystemInterface, TaxMapInterface
             return $holder;
         }
 
-        if ($notification->compareToken($this)
-            || $notification->isSuccess()
+        if (!$notification->compareToken($this)
+            || !$notification->isSuccess()
             || $notification->getStatus() !== Notification::STATUS_CONFIRMED) {
 
             return $holder;

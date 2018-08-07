@@ -52,26 +52,27 @@ class ApiExtraController extends Controller
             throw new \Exception('not setup Tinkoff');
         }
 
-        $init = InitRequest::create($cashDocument,$tinkoff);
+        $init = new InitRequest($this->container);
+        $init->generate($cashDocument,$tinkoff);
 
         $client = new Client();
 
+        /** @var InitResponse $response */
         $response = InitResponse::parseResponse($client->post($tinkoff::URL_API . '/Init', ['json' => $init]));
 
         $logger = $this->container->get('mbh.payment_tinkoff.logger');
         $dataForLogger = ' Data response: ' . json_encode($response, JSON_UNESCAPED_UNICODE);
-        $dataForLogger .= ' Data init: ' . json_encode($init, JSON_UNESCAPED_UNICODE);
+        $dataForLogger .= '. Data init: ' . json_encode($init, JSON_UNESCAPED_UNICODE);
 
-        if ($response !== null || $response->getErrorCode() !== '0') {
+        if ($response === null || $response->getErrorCode() !== '0') {
             $msg = 'at response from tinkoff.';
 
             $logger->addError($msg . $dataForLogger);
-            throw new \Exception('Error ' . $msg);
+            throw new \Exception('Error ' . $msg . $response->getDetails() ?? null);
         }
 
-        $logger->addInfo('Ok' . $dataForLogger);
+        $logger->addInfo('Ok.' . $dataForLogger);
 
-//        return $this->redirect($response->getPaymentURL());
-        return $this->redirect('http://localhost:9099/success.php');
+        return $this->redirect($response->getPaymentURL());
     }
 }

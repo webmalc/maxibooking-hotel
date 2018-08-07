@@ -10,6 +10,7 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\Tinkoff;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @see https://oplata.tinkoff.ru/landing/develop/documentation
@@ -19,6 +20,13 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
  */
 class Receipt implements \JsonSerializable
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
     /**
      * Массив, содержащий в себе информацию о товарах
      *
@@ -57,51 +65,52 @@ class Receipt implements \JsonSerializable
      */
     private $taxation;
 
-    public static function create(CashDocument $cashDocument, Tinkoff $tinkoff): self
+    public function create(CashDocument $cashDocument, Tinkoff $tinkoff): self
     {
         $payer = $cashDocument->getPayer();
 
-        $receipt = new Receipt();
-        $receipt->setEmail($payer->getEmail());
-        $receipt->setTaxation($tinkoff->getTaxationSystemCode());
+        $this->setEmail($payer->getEmail());
+        $this->setTaxation($tinkoff->getTaxationSystemCode());
 
         $payerPhone = $payer->getPhone();
         if ($payerPhone !== null) {
-            $receipt->setPhone($payerPhone);
+            $this->setPhone($payerPhone);
         }
+
+        $trans = $this->container->get('translator');
 
         $tax = $tinkoff->getTaxationRateCode();
 
         $order = $cashDocument->getOrder();
         /** @var Package $package */
         foreach ($order->getPackages() as $package) {
-            $name = 'Проживание в номере "%1$s".';
+            $name = $trans->trans('payment.receipt.item_description.package');
 
             $item = new Item();
-            $item->setName(sprintf($name, $package->getRoomType()->getName()));
+            $item->setName(sprintf($name, $package->getRoomType()->getName(), $package->getNumberWithPrefix()));
             $item->setPrice($package->getPackagePrice(true) * 100);
             $item->setQuantity(1);
             $item->setAmount($package->getPackagePrice(true) * 100);
             $item->setTax($tax);
 
-            $receipt->addItems($item);
+            $this->addItems($item);
 
             /** @var PackageService $service */
             foreach ($package->getServices() as $service) {
                 $quantity = $service->getAmount() * $service->getNights() * $service->getPersons();
 
                 $item = new Item();
-                $item->setName('Услуга: ' . $service->getService()->getName());
+                $item->setName($trans->trans('payment.receipt.item_description.service') . $service->getService()->getName());
                 $item->setPrice($service->getPrice() * 100);
                 $item->setQuantity($quantity);
                 $item->setAmount($quantity * $item->getPrice());
                 $item->setTax($tax);
 
-                $receipt->addItems($item);
+                $this->addItems($item);
             }
         }
 
-        return $receipt;
+        return $this;
     }
 
     /**

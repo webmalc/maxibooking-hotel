@@ -41,7 +41,7 @@ abstract class Response extends InitCommon
      * обязательный да
      * String(20)
      *
-     * @var string
+     * @var null|string
      */
     protected $errorCode;
 
@@ -51,6 +51,14 @@ abstract class Response extends InitCommon
     public function isSuccess(): bool
     {
         return $this->success;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSuccess(): string
+    {
+        return $this->isSuccess() ? 'true' : 'false';
     }
 
     /**
@@ -70,9 +78,9 @@ abstract class Response extends InitCommon
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getErrorCode(): string
+    public function getErrorCode(): ?string
     {
         return $this->errorCode;
     }

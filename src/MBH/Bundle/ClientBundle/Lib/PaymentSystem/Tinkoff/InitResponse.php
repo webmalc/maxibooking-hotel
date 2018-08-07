@@ -45,7 +45,8 @@ class InitResponse extends Response
         }
         $self = new self();
         foreach ($body as $key => $value) {
-            if (property_exists(self::class, lcfirst($key))) {
+            $key = lcfirst($key);
+            if (property_exists(self::class, $key)) {
                 $self->$key = $value;
             }
         }

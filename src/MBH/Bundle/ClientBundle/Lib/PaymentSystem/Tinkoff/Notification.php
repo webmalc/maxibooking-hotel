@@ -25,18 +25,10 @@ class Notification extends Response
     public const STATUS_REJECTED = 'REJECTED';                  //	Списание денежных средств закончилась ошибкой
 
     /**
-     * Текущая сумма транзакции в копейках
-     * Number
-     *
-     * @var int
-     */
-    private $amount;
-
-    /**
      * Идентификатор рекуррентного платежа
      * Number
      *
-     * @var int
+     * @var null|int
      */
     private $rebillId;
 
@@ -86,7 +78,7 @@ class Notification extends Response
      * Номер чека в смене. Целочисленное значение
      * Number
      *
-     * @var
+     * @var null|int
      */
     private $fiscalNumber;
 
@@ -94,7 +86,7 @@ class Notification extends Response
      * Номер смены. Целочисленное значение
      * Number
      *
-     * @var
+     * @var null|int
      */
     private $shiftNumber;
 
@@ -102,7 +94,7 @@ class Notification extends Response
      * Дата и время документа из ФН
      * Date
      *
-     * @var
+     * @var null|string
      */
     private $receiptDatetime;
 
@@ -110,7 +102,7 @@ class Notification extends Response
      * Номер ФН
      * String(20)
      *
-     * @var string
+     * @var null|string
      */
     private $fnNumber;
 
@@ -118,7 +110,7 @@ class Notification extends Response
      * Регистрационный номер ККТ
      * String(20)
      *
-     * @var string
+     * @var null|string
      */
     private $ecrRegNumber;
 
@@ -126,7 +118,7 @@ class Notification extends Response
      * Фискальный номер документа. Целочисленное значение
      * Number
      *
-     * @var integer
+     * @var null|integer
      */
     private $fiscalDocumentNumber;
 
@@ -134,7 +126,7 @@ class Notification extends Response
      * Фискальный признак документа. Целочисленное значение
      * Number
      *
-     * @var integer
+     * @var null|integer
      */
     private $fiscalDocumentAttribute;
 
@@ -142,7 +134,7 @@ class Notification extends Response
      * Наименование оператора фискальных данных. Только для онлайн-касс Cloud Kassir
      * String
      *
-     * @var string
+     * @var null|string
      */
     private $ofd;
 
@@ -150,7 +142,7 @@ class Notification extends Response
      * URL адрес с копией чека. Только для онлайн-касс Cloud Kassir
      * String
      *
-     * @var
+     * @var null|string
      */
     private $url;
 
@@ -158,11 +150,13 @@ class Notification extends Response
      * URL адрес с QR кодом для проверки чека в ФН Только для онлайн-касс Cloud Kassir
      * String
      *
-     * @var string
+     * @var null|string
      */
     private $qrCodeUrl;
 
     /**
+     * НЕ ИСПОЛЬЗУЕТСЯ
+     *
      * Данные чека. Повторяет структуру объекта Receipt для инициализации платежа при вызове метода Init
      * Object
      *
@@ -176,7 +170,7 @@ class Notification extends Response
      *      IncomeReturn (Возврат прихода) — Выдается при возврате покупателю (клиенту) средств, полученных от него. Метод Cancel
      * String
      *
-     * @var string
+     * @var null|string
      */
     private $type;
 
@@ -190,7 +184,8 @@ class Notification extends Response
 
         $self = new self();
         foreach ($body as $key => $value) {
-            if (property_exists(self::class, lcfirst($key))) {
+            $key = lcfirst($key);
+            if (property_exists(self::class, $key)) {
                 $self->$key = $value;
             }
         }
@@ -198,12 +193,16 @@ class Notification extends Response
         return $self;
     }
 
+    /**
+     * @param Tinkoff $tinkoff
+     * @return bool
+     */
     public function compareToken(Tinkoff $tinkoff): bool
     {
         $data = [
             'TerminalKey' => $tinkoff->getTerminalKey(),
             'OrderId'     => $this->getOrderId(),
-            'Success'     => $this->isSuccess(),
+            'Success'     => $this->getSuccess(),
             'Status'      => $this->getStatus(),
             'PaymentId'   => $this->getPaymentId(),
             'ErrorCode'   => $this->getErrorCode(),
@@ -211,19 +210,37 @@ class Notification extends Response
             'Password'    => $tinkoff->getSecretKey(),
         ];
 
-        if ($tinkoff->isWithFiscalization()) {
+        if ($tinkoff->isWithFiscalization() && $this->receipt !== null) {
+            $data = array_merge(
+                $data,
+                [
+                    'FiscalNumber'            => $this->getFiscalNumber(),
+                    'ShiftNumber'             => $this->getShiftNumber(),
+                    'ReceiptDatetime'         => $this->getReceiptDatetime(),
+                    'FnNumber'                => $this->getFnNumber(),
+                    'EcrRegNumber'            => $this->getEcrRegNumber(),
+                    'FiscalDocumentNumber'    => $this->getFiscalDocumentNumber(),
+                    'FiscalDocumentAttribute' => $this->getFiscalDocumentAttribute(),
+                    'Ofd'                     => $this->getOfd(),
+                    'Url'                     => $this->getUrl(),
+                    'QrCodeUrl'               => $this->getQrCodeUrl(),
+                    'Type'                    => $this->getType(),
+                ]
+            );
 
         } else {
             $data = array_merge(
-                    $data,
-                    [
-                        'CardId'      => $this->getCardId(),
-                        'Pan'         => $this->getPan(),
-                        'ExpDate'     => $this->getExpDate(),
-                        'RebillId'    => $this->getRebillId(),
-                    ]
-                );
+                $data,
+                [
+                    'CardId'   => $this->getCardId(),
+                    'Pan'      => $this->getPan(),
+                    'ExpDate'  => $this->getExpDate(),
+                    'RebillId' => $this->getRebillId(),
+                ]
+            );
         }
+        $tokenCurrent = $this->returnSha256($data);
+        $token = $this->getToken();
 
         return $this->returnSha256($data) === $this->getToken();
     }
@@ -237,9 +254,9 @@ class Notification extends Response
     }
 
     /**
-     * @return int
+     * @return null|int
      */
-    public function getRebillId(): int
+    public function getRebillId(): ?int
     {
         return $this->rebillId;
     }
@@ -274,5 +291,93 @@ class Notification extends Response
     public function getExpDate(): string
     {
         return $this->expDate;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getFiscalNumber(): ?int
+    {
+        return $this->fiscalNumber;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getShiftNumber(): ?int
+    {
+        return $this->shiftNumber;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getReceiptDatetime(): ?string
+    {
+        return $this->receiptDatetime;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFnNumber(): ?string
+    {
+        return $this->fnNumber;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getEcrRegNumber(): ?string
+    {
+        return $this->ecrRegNumber;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getFiscalDocumentNumber(): ?int
+    {
+        return $this->fiscalDocumentNumber;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getFiscalDocumentAttribute(): ?int
+    {
+        return $this->fiscalDocumentAttribute;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getOfd(): ?string
+    {
+        return $this->ofd;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getQrCodeUrl(): ?string
+    {
+        return $this->qrCodeUrl;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
     }
 }
