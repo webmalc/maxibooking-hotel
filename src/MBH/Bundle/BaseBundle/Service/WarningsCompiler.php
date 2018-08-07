@@ -29,7 +29,7 @@ class WarningsCompiler
      * @param int $periodLengthInDays
      * @param string $className
      * @param string $comparedField
-     * @param bool $isSorted
+     * @param Hotel|null $hotel
      * @return array
      * @throws \Exception
      */
@@ -37,7 +37,7 @@ class WarningsCompiler
         int $periodLengthInDays,
         string $className,
         string $comparedField,
-        $isSorted = true
+        Hotel $hotel = null
     ) {
         $cachesSortedByHotelRoomTypeAndTariff = $this->getCachesForPeriod($periodLengthInDays, $className);
 
@@ -46,6 +46,10 @@ class WarningsCompiler
 
         $periodsWithoutPrice = [];
         foreach ($cachesSortedByHotelRoomTypeAndTariff as $hotelId => $cachesByRoomTypeAndTariff) {
+            if (!is_null($hotel) || $hotel->getId() !== $hotelId) {
+                continue;
+            }
+
             foreach ($cachesByRoomTypeAndTariff as $roomTypeId => $cachesByTariff) {
                 foreach ($cachesByTariff as $tariffId => $caches) {
                     $cachePeriods = $this->periodsCompiler
@@ -61,9 +65,7 @@ class WarningsCompiler
                             $tariff = $className === RoomCache::class ? null : $this->dm->find('MBHPriceBundle:Tariff', $tariffId);
 
                             $emptyPeriod = new EmptyCachePeriod($cachePeriodData['begin'], $cachePeriodData['end'], $roomType, $tariff);
-                            $isSorted
-                                ? $periodsWithoutPrice[$hotelId][$roomTypeId][$tariffId][] = $emptyPeriod
-                                : $periodsWithoutPrice[] = $emptyPeriod;
+                            $periodsWithoutPrice[$hotelId][$roomTypeId][$tariffId][] = $emptyPeriod;
                         }
                     }
                 }
@@ -74,23 +76,23 @@ class WarningsCompiler
     }
 
     /**
-     * @param bool $isSorted
+     * @param Hotel|null $hotel
      * @return array
      * @throws \Exception
      */
-    public function getEmptyPriceCachePeriods($isSorted = true)
+    public function getEmptyPriceCachePeriods(Hotel $hotel = null)
     {
-        return $this->getPeriodsWithEmptyCaches(self::CACHE_PERIOD_LENGTH_IN_DAYS, PriceCache::class, 'price', $isSorted);
+        return $this->getPeriodsWithEmptyCaches(self::CACHE_PERIOD_LENGTH_IN_DAYS, PriceCache::class, 'price', $hotel);
     }
 
     /**
-     * @param bool $isSorted
+     * @param Hotel|null $hotel
      * @return array
      * @throws \Exception
      */
-    public function getEmptyRoomCachePeriods($isSorted = true)
+    public function getEmptyRoomCachePeriods(Hotel $hotel = null)
     {
-        return $this->getPeriodsWithEmptyCaches(self::CACHE_PERIOD_LENGTH_IN_DAYS, RoomCache::class, 'totalRooms', $isSorted);
+        return $this->getPeriodsWithEmptyCaches(self::CACHE_PERIOD_LENGTH_IN_DAYS, RoomCache::class, 'totalRooms', $hotel);
     }
 
     /**
