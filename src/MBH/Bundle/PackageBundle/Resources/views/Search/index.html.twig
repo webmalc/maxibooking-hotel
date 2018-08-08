@@ -61,6 +61,7 @@
                    title='{{ 'form.searchType.payer'|trans() }}'
                    data-toggle='tooltip'></i>
                 {{ form_widget(form.tourist) }}
+                {% if is_granted('ROLE_TOURIST_NEW') %}
                 <small class="hidden-xs">
                     <a href="{{ path('tourist_new') }}"
                        id="add-guest" target="_blank"
@@ -69,6 +70,7 @@
                        <i class="fa fa-plus"></i>
                     </a>
                 </small>
+                {% endif %}
             </div>
 
             {% if is_granted('ROLE_FORCE_BOOKING') %}

@@ -667,13 +667,15 @@
                         <div class="input">
                             <strong>{{ 'modal.chessBoard.payer'|trans }}</strong>&nbsp;
                             {{ form_widget(searchForm.tourist) }}&nbsp;
-                            <small>
-                                <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
-                                   title='{{ 'form.searchType.payer_add'|trans() }}'
-                                   data-toggle='tooltip'>
-                                    <i class="fa fa-plus"></i>
-                                </a>
-                            </small>
+                            {% if is_granted('ROLE_TOURIST_NEW') %}
+                                <small>
+                                    <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
+                                       title='{{ 'form.searchType.payer_add'|trans() }}'
+                                       data-toggle='tooltip'>
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                </small>
+                            {% endif %}
                         </div>
                         <div id="package-new-results"></div>
                     </div>

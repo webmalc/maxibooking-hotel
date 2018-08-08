@@ -2,16 +2,24 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
 interface ChannelManagerConfigInterface
 {
     public function getIsEnabled();
 
+    public function isMainSettingsFilled();
+    public function isConfirmedWithDataWarnings(): ?bool;
+    public function setIsConfirmedWithDataWarnings(bool $isConfirmedWithDataWarnings);
+
     /**
+     * @param bool $checkOldPackages
      * @return bool
      */
-    public function isReadyToSync(): bool;
+    public function isReadyToSync($checkOldPackages = false): bool;
 
     /**
      * @return Hotel
@@ -31,17 +39,23 @@ interface ChannelManagerConfigInterface
 
     public function removeAllRooms();
 
+    /**
+     * @return ArrayCollection|array|Room[]
+     */
     public function getRooms();
 
-    public function addRoom(\MBH\Bundle\ChannelManagerBundle\Document\Room $room);
+    public function addRoom(Room $room);
 
-    public function removeRoom(\MBH\Bundle\ChannelManagerBundle\Document\Room $room);
+    public function removeRoom(Room $room);
 
     public function removeAllTariffs();
 
+    /**
+     * @return ArrayCollection|array|Tariff[]
+     */
     public function getTariffs();
 
-    public function addTariff(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff);
+    public function addTariff(Tariff $tariff);
 
-    public function removeTariff(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff);
+    public function removeTariff(Tariff $tariff);
 }

@@ -50,8 +50,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
     public function indexAction(Request $request)
     {
         $query = new SearchQuery();
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $query->range = $clientConfig ? $clientConfig->getSearchDates() : 0;
+        $query->range = $this->clientConfig ? $this->clientConfig->getSearchDates() : 0;
         $form = $this->createForm(SearchType::class, $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,

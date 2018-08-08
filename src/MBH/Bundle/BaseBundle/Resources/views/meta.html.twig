@@ -144,6 +144,10 @@
                 {% set bootstrapLocale = 'ru' %}
                 {% set select2Locale = 'ru' %}
                 {% set frontMessagesLocale = 'ru' %}
+            {% else %}
+                {% set bootstrapLocale = 'ru' %}
+                {% set select2Locale = 'ru' %}
+                {% set frontMessagesLocale = 'en' %}
             {% endif %}
             {% set bootstrapLocaleFile = 'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.' ~ bootstrapLocale ~ '.min.js' %}
             {% set select2LocaleFile = 'assets/vendor/select2/dist/js/i18n/' ~ select2Locale ~ '.js' %}

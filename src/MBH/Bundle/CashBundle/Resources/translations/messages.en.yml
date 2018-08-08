@@ -1,4 +1,4 @@
-form.cashDocumentType.number: Number
+form.cashDocumentType.number: 'Reference number'
 form.cashDocumentType.sum: Sum
 form.cashDocumentType.payer: Payer
 form.cashDocumentType.organization: Company
@@ -6,17 +6,17 @@ form.cashDocumentType.tourist: Client
 form.cashDocumentType.article: Article
 form.cashDocumentType.placeholder_fio: 'Full name'
 form.cashDocumentType.payment_way: 'Payment option'
-form.cashDocumentType.document_date: 'Document date'
+form.cashDocumentType.document_date: 'Receipt date'
 form.cashDocumentType.paid_date: 'Payment date'
 form.cashDocumentType.operation_type: 'Transaction type'
 form.cashDocumentType.comment: Note
 form.cashDocumentType.is_paid: 'Paid?'
-controller.cashController.edit_record_success: 'Entry successfully edited.'
+controller.cashController.edit_record_success: 'Information successfully updated'
 controller.cashController.payment_confirmed_success: 'Payment successfully confirmed'
 cashDocumentCriteria.type.order: 'With order number'
 cashDocumentCriteria.type.other: 'Without order number'
 mbhcashbundle.service.onecexporter.vidplatezha: 'Payment type'
-mbhcashbundle.view.cash.index.ostatok.po.kasse: 'Cashdesk balance'
+mbhcashbundle.view.cash.index.ostatok.po.kasse: 'Transactions Balance'
 mbhcashbundle.service.onecexporter.sektsiyadokument: 'Document section'
 mbhcashbundle.service.onecexporter.platezhnoe.poruchenie: 'Payment order'
 form.cashDocumentType.platelshikBank1: 'Payer bank'
@@ -30,7 +30,7 @@ mbhcashbundle.view.cash.jsonbuttons.data: Date
 mbhcashbundle.service.onecexporter.fio: 'Full name'
 mbhcashbundle.service.onecexporter.contact: Contact
 mbhcashbundle.service.onecexporter.adres: Address
-form.cashDocumentType.inn: TIN
+form.cashDocumentType.inn: 'Tax number'
 mbhcashbundle.view.cash.index.1c_export: Export
 mbhcashbundle.form.searchtype.sortirova: Sorting
 mbhcashbundle.form.searchtype.po: To
@@ -41,16 +41,16 @@ mbhcashbundle.service.onecexporter.platelshchik: Payer
 mbhcashbundle.service.onecexporter.platelshchikschet: 'Payer order'
 mbhcashbundle.service.onecexporter.dataspisano: 'Date Written off'
 mbhcashbundle.service.onecexporter.poluchatelbank1: 'Recepient bank'
-mbhcashbundle.service.onecexporter.platelshchikinn: 'Payer TIN'
-mbhcashbundle.service.onecexporter.platelshchikkpp: 'Payer Registry Number'
+mbhcashbundle.service.onecexporter.platelshchikinn: 'Payer`s Tax number'
+mbhcashbundle.service.onecexporter.platelshchikkpp: 'Payer`s Company number'
 mbhcashbundle.service.onecexporter.platelshchikraschschet: 'Payer account number'
 mbhcashbundle.service.onecexporter.platelshchikbik: 'SWIFT / BIC'
 mbhcashbundle.service.onecexporter.platelshchikkorschet: 'IBAN/ABA/IFSC/Routing code'
 mbhcashbundle.service.onecexporter.poluchatelʹschet: 'Recepient  account number'
 mbhcashbundle.service.onecexporter.datapostupilo: 'Date of receipt'
 mbhcashbundle.service.onecexporter.poluchatel: Recepient
-mbhcashbundle.service.onecexporter.poluchatelinn: 'Recepient TIN'
-mbhcashbundle.service.onecexporter.poluchatelkpp: 'Recepient Registry Number'
+mbhcashbundle.service.onecexporter.poluchatelinn: 'Recepient`s Tax number'
+mbhcashbundle.service.onecexporter.poluchatelkpp: 'Recepient`s Company number'
 mbhcashbundle.service.onecexporter.poluchatelraschschet: 'Recepient account number'
 mbhcashbundle.service.onecexporter.poluchatelbank: 'Recepient bank'
 mbhcashbundle.service.onecexporter.poluchatelbik: 'SWIFT / BIC'
@@ -82,16 +82,16 @@ mbhcashbundle.service.onecexporter.konetsfayla: 'File ending'
 mbhcashbundle.form.searchtype.vid.platezha: 'Payment type'
 mbhcashbundle.view.cash.index.upload_clearing: 'Export non cash'
 form.cashDocumentType.is_send_mail.label: 'Notify about the payment?'
-controller.cashController.beznal.v.tom.chisle.electronnie: 'Non cash (incl. electronic transactions)'
-cashDocumentSubscriber.document.dlia.pechati.ne.sozdan: 'Document for printing is generated.'
+controller.cashController.beznal.v.tom.chisle.electronnie: 'Non cash (incl. Bank wire and online transactions)'
+cashDocumentSubscriber.document.dlia.pechati.ne.sozdan: 'Document for printing has not been created'
 cashDocumentSubscriber.ne.naidena.organizacia.dlia.etogo.otela: 'Companies from My companies sections are not found for this hotel'
 cashDocumentSubscriber.ne.ustanovlen.bank.polichatela: 'Recepient bank not found'
 cashDocumentSubscriber.ne.ustanovlen.bik.polichatela: 'SWIFT / BIC is not specified'
 cashDocumentSubscriber.ot: from
 cashDocumentSubscriber.schet: Invoice
 cashDocumentSubscriber.ne.ustanovlen.kor.shet: 'IBAN/ABA/IFSC/Routing code is not specified'
-cashDocumentSubscriber.ne.ustanovlen.inn: 'TIN is not specified'
-cashDocumentSubscriber.ne.ustanovlen.kpp: 'Registry Number is not specified'
+cashDocumentSubscriber.ne.ustanovlen.inn: 'Tax number is not specified'
+cashDocumentSubscriber.ne.ustanovlen.kpp: 'Company number is not specified'
 cashDocumentSubscriber.ne.ustanovlen.raschetnii.shet: 'Account number not specified'
 cashDocumentSubscriber.ne.ustanovleno.nazvanie.organizacii: 'Organization name is not specified'
 cashDocumentSubscriber.schet.na.oplatu: 'Invoice for payment'

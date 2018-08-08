@@ -9,6 +9,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class TariffsType extends AbstractType
@@ -42,7 +43,7 @@ class TariffsType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'constraints' => null,
+                'constraints' => [new Callback([$this, 'check'])],
                 'booking' => [],
                 'hotel' => null,
             ]
@@ -74,7 +75,7 @@ class TariffsType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'mbh_bundle_channelmanagerbundle_booking_type';
+        return 'mbh_bundle_channelmanagerbundle_tariffs_type';
     }
 
 }

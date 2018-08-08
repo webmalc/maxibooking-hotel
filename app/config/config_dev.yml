@@ -35,7 +35,7 @@ assetic:
     use_controller: "%use_assetic_controller%"
 
 swiftmailer:
-    delivery_address: ['faainttt@gmail.com']
+    delivery_address: ['mb-error@maxi-booking.ru']
 
 vich_uploader:
     db_driver: mongodb
@@ -98,3 +98,21 @@ liip_imagine:
             quality: 80
             filters:
               relative_resize: { scale: 0.5, allow_upscale: true }
+services:
+    mbh.channelmanager.myallocator:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.booking:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.ostrovok:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.hundred_one_hotels:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.expedia:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+    mbh.channelmanager.vashotel:
+        class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock

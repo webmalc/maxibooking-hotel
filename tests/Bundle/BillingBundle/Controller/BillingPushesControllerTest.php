@@ -24,11 +24,9 @@ class BillingPushesControllerTest extends WebTestCase
         $this->assertStatusCode(401, $this->client);
 
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
-        /** @var ClientConfigRepository $clientConfigRepo */
-        $clientConfigRepo = $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig');
-
-        $clientConfig = $clientConfigRepo->fetchConfig();
-        $clientConfig->setIsCacheValid(true);
+        $clientConfig = $this->getContainer()
+            ->get('mbh.client_config_manager')
+            ->changeCacheValidity(true);
 
         $content = json_encode(['token' => $this->getContainer()->getParameter('billing_front_token')]);
         $this->client->request('POST', $url, [], [], ['HTTP_CONTENT_TYPE' => 'application/json'], $content);

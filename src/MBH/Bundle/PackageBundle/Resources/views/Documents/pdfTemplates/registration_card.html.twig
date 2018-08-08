@@ -354,8 +354,8 @@
                                 <div class="title">
                                     <div>Pass №</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.passport'|trans }} №</div>
-                                </div>
-                                <div class="area" style="height: 38px !important;">{% if tourist and tourist.documentRelation and tourist.documentRelation.number and tourist.documentRelation.series %} {{ tourist.documentRelation.series }} {{ tourist.documentRelation.number }} {% endif %}</div>
+                                </div>and tourist.documentRelation.series
+                                <div class="area" style="height: 38px !important;">{% if tourist and tourist.documentRelation %} {% if tourist.documentRelation.series %} {{ tourist.documentRelation.series }}{% endif %} {% if tourist.documentRelation.number %}{{ tourist.documentRelation.number }}{% endif %} {% endif %}</div>
                             </div>
                         </td>
                         <td colspan="6">
@@ -491,8 +491,8 @@
                 <div class="description">
                     <div class="text">
                         You will find in your room the list of services that our hotel provides. <br>
-                        <strong>The checking-out time at the hotel is {{ arrivalTimeDefault }}:00. The checking time in
-                            the hotel is {{ departureTimeDefault }}:00.</strong><br>
+                        <strong>The checking-out time at the hotel is {{ departureTimeDefault }}:00. The checking time in
+                            the hotel is {{ arrivalTimeDefault }}:00.</strong><br>
                         The smoking is allowed only in designated places. <br>
                         The management is not responsible for your money and valuables not deposited in the hotel's
                         safe.

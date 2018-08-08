@@ -19,9 +19,7 @@ function addLoadEvent(func) {
     }
 }
 
-
-
-addLoadEvent(function () {
+function onLoadFormLoad() {
     var getCoords = function (elem) {
         var box = elem.getBoundingClientRect();
 
@@ -91,8 +89,18 @@ addLoadEvent(function () {
     if (!formWrapper) {
         return;
     }
+
     var urlIndex = window.location.href.indexOf('?');
-    var url = urlIndex !== -1 ? window.location.href.slice(urlIndex) : '?url=' + window.location.pathname;
+    var url;
+    if (urlIndex !== -1) {
+        url = window.location.href.slice(urlIndex);
+    } else {
+        url = '?url=' + window.location.pathname;
+    }
+    if (config.form_url.indexOf('?') > -1) {
+        url = url.replace('?', '&');
+    }
+
     var iframeWidth = typeof(frameWidth) !== 'undefined' ? frameWidth : 300;
     var iframeHeight = typeof(frameHeight) !== 'undefined' ? frameHeight : 400;
 
@@ -149,21 +157,21 @@ addLoadEvent(function () {
     });
 
     var resizeIframeWidth = function () {
-        var width = window.outerWidth;
-        if (formIframe && width) {
-            formIframe.width = width < iframeWidth ? width : iframeWidth;
-        }
-    },
+            var width = window.outerWidth;
+            if (formIframe && width) {
+                formIframe.width = width < iframeWidth ? width : iframeWidth;
+            }
+        },
         resizeIframeHeight = function (event) {
             if (event.data.type !== 'mbh') {
                 return;
             }
             if (event.data.action === 'formResize') {
                 var formIframe = document.getElementById("mbh-form-iframe");
-                formIframe.height =  event.data.formHeight+5;
+                formIframe.height = event.data.formHeight + 5;
             }
         };
-    setInterval(function() {
+    setInterval(function () {
         resizeIframeWidth();
     }, 300);
     var processMetricMessage = function (e) {
@@ -187,6 +195,7 @@ addLoadEvent(function () {
         window.attachEvent("onmessage", resizeIframeHeight);
         window.attachEvent("onmessage", processMetricMessage);
     }
+}
 
-});
+addLoadEvent(onLoadFormLoad);
 

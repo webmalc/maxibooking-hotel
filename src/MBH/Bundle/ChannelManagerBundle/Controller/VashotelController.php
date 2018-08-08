@@ -34,12 +34,17 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     {
         $entity = $this->hotel->getVashotelConfig();
 
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($entity, 'vashotel');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+
         $form = $this->createForm(
             VashotelType::class, $entity
         );
 
         return [
-            'entity' => $entity,
+            'config' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
@@ -51,6 +56,9 @@ class VashotelController extends Controller implements CheckHotelControllerInter
      * @Method("POST")
      * @Security("is_granted('ROLE_VASHOTEL')")
      * @Template("MBHChannelManagerBundle:Vashotel:index.html.twig")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Throwable
      */
     public function saveAction(Request $request)
     {
@@ -71,18 +79,23 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.vashotelController.settings_saved_success'))
-            ;
+            $this->addFlash('success', 'controller.vashotelController.settings_saved_success');
 
             $this->get('mbh.channelmanager.vashotel')->syncServices($entity);
-            $this->get('mbh.channelmanager')->updateInBackground();
+            $channelManagerService = $this->get('mbh.channelmanager');
+            $channelManagerService->updateInBackground();
+
+            if (!$entity->isReadyToSync()) {
+                $channelManagerHumanName = $channelManagerService->getServiceHumanName('vashotel');
+                $this->get('mbh.messages_store')
+                    ->sendCMConfirmationMessage($entity, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
+            }
 
             return $this->redirect($this->generateUrl('vashotel'));
         }
 
         return [
-            'entity' => $entity,
+            'config' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
@@ -125,11 +138,11 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.vashotelController.settings_saved_success'));
+            $this->addFlash('success', 'controller.vashotelController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('vashotel_room'));
+            $redirectRouteName = $config->isReadyToSync() ? 'vashotel_room' : 'vashotel_tariff';
+
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [
@@ -152,6 +165,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getVashotelConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -178,11 +192,13 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.vashotelController.settings_saved_success'));
+            $this->addFlash('success', 'controller.vashotelController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('vashotel_tariff'));
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'vashotel'])
+                : $this->generateUrl('vashotel_tariff');
+
+            return $this->redirect($redirectRoute);
         }
 
         return [

@@ -587,11 +587,12 @@ class ChessBoardDataBuilder
      * Lazy loading of available room types
      *
      * @return RoomType[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getAvailableRoomTypes()
     {
         if (!$this->isAvailableRoomTypesInit) {
-            $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+            $isDisableableOn = $this->container->get('mbh.client_config_manager')->fetchConfig()->isDisableableOn();
             $filterCollection = $this->dm->getFilterCollection();
             if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
                 $filterCollection->enable('disableable');

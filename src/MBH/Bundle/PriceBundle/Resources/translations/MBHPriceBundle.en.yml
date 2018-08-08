@@ -1,10 +1,10 @@
 price.views.restruction.generator.small_title: Wizard
-price.views.restruction.layout.small_title: 'Conditions and restrictions'
+price.views.restruction.layout.small_title: 'Terms and Conditions'
 price.views.restruction.index.small_title: Overview
 price.views.restruction.index.date: Dates
 price.views.restruction.index.type: 'Room type'
 price.views.restruction.index.save: Save
-price.views.restruction.index.random: 'Conditions and restrictions wizard'
+price.views.restruction.index.random: 'Terms and conditions wizard'
 price.views.restruction.index.cancel: Cancel
 tariffs.filter.small_title: Overview
 price.views.restriction.table.minstayArrival: 'Minimum stay (arrival)'
@@ -15,12 +15,12 @@ price.views.restriction.table.minBeforeArrival: 'Minimum days before arrival'
 price.views.restriction.table.maxGuest: 'Maximum number of guests'
 price.views.restriction.table.minGuest: 'Minimum number of guests'
 price.views.restriction.table.maxBeforeArrival: 'Maximum days before arrival'
-price.views.restriction.table.closedOnArrival: 'No check in'
-price.views.restriction.table.closedOnDeparture: 'No check out'
+price.views.restriction.table.closedOnArrival: 'No check-in'
+price.views.restriction.table.closedOnDeparture: 'No Check-out'
 price.views.restriction.table.closed: Closed
-price.views.promotion.edit.small_title: 'Edit Sales'
-price.views.promotion.layout.small_title: Sales
-price.views.promotion.index.name: Title
+price.views.promotion.edit.small_title: 'Edit Promotion / Discount'
+price.views.promotion.layout.small_title: 'Promotions and Discounts'
+price.views.promotion.index.name: Name
 price.views.promotion.index.individual: Individual
 price.views.promotion.index.discount: Discount
 price.views.promotion.index.adults: 'Adults free of charge'
@@ -31,7 +31,7 @@ price.views.promotion.index.delete: Delete
 price.views.promotion.new.small_title: 'New sale'
 price.views.priceCache.table.prices: Price
 price.views.priceCache.table.isPersonPrice: 'Price per person?'
-price.views.priceCache.table.singlePrice: 'Single person price'
+price.views.priceCache.table.singlePrice: 'Single occupancy price'
 price.views.priceCache.generator.small_title: Wizard
 price.views.priceCache.layout.small_title: Prices
 price.views.priceCache.index.small_title: Overview
@@ -41,32 +41,32 @@ price.views.priceCache.index.rate: Rate
 price.views.priceCache.index.save: Save
 price.views.priceCache.index.random: 'Price wizard'
 price.views.priceCache.index.cancel: Cancel
-price.views.overview.tabla.rooms: 'Available rooms'
-price.views.overview.tabla.tariff_rooms: 'Room rates'
-price.views.overview.tabla.prices: Pricing
-price.views.overview.tabla.restriction: 'Conditions and restrictions'
+price.views.overview.tabla.rooms: 'Rooms for sale: Available'
+price.views.overview.tabla.tariff_rooms: 'Rate quotas: Available'
+price.views.overview.tabla.prices: 'Room prices: Available'
+price.views.overview.tabla.restriction: 'Conditions / restrictions on reservations: None'
 price.views.overview.layout.small_title: 'Rooms and rates'
 price.views.overview.index.small_title: Overview
 price.views.overview.index.date: Dates
 price.views.overview.index.type: 'Room type'
 price.views.overview.index.rate: Rate
 tariff.filter.status: 'Rate status'
-tariff.filter.state: 'Show disabled?'
-tariff.table.name: Title
-tariff.table.base: Default
-tariff.table.children: Child
-tariff.table.infant: Infant
-tariff.table.terms: Terms
-tariff.table.default: Default
+tariff.filter.state: 'Include non-active?'
+tariff.table.name: Name
+tariff.table.base: 'Subsidiary rates'
+tariff.table.children: 'Child age limit'
+tariff.table.infant: 'Infant age limit'
+tariff.table.terms: Dates
+tariff.table.default: 'Base Rate'
 tariff.table.online: Online
 price.views.restriction.generator.small_title: Wizard
-price.views.restriction.layout.small_title: 'Conditions and restrictions'
+price.views.restriction.layout.small_title: 'Terms and Conditions'
 price.views.restriction.index.small_title: Overview
 price.views.restriction.index.date: Dates
 price.views.restriction.index.type: 'Room type'
 price.views.restriction.index.rate: Rate
 price.views.restriction.index.save: Save
-price.views.restriction.index.random: 'Conditions and restrictions wizard'
+price.views.restriction.index.random: 'Terms and conditions wizard'
 price.views.restriction.index.cancel: Cancel
 price.views.overview.index.tab_name: Overview
 price.views.overview.limits.tab_name: Limits

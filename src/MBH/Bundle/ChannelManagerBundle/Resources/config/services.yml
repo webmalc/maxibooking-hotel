@@ -44,9 +44,6 @@ services:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia
         arguments: ['@service_container']
 
-    mbh.channelmanager.expedia_type:
-        class: MBH\Bundle\ChannelManagerBundle\Form\ExpediaType
-
     mbh.channelmanager.expedia_request_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestFormatter
         arguments: ['%mbh.channelmanager.services%']
@@ -90,7 +87,7 @@ services:
 
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
-      arguments: ['@mbh.currency']
+      arguments: ['@mbh.currency', '@translator']
       tags:
               - { name: form.type }
 
@@ -132,7 +129,7 @@ services:
 
     mbh.twig.channelmanager.extension:
         class: MBH\Bundle\ChannelManagerBundle\Twig\Extension
-        arguments: ['@service_container', '@doctrine_mongodb', '%mbh.channelmanager.services%']
+        arguments: ['@service_container', '@doctrine_mongodb', '%mbh.channelmanager.services%', '@mbh.cm_wizard_manager']
         tags:
             - { name: twig.extension }
 
@@ -141,3 +138,37 @@ services:
         arguments: ['@mbh.helper']
         tags:
             - { name: form.type}
+
+    mbh.cm_wizard_manager:
+        class: MBH\Bundle\ChannelManagerBundle\Services\CMWizardManager
+        arguments:
+            - '@mbh.channelmanager'
+            - '@mbh.document_fields_manager'
+            - '@security.token_storage'
+            - '@mbh.billing.api'
+            - '@translator'
+            - '@mbh.warnings_compiler'
+            - '@mbh.helper'
+
+    mbh.channel_manager_config_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\ChannelManagerConfigType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}
+
+    mbh.hundred_one_hotels_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\HundredOneHotelType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}
+
+    mbh.vash_otel_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\VashotelType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}
+
+    mbh.intro_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\IntroType
+        arguments: ['@translator']
+        tags: [{name: form.type}]

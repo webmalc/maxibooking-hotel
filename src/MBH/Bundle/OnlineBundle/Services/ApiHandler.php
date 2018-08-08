@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 class ApiHandler
 {
     const DATE_FORMAT = 'd.m.Y';
+    const MIN_PRICES_PERIOD_IN_DAYS = 100;
 
     /** @var DocumentManager $dm */
     private $dm;

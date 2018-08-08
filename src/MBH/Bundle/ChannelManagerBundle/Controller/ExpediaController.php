@@ -4,7 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
-use MBH\Bundle\ChannelManagerBundle\Form\ExpediaType;
+use MBH\Bundle\ChannelManagerBundle\Form\ChannelManagerConfigType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -34,7 +34,15 @@ class ExpediaController extends Controller
     {
         $config = $this->hotel->getExpediaConfig();
 
-        $form = $this->createForm(ExpediaType::class, $config);
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'expedia');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+
+        $form = $this->createForm(ChannelManagerConfigType::class, $config, [
+            'data_class' => ExpediaConfig::class,
+            'channelManagerName' => 'Expedia Partner Central'
+        ]);
 
         return [
             'form' => $form->createView(),
@@ -50,6 +58,7 @@ class ExpediaController extends Controller
      * @Template("MBHChannelManagerBundle:Expedia:index.html.twig")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Throwable
      */
     public function saveAction(Request $request)
     {
@@ -60,7 +69,10 @@ class ExpediaController extends Controller
             $config->setHotel($this->hotel);
         }
 
-        $form = $this->createForm(ExpediaType::class, $config);
+        $form = $this->createForm(ChannelManagerConfigType::class, $config, [
+            'data_class' => ExpediaConfig::class,
+            'channelManagerName' => 'Expedia Partner Central'
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -72,6 +84,10 @@ class ExpediaController extends Controller
                 $this->get('mbh.channelmanager')->updateInBackground();
 
                 $this->addFlash('success', 'controller.expediaController.settings_saved_success');
+                if (!$config->isReadyToSync()) {
+                    $this->get('mbh.messages_store')
+                        ->sendMessageToTechSupportAboutNewConnection('Expedia', $this->get('mbh.instant_notifier'));
+                }
             } else {
                 $this->addFlash('danger', $errorMessage);
             }
@@ -92,6 +108,7 @@ class ExpediaController extends Controller
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getExpediaConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -126,7 +143,11 @@ class ExpediaController extends Controller
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
-            return $this->redirectToRoute('expedia_tariff');
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'expedia'])
+                : $this->generateUrl('expedia_tariff');
+
+            return $this->redirect($redirectRoute);
         }
 
         return [
@@ -182,10 +203,11 @@ class ExpediaController extends Controller
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
-
             $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
-            return $this->redirectToRoute('expedia_room');
+            $redirectRouteName = $config->isReadyToSync() ? 'expedia_room' : 'expedia_tariff';
+
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [

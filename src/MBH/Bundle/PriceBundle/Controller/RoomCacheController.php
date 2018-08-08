@@ -23,16 +23,21 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
      * @Method("GET")
      * @Security("is_granted('ROLE_ROOM_CACHE_VIEW')")
      * @Template()
+     * @throws \Exception
      */
     public function indexAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         //get roomTypes
         $roomTypesCallback = function () use ($hotel) {
             return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
         };
         $roomTypes = $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+        $emptyPeriodWarnings = $this->get('mbh.warnings_compiler')->getEmptyCacheWarningsAsStrings($this->hotel, 'room');
+        if (!empty($emptyPeriodWarnings)) {
+            $this->addFlash('warning', join('<br>', $emptyPeriodWarnings));
+        }
 
         return [
             'roomTypes' => $roomTypes,
@@ -94,7 +99,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $roomTypesCallback = function () use ($hotel, $requestedRoomTypes) {
             return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $requestedRoomTypes);
         };
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         if (!count($roomTypes)) {

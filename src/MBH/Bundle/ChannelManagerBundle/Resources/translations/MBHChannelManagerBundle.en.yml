@@ -95,8 +95,8 @@ channelManager.101Hotels.notification.delete: '101hotels.ru order %order% delete
 channelManager.101Hotels.notification.error.subject: '101hotels.ru error'
 channelManager.101Hotels.notification.error: '101hotels.ru order processing error. Information: %info%'
 views.booking.actions.sync_all_old_desc: All
-services.channel_manager.error.unexpected_removed_order: 'Received information from the reservation system "%service_name%" about the reservation number "%orderId%" cancellation. However, there is no information about this reservation in MaxiBooking. Use the booking system "%service_name%" personal account to update the information on reservation cancellation. And, please, report us about the error by contacting MaxiBooking support team.'
-services.channel_manager.error.unexpected_modified_order: 'Received information from the reservation system "%service_name%" about the reservation number "%orderId%" change. However, there is no information about this reservation in MaxiBooking. A new reservation with incoming data was created. Use the booking system "%service_name%" personal account to update the information on reservation changed. And, please, report us about the error by contacting MaxiBooking support team.'
+services.channel_manager.error.unexpected_removed_order: 'Reservation cancellation received from "%service_name%" for the reservation number "%orderId%". MaxiBooking does not have information on this reservation. Please review your account at "%service_name%" for details on this reservation. In case of error please inform MaxiBooking Support team.'
+services.channel_manager.error.unexpected_modified_order: 'Reservation change received from "%service_name%" for the reservation number "%orderId%". MaxiBooking does not have information on this reservation. New reservation  has been created to match incoming data. Please review your account at "%service_name%" for details on this reservation. In case of error please inform MaxiBooking Support team.'
 channelManager.expedia.notification.subject.new: 'New Expedia.com order'
 views.expedia.actions.sync_old_orders: Reservations
 views.expedia.actions.sync_old_orders.title: 'Synchronize reservations'
@@ -123,7 +123,6 @@ channelManager.hotels.notification.edit: 'Hotels.com order %order% changed. Rese
 channelManager.hotels.notification.delete: 'Hotels.com order %order% deleted. Reservation numbers: %packages%'
 channelManager.hotels.notification.error.subject: 'Hotels.com error'
 channelManager.hotels.notification.error: 'Hotels.com order processing error. Information: %info%'
-channelmanager.orders_not_fetched.error: 'Upload the information about already created reservations on Booking.com by pressing the button'
 views.channelmanager.actions.sync_all: Load
 channelManager.commonCM.notification.error: 'Error while proccessing the order %channelManagerName%. Information: %info%'
 channelManager.commonCM.notification.error.subject: 'Error %channelManagerName%'

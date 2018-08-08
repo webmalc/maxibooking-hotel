@@ -250,7 +250,7 @@ class ChessBoardManager {
     }
 
     private onChangeScaleClick() {
-        $('.reduce-scale-button, .increase-scale-button').on(this.getClickEventType(), (event) => {
+        $('.reduce-scale-button, .increase-scale-button').on(ChessBoardManager.getClickEventType(), (event) => {
             const sliderValue = $('#ex1').slider('getValue');
             const buttonClassList = event.target.classList;
             const newSliderValue = buttonClassList.contains('increase-scale-button') ? (sliderValue + 1) : (sliderValue - 1);
@@ -393,7 +393,7 @@ class ChessBoardManager {
             return isAddition ? date.add(changeDaysFormat, 'days') : date.subtract(changeDaysFormat, 'days');
         };
 
-        $('.change-days-button').on(this.getClickEventType(), function () {
+        $('.change-days-button').on(ChessBoardManager.getClickEventType(), function () {
             const $rangePicker = $('.daterangepicker-input').data('daterangepicker');
             const $beginDateField = $('#accommodation-report-filter-begin');
             const $endDateField = $('#accommodation-report-filter-end');
@@ -1595,7 +1595,7 @@ class ChessBoardManager {
         }
     }
 
-    private getClickEventType() {
+    public static getClickEventType() {
         return isMobileDevice() ? 'touchstart' : 'click';
     }
 
@@ -1615,7 +1615,7 @@ class ChessBoardManager {
                 changeVisibilityFunc(element);
             });
         }
-        $hideFieldButtons.on(this.getClickEventType(), (event) => {
+        $hideFieldButtons.on(ChessBoardManager.getClickEventType(), (event) => {
             changeVisibilityFunc(event.target);
             //prevent touch on filter button after element is hidden
             event.preventDefault();

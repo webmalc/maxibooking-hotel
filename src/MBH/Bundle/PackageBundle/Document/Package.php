@@ -562,6 +562,14 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return int
+     */
+    public function getNumberOfGuests()
+    {
+        return $this->getAdults() + $this->getChildren();
+    }
+
+    /**
      * Set begin
      *
      * @param \DateTime $begin
@@ -1040,11 +1048,11 @@ class Package extends Base implements \JsonSerializable
     /**
      * get services for recalculation
      *
-     * @return array
+     * @return PackageService[]
      */
     public function getServicesForRecalc(): array
     {
-        return array_filter($this->services->toArray(), function ($service) {
+        return array_filter($this->services->toArray(), function (PackageService $service) {
             if (!$service->isRecalcWithPackage()) {
                 return false;
             }

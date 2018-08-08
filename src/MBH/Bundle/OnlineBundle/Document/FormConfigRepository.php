@@ -18,4 +18,12 @@ class FormConfigRepository extends DocumentRepository
 
         return $qb->getQuery()->getSingleResult();
     }
+
+    /**
+     * @return FormConfig
+     */
+    public function getForMBSite()
+    {
+        return $this->findOneBy(['forMbSite' => true]);
+    }
 }

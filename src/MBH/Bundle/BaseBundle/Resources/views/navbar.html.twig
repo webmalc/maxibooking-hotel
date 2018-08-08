@@ -85,7 +85,7 @@
                                     <li>
                                         {% if title_url is defined  %}{% set hotel_url = title_url %}{% else %}{% set hotel_url = null %}{% endif%}
                                         <a href="{{ path('hotel_select', {'id': hotel.id, 'url': hotel_url}) }}">
-                                            <i class="fa fa-home"></i>&nbsp;{{ hotel.getTitleOrFullTitle() }}
+                                            <i class="fa fa-home"></i>&nbsp;{{ hotel.name }}
                                         </a>
                                     </li>
                                 {% endfor %}

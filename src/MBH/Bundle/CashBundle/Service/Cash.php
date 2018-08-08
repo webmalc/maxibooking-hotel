@@ -72,10 +72,7 @@ class Cash
         $notifier = $this->container->get('mbh.notifier.mailer');
         $message = $notifier::createMessage();
 
-        $clientConfig = $this->container
-            ->get('doctrine.odm.mongodb.document_manager')
-            ->getRepository('MBHClientBundle:ClientConfig')
-            ->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
 
         $localCurrency = $clientConfig->getCurrency();
 

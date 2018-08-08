@@ -35,13 +35,18 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     {
         $config = $this->hotel->getBookingConfig();
 
+        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'booking');
+        if ($isReadyResult !== true) {
+            return $this->redirect($isReadyResult);
+        }
+        
         $form = $this->createForm(
             BookingType::class,
             $config
         );
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
@@ -83,7 +88,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
         return $this->redirect($this->generateUrl('booking'));
     }
-    
+
     /**
      * Main configuration save
      * @Route("/", name="booking_save")
@@ -92,6 +97,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * @Template("MBHChannelManagerBundle:Booking:index.html.twig")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Throwable
      */
     public function saveAction(Request $request)
     {
@@ -114,11 +120,15 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
+            if (!$config->isReadyToSync()) {
+                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('Booking', $this->get('mbh.instant_notifier'));
+            }
+
             return $this->redirect($this->generateUrl('booking'));
         }
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
@@ -178,7 +188,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('booking_room'));
+            $redirectRouteName = $config->isReadyToSync() ? 'booking_room' : 'booking_tariff';
+
+            return $this->redirect($this->generateUrl($redirectRouteName));
         }
 
         return [
@@ -200,6 +212,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getBookingConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -225,12 +238,14 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
-
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
-            return $this->redirect($this->generateUrl('booking_tariff'));
-        }
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'booking'])
+                : $this->generateUrl('booking_tariff');
 
+            return $this->redirect($redirectRoute);
+        }
 
         return [
             'config' => $config,
@@ -255,7 +270,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         }
 
         return [
-            'doc' => $config,
+            'config' => $config,
             'logs' => $this->logs($config)
         ];
     }

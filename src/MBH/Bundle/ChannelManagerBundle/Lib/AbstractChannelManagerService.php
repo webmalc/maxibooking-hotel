@@ -43,8 +43,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         "ostrovok",
         "oktogo",
         "101Hotels",
-        "homeaway",
-        "tripadvisor"
     ];
 
     /**
@@ -245,9 +243,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     }
 
     /**
+     * @param bool $forPullingOldOrders
      * @return array
      */
-    public function getConfig()
+    public function getConfig($forPullingOldOrders = false)
     {
         $result = [];
 
@@ -255,7 +254,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $method = 'get' . static::CONFIG;
             $config = $hotel->$method();
 
-            if ($config && $config instanceof BaseInterface && $config->isReadyToSync()) {
+            if ($config && $config instanceof BaseInterface && $config->isReadyToSync(!$forPullingOldOrders)) {
                 $result[] = $config;
             }
         }
@@ -275,10 +274,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $check = $this->updateRooms($begin, $end, $roomType);
         $result ? $result = $check : $result;
 
-        $this->updateRestrictions($begin, $end, $roomType);
+        $check = $this->updateRestrictions($begin, $end, $roomType);
         $result ? $result = $check : $result;
 
-        $this->updatePrices($begin, $end, $roomType);
+        $check = $this->updatePrices($begin, $end, $roomType);
         $result ? $result = $check : $result;
 
         $this->log('ChannelManager update function end.');

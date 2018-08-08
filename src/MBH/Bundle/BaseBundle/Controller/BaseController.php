@@ -47,7 +47,7 @@ class BaseController extends Controller
         $this->dm = $this->get('doctrine_mongodb')->getManager();
         $this->hotel = $this->get('mbh.hotel.selector')->getSelected();
         $this->helper = $this->get('mbh.helper');
-        $this->clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $this->clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
     }
 
     /**

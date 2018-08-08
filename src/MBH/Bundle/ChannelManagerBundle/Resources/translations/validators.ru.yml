@@ -14,7 +14,7 @@ validator.document.vashotelConfig.no_password: 'Не заполнен парол
 validator.document.hundredOneHotelsConfig.no_hotel_selected: 'Не выбран отель'
 validator.document.hundredOneHotelsConfig.no_hotel_id_specified: 'Не указан Id отеля'
 validator.document.hundredOneHotelsConfig.no_api_key_specified: 'Не указан ключ API отеля'
-roomtype.validation: 'Выбрано более одного типа номера'
+roomtype.validation: 'Каждый номер в системе бронирования может быть сопоставлен только 1 типу номера в "Максибукинге"'
 roomtype.validation.not_all_rooms_synced: 'Не указаны типы номеров из системы Maxibooking для синхронизации с номерами ChannelManager-а ID: %ids%'
 tarifftype.validation: 'Выбрано более одного типа тарифа'
 tarifftype.validation.not_all_tariffs_synced: 'Не указаны тарифы из системы Maxibooking для синхронизации с тарифами ChannelManager-а ID: %ids%'

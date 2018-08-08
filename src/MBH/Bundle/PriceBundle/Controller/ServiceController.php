@@ -180,7 +180,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
     /**
      * Displays a form to edit a new entity.
      *
-     * @Route("/{id}/update/entry", name="price_service_category_entry_update")
+     * @Route("/{id}/edit/entry", name="price_service_category_entry_update")
      * @Method("POST")
      * @Security("is_granted('ROLE_SERVICE_EDIT')")
      * @Template("MBHPriceBundle:Service:editEntry.html.twig")

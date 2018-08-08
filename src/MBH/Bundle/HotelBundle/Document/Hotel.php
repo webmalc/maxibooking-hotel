@@ -8,10 +8,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
@@ -24,6 +26,7 @@ use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 /**
  * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
@@ -55,6 +58,8 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      */
     use BlameableDocument;
     use InternableDocument;
+    use LocalizableTrait;
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -67,6 +72,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      *      maxMessage="validator.document.hotel.max_name"
      * )
      * @ODM\Index()
+     * @Gedmo\Translatable
      */
     protected $fullTitle;
 
@@ -245,6 +251,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $settlement;
 
@@ -253,6 +260,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $street;
 
@@ -334,6 +342,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @ODM\Field(type="string")
      * @var string
+     * @Gedmo\Translatable
      */
     protected $description;
 
@@ -420,6 +429,11 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      */
     protected $pollLink;
 
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
+
     public function __construct()
     {
         $this->roomTypes = new ArrayCollection();
@@ -472,26 +486,11 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * Get Full title
-     *
      * @return string
      */
-    public function getName(): string
+    public function getFullTitleOrTitle()
     {
-        return $this->fullTitle;
-    }
-
-    public function __toString()
-    {
-        return $this->getTitleOrFullTitle();
-    }
-
-    /**
-     * @return string
-     */
-    public function getTitleOrFullTitle()
-    {
-        return !empty($this->getTitle()) ? $this->getTitle() : $this->getFullTitle();
+        return $this->getFullTitle() ?? $this->getTitle();
     }
 
     /**
@@ -1585,10 +1584,13 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Add image
      * @param Image $image
+     * @return Hotel
      */
     public function addImage(Image $image)
     {
         $this->images->add($image);
+
+        return $this;
     }
 
     /**
@@ -1796,12 +1798,37 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
+    /**
+     * @param UploaderHelper $helper
+     * @param CacheManager $cacheManager
+     * @return array
+     */
+    public function getImagesData(UploaderHelper $helper, CacheManager $cacheManager)
+    {
+        $imagesData = [];
+        /** @var Image $image */
+        foreach ($this->getImages() as $image) {
+            $imageData = ['isMain' => $image->getIsDefault()];
+            $imageData['url'] = $cacheManager->getBrowserPath($helper->asset($image, 'imageFile'), 'scaler');
+            if ($image->getWidth()) {
+                $imageData['width'] = (int)$image->getWidth();
+            }
+            if ($image->getHeight()) {
+                $imageData['height'] = (int)$image->getHeight();
+            }
+            $imagesData[] = $imageData;
+        }
+
+        return $imagesData;
+    }
 
     /**
      * @param bool $isFull
+     * @param UploaderHelper $uploaderHelper
+     * @param CacheManager|null $cacheManager
      * @return array
      */
-    public function getJsonSerialized($isFull = false)
+    public function getJsonSerialized($isFull = false, UploaderHelper $uploaderHelper= null, CacheManager $cacheManager = null)
     {
         $data = [
             'id' => $this->getId(),
@@ -1813,13 +1840,51 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                 'isEnabled' => $this->getIsEnabled(),
                 'isDefault' => $this->getIsDefault(),
                 'isHostel' => $this->getIsHostel(),
-                'facilities' => $this->getFacilities(),
+                'description' => $this->getDescription(),
+                'facilities' => $this->getFacilities()
             ];
+            if (!is_null($uploaderHelper) && !is_null($cacheManager)) {
+                $comprehensiveData['photos'] = $this->getImagesData($uploaderHelper, $cacheManager);
+                if (!empty($this->getLogoImage())) {
+                    $comprehensiveData['logoUrl'] = $cacheManager->getBrowserPath($uploaderHelper->asset($this->getLogoImage(), 'imageFile'), 'scaler');
+                }
+            } else {
+                throw new \InvalidArgumentException('It\'s required uploader helper and current domain for serialization of the full information about the hotel!');
+            }
+
             if (!is_null($this->latitude)) {
                 $comprehensiveData['latitude'] = $this->latitude;
             }
             if (!is_null($this->longitude)) {
                 $comprehensiveData['longitude'] = $this->longitude;
+            }
+            if (!empty($this->street)) {
+                $comprehensiveData['street'] = $this->street;
+            }
+            if (!empty($this->house)) {
+                $comprehensiveData['house'] = $this->house;
+            }
+            if (!empty($this->corpus)) {
+                $comprehensiveData['corpus'] = $this->corpus;
+            }
+            if (!empty($this->flat)) {
+                $comprehensiveData['flat'] = $this->flat;
+            }
+            if (!empty($this->zipCode)) {
+                $comprehensiveData['zipCode'] = $this->zipCode;
+            }
+            if (!empty($this->getContactInformation())) {
+                $contactsInfo = $this->getContactInformation();
+                $contactsInfoArray = [];
+                if (!empty($contactsInfo->getEmail())) {
+                    $contactsInfoArray['email'] = $contactsInfo->getEmail();
+                }
+                if (!empty($contactsInfo->getPhoneNumber())) {
+                    $contactsInfoArray['phone'] = $contactsInfo->getPhoneNumber();
+                }
+                if (!empty($contactsInfoArray)) {
+                    $comprehensiveData['contacts'] = $contactsInfoArray;
+                }
             }
 
             $data = array_merge($data, $comprehensiveData);

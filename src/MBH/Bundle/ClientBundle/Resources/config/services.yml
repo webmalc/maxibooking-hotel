@@ -62,8 +62,8 @@ services:
             - '@mbh.billing.logger'
             - '%client%'
             - '@kernel'
+            - '@mbh.client_config_manager'
             - '@mbh.helper'
-
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:
@@ -87,6 +87,10 @@ services:
     mbh.fms_dictionaries:
         class: MBH\Bundle\ClientBundle\Lib\FMSDictionaries
         arguments: ['@mbh.csv_reader']
+
+    mbh.client_config_manager:
+        class: MBH\Bundle\ClientBundle\Service\ClientConfigManager
+        arguments: ['@doctrine.odm.mongodb.document_manager', '%locale%']
 
     MBH\Bundle\ClientBundle\Service\DocumentSerialize\:
         resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/DocumentSerialize/*'

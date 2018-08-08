@@ -98,7 +98,7 @@ class PriceCacheControllerTest extends WebTestCase
     {
         $dm = $this->getDocumentManager();
 
-        $dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode(true);
+        $this->getContainer()->get('mbh.client_config_manager')->changeDisableableMode(true);
 
         /** @var RoomType $roomType */
         $roomType = $dm->getRepository('MBHHotelBundle:RoomType')
@@ -117,7 +117,7 @@ class PriceCacheControllerTest extends WebTestCase
             $this->getResultFromTable()
         );
 
-        $dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode(false);
+        $this->getContainer()->get('mbh.client_config_manager')->changeDisableableMode(false);
         $roomType->setIsEnabled(true);
 
         $this->assertEquals(
