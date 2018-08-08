@@ -34,7 +34,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     {
         $entity = $this->hotel->getVashotelConfig();
 
-        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($entity, 'vashotel');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($entity, 'vashotel');
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }
