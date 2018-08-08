@@ -7,16 +7,19 @@ use Tests\Bundle\SearchBundle\SearchWebTestCase;
 class SearchControllerTest extends SearchWebTestCase
 {
 
-    /** @dataProvider requestDataProvider
+    /**
+     * TODO: Для группировок сделать отдельные тесты? Пока костыль небольшой.
+     * @dataProvider requestDataProvider
      * @param iterable $requestData
-     * @param bool $result
+     * @param bool $isResultExpected
+     * @param string $grouping
      */
-    public function testSyncSearchAction(iterable $requestData, bool $result): void
+    public function testSyncSearchAction(iterable $requestData, bool $isResultExpected, string $grouping = ''): void
     {
-
+        $route = '/search/sync/json' . ($grouping ? '/' . $grouping : '');
         $this->client->request(
             'POST',
-            '/search/sync/json',
+            $route,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -25,16 +28,19 @@ class SearchControllerTest extends SearchWebTestCase
 
         $response = $this->client->getResponse();
         $json = $response->getContent();
-        if ($result) {
+        if ($isResultExpected) {
             $this->assertTrue($response->isSuccessful());
             $this->assertJson($json);
             $answer = json_decode($json, true);
-            $this->assertCount(8, $answer['results']);
+            $this->assertCount($grouping ? 6 : 8, $answer['results']);
             $actualResults = $answer['results'];
-            foreach ($actualResults as $actualResult) {
-                $this->assertArrayHasKey('conditions', $actualResult);
-                $this->assertNotEmpty($actualResult['conditions']['id']);
+            if (!$grouping) {
+                foreach ($actualResults as $actualResult) {
+                    $this->assertArrayHasKey('conditions', $actualResult);
+                    $this->assertNotEmpty($actualResult['conditions']['id']);
+                }
             }
+
 
         } else {
             $this->assertFalse($response->isSuccessful());
@@ -109,7 +115,7 @@ class SearchControllerTest extends SearchWebTestCase
             sleep(1);
             $this->client->request(
                 'GET',
-                '/search/async/results/'.$conditionsId,
+                '/search/async/results/' . $conditionsId,
                 [],
                 [],
                 [],
@@ -125,18 +131,21 @@ class SearchControllerTest extends SearchWebTestCase
 
     public function requestDataProvider()
     {
-        yield [
-            [
-                'begin' => (new \DateTime('midnight +3 days'))->format('d.m.Y'),
-                'end' => (new \DateTime('midnight +7 days'))->format('d.m.Y'),
-                'adults' => 2,
-                'children' => 0,
-                'additionalBegin' => 0,
-                'roomTypes' => [],
-                'tariffs' => []
-            ],
-            true
-        ];
+        foreach (['roomType', ''] as $grouping) {
+            yield [
+                [
+                    'begin' => (new \DateTime('midnight +3 days'))->format('d.m.Y'),
+                    'end' => (new \DateTime('midnight +7 days'))->format('d.m.Y'),
+                    'adults' => 2,
+                    'children' => 0,
+                    'additionalBegin' => 0,
+                    'roomTypes' => [],
+                    'tariffs' => []
+                ],
+                true,
+                $grouping
+            ];
+        }
 
         yield [
             [

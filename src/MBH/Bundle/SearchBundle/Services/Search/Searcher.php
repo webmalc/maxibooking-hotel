@@ -39,6 +39,7 @@ class Searcher implements SearcherInterface
 
 
     /**
+     * TODO: Надобно сделать сервис проверки лимитов и под каждый лимит отдельный класс как в restrictions например.
      * @param SearchQuery $searchQuery
      * @return Result
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
@@ -47,12 +48,10 @@ class Searcher implements SearcherInterface
     public function search(SearchQuery $searchQuery): Result
     {
         try {
-            //** TODO: Надобно сделать сервис проверки лимитов и под каждый лимит отдельный класс
-            // как в restrictions например.
-            // */
             $errors = $this->validator->validate($searchQuery);
             if (\count($errors)) {
-                throw new SearcherException('There is a problem in SearchQuery. '. (string)$errors);
+                /** @var string $errors */
+                throw new SearcherException('There is a problem in SearchQuery. '. $errors);
             }
 
             $this->searchLimitChecker->checkRoomCacheLimit($searchQuery);
@@ -70,7 +69,6 @@ class Searcher implements SearcherInterface
         } catch (SearchException $e) {
             $result = Result::createErrorResult($searchQuery, $e);
         }
-
 
         return $result;
     }

@@ -10,6 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -245,17 +246,17 @@ class SearchResultCacheItem extends Base
         return $this;
     }
 
-    public static function createInstance(Result $result, SerializerInterface $serializer = null, string $format = 'json'): SearchResultCacheItem
+    public static function createInstance(Result $result, ResultSerializer $serializer = null): SearchResultCacheItem
     {
         $cacheItem = new self();
-        $roomType = $result->getResultRoomType()->getRoomType();
-        $tariff = $result->getResultTariff()->getTariff();
+        $roomTypeId = $result->getResultRoomType()->getId();
+        $tariffId = $result->getResultTariff()->getId();
         $resultConditions = $result->getResultConditions();
         $adults = $resultConditions->getAdults();
         $children = $resultConditions->getChildren();
         $childrenAges = $resultConditions->getChildrenAges();
         if (null !== $serializer) {
-            $serializedResult = $serializer->serialize($result, $format);
+            $serializedResult = $serializer->serialize($result);
         } else {
             $serializedResult = json_encode($result, JSON_UNESCAPED_UNICODE);
         }
@@ -263,8 +264,8 @@ class SearchResultCacheItem extends Base
         $cacheItem
             ->setBegin($result->getBegin())
             ->setEnd($result->getEnd())
-            ->setRoomTypeId($roomType->getId())
-            ->setTariffId($tariff->getId())
+            ->setRoomTypeId($roomTypeId)
+            ->setTariffId($tariffId)
             ->setAdults($adults)
             ->setChildren($children)
             ->setChildrenAges($childrenAges)

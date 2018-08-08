@@ -4,9 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-use MBH\Bundle\HotelBundle\Document\Room;
-
-class ResultRoom implements \JsonSerializable
+class ResultRoom
 {
     /** @var string */
     private $id;
@@ -51,14 +49,6 @@ class ResultRoom implements \JsonSerializable
         $this->name = $name;
 
         return $this;
-    }
-
-    public function jsonSerialize()
-    {
-        return [
-            'id' => $this->getId(),
-            'name' => $this->getName()
-        ];
     }
 
 

@@ -32,31 +32,36 @@ class ResultRedisStoreTest extends SearchWebTestCase
         $this->assertTrue((bool)$cache->exists($key1));
         $this->assertTrue((bool)$cache->exists($key2));
 
-        $actual1 = unserialize($cache->get($key1));
-        $actual2 = unserialize($cache->get($key2));
+        $serializer = $this->getContainer()->get('mbh_search.result_serializer');
+        $actual1 = $serializer->deserialize($cache->get($key1));
+        $actual2 = $serializer->deserialize($cache->get($key2));
 
         $this->assertInstanceOf(Result::class, $actual1);
         $this->assertInstanceOf(Result::class, $actual2);
     }
 
-    public function testReceive(): void {
-        $cache = $this->getContainer()->get('snc_redis.results');
+    public function testPureReceive(): void {
+        $asyncCache = $this->getContainer()->get('snc_redis.results');
         $service = $this->getContainer()->get('mbh_search.redis_store');
 
         $hash = uniqid('', false);
         $searchResult1 = $this->getData($hash, 'ok');
         $searchResult2 = $this->getData($hash, 'error');
         $searchResult3 = $this->getData($hash, 'ok');
-        $conditions = $searchResult1->getResultConditions()->getConditions();
+        $conditions = new SearchConditions();
         $resultsCount = 3;
-        $conditions->setExpectedResultsCount($resultsCount);
+        $resultConditions = $searchResult1->getResultConditions();
+        $conditions
+            ->setSearchHash($resultConditions->getSearchHash())
+            ->setExpectedResultsCount($resultsCount)
+        ;
 
-        $cache->flushall();
+        $asyncCache->flushall();
         $service->store($searchResult1);
         $service->store($searchResult3);
-        $actualResult1 = $service->receive($conditions);
+        $actualResult1 = $service->receive($conditions, false, null, null);
         $service->store($searchResult2);
-        $actualResult2 = $service->receive($conditions);
+        $actualResult2 = $service->receive($conditions, false, null, null);
 
         $this->assertCount(2, $actualResult1);
         $this->assertCount(1, $actualResult2);
@@ -71,8 +76,8 @@ class ResultRedisStoreTest extends SearchWebTestCase
             $this->assertEquals($hash, $actual->getResultConditions()->getSearchHash());
 
         }
-        $this->assertCount(0, $cache->keys($hash . '*'));
-        $this->assertEquals($resultsCount, (int)$cache->get('received'. $hash));
+        $this->assertCount(0, $asyncCache->keys($hash . '*'));
+        $this->assertEquals($resultsCount, (int)$asyncCache->get('received'. $hash));
     }
 
     private function getData(string $hash, string $status): Result
@@ -87,25 +92,22 @@ class ResultRedisStoreTest extends SearchWebTestCase
             ->setEnd(new \DateTime())
             ->setAdults(2)
         ;
-        $resultRoomType = new ResultRoomType();
-        $resultRoomType->setRoomType($roomType);
-        $resultTariff = new ResultTariff();
-        $resultTariff->setTariff($tariff);
-
-
-        $result = new Result();
-        $resultConditions = new ResultConditions();
-        $resultConditions->setConditions($conditions);
-        $result->setResultConditions($resultConditions);
-        $result
-            ->setBegin(new \DateTime())
-            ->setEnd(new \DateTime())
-            ->setResultRoomType($resultRoomType)
-            ->setResultTariff($resultTariff)
-            ->setStatus($status)
-            ->setPrices([])
-            ->setMinRoomsCount(0)
-        ;
+        $resultRoomType = ResultRoomType::createInstance($roomType);
+        $resultTariff = ResultTariff::createInstance($tariff);
+        $resultConditions = ResultConditions::createInstance($conditions);
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight +3 days');
+        $result = Result::createInstance(
+            $begin,
+            $end,
+            $resultConditions,
+            $resultTariff,
+            $resultRoomType,
+            [],
+            0,
+            []
+        );
+        $result->setStatus($status);
 
         return $result;
     }

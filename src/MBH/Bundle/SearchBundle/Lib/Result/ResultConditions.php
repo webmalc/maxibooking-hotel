@@ -6,7 +6,7 @@ namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 
-class ResultConditions implements \JsonSerializable
+class ResultConditions
 {
 
     /** @var string */
@@ -22,9 +22,9 @@ class ResultConditions implements \JsonSerializable
     /** @var array */
     private $childrenAges;
     /** @var string */
-    private $hash;
+    private $searchHash;
     /** @var bool */
-    private $isForceBooking;
+    private $isForceBooking = false;
 
     /**
      * @return string
@@ -141,18 +141,18 @@ class ResultConditions implements \JsonSerializable
     /**
      * @return string
      */
-    public function getHash(): string
+    public function getSearchHash(): string
     {
-        return $this->hash;
+        return $this->searchHash;
     }
 
     /**
-     * @param string $hash
+     * @param string $searchHash
      * @return ResultConditions
      */
-    public function setHash(string $hash): ResultConditions
+    public function setSearchHash(string $searchHash): ResultConditions
     {
-        $this->hash = $hash;
+        $this->searchHash = $searchHash;
         return $this;
     }
 
@@ -171,23 +171,8 @@ class ResultConditions implements \JsonSerializable
     public function setIsForceBooking(bool $isForceBooking): ResultConditions
     {
         $this->isForceBooking = $isForceBooking;
+
         return $this;
-    }
-
-
-
-
-    public function jsonSerialize()
-    {
-        return [
-            'id' => $this->getId(),
-            'begin' => $this->getBegin()->format('d-m-Y'),
-            'end' => $this->getEnd()->format('d-m-Y'),
-            'adults' => $this->getAdults(),
-            'children' => $this->getChildren(),
-            'childrenAges' => $this->getChildrenAges(),
-            'hash' => $this->getHash()
-        ];
     }
 
     public static function createInstance(SearchConditions $conditions): ResultConditions
@@ -199,8 +184,9 @@ class ResultConditions implements \JsonSerializable
             ->setBegin($conditions->getBegin())
             ->setEnd($conditions->getEnd())
             ->setAdults($conditions->getAdults())
-            ->setChildrenAges($conditions->getChildrenAges())
-            ->setHash($conditions->getSearchHash())
+            ->setChildren($conditions->getChildren() ?? 0)
+            ->setChildrenAges($conditions->getChildrenAges() ?? [])
+            ->setSearchHash($conditions->getSearchHash())
             ->setIsForceBooking($conditions->isForceBooking())
         ;
 

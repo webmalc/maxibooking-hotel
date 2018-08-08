@@ -6,7 +6,7 @@ namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
 
-class ResultRoomType implements \JsonSerializable
+class ResultRoomType
 {
     /** @var string */
     private $id;
@@ -15,10 +15,10 @@ class ResultRoomType implements \JsonSerializable
     private $name = '';
 
     /** @var string */
-    private $categoryName;
+    private $categoryName = '';
 
     /** @var string */
-    private $hotelName;
+    private $hotelName = '';
 
     /**
      * @return string
@@ -80,7 +80,7 @@ class ResultRoomType implements \JsonSerializable
     /**
      * @return string
      */
-    public function getHotelName(): string
+    public function getHotelName(): ?string
     {
         return $this->hotelName;
     }
@@ -96,15 +96,6 @@ class ResultRoomType implements \JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize()
-    {
-        return [
-            'id' => $this->getId(),
-            'name' => $this->getName(),
-            'categoryName' => $this->getCategoryName(),
-            'hotelName' => $this->getHotelName()
-        ];
-    }
 
     public static function createInstance(RoomType $roomType): ResultRoomType
     {

@@ -7,11 +7,11 @@ namespace MBH\Bundle\SearchBundle\Lib\Result;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
-class Result implements \JsonSerializable, ResultCacheablesInterface
+class Result implements ResultCacheablesInterface
 {
 
     /** @var string */
-    private $uniqueId;
+    private $id;
 
     /** @var \DateTime */
     private $begin;
@@ -44,7 +44,7 @@ class Result implements \JsonSerializable, ResultCacheablesInterface
     private $status = 'ok';
 
     /** @var string */
-    private $error;
+    private $error = '';
 
     /**
      * @return \DateTime
@@ -258,11 +258,18 @@ class Result implements \JsonSerializable, ResultCacheablesInterface
 
     public function getId(): string
     {
-        if (null === $this->uniqueId) {
-            $this->uniqueId = uniqid('results_id', true);
+        if (null === $this->id) {
+            $this->id = uniqid('results_id', true);
         }
 
-        return $this->uniqueId;
+        return $this->id;
+    }
+
+    public function setId(string $id): Result
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getSearchHash(): string
@@ -270,47 +277,20 @@ class Result implements \JsonSerializable, ResultCacheablesInterface
         return $this->resultConditions->getSearchHash();
     }
 
-
-    public function jsonSerialize()
-    {
-        return [
-            'begin' => $this->getBegin()->format('d.m.Y'),
-            'end' => $this->getEnd()->format('d.m.Y'),
-            'roomType' => $this->getResultRoomType(),
-            'tariff' => $this->getResultTariff(),
-            'conditions' => $this->getResultConditions(),
-            'prices' => $this->getPrices(),
-            'minRooms' => $this->getMinRoomsCount(),
-            'accommodationRooms' => $this->getAccommodationRooms(),
-            'virtualRoom' => $this->getVirtualRoom(),
-            'status' => $this->getStatus(),
-            'uniqueId' => $this->getId()
-        ];
-    }
-
-
     public static function createErrorResult(SearchQuery $searchQuery, SearchException $exception): Result
     {
-        $result = new static();
         $begin = $searchQuery->getBegin();
         $end = $searchQuery->getEnd();
-        $tariff = new ResultTariff();
-        $tariff
-            ->setId($searchQuery->getTariffId())
-        ;
-        $roomType = new ResultRoomType();
-        $roomType->setId($searchQuery->getRoomTypeId());
-
-
+        $resultConditions = ResultConditions::createInstance($searchQuery->getSearchConditions());
+        $resultTariff = new ResultTariff();
+        $resultTariff->setId($searchQuery->getTariffId());
+        $resultRoomType = new ResultRoomType();
+        $resultRoomType->setId($searchQuery->getRoomTypeId());
+        $result = self::createInstance($begin, $end, $resultConditions, $resultTariff, $resultRoomType, [], 0, []);
 
         $result
             ->setStatus('error')
-            ->setError($exception->getMessage())
-            ->setResultConditions(ResultConditions::createInstance($searchQuery->getSearchConditions()))
-            ->setResultTariff($tariff)
-
-        ;
-
+            ->setError($exception->getMessage());
 
         return $result;
     }

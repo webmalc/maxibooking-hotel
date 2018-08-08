@@ -11,5 +11,5 @@ interface AsyncResultStoreInterface
 {
     public function store(ResultCacheablesInterface $searchResult):  void;
 
-    public function receive(SearchConditions $conditions): array;
+    public function receive(SearchConditions $conditions);
 }

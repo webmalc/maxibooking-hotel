@@ -27,7 +27,7 @@ class SearchCacheTest extends SearchWebTestCase
     /**
      * @dataProvider dataProvider
      */
-    public function testSaveToCahe($data)
+    public function testMockedSaveToCahe($data)
     {
         $dmMock = $this->createMock(DocumentManager::class);
         $dmMock->expects($this->once())->method('persist')->willReturnCallback(function ($actual) {
@@ -41,7 +41,8 @@ class SearchCacheTest extends SearchWebTestCase
         $repositoryMock = $this->createMock(SearchResultCacheItemRepository::class);
         $repositoryMock->expects($this->once())->method('getDocumentManager')->willReturn($dmMock);
 
-        $service = new SearchCache($repositoryMock);
+        $serializer = $this->getContainer()->get('mbh_search.result_serializer');
+        $service = new SearchCache($repositoryMock, $serializer);
 
         $result = $data['result'];
         $service->saveToCache($result);
@@ -49,23 +50,15 @@ class SearchCacheTest extends SearchWebTestCase
     }
 
     /** @dataProvider dataProvider */
-    public function testSearchInCache($data)
+    public function testMockedSearchInCache($data)
     {
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $dm->getRepository(SearchResultCacheItem::class)->flushCache();
         /** @var Result $result */
         $result = $data['result'];
-        $cacheItem = new SearchResultCacheItem();
-        $cacheItem
-            ->setBegin($result->getBegin())
-            ->setEnd($result->getEnd())
-            ->setTariffId($result->getResultTariff()->getId())
-            ->setRoomTypeId($result->getResultRoomType()->getId())
-            ->setAdults($result->getResultConditions()->getAdults())
-            ->setChildren($result->getResultConditions()->getChildren())
-            ->setChildrenAges($result->getResultConditions()->getChildrenAges())
-            ->setSerializedSearchResult(json_encode($result, JSON_UNESCAPED_UNICODE))
-        ;
+        $serializer = $this->getContainer()->get('mbh_search.result_serializer');
+        $cacheItem = SearchResultCacheItem::createInstance($result, $serializer);
+
 
         $dm->persist($cacheItem);
         $dm->flush($cacheItem);
@@ -75,8 +68,7 @@ class SearchCacheTest extends SearchWebTestCase
         /** @var Result $actual */
         $actual = $service->searchInCache($data['searchQuery']);
         $this->assertInstanceOf(Result::class, $actual);
-        $this->assertEquals($result->getResultRoomType()->getName(), $actual->getResultRoomType()->getName());
-        $this->assertEquals($result->getResultTariff()->getTariffName(), $actual->getResultTariff()->getTariffName());
+        $this->assertEquals($serializer->serialize($result), $serializer->serialize($actual));
 
     }
 
@@ -95,12 +87,8 @@ class SearchCacheTest extends SearchWebTestCase
         /** @var RoomType $roomType */
         $roomType = $hotel->getRoomTypes()->first();
 
-        $resultRoomType = new ResultRoomType();
-        $resultRoomType->setRoomType($roomType);
-
-        $resultTariff = new ResultTariff();
-        $resultTariff->setTariff($tariff);
-
+        $resultRoomType = ResultRoomType::createInstance($roomType);
+        $resultTariff = ResultTariff::createInstance($tariff);
 
         $adults = 2;
         $children = 2;
@@ -116,42 +104,20 @@ class SearchCacheTest extends SearchWebTestCase
             ->setChildren($children)
             ->setChildrenAges($childrenAges);
 
+        $dayPrice = ResultDayPrice::createInstance($begin, $adults, $children, 0, 333, $resultTariff);
+        $resultPrice = ResultPrice::createInstance($adults, $children, 33333, [$dayPrice]);
+        $resultConditions = ResultConditions::createInstance($conditions);
 
-        $dayPrice = new ResultDayPrice();
-        $dayPrice
-            ->setAdults($adults)
-            ->setChildren($children)
-            ->setInfants(0)
-            ->setDate($begin)
-            ->setTariff($resultTariff)
-            ->setPrice(333)
-        ;
-
-        $resultPrice = new ResultPrice();
-        $resultPrice
-            ->setSearchAdults($adults)
-            ->setSearchChildren($children)
-            ->setChildrenAges($childrenAges)
-            ->setTotal(33333)
-            ->addDayPrice($dayPrice)
-
-        ;
-
-        $resultConditions = new ResultConditions();
-        $resultConditions->setConditions($conditions);
-
-
-
-        $result = new Result();
-        $result
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setResultTariff($resultTariff)
-            ->setResultRoomType($resultRoomType)
-            ->setResultConditions($resultConditions)
-            ->setPrices([$resultPrice])
-            ->setMinRoomsCount(5)
-        ;
+        $result = Result::createInstance(
+            $begin,
+            $end,
+            $resultConditions,
+            $resultTariff,
+            $resultRoomType,
+            [$resultPrice],
+            5,
+            []
+        );
 
         $searchQuery = new SearchQuery();
         $searchQuery

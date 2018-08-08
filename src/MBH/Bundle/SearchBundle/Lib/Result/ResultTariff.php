@@ -6,7 +6,7 @@ namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
-class ResultTariff implements \JsonSerializable
+class ResultTariff
 {
 
     /** @var string */
@@ -51,17 +51,6 @@ class ResultTariff implements \JsonSerializable
         $this->name = $name;
 
         return $this;
-    }
-
-
-
-
-    public function jsonSerialize()
-    {
-        return [
-            'id' => $this->getId(),
-            'name' => $this->getName()
-        ];
     }
 
     public static function createInstance(Tariff $tariff): ResultTariff

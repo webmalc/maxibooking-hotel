@@ -4,16 +4,13 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-class ResultPrice implements \JsonSerializable
+class ResultPrice
 {
     /** @var int */
     private $searchAdults;
 
     /** @var  int*/
     private $searchChildren;
-
-    /** @var array */
-    private $childrenAges;
 
     /** @var float */
     private $total;
@@ -59,24 +56,6 @@ class ResultPrice implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getChildrenAges(): array
-    {
-        return $this->childrenAges;
-    }
-
-    /**
-     * @param array $childrenAges
-     * @return ResultPrice
-     */
-    public function setChildrenAges(array $childrenAges): ResultPrice
-    {
-        $this->childrenAges = $childrenAges;
-
-        return $this;
-    }
 
     /**
      * @return float
@@ -124,15 +103,6 @@ class ResultPrice implements \JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize()
-    {
-        return [
-                'adults' => $this->getSearchAdults(),
-                'children' => $this->getSearchChildren(),
-                'total' => $this->getTotal(),
-                'dayPrices' => $this->getDayPrices()
-        ];
-    }
 
     public static function createInstance(int $searchAdults, int $searchChildren, int $total, array $dayPrices = []): ResultPrice
     {

@@ -44,37 +44,6 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
         $consumer->execute($message);
     }
 
-    public function testExecuteNotFound(): void
-    {
-        $body = [
-            'conditionsId' => 'someId',
-            'searchQueries' => serialize([new SearchQuery(), new SearchQuery()])
-        ];
-        $message = $this->createMock(AMQPMessage::class);
-        $message->expects($this->once())->method('getBody')->willReturn(json_encode($body));
-
-        $searchConditions = $this->createMock(SearchConditions::class);
-        $searchConditions->expects($this->any())->method('getId')->willReturn($body['conditionsId']);
-
-        $resultStore = $this->createMock(AsyncResultStoreInterface::class);
-        $exceptionMessage = 'Not found message';
-        $resultStore->expects($this->exactly(2))->method('store')->willReturnCallback(function ($searchResult) use ($exceptionMessage, $body) {
-            /** @var Result $searchResult */
-            $this->assertInstanceOf(Result::class, $searchResult);
-            $this->assertEquals('error', $searchResult->getStatus());
-            $this->assertEquals($exceptionMessage, $searchResult->getError());
-        } );
-
-        $conditionsRepository = $this->createMock(SearchConditionsRepository::class);
-        $conditionsRepository->expects($this->once())->method('find')->willReturn($searchConditions);
-
-        $searcher = $this->createMock(Searcher::class);
-        $searcher->expects($this->exactly(2))->method('search')->willThrowException(new SearchException($exceptionMessage));
-
-        $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository, $resultStore);
-        $consumer->execute($message);
-    }
-
     public function testExecuteException(): void
     {
         $body = [

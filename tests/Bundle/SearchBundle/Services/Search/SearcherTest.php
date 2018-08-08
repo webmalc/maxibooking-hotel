@@ -16,13 +16,8 @@ class SearcherTest extends SearchWebTestCase
         $searchQueries = $this->createSearchQueries($data['conditions']);
 
         $searcher = $this->getContainer()->get('mbh_search.searcher');
-        $errors = [];
         foreach ($searchQueries as $searchQuery) {
-            try {
-                $actual[] = $searcher->search($searchQuery);
-            } catch (SearchException $e) {
-                $errors['searchError'][] = $e->getMessage();
-            }
+            $actual[] = $searcher->search($searchQuery);
         }
         $expected = $data['expected'];
         /** @noinspection PhpUndefinedVariableInspection */
@@ -45,8 +40,6 @@ class SearcherTest extends SearchWebTestCase
         });
 
         $this->assertCount($expected['errorResult'], $actualErrors);
-
-
         $this->assertEquals($expected['totalPrice'], reset($actualResults)->getPrices()[0]->getTotal());
     }
 

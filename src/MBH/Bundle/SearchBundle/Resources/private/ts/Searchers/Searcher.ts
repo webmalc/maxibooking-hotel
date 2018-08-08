@@ -37,16 +37,6 @@ abstract class Searcher {
     protected getSearchConditions() {
         return  this.searchDataReceiver.getSearchConditionsData();
 
-
-        //
-        // let data: SearchDataType;
-        // data = {
-        //     begin: '05.09.2018',
-        //     end: '19.09.2018',
-        //     adults: 2
-        // };
-        //
-        // return data;
     }
 
 }

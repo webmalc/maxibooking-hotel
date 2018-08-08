@@ -10,6 +10,9 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class SearchTest extends SearchWebTestCase
@@ -24,17 +27,32 @@ class SearchTest extends SearchWebTestCase
      * @param iterable $data
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
      */
     public function testSearchSync(iterable $data): void
     {
         $search = $this->getContainer()->get('mbh_search.search');
         $conditionData = $this->createConditionData($data);
-        $actual = $search->searchSync($conditionData);
+        $actual = $search->searchSync($conditionData, true, null, null);
         $this->assertCount(2, $search->getRestrictionsErrors());
         foreach ($actual as $result) {
             $this->assertInstanceOf(Result::class, $result);
         }
 
+    }
+
+    /** @dataProvider syncDataProvider
+     * @param iterable $data
+     * @throws SearchConditionException
+     * @throws SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
+     */
+    public function testGroupedSerializedSearchSync(iterable $data): void
+    {
+        $search = $this->getContainer()->get('mbh_search.search');
+        $conditionData = $this->createConditionData($data);
+        $actual = $search->searchSync($conditionData, true, 'roomType', 'json');
+        $this->assertJson($actual);
     }
 
     /** @dataProvider syncDataProvider

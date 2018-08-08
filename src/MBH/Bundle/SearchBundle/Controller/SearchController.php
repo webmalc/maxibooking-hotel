@@ -43,9 +43,7 @@ class SearchController extends Controller
             if (!\is_array($data)) {
                 throw new SearchConditionException('Bad received data');
             }
-            $results = $search->searchSync($data);
-            $responder = $this->get('mbh_search.search_results_responder');
-            $resultsArray = $responder->handleResults($results, $grouping);
+            $results = $search->searchSync($data, $grouping);
             $json = json_encode(['results' => $resultsArray], JSON_UNESCAPED_UNICODE);
             $answer = new JsonResponse($json, 200, [], true);
         } catch (SearchConditionException|SearchQueryGeneratorException|GroupingFactoryException $e) {
@@ -64,9 +62,6 @@ class SearchController extends Controller
      */
     public function asyncSearchAction(Request $request)
     {
-        $stopwatch = $this->get('debug.stopwatch');
-        $stopwatch->start('searchTime');
-
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
         $search->setAsyncQueriesChunk(30);

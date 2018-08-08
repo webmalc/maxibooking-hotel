@@ -96,7 +96,7 @@ services:
 
     mbh_search.search:
         class: MBH\Bundle\SearchBundle\Services\Search\Search
-        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_factory', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer']
+        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_factory', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer', '@mbh_search.results_final_builder']
 
     mbh_search.accommodation_room_searcher:
         class: MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher
@@ -219,7 +219,7 @@ services:
 ##Cache Results
     mbh_search.cache_search:
         class: MBH\Bundle\SearchBundle\Services\Cache\SearchCache
-        arguments: ['@mbh_search.search_cache_item_repository']
+        arguments: ['@mbh_search.search_cache_item_repository', '@mbh_search.result_serializer']
 
   ##REDIS_Caches
     mbh_search.redis:
@@ -278,15 +278,21 @@ services:
         arguments: ['@mbh_search.price_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.price_cache_repository', '@mbh_search.client_config_repository', '@mbh_search.price_cache_redis_cache']
 
 #SearchResult To JSON
-    mbh_search.search_results_responder:
-        class: MBH\Bundle\SearchBundle\Services\SearchResultsResponder
+
+    mbh_search.results_final_builder:
+        class: MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder
+        arguments: ['@mbh_search.serializer']
 
 #AsyncStores
     mbh_search.redis_store:
         class: MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore
-        arguments: ['@snc_redis.results_client']
+        arguments: ['@snc_redis.results_client', '@mbh_search.result_serializer', '@mbh_search.results_final_builder']
 
 #serializer
+    mbh_search.serializer:
+        class: Symfony\Component\Serializer\Serializer
+        factory: ['MBH\Bundle\SearchBundle\Services\Data\Serializers\SearchSerializerFactory', createSerializer]
+
     mbh_search.result_serializer:
       class: MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer
-      arguments: ['@serializer']
+      arguments: ['@mbh_search.serializer']
