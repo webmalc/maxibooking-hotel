@@ -2,3 +2,20 @@
 
 {% set title = 'warehouse.common.title'|trans %}
 {% set title_url = path('warehouse_category') %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2''@MBHWarehouseBundle/Resources/public/js/warehouse/*'%}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHWarehouseBundle/Resources/public/css/warehouse/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}

@@ -8,23 +8,21 @@
 
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
         {% block content %}
-        <form id="filling-table-filter" class="form-inline icon-label-form">
-            <div class="form-group input">
-                <label><i class="fa fa-calendar" title="{{ 'report.filling.filling.dates'|trans }}" data-toggle='tooltip'></i></label>
-                <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
+        <form id="filling-table-filter" class="form-inline filter-form icon-label-form">
+            <div class="filter-form_group-date">
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title="{{ 'report.filling.filling.dates'|trans }}" data-toggle='tooltip'></i>
+                    <div class="filter-form_input">
+                        <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
+                        <span class="filter-form_separator"></span>
+                        <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
+                    </div>
+                </div>
             </div>
-            <div class="form-group input">
-                <label>—</label>
-                <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
-            </div>
-
-            <div class="form-group input">
-                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
-            </div>
-
-            <div class="form-group input">
-                <label><i class="fa fa-bed" title='{{ 'report.filling.filling.room_types'|trans }}' data-toggle='tooltip'></i></label>
-                <select name="roomTypes[]" multiple data-placeholder='{{ 'report.filling.filling.room_types'|trans }}' id="filling-report-filter-roomType" class="form-control input-sm">
+            {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+            <div class="filter-form_input">
+                <i class="fa fa-bed" title='{{ 'report.filling.filling.room_types'|trans }}' data-toggle='tooltip'></i>
+                <select name="roomTypes[]" multiple data-placeholder='{{ 'report.filling.filling.room_types'|trans }}' id="filling-report-filter-roomType" class="form-control">
                     <option></option>
                     {% for hotelId, hotelRoomsData in roomTypeList %}
                         <optgroup label="{{ hotelRoomsData['hotel'].getName() }}">
@@ -35,29 +33,29 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group input">
-                <label for="filling-report-filter-status"><i class="fa fa-server" title='{{ 'report.filling.filling.room_status'|trans }}' data-toggle='tooltip'></i></label>
-                <select style="width: 250px;" name="roomStatus[]" multiple data-placeholder='{{ 'report.filling.filling.room_status'|trans }}' id="filling-report-filter-status" class="form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-server" title='{{ 'report.filling.filling.room_status'|trans }}' data-toggle='tooltip'></i>
+                <select name="roomStatus[]" multiple data-placeholder='{{ 'report.filling.filling.room_status'|trans }}' id="filling-report-filter-status" class="form-control">
                     <option></option>
                     {% for roomStatusId, roomStatus in roomStatusOptions %}
                         <option value="{{ roomStatusId }}">{{ roomStatus }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group input">
-                <label for="filling-report-filter-hotel"><i class="fa fa-home" title='{{ 'report.polls_view.hotel'|trans }}' data-toggle='tooltip'></i></label>
-                <select style="width: 250px;" name="hotels[]" multiple data-placeholder='{{ 'report.polls_view.hotel'|trans }}' id="filling-report-filter-hotel" class="form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-home" title='{{ 'report.polls_view.hotel'|trans }}' data-toggle='tooltip'></i>
+                <select name="hotels[]" multiple data-placeholder='{{ 'report.polls_view.hotel'|trans }}' id="filling-report-filter-hotel" class="form-control">
                     <option></option>
                     {% for hotel in hotels %}
                         <option value="{{ hotel.id }}" {{ selected_hotel().id == hotel.id ? 'selected' }}>{{ hotel.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group input">
-                <label for="filling-report-filter-isEnabled"><i class="fa fa-toggle-on" title="{{ 'report.filling.filling.only_enabled'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>&nbsp;</label>
+            <div class="filter-form_input">
+                <i class="fa fa-toggle-on" title="{{ 'report.filling.filling.only_enabled'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>
                 <input type="checkbox" id="filling-report-filter-isEnabled">
             </div>
-            &nbsp;<div class="form-group input">
+            <div class="filter-form_input">
                 <button type="button" class="btn btn-primary navbar-btn" id="filling-filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
             </div>
         </form>

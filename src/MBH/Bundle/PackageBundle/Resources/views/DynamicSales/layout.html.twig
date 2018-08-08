@@ -14,7 +14,7 @@
 {% block styles %}
     {{ parent() }}
 
-    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/dynamic_sales.less'%}
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/dynamicSales/*'%}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
 {% endblock %}

@@ -38,6 +38,12 @@
               }
             </script>
 
+            {% javascripts filter='uglifyjs2'
+                '@MBHBaseBundle/Resources/public/js/first/*'
+            %}
+                <script type="text/javascript" src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+
             {% block styles %}
 
                 {% stylesheets filter='cssrewrite, uglifycss'
@@ -76,7 +82,7 @@
 
         <body class="hold-transition {{ loginPage is defined ? 'login-page' : 'skin-blue sidebar-mini fixed' }}">
         <script type="text/javascript">
-          if (localStorage.getItem('sidebar-collapse') == 'close') {
+          if (!isMobileDevice() && localStorage.getItem('sidebar-collapse') == 'close') {
             document.getElementsByTagName('body')[0].className+=' sidebar-collapse'
           }
         </script>
@@ -84,7 +90,7 @@
 
         {% block scripts %}
 
-            {% javascripts
+            {% javascripts filter='uglifyjs2'
                 '@MBHBaseBundle/Resources/public/js/menu/*'
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -177,4 +183,3 @@
     </body>
 </html>
 {% endspaceless %}
-

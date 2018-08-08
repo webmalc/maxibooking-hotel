@@ -4,6 +4,14 @@
 {% set title_url = path('online_poll_config') %}
 {% set layout = "box" %}
 
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHOnlineBundle/Resources/public/css/zzz_mob-010-poll_config.less'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
 {% block content %}
     <div class="panel panel-default">
         <div class="panel-heading"><h3 class="panel-title">{{ 'views.poll.config.voting_code'|trans}}</h3></div>

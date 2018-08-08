@@ -5,6 +5,15 @@
     {% set title_url = path('package') %}
 {% endif %}
 
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/package/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
+{% endblock %}
+
 {% block body %}
     {{ parent() }}
     {% include 'MBHPackageBundle:Documents:documentFormModal.html.twig' %}

@@ -1,0 +1,81 @@
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+
+  .filter-form_separator::after {
+    content: "—";
+  }
+
+  input.datepicker {
+    width: unset;
+    max-width: 84px;
+  }
+
+  .filter-form_group-date {
+    display: flex !important;
+    flex-wrap: wrap;
+
+    > div > .filter-form_input {
+      input.datepicker {
+        &:first-child {
+          margin-right: .3em;
+        }
+
+        &:last-child {
+          margin-left: .3em;
+        }
+      }
+    }
+  }
+
+  .filter-form_group-select-in-service,
+  .filter-form_group-human-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .filter-form_group-select-in-service {
+    div.filter-form_input {
+      &:first-child {
+        margin-right: .3em;
+      }
+      &:last-child {
+        margin-left: .3em;
+      }
+    }
+  }
+
+  .filter-form_input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    > i.fa {
+      display: flex;
+      justify-content: center;
+
+      &::before {
+        width: 20px;
+        margin-left: 8px;
+      }
+    }
+
+    > button {
+      margin-left: 10px;
+    }
+  }
+  .group-date-select {
+    margin-left: 5px;
+  }
+
+  .filter-form_group-checkbox{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    >.filter-form_input {
+      width: unset;
+    }
+  }
+}

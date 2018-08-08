@@ -33,7 +33,7 @@
     <div class="tab-content">
         {% for entity in entities %}
 
-            <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}"
+            <div class="tab-pane{% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %} active{% endif %}"
                  id="{{ entity.id }}">
 
                 <!-- Tab actions -->
@@ -105,7 +105,7 @@
                                     </li>
                                 {% endif %}
                             </ul>
-                            <ul class="nav navbar-nav navbar-right">
+                            <ul class="nav navbar-nav navbar-right hidden-xs">
                                 <li id='list-export-add-{{ loop.index }}'></li>
                             </ul>
                             <div style="float: right; margin-right: 5px; margin-top: 13px">

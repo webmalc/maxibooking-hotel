@@ -2,3 +2,20 @@
 
 {% set title = 'price.views.priceCache.layout.small_title'|trans({},'MBHPriceBundle') %}
 {% set title_url = path('price_cache_overview') %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/price-cache/*'%}
+
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{#{% block styles %}#}
+    {#{{ parent() }}#}
+
+    {#{% stylesheets filter='cssrewrite, uglifycss' '@MBHPriceBundle/Resources/public/css/price-cache/*'%}#}
+        {#<link rel="stylesheet" href="{{ asset_url }}"/>#}
+    {#{% endstylesheets %}#}
+{#{% endblock %}#}

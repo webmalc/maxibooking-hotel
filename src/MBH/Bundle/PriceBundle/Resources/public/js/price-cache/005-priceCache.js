@@ -8,8 +8,14 @@ $(document).ready(function () {
     var $irrelevantPricesAlertDate = $('#irrelevant-prices-alert-date');
     $displayedTimeInput.timepicker({
         showMeridian: false,
-        minuteStep: 5
+        minuteStep: 5,
+        disableFocus: true
     });
+
+    if (isMobileDevice()) {
+      document.querySelector('.bootstrap-timepicker table').classList.add('custom-mobile-style');
+    }
+
     if ($displayedDateInput.val()) {
         $irrelevantPricesAlert.show();
         $irrelevantPricesAlertDate.text($displayedDateInput.val() + ' ' + $displayedTimeInput.val())
@@ -137,7 +143,7 @@ $(document).ready(function () {
             var $hiddenInput = $(hiddenInput);
             var $fakeInput = $($textPrices[index]);
             inputs.push([$fakeInput, $hiddenInput]);
-        })
+        });
 
         var $priceInput = $('#mbh_price_bundle_price_cache_generator_price'),
             getPrice = function () {
@@ -192,7 +198,7 @@ $(document).ready(function () {
                     updatePrice($fakeInput, $input);
                     updatePriceView($fakeInput, $input);
                 })
-            }
+            };
 
         $priceInput.on('change', function (e) {
             updatePriceList();

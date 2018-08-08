@@ -6,19 +6,19 @@
 
 {% block content %}
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'dishorder-table-filter-widget'} %}
-        <form id="package-table-filter" class="form-inline remember" role="form">
-            <div class="group-date">
-                <div class="input">
-                    <i class="fa fa-calendar fa-custom-style"
+        <form id="package-table-filter" class="form-inline remember filter-form" role="form">
+            <div class="filter-form_group-date">
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar"
                        title='{{ 'package.index.dates'|trans }}'
                        data-toggle='tooltip'></i>
-                    <div class="input">
+                    <div class="filter-form_input">
                         <input type="text"
                                id="package-filter-begin"
                                class="datepicker package-filter begin-datepicker form-control"
                                data-date-format="dd.mm.yyyy"
                                value="{{ client_config().getActualBeginDate()|date('d.m.Y') }}">
-                        &nbsp—&nbsp
+                        <span class="filter-form_separator"></span>
                         <input type="text"
                                id="package-filter-end"
                                class="datepicker package-filter end-datepicker form-control"
@@ -26,8 +26,7 @@
                                value="">
                     </div>
                 </div>
-                &nbsp;
-                <div class="input group-date-select">
+                <div class="filter-form_input filter-form_group-date-select">
                     <select id="package-filter-dates" class="package-filter form-control">
                         <option value="begin">{{ 'package.index.check_in'|trans({}, 'MBHPackageBundle') }}</option>
                         <option value="end">{{ 'package.index.check_out'|trans({}, 'MBHPackageBundle') }}</option>
@@ -38,8 +37,8 @@
                 </div>
             </div>
 
-            <div class="input">
-                <i class="fa fa-bed fa-custom-style"
+            <div class="filter-form_input">
+                <i class="fa fa-bed"
                    title='{{ 'package.index.room_type'|trans }}'
                    data-toggle='tooltip'></i>
                 <select data-placeholder="{{ 'package.index.room_type'|trans }}"
@@ -51,8 +50,8 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="input">
-                <i class="fa fa-paper-plane fa-custom-style"
+            <div class="filter-form_input">
+                <i class="fa fa-paper-plane"
                    title='{{ 'package.index.package_type'|trans }}'
                    data-toggle='tooltip'></i>
                 <select data-placeholder="{{ 'package.index.package_type'|trans }}"
@@ -67,8 +66,8 @@
             </div>
 
 
-            <div class="input">
-                <i class="fa fa-compass fa-custom-style"
+            <div class="filter-form_input">
+                <i class="fa fa-compass"
                    title='{{ 'package.index.filter.package_source.title'|trans }}'
                    data-toggle='tooltip'></i>
                 <select data-placeholder="{{ 'package.index.filter.package_source.placeholder'|trans }}"
@@ -80,34 +79,34 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="input">
-                <i class="{{ currency().icon }} fa-custom-style"
+            <div class="filter-form_input">
+                <i class="{{ currency().icon }}"
                    title='{{ 'package.index.payment_status'|trans }}'
                    data-toggle='tooltip'></i>
                 <select data-placeholder="{{ 'package.index.payment_status'|trans }}"
                         id="package-filter-paid"
-                        class="package-filter form-control input-sm">
+                        class="package-filter form-control">
                     <option></option>
                     <option value="paid">{{ 'package.index.paid'|trans({}, 'MBHPackageBundle') }}</option>
                     <option value="part">{{ 'package.index.partly_paid'|trans({}, 'MBHPackageBundle') }}</option>
                     <option value="not_paid">{{ 'package.index.not_paid'|trans({}, 'MBHPackageBundle') }}</option>
                 </select>
             </div>
-            <div class="input">
-                <i class="fa fa-check fa-custom-style"
+            <div class="filter-form_input">
+                <i class="fa fa-check"
                    title='{{ 'package.index.is_confirmed'|trans({}, 'MBHPackageBundle') }}'
                    data-toggle='tooltip'></i>
                 <select data-placeholder="{{ 'package.index.is_confirmed'|trans({}, 'MBHPackageBundle') }}"
                         id="package-filter-confirmed"
-                        class="package-filter form-control input-sm">
+                        class="package-filter form-control">
                     <option></option>
                     <option value="1">{{ 'package.index.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}</option>
                     <option value="0">{{ 'package.index.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</option>
                 </select>
             </div>
             {% if environment == 'prod' %}
-                <div class="input">
-                    <i class="fa fa-trash-o fa-custom-style"
+                <div class="filter-form_input">
+                    <i class="fa fa-trash-o"
                        title='{{ 'package.index.deleted'|trans({}, 'MBHPackageBundle') }}'
                        data-toggle='tooltip'></i>
                     <input type="checkbox" id="package-filter-deleted" class="package-filter" value="1"/>

@@ -57,19 +57,6 @@
     padding: 0px 0px 5px 10px;
     display: inline-block;
   }
-
-  select {
-    //width: 130px;
-  }
-
-  #package-filter-dates {
-    width: 150px;
-  }
-
-  input.datepicker {
-    max-width: 84px !important;
-    //width: 80px;
-  }
 }
 
 #package-table-quick-links
@@ -122,73 +109,14 @@
   }
 }
 
-#package-table-filter {
-  display: flex;
-  flex-wrap: wrap;
-
-  #package-filter-dates {
-    width: 150px;
-  }
-
-  input.datepicker {
-    max-width: 84px !important;
-  }
-
-  .fa-custom-style {
-    display: flex;
-    justify-content: center;
-  }
-
-  .fa-custom-style:before {
-    width: 20px;
-    margin-left: 8px;
-  }
-
-  .group-date {
-    display: flex !important;
-    flex-wrap: wrap;
-  }
-
-  .input {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .group-date-select {
-    margin-left: 5px;
-  }
+select#package-filter-confirmed + span.select2 {
+  width: 145px !important;
 }
 
-@media (max-width: 633px){
-  #package-table-filter {
-    input.datepicker {
-      max-width: 100% !important;
-      text-align: center;
-    }
-    .group-date .input:first-child
-    {
-      margin-bottom: 0;
-    }
-    .group-date-select {
-      margin-left: 0;
-      padding-left: 28px;
-    }
-    .select2-container--default {
-      width: 100% !important;
-    }
-    .input {
-      width: 100%;
-      margin-bottom: 3px;
-    }
-  }
-
-  #package-table-quick-links {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-
-    li a {
-      width: 100%;
+#backdrop-package-load-content {
+  div.alert.alert-warning {
+    i.fa.fa-spinner {
+      margin-right: 0.3em;
     }
   }
 }

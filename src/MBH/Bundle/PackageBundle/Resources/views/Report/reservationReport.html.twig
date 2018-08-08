@@ -1,17 +1,19 @@
-{% extends 'MBHPackageBundle::layout.html.twig' %}
+{% extends 'MBHPackageBundle:Report:layout.html.twig' %}
 
 {% set title = 'views.report.reservation_report.title'|trans %}
+{% set title_url = path('reservation_report') %}
+{% set small_title = 'reservation_report.title'|trans %}
 {% set layout = 'box' %}
 
 {% block content %}
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'reservation-report-filter'} %}
         {% block content %}
             <form class="form-inline search-form filter-form remember mbh-start-date" id="reservation-report-filter" role="form">
-                <div class="input">
+                <div class="filter-form_input">
                     <i class="fa fa-calendar" title='{{ 'views.report.reservation_report.period.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
+                       data-toggle='tooltip'></i>
                     <input type="text" id="reservation-report-filter-begin"
-                           class="datepicker reservation-report-filter begin-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
+                           class="datepicker reservation-report-filter begin-datepicker mbh-daterangepicker  not-set-date form-control"
                            data-date-format="dd.mm.yyyy">
                 </div>
                 <div class="input hidden">
@@ -20,26 +22,26 @@
                            class="datepicker reservation-report-filter end-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
                            data-date-format="dd.mm.yyyy">
                 </div>
-                <div class="input">
+                <div class="filter-form_input">
                     <i class="fa fa-file" title='{{ 'views.report.reservation_report.report_date.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
+                       data-toggle='tooltip'></i>
                     <input type="text" id="reservation-report-date"
-                           class="datepicker reservation-report-filter form-control input-sm"
+                           class="datepicker reservation-report-filter form-control"
                            data-date-format="dd.mm.yyyy">
                 </div>
 
-                <div class="input">
+                <div class="filter-form_input">
                     <i class="fa fa-home" title='{{ 'views.report.reservation_report.room_types.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
+                       data-toggle='tooltip'></i>
                     <select multiple data-placeholder="{{ 'views.report.reservation_report.room_types.title'|trans }}"
-                            id="reservation-report-filter-rooms" class="reservation-report-filter form-control input-sm">
+                            id="reservation-report-filter-rooms" class="reservation-report-filter form-control">
                         <option></option>
                         {% for room in roomTypes %}
                             <option value="{{ room.id }}">{{ room.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="input">
+                <div class="filter-form_input">
                     <button type="button" class="btn btn-primary report-update-button">{{ 'views.report.packages_daily_report.update_button'|trans }}</button>
                 </div>
             </form>

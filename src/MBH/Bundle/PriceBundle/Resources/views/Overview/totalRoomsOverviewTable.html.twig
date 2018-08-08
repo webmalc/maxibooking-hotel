@@ -5,7 +5,7 @@
 {% set firstRoomTypeData = reportData|first|first %}
 {% set numberOfColumns = firstRoomTypeData['totalRooms']|length + 2 %}
 
-<table id="total-rooms-overview-table" class="table table-bordered" style="width: 300px">
+<table id="total-rooms-overview-table" class="table table-bordered custom-mobile-style" style="width: 300px">
     <tbody>
         <tr>
             <td class="info">{{ 'total_rooms_overview_table.available_number_of_rooms'|trans}}</td>
@@ -15,7 +15,7 @@
 </table>
 
 <table id="total-rooms-overview-table"
-       class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+       class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid custom-mobile-style">
     <tbody>
     <tr class="mbh-grid-header1 warning">
         <td colspan="{{ numberOfColumns }}"><strong>{{ 'total_rooms_overview_table.by_all_hotels'|trans}}</strong></td>

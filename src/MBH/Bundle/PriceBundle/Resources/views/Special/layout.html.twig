@@ -2,3 +2,20 @@
 
 {% set title = "special.title" %}
 {% set title_url = path('special') %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/special/*'%}
+
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{#{% block styles %}#}
+    {#{{ parent() }}#}
+
+    {#{% stylesheets filter='cssrewrite, uglifycss' '@MBHPriceBundle/Resources/public/css/special/*'%}#}
+        {#<link rel="stylesheet" href="{{ asset_url }}"/>#}
+    {#{% endstylesheets %}#}
+{#{% endblock %}#}

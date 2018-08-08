@@ -40,5 +40,8 @@ $(document).ready(function () {
     }());
 
     //roomType rooms datatables
-    $('.service-tables').dataTable();
+    $('.service-tables').dataTable({
+      language    : mbh.datatablesOptions.language,
+      pageLength  : mbh.datatablesOptions.pageLength
+    });
 });

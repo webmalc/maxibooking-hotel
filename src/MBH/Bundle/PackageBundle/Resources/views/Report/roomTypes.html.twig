@@ -8,9 +8,9 @@
 {% block content %}
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
-        <form id="room-types-table-filter" class="form-inline icon-label-form">
-            <div class="form-group">
-                <label><i class="fa fa-bed" title='{{ 'report.room_types.room_type_filter.title'|trans }}' data-toggle='tooltip'></i></label>
+        <form id="room-types-table-filter" class="form-inline filter-form icon-label-form">
+            <div class="filter-form_input">
+                <i class="fa fa-bed" title='{{ 'report.room_types.room_type_filter.title'|trans }}' data-toggle='tooltip'></i>
                 <select name="roomType" data-placeholder="{{ 'report.room_types.room_type_filter.title'|trans }}" id="accommodation-report-filter-roomType" class="form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
@@ -19,8 +19,8 @@
                 </select>
             </div>
             {% if housings %}
-                <div class="form-group">
-                    <label><i class="fa fa-home" title='{{ 'report.room_types.housing_filter.title'|trans }}' data-toggle='tooltip'></i></label>
+                <div class="filter-form_input">
+                    <i class="fa fa-home" title='{{ 'report.room_types.housing_filter.title'|trans }}' data-toggle='tooltip'></i>
                     <select name="housing" data-placeholder="{{ 'report.room_types.housing_filter.title'|trans }}" id="accommodation-report-filter-housing" class="form-control input-sm">
                         <option></option>
                         {% for housing in housings %}
@@ -30,8 +30,8 @@
                 </div>
             {% endif %}
             {% if floors %}
-                <div class="form-group">
-                    <label><i class="fa fa-building" title='{{ 'report.room_types.floor_filter.title'|trans }}' data-toggle='tooltip'></i></label>
+                <div class="filter-form_input">
+                    <i class="fa fa-building" title='{{ 'report.room_types.floor_filter.title'|trans }}' data-toggle='tooltip'></i>
                     <select name="floor" data-placeholder="{{ 'report.room_types.floor_filter.title'|trans }}" id="accommodation-report-filter-floor" class="form-control input-sm" style="width: 75px">
                         <option></option>
                         {% for floor in floors %}
@@ -40,8 +40,8 @@
                     </select>
                 </div>
             {% endif %}
-            <div class="form-group">
-                <label><i class="{{ currency().icon }}" title='{{ 'report.room_types.payment_status_filter.title'|trans }}' data-toggle='tooltip'></i></label>
+            <div class="filter-form_input">
+                <i class="{{ currency().icon }}" title='{{ 'report.room_types.payment_status_filter.title'|trans }}' data-toggle='tooltip'></i>
                 <select name="status" data-placeholder="{{ 'report.room_types.payment_status_filter.title'|trans }}" id="accommodation-report-filter-status" class="form-control input-sm">
                     <option></option>
                     {% for status in statuses %}
@@ -52,7 +52,7 @@
             {# После добавления даты, необходимо учитывать статус плательщика (Заехал/Не заехал и т.п.) #}
             {#<div class="form-group">#}
                 {#<label>#}
-                    {#<i class="fa fa-calendar fa-custom-style"#}
+                    {#<i class="fa fa-calendar"#}
                        {#title='{{ 'package.index.dates'|trans }}'#}
                        {#data-toggle='tooltip'></i>#}
                 {#</label>#}

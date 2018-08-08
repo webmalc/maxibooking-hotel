@@ -9,19 +9,22 @@
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'users-report-filter-widget'} %}
         <form id="users-report-filter" class="form-inline filter-form remember" role="form">
-            <div class="input">
-                <i class="fa fa-calendar" title='{{ 'report.user.dates'|trans }}' data-toggle='tooltip'></i>&nbsp
-                <input type="text" name="begin" id="users-report-filter-begin" class="datepicker users-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-14 days")|date('d.m.Y') : app.request.get('begin')}}">
-            </div>
-            <div class="input">
-                — &nbsp
-                <input type="text" name="end" id="users-report-filter-end" class="datepicker users-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end')}}">
+            <div class="filter-form_group-date">
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title='{{ 'report.user.dates'|trans }}' data-toggle='tooltip'></i>
+                    <div class="filter-form_input">
+                        <input type="text" name="begin" id="users-report-filter-begin" class="datepicker users-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-14 days")|date('d.m.Y') : app.request.get('begin')}}">
+                        <span class="filter-form_separator"></span>
+                        <input type="text" name="end" id="users-report-filter-end" class="datepicker users-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end')}}">
+                    </div>
+                </div>
             </div>
 
             {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
             
-            <div class="input">
-                <i class="fa fa-user" title='{{ 'report.user.user'|trans }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'report.user.user'|trans }}" id="users-report-filter-users" class="users-report-filter form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-user" title='{{ 'report.user.user'|trans }}' data-toggle='tooltip'></i>
+                <select multiple data-placeholder="{{ 'report.user.user'|trans }}" id="users-report-filter-users" class="users-report-filter form-control input-sm">
                     <option></option>
                     {% for user in users %}
                         <option value="{{ user }}">{{ user }}</option>
@@ -29,8 +32,9 @@
                 </select>
             </div>
 
-            <div class="input">
-                <i class="fa fa-bed" title='{{ 'report.user.room_type'|trans }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'report.user.room_type'|trans }}" id="users-report-filter-roomType" class="users-report-filter form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-bed" title='{{ 'report.user.room_type'|trans }}' data-toggle='tooltip'></i>
+                <select multiple data-placeholder="{{ 'report.user.room_type'|trans }}" id="users-report-filter-roomType" class="users-report-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}">{{ roomType.name }}</option>
@@ -38,8 +42,9 @@
                 </select>
             </div>
 
-            <div class="input">
-                <i class="fa fa-sliders" title='{{ 'report.user.tariff'|trans }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'report.user.tariff'|trans }}" id="users-report-filter-tariff" class="users-report-filter form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-sliders" title='{{ 'report.user.tariff'|trans }}' data-toggle='tooltip'></i>
+                <select multiple data-placeholder="{{ 'report.user.tariff'|trans }}" id="users-report-filter-tariff" class="users-report-filter form-control input-sm">
                     <option></option>
                     {% for tariff in tariffs %}
                         <option value="{{ tariff.id }}">{{ tariff.name }}</option>

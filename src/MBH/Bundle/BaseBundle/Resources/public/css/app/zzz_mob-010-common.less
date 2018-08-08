@@ -1,0 +1,222 @@
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 0;
+  }
+
+  .tab-pane {
+    all: unset;
+  }
+
+  .content-header {
+    padding: 0 15px 0 15px;
+  }
+
+  .content-wrapper.main-container {
+    min-height: unset !important;
+    padding-top: 0;
+  }
+
+  section.content {
+    padding-top: 0;
+    padding-bottom: 0;
+    >.box.box-default {
+      border-top: unset;
+      margin-bottom: unset;
+      .box-body {
+        padding-bottom: 0;
+      }
+    }
+
+    #package-summary, .package-summary {
+      .package-summary-row, .order-summary-row{
+        display: table-row;
+        margin-left: unset;
+      }
+    }
+
+    div.bg-gray.color-palette.alert {
+      display: table;
+      width: 100%;
+      > span {
+        display: table-row;
+        > * {
+          display: table-cell;
+          width: 50%;
+
+          &:first-child {
+            text-align: right;
+          }
+          &:last-child {
+            text-align: left;
+            padding-left: .3em;
+          }
+        }
+      }
+    }
+  }
+
+  .box-header_when-mobile {
+    .box-tools {
+      height: 100%;
+      width: 100%;
+      button {
+        margin-left: 10px;
+        margin-top: -5px;
+        width: 100%;
+        height: 100%;
+        .fa {
+          float: right;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+
+  header.main-header {
+    top: unset !important;
+    position: relative !important;
+
+    nav[role="navigation"] {
+      > div.navbar-custom-menu > ul.nav {
+        > li.notifications-menu {
+          overflow: hidden;
+          > a {
+            text-overflow: ellipsis;
+          }
+        }
+
+        > li > a {
+          padding: 15px 10px;
+        }
+      }
+    }
+  }
+
+  .sidebar-open .content-wrapper,
+  .sidebar-open .main-footer  {
+    -webkit-transform: unset;
+    transform: unset;
+  }
+
+  aside.main-sidebar {
+    z-index: 1000;
+    top:100px;
+    padding-top: 0;
+    width: 100%;
+    left: -100%;
+    transform: translateX(0px);
+    transition-property: left;
+    transition-duration: 500ms;
+  }
+
+  .sidebar-open {
+    aside.main-sidebar {
+      left: 0;
+
+      &::after {
+        content: "MaxiBooking";
+        font-size: 10px;
+        color: #408dbc;
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        margin-top: 15px;
+      }
+    }
+
+  }
+
+  body.hidden-logo {
+    header {
+      position: fixed !important;
+      top: 0 !important;
+
+      a.logo {
+        display: none;
+        .logo-mini {
+          display: none;
+        }
+      }
+    }
+
+    aside.main-sidebar {
+      top:50px;
+    }
+
+    .content-wrapper.main-container {
+      padding-top: 100px;
+    }
+  }
+
+  form {
+    .input-xs,
+    .input-xxs,
+    select,
+    input[type="text"]:not([class^="bootstrap-timepicker"]){
+      width: 100% !important;
+      min-width: unset !important;
+    }
+
+    // отдельно для поля Найти гостя. а может и не только, поэтому здесь
+    select + span.select2 {
+      width: 100% !important;
+    }
+  }
+
+  ul[role="tablist"] li {
+    width: 100%;
+    border-bottom: 0.5px solid #3c8dbc;
+
+    &:not(.active) {
+      background: #9c9c9c7d;
+    }
+  }
+
+  /** кнопки действий*/
+  #actions {
+    position: relative;
+    margin-right: -10px;
+    margin-left: -10px;
+    ul:not(.dropdown-menu) {
+      margin: 0px -10px;
+      > li {
+        button {
+          width: 100%;
+          margin-right: 0;
+        }
+      }
+    }
+  }
+  .navbar_tad-a_hotel {
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 450px) {
+  .navbar_tad-a_hotel {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 375px) {
+  section.content {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .navbar_tad-a_hotel {
+    max-width: 155px;
+  }
+}
+
+@media (max-width: 350px) {
+  section.content {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+  .navbar_tad-a_hotel {
+    max-width: 115px;
+  }
+}

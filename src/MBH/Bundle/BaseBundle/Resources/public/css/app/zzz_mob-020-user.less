@@ -1,0 +1,30 @@
+@media (max-width: 767px) {
+  #add-guest-modal {
+    .modal-body {
+      padding-top: 0;
+
+      form ul.nav.nav-tabs {
+        margin-bottom: 5px;
+        > li {
+          //width: 100%;
+          float: unset;
+          border-bottom: .5px solid #3c8dbc;
+          &:not(.active) {
+            background: #9c9c9c7d;
+          }
+
+          & > a {
+            margin-right: unset;
+          }
+        }
+      }
+    }
+
+    .modal-footer {
+      padding-top: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+  }
+}
