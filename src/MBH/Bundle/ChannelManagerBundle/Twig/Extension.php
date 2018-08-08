@@ -40,7 +40,6 @@ class Extension extends \Twig_Extension
         $this->docManager = $docManager;
         $this->container = $container;
         $this->serviceParams = $serviceParams;
-        $this->channelManagerWizard = $channelManagerWizard;
     }
 
     /**
@@ -105,6 +104,6 @@ class Extension extends \Twig_Extension
      */
     public function isChannelManagerConfiguredByTechSupport(string $channelManagerName)
     {
-        return $this->channelManagerWizard->isConfiguredByTechSupport($channelManagerName);
+        return $this->container->get('mbh.cm_wizard_manager')->isConfiguredByTechSupport($channelManagerName);
     }
 }

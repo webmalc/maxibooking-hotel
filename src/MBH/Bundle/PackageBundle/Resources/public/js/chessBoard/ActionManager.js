@@ -480,8 +480,4 @@ var ActionManager = /** @class */ (function () {
     };
     return ActionManager;
 }());
-hidePackageUpdateModal();
-{
-    $('#packageModal').modal('hide');
-}
 //# sourceMappingURL=ActionManager.js.map
