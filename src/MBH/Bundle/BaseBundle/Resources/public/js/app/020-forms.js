@@ -374,7 +374,7 @@ var docReadyForms = function () {
         placeholder: Translator.trans("020-forms.make_choice"),
         allowClear: true,
         width: 'resolve',
-        formatSelection: function (item, container) {
+        templateSelection: function (item, container) {
             var optgroup = $(item.element).parent('optgroup').attr('label');
             if (!optgroup) {
                 return item.text;

@@ -254,8 +254,8 @@ var docReadyPackages = function () {
                 placeholder: $(this).prop('data-placeholder'),
                 allowClear: true,
                 width: 'element',
-                formatResult: format,
-                formatSelection: format
+                templateResult: format,
+                templateSelection: format
             });
         });
     }());
