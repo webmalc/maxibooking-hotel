@@ -239,8 +239,6 @@ class Notification extends Response
                 ]
             );
         }
-        $tokenCurrent = $this->returnSha256($data);
-        $token = $this->getToken();
 
         return $this->returnSha256($data) === $this->getToken();
     }
