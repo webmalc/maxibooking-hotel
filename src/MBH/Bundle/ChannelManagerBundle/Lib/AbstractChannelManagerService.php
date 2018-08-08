@@ -274,10 +274,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $check = $this->updateRooms($begin, $end, $roomType);
         $result ? $result = $check : $result;
 
-        $this->updateRestrictions($begin, $end, $roomType);
+        $check = $this->updateRestrictions($begin, $end, $roomType);
         $result ? $result = $check : $result;
 
-        $this->updatePrices($begin, $end, $roomType);
+        $check = $this->updatePrices($begin, $end, $roomType);
         $result ? $result = $check : $result;
 
         $this->log('ChannelManager update function end.');

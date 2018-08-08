@@ -95,6 +95,8 @@ class BaseControllerTest extends WebTestCase
         'online_payment_form_new',
         'online_payment_form_edit',
         'online_payment_form_delete',
+        'wizard_info',
+        'cm_data_warnings'
     ];
 
     private const ROUTERS_CHANNEL_MANAGER = [

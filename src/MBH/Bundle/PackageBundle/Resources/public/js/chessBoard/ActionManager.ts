@@ -29,8 +29,9 @@ class ActionManager {
                 $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
                 let $removeButton = $packageDeleteModal.find('#package-delete-modal-button');
                 $removeButton.attr('type', 'button');
-                $removeButton.unbind('click');
-                $removeButton.click(function () {
+                const clickEventType = ChessBoardManager.getClickEventType();
+                $removeButton.unbind(clickEventType);
+                $removeButton.on(clickEventType, function () {
                     self.dataManager.deletePackageRequest(packageId, $modalContainer, $packageDeleteModal);
                 })
             }
@@ -135,14 +136,17 @@ class ActionManager {
 
     private modifySpecialButton(packageData, element, editModal) {
         let self = this;
-        element.onclick = function () {
+        $(element).on(ChessBoardManager.getClickEventType(), function () {
             event.preventDefault();
-            let $searchPackageForm = $('#package-search-form');
-            let specialId = element.getAttribute('data-id');
-            let newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
+            const $searchPackageForm = $('#package-search-form');
+            const specialId = element.classList.contains('cancel') ? null : element.getAttribute('data-id');
+            const newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
             editModal.modal('hide');
-            self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
-        }
+            setTimeout(() => {
+                self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
+            }, 250);
+
+        })
     }
 
     private modifyButtonsByGuest($editModal) {
@@ -182,13 +186,13 @@ class ActionManager {
         }
         element.setAttribute('data-url', newPackageCreateUrl);
 
-        element.onclick = function () {
+        $(element).on(ChessBoardManager.getClickEventType(), function () {
             if (!element.getAttribute('disabled')) {
                 let url = element.getAttribute('data-url');
-                self.dataManager.createPackageRequest(url, packageData);
                 editModal.modal('hide');
+                self.dataManager.createPackageRequest(url, packageData);
             }
-        };
+        });
     }
 
     public static callIntervalBeginOutOfRangeModal(side) {
@@ -224,7 +228,7 @@ class ActionManager {
             editButton.css('background-color', 'transparent');
             editButton.css('border', '1px solid #fff');
             editButton.css('color', '#fff');
-            editButton.click(function () {
+            editButton.on(ChessBoardManager.getClickEventType(), function () {
                 $modal.modal('hide');
             });
             editButton.appendTo($modal.find('.modal-footer'));
@@ -240,7 +244,7 @@ class ActionManager {
         if (intervalData) {
             let $deleteButton = packageInfoModal.find('#package-info-modal-delete');
             if (intervalData.removePackage) {
-                $deleteButton.click(function () {
+                $deleteButton.on(ChessBoardManager.getClickEventType(), function () {
                     self.callRemoveConfirmationModal(packageId);
                     packageInfoModal.modal('hide');
                 });
@@ -248,7 +252,7 @@ class ActionManager {
                 $deleteButton.hide();
             }
             let $editButton = packageInfoModal.find('#package-info-modal-edit');
-            $editButton.click(function () {
+            $editButton.on(ChessBoardManager.getClickEventType(), function () {
                 $editButton.attr('href', Routing.generate('package_edit', {id: packageId}));
             });
 
@@ -293,9 +297,9 @@ class ActionManager {
         let modalAlertDiv = document.getElementById('package-modal-change-alert');
         modalAlertDiv.innerHTML = '';
         let newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
-        let isNewAccommodationInAnotherRoomType = ActionManager.isNewAccommodationInAnotherRoomType(newIntervalData, intervalData);
-        if (isNewAccommodationInAnotherRoomType || (intervalData && changedSide)) {
-            let alertMessageData = this.getAlertMessage(newIntervalData, intervalData, isNewAccommodationInAnotherRoomType);
+        let isAccommodationInAnotherRoomType = ActionManager.isAccommodationInAnotherRoomType(newIntervalData, intervalData);
+        if (isAccommodationInAnotherRoomType || (intervalData && changedSide)) {
+            let alertMessageData = this.getAlertMessage(newIntervalData, intervalData, isAccommodationInAnotherRoomType);
             if (alertMessageData) {
                 ActionManager.showAlertMessage(alertMessageData, $updateForm);
             }
@@ -309,11 +313,15 @@ class ActionManager {
             || ActionManager.isPackageBeginChanged(accommodationData, intervalData)
             || ActionManager.isPackageEndChanged(accommodationData, intervalData);
 
-        return accommodationData.roomType !== intervalData.packageRoomTypeId && isNewAccommodation;
+        return ActionManager.isAccommodationInAnotherRoomType(accommodationData, intervalData) && isNewAccommodation;
     }
 
-    private getAlertMessage(newIntervalData, intervalData, isNewAccommodationInAnotherRoomType) {
-        if (isNewAccommodationInAnotherRoomType) {
+    protected static isAccommodationInAnotherRoomType(accommodationData, intervalData) {
+        return accommodationData.roomType !== intervalData.packageRoomTypeId;
+    }
+
+    private getAlertMessage(newIntervalData, intervalData, isAccommodationInAnotherRoomType) {
+        if (isAccommodationInAnotherRoomType) {
             let packageAccommodations = this.dataManager.getPackageAccommodations(intervalData.packageId);
             let existsAccommodationWithCurrentRoomType = packageAccommodations.some((accommodationData) => {
                 return accommodationData.packageRoomTypeId === accommodationData.roomTypeId;
@@ -422,7 +430,7 @@ class ActionManager {
                 $modalContent.removeClass(alertMessageData.modalContentClass);
                 $('#package-modal-change-alert').addClass('text-center');
             };
-            $continueButton.click(function () {
+            $continueButton.on(ChessBoardManager.getClickEventType(), function () {
                 onWithModalClassWindowClosed();
             });
             $('#packageModal').on('hidden.bs.modal', function () {
@@ -434,7 +442,7 @@ class ActionManager {
         let $confirmButton = $('#packageModalConfirmButton');
         $confirmButton.hide();
         $updateForm.hide();
-        $continueButton.click(function () {
+        $continueButton.on(ChessBoardManager.getClickEventType(), function () {
             ActionManager.onContinueButtonClick($modalAlertDiv, $confirmButton, $continueButton, $updateForm);
         })
     }

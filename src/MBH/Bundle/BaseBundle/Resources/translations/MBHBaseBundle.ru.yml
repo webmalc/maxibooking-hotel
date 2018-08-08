@@ -3,7 +3,6 @@ views.actions.list.add: Добавить
 views.actions.new.save: Сохранить
 views.actions.saveButtons.save_and_close: 'Сохранить и закрыть'
 views.actions.saveButtons.save: Сохранить
-views.actions.confirm: Подтвердить
 views.actions.saveButtons.cancel: Отмена
 views.actions.saveButtons.log: Логи
 views.actions.update.save: Сохранить

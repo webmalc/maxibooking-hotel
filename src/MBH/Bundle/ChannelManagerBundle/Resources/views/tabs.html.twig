@@ -3,12 +3,15 @@
 {% endif %}
 
 {% set menu = [] %}
-{% if  config is null or not config.isReadyToSync() %}
+{% set isReadyToSync = config and config.isReadyToSync() %}
+{% if not isReadyToSync %}
     {% set menu = menu|merge([
-        {'route': 'wizard_info', routeParams: {channelManagerName: base}, icon: 'fa-book', titleTransId: 'views.tabs.instruction'},
+        {'route': 'wizard_info', routeParams: {channelManagerName: base},
+            titleTransId: 'views.tabs.instruction', titleTransParams: {'%channelManagerName%': channel_manager_human_name(base)}},
     ]) %}
     {% set active = active + 1 %}
 {% endif %}
+
 
 {% set menu = menu|merge([
     {'route': base, icon: 'fa-info-circle', titleTransId: 'views.tabs.main_settings'},
@@ -16,7 +19,13 @@
     {'route': base ~ '_tariff', icon: 'fa-sliders', titleTransId: 'views.tabs.tariffs'}
 ]) %}
 
-{% if services and config and config.isReadyToSync() %}
+{% if not isReadyToSync %}
+    {% set menu = menu|merge([
+        {'route': 'cm_data_warnings', routeParams: {channelManagerName: base}, titleTransId: 'view.tabs.data_warnings'}
+    ]) %}
+{% endif %}
+
+{% if services and isReadyToSync %}
     {% set menu = menu|merge([
         {'route': base ~ '_service', icon: 'fa-plug', titleTransId: 'views.tabs.services'}
     ]) %}
@@ -42,11 +51,14 @@
 <ul class="nav nav-tabs" role="tablist">
     {% for item in menu %}
         {% set routeParams = item.routeParams is defined ? item.routeParams : {} %}
-        {% set title = (config and config.isReadyToSync() ? '<i class="fa ' ~ item.icon ~ '"></i>' : loop.index ~ '.') ~ item.titleTransId|trans({}, 'MBHChannelManagerBundle') %}
-        {% set isConfiguredByTechSupport = base not in ['booking', 'expedia', 'myallocator', 'ostrovok'] %}
+        {% set titleTransParams = item.titleTransParams is defined ? item.titleTransParams : {} %}
+
+        {% set title = (config and config.isReadyToSync() ? '<i class="fa ' ~ item.icon ~ '"></i>' : loop.index ~ '. ') ~ item.titleTransId|trans(titleTransParams, 'MBHChannelManagerBundle') %}
+        {% set isConfiguredByTechSupport = is_cm_configured_by_tech_support(base) %}
         {% set isActiveTab = loop.index == active %}
+
         {% if not (isActiveTab or (config and config.isReadyToSync())
-            or (is_mb_user() and loop.index in [1, 2] and active in [1, 2] and (isConfiguredByTechSupport or (config and config.hotelId))
+            or (loop.index in [1, 2] and active in [1, 2] and ((is_mb_user() and isConfiguredByTechSupport) or (not isConfiguredByTechSupport and (config and config.isConnectionSettingsRead())))
             and not (loop.index == 2 and active == 1 and isConfiguredByTechSupport and (config is empty or config.hotelId is empty)))) %}
             <li class="disabled">
                 <a href="#" role="tab">{{ title|raw }}</a>

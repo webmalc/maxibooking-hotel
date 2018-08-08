@@ -82,7 +82,6 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
     {
         $this->rooms = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
-        $this->setReadinessConfirmed(false);
     }
 
     /**

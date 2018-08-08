@@ -5,15 +5,14 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
-use MBH\Bundle\UserBundle\Document\User;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * @Route("/")
@@ -122,26 +121,33 @@ class ChannelManagerController extends Controller
         $hasForm = $wizardManager->isConfiguredByTechSupport($channelManagerName);
         $channelManagerHumanName = $channelManagerService->getServiceHumanName($channelManagerName);
 
+        $configName = $channelManagerService->getConfigFullName($channelManagerName);
+        /** @var ChannelManagerConfigInterface|Base $config */
+        $config = $this->dm->getRepository($configName)->findOneBy(['hotel' => $this->hotel]);
+
         $responseParams = [
             'hasForm' => $hasForm,
             'channelManagerName' => $channelManagerName,
             'channelManagerHumanName' => $channelManagerHumanName,
+            'config' => $config
         ];
 
         if ($hasForm) {
-            $configName = $channelManagerService->getConfigFullName($channelManagerName);
-
-            /** @var ChannelManagerConfigInterface|Base $config */
-            $config = $this->dm->getRepository($configName)->findOneBy(['hotel' => $this->hotel]);
             if (is_null($config)) {
                 $config = (new $configName());
                 $config->setHotel($this->hotel);
+                $responseParams['config'] = $config;
             }
+
             $form = $this->createForm($wizardManager->getIntroForm($channelManagerName), $config, [
-                'data_class' => $configName
+                'data_class' => $configName,
+                'hotelAddress' => $wizardManager->getChannelManagerHotelAddress($this->hotel),
+                'hotelAddressFormRoute' => $this->generateUrl('hotel_contact_information', ['id' => $this->hotel->getId()]),
+                'hotelName' => $this->hotel->getName(),
+                'hotelNameFormRoute' => $this->generateUrl('hotel_edit', ['id' => $this->hotel->getId()]),
             ]);
 
-            if ($request->isMethod('POST')) {
+            if ($request->isMethod('POST') && empty($config->getId())) {
                 if (!empty($config->getId())) {
                     throw new \RuntimeException($configName . ' for hotel with ID="' . $this->hotel->getId() . ' is already exists');
                 }
@@ -157,9 +163,7 @@ class ChannelManagerController extends Controller
 
             $responseParams = array_merge($responseParams, [
                 'form' => $form->createView(),
-                'config' => $config,
                 'messages' => [
-                    'info' => $wizardManager->getConnectionInfoMessages($this->hotel, $channelManagerName, $channelManagerHumanName),
                     'errors' => $wizardManager->getUnfilledDataErrors($this->hotel, $channelManagerName),
                 ]
             ]);
@@ -169,29 +173,62 @@ class ChannelManagerController extends Controller
     }
 
     /**
-     * @Route("/confirm_cm_config/{channelManagerName}", name="confirm_cm_config")
+     * @Template()
+     * @Route("/{channelManagerName}/data_warnings", name="cm_data_warnings")
+     * @param string $channelManagerName
+     * @return array
+     * @throws \Exception
+     */
+    public function dataWarningsAction(string $channelManagerName)
+    {
+        $cmWizard = $this->get('mbh.cm_wizard_manager');
+        $warningsCompiler = $this->get('mbh.warnings_compiler');
+
+        return [
+            'channelManagerName' => $channelManagerName,
+            'config' => $this->get('mbh.channelmanager')->getConfigForHotel($this->hotel, $channelManagerName),
+            'lastDefinedPriceCaches' =>
+                $cmWizard->getLastCachesData($this->hotel, $channelManagerName, PriceCache::class),
+            'lastDefinedRoomCaches' =>
+                $cmWizard->getLastCachesData($this->hotel, $channelManagerName, RoomCache::class),
+            'emptyRoomCachePeriods' => $warningsCompiler->getEmptyRoomCachePeriods($this->hotel),
+            'emptyPriceCachePeriods' => $warningsCompiler->getEmptyPriceCachePeriods($this->hotel)
+        ];
+    }
+
+    /**
+     * @Route("/read_connection_instruction/{channelManagerName}", name="read_connection_instruction")
      * @param string $channelManagerName
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Throwable
      */
-    public function confirmConfigReadiness(string $channelManagerName)
+    public function setIsConnectionInstructionRead(string $channelManagerName)
     {
-        if (!$this->getUser() instanceof User || $this->getUser()->getUsername() !== UserData::MB_USER_USERNAME) {
-            throw new AccessDeniedException('Only mb user can confirm channel manager config');
-        }
-
-        $channelManagerService = $this->get('mbh.channelmanager');
-        $confirmationResult = $channelManagerService->confirmReadinessOfCM($this->hotel, $channelManagerName);
-
-        if ($confirmationResult) {
-            $this->addFlash('success', 'channel_manager.confirmation.success');
-
-            $channelManagerHumanName = $channelManagerService->getServiceHumanName($channelManagerName);
-            $config = $channelManagerService->getConfigForHotel($this->hotel, $channelManagerName);
-            $this->get('mbh.messages_store')
-                ->sendCMConfirmationMessage($config, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
-        }
+        $this->get('mbh.channelmanager')->setIsConnectionInstructionRead($this->hotel, $channelManagerName);
 
         return $this->redirectToRoute($channelManagerName);
+    }
+
+    /**
+     * @Route("/confirm_with_warnings/{channelManagerName}", name="cm_confirm_with_warnings")
+     * @param string $channelManagerName
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function setConfirmedWithWarningsAction(string $channelManagerName)
+    {
+        $channelManagerService = $this->get('mbh.channelmanager');
+        $config = $channelManagerService->getConfigForHotel($this->hotel, $channelManagerName);
+        $config->setIsConfirmedWithDataWarnings(true);
+        $this->dm->flush();
+
+        $this->addFlash('success', $this->get('translator')->trans('cm_wizard.configuration.success', [
+            '%channelManagerHumanName%' => $channelManagerService->getServiceHumanName($channelManagerName)
+        ]));
+
+        $redirectRouteName = isset($channelManagerService::PULL_OLD_ORDERS_ROUTES[$channelManagerName])
+            ? $channelManagerService::PULL_OLD_ORDERS_ROUTES[$channelManagerName]
+            : $channelManagerName;
+
+        return $this->redirectToRoute($redirectRouteName);
     }
 }

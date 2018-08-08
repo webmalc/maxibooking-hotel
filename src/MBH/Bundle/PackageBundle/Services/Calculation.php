@@ -74,7 +74,7 @@ class Calculation
             $cashes[] = $newDoc;
         }
         foreach ($cashes as $cash) {
-            if (!$cash->getIsPaid() || in_array($cash->getId(), $ids)) {
+            if (!$cash->getIsPaid() || !empty($cash->getDeletedAt()) || in_array($cash->getId(), $ids)) {
                 continue;
             }
             $ids[] = $cash->getId();

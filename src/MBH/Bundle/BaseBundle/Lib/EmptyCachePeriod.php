@@ -67,7 +67,7 @@ class EmptyCachePeriod
      */
     public function getPeriodAsString()
     {
-        return $this->begin->format(self::DATE_FORMAT) . '-' . $this->end->format(self::DATE_FORMAT);
+        return $this->begin->format(self::DATE_FORMAT) . ' - ' . $this->end->format(self::DATE_FORMAT);
     }
 
     /**
