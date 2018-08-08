@@ -1,9 +1,9 @@
 package.pdf.hotel_accommodation: 'Hotel accommodation'
 package.pdf.short_city_extend: city
-package.pdf.short_housing_extend: wing
+package.pdf.short_housing_extend: bldg
 package.pdf.short_apartment_extend: apt
 package.pdf.short_street_extend: str
-package.pdf.inn: TIN
+package.pdf.inn: 'Tax number'
 package.pdf.notifies_customers: 'notifies the custumer:'
 package.pdf.with_an_address: 'located at:'
 analytics.index.sales_date: 'Date of sale'
@@ -39,7 +39,7 @@ order.cash.short_pay: Pay
 order.cash.cash_documents_not_found: 'Payment documents not found'
 order.edit.order_editing: 'Edit order #'
 order.edit.deleted: Deleted
-order.edit.room: Room
+order.edit.room: 'Order Number'
 order.edit.card: 'Edit card'
 order.edit.paid_price: 'Paid / Total'
 order.edit.paid: Paid
@@ -52,7 +52,7 @@ order.edit.payment_card_info.hide_button.title: Hide
 order.edit.is_confirmed: 'Confirmed?'
 order.edit.is_confirmed_yes: 'Yes'
 order.edit.is_confirmed_no: 'No'
-order.layout.reservation: Reservation
+order.layout.reservation: Reservations
 order.navbar.delete_order: 'Delete order'
 order.navbar.lock: Block
 order.packages.dates: Dates
@@ -71,14 +71,14 @@ order.tabs.not_confirmed: 'Not confirmed'
 order.tabs.order_info: 'Order information'
 order.tabs.reservations: Reservations
 order.tabs.payer: Payer
-order.tabs.calculations: Accounting
+order.tabs.calculations: Transactions
 order.touristEdit.edit_order: 'Edit order #'
 order.touristEdit.deleted: Deleted
 order.touristEdit.payer_not_specified: 'Payer not specified'
 order.touristEdit.organization_not_specified: 'Company not specified'
 order.touristEdit.fio: 'Full Name'
-order.touristEdit.birth_date: 'Birth date'
-order.touristEdit.gender: Sex
+order.touristEdit.birth_date: 'Date of Birth'
+order.touristEdit.gender: Gender
 order.touristEdit.phone: 'Phone number'
 order.touristEdit.email: Email
 order.touristEdit.address: Address
@@ -164,7 +164,7 @@ package.editTabs.reservation_info: 'General Information'
 package.editTabs.guests: Guests
 package.editTabs.services: Services
 package.editTabs.placement: Accommodation
-package.editTabs.documents: Documents
+package.editTabs.documents: 'Upload Documents'
 package.editTabs.data_transfer: 'Data transfer'
 package.editTabs.order: Order
 package.guest.edit_reservation: 'Edit reservation'
@@ -172,7 +172,7 @@ package.guest.deleted: Deleted
 package.guest.guests_not_added: 'Guests not added:'
 package.guest.phone: 'Phone number'
 package.guest.email: Email
-package.guest.birth_date: 'Birth date'
+package.guest.birth_date: 'Date of Birth'
 package.guest.age: Age
 package.guest.passport: ID
 package.guest.address: Address
@@ -181,8 +181,8 @@ package.guest.edit_record: Edit
 package.guest.write_a_client: 'Send client a message'
 package.guest.delete_record: Delete
 package.index.reservations_list: 'Reservations list'
-package.index.check_in: 'Check in'
-package.index.check_out: 'Check out'
+package.index.check_in: Check-in
+package.index.check_out: Check-out
 package.index.create: Created
 package.index.accommodation: Accommodation
 package.index.deletedAt: Deleted
@@ -192,8 +192,8 @@ package.index.not_paid: 'Not paid'
 package.index.is_confirmed: Confirmed
 package.index.is_confirmed_yes: 'Yes'
 package.index.is_confirmed_no: 'No'
-package.index.check_in_today: 'Check in today'
-package.index.check_in_tomorrow: 'Check in tomorrow'
+package.index.check_in_today: 'Check-in today'
+package.index.check_in_tomorrow: 'Check-in tomorrow'
 package.index.checked_in_now: 'Currently accommodated'
 package.index.not_confirmed: 'Not confirmed'
 package.index.without_placement: 'Without allocation'
@@ -206,7 +206,7 @@ package.index.placement: Accommodation
 package.index.guests: Guests
 package.index.price: Price
 package.index.created: Created
-package.index.default: Default
+package.index.default: 'Base Rate'
 package.index.isUpdated: Updated
 package.index.selection: Accommodation
 package.index.porter_link: 'Porter report'
@@ -222,15 +222,15 @@ package.json.go_to_placement: 'Proceed to accommodation'
 package.json.not_placed: 'Without allocation'
 package.json.go_to_payer: 'Proceed to payer'
 package.json.no_payer: 'No payer'
-package.json.go_to_calculations: 'Proceed to accounting'
+package.json.go_to_calculations: 'Proceed to Transactions'
 package.json.today: Today
 package.jsonButtons.confirm_order: 'Confirm order'
 package.jsonButtons.edit_record: Edit
 package.jsonButtons.delete_record: Delete
 package.jsonButtons.view_record: 'View record'
-package.layout.reservation: Reservation
+package.layout.reservation: Reservations
 package.listTabs.list: List
-package.listTabs.chess: 'Reservation Calendar'
+package.listTabs.chess: Calendar
 package.listTabs.placement: Accommodation
 package.listTabs.clients: Guests
 package.new.reservation_error: 'Reservation error'
@@ -238,7 +238,7 @@ package.new.reservation_error_try_again: 'An error accured during reservation pr
 package.pdf.executor: 'Executor:'
 package.pdf.address: Address
 package.pdf.short_home_extend: 'house #'
-package.pdf.count_paid_total: 'Services total cost:'
+package.pdf.count_paid_total: 'Total amount paid for Services'
 package.pdf.customer: 'Guest:'
 package.pdf.not_specified: 'Not specified'
 package.pdf.services_name: 'Services names'
@@ -253,7 +253,7 @@ package.pdf.night: night
 package.service.edit_reservation: 'Edit reservation'
 package.service.paid: Paid
 package.service.not_paid: 'Not paid'
-package.service.name: Title
+package.service.name: Name
 package.service: Service
 package.service.items: '{% amount %} un.'
 package.service.nights_amount: 'Number of nights'
@@ -264,7 +264,7 @@ package.service.amount: Number
 package.service.short_amount: Number
 package.service.package: Reservation
 package.service.tourist: Payer
-package.service.title: Title
+package.service.title: Name
 package.service.order: Order
 package.service.date: Date
 package.service.price: Price
@@ -278,7 +278,7 @@ package.service.delete_record: Delete
 package.service.add_services: 'Add services?'
 package.service.time: Time
 package.service.edit_record: Edit
-package.service.index.show_deleted: 'Show deleted'
+package.service.index.show_deleted: 'Include previously deleted'
 package.service.index.filter: Filter
 package.service.index.period: Period
 package.service.index.byDay: 'By days'
@@ -289,7 +289,7 @@ report.room.room_type: 'Room type'
 report.roomsCells.rooms_amount: 'Rooms total:'
 report.roomsCells.occupied_rooms_amount: 'Rooms reserved'
 report.roomsCells.empty_rooms_amount: 'Rooms available'
-report.roomsCells.select_check_in_date_for_reservation: 'Select check in date'
+report.roomsCells.select_check_in_date_for_reservation: 'Select Check-in date'
 report.roomsTable.no_room_types: 'This hotel doen''t have any room types'
 report.roomsTable.room: Room
 report.roomsTable.whole_hotel: 'Whole hotel'
@@ -298,24 +298,24 @@ search.index.enter_search_data: 'Enter parameters for room selection'
 search.layout.room_search: Reservation
 search.results.tariff_search: 'Search by rates'
 search.results.green: green
-search.results.main_tariffs: '- default rates'
+search.results.main_tariffs: '- Base Rates'
 search.results.blue: blue
 search.results.special_tariffs: '- special rates'
-search.results.check_in: 'Check in'
-search.results.check_out: 'Check out'
+search.results.check_in: Check-in
+search.results.check_out: Check-out
 search.results.dates: Dates
 search.results.days_and_nights: Days/nights
 search.results.hotel: Hotel
 search.results.type: Type
-search.results.room: Room
+search.results.room: 'Room Allocation'
 search.results.tariff: Rate
 search.results.quantity: Quantity
 search.results.guests: Guests
 search.results.price: Price
 search.results.total_beds: 'Available beds'
-search.results.total_rooms: 'Available rooms'
+search.results.total_rooms: 'Rooms for Sale'
 search.results.reservate: Reserve
-search.results.accommodation: Accommodate
+search.results.accommodation: Reserve
 search.results.nothing_found_for_your_request: 'Nothing found for your request'
 search.results.enter_search_data: 'Enter parameters for room selection'
 analytics.layout.report: Reports
@@ -325,9 +325,9 @@ package.index.summary.paid: Paid
 package.index.summary.debt: Debt
 package.index.summary.nights: Nights
 package.index.summary.guests: Guests
-package.index.name: Title
-package.index.inner_name: 'Internal name'
-package.index.delete_reason: 'Deletion reason'
+package.index.name: Name
+package.index.inner_name: 'Short Name'
+package.index.delete_reason: 'Cancellation reason'
 package.index.edit_record: 'Edit entry'
 package.index.delete_record: Delete
 accommodation.alert: 'It''s not recommended to accommodate guests before their arrival to the hotel'
@@ -343,24 +343,24 @@ report.porter.error: 'Dates selected incorrectly'
 report.porter.arrivals.empty: 'Reservations not found'
 report.porter.live.empty: 'Reservations not found'
 report.porter.live.debt: Payment
-report.porter.live.departure: 'Check out'
-report.porter.live.arrival: 'Check in'
+report.porter.live.departure: Check-out
+report.porter.live.arrival: Check-in
 report.porter.live.table: Residents
 report.porter.lives.table: Residents
 report.porter.arrivals.table: 'Checking in'
-report.porter.out.table: 'Check out'
+report.porter.out.table: Check-out
 report.porter.note: Comment
-modal.form.delete.reasons.package: 'Reservation deletion reason'
-modal.form.delete.reasons.order: 'Order deletion reason'
+modal.form.delete.reasons.package: 'Cancellation reason'
+modal.form.delete.reasons.order: 'Order Cancellation reason'
 modal.form.delete.reasons.reason_default: 'Not specified'
 modal.form.delete.reasons.close: Cancel
 modal.form.delete.reasons.delete: Delete
-views.list.based_on_technologies_mb: 'Based on MAXIBOOKING LLC technology'
+views.list.based_on_technologies_mb: 'Developed by MaxiBooking Ltd.'
 analytics.index.rooms_total: 'Rooms total'
 package.edit.query: Details
 package.pdf.persons: Persons
 package.pdf.days: Days
-source.index.name: Title
+source.index.name: Name
 source.index.reservation_source: 'Booking source'
 package.pdf.executor_caps: EXECUTOR
 package.pdf.customer_caps: CUSTOMER
@@ -374,15 +374,15 @@ source.index.created: Created
 report.accommodation.dates: Dates
 package.pdf.conditions: 'The above services provided fully and in time. A client doesn''t have any claims regarding the volume, quality and timing of the services.'
 package.service.per_persons: '{0} for {% persons %} guests|{1} per {% persons %} guest|]1,Inf] for {% persons %} guests'
-package.service.calculation_type: 'Payment type'
+package.service.calculation_type: 'Charge type'
 package.editService.edit_service: 'Edit service'
 report.accommodation.placement: accommodation
 report.accommodationTable.no_room_found: 'Rooms not found'
 report.accommodationTable.no_main_guest: 'No main guest'
-report.accommodationTable.early_check_in: 'Early check in:'
-report.accommodationTable.late_check_out: 'Late check out:'
+report.accommodationTable.early_check_in: 'Early Check-in'
+report.accommodationTable.late_check_out: 'Late Check-out'
 source.edit.edit_reservation_source: 'Edit booking source for reservation #'
-source.index.inner_name: 'Internal title'
+source.index.inner_name: 'Short Name'
 source.index.edit_record: Edit
 source.index.delete_record: Delete
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Impossible to delete the record with reservations. Reservations:'
@@ -402,7 +402,7 @@ mbh.package.arrivals.study: Education
 mbh.package.arrivals.other: Other
 report.users.small_title: Users
 report.users.roomtype: Rooms
-package.edit.edit_delete_reasons: 'Edit deletion reasons'
+package.edit.edit_delete_reasons: 'Edit Cancellation reason'
 organizations.breadcrumbs.add: 'Add company'
 organizations.breadcrumbs.edit: 'Edit company'
 organizations.confirm_delete: 'Do you really wish to delete company "%organization_name%"'
@@ -424,19 +424,19 @@ views.list.not_necessary: 'not requred'
 views.list.review_comiled: 'No feedback for this order!'
 report.poll.invite: 'Visa invitations'
 report.poll.small_title_order: 'Order evaluation'
-views.report.polls.not_found: 'Polls not found'
+views.report.polls.not_found: 'No records'
 views.report.polls.view_record: 'Go to results'
 mbh.package.arrivals.tourism: Recreation/Tourism
 mbh.package.arrivals.work: Job/Internship
 mbh.package.arrivals.residence: 'Temorary residence'
-dynamic.sales.day.total-sales-price-for-period: 'Amount of reservations per a period/$'
+dynamic.sales.day.total-sales-price-for-period: 'Reservations per period'
 dynamic.sales.day.total-sales-price: 'Amount of reservations in 24 hours/$'
 dynamic.sales.day.number-of-created-packages-for-period: 'Reservations created per period'
 dynamic.sales.day.number-of-cancelled: 'Reservations cancelled in 24 hours'
 dynamic.sales.day.sales.comparison: Comparisson
 package.dynamic.sale.search: Show
 dynamic.sales.layout.title: Reports
-dynamic.sales.day.periods: Periods
+dynamic.sales.day.periods: Period
 dynamic.sales.day.summary: Total
 dynamic.sales.day.sales.summ: Sum
 dynamic.sales.day.sales.amounts: Quantity
@@ -446,7 +446,7 @@ dynamic_sales.room_type_options.total: Total
 dynamic.sales.result: Total
 order.index.summary.total: 'Sum total'
 report.work_shift.small_title: 'Work shifts'
-package.dynamic.sale: 'Dynamics of sales'
+package.dynamic.sale: 'Sales Dynamics'
 dynamic.sales.range_is_over_error: 'Period should not exceed %numberOfDays% days'
 dynamic.sales.day.number-of-created-packages: 'Reservations created in 24 hours'
 dynamic.sales.day.number-of-paid: 'Orders payed in 24 hours'
@@ -458,10 +458,12 @@ dynamic.sales.day.sum-of-paid-minus-cancelled: 'The sum of paid reservations for
 dynamic.sales.day.sales.volume: 'Amount of reservations in 24 hours/$'
 dynamic.sales.day.number-of-man-days-for-period: 'Reservations in guests number/days for a period'
 dynamic.sales.day.number-of-man-days: 'Reservations in guests number/days in 24 hours'
-dynamic.sales.day.number-of-package-days-for-period: 'Reservations in rooms number/days for a period'
+dynamic.sales.day.number-of-package-days-for-period: 'Reservations in rooms/days per period'
 dynamic.sales.day.number-of-package-days: 'Reservations in rooms number/days in 24 hours'
 dynamic.sales.day.sum-of-paid-for-cancelled-for-period: 'Reservations cancelled for a period'
 dynamic.sales.day.sum-paid-to-clients-for-period-for-removed: 'Recervations cancelled cost for a period'
 dynamic.sales.show.title: 'Categories displayed'
 views.report.polls.select_button.title: Apply
 dynamic_sales.modal.close_button.text: Close
+modal.form.delete.reasons.confirmation: 'Are you sure you want to cancel and delete this reservation?'
+package.edit.package_price: 'Accommodation price'
