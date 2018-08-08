@@ -224,7 +224,7 @@ class Tinkoff implements PaymentSystemInterface, TaxMapInterface
         }
 
         $holder->setDoc($notification->getOrderId());
-        $holder->setText('ok');
+        $holder->setText('OK');
 
         return $holder;
     }
