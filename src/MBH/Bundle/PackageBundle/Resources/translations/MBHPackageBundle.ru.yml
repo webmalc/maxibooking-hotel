@@ -414,7 +414,7 @@ mbh.package.arrivals.work: Работа/стажировка
 mbh.package.arrivals.study: Курсы/учеба
 mbh.package.arrivals.residence: 'Временное проживание'
 mbh.package.arrivals.other: Другое
-report.users.small_title: Пользователи
+report.users.small_title: 'Отчеты по менеджерам'
 report.users.error: 'Брони не найдены'
 report.porter.error: 'Даты заданы неверно'
 report.porter.arrivals.empty: 'Брони не найдены'

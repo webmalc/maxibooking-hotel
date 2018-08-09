@@ -398,7 +398,7 @@ views.report.polls.th.order: Order
 mbhpackagebundle.view.report.polls.daty: Dates
 mbh.package.arrivals.study: Education
 mbh.package.arrivals.other: Other
-report.users.small_title: Users
+report.users.small_title: 'Sales Team'
 package.edit.edit_delete_reasons: 'Edit deletion reasons'
 organizations.breadcrumbs.add: 'Add company'
 organizations.breadcrumbs.edit: 'Edit company'
