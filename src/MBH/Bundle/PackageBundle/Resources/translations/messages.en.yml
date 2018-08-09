@@ -1287,7 +1287,6 @@ reservation_report.date: Date
 reservation_report.title: 'Reservations Dynamics'
 reservation_report.total_row: Total
 views.report.reservation_report.report_date.title: Date
-views.report.reservation_report.title: 'Reservations Dynamics'
 views.report.reservation_report.room_types.title: 'Room type'
 reservation_report.number_of_packages_common: 'Number of booked rooms'
 reservation_report.number_of_packages: 'Number of booked rooms as of %date%'

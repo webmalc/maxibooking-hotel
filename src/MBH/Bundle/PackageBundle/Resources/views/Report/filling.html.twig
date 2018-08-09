@@ -1,8 +1,18 @@
 {% extends 'MBHPackageBundle:Report:layout.html.twig' %}
 
+{% set title = 'menu.label.financial_analytics'|trans({}, 'MBHBaseBundle') %}
 {% set small_title = "source.index.filling"|trans({}, "MBHPackageBundle") %}
 {% set layout = 'box' %}
 {% set title_url = path('report_filling') %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/report/filling/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
+{% endblock %}
 
 {% block content %}
 

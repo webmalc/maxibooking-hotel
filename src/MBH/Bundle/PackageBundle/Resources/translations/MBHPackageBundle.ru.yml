@@ -400,7 +400,7 @@ views.list.based_on_technologies_mb: 'Основано на технология
 views.list.review_comiled: 'Отзыв по этому заказу уже оставлен!'
 views.list.we_were_glad_to_recieve_you: 'Мы были рады принимать вас и надеемся, что ваше пребывание в нашем отеле было комфортным и приятным'
 views.list.please_fill_questionnaire: 'Пожалуйста, заполните небольшую анкету гостя, ваша оценка поможет нам развиваться и улучшать наш сервис. Мы будем рады видеть Вас снова!'
-report.poll.small_title: Оценки
+report.poll.small_title: 'Отзывы гостей'
 report.poll.invite: 'Визовые приглашения'
 report.poll.small_title_order: 'Оценки заказа '
 views.report.polls.th.order: Заказ
@@ -435,7 +435,6 @@ modal.form.delete.reasons.close: Отмена
 modal.form.delete.reasons.delete: Удалить
 package.dynamic.sale: 'Динамика продаж'
 package.dynamic.sale.search: Показать
-dynamic.sales.layout.title: Отчеты
 dynamic.sales.range_is_over_error: 'Период не должен превышать %numberOfDays% дней'
 dynamic.sales.day.periods: Периоды
 dynamic.sales.day.summary: Итого

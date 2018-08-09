@@ -1253,7 +1253,6 @@ report.packages_daily_report_compiler.sum_for_packages: 'Приход за бр�
 report.packages_daily_report_compiler.cancellation_for_packages: 'Аннуляция за брони'
 report.packages_daily_report_compiler.return_for_packages: 'Вернули за брони'
 views.report.packages_daily_report.title: 'Денежные средства'
-views.report.reservation_report.title: 'Отчет по бронированию номеров'
 reservation_report.title: 'Бронирование'
 views.report.packages_daily_report.mail_title: 'Отчет по денежным средствам'
 views.report.packages_daily_report.dates_input.title: 'Даты бронирования'

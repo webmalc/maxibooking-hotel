@@ -1,12 +1,11 @@
 {% extends "MBHPackageBundle::layout.html.twig" %}
 
-{% set title = 'report.layout.title'|trans({}, 'MBHPackageBundle') %}
+{% set title = 'menu.label.financial_analytics'|trans({}, 'MBHBaseBundle') %}
 {% set small_title = 'report.users.small_title'|trans({}, 'MBHPackageBundle') %}
 {% set title_url = path('report_users') %}
 {% set layout = 'box' %}
 
 {% block content %}
-
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'users-report-filter-widget'} %}
         <form id="users-report-filter" class="form-inline filter-form remember" role="form">
             <div class="filter-form_group-date">
