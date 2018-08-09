@@ -83,20 +83,29 @@ class Search
      * @param bool $isHideError
      * @param null $grouping
      * @param string $serializeType
+     * @param bool $isCreateAnswer
      * @return mixed
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
      */
-    public function searchSync(array $data, bool $isHideError = true, $grouping = null, ?string $serializeType = 'json')
+    public function searchSync(
+        array $data,
+        bool $isHideError = true,
+        $grouping = null,
+        ?string $serializeType = 'json',
+        bool $isCreateAnswer = false
+    )
     {
         $conditions = $this->createSearchConditions($data);
         $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
-        if (self::PRE_RESTRICTION_CHECK) {
-            $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
-        }
+//        if (self::PRE_RESTRICTION_CHECK) {
+//            $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
+//        }
         $results = [];
         foreach ($searchQueries as $searchQuery) {
+            /** @var SearchQuery $searchQuery */
+            $searchQuery->setIsUseCache(true);
             $results[] = $this->searcher->search($searchQuery);
         }
 
@@ -105,6 +114,7 @@ class Search
             ->hideError($isHideError)
             ->setGrouping($grouping)
             ->serialize($serializeType)
+            ->createAnswer($isCreateAnswer)
             ->getResults();
 
         return $results;

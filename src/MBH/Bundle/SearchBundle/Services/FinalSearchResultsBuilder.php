@@ -12,8 +12,10 @@ class FinalSearchResultsBuilder
 {
     /** @var array */
     private $results;
+
     /** @var bool */
     private $isFilterError = true;
+
     /** @var string */
     private $grouping;
 
@@ -22,6 +24,9 @@ class FinalSearchResultsBuilder
 
     /** @var SerializerInterface */
     private $serializer;
+
+    /** @var bool */
+    private $isCreateAnswer = false;
 
     /**
      * SearchResultsFinalHandler constructor.
@@ -34,7 +39,7 @@ class FinalSearchResultsBuilder
 
     public function set($results): self
     {
-        if (!\is_array($results)) {
+        if (!\is_iterable($results)) {
             $this->addResult($results);
         } else {
             foreach ($results as $result) {
@@ -73,6 +78,12 @@ class FinalSearchResultsBuilder
         return $this;
     }
 
+    public function createAnswer(bool $isCreateAnswer): self {
+        $this->isCreateAnswer = $isCreateAnswer;
+
+        return $this;
+    }
+
 
     /**
      * @return mixed
@@ -90,6 +101,12 @@ class FinalSearchResultsBuilder
             /** @noinspection CallableParameterUseCaseInTypeContextInspection */
             $grouping = $groupingFactory->createGrouping($this->grouping);
             $results = $grouping->group($results);
+        }
+
+        if ($this->isCreateAnswer) {
+            $results = [
+                'results' => $results
+            ];
         }
 
         if ($this->serializeType) {

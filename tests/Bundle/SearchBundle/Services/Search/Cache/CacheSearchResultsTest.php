@@ -18,20 +18,52 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultPrice;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Cache\SearchCache;
+use MBH\Bundle\SearchBundle\Services\Cache\CacheSearchResults;
+use Predis\Client;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class SearchCacheTest extends SearchWebTestCase
+class CacheSearchResultsTest extends SearchWebTestCase
 {
+
+    /** @dataProvider dataProvider */
+    public function testSearchInCache($data)
+    {
+        /** @var Result $result */
+        $result = $data['result'];
+        $serializer = $this->getContainer()->get('mbh_search.result_serializer');
+        $cache = $this->getContainer()->get('snc_redis.cache_results_client');
+        $cache->flushall();
+
+        $json = $serializer->serialize($result);
+        $searchQuery = $data['searchQuery'];
+        $key = SearchResultCacheItem::createRedisKey($searchQuery);
+        $cache->set($key, $json);
+
+        $service = $this->getContainer()->get('mbh_search.cache_search');
+        /** @var Result $actual */
+        $actual = $service->searchInCache($searchQuery);
+        $this->assertInstanceOf(Result::class, $actual);
+        $this->assertEquals($serializer->serialize($result), $serializer->serialize($actual));
+
+    }
 
     /**
      * @dataProvider dataProvider
      */
     public function testMockedSaveToCahe($data)
     {
+        $redisMock = $this->createMock(Client::class);
+        $redisMock->expects($this->once())->method('__call')->willReturnCallback(function ($name, $args) use (&$createdKey, &$json) {
+            $this->assertEquals('set', $name);
+            $this->assertEquals($args[0], $createdKey);
+            $this->assertEquals($args[1], $json);
+        });
+
         $dmMock = $this->createMock(DocumentManager::class);
-        $dmMock->expects($this->once())->method('persist')->willReturnCallback(function ($actual) {
+        $dmMock->expects($this->once())->method('persist')->willReturnCallback(function ($actual) use (&$result, &$createdKey){
+            /** @var SearchResultCacheItem $actual */
             $this->assertInstanceOf(SearchResultCacheItem::class, $actual);
+            $this->assertEquals($createdKey, $actual->getCacheResultKey());
         });
 
         $dmMock->expects($this->once())->method('flush')->willReturnCallback(function ($actual) {
@@ -42,33 +74,16 @@ class SearchCacheTest extends SearchWebTestCase
         $repositoryMock->expects($this->once())->method('getDocumentManager')->willReturn($dmMock);
 
         $serializer = $this->getContainer()->get('mbh_search.result_serializer');
-        $service = new SearchCache($repositoryMock, $serializer);
+        $service = new CacheSearchResults($repositoryMock, $serializer, $redisMock);
 
         $result = $data['result'];
-        $service->saveToCache($result);
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        $json = $serializer->serialize($result);
+        $searchQuery = $data['searchQuery'];
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        $createdKey = SearchResultCacheItem::createRedisKey($searchQuery);
 
-    }
-
-    /** @dataProvider dataProvider */
-    public function testMockedSearchInCache($data)
-    {
-        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
-        $dm->getRepository(SearchResultCacheItem::class)->flushCache();
-        /** @var Result $result */
-        $result = $data['result'];
-        $serializer = $this->getContainer()->get('mbh_search.result_serializer');
-        $cacheItem = SearchResultCacheItem::createInstance($result, $serializer);
-
-
-        $dm->persist($cacheItem);
-        $dm->flush($cacheItem);
-        $dm->clear();
-
-        $service = $this->getContainer()->get('mbh_search.cache_search');
-        /** @var Result $actual */
-        $actual = $service->searchInCache($data['searchQuery']);
-        $this->assertInstanceOf(Result::class, $actual);
-        $this->assertEquals($serializer->serialize($result), $serializer->serialize($actual));
+        $service->saveToCache($result, $searchQuery);
 
     }
 
@@ -127,7 +142,10 @@ class SearchCacheTest extends SearchWebTestCase
             ->setRoomTypeId($roomType->getId())
             ->setAdults($adults)
             ->setChildren($children)
-            ->setChildrenAges($childrenAges);
+            ->setChildrenAges($childrenAges)
+            ->setSearchConditions($conditions)
+
+        ;
 
         yield [
             [

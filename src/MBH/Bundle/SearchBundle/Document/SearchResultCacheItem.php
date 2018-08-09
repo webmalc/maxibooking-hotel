@@ -9,7 +9,9 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -92,7 +94,7 @@ class SearchResultCacheItem extends Base
      * @var string
      * @ODM\Field(type="string")
      */
-    private $serializedSearchResult;
+    private $cacheResultKey;
 
     /**
      * @return \DateTime
@@ -230,23 +232,23 @@ class SearchResultCacheItem extends Base
     /**
      * @return string
      */
-    public function getSerializedSearchResult(): string
+    public function getCacheResultKey(): string
     {
-        return $this->serializedSearchResult;
+        return $this->cacheResultKey;
     }
 
     /**
-     * @param string $serializedSearchResult
+     * @param string $cacheResultKey
      * @return SearchResultCacheItem
      */
-    public function setSerializedSearchResult(string $serializedSearchResult): SearchResultCacheItem
+    public function setCacheResultKey(string $cacheResultKey): SearchResultCacheItem
     {
-        $this->serializedSearchResult = $serializedSearchResult;
+        $this->cacheResultKey = $cacheResultKey;
 
         return $this;
     }
 
-    public static function createInstance(Result $result, ResultSerializer $serializer = null): SearchResultCacheItem
+    public static function createInstance(Result $result, SearchQuery $searchQuery): SearchResultCacheItem
     {
         $cacheItem = new self();
         $roomTypeId = $result->getResultRoomType()->getId();
@@ -255,12 +257,7 @@ class SearchResultCacheItem extends Base
         $adults = $resultConditions->getAdults();
         $children = $resultConditions->getChildren();
         $childrenAges = $resultConditions->getChildrenAges();
-        if (null !== $serializer) {
-            $serializedResult = $serializer->serialize($result);
-        } else {
-            $serializedResult = json_encode($result, JSON_UNESCAPED_UNICODE);
-        }
-
+        $key = self::createRedisKey($searchQuery);
         $cacheItem
             ->setBegin($result->getBegin())
             ->setEnd($result->getEnd())
@@ -269,9 +266,26 @@ class SearchResultCacheItem extends Base
             ->setAdults($adults)
             ->setChildren($children)
             ->setChildrenAges($childrenAges)
-            ->setSerializedSearchResult($serializedResult);
+            ->setCacheResultKey($key);
 
         return $cacheItem;
+    }
+
+    public static function createRedisKey(SearchQuery $searchQuery): string
+    {
+        $key = '';
+        $key .= $searchQuery->getBegin()->format('d.m.Y').'_'.$searchQuery->getEnd()->format('d.m.Y');
+        $key .= '_' . $searchQuery->getRoomTypeId();
+        $key .= '_' . $searchQuery->getTariffId();
+        $conditions = $searchQuery->getSearchConditions();
+        if (!$conditions) {
+            throw new SearchResultCacheException('There is no conditions for create cache result redis key');
+        }
+        $key .= '_' . $conditions->getAdults();
+        $key .= '_' . $conditions->getChildren();
+        $key .= '_children_ages_' . implode('_', $conditions->getChildrenAges());
+
+        return $key;
     }
 
 

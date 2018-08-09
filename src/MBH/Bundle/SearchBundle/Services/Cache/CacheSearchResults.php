@@ -9,8 +9,9 @@ use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
+use Predis\Client;
 
-class SearchCache implements SearchCacheInterface
+class CacheSearchResults implements SearchCacheInterface
 {
 
     /** @var SearchResultCacheItemRepository */
@@ -19,37 +20,45 @@ class SearchCache implements SearchCacheInterface
     /** @var ResultSerializer */
     private $serializer;
 
+    /** @var Client */
+    private $redis;
+
     /**
      * SearchCache constructor.
      * @param SearchResultCacheItemRepository $cacheItemRepository
+     * @param ResultSerializer $serializer
+     * @param Client $client
      */
-    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer)
+    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client)
     {
         $this->cacheItemRepository = $cacheItemRepository;
         $this->serializer = $serializer;
+        $this->redis = $client;
     }
 
-
-    public function saveToCache(Result $result): void
-    {
-        $cacheItem = SearchResultCacheItem::createInstance($result, $this->serializer);
-        $dm = $this->cacheItemRepository->getDocumentManager();
-        $dm->persist($cacheItem);
-        $dm->flush($cacheItem);
-
-    }
 
     public function searchInCache(SearchQuery $searchQuery): ?Result
     {
         $result = null;
         /** @var SearchResultCacheItem $cache */
-        $cache = $this->cacheItemRepository->fetchBySearchQuery($searchQuery);
-        if ($cache) {
-            $json = $cache['serializedSearchResult'];
-            $result = $this->serializer->deserialize($json);
+        $key = SearchResultCacheItem::createRedisKey($searchQuery);
+        $cacheResult = $this->redis->get($key);
+        if ($cacheResult) {
+            /** @var Result $result */
+            $result = $this->serializer->deserialize($cacheResult);
         }
 
         return $result;
+
+    }
+
+    public function saveToCache(Result $result, SearchQuery $searchQuery): void
+    {
+        $cacheItem = SearchResultCacheItem::createInstance($result, $searchQuery);
+        $this->redis->set($cacheItem->getCacheResultKey(), $this->serializer->serialize($result));
+        $dm = $this->cacheItemRepository->getDocumentManager();
+        $dm->persist($cacheItem);
+        $dm->flush($cacheItem);
 
     }
 

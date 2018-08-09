@@ -11,14 +11,12 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultCacheablesInterface;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
 use MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder;
 use Predis\Client;
-use Symfony\Component\Cache\Simple\AbstractCache;
 use Symfony\Component\Cache\Simple\RedisCache;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class ResultRedisStore implements AsyncResultStoreInterface
 {
 
-    /** @var RedisCache */
+    /** @var Client */
     private $cache;
     /**
      * @var ResultSerializer

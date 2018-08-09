@@ -11,5 +11,5 @@ interface SearchCacheInterface
 {
     public function searchInCache(SearchQuery $searchQuery): ?Result;
 
-    public function saveToCache(Result $cacheItem): void;
+    public function saveToCache(Result $cacheItem, SearchQuery $searchQuery): void;
 }

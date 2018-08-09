@@ -385,3 +385,11 @@ snc_redis:
             dsn: '%mbh_redis%'
             options:
                 prefix: 'search_results_'
+        cache_search_results:
+            type: predis
+            alias: cache_results
+            dsn: '%mbh_redis%'
+            options:
+                prefix: 'cache_search_results_'
+
+

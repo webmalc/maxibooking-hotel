@@ -41,7 +41,7 @@ class CacheSearcher implements SearcherInterface
             return $result;
         }
         $result = $this->searcher->search($searchQuery);
-        $this->cache->saveToCache($result);
+        $this->cache->saveToCache($result, $searchQuery);
 
         return $result;
     }

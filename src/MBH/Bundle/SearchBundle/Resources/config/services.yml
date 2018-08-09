@@ -94,9 +94,13 @@ services:
         class: MBH\Bundle\SearchBundle\Services\Search\Searcher
         arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_limit_checker', '@mbh_search.result_composer', '@validator']
 
+#    mbh_search.search:
+#        class: MBH\Bundle\SearchBundle\Services\Search\Search
+#        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_factory', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer', '@mbh_search.results_final_builder']
+
     mbh_search.search:
         class: MBH\Bundle\SearchBundle\Services\Search\Search
-        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_factory', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer', '@mbh_search.results_final_builder']
+        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.cache_searcher', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer', '@mbh_search.results_final_builder']
 
     mbh_search.accommodation_room_searcher:
         class: MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher
@@ -218,8 +222,8 @@ services:
 
 ##Cache Results
     mbh_search.cache_search:
-        class: MBH\Bundle\SearchBundle\Services\Cache\SearchCache
-        arguments: ['@mbh_search.search_cache_item_repository', '@mbh_search.result_serializer']
+        class: MBH\Bundle\SearchBundle\Services\Cache\CacheSearchResults
+        arguments: ['@mbh_search.search_cache_item_repository', '@mbh_search.result_serializer', '@snc_redis.cache_results_client']
 
   ##REDIS_Caches
     mbh_search.redis:
@@ -250,7 +254,6 @@ services:
     mbh_search.search_result_redis_cache:
         class: Symfony\Component\Cache\Simple\RedisCache
         arguments: ['@mbh_search.redis', 'search_results' ]
-
 
 ##Fetchers
     mbh_search.shared_data_fetcher:

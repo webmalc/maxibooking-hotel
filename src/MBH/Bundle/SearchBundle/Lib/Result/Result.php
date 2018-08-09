@@ -47,6 +47,15 @@ class Result implements ResultCacheablesInterface
     private $error = '';
 
     /**
+     * Result constructor.
+     */
+    public function __construct()
+    {
+        $this->id = uniqid('results_id', true);
+    }
+
+
+    /**
      * @return \DateTime
      */
     public function getBegin(): \DateTime
@@ -258,10 +267,6 @@ class Result implements ResultCacheablesInterface
 
     public function getId(): string
     {
-        if (null === $this->id) {
-            $this->id = uniqid('results_id', true);
-        }
-
         return $this->id;
     }
 
@@ -304,7 +309,7 @@ class Result implements ResultCacheablesInterface
         array $resultPrices,
         int $minRooms,
         array $accommodationRooms,
-        ResultRoom  $virtualRoom = null
+        ResultRoom $virtualRoom = null
 
     ): Result
     {
@@ -319,8 +324,7 @@ class Result implements ResultCacheablesInterface
             ->setResultRoomType($roomType)
             ->setPrices($resultPrices)
             ->setAccommodationRooms($accommodationRooms)
-            ->setVirtualRoom($virtualRoom)
-        ;
+            ->setVirtualRoom($virtualRoom);
 
 
         return $result;

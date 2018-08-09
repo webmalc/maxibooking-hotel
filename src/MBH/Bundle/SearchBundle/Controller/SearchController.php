@@ -43,8 +43,7 @@ class SearchController extends Controller
             if (!\is_array($data)) {
                 throw new SearchConditionException('Bad received data');
             }
-            $results = $search->searchSync($data, $grouping);
-            $json = json_encode(['results' => $resultsArray], JSON_UNESCAPED_UNICODE);
+            $json = $search->searchSync($data, true, $grouping, 'json', true);
             $answer = new JsonResponse($json, 200, [], true);
         } catch (SearchConditionException|SearchQueryGeneratorException|GroupingFactoryException $e) {
             $answer = new JsonResponse(['error' => $e->getMessage()], 400);
