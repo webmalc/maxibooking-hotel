@@ -343,7 +343,7 @@ search.results.accommodation: Разместить
 search.results.nothing_found_for_your_request: 'По вашему запросу ничего не найдено.'
 search.results.enter_search_data: 'Введите данные для подбора проживания.'
 source.edit.edit_reservation_source: 'редактрирование источники брони #'
-source.index.reservation_source: 'источник броней'
+source.index.reservation_source: 'Источники продаж'
 source.index.services: Услуги
 source.index.fms: 'Для ФМС'
 source.index.filling: Заполняемость
