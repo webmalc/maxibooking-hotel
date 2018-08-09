@@ -129,7 +129,6 @@ restaurant.dishorder.nodish: 'Добавьте блюдо чтобы можно 
 restaurant.dishorder.status.payed: Оплачен
 restaurant.dishorder.payer.noname: 'нет привязки к брони'
 restaurant.dishorder.title: Заказы
-restaurant.dishorder.common.title: Заказы
 restaurant.dishorder.common.addsuccess: 'Заказ успешно создан'
 restaurant.dishorder.common.editsuccess: 'Заказ успешно отредактирован'
 restaurant.dishorder.common.noitems: 'Заказов нет'
@@ -142,7 +141,6 @@ restaurant.dishorder.table.content: Состав
 restaurant.dishorder.table.payer: Плательщик
 restaurant.dishorder.table.time: Дата
 restaurant.dishorder.actions.tolist: 'К списку'
-restaurant.dishorder.actions.list.small_title: 'Добавление заказа'
 restaurant.dishorder.actions.showfreeze.small_title: 'Просмотр заказа'
 restaurant.dishorder.actions.add: 'создать заказ'
 restaurant.dishorder.actions.edit: 'Редактирование заказа'

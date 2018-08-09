@@ -27,7 +27,6 @@ warehouse.record.title: Name
 warehouse.record.hotels: Hotels
 warehouse.record.in: Receipt
 warehouse.record.out: Dispatch
-warehouse.record.inventory: Balance
 warehouse.record.tabs.list: Records
 warehouse.record.tabs.inventory: Balance
 warehouse.record.new: 'New record'

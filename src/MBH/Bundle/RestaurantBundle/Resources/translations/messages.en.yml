@@ -56,7 +56,6 @@ restaurant.dishorder.table.content: Content
 restaurant.dishorder.table.payer: Payer
 restaurant.dishorder.table.time: Date
 restaurant.dishorder.actions.tolist: 'To list'
-restaurant.dishorder.actions.list.small_title: 'Add order'
 restaurant.dishorder.actions.showfreeze.small_title: 'View order'
 restaurant.dishorder.actions.edit: 'Edit order'
 restaurant.dishorder.actions.delete: 'Delete order'
@@ -85,7 +84,6 @@ restaurant.table.item.category.table: Table
 restaurant.table.actions.delete: 'Delete chair'
 restaurant.table.item.helper.addtype: 'Select a type'
 restaurant.dishmenu.item.active: availability
-restaurant.dishorder.common.title: orders
 restaurant.dishorder.actions.freezed: 'cash out'
 restaurant.dishorder.form.id.label: 'Order #'
 restaurant.dishorder.form.amount.help: Quantity
