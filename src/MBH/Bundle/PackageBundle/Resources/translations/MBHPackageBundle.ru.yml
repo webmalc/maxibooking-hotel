@@ -367,7 +367,6 @@ package.index.edit_record: 'Редактирование записи'
 package.index.delete_record: 'Удаление записи'
 package.edit.edit_delete_reasons: 'редактирование причины удаления'
 accommodation.alert: 'Не рекомендуется размещать гостей до их заезда в отель'
-organizations.breadcrumbs.list: Организации
 organizations.breadcrumbs.add: 'Добавить организацию'
 organizations.breadcrumbs.edit: 'Редактировать организацию'
 organizations.confirm_delete: 'Вы действительно хотите удалить организацию "%organization_name%"'
@@ -416,9 +415,7 @@ mbh.package.arrivals.study: Курсы/учеба
 mbh.package.arrivals.residence: 'Временное проживание'
 mbh.package.arrivals.other: Другое
 report.users.small_title: Пользователи
-report.users.roomtype: 'Номерной фонд'
 report.users.error: 'Брони не найдены'
-report.porter.small_title: Портье
 report.porter.error: 'Даты заданы неверно'
 report.porter.arrivals.empty: 'Брони не найдены'
 report.porter.live.empty: 'Брони не найдены'

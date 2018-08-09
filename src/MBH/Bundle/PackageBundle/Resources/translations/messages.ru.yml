@@ -444,7 +444,6 @@ tourist.edit_extended.small_title: 'редактирование гостя #'
 tourist.new.small_title: 'создание гостя'
 tourist.edit_document.small_title: 'редактирование гостя #'
 tourist.edit_address.small_title: 'редактирование гостя #'
-tourist.index.small_title: 'Список клиентов'
 tourist.index.foreign_citizens: 'Иностранные граждане'
 tourist.index.dates: Даты
 tourist.index.fio: ФИО

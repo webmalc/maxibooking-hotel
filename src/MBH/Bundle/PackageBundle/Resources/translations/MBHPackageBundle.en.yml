@@ -338,7 +338,6 @@ task.group: Group
 poll.question.rules: 'Hotel accommodation rules availability'
 poll.question.hotel_location: 'Hotel location and transport availability'
 poll.controller.save_success: 'Thank you! Your rating successfully saved!'
-report.porter.small_title: Porter
 report.porter.error: 'Dates selected incorrectly'
 report.porter.arrivals.empty: 'Reservations not found'
 report.porter.live.empty: 'Reservations not found'
@@ -391,7 +390,6 @@ report.poll.small_title: Grades
 views.report.polls.th.hotel: Hotel
 poll.question.category.accommodation: 'Overall comfort'
 report.users.error: 'Reservations not found'
-organizations.breadcrumbs.list: Company
 poll.other.note: Comment
 poll.question.category.hotel: 'our hotel'
 views.list.send: SEND
@@ -401,7 +399,6 @@ mbhpackagebundle.view.report.polls.daty: Dates
 mbh.package.arrivals.study: Education
 mbh.package.arrivals.other: Other
 report.users.small_title: Users
-report.users.roomtype: Rooms
 package.edit.edit_delete_reasons: 'Edit deletion reasons'
 organizations.breadcrumbs.add: 'Add company'
 organizations.breadcrumbs.edit: 'Edit company'

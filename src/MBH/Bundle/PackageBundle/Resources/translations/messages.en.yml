@@ -510,7 +510,6 @@ form.order_document_type.file: File
 form.order_document_type.note: Comment
 tourist.json.clients_in_black_list: 'This guest is blacklisted'
 tourist.json.client_not_in_black_list: 'This guest is not on blacklist'
-tourist.index.small_title: 'List of guests'
 tourist.index.foreign_citizens: 'Foreign citizen'
 tourist.index.dates: Dates
 tourist.index.fio: 'Full name'
