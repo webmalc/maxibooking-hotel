@@ -14,6 +14,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultDayPrice;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultPrice;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
+use MBH\Bundle\SearchBundle\Services\Data\Serializers\SearchSerializerFactory;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class ResultSerializerTest extends SearchWebTestCase
@@ -26,7 +27,6 @@ class ResultSerializerTest extends SearchWebTestCase
         $actual = $serializer->serialize($data);
         $this->assertJson($actual);
     }
-
 
     public function testDeserialize(): void
     {

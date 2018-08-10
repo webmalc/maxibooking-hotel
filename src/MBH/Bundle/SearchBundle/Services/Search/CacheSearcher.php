@@ -30,11 +30,11 @@ class CacheSearcher implements SearcherInterface
 
     /**
      * @param SearchQuery $searchQuery
-     * @return Result
+     * @return Result|array
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
-    public function search(SearchQuery $searchQuery): Result
+    public function search(SearchQuery $searchQuery)
     {
         $result = $this->cache->searchInCache($searchQuery);
         if (null !== $result) {

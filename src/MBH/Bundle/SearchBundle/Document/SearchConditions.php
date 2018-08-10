@@ -156,6 +156,14 @@ class SearchConditions extends Base
     private $expectedResultsCount = 0;
 
     /**
+     * @var bool
+     * @Assert\Type(type="bool")
+     * @ODM\Field(type="bool")
+     *
+     */
+    private $isUseCache = true;
+
+    /**
      * SearchConditions constructor.
      */
     public function __construct()
@@ -489,6 +497,25 @@ class SearchConditions extends Base
     public function getMaxEnd(): \DateTime
     {
         return (clone $this->getEnd())->modify("+{$this->getAdditionalEnd()} days");
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseCache(): bool
+    {
+        return $this->isUseCache;
+    }
+
+    /**
+     * @param bool $isUseCache
+     * @return SearchConditions
+     */
+    public function setIsUseCache(bool $isUseCache): SearchConditions
+    {
+        $this->isUseCache = $isUseCache;
+
+        return $this;
     }
 
 

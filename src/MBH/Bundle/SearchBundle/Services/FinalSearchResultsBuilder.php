@@ -6,7 +6,8 @@ namespace MBH\Bundle\SearchBundle\Services;
 
 use MBH\Bundle\SearchBundle\Lib\Result\Grouping\GroupingFactory;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
-use Symfony\Component\Serializer\SerializerInterface;
+use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 class FinalSearchResultsBuilder
 {
@@ -20,9 +21,9 @@ class FinalSearchResultsBuilder
     private $grouping;
 
     /** @var string */
-    private $serializeType;
+    private $isCreateJson;
 
-    /** @var SerializerInterface */
+    /** @var ResultSerializer */
     private $serializer;
 
     /** @var bool */
@@ -30,9 +31,9 @@ class FinalSearchResultsBuilder
 
     /**
      * SearchResultsFinalHandler constructor.
-     * @param SerializerInterface $serializer
+     * @param ResultSerializer $serializer
      */
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(ResultSerializer $serializer)
     {
         $this->serializer = $serializer;
     }
@@ -50,8 +51,11 @@ class FinalSearchResultsBuilder
         return $this;
     }
 
-    public function addResult(Result $result): self
+    public function addResult($result): self
     {
+        if ($result instanceof Result) {
+            $result = $this->serializer->serialize($result, 'array');
+        }
         $this->results[] = $result;
 
         return $this;
@@ -71,9 +75,9 @@ class FinalSearchResultsBuilder
         return $this;
     }
 
-    public function serialize(?string $serialize = 'json'): self
+    public function createJson(bool $isCreate = true): self
     {
-        $this->serializeType = $serialize;
+        $this->isCreateJson = $isCreate;
 
         return $this;
     }
@@ -92,11 +96,12 @@ class FinalSearchResultsBuilder
     public function getResults()
     {
         $results = $this->results;
-        if ($this->isFilterError) {
+
+        if ($this->isFilterError && \count($results)) {
             $results = array_filter($results, [$this, 'filterError']);
         }
 
-        if ($this->grouping) {
+        if ($this->grouping && \count($results)) {
             $groupingFactory = new GroupingFactory();
             /** @noinspection CallableParameterUseCaseInTypeContextInspection */
             $grouping = $groupingFactory->createGrouping($this->grouping);
@@ -109,24 +114,18 @@ class FinalSearchResultsBuilder
             ];
         }
 
-        if ($this->serializeType) {
-            $results = $this->serializer
-                ->serialize(
-                    $results,
-                    $this->serializeType,
-                    [
-                        'json_encode_options' => JSON_UNESCAPED_UNICODE
-                    ]
-                );
+        if ($this->isCreateJson) {
+            $results = $this->serializer->encodeArrayToJson($results);
+
         }
         $this->unsetResults();
 
         return $results;
     }
 
-    private function filterError(Result $result): bool
+    private function filterError(array $result): bool
     {
-        return $result->getStatus() === 'ok';
+        return $result['status'] === 'ok';
     }
 
     public function unsetResults(): void

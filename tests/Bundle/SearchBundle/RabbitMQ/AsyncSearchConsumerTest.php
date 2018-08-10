@@ -13,12 +13,13 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
+use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use PhpAmqpLib\Message\AMQPMessage;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class AsyncSearchConsumerTest extends SearchWebTestCase
 {
-    public function testExecuteFound(): void
+    public function testExecuteFoundNoCache(): void
     {
         $body = [
             'conditionsId' => 'someId',
@@ -32,15 +33,20 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
         $conditionsRepository = $this->createMock(SearchConditionsRepository::class);
         $conditionsRepository->expects($this->once())->method('find')->willReturn($searchConditions);
 
+        $searchedResult1 = new Result();
+
         $searcher = $this->createMock(Searcher::class);
-        $searcher->expects($this->exactly(2))->method('search')->willReturn(new Result());
+        $searcher->expects($this->exactly(2))->method('search')->willReturn($searchedResult1);
+
+        $searcherFactory = $this->createMock(SearcherFactory::class);
+        $searcherFactory->expects($this->once())->method('getSearcher')->willReturn($searcher);
 
         $stocker = $this->createMock(AsyncResultStoreInterface::class);
         $stocker->expects($this->exactly(2))->method('store')->willReturnCallback(function ($searchResult) {
             $this->assertInstanceOf(Result::class, $searchResult);
         } );
 
-        $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository, $stocker);
+        $consumer = new AsyncSearchConsumer($searcherFactory, $conditionsRepository, $stocker);
         $consumer->execute($message);
     }
 
@@ -55,9 +61,13 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
 
         $conditionsRepository = $this->createMock(SearchConditionsRepository::class);
         $conditionsRepository->expects($this->once())->method('find')->willReturn(null);
+
         $searcher = $this->createMock(Searcher::class);
+        $searcherFactory = $this->createMock(SearcherFactory::class);
+        $searcherFactory->expects($this->never())->method('getSearcher')->willReturn($searcher);
+
         $resultStore = $this->createMock(AsyncResultStoreInterface::class);
-        $consumer = new AsyncSearchConsumer($searcher, $conditionsRepository, $resultStore);
+        $consumer = new AsyncSearchConsumer($searcherFactory, $conditionsRepository, $resultStore);
         $this->expectException(AsyncSearchConsumerException::class);
         $consumer->execute($message);
     }

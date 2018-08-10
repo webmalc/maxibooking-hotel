@@ -33,10 +33,10 @@ class SearchTest extends SearchWebTestCase
     {
         $search = $this->getContainer()->get('mbh_search.search');
         $conditionData = $this->createConditionData($data);
-        $actual = $search->searchSync($conditionData, true, null, null);
+        $actual = $search->searchSync($conditionData);
         $this->assertCount(2, $search->getRestrictionsErrors());
         foreach ($actual as $result) {
-            $this->assertInstanceOf(Result::class, $result);
+            $this->assertInternalType('array', $result);
         }
 
     }
@@ -51,7 +51,7 @@ class SearchTest extends SearchWebTestCase
     {
         $search = $this->getContainer()->get('mbh_search.search');
         $conditionData = $this->createConditionData($data);
-        $actual = $search->searchSync($conditionData, true, 'roomType', 'json');
+        $actual = $search->searchSync($conditionData, true, 'roomType', true);
         $this->assertJson($actual);
     }
 

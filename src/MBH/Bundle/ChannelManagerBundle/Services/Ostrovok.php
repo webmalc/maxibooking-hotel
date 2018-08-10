@@ -319,6 +319,10 @@ class Ostrovok extends Base
         // iterate hotels
         $rna_request_data = [];
         foreach ($this->getConfig() as $config) {
+            /** @var OstrovokConfig $config */
+            if (!$config->getIsEnabled()) {
+                continue;
+            }
             //First update Tariff restriction
             $tariffs = $this->getTariffs($config, true);
             $ratePlans = $this->getRatePlansArray($config->getHotelId());

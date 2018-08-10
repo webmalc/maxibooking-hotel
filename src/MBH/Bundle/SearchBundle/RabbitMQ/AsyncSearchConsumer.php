@@ -12,7 +12,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
-use MBH\Bundle\SearchBundle\Services\Search\SearcherInterface;
+use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -20,7 +20,7 @@ class AsyncSearchConsumer implements ConsumerInterface
 {
 
     /** @var Searcher */
-    private $searcher;
+    private $searcherFactory;
 
     /** @var SearchConditionsRepository */
     private $conditionsRepository;
@@ -32,13 +32,13 @@ class AsyncSearchConsumer implements ConsumerInterface
 
     /**
      * AsyncSearchConsumer constructor.
-     * @param SearcherInterface $searcher
+     * @param SearcherFactory $searcherFactory
      * @param SearchConditionsRepository $conditionsRepository
      * @param AsyncResultStoreInterface $resultStore
      */
-    public function __construct(SearcherInterface $searcher, SearchConditionsRepository $conditionsRepository, AsyncResultStoreInterface $resultStore)
+    public function __construct(SearcherFactory $searcherFactory, SearchConditionsRepository $conditionsRepository, AsyncResultStoreInterface $resultStore)
     {
-        $this->searcher = $searcher;
+        $this->searcherFactory = $searcherFactory;
         $this->conditionsRepository = $conditionsRepository;
         $this->resultStore = $resultStore;
     }
@@ -55,10 +55,11 @@ class AsyncSearchConsumer implements ConsumerInterface
         if (!$conditions ) {
             throw new AsyncSearchConsumerException('Error! Can not find SearchConditions for search');
         }
+        $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
         foreach ($searchQueries as $searchQuery) {
             /** @var SearchQuery $searchQuery */
             $searchQuery->setSearchConditions($conditions);
-            $result = $this->searcher->search($searchQuery);
+            $result = $searcher->search($searchQuery);
             $this->resultStore->store($result);
         }
 

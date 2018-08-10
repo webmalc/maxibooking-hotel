@@ -82,8 +82,8 @@ services:
 
 #search
 
-    mbh_search.search_factory:
-        class: MBH\Bundle\SearchBundle\Services\Search\SearchFactory
+    mbh_search.searcher_factory:
+        class: MBH\Bundle\SearchBundle\Services\Search\SearcherFactory
         arguments: ['@mbh_search.searcher', '@mbh_search.cache_searcher']
 
     mbh_search.cache_searcher:
@@ -100,7 +100,7 @@ services:
 
     mbh_search.search:
         class: MBH\Bundle\SearchBundle\Services\Search\Search
-        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.cache_searcher', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer', '@mbh_search.results_final_builder']
+        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.searcher_factory', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer', '@mbh_search.results_final_builder']
 
     mbh_search.accommodation_room_searcher:
         class: MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher
@@ -121,7 +121,7 @@ services:
 # async receive results
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
-        arguments: ['@mbh_search.search_factory', '@mbh_search.search_conditions_repository', '@mbh_search.redis_store']
+        arguments: ['@mbh_search.searcher_factory', '@mbh_search.search_conditions_repository', '@mbh_search.redis_store']
 
 #search limit checker for refactoring
     mbh_search.search_limit_checker:
@@ -284,7 +284,7 @@ services:
 
     mbh_search.results_final_builder:
         class: MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder
-        arguments: ['@mbh_search.serializer']
+        arguments: ['@mbh_search.result_serializer']
 
 #AsyncStores
     mbh_search.redis_store:
@@ -296,6 +296,10 @@ services:
         class: Symfony\Component\Serializer\Serializer
         factory: ['MBH\Bundle\SearchBundle\Services\Data\Serializers\SearchSerializerFactory', createSerializer]
 
+    mbh_search.normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+        factory: ['MBH\Bundle\SearchBundle\Services\Data\Serializers\SearchSerializerFactory', createNormalizer]
+
     mbh_search.result_serializer:
       class: MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer
-      arguments: ['@mbh_search.serializer']
+      arguments: ['@mbh_search.serializer', '@mbh_search.normalizer']

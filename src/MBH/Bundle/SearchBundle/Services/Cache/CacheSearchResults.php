@@ -37,7 +37,13 @@ class CacheSearchResults implements SearchCacheInterface
     }
 
 
-    public function searchInCache(SearchQuery $searchQuery): ?Result
+    /**
+     * @param SearchQuery $searchQuery
+     * @param bool $hydrated
+     * @return mixed
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException
+     */
+    public function searchInCache(SearchQuery $searchQuery, $hydrated = false)
     {
         $result = null;
         /** @var SearchResultCacheItem $cache */
@@ -45,11 +51,10 @@ class CacheSearchResults implements SearchCacheInterface
         $cacheResult = $this->redis->get($key);
         if ($cacheResult) {
             /** @var Result $result */
-            $result = $this->serializer->deserialize($cacheResult);
+            $result = $hydrated ? $this->serializer->deserialize($cacheResult) : $this->serializer->decodeJsonToArray($cacheResult);
         }
 
         return $result;
-
     }
 
     public function saveToCache(Result $result, SearchQuery $searchQuery): void
@@ -59,7 +64,6 @@ class CacheSearchResults implements SearchCacheInterface
         $dm = $this->cacheItemRepository->getDocumentManager();
         $dm->persist($cacheItem);
         $dm->flush($cacheItem);
-
     }
 
     public function invalidateCache(\DateTime $begin, \DateTime $end = null): void

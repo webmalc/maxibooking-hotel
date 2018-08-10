@@ -59,24 +59,26 @@ class ResultRedisStoreTest extends SearchWebTestCase
         $asyncCache->flushall();
         $service->store($searchResult1);
         $service->store($searchResult3);
-        $actualResult1 = $service->receive($conditions, false, null, null);
+        $actualResult1 = $service->receive($conditions, false);
         $service->store($searchResult2);
-        $actualResult2 = $service->receive($conditions, false, null, null);
+        $actualResult2 = $service->receive($conditions, false);
 
         $this->assertCount(2, $actualResult1);
         $this->assertCount(1, $actualResult2);
 
-        $actual1 = array_pop($actualResult1);
-        $actual3 = array_pop($actualResult1);
-        $actual2 = array_pop($actualResult2);
+        $serializer = $this->getContainer()->get('mbh_search.result_serializer');
+        $actual1 = $serializer->denormalize(array_pop($actualResult1));
+        $actual3 = $serializer->denormalize(array_pop($actualResult1));
+        $actual2 = $serializer->denormalize(array_pop($actualResult2));
+
 
         foreach ([$actual1, $actual2, $actual3] as $actual) {
+
             $this->assertInstanceOf(Result::class, $actual);
             /** @var Result $actual */
             $this->assertEquals($hash, $actual->getResultConditions()->getSearchHash());
 
         }
-        $serializer = $this->getContainer()->get('mbh_search.result_serializer');
         foreach ([
                      [$searchResult1, $actual1],
                      [$searchResult2, $actual2],

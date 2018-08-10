@@ -17,25 +17,75 @@ class ResultSerializer
 
     /** @var SerializerInterface */
     private $serializer;
+    /**
+     * @var ObjectNormalizer
+     */
+    private $normalizer;
 
     /**
      * ResultSerializer constructor.
      * @param SerializerInterface $serializer
+     * @param ObjectNormalizer $normalizer
      */
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer, ObjectNormalizer $normalizer)
     {
         $this->serializer = $serializer;
+        $this->normalizer = $normalizer;
     }
 
-    public function serialize(Result $result, string $type = 'json'): string
+    /**
+     * @param Result $result
+     * @param string $type
+     * @return iterable|string
+     */
+    public function serialize(Result $result, string $type = 'json')
     {
+        if ('array' === $type) {
+            return $this->normalize($result);
+        }
+
         return $this->serializer->serialize($result, $type, [
             'json_encode_options' => JSON_UNESCAPED_UNICODE
         ]);
     }
 
+    /**
+     * @param Result $result
+     * @param array $context
+     * @return iterable
+     */
+    public function normalize(Result $result, array $context = []): iterable
+    {
+        return $this->normalizer->normalize($result, null, $context);
+    }
+
     public function deserialize($serializedResult, $format = 'json')
     {
         return $this->serializer->deserialize($serializedResult, Result::class, $format);
+    }
+
+    public function encodeArrayToJson(array $result): string
+    {
+        $encoder = new JsonEncoder();
+
+        return $encoder->encode($result, 'json', [
+            'json_encode_options' => JSON_UNESCAPED_UNICODE
+        ]);
+    }
+
+    public function decodeJsonToArray(string $json): iterable
+    {
+        $encoder = new JsonEncoder();
+
+        return $encoder->decode($json, 'json');
+    }
+
+    /**
+     * @param array $result
+     * @return Result|object
+     */
+    public function denormalize(array $result): Result
+    {
+        return $this->normalizer->denormalize($result, Result::class);
     }
 }

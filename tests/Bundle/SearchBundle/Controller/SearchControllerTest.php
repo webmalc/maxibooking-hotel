@@ -36,8 +36,8 @@ class SearchControllerTest extends SearchWebTestCase
             $actualResults = $answer['results'];
             if (!$grouping) {
                 foreach ($actualResults as $actualResult) {
-                    $this->assertArrayHasKey('conditions', $actualResult);
-                    $this->assertNotEmpty($actualResult['conditions']['id']);
+                    $this->assertArrayHasKey('resultConditions', $actualResult);
+                    $this->assertNotEmpty($actualResult['resultConditions']['id']);
                 }
             }
 
@@ -115,7 +115,7 @@ class SearchControllerTest extends SearchWebTestCase
             sleep(1);
             $this->client->request(
                 'GET',
-                '/search/async/results/' . $conditionsId,
+                '/search/async/results/' . $conditionsId.'/roomType',
                 [],
                 [],
                 [],

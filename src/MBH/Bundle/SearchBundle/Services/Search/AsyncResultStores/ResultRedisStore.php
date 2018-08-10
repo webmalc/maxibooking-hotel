@@ -41,26 +41,34 @@ class ResultRedisStore implements AsyncResultStoreInterface
         $this->finalResultsBuilder = $resultsBuilder;
     }
 
-    public function store(ResultCacheablesInterface $searchResult): void
+    public function store($result): void
     {
-        $hash = $searchResult->getSearchHash();
-        $uniqueId = $searchResult->getId();
+        if ($result instanceof Result) {
+            $hash = $result->getSearchHash();
+            $uniqueId = $result->getId();
+            $data = $this->serializer->serialize($result);
+        } else {
+            $hash = $result['searchHash'];
+            $uniqueId = $result['id'];
+            $data = $this->serializer->encodeArrayToJson($result);
+        }
+
         $key = $hash . $uniqueId;
         /** @var Result $searchResult */
-        $this->cache->set($key, $this->serializer->serialize($searchResult));
+        $this->cache->set($key, $data);
     }
 
     /**
      * @param SearchConditions $conditions
      * @param bool $isHideError
      * @param null $grouping
-     * @param null|string $serializeType
+     * @param bool $isCreateJson
+     * @param bool $isCreateAnswer
      * @return mixed
      * @throws AsyncResultReceiverException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
      */
-    public function receive(SearchConditions $conditions, bool $isHideError = true, $grouping = null, ?string $serializeType = 'json')
+    public function receive(SearchConditions $conditions, bool $isHideError = true, $grouping = null, bool $isCreateJson = false, bool $isCreateAnswer = false)
     {
         $results = [];
         $keysForDelete = [];
@@ -91,14 +99,16 @@ class ResultRedisStore implements AsyncResultStoreInterface
         if (\count($keysForDelete)) {
             $received = $this->cache->del($keysForDelete);
         }
+
         $this->cache->set('received'. $hash, (int)$receivedCount + $received);
-        $results = array_map([$this->serializer, 'deserialize'], $results);
+        $results = array_map([$this->serializer, 'decodeJsonToArray'], $results);
 
         $results = $this->finalResultsBuilder
             ->set($results)
             ->hideError($isHideError)
             ->setGrouping($grouping)
-            ->serialize($serializeType)
+            ->createJson($isCreateJson)
+            ->createAnswer($isCreateAnswer)
             ->getResults();
 
         return $results;

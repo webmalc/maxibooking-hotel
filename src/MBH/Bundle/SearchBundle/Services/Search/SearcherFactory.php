@@ -7,7 +7,7 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
-class SearchFactory implements SearcherInterface
+class SearcherFactory
 {
     /** @var Searcher */
     private $searcher;
@@ -27,13 +27,13 @@ class SearchFactory implements SearcherInterface
     }
 
 
-    public function search(SearchQuery $searchQuery): Result
+    public function getSearcher(bool $isUseCache = false): SearcherInterface
     {
-        if ($searchQuery->isUseCache()) {
-            return $this->cacheSearcher->search($searchQuery);
+        if ($isUseCache) {
+            return $this->cacheSearcher;
         }
 
-        return $this->searcher->search($searchQuery);
+        return $this->searcher;
     }
 
 }

@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
@@ -22,13 +21,13 @@ class Search
     public const QUERIES_CHUNK_NUM = 20;
 
     /** @var bool */
-    public const PRE_RESTRICTION_CHECK = true;
+    public const PRE_RESTRICTION_CHECK = false;
+
+    /** @var SearcherFactory */
+    private $searcherFactory;
 
     /** @var RestrictionsCheckerService */
     private $restrictionChecker;
-
-    /** @var SearcherInterface */
-    private $searcher;
 
     /** @var DocumentManager */
     private $dm;
@@ -51,7 +50,7 @@ class Search
     /**
      * Search constructor.
      * @param RestrictionsCheckerService $restrictionsChecker
-     * @param SearcherInterface $searcher
+     * @param SearcherFactory $factory
      * @param DocumentManager $documentManager
      * @param SearchConditionsCreator $conditionsCreator
      * @param SearchQueryGenerator $queryGenerator
@@ -60,7 +59,7 @@ class Search
      */
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
-        SearcherInterface $searcher,
+        SearcherFactory $factory,
         DocumentManager $documentManager,
         SearchConditionsCreator $conditionsCreator,
         SearchQueryGenerator $queryGenerator,
@@ -69,7 +68,7 @@ class Search
     )
     {
         $this->restrictionChecker = $restrictionsChecker;
-        $this->searcher = $searcher;
+        $this->searcherFactory = $factory;
         $this->dm = $documentManager;
         $this->conditionsCreator = $conditionsCreator;
         $this->queryGenerator = $queryGenerator;
@@ -82,7 +81,7 @@ class Search
      * @param array $data
      * @param bool $isHideError
      * @param null $grouping
-     * @param string $serializeType
+     * @param bool $isCreateJson
      * @param bool $isCreateAnswer
      * @return mixed
      * @throws SearchConditionException
@@ -93,27 +92,26 @@ class Search
         array $data,
         bool $isHideError = true,
         $grouping = null,
-        ?string $serializeType = 'json',
+        bool $isCreateJson = false,
         bool $isCreateAnswer = false
     )
     {
         $conditions = $this->createSearchConditions($data);
         $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
-//        if (self::PRE_RESTRICTION_CHECK) {
-//            $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
-//        }
+        if (self::PRE_RESTRICTION_CHECK) {
+            $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
+        }
         $results = [];
+        $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
         foreach ($searchQueries as $searchQuery) {
-            /** @var SearchQuery $searchQuery */
-            $searchQuery->setIsUseCache(true);
-            $results[] = $this->searcher->search($searchQuery);
+            $results[] = $searcher->search($searchQuery);
         }
 
         $results = $this->resultsBuilder
             ->set($results)
             ->hideError($isHideError)
             ->setGrouping($grouping)
-            ->serialize($serializeType)
+            ->createJson($isCreateJson)
             ->createAnswer($isCreateAnswer)
             ->getResults();
 

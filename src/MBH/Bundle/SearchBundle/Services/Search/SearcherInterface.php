@@ -9,6 +9,6 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 interface SearcherInterface
 {
-    public function search(SearchQuery $searchQuery): Result;
+    public function search(SearchQuery $searchQuery);
 
 }

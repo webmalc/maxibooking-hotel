@@ -41,9 +41,16 @@ class CacheSearchResultsTest extends SearchWebTestCase
 
         $service = $this->getContainer()->get('mbh_search.cache_search');
         /** @var Result $actual */
-        $actual = $service->searchInCache($searchQuery);
-        $this->assertInstanceOf(Result::class, $actual);
-        $this->assertEquals($serializer->serialize($result), $serializer->serialize($actual));
+        foreach ([true, false] as $hydrated) {
+            $actual = $service->searchInCache($searchQuery, $hydrated);
+            if ($hydrated) {
+                $this->assertInstanceOf(Result::class, $actual);
+                $this->assertEquals($serializer->serialize($result), $serializer->serialize($actual));
+            } else {
+                $this->assertInternalType('array', $actual);
+                $this->assertArraySimilar($serializer->normalize($result), $actual);
+            }
+        }
 
     }
 
@@ -53,10 +60,11 @@ class CacheSearchResultsTest extends SearchWebTestCase
     public function testMockedSaveToCahe($data)
     {
         $redisMock = $this->createMock(Client::class);
-        $redisMock->expects($this->once())->method('__call')->willReturnCallback(function ($name, $args) use (&$createdKey, &$json) {
+        $redisMock->expects($this->once())->method('__call')->willReturnCallback(function ($name, $args) use (&$createdKey, &$resultJson) {
             $this->assertEquals('set', $name);
             $this->assertEquals($args[0], $createdKey);
-            $this->assertEquals($args[1], $json);
+            $this->assertJson($args[1]);
+            $this->assertEquals($args[1], $resultJson);
         });
 
         $dmMock = $this->createMock(DocumentManager::class);
@@ -78,7 +86,7 @@ class CacheSearchResultsTest extends SearchWebTestCase
 
         $result = $data['result'];
         /** @noinspection PhpUnusedLocalVariableInspection */
-        $json = $serializer->serialize($result);
+        $resultJson = $serializer->serialize($result);
         $searchQuery = $data['searchQuery'];
         /** @noinspection PhpUnusedLocalVariableInspection */
         $createdKey = SearchResultCacheItem::createRedisKey($searchQuery);
