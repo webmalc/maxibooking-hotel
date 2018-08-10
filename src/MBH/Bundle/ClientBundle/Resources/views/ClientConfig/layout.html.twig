@@ -2,3 +2,14 @@
 
 {% set title = 'views.clientConfig.layout.parameters'|trans({}, 'MBHClientBundle') %}
 {% set title_url = path('client_config') %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2'
+        '@MBHClientBundle/Resources/public/js/client_config/*'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}

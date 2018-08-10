@@ -1,6 +1,7 @@
-{% extends "MBHClientBundle:ClientConfig:layoutPaymentSystem.html.twig" %}
+{% extends "MBHClientBundle:ClientConfigPaymentSystem:layout.html.twig" %}
 
-{% set small_title = 'client.views.payment_systems.small_title'|trans({}, "MBHClientBundle") %}
+{% set title = 'menu.label.web_site'|trans({}, 'MBHBaseBundle') %}
+{% set small_title = 'menu.label.payment_systems'|trans({}, "MBHBaseBundle") %}
 {% set layout = "tabs" %}
 
 {% block content %}

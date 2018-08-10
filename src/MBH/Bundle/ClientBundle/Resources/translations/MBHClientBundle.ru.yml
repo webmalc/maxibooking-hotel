@@ -1,4 +1,5 @@
 views.clientConfig.index.editing: Редактирование
+views.clientConfig.index.new: Создание
 views.clientConfig.layout.parameters: Параметры
 client.tabs.params: Параметры
 client.tabs.payment_system: 'Платежные системы'

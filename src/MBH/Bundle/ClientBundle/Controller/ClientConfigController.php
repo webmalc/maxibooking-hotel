@@ -106,7 +106,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
     /**
      * @Route("/payment_systems", name="client_payment_systems", options={"expose"=true})
-     * @Template()
+     * @Template("@MBHClient/ClientConfigPaymentSystem/index.html.twig")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @return array
      */
@@ -163,7 +163,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Route("/payment_system_form/{paymentSystemName}", name="client_payment_system_form")
      * @Method("GET")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
-     * @Template()
+     * @Template("@MBHClient/ClientConfigPaymentSystem/form.html.twig")
      * @return array
      */
     public function paymentSystemFormAction($paymentSystemName = null)

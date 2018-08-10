@@ -1,7 +1,16 @@
-{% extends 'MBHOnlineBundle:Form:layout.html.twig' %}
+{% extends 'MBHOnlineBundle:Form:common_for_new_and_edit.html.twig' %}
 
 {% set small_title = 'views.form.index.new'|trans({}, 'MBHOnlineBundle') %}
 {% set layout = "tabs" %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% include 'MBHOnlineBundle::assetic_for_form_js.html.twig' %}
+{% endblock %}
+{% block styles %}
+    {{ parent() }}
+    {% include 'MBHOnlineBundle::assetic_for_form_css.html.twig' %}
+{% endblock %}
 
 {% block content %}
     <ul class="nav nav-tabs">
