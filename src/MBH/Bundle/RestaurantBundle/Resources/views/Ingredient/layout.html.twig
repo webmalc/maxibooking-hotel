@@ -1,4 +1,7 @@
 {% extends "MBHRestaurantBundle::layout.html.twig" %}
 
-{% set title = 'restaurant.common.title'|trans|capitalize %}
+{% set management_icon = true %}
+{% if title is not defined %}
+    {% set title = 'restaurant.common.title'|trans|capitalize %}
+{% endif %}
 {% set title_url = path('restaurant_ingredient_category') %}

@@ -1,6 +1,6 @@
 mbhwarehousebundle.form.recordfiltertype.po: по
 warehouse.common.title: Склад
-warehouse.common.subtitle: Список
+warehouse.common.subtitle: 'Номенклатура склада'
 warehouse.common.edit: Редактировать
 warehouse.common.del: Удалить
 warehouse.common.included: Включен

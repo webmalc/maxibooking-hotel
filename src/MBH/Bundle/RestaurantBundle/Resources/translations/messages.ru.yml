@@ -28,7 +28,7 @@ restaurant.collectprice: 'Формирование цены'
 restaurant.dishconsist: 'Состав блюда'
 restaurant.namelabel: Название
 restaurant.common.title: ингредиенты
-restaurant.common.small_title: Список
+restaurant.common.small_title: 'Ресторан - Ингредиенты'
 restaurant.common.edit: редактировать
 restaurant.common.add: добавить
 restaurant.common.delete: удалить
@@ -76,7 +76,7 @@ restaurant.ingredient.form.output.help: 'Процент получаемый н�
 restaurant.ingredient.form.is_enable.label: Показать
 restaurant.ingredient.form.is_enable.help: 'Показывать ли ингредиент в списке выбора'
 restaurant.dishmenu.title: 'Меню блюд'
-restaurant.dishmenu.small_title: Список
+restaurant.dishmenu.small_title: 'Ресторан - Меню блюд'
 restaurant.dishmenu.common.add: null
 restaurant.dishmenu.common.edit: редактировать
 restaurant.dishmenu.common.delete: удалить
@@ -188,7 +188,7 @@ restaurant.table.common.shifted: 'Сдвигается со столами'
 restaurant.table.newaction.title: 'Новая категория столов'
 restaurant.table.newaction.small_title: 'добавление стола'
 restaurant.table.newaction.small_title_addchairs: 'добавление стульев'
-restaurant.table.actions.list.small_title: 'Список столов'
+restaurant.table.actions.list.small_title: 'Ресторан - Cтолики'
 restaurant.table.actions.edit: 'редактирование стола'
 restaurant.table.actions.add: 'Добавить стол'
 restaurant.table.actions.addchars: 'Добавить стул'
