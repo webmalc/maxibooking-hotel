@@ -42,7 +42,12 @@
                 {% endif %}
             </h1>
             <ol class="breadcrumb" id="main-breadcrumb">
-                <li><a href="{{ path('_welcome') }}"><i class="fa fa-home"></i></a></li>
+                <li>
+                    <a href="{{ path('_welcome') }}"><i class="fa fa-home"></i></a>
+                    {% if management_icon is defined %}
+                        <i class="fa fa-cog management_visible-xs"></i>
+                    {% endif %}
+                </li>
                 {% if title_url is defined and title_url %}
                 <li><a href="{{ title_url }}">{{ title|default(project_title)|trans }}</a></li>
                 {% endif %}

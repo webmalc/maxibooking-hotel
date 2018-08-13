@@ -1,6 +1,9 @@
 {% extends "MBHWarehouseBundle::layout.html.twig" %}
 
-{% set title = 'warehouse.common.title'|trans %}
+{% set management_icon = true %}
+{% if title is not defined %}
+    {% set title = 'warehouse.common.subtitle'|trans %}
+{% endif %}
 {% set title_url = path('warehouse_category') %}
 
 {% block scripts %}

@@ -1,12 +1,13 @@
 {% extends "MBHBaseBundle::page.html.twig" %}
 
+{% set management_icon = true %}
 {% set title_url = path('client_payment_systems') %}
 
 {% block scripts %}
     {{ parent() }}
 
     {% javascripts filter='uglifyjs2'
-        '@MBHClientBundle/Resources/public/js/001-paymentSystem.js'
+        '@MBHClientBundle/Resources/public/js/client_config_payment_system/*'
     %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}

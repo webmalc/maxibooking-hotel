@@ -1,3 +1,10 @@
+@media (min-width: 768px) {
+  #main-breadcrumb {
+    .management_visible-xs {
+      display: none;
+    }
+  }
+}
 @media (max-width: 767px) {
   body {
     padding-bottom: 0;
@@ -144,7 +151,17 @@
     }
 
     .content-wrapper.main-container {
-      padding-top: 100px;
+      padding-top: 135px;
+
+      #main-breadcrumb {
+        margin-top: unset;
+        padding: 0 5px;
+        z-index: 10;
+        position: fixed;
+        top: 50px;
+        left: 0;
+        white-space: nowrap;
+      }
     }
   }
 

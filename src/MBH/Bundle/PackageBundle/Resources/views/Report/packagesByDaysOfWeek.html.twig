@@ -1,8 +1,27 @@
 {% extends 'MBHPackageBundle:Report:layout.html.twig' %}
 
+{% set title = 'analytics.layout.report'|trans({}, 'MBHPackageBundle') %}
 {% set small_title = 'distribution_by_days_report.title'|trans %}
 {% set title_url = path('distribution_by_days_of_the_week') %}
 {% set layout = 'box' %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/report/distribution-report.js' %}
+
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/report/distribution_by_days_report/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
+{% endblock %}
 
 {% block content %}
     <input id="default-begin-date" type="hidden" value="{{ filter_begin_date()|date('d.m.Y') }}">
@@ -74,13 +93,4 @@
     {% endembed %}
 
     <div id="distribution-report-table" class="scrolling" style="position:relative;"></div>
-{% endblock %}
-
-{% block scripts %}
-    {{ parent() }}
-    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/report/distribution-report.js' %}
-
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-
 {% endblock %}

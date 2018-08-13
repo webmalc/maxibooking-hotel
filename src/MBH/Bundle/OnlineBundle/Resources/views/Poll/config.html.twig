@@ -1,6 +1,8 @@
 {% extends "MBHOnlineBundle::layout.html.twig" %}
 
-{% set title = 'views.form.layout.online_polls'|trans({}, 'MBHOnlineBundle') %}
+{% set management_icon = true %}
+{% set title = 'menu.label.web_site'|trans({}, 'MBHBaseBundle') %}
+{% set small_title = 'views.form.layout.online_polls'|trans({}, 'MBHOnlineBundle') %}
 {% set title_url = path('online_poll_config') %}
 {% set layout = "box" %}
 

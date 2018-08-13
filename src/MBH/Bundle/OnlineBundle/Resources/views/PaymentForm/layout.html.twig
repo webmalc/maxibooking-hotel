@@ -1,65 +1,7 @@
-{% extends "MBHBaseBundle::page.html.twig" %}
-{#{% extends "MBHOnlineBundle::layout.html.twig" %}#}
+{% extends "MBHOnlineBundle::layout.html.twig" %}
 
-{#{% set title = 'views.form.layout.online_form'|trans({}, 'MBHOnlineBundle') %}#}
+{% set management_icon = true %}
 {% set title_url = path('online_payment_form') %}
 {% set layout = 'tabs' %}
 
 {% set prefixForm = constant('MBH\\Bundle\\OnlineBundle\\Form\\PaymentFormType::PREFIX') ~ '_' %}
-
-
-{% block scripts %}
-    {{ parent() }}
-    <script src="{{ asset('assets/vendor/codemirror/lib/codemirror.js') }}"></script>
-    <script src="{{ asset('assets/vendor/codemirror/mode/css/css.js') }}"></script>
-    <script src="{{ asset('assets/vendor/codemirror/mode/twig/twig.js') }}"></script>
-    {#<script src="{{ asset('assets/vendor/codemirror/mode/xml/xml.js') }}"></script>#}
-    <script src="{{ asset('assets/vendor/codemirror/mode/javascript/javascript.js') }}"></script>
-    <script src="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.js') }}"></script>
-    <script>
-      var elements = [
-        {
-          elementId: '{{ prefixForm }}css',
-          type: 'css'
-        },
-        {
-          elementId: '{{ prefixForm }}js',
-          type: 'js'
-        }
-      ];
-
-      var applyCodeMirror = function (element, mode) {
-        CodeMirror.fromTextArea(element, {
-          lineNumbers: true,
-          mode: mode,
-          extraKeys: {
-            "F11": function (cm) {
-              cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-            },
-            "Esc": function (cm) {
-              if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-            }
-          }
-        });
-      };
-
-      for (var i in elements) {
-        var element = elements[i];
-        applyCodeMirror(document.getElementById(element.elementId), element.type);
-      }
-
-    </script>
-{% endblock %}
-
-{% block styles %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/vendor/codemirror/lib/codemirror.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.css') }}">
-    <style>
-        .CodeMirror-fullscreen {
-            top: 60px;
-            left: 60px;
-            bottom: 60px;
-        }
-    </style>
-{% endblock %}

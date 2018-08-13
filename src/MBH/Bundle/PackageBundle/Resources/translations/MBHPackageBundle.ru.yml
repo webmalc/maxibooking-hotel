@@ -343,7 +343,7 @@ search.results.accommodation: Разместить
 search.results.nothing_found_for_your_request: 'По вашему запросу ничего не найдено.'
 search.results.enter_search_data: 'Введите данные для подбора проживания.'
 source.edit.edit_reservation_source: 'редактрирование источники брони #'
-source.index.reservation_source: 'источник броней'
+source.index.reservation_source: 'Источники продаж'
 source.index.services: Услуги
 source.index.fms: 'Для ФМС'
 source.index.filling: Заполняемость
@@ -367,7 +367,6 @@ package.index.edit_record: 'Редактирование записи'
 package.index.delete_record: 'Удаление записи'
 package.edit.edit_delete_reasons: 'редактирование причины удаления'
 accommodation.alert: 'Не рекомендуется размещать гостей до их заезда в отель'
-organizations.breadcrumbs.list: Организации
 organizations.breadcrumbs.add: 'Добавить организацию'
 organizations.breadcrumbs.edit: 'Редактировать организацию'
 organizations.confirm_delete: 'Вы действительно хотите удалить организацию "%organization_name%"'
@@ -401,7 +400,7 @@ views.list.based_on_technologies_mb: 'Основано на технология
 views.list.review_comiled: 'Отзыв по этому заказу уже оставлен!'
 views.list.we_were_glad_to_recieve_you: 'Мы были рады принимать вас и надеемся, что ваше пребывание в нашем отеле было комфортным и приятным'
 views.list.please_fill_questionnaire: 'Пожалуйста, заполните небольшую анкету гостя, ваша оценка поможет нам развиваться и улучшать наш сервис. Мы будем рады видеть Вас снова!'
-report.poll.small_title: Оценки
+report.poll.small_title: 'Отзывы гостей'
 report.poll.invite: 'Визовые приглашения'
 report.poll.small_title_order: 'Оценки заказа '
 views.report.polls.th.order: Заказ
@@ -415,10 +414,8 @@ mbh.package.arrivals.work: Работа/стажировка
 mbh.package.arrivals.study: Курсы/учеба
 mbh.package.arrivals.residence: 'Временное проживание'
 mbh.package.arrivals.other: Другое
-report.users.small_title: Пользователи
-report.users.roomtype: 'Номерной фонд'
+report.users.small_title: 'Отчеты по менеджерам'
 report.users.error: 'Брони не найдены'
-report.porter.small_title: Портье
 report.porter.error: 'Даты заданы неверно'
 report.porter.arrivals.empty: 'Брони не найдены'
 report.porter.live.empty: 'Брони не найдены'
@@ -438,7 +435,6 @@ modal.form.delete.reasons.close: Отмена
 modal.form.delete.reasons.delete: Удалить
 package.dynamic.sale: 'Динамика продаж'
 package.dynamic.sale.search: Показать
-dynamic.sales.layout.title: Отчеты
 dynamic.sales.range_is_over_error: 'Период не должен превышать %numberOfDays% дней'
 dynamic.sales.day.periods: Периоды
 dynamic.sales.day.summary: Итого
