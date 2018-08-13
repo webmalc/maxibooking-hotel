@@ -183,14 +183,15 @@ class ChannelManagerController extends Controller
     {
         $cmWizard = $this->get('mbh.cm_wizard_manager');
         $warningsCompiler = $this->get('mbh.warnings_compiler');
+        $config = $this->get('mbh.channelmanager')->getConfigForHotel($this->hotel, $channelManagerName);
 
         return [
             'channelManagerName' => $channelManagerName,
-            'config' => $this->get('mbh.channelmanager')->getConfigForHotel($this->hotel, $channelManagerName),
+            'config' => $config,
             'lastDefinedPriceCaches' =>
-                $cmWizard->getLastCachesData($this->hotel, $channelManagerName, PriceCache::class),
+                $cmWizard->getLastCachesData($config, PriceCache::class),
             'lastDefinedRoomCaches' =>
-                $cmWizard->getLastCachesData($this->hotel, $channelManagerName, RoomCache::class),
+                $cmWizard->getLastCachesData($config, RoomCache::class),
             'emptyRoomCachePeriods' => $warningsCompiler->getEmptyRoomCachePeriods($this->hotel),
             'emptyPriceCachePeriods' => $warningsCompiler->getEmptyPriceCachePeriods($this->hotel)
         ];

@@ -23,7 +23,7 @@ class SiteManager
     const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies/index.html?q';
     const DEFAULT_BOOTSTRAP_THEME = 'cerulean';
     const SITE_DOMAIN = '.maaaxi.com';
-    const SITE_PROTOCOL = 'http://';
+    const SITE_PROTOCOL = 'https://';
     const MANDATORY_FIELDS_BY_ROUTE_NAMES = [
         Hotel::class => [
             'hotel_edit' => ['description', 'logoImage'],

@@ -180,11 +180,10 @@ class CMWizardManager
 
     /**
      * @param ChannelManagerConfigInterface $config
-     * @param string $channelManagerName
      * @param string $cacheClass
      * @return array
      */
-    public function getLastCachesData(ChannelManagerConfigInterface $config, string $channelManagerName, string $cacheClass)
+    public function getLastCachesData(ChannelManagerConfigInterface $config, string $cacheClass)
     {
         /** @var RoomType[] $syncRoomTypes */
         $syncRoomTypes = array_map(function(Room $room) {

@@ -273,9 +273,7 @@ class BillingApi
      */
     public function addClientSite(WebSite $clientSite)
     {
-        $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint']);
-
-        return $this->sendPostAndHandleResult($url, $this->serializer->normalize($clientSite));
+        return $this->createBillingEntityBySettings($clientSite, self::SITES_ENDPOINT_SETTINGS);
     }
 
     /**
