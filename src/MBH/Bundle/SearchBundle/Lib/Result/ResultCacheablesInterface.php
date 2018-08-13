@@ -8,6 +8,4 @@ interface ResultCacheablesInterface
 {
     public function getId(): string;
 
-    public function getSearchHash(): string;
-
 }

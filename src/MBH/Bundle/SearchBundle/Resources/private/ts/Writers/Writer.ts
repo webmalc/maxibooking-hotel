@@ -72,7 +72,7 @@ class Writer {
             props: ['prices', 'defaultPriceIndex'],
             template: `<span>
                         <select v-model="selected" @change="$emit('price-index-update', selected)">
-                            <option v-for="(price, key) in prices" :value="key">{{price.adults}}_{{price.children}} - {{rounded(price.total)}} </option>
+                            <option v-for="(price, key) in prices" :value="key">{{price.searchAdults}}_{{price.searchChildren}} - {{rounded(price.total)}} </option>
                         </select>
                     </span>`,
             methods: {
@@ -95,7 +95,7 @@ class Writer {
             props: ['result'],
             template: `<li>
             <span>{{result.begin}}-{{result.end}}.  Тариф - 
-                <tariff :tariff="result.tariff"></tariff>
+                <tariff :tariff="result.resultTariff"></tariff>
                 <prices :prices="result.prices" :defaultPriceIndex="currentPriceIndex" @price-index-update="priceIndexUpdate($event)"></prices>
             </span>
                 <package-link :link="getLink()"></package-link>
@@ -104,11 +104,11 @@ class Writer {
                 getLink: function () {
                     const begin: string = this.result.begin;
                     const end: string = this.result.end;
-                    const tariff: string = this.result.tariff.id;
-                    const roomType: string = this.result.roomType.id;
+                    const tariff: string = this.result.resultTariff.id;
+                    const roomType: string = this.result.resultRoomType.id;
                     const adults: number = this.result.prices[this.currentPriceIndex].adults;
                     const children: number = this.result.prices[this.currentPriceIndex].children;
-                    const childrenAges = this.result.conditions.childrenAges;
+                    const childrenAges = this.result.resultConditions.childrenAges;
                     return Routing.generate('package_new', {
                         begin: begin,
                         end: end,
@@ -192,7 +192,19 @@ class Writer {
                 //  * @url https://ru.vuejs.org/v2/guide/reactivity.html */
                 this.rootApp.$set(this.rootApp.rawData, newKey, data[newKey]);
             } else {
-                this.data[newKey].results = this.data[newKey].results.concat(data[newKey].results);
+                let existsDates = this.data[newKey].results;
+                let newDates = data[newKey].results;
+                for (let newDatesKey in newDates) {
+                    if (newDates.hasOwnProperty(newDatesKey) && existsDates.hasOwnProperty(newDatesKey)) {
+                        for (let newDate of newDates[newDatesKey]) {
+                            this.data[newKey].results[newDatesKey].push(newDate);
+                        }
+                    } else {
+                        Vue.set(this.data[newKey].results, newDatesKey, newDates[newDatesKey]);
+                    }
+                }
+
+                // this.data[newKey].results = this.data[newKey].results.concat(data[newKey].results);
             }
         }
     }

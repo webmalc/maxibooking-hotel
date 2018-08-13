@@ -60,7 +60,7 @@ class AsyncSearchConsumer implements ConsumerInterface
             /** @var SearchQuery $searchQuery */
             $searchQuery->setSearchConditions($conditions);
             $result = $searcher->search($searchQuery);
-            $this->resultStore->store($result);
+            $this->resultStore->store($result, $conditions);
         }
 
     }

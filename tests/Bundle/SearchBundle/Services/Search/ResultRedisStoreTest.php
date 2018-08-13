@@ -20,12 +20,14 @@ class ResultRedisStoreTest extends SearchWebTestCase
         $cache = $this->getContainer()->get('snc_redis.results');
         $cache->flushall();
         $hash = uniqid('', false);
+        $conditions = new SearchConditions();
+        $conditions->setSearchHash($hash);
         $searchResult1 = $this->getData($hash, 'ok');
         $searchResult2 = $this->getData($hash, 'error');
 
         $service = $this->getContainer()->get('mbh_search.redis_store');
-        $service->store($searchResult1);
-        $service->store($searchResult2);
+        $service->store($searchResult1,  $conditions);
+        $service->store($searchResult2,  $conditions);
 
         $key1 = "{$hash}{$searchResult1->getId()}";
         $key2 = "{$hash}{$searchResult2->getId()}";
@@ -57,19 +59,19 @@ class ResultRedisStoreTest extends SearchWebTestCase
         ;
 
         $asyncCache->flushall();
-        $service->store($searchResult1);
-        $service->store($searchResult3);
+        $service->store($searchResult1, $conditions);
+        $service->store($searchResult3, $conditions);
         $actualResult1 = $service->receive($conditions, false);
-        $service->store($searchResult2);
+        $service->store($searchResult2, $conditions);
         $actualResult2 = $service->receive($conditions, false);
 
         $this->assertCount(2, $actualResult1);
         $this->assertCount(1, $actualResult2);
 
         $serializer = $this->getContainer()->get('mbh_search.result_serializer');
-        $actual1 = $serializer->denormalize(array_pop($actualResult1));
-        $actual3 = $serializer->denormalize(array_pop($actualResult1));
-        $actual2 = $serializer->denormalize(array_pop($actualResult2));
+        $actual3 = $serializer->denormalize(array_shift($actualResult1));
+        $actual1 = $serializer->denormalize(array_shift($actualResult1));
+        $actual2 = $serializer->denormalize(array_shift($actualResult2));
 
 
         foreach ([$actual1, $actual2, $actual3] as $actual) {

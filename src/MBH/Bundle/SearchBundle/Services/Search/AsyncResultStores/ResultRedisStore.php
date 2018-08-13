@@ -41,14 +41,13 @@ class ResultRedisStore implements AsyncResultStoreInterface
         $this->finalResultsBuilder = $resultsBuilder;
     }
 
-    public function store($result): void
+    public function store($result,  SearchConditions $conditions): void
     {
+        $hash = $conditions->getSearchHash();
         if ($result instanceof Result) {
-            $hash = $result->getSearchHash();
             $uniqueId = $result->getId();
             $data = $this->serializer->serialize($result);
         } else {
-            $hash = $result['searchHash'];
             $uniqueId = $result['id'];
             $data = $this->serializer->encodeArrayToJson($result);
         }

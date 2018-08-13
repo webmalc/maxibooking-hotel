@@ -32,9 +32,14 @@ class AsyncSearcher extends Searcher {
                         data: JSON.stringify([])
                     });
                     let data = await requestResults;
+                    if (requestResults.status === 204) {
+                        throw new Error('End of data');
+                    }
                     this.drawResults(data);
+
                 } catch (err) {
                     error = true;
+                    console.log(err);
                     this.onStopSearch(requestResults);
                 }
                 count++;

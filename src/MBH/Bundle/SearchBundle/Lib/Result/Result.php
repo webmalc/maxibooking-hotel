@@ -277,11 +277,6 @@ class Result implements ResultCacheablesInterface
         return $this;
     }
 
-    public function getSearchHash(): string
-    {
-        return $this->resultConditions->getSearchHash();
-    }
-
     public static function createErrorResult(SearchQuery $searchQuery, SearchException $exception): Result
     {
         $begin = $searchQuery->getBegin();
