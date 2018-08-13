@@ -1,1 +1,2 @@
 validator.document.order_sum_less_zero: 'Order sum cannot be below 0'
+validator.site_form.hotels_collection_is_empty: 'Need to select at least 1 hotel'

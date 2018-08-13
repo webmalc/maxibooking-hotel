@@ -27,7 +27,7 @@ resetting.request.submit: 'Reset password'
 resetting.reset.submit: 'Change password'
 resetting.flash.success: 'The password has been reset successfully.'
 resetting.email.subject: 'Reset Password'
-resetting.email.message: 'Hello %username%! To reset your password please follow the link by clicking "%buttonName%".'
+resetting.email.message: "Hello %username%!\n\nTo reset your password - please visit %confirmationUrl%\n\nRegards,\nthe Team.\n"
 layout.logout: 'Log out'
 layout.login: 'Log in'
 layout.register: Register
