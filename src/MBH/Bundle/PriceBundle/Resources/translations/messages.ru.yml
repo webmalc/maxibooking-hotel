@@ -249,7 +249,7 @@ mbhpricebundle.view.service.index.sokhranitizmeneniya: 'Сохранить из�
 mbhpricebundle.view.service.index.dobavitʹnovuyukategoriyu: 'Добавить новую категорию'
 mbhpricebundle.view.service.newentry.sozdaniyeuslugivkategorii: 'создание услуги в категории'
 mbhpricebundle.view.service.editentry.redaktirovaniyeuslugivkategorii: 'редактирование услуги в категории'
-mbhpricebundle.view.service.layout.uslugi: Услуги
+mbhpricebundle.view.service.layout.uslugi: 'Дополнительные услуги'
 mbhpricebundle.view.service.new.sozdaniyekategoriiuslug: 'создание категории услуг'
 mbhpricebundle.view.service.edit.redaktirovaniyekategoriiuslug: 'редактирование категории услуг'
 mbhpricebundle.view.tariff.editinheritance.redaktirovaniye: редактирование

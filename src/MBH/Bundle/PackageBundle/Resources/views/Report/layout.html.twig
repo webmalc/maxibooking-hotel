@@ -9,4 +9,11 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% set title = 'analytics.layout.report'|trans({}, 'MBHPackageBundle') %}
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/report/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
+{% endblock %}

@@ -14,7 +14,7 @@
 {% set titleSubPadding = currentSizes['titleSubPadding'] %}
 {% set titleSubFontSize = currentSizes['titleSubFontSize'] %}
 {% set leftRoomsAndNoAccFontSize = currentSizes['leftRoomsAndNoAccFontSize'] %}
-{% set stylesFile = 'bundles/mbhpackage/css/chessboard/chessboard_' ~ stylesFileNumber ~ '.css' %}
+{#{% set stylesFile = 'bundles/mbhpackage/css/chessboard/chessboard_' ~ stylesFileNumber ~ '.css' %}#}
 {% set subtrahend = (tableCellHeight / 5)|round %}
 {% set minuend = tableCellHeight - subtrahend %}
 {% set numberOfRoomsOptions = [0, 20,30, 50] %}
@@ -41,6 +41,7 @@
     {{ parent() }}
     {% stylesheets filter='cssrewrite, uglifycss'
         '@MBHPackageBundle/Resources/public/css/*'
+        '@MBHPackageBundle/Resources/public/css/chessboard/zzz_mob-chessBoard.less'
         'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
         <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
@@ -209,9 +210,31 @@
             border-right-color: #000 !important;
         }
     </style>
+    {% if stylesFileNumber == 0 %}
+        {% stylesheets filter='cssrewrite, uglifycss'
+            '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_0.less' %}
+            <link rel="stylesheet" href="{{ asset_url }}"/>
+        {% endstylesheets %}
+    {% elseif stylesFileNumber == 1 %}
+        {% stylesheets filter='cssrewrite, uglifycss'
+            '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_1.less' %}
+            <link rel="stylesheet" href="{{ asset_url }}"/>
+        {% endstylesheets %}
+    {% elseif stylesFileNumber == 2 %}
+        {% stylesheets filter='cssrewrite, uglifycss'
+            '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_2.less' %}
+            <link rel="stylesheet" href="{{ asset_url }}"/>
+        {% endstylesheets %}
+    {% elseif stylesFileNumber == 3 %}
+        {% stylesheets filter='cssrewrite, uglifycss'
+            '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_3.less' %}
+            <link rel="stylesheet" href="{{ asset_url }}"/>
+        {% endstylesheets %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
+{% spaceless %}
     {# pass package data for processing on client-side #}
     <script>
         var packages = JSON.parse('{{ packages|raw }}');
@@ -235,7 +258,7 @@
         var maxSliderSize = {{ maxSliderSize }};
     </script>
 
-    <link rel="stylesheet" href="{{ asset(stylesFile) }}"/>
+    {#<link rel="stylesheet" href="{{ asset(stylesFile) }}"/>#}
     <div id="chessboard-messages"></div>
     <div id="dimmer"></div>
     <div id="loading-indicator" style="position:fixed; display: none; z-index:500;">
@@ -706,5 +729,5 @@
     <div style="display: none">
         {{ form(searchForm , {'attr' : { 'id' : 'package-search-form' }}) }}
     </div>
-
+{% endspaceless %}
 {% endblock %}

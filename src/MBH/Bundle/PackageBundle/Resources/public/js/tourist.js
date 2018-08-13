@@ -13,10 +13,19 @@ var docReadyTourists = function () {
         return $.param({'form': getTouristFilterFormData($touristForm, $citizenshipSelect)});
     };
     $touristTable.dataTable({
+        'language'    : mbh.datatablesOptions.language,
+        pageLength    : mbh.datatablesOptions.pageLength,
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-        buttons: [
-            getExportButtonSettings('tourist', 'csv', touristFilterFormCallback)
-        ],
+        buttons       : {
+            dom: {
+                container: {
+                    className: 'dt-buttons hidden-xs'
+                }
+            },
+            buttons: [
+                getExportButtonSettings('tourist', 'csv', touristFilterFormCallback)
+            ]
+        },
         "processing": true,
         "serverSide": true,
         "ordering": false,
@@ -58,7 +67,8 @@ var docReadyTourists = function () {
     $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday').datepicker({
         language: "ru",
         autoclose: true,
-        startView: 2
+        startView: 2,
+        disableTouchKeyboard: true
     });
 
     var $guestForm = $('form[name=mbh_bundle_packagebundle_package_order_tourist_type]');

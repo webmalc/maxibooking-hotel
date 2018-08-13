@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
 
-{% set small_title = "tourist.index.small_title"|trans %}
+{% set small_title = "menu.label.reports.clients"|trans %}
 {% set layout = 'box' %}
 
 {% block content %}
@@ -8,22 +8,25 @@
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'tourist-filter-widget'} %}
         {% block content %}
             {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'tourist-form'}}) }}
-            <div class="form-group">
-                <label><i class="fa fa-calendar" title='{{ 'tourist.index.dates'|trans }}'
-                          data-toggle='tooltip'></i></label>
-                {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
-                {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+            <div class="filter-form_group-date">
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title='{{ 'tourist.index.dates'|trans }}'
+                       data-toggle='tooltip'></i>
+                    <div class="filter-form_input">
+                        {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }}
+                        <span class="filter-form_separator"></span>
+                        {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
-            </div>
-            <div class="form-group">
-                <label><i class="fa fa-male" title="{{ 'tourist.index.foreign_citizens'|trans }}"
-                          data-toggle="tooltip"></i></label>
+            {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+            <div class="filter-form_input">
+                <i class="fa fa-male" title="{{ 'tourist.index.foreign_citizens'|trans }}"
+                   data-toggle="tooltip"></i>
                 {{ form_widget(form.citizenship) }}
-                {{ form_widget(form._token) }}
-                {{ form_rest(form.search) }}
             </div>
+            {{ form_widget(form._token) }}
+            {{ form_rest(form.search) }}
             {{ form_end(form, {render_rest: false}) }}
         {% endblock %}
     {% endembed %}
@@ -53,9 +56,7 @@
         </tbody>
     </table>
 
-
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'tourist_new', 'role': 'tourist'} %}
-    {% embed "MBHBaseBundle:Actions:base_list.html.twig" %}
+    {% embed "MBHBaseBundle:Actions:base_list.html.twig" with {'route': 'tourist_new', 'role': 'tourist'} %}
         {% block left %}
             {% if is_granted('ROLE_TOURIST_NEW') %}
                 <li>

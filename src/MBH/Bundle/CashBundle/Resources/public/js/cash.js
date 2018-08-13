@@ -77,12 +77,24 @@ $(document).ready(function () {
                 $begin.val(defaultBeginValue);
             }
 
+            /* возможно это лишнее, и достаточно будет всегда использовать jq */
+            var valueDataTable = {filter: null, method:null, article:null};
+            if (isMobileDevice()) {
+              valueDataTable.filter = $filterSelectElement.val();
+              valueDataTable.method = $methodSelectElement.val();
+              valueDataTable.article = $articleSelectElement.val();
+            } else {
+              valueDataTable.filter = $filterSelectElement.select2('val');
+              valueDataTable.method = $methodSelectElement.select2('val');
+              valueDataTable.article = $articleSelectElement.select2('val');
+            }
+
             return {
                 begin: $begin.val(),
                 end: $('#end').val(),
-                filter: $filterSelectElement.select2('val'),
-                method: $methodSelectElement.select2('val'),
-                article: $articleSelectElement.select2('val'),
+                filter: valueDataTable.filter,
+                method: valueDataTable.method,
+                article: valueDataTable.article,
                 show_no_paid: $showNoPaidCheckbox.prop("checked") ? 1 : 0,
                 show_no_confirmed: $showNoConfirmed.prop("checked") ? 1 : 0,
                 by_day: $byDayCheckbox.prop("checked") ? 1 : 0,
@@ -112,6 +124,8 @@ $(document).ready(function () {
         };
 
     var dataTableOptions = {
+        language    : mbh.datatablesOptions.language,
+        pageLength  : mbh.datatablesOptions.pageLength,
         "processing": true,
         "serverSide": true,
         "ordering": true,

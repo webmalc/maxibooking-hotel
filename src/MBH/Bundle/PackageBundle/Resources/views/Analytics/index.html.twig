@@ -6,37 +6,41 @@
 {% block content %}
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'analytics-filter-widget'} %}
-        <form id="analytics-filter" class="form-inline remember" role="form">
-            <div class="input">
-                <i class="fa fa-calendar" title={{ 'analytics.index.sales_date'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <input
-                        value="{{ "now"|date_modify("-1 month")|date('d.m.Y') }}" type="text"
-                        name="begin"
-                        id="analytics-filter-begin"
-                        class="datepicker begin-datepicker analytics-filter form-control input-sm"
-                        data-date-format="dd.mm.yyyy">
-            </div>
-            <div class="input">
-                — &nbsp<input value="{{ "now"|date('d.m.Y') }}" type="text" id="analytics-filter-end"
+        <form id="analytics-filter" class="form-inline filter-form remember" role="form">
+            <div class="filter-form_group-date">
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title={{ 'analytics.index.sales_date'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>
+                    <div class="filter-form_input">
+                        <input value="{{ "now"|date_modify("-1 month")|date('d.m.Y') }}" type="text"
+                                name="begin"
+                                id="analytics-filter-begin"
+                                class="datepicker begin-datepicker analytics-filter form-control input-sm"
+                            data-date-format="dd.mm.yyyy">
+                        <span class="filter-form_separator"></span>
+                        <input value="{{ "now"|date('d.m.Y') }}" type="text" id="analytics-filter-end"
                               class="datepicker end-datepicker analytics-filter form-control input-sm"
                               name="end"
                               data-date-format="dd.mm.yyyy">
+                    </div>
+                </div>
             </div>
-            <div class="input">
-                <i class="fa fa-bar-chart-o" title={{ 'analytics.index.report_type'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <select
-                        data-placeholder={{ 'analytics.index.report_type'|trans({}, 'MBHPackageBundle') }} id="analytics-filter-type"
+            <div class="filter-form_input">
+                <i class="fa fa-bar-chart-o" title={{ 'analytics.index.report_type'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>
+                <select data-placeholder="{{ 'analytics.index.report_type'|trans({}, 'MBHPackageBundle') }}" id="analytics-filter-type"
                         name="type"
                         class="analytics-filter form-control input-sm">
+                        <option></option>
                     {% for key, type in types %}
                         <option value="{{ key }}"{% if loop.index == 1 %} selected {% endif %}>{{('mbh.analytics.types.' ~ key)|trans }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="input">
-                <i class="fa fa-bed" title={{ 'analytics.index.room_type'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <select
-                        data-placeholder={{ 'analytics.index.room_type'|trans({}, 'MBHPackageBundle') }} id="analytics-filter-roomType" multiple="multiple"
+            <div class="filter-form_input">
+                <i class="fa fa-bed" title="{{ 'analytics.index.room_type'|trans({}, 'MBHPackageBundle') }}" data-toggle='tooltip'></i>
+                    <select
+                        data-placeholder="{{ 'analytics.index.room_type'|trans({}, 'MBHPackageBundle') }}" id="analytics-filter-roomType" multiple="multiple"
                         name="roomType[]"
                         class="analytics-filter form-control input-sm">
-                    <option></option>
                     {% for roomType in roomTypes %}
 
                         {% if hotel is not defined or hotel.id != roomType.hotel.id %}
@@ -54,17 +58,15 @@
                 </select>
             </div>
 
-            <div class="input" id="analytics-filter-cumulative-wrapper">
-                <i class="fa fa-signal" title={{ 'analytics.index.cumulative'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <input
-                        type="checkbox" name="cumulative" id="analytics-filter-cumulative" class="analytics-filter"
-                        value="1"/>
-            </div>
-            <div class="input" id="analytics-filter-months-wrapper">
-                <i class="fa fa-calendar" title="{{ 'analytics.index.monthly'|trans({}, 'MBHPackageBundle') }}" data-toggle='tooltip'></i>&nbsp <input type="checkbox"
-                                                                                                     name="months"
-                                                                                                     id="analytics-filter-months"
-                                                                                                     class="analytics-filter"
-                                                                                                     value="1"/>
+            <div class="filter-form_group-checkbox">
+                <div class="filter-form_input" id="analytics-filter-cumulative-wrapper">
+                    <i class="fa fa-signal" title={{ 'analytics.index.cumulative'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>
+                    <input type="checkbox" name="cumulative" id="analytics-filter-cumulative" class="analytics-filter" value="1"/>
+                </div>
+                <div class="filter-form_input" id="analytics-filter-months-wrapper">
+                    <i class="fa fa-calendar" title="{{ 'analytics.index.monthly'|trans({}, 'MBHPackageBundle') }}" data-toggle='tooltip'></i>
+                    <input type="checkbox" name="months" id="analytics-filter-months" class="analytics-filter" value="1"/>
+                </div>
             </div>
         </form>
     </div></div>

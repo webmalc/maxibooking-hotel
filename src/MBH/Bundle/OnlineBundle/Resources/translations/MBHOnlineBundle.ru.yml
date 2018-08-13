@@ -94,6 +94,6 @@ views.api.getResultsTable.nochei: Ночей
 views.form.index.settings_in_quotes: настройки
 views.form.index.settings_required: 'Необходимо заполнить основные настройки!'
 views.form.index.to_form_place: 'На место для формы:'
-views.form.layout.online_polls: Оценки
+views.form.layout.online_polls: 'Настройка отзывов'
 views.form.layout.invite: 'Визовое приглашение'
 online_form.notification: 'Оформлены новые брони через онлайн форму.'

@@ -25,7 +25,7 @@
                 <small>{{ 'dynamic.sales.day.periods'|trans({},'MBHPackageBundle') }}</small>
             </div>
         </div>
-        <table id="headerTable" class="table table-bordered table-striped table-condensed mbh-grid text-center">
+        <table id="headerTable" class="table table-bordered table-striped table-condensed mbh-grid text-center custom-mobile-style">
             <tbody>
             <tr class="dates">
                 <td class="first-th left-offset-line" rowspan="{{ periodsCount }}"></td>
@@ -71,7 +71,7 @@
             {% set numberOfRightTables = roomTypesQuantity %}
         {% endif %}
         {% for i in 1..numberOfRightTables %}
-            <table class="table table-bordered table-condensed rightTable">
+            <table class="table table-bordered table-condensed rightTable custom-mobile-style">
                 <tbody>
                 {% for shownOption in optionsShows %}
                     <tr>
@@ -93,7 +93,7 @@
             </table>
 
             {% if periodsCount > 1 and optionsShows|length > 0 %}
-                <table class="table table-bordered table-condensed rightTable rightTable-comparison">
+                <table class="table table-bordered table-condensed rightTable rightTable-comparison custom-mobile-style">
                     <tbody>
                     {% for shownOption in optionsShows %}
                         {% for comparisonRowNumber in 1..comparisonRowsCount %}
@@ -124,7 +124,7 @@
         {% if not showOnlyTotalValues %}
             {% for dynamicSaleTypeData in dynamicSalesData.dynamicSales %}
                 <table id="{{ dynamicSaleTypeData.roomType.id }}"
-                       class="dynamic-sales-table table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center">
+                       class="dynamic-sales-table table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center custom-mobile-style">
                     <tbody>
                     <tr class="mbh-grid-header2 warning">
                         <td colspan="{{ maxCount +2 }}" style="text-align: left">
@@ -201,7 +201,7 @@
 
         {% if roomTypesQuantity > 1 or showOnlyTotalValues %}
             <table id="summary"
-                   class="dynamic-sales-table table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center">
+                   class="dynamic-sales-table table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center custom-mobile-style">
                 <tbody>
                 <tr class="mbh-grid-header2 warning">
                     <td colspan="{{ maxCount +2 }}" style="text-align: left">

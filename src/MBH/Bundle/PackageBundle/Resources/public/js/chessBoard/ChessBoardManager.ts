@@ -1577,20 +1577,22 @@ class ChessBoardManager {
     }
 
     private updateChessboardDataWithoutActions() {
-        let time = 0;
-        $(document).on('click', () => {
-            time = 0;
-        });
-
-        setInterval(() => {
-            time++;
-            if (time > 30) {
-                ActionManager.showLoadingIndicator();
-                this.dataManager.updatePackagesData();
-                ActionManager.hideLoadingIndicator();
+        if (!isMobileDevice()) {
+            let time = 0;
+            $(document).on('click', () => {
                 time = 0;
-            }
-        }, 1000);
+            });
+
+            setInterval(() => {
+                time++;
+                if (time > 30) {
+                    ActionManager.showLoadingIndicator();
+                    this.dataManager.updatePackagesData();
+                    ActionManager.hideLoadingIndicator();
+                    time = 0;
+                }
+            }, 1000);
+        }
     }
 
     public static getClickEventType() {
