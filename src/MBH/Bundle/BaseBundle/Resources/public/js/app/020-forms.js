@@ -676,7 +676,7 @@ var docReadyForms = function () {
 var select2TemplateResult = {
     _iconHtml: function (state) {
         if (!state.id) {
-            return state.text;
+            return null;
         }
         var rawIcons = state.element.getAttribute('data-icon'),
             result = '';
@@ -756,7 +756,7 @@ var select2TemplateResult = {
             isEmpty: function () {
                 return $list.find('.btn').length == 0;
             }
-        }
+        };
 
         this.help = {
             inited: false,
@@ -781,7 +781,7 @@ var select2TemplateResult = {
                     that.items.isEmpty() ? this.show() : this.hide();
                 }
             }
-        }
+        };
 
         this.init = function () {
             if (isMultiple) {
