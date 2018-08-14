@@ -69,16 +69,17 @@ class SearchQuery
     /** @var bool */
     private $isRestrictionsWhereChecked = false;
 
+    /** @var bool  */
+    private $isIgnoreRestrictions = false;
+
     /** @var bool */
     private $isForceBooking;
 
     /** @var string */
     private $searchHash;
 
-
-
     /**
-     * @return \DateTime
+     * @return mixed
      */
     public function getBegin()
     {
@@ -86,7 +87,7 @@ class SearchQuery
     }
 
     /**
-     * @param \DateTime $begin
+     * @param mixed $begin
      * @return SearchQuery
      */
     public function setBegin($begin): SearchQuery
@@ -97,7 +98,7 @@ class SearchQuery
     }
 
     /**
-     * @return \DateTime
+     * @return mixed
      */
     public function getEnd()
     {
@@ -105,7 +106,7 @@ class SearchQuery
     }
 
     /**
-     * @param \DateTime $end
+     * @param mixed $end
      * @return SearchQuery
      */
     public function setEnd($end): SearchQuery
@@ -257,6 +258,18 @@ class SearchQuery
         return $this;
     }
 
+    public function isIgnoreRestrictions(): bool
+    {
+        return $this->isIgnoreRestrictions;
+    }
+
+    public function setIgnoreRestrictions(bool $isIgnore): SearchQuery
+    {
+        $this->isIgnoreRestrictions = $isIgnore;
+
+        return $this;
+    }
+
     /**
      * @return int
      */
@@ -387,7 +400,7 @@ class SearchQuery
         return \count($infants);
     }
 
-    public function getDuration(): int
+     public function getDuration(): int
     {
         return (int)$this->end->diff($this->begin)->format('%a');
     }
@@ -405,6 +418,7 @@ class SearchQuery
             ->setChildAge($queryHelper->getChildAge())
             ->setInfantAge($queryHelper->getInfantAge())
             ->setSearchConditions($conditions)
+            ->setIgnoreRestrictions($conditions->isIgnoreRestrictions())
             ->setChildren($conditions->getChildren())
             ->setAdults($conditions->getAdults())
             ->setChildrenAges($conditions->getChildrenAges())

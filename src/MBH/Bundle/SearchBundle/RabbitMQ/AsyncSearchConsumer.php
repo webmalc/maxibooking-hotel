@@ -7,11 +7,10 @@ namespace MBH\Bundle\SearchBundle\RabbitMQ;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncSearchConsumerException;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
-use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
+use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -19,7 +18,7 @@ class AsyncSearchConsumer implements ConsumerInterface
 {
 
     /** @var Searcher */
-    private $searcher;
+    private $searcherFactory;
 
     /** @var SearchConditionsRepository */
     private $conditionsRepository;
@@ -31,28 +30,18 @@ class AsyncSearchConsumer implements ConsumerInterface
 
     /**
      * AsyncSearchConsumer constructor.
-     * @param Searcher $searcher
+     * @param SearcherFactory $searcherFactory
      * @param SearchConditionsRepository $conditionsRepository
      * @param AsyncResultStoreInterface $resultStore
      */
-    public function __construct(Searcher $searcher, SearchConditionsRepository $conditionsRepository, AsyncResultStoreInterface $resultStore)
+    public function __construct(SearcherFactory $searcherFactory, SearchConditionsRepository $conditionsRepository, AsyncResultStoreInterface $resultStore)
     {
-        $this->searcher = $searcher;
+        $this->searcherFactory = $searcherFactory;
         $this->conditionsRepository = $conditionsRepository;
         $this->resultStore = $resultStore;
     }
 
 
-    /**
-     * @param AMQPMessage $msg
-     * @return mixed|void
-     * @throws AsyncSearchConsumerException
-     * @throws \Doctrine\ODM\MongoDB\LockException
-     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     */
     public function execute(AMQPMessage $msg)
     {
         $body = json_decode($msg->getBody(), true);
@@ -64,16 +53,12 @@ class AsyncSearchConsumer implements ConsumerInterface
         if (!$conditions ) {
             throw new AsyncSearchConsumerException('Error! Can not find SearchConditions for search');
         }
+        $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
         foreach ($searchQueries as $searchQuery) {
             /** @var SearchQuery $searchQuery */
             $searchQuery->setSearchConditions($conditions);
-            try {
-                $result = $this->searcher->search($searchQuery);
-            } catch (SearchException $exception) {
-                $result = Result::createErrorResult($conditions, $exception);
-            }
-
-            $this->resultStore->store($result);
+            $result = $searcher->search($searchQuery);
+            $this->resultStore->store($result, $conditions);
         }
 
     }

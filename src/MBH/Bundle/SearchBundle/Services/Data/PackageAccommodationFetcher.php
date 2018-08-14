@@ -4,7 +4,6 @@
 namespace MBH\Bundle\SearchBundle\Services\Data;
 
 
-use MBH\Bundle\PackageBundle\Document\PackageAccommodationRepository;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\SearchBundle\Lib\Data\DataFetchQueryInterface;
 use Symfony\Component\Cache\Simple\AbstractCache;

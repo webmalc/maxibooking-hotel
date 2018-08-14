@@ -134,6 +134,13 @@ class SearchConditions extends Base
      */
     private $isOnline = false;
 
+    /** @var bool
+     * @Assert\Type(type="bool")
+     * @ODM\Field(type="bool")
+     *
+     */
+    private $isIgnoreRestrictions = false;
+
     /**
      * @var bool
      * @Assert\Type(type="bool")
@@ -156,6 +163,14 @@ class SearchConditions extends Base
     private $expectedResultsCount = 0;
 
     /**
+     * @var bool
+     * @Assert\Type(type="bool")
+     * @ODM\Field(type="bool")
+     *
+     */
+    private $isUseCache = true;
+
+    /**
      * @var string
      * @Assert\Type(type="string")
      * @ODM\Field(type="string")
@@ -176,9 +191,11 @@ class SearchConditions extends Base
     }
 
 
-    public function setId($id)
+    public function setId($id): SearchConditions
     {
         $this->id = $id;
+
+        return $this;
     }
     /**
      * @return \DateTime
@@ -418,6 +435,18 @@ class SearchConditions extends Base
         return $this;
     }
 
+    public function isIgnoreRestrictions(): bool
+    {
+        return $this->isIgnoreRestrictions;
+    }
+
+    public function setIgnoreRestrictions(): SearchConditions
+    {
+        $this->isIgnoreRestrictions = true;
+
+        return $this;
+    }
+
     /**
      * @return bool
      */
@@ -506,6 +535,25 @@ class SearchConditions extends Base
         return $this;
     }
 
+
+    /**
+     * @return bool
+     */
+    public function isUseCache(): bool
+    {
+        return $this->isUseCache;
+    }
+
+    /**
+     * @param bool $isUseCache
+     * @return SearchConditions
+     */
+    public function setIsUseCache(bool $isUseCache): SearchConditions
+    {
+        $this->isUseCache = $isUseCache;
+
+        return $this;
+    }
 
     /**
      * @return bool

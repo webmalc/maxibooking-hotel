@@ -10,7 +10,6 @@ use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
-use MBH\Bundle\PackageBundle\Document\PackageAccommodationRepository;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PriceBundle\Document\PriceCacheRepository;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
@@ -115,7 +114,7 @@ class DataHolder
         $this->roomRepository = $roomRepository;
         $this->packageRepository = $packageRepository;
         $this->priceCacheRepository = $priceCacheRepository;
-        $this->searchConditionsRepository = $configRepository;
+        $this->searchConditionsRepository = $conditionsRepository;
     }
 
 
@@ -343,10 +342,10 @@ class DataHolder
     }
 
 
-    /**
+    /*************************************
+     * Accommodation block.
      * @param SearchQuery $searchQuery
      * @return array
-     * @throws MongoDBException
      */
     public function getNecessaryAccommodationRooms(SearchQuery $searchQuery): array
     {

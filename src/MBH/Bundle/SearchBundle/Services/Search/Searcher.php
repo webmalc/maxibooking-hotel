@@ -3,15 +3,14 @@
 
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
-
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class Searcher
+class Searcher implements SearcherInterface
 {
     /** @var RestrictionsCheckerService */
     private $restrictionChecker;
@@ -40,32 +39,23 @@ class Searcher
 
 
     /**
+     * TODO: Надобно сделать сервис проверки лимитов и под каждый лимит отдельный класс как в restrictions например.
      * @param SearchQuery $searchQuery
      * @return Result
-     * @throws SearcherException
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function search(SearchQuery $searchQuery): Result
     {
+        try {
+            $errors = $this->validator->validate($searchQuery);
+            if (\count($errors)) {
+                /** @var string $errors */
+                throw new SearcherException('There is a problem in SearchQuery. '. $errors);
+            }
 
-        //** TODO: Надобно сделать сервис проверки лимитов и под каждый лимит отдельный класс
-        // как в restrictions например.
-        // */
-        $errors = $this->validator->validate($searchQuery);
-        if (\count($errors)) {
-            throw new SearcherException('There is a problem in SearchQuery. '. (string)$errors);
-        }
+            $this->searchLimitChecker->checkRoomCacheLimit($searchQuery);
 
-        $this->searchLimitChecker->checkRoomCacheLimit($searchQuery);
-
-        if (!$searchQuery->isForceBooking()) {
             if (!$this->restrictionChecker->check($searchQuery)) {
                 throw new SearcherException('Violation in restriction.');
             }
@@ -73,17 +63,19 @@ class Searcher
             $this->searchLimitChecker->checkDateLimit($searchQuery);
             $this->searchLimitChecker->checkTariffConditions($searchQuery);
             $this->searchLimitChecker->checkRoomTypePopulationLimit($searchQuery);
+
+            $result = $this->resultComposer->composeResult($searchQuery);
+            $this->searchLimitChecker->checkWindows($result);
+        } catch (SearchException $e) {
+            $result = Result::createErrorResult($searchQuery, $e);
         }
 
-        $searchResult = $this->resultComposer->composeResult($searchQuery);
-
-        if (!$searchQuery->isForceBooking()) {
-            $this->searchLimitChecker->checkWindows($searchResult);
-        }
-
-        return $searchResult;
+        return $result;
     }
 
+    /**
+     * @return array|null
+     */
     public function getRestrictionError(): ?array
     {
         return $this->restrictionChecker->getErrors();

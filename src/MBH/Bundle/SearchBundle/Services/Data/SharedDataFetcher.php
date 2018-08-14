@@ -26,7 +26,7 @@ class SharedDataFetcher implements SharedDataFetcherInterface
     public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository, RoomRepository $roomRepository)
     {
         $this->tariffs = $tariffRepository->findAll();
-        $this->roomTypes = $roomTypeRepository->findAllWithHotels();
+        $this->roomTypes = $roomTypeRepository->findAll();
         $this->rooms = $roomRepository->findAll();
     }
 
@@ -63,11 +63,6 @@ class SharedDataFetcher implements SharedDataFetcherInterface
         throw new SharedFetcherException('There is no RoomType in RoomTypeHolder!');
     }
 
-    /**
-     * @param string $roomId
-     * @return string
-     * @throws SharedFetcherException
-     */
     public function getRoomTypeIdOfRoomId(string $roomId): string
     {
         foreach ($this->rooms as $room) {

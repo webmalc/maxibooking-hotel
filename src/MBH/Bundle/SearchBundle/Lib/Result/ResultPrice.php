@@ -4,7 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-class ResultPrice implements \JsonSerializable
+class ResultPrice
 {
     /** @var int */
     private $searchAdults;
@@ -12,14 +12,11 @@ class ResultPrice implements \JsonSerializable
     /** @var  int*/
     private $searchChildren;
 
-    /** @var array */
-    private $childrenAges;
-
     /** @var float */
     private $total;
 
     /** @var ResultDayPrice[] */
-    private $dayPrices;
+    private $dayPrices = [];
 
     /**
      * @return int
@@ -59,24 +56,6 @@ class ResultPrice implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getChildrenAges(): array
-    {
-        return $this->childrenAges;
-    }
-
-    /**
-     * @param array $childrenAges
-     * @return ResultPrice
-     */
-    public function setChildrenAges(array $childrenAges): ResultPrice
-    {
-        $this->childrenAges = $childrenAges;
-
-        return $this;
-    }
 
     /**
      * @return float
@@ -105,6 +84,17 @@ class ResultPrice implements \JsonSerializable
         return $this->dayPrices;
     }
 
+    /**
+     * @param ResultDayPrice[] $dayPrices
+     * @return ResultPrice
+     */
+    public function setDayPrices(array $dayPrices): ResultPrice
+    {
+        $this->dayPrices = $dayPrices;
+
+        return $this;
+    }
+
 
     public function addDayPrice(ResultDayPrice $dayPrice): ResultPrice
     {
@@ -113,15 +103,18 @@ class ResultPrice implements \JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize()
-    {
-        return [
-                'adults' => $this->getSearchAdults(),
-                'children' => $this->getSearchChildren(),
-                'total' => $this->getTotal(),
-                'dayPrices' => $this->getDayPrices()
-        ];
-    }
 
+    public static function createInstance(int $searchAdults, int $searchChildren, int $total, array $dayPrices = []): ResultPrice
+    {
+        $resultPrice = new self();
+        $resultPrice
+            ->setSearchAdults($searchAdults)
+            ->setSearchChildren($searchChildren)
+            ->setTotal($total)
+            ->setDayPrices($dayPrices)
+        ;
+
+        return $resultPrice;
+    }
 
 }

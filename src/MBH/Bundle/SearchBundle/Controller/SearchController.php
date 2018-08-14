@@ -89,9 +89,6 @@ class SearchController extends Controller
      */
     public function asyncSearchAction(Request $request)
     {
-        $stopwatch = $this->get('debug.stopwatch');
-        $stopwatch->start('searchTime');
-
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
         $search->setAsyncQueriesChunk(30);
@@ -115,20 +112,16 @@ class SearchController extends Controller
      * @param SearchConditions $conditions
      * @param null|string $grouping
      * @return JsonResponse
+     * @throws GroupingFactoryException
      */
     public function getAsyncResultsAction(SearchConditions $conditions, ?string $grouping = null): JsonResponse
     {
         $receiver = $this->get('mbh_search.redis_store');
         try {
-            $results = $receiver->receive($conditions);
-            $responder = $this->get('mbh_search.search_results_responder');
-            $resultsArray = $responder->handleResults($results, $grouping);
-            $json = json_encode(['results' => $resultsArray], JSON_UNESCAPED_UNICODE);
+            $json = $receiver->receive($conditions, true, $grouping, true, true);
             $answer = new JsonResponse($json, 200, [], true);
         } catch (AsyncResultReceiverException $exception) {
             $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage()], 204);
-        } catch (\Psr\SimpleCache\InvalidArgumentException|GroupingFactoryException $exception) {
-            $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage(), 500]);
         }
 
         return $answer;

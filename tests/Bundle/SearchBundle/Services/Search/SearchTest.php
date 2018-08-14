@@ -87,7 +87,7 @@ class SearchTest extends SearchWebTestCase
             [
                 'beginOffset' => 3,
                 'endOffset' => 7,
-                'roomTypes' => ['Люкс'],
+                'roomTypes' => [],
                 'tariffs' => [],
                 'hotels' => [],
                 'adults' => 2,

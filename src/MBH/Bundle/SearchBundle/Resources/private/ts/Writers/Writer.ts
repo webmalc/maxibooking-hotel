@@ -72,7 +72,7 @@ class Writer {
             props: ['prices', 'defaultPriceIndex'],
             template: `<td class="text-center">
                      <select v-model="selected" @change="$emit('price-index-update', selected)" class="form-control plain-html input-sm search-tourists-select">
-                            <option v-for="(price, key) in prices" :value="key"><span>{{price.adults}} взр.</span><span v-if="price.children">+{{price.children}} реб.</span></option>
+                            <option v-for="(price, key) in prices" :value="key"><span>{{price.searchAdults}} взр.</span><span v-if="price.searchChildren">+{{price.searchChildren}} реб.</span></option>
                         </select>
                     </td>`
             ,
@@ -130,40 +130,40 @@ class Writer {
             template: `<tr :class="{success: isAdditionalDate}">
                     <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
                     <td>{{begin}}-{{end}}<br><small>{{night}} ночей</small></td>
-                    <td is="tariff" :tariff="result.tariff" :freeRooms="minRooms"></td>
+                    <td is="tariff" :tariff="result.resultTariff" :freeRooms="minRooms"></td>
                     <td is="count" :count="minRooms" :quantity="quantity" @quantity="quantityUpdate($event)"></td>
                     <td is="prices" :prices="result.prices" :defaultPriceIndex="currentPriceIndex" @price-index-update="priceIndexUpdate($event)"></td>
-                    <td is="total-price" :price="result.prices[currentPriceIndex]" :tariffName="result.tariff.name"></td>
+                    <td is="total-price" :price="result.prices[currentPriceIndex]" :tariffName="result.resultTariff.name"></td>
                     <td is="package-link" :link="getLink()" :roomsCount="minRooms" data-toggle="tooltip" @click.native="$emit('booking', quantity)"></td>
             </tr>`,
             computed: {
                 begin: function () {
-                    let begin = moment(this.result.begin, 'DD.MM.YYYY');
+                    let begin = moment(this.result.begin);
 
                     return begin.format('DD MMM');
                 },
                 end: function () {
-                    let end = moment(this.result.end, 'DD.MM.YYYY');
+                    let end = moment(this.result.end);
 
                     return end.format('DD MMM');
                 },
                 night: function () {
-                    const begin = moment.utc(this.result.begin, 'DD.MM.YYYY');
-                    const end = moment.utc(this.result.end, 'DD.MM.YYYY');
+                    const begin = moment.utc(this.result.begin);
+                    const end = moment.utc(this.result.end);
 
                     return moment.duration(end.diff(begin)).days();
                 },
                 isAdditionalDate: function () {
-                    let conditionBegin = this.result.conditions.begin;
+                    let conditionBegin = this.result.resultConditions.begin;
                     let begin = this.result.begin;
 
-                    let conditionEnd = this.result.conditions.end;
+                    let conditionEnd = this.result.resultConditions.end;
                     let end = this.result.end;
 
                     return (conditionBegin == begin) && (conditionEnd == end);
                 },
                 minRooms: function ()  {
-                    return this.result.minRooms;
+                    return this.result.minRoomsCount;
                 }
 
 
@@ -172,13 +172,13 @@ class Writer {
                 getLink: function () {
                     const begin: string = this.result.begin;
                     const end: string = this.result.end;
-                    const tariff: string = this.result.tariff.id;
-                    const roomType: string = this.result.roomType.id;
+                    const tariff: string = this.result.resultTariff.id;
+                    const roomType: string = this.result.resultRoomType.id;
                     const adults: number = this.result.prices[this.currentPriceIndex].adults;
                     const children: number = this.result.prices[this.currentPriceIndex].children;
-                    const childrenAges = this.result.conditions.childrenAges;
-                    const order = this.result.conditions.order;
-                    const forceBooking = this.result.conditions.forceBooking;
+                    const childrenAges = this.result.resultConditions.childrenAges;
+                    const order = this.result.resultConditions.order;
+                    const forceBooking = this.result.resultConditions.forceBooking;
                     return Routing.generate('package_new', {
                         begin: begin,
                         end: end,
@@ -292,7 +292,17 @@ class Writer {
                 //  * @url https://ru.vuejs.org/v2/guide/reactivity.html */
                 this.rootApp.$set(this.rootApp.rawData, newKey, data[newKey]);
             } else {
-                this.data[newKey].results = this.data[newKey].results.concat(data[newKey].results);
+                let existsDates = this.data[newKey].results;
+                let newDates = data[newKey].results;
+                for (let newDatesKey in newDates) {
+                    if (newDates.hasOwnProperty(newDatesKey) && existsDates.hasOwnProperty(newDatesKey)) {
+                        for (let newDate of newDates[newDatesKey]) {
+                            this.data[newKey].results[newDatesKey].push(newDate);
+                        }
+                    } else {
+                        Vue.set(this.data[newKey].results, newDatesKey, newDates[newDatesKey]);
+                    }
+                }
             }
         }
     }

@@ -6,18 +6,43 @@ namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 
-class ResultConditions implements \JsonSerializable
+class ResultConditions
 {
 
-    /** @var SearchConditions */
-    private $conditions;
+    /** @var string */
+    private $id;
+    /** @var \DateTime */
+    private $begin;
+    /** @var \DateTime */
+    private $end;
+    /** @var int */
+    private $adults;
+    /** @var int */
+    private $children;
+    /** @var array */
+    private $childrenAges;
+    /** @var string */
+    private $searchHash;
+    /** @var bool */
+    private $isForceBooking = false;
 
     /**
      * @return string
      */
     public function getId(): string
     {
-        return $this->conditions->getId();
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return ResultConditions
+     */
+    public function setId(string $id): ResultConditions
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -25,7 +50,18 @@ class ResultConditions implements \JsonSerializable
      */
     public function getBegin(): \DateTime
     {
-        return $this->conditions->getBegin();
+        return $this->begin;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @return ResultConditions
+     */
+    public function setBegin(\DateTime $begin): ResultConditions
+    {
+        $this->begin = $begin;
+
+        return $this;
     }
 
     /**
@@ -33,7 +69,18 @@ class ResultConditions implements \JsonSerializable
      */
     public function getEnd(): \DateTime
     {
-        return $this->conditions->getEnd();
+        return $this->end;
+    }
+
+    /**
+     * @param \DateTime $end
+     * @return ResultConditions
+     */
+    public function setEnd(\DateTime $end): ResultConditions
+    {
+        $this->end = $end;
+
+        return $this;
     }
 
     /**
@@ -41,7 +88,18 @@ class ResultConditions implements \JsonSerializable
      */
     public function getAdults(): int
     {
-        return $this->conditions->getAdults();
+        return $this->adults;
+    }
+
+    /**
+     * @param int $adults
+     * @return ResultConditions
+     */
+    public function setAdults(int $adults): ResultConditions
+    {
+        $this->adults = $adults;
+
+        return $this;
     }
 
     /**
@@ -49,7 +107,17 @@ class ResultConditions implements \JsonSerializable
      */
     public function getChildren(): int
     {
-        return $this->conditions->getChildren() ?? 0;
+        return $this->children;
+    }
+
+    /**
+     * @param int $children
+     * @return ResultConditions
+     */
+    public function setChildren(int $children): ResultConditions
+    {
+        $this->children = $children;
+        return $this;
     }
 
     /**
@@ -57,59 +125,72 @@ class ResultConditions implements \JsonSerializable
      */
     public function getChildrenAges(): array
     {
-        return $this->conditions->getChildrenAges() ?? [];
+        return $this->childrenAges;
     }
 
     /**
-     * @return SearchConditions
-     */
-    public function getConditions(): SearchConditions
-    {
-        return $this->conditions;
-    }
-
-    /**
-     * @param SearchConditions $conditions
+     * @param array $childrenAges
      * @return ResultConditions
      */
-    public function setConditions(SearchConditions $conditions): ResultConditions
+    public function setChildrenAges(array $childrenAges): ResultConditions
     {
-        $this->conditions = $conditions;
+        $this->childrenAges = $childrenAges;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSearchHash(): string
+    {
+        return $this->searchHash;
+    }
+
+    /**
+     * @param string $searchHash
+     * @return ResultConditions
+     */
+    public function setSearchHash(string $searchHash): ResultConditions
+    {
+        $this->searchHash = $searchHash;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForceBooking(): bool
+    {
+        return $this->isForceBooking;
+    }
+
+    /**
+     * @param bool $isForceBooking
+     * @return ResultConditions
+     */
+    public function setIsForceBooking(bool $isForceBooking): ResultConditions
+    {
+        $this->isForceBooking = $isForceBooking;
 
         return $this;
     }
 
-    public function isForceBooking(): bool
+    public static function createInstance(SearchConditions $conditions): ResultConditions
     {
-        return $this->conditions->isForceBooking();
-    }
+        $searchConditions = new self();
 
-    public function getSearchHash(): string
-    {
-        return $this->conditions->getSearchHash();
-    }
+        $searchConditions
+            ->setId($conditions->getId())
+            ->setBegin($conditions->getBegin())
+            ->setEnd($conditions->getEnd())
+            ->setAdults($conditions->getAdults())
+            ->setChildren($conditions->getChildren() ?? 0)
+            ->setChildrenAges($conditions->getChildrenAges() ?? [])
+            ->setSearchHash($conditions->getSearchHash())
+            ->setIsForceBooking($conditions->isForceBooking())
+        ;
 
-    public function getOrder(): ?string
-    {
-        return $this->conditions->getOrder();
-    }
-
-
-
-
-    public function jsonSerialize()
-    {
-        return [
-            'id' => $this->getId(),
-            'begin' => $this->getBegin()->format('d.m.Y'),
-            'end' => $this->getEnd()->format('d.m.Y'),
-            'adults' => $this->getAdults(),
-            'children' => $this->getChildren(),
-            'childrenAges' => $this->getChildrenAges(),
-            'hash' => $this->getSearchHash(),
-            'order' => $this->getOrder(),
-            'forceBooking' => $this->isForceBooking()
-        ];
+        return $searchConditions;
     }
 
 

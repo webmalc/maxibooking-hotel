@@ -4,7 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-class ResultDayPrice implements \JsonSerializable
+class ResultDayPrice
 {
     /** @var \DateTime */
     private $date;
@@ -153,24 +153,34 @@ class ResultDayPrice implements \JsonSerializable
      * @param ResultPromotion $promotion
      * @return ResultDayPrice
      */
-    public function setPromotion(ResultPromotion $promotion): ResultDayPrice
+    public function setPromotion(?ResultPromotion $promotion = null): ResultDayPrice
     {
         $this->promotion = $promotion;
 
         return $this;
     }
 
-    public function jsonSerialize()
+    public static function createInstance(
+        \DateTime $day,
+        int $adults,
+        int $children,
+        int $infants,
+        float $price,
+        ResultTariff $tariff,
+        ResultPromotion $promotion = null
+    ): ResultDayPrice
     {
-        return [
-            'day' => $this->getDate()->format('d.m.Y'),
-            'tariff' => $this->getTariff(),
-            'price' => $this->getPrice(),
-            'adults' => $this->getAdults(),
-            'children' => $this->getChildren(),
-            'infants' => $this->getInfants(),
-            'promotion' => $this->getPromotion()
-        ];
+        $dayPrice = new self();
+        $dayPrice
+            ->setDate($day)
+            ->setAdults($adults)
+            ->setChildren($children)
+            ->setInfants($infants)
+            ->setPrice($price)
+            ->setTariff($tariff)
+            ->setPromotion($promotion);
+
+        return $dayPrice;
     }
 
 

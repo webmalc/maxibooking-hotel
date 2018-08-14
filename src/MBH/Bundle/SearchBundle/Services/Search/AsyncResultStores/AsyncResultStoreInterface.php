@@ -9,7 +9,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultCacheablesInterface;
 
 interface AsyncResultStoreInterface
 {
-    public function store(ResultCacheablesInterface $searchResult):  void;
+    public function store($result, SearchConditions $conditions):  void;
 
-    public function receive(SearchConditions $conditions): array;
+    public function receive(SearchConditions $conditions);
 }

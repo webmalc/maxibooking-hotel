@@ -8,44 +8,66 @@ use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultCacheablesInterface;
+use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
+use MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder;
 use Predis\Client;
-use Symfony\Component\Cache\Simple\AbstractCache;
 use Symfony\Component\Cache\Simple\RedisCache;
 
 class ResultRedisStore implements AsyncResultStoreInterface
 {
 
-    /** @var RedisCache */
+    /** @var Client */
     private $cache;
+    /**
+     * @var ResultSerializer
+     */
+    private $serializer;
+    /**
+     * @var FinalSearchResultsBuilder
+     */
+    private $finalResultsBuilder;
+
 
     /**
      * ResultRedisStore constructor.
-     * @param AbstractCache $cache
+     * @param Client $cache
+     * @param ResultSerializer $serializer
+     * @param FinalSearchResultsBuilder $resultsBuilder
      */
-    public function __construct(Client $cache)
+    public function __construct(Client $cache, ResultSerializer $serializer, FinalSearchResultsBuilder $resultsBuilder)
     {
         $this->cache = $cache;
+        $this->serializer = $serializer;
+        $this->finalResultsBuilder = $resultsBuilder;
     }
 
-    /**
-     * @param ResultCacheablesInterface $searchResult
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    public function store(ResultCacheablesInterface $searchResult): void
+    public function store($result,  SearchConditions $conditions): void
     {
-        $hash = $searchResult->getSearchHash();
-        $uniqueId = $searchResult->getId();
+        $hash = $conditions->getSearchHash();
+        if ($result instanceof Result) {
+            $uniqueId = $result->getId();
+            $data = $this->serializer->serialize($result);
+        } else {
+            $uniqueId = $result['id'];
+            $data = $this->serializer->encodeArrayToJson($result);
+        }
+
         $key = $hash . $uniqueId;
-        $this->cache->set($key, serialize($searchResult));
+        /** @var Result $searchResult */
+        $this->cache->set($key, $data);
     }
 
     /**
      * @param SearchConditions $conditions
-     * @return Result[]
+     * @param bool $isHideError
+     * @param null $grouping
+     * @param bool $isCreateJson
+     * @param bool $isCreateAnswer
+     * @return mixed
      * @throws AsyncResultReceiverException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
      */
-    public function receive(SearchConditions $conditions): array
+    public function receive(SearchConditions $conditions, bool $isHideError = true, $grouping = null, bool $isCreateJson = false, bool $isCreateAnswer = false)
     {
         $results = [];
         $keysForDelete = [];
@@ -77,10 +99,16 @@ class ResultRedisStore implements AsyncResultStoreInterface
             $received = $this->cache->del($keysForDelete);
         }
 
-
         $this->cache->set('received'. $hash, (int)$receivedCount + $received);
+        $results = array_map([$this->serializer, 'decodeJsonToArray'], $results);
 
-        $results = array_map('\unserialize', $results);
+        $results = $this->finalResultsBuilder
+            ->set($results)
+            ->hideError($isHideError)
+            ->setGrouping($grouping)
+            ->createJson($isCreateJson)
+            ->createAnswer($isCreateAnswer)
+            ->getResults();
 
         return $results;
     }

@@ -37,13 +37,11 @@ class RestrictionsCheckerService
         $this->checkers[] = $checker;
     }
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @return bool
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
     public function check(SearchQuery $searchQuery): bool
     {
+        if ($searchQuery->isIgnoreRestrictions()) {
+            return true;
+        }
         $isError = false;
         if (!$searchQuery->isRestrictionsWhereChecked()) {
             $fetchQuery = RestrictionsFetchQuery::createInstanceFromSearchQuery($searchQuery);

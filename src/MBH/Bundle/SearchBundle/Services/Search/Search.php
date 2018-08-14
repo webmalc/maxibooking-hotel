@@ -7,28 +7,27 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
+use MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
 class Search
 {
-    /** @var int  */
+    /** @var int */
     public const QUERIES_CHUNK_NUM = 20;
 
-    /** @var bool  */
+    /** @var bool */
     public const PRE_RESTRICTION_CHECK = false;
+
+    /** @var SearcherFactory */
+    private $searcherFactory;
 
     /** @var RestrictionsCheckerService */
     private $restrictionChecker;
-
-    /** @var Searcher */
-    private $searcher;
 
     /** @var DocumentManager */
     private $dm;
@@ -45,59 +44,76 @@ class Search
     /** @var int */
     private $asyncQueriesChunk;
 
+    /** @var FinalSearchResultsBuilder */
+    private $resultsBuilder;
+
     /**
      * Search constructor.
      * @param RestrictionsCheckerService $restrictionsChecker
-     * @param Searcher $searcher
+     * @param SearcherFactory $factory
      * @param DocumentManager $documentManager
      * @param SearchConditionsCreator $conditionsCreator
      * @param SearchQueryGenerator $queryGenerator
      * @param ProducerInterface $producer
+     * @param FinalSearchResultsBuilder $builder
      */
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
-        Searcher $searcher,
+        SearcherFactory $factory,
         DocumentManager $documentManager,
         SearchConditionsCreator $conditionsCreator,
         SearchQueryGenerator $queryGenerator,
-        ProducerInterface $producer
+        ProducerInterface $producer,
+        FinalSearchResultsBuilder $builder
     )
     {
         $this->restrictionChecker = $restrictionsChecker;
-        $this->searcher = $searcher;
+        $this->searcherFactory = $factory;
         $this->dm = $documentManager;
         $this->conditionsCreator = $conditionsCreator;
         $this->queryGenerator = $queryGenerator;
         $this->producer = $producer;
+        $this->resultsBuilder = $builder;
     }
 
 
     /**
      * @param array $data
-     * @param bool $isHideRestrictedResults
-     * @return Result[]
+     * @param bool $isHideError
+     * @param null $grouping
+     * @param bool $isCreateJson
+     * @param bool $isCreateAnswer
+     * @return mixed
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
      */
-    public function searchSync(array $data, bool $isHideRestrictedResults = true): array
+    public function searchSync(
+        array $data,
+        bool $isHideError = true,
+        $grouping = null,
+        bool $isCreateJson = false,
+        bool $isCreateAnswer = false
+    )
     {
         $conditions = $this->createSearchConditions($data);
-        $searchQueries = $this->createSearchQueries($conditions);
-        $results = [];
-        foreach ($searchQueries as $searchQuery) {
-            try {
-                $results[] = $this->searcher->search($searchQuery);
-            } catch (SearchException $e) {
-                $restrictedResult = Result::createErrorResult($conditions, $e);
-                if (!$isHideRestrictedResults) {
-                    $results[] = $restrictedResult;
-                }
-            }
+        $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
+        if (self::PRE_RESTRICTION_CHECK) {
+            $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
         }
+        $results = [];
+        $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
+        foreach ($searchQueries as $searchQuery) {
+            $results[] = $searcher->search($searchQuery);
+        }
+
+        $results = $this->resultsBuilder
+            ->set($results)
+            ->hideError($isHideError)
+            ->setGrouping($grouping)
+            ->createJson($isCreateJson)
+            ->createAnswer($isCreateAnswer)
+            ->getResults();
 
         return $results;
     }
@@ -113,7 +129,8 @@ class Search
     {
 
         $conditions = $this->createSearchConditions($data);
-        $searchQueries = $this->createSearchQueries($conditions);
+        $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
+        $conditions->setExpectedResultsCount(\count($searchQueries));
         $this->dm->persist($conditions);
         $this->dm->flush($conditions);
 
@@ -146,32 +163,13 @@ class Search
     private function createSearchConditions(array $data): SearchConditions
     {
 
-        $hash = uniqid('azovsky', true);
+        $hash = uniqid('az_', true);
         $conditions = $this->conditionsCreator->createSearchConditions($data);
         $conditions->setSearchHash($hash);
         $this->saveQueryStat($conditions);
 
         return $conditions;
     }
-
-    /**
-     * @param SearchConditions $conditions
-     * @return array
-     * @throws SearchQueryGeneratorException
-     */
-    private function createSearchQueries(SearchConditions $conditions): array
-    {
-
-        $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
-
-        if (self::PRE_RESTRICTION_CHECK) {
-            $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
-        }
-        $conditions->setExpectedResultsCount(\count($searchQueries));
-
-        return $searchQueries;
-    }
-
 
     /**
      * @param SearchConditions $conditions
@@ -206,7 +204,6 @@ class Search
     {
         $this->asyncQueriesChunk = $asyncQueriesChunk;
     }
-
 
 
 }

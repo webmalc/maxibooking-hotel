@@ -15,8 +15,6 @@ use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
-use MBH\Bundle\SearchBundle\Document\SearchResult;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
@@ -63,11 +61,7 @@ class SearchLimitChecker
     }
 
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @throws SearchLimitCheckerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     */
+
     public function checkDateLimit(SearchQuery $searchQuery): void
     {
         $tariffId = $searchQuery->getTariffId();
@@ -114,11 +108,6 @@ class SearchLimitChecker
     }
 
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @throws SearchLimitCheckerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     */
     public function checkRoomTypePopulationLimit(SearchQuery $searchQuery): void
     {
         $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
@@ -133,14 +122,6 @@ class SearchLimitChecker
         }
     }
 
-
-    /**
-     * @param SearchQuery $searchQuery
-     * @return array
-     * @throws SearchLimitCheckerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
     public function checkRoomCacheLimit(SearchQuery $searchQuery): array
     {
         $roomCacheQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
@@ -182,6 +163,7 @@ class SearchLimitChecker
      * @param Result $result
      * @throws SearchLimitCheckerException
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
     public function checkWindows(Result $result): void
     {
@@ -191,11 +173,12 @@ class SearchLimitChecker
                 return;
             }
 
-            $roomType = $result->getResultRoomType()->getRoomType();
             $begin = clone $result->getBegin();
             $end = clone $result->getEnd();
+            $roomType = $this->sharedDataFetcher->getFetchedRoomType($result->getResultRoomType()->getId());
+            $searchingTariff = $this->sharedDataFetcher->getFetchedTariff($result->getResultTariff()->getId());
             /** @var Tariff $tariff */
-            $tariff = $this->dm->getRepository(Tariff::class)->fetchBaseTariff($result->getResultTariff()->getTariff()->getHotel());
+            $tariff = $this->dm->getRepository(Tariff::class)->fetchBaseTariff($searchingTariff->getHotel());
             /** @var RestrictionRepository $restrictionRepo */
             $restrictionRepo = $this->dm->getRepository(Restriction::class);
             /** @var Restriction $beginRestriction */

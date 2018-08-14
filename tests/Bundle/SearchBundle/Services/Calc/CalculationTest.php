@@ -13,6 +13,7 @@ use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
+use Tests\Bundle\SearchBundle\NamesLibrary;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class CalculationTest extends SearchWebTestCase
@@ -87,7 +88,11 @@ class CalculationTest extends SearchWebTestCase
                 $packagePrice = $actualData['packagePrices'][$index];
                 $day = (clone $begin)->modify("+ $index days")->format('d_m_Y') . ' offset' . $index;
                 $this->assertEquals($variant['priceByDay'][$index], $packagePrice->getPrice(), "Error in $key $day");
-                $this->assertEquals($variant['tariffByDay'][$index], $packagePrice->getTariff()->getName(), "Error in $key $day");
+                $this->assertEquals(
+                    $variant['tariffByDay'][$index],
+                    $packagePrice->getTariff()->getName(),
+                    "Error in $key $day"
+                );
                 $this->assertEquals($fakePromotion->getFullTitle(), $packagePrice->getPromotion()->getFullTitle());
             }
         }
@@ -103,7 +108,7 @@ class CalculationTest extends SearchWebTestCase
         yield [
             false,
             [
-                'searchRoomTypeName' => AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'searchRoomTypeName' => NamesLibrary::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'searchTariffName' => 'Основной тариф',
                 'hotelName' => 'Отель Волга',
                 'beginOffset' => 8,
@@ -114,39 +119,63 @@ class CalculationTest extends SearchWebTestCase
                         'children' => 0,
                         'total' => 1900 * 5,
                         'priceByDay' => [1900, 1900, 1900, 1900, 1900],
-                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                        ],
                     ],
                     [
                         'adults' => 3,
                         'children' => 0,
                         'total' => 2000 * 5,
-                        'priceByDay' => [2000,2000,2000,2000,2000],
-                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                        'priceByDay' => [2000, 2000, 2000, 2000, 2000],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                        ],
                     ],
                     [
                         'adults' => 3,
                         'children' => 2,
                         'total' => 2000 * 5 + (700 + 700) * 5,
-                        'priceByDay' => [3400,3400,3400,3400,3400],
-                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                        'priceByDay' => [3400, 3400, 3400, 3400, 3400],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                        ],
                     ],
                     [
                         'adults' => 5,
                         'children' => 0,
                         'total' => 2000 * 5 + (1500 + 1500) * 5,
-                        'priceByDay' => [5000,5000,5000,5000,5000],
-                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
-                    ]
+                        'priceByDay' => [5000, 5000, 5000, 5000, 5000],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                        ],
+                    ],
                 ],
 
-            ]
+            ],
         ];
 
         yield [
             false,
             [
-                'searchRoomTypeName' => AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
-                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                'searchRoomTypeName' => NamesLibrary::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => NamesLibrary::UP_TARIFF_NAME,
                 'hotelName' => 'Отель Волга',
                 'beginOffset' => 2,
                 'endOffset' => 9,
@@ -159,11 +188,12 @@ class CalculationTest extends SearchWebTestCase
                         'tariffByDay' => [
                             'Основной тариф',
                             'Основной тариф',
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::UP_TARIFF_NAME],
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::UP_TARIFF_NAME,
+                        ],
                     ],
                     [
                         'adults' => 2,
@@ -173,11 +203,11 @@ class CalculationTest extends SearchWebTestCase
                         'tariffByDay' => [
                             'Основной тариф',
                             'Основной тариф',
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::UP_TARIFF_NAME
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::UP_TARIFF_NAME,
                         ],
                     ],
                 ],
@@ -188,8 +218,8 @@ class CalculationTest extends SearchWebTestCase
         yield [
             false,
             [
-                'searchRoomTypeName' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
-                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                'searchRoomTypeName' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => NamesLibrary::UP_TARIFF_NAME,
                 'hotelName' => 'Отель Волга',
                 'beginOffset' => 2,
                 'endOffset' => 9,
@@ -202,11 +232,12 @@ class CalculationTest extends SearchWebTestCase
                         'tariffByDay' => [
                             'Основной тариф',
                             'Основной тариф',
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::UP_TARIFF_NAME],
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::UP_TARIFF_NAME,
+                        ],
                     ],
                     [
                         'adults' => 3,
@@ -216,11 +247,11 @@ class CalculationTest extends SearchWebTestCase
                         'tariffByDay' => [
                             'Основной тариф',
                             'Основной тариф',
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::UP_TARIFF_NAME
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::UP_TARIFF_NAME,
                         ],
                     ],
                     [
@@ -231,11 +262,11 @@ class CalculationTest extends SearchWebTestCase
                         'tariffByDay' => [
                             'Основной тариф',
                             'Основной тариф',
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::UP_TARIFF_NAME
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::UP_TARIFF_NAME,
                         ],
                     ],
                 ],
@@ -246,8 +277,8 @@ class CalculationTest extends SearchWebTestCase
         yield [
             false,
             [
-                'searchRoomTypeName' => AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
-                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                'searchRoomTypeName' => NamesLibrary::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => NamesLibrary::UP_TARIFF_NAME,
                 'hotelName' => 'Отель Волга',
                 'beginOffset' => 24,
                 'endOffset' => 32,
@@ -260,12 +291,12 @@ class CalculationTest extends SearchWebTestCase
                     ],
                 ],
 
-            ]
+            ],
         ];
         yield [
             true,
             [
-                'searchRoomTypeName' => AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'searchRoomTypeName' => NamesLibrary::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'searchTariffName' => 'Основной тариф',
                 'hotelName' => 'Отель Волга',
                 'beginOffset' => 8,
@@ -276,38 +307,62 @@ class CalculationTest extends SearchWebTestCase
                         'children' => 0,
                         'total' => 2400 * 5,
                         'priceByDay' => [2400, 2400, 2400, 2400, 2400],
-                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                        ],
                     ],
                     [
                         'adults' => 3,
                         'children' => 0,
                         'total' => 2450 * 5,
                         'priceByDay' => [2450, 2450, 2450, 2450, 2450],
-                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                        ],
                     ],
                     [
                         'adults' => 3,
                         'children' => 2,
                         'total' => 2450 * 5 + (850 + 750) * 5,
                         'priceByDay' => [4050, 4050, 4050, 4050, 4050],
-                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                        ],
                     ],
                     [
                         'adults' => 5,
                         'children' => 0,
                         'total' => 2450 * 5 + (900 + 800) * 5,
                         'priceByDay' => [4150, 4150, 4150, 4150, 4150],
-                        'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
-                    ]
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                            'Основной тариф',
+                        ],
+                    ],
                 ],
 
-            ]
+            ],
         ];
         yield [
             true,
             [
-                'searchRoomTypeName' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
-                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                'searchRoomTypeName' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => NamesLibrary::UP_TARIFF_NAME,
                 'hotelName' => 'Отель Волга',
                 'beginOffset' => 2,
                 'endOffset' => 9,
@@ -316,15 +371,16 @@ class CalculationTest extends SearchWebTestCase
                         'adults' => 1,
                         'children' => 0,
                         'total' => 2400 * 2 + 2390 * 4 + 2380,
-                        'priceByDay' => [2400,2400,2390,2390,2390,2390,2380],
+                        'priceByDay' => [2400, 2400, 2390, 2390, 2390, 2390, 2380],
                         'tariffByDay' => [
                             'Основной тариф',
                             'Основной тариф',
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::UP_TARIFF_NAME],
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::UP_TARIFF_NAME,
+                        ],
                     ],
                     [
                         'adults' => 3,
@@ -334,11 +390,11 @@ class CalculationTest extends SearchWebTestCase
                         'tariffByDay' => [
                             'Основной тариф',
                             'Основной тариф',
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::UP_TARIFF_NAME
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::UP_TARIFF_NAME,
                         ],
                     ],
                     [
@@ -349,16 +405,16 @@ class CalculationTest extends SearchWebTestCase
                         'tariffByDay' => [
                             'Основной тариф',
                             'Основной тариф',
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::DOWN_TARIFF_NAME,
-                            AdditionalTariffData::UP_TARIFF_NAME
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::DOWN_TARIFF_NAME,
+                            NamesLibrary::UP_TARIFF_NAME,
                         ],
                     ],
                 ],
 
-            ]
+            ],
         ];
     }
 

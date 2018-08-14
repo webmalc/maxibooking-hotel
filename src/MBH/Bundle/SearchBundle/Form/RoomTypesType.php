@@ -60,7 +60,10 @@ class RoomTypesType extends AbstractType
                             $data[$index] = (array)$roomType;
                         }
                     }
-                    $data = array_merge(...$data);
+                    if (\count($data)) {
+                        $data = array_merge(...$data);
+                    }
+
                     $event->setData(array_unique($data));
                 }
 

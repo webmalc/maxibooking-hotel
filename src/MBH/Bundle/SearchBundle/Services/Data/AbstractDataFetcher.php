@@ -21,11 +21,6 @@ abstract class AbstractDataFetcher implements DataFetcherInterface
         $this->cache = $cache;
     }
 
-    /**
-     * @param DataFetchQueryInterface $fetchQuery
-     * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
     public function fetchNecessaryDataSet(DataFetchQueryInterface $fetchQuery): array
     {
         $result = $this->holder->get($fetchQuery);
@@ -39,11 +34,6 @@ abstract class AbstractDataFetcher implements DataFetcherInterface
 
     }
 
-    /**
-     * @param DataFetchQueryInterface $fetchQuery
-     * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
     private function getData(DataFetchQueryInterface $fetchQuery): array
     {
         $hash = $fetchQuery->getHash();
