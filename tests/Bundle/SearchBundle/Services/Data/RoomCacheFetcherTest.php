@@ -5,8 +5,9 @@ namespace Tests\Bundle\SearchBundle\Services\Data;
 
 
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
-use Tests\Bundle\SearchBundle\NamesLibrary;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class RoomCacheFetcherTest extends SearchWebTestCase
@@ -41,8 +42,8 @@ class RoomCacheFetcherTest extends SearchWebTestCase
             [
                 'beginOffset' => 0,
                 'endOffset' => 5,
-                'tariffFullTitle' => NamesLibrary::UP_TARIFF_NAME,
-                'roomTypeFullTitle' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'tariffFullTitle' => AdditionalTariffData::UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'hotelFullTitle' => 'Отель Волга',
                 'expected' => [
                     0 => null,

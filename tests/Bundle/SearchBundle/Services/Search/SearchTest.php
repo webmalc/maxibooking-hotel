@@ -4,16 +4,15 @@
 namespace Tests\Bundle\SearchBundle\Services\Search;
 
 
-use Doctrine\ODM\MongoDB\MongoDBException;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
-use MBH\Bundle\SearchBundle\Document\SearchResultHolder;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\DataHolderException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class SearchTest extends SearchWebTestCase
@@ -26,10 +25,9 @@ class SearchTest extends SearchWebTestCase
 
     /** @dataProvider syncDataProvider
      * @param iterable $data
-     * @throws MongoDBException
-     * @throws DataHolderException
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
      */
     public function testSearchSync(iterable $data): void
     {
@@ -38,9 +36,23 @@ class SearchTest extends SearchWebTestCase
         $actual = $search->searchSync($conditionData);
         $this->assertCount(2, $search->getRestrictionsErrors());
         foreach ($actual as $result) {
-            $this->assertInstanceOf(Result::class, $result);
+            $this->assertInternalType('array', $result);
         }
 
+    }
+
+    /** @dataProvider syncDataProvider
+     * @param iterable $data
+     * @throws SearchConditionException
+     * @throws SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
+     */
+    public function testGroupedSerializedSearchSync(iterable $data): void
+    {
+        $search = $this->getContainer()->get('mbh_search.search');
+        $conditionData = $this->createConditionData($data);
+        $actual = $search->searchSync($conditionData, true, 'roomType', true);
+        $this->assertJson($actual);
     }
 
     /** @dataProvider syncDataProvider
@@ -61,7 +73,6 @@ class SearchTest extends SearchWebTestCase
         $conditionData = $this->createConditionData($data);
         $search = $this->getContainer()->get('mbh_search.search');
         $search->setAsyncQueriesChunk($expected['chunk']);
-        /** @var SearchResultHolder $actual */
         $actual = $search->searchAsync($conditionData);
         $this->dm->clear();
         $conditions = $this->dm->find(SearchConditions::class, $actual);

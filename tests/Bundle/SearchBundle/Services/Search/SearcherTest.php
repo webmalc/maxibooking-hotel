@@ -16,21 +16,31 @@ class SearcherTest extends SearchWebTestCase
         $searchQueries = $this->createSearchQueries($data['conditions']);
 
         $searcher = $this->getContainer()->get('mbh_search.searcher');
-
         foreach ($searchQueries as $searchQuery) {
-            try {
-                $actual[] = $searcher->search($searchQuery);
-            } catch (SearchException $e) {
-                $errors['searchError'][] = $e->getMessage();
-            }
+            $actual[] = $searcher->search($searchQuery);
         }
         $expected = $data['expected'];
         /** @noinspection PhpUndefinedVariableInspection */
         $this->assertCount($expected['resultsCount'], $actual);
         /** @var Result $actualSearchResult */
-        $actualSearchResult = reset($actual);
-        $this->assertInstanceOf(Result::class, $actualSearchResult);
-        $this->assertEquals($expected['totalPrice'], $actualSearchResult->getPrices()[0]->getTotal());
+        foreach ($actual as $actualSearchResult) {
+            $this->assertInstanceOf(Result::class, $actualSearchResult);
+        }
+
+        $actualResults = array_filter($actual, function ($result) {
+            /** @var Result $result */
+            return $result->getStatus() === 'ok';
+        });
+
+        $this->assertCount($expected['okResult'], $actualResults);
+
+        $actualErrors = array_filter($actual, function ($result) {
+            /** @var Result $result */
+            return $result->getStatus() === 'error';
+        });
+
+        $this->assertCount($expected['errorResult'], $actualErrors);
+        $this->assertEquals($expected['totalPrice'], reset($actualResults)->getPrices()[0]->getTotal());
     }
 
     public function dataProvider(): iterable
@@ -48,8 +58,10 @@ class SearcherTest extends SearchWebTestCase
                     'childrenAges' => [5],
                 ],
                 'expected' => [
-                    'resultsCount' => 1,
-                    'totalPrice' => 4400
+                    'resultsCount' => 5,
+                    'totalPrice' => 4400,
+                    'okResult' => 1,
+                    'errorResult' => 4
 
                 ]
 

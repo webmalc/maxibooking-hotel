@@ -4,9 +4,10 @@
 namespace Tests\Bundle\SearchBundle\Services\Data;
 
 
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\SearchBundle\Lib\Data\RestrictionsFetchQuery;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Tests\Bundle\SearchBundle\NamesLibrary;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class RestrictionFetcherTest extends SearchWebTestCase
@@ -39,8 +40,8 @@ class RestrictionFetcherTest extends SearchWebTestCase
             [
                 'beginOffset' => 0,
                 'endOffset' => 5,
-                'tariffFullTitle' => NamesLibrary::UP_TARIFF_NAME,
-                'roomTypeFullTitle' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'tariffFullTitle' => AdditionalTariffData::UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'hotelFullTitle' => 'Отель Волга',
                 'expected' => [
                     'minStayArrival' => [
@@ -63,8 +64,8 @@ class RestrictionFetcherTest extends SearchWebTestCase
             [
                 'beginOffset' => 0,
                 'endOffset' => 5,
-                'tariffFullTitle' => NamesLibrary::CHILD_UP_TARIFF_NAME,
-                'roomTypeFullTitle' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'hotelFullTitle' => 'Отель Волга',
                 'expected' => [
                     'minStayArrival' => [

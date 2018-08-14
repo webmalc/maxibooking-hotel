@@ -4,11 +4,13 @@
 namespace Tests\Bundle\SearchBundle\Lib;
 
 
-use Tests\Bundle\SearchBundle\NamesLibrary;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\RoomTypeCategoryData;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
@@ -174,8 +176,8 @@ class DataHolderTest extends SearchWebTestCase
             [
                 'beginOffset' => 0,
                 'endOffset' => 5,
-                'tariffFullTitle' => NamesLibrary::UP_TARIFF_NAME,
-                'roomTypeFullTitle' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'tariffFullTitle' => AdditionalTariffData::UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'hotelFullTitle' => 'Отель Волга',
                 'expected' => [
                     0 => null,
@@ -211,8 +213,8 @@ class DataHolderTest extends SearchWebTestCase
             [
                 'beginOffset' => 0,
                 'endOffset' => 5,
-                'tariffFullTitle' => NamesLibrary::UP_TARIFF_NAME,
-                'roomTypeFullTitle' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'tariffFullTitle' => AdditionalTariffData::UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'hotelFullTitle' => 'Отель Волга',
                 'expected' => [
                     'minStayArrival' => [
@@ -235,8 +237,8 @@ class DataHolderTest extends SearchWebTestCase
             [
                 'beginOffset' => 0,
                 'endOffset' => 5,
-                'tariffFullTitle' => NamesLibrary::CHILD_UP_TARIFF_NAME,
-                'roomTypeFullTitle' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'hotelFullTitle' => 'Отель Волга',
                 'expected' => [
                     'minStayArrival' => [
@@ -334,13 +336,13 @@ class DataHolderTest extends SearchWebTestCase
                 'isCategory' => false,
                 'beginOffset' => 0,
                 'endOffset' => 26,
-                'tariffFullTitle' => NamesLibrary::CHILD_UP_TARIFF_NAME,
-                'roomTypeFullTitle' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'hotelFullTitle' => 'Отель Волга',
                 'expected' => [
                     'count' => 18,
-                    'TariffName' => NamesLibrary::UP_TARIFF_NAME,
-                    'RoomType' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                    'TariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                    'RoomType' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                     'RoomTypeCategory' => null
                 ]
             ]
@@ -350,14 +352,14 @@ class DataHolderTest extends SearchWebTestCase
                 'isCategory' => true,
                 'beginOffset' => 0,
                 'endOffset' => 26,
-                'tariffFullTitle' => NamesLibrary::CHILD_UP_TARIFF_NAME,
-                'roomTypeFullTitle' => NamesLibrary::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
                 'hotelFullTitle' => 'Отель Волга',
                 'expected' => [
                     'count' => 18,
-                    'TariffName' => NamesLibrary::UP_TARIFF_NAME,
+                    'TariffName' => AdditionalTariffData::UP_TARIFF_NAME,
                     'RoomType' => null,
-                    'RoomTypeCategory' => NamesLibrary::ADDITIONAL_PLACES_CATEGORY['fullTitle']
+                    'RoomTypeCategory' => RoomTypeCategoryData::ADDITIONAL_PLACES_CATEGORY['fullTitle']
                 ]
             ]
         ];

@@ -23,17 +23,15 @@ class SearchResultComposerTest extends SearchWebTestCase
     }
 
     /** @dataProvider dataProvider */
-    public function testComposeResult($data): void
+    public function testComposeResult($data)
     {
         $searchQuery = $this->createSearchQuery($data);
-        /** @var Result $actual */
         $searchQuery->getSearchConditions()->setId('fakeId');
+        /** @var Result $actual */
         $actual = $this->searchComposer->composeResult($searchQuery);
         $expected = $data['expected'];
         /** TODO: Добавить всякой фигни */
         $this->assertEquals($expected['minCache'], $actual->getMinRoomsCount());
-
-
     }
 
     public function dataProvider(): iterable

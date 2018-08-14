@@ -11,12 +11,15 @@ use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class RoomTypeGroupingTest extends SearchWebTestCase
 {
-    /** @dataProvider dataProvider */
+    /** @dataProvider dataProvider
+     * @param iterable $data
+     */
     public function testGroup(iterable $data): void
     {
         $source = $data['source'];
         $expected = $data['expected'];
         $searchResults = [];
+        $serializer = $this->getContainer()->get('mbh_search.result_serializer');
         foreach ($source as $value) {
             $result = $this->createMock(Result::class);
             $resultRoomType = $this->createMock(ResultRoomType::class);
@@ -24,7 +27,12 @@ class RoomTypeGroupingTest extends SearchWebTestCase
             $result->expects($this->any())->method('getResultRoomType')->willReturn($resultRoomType);
             $result->expects($this->any())->method('getBegin')->willReturn(new \DateTime("midnight + {$value['beginOffset']} days"));
             $result->expects($this->any())->method('getEnd')->willReturn(new \DateTime("midnight + {$value['endOffset']} days"));
-            $searchResults[] = $result;
+            $searchResults[] = $serializer->normalize(
+                $result,
+                [
+                    'attributes' => ['id', 'resultRoomType', 'begin', 'end']
+                ]
+            );
         }
 
         $service = new RoomTypeGrouping();
