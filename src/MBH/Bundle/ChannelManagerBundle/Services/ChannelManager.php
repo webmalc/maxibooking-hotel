@@ -79,7 +79,6 @@ class ChannelManager
         $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->client = $container->getParameter('client');
         $this->producer = $this->container->get('old_sound_rabbit_mq.task_command_runner_producer');
-        $this->services = $this->getServices();
     }
 
     /**
@@ -91,10 +90,11 @@ class ChannelManager
     }
 
     /**
+     * @param bool $isForPullingOldOrders
      * @param array $filter
      * @return array
      */
-    public function getServices(array $filter = null)
+    public function getServices($isForPullingOldOrders = false, array $filter = null)
     {
         if (!$this->checkEnvironment()) {
             return [];
@@ -106,7 +106,7 @@ class ChannelManager
             try {
                 $service = $this->container->get($info['service']);
 
-                if ($service instanceof ServiceInterface && !empty($service->getConfig())) {
+                if ($service instanceof ServiceInterface && !empty($service->getConfig($isForPullingOldOrders))) {
                     if (!empty($filter) && !in_array($key, $filter)) {
                         continue;
                     }
@@ -228,7 +228,7 @@ class ChannelManager
     public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): array
     {
         $results = [];
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             $result = $service['service']->getOverview($begin, $end, $hotel);
             $results[$service['key']] = $result;
             if ($result) {
@@ -250,7 +250,7 @@ class ChannelManager
         }
 
         $result = false;
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             try {
                 $noError = true;
                 if (empty($roomType) && empty($begin) && empty($end) && $command === AbstractChannelManagerService::COMMAND_UPDATE) {
@@ -331,7 +331,7 @@ class ChannelManager
 
     public function pushResponse($serviceTitle, Request $request)
     {
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             if ($serviceTitle && $service['key'] != $serviceTitle) {
                 continue;
             }
@@ -359,7 +359,7 @@ class ChannelManager
             return false;
         }
         $result = false;
-        foreach ($this->services as $service) {
+        foreach ($this->getServices($pullOldStatus === self::OLD_PACKAGES_PULLING_ALL_STATUS) as $service) {
             if ($serviceTitle && $service['key'] != $serviceTitle) {
                 continue;
             }
