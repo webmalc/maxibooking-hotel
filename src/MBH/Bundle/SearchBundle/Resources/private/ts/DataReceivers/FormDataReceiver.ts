@@ -129,6 +129,7 @@ class FormDataReceiver implements DataReceiverInterface {
             children: Number(this.getFormFieldValue('children')),
             childrenAges: this.getChildrenAges(),
             order: Number(this.getFormFieldValue('order')),
+            isForceBooking: this.getFormField('isForceBooking').bootstrapSwitch('state'),
             isSpecialStrict: this.getFormField('isSpecialStrict').bootstrapSwitch('state'),
         };
 

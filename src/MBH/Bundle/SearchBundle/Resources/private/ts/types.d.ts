@@ -9,7 +9,8 @@ interface SearchDataType {
     roomTypes?: any,
     tariffs?: any,
     hotels?: any,
-    order?: number
+    order?: number,
+    isForceBooking?: boolean,
     isSpecialStrict?: boolean
 }
 
