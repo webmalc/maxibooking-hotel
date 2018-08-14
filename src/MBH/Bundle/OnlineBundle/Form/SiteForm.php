@@ -93,7 +93,7 @@ class SiteForm extends AbstractType
                 'label' => 'site_form.hotels.label',
                 'class' => Hotel::class,
                 'multiple' => true,
-                'required' => false,
+                'required' => true,
                 'help' => 'site_form.hotels.help',
                 'query_builder' => function(HotelRepository $hotelRepository) {
                     return $hotelRepository->getQBWithAvailable();
