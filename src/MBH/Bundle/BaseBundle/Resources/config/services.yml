@@ -267,7 +267,7 @@ services:
 
     task_command_runner:
         class:      MBH\Bundle\BaseBundle\Task\CommandRunner
-        arguments:  ["@mbh.task.logger", "@kernel"]
+        arguments:  ["@mbh.task.logger", "@kernel", "@mbh.exception_manager"]
 
     mbh.locale.subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\LocaleSubscriber

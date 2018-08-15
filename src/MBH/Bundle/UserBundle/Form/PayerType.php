@@ -36,6 +36,11 @@ class PayerType extends AbstractType
         $this->clientPayerManager = $clientPayerManager;
     }
 
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     * @throws \Exception
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         /** @var Client $client */
@@ -121,7 +126,7 @@ class PayerType extends AbstractType
                 'required' => false,
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.series.label',
-                'data' => $clientRuPayerData ? $clientRuPayerData->getPassportSerial() : ''
+                'data' => $clientRuPayerData ? $clientRuPayerData->getPassport_serial() : ''
             ])
             ->add('number', TextType::class, [
                 'required' => false,
