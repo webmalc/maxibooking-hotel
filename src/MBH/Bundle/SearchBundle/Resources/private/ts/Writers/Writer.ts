@@ -311,12 +311,12 @@ class Writer {
         let $holder = $('#specials');
         $holder.empty();
         $holder.append($(data));
-        let $specialWrapper = $holder.find('#package-new-search-special-wrapper');
-        $specialWrapper.readmore({
-            moreLink: '<div class="more-link"><a href="#">'+$specialWrapper.attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
-            lessLink: '<div class="less-link"><a href="#">'+$specialWrapper.attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
-            collapsedHeight: 230
-        });
+        // let $specialWrapper = $holder.find('#package-new-search-special-wrapper');
+        // $specialWrapper.readmore({
+        //     moreLink: '<div class="more-link"><a href="#">'+$specialWrapper.attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
+        //     lessLink: '<div class="less-link"><a href="#">'+$specialWrapper.attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
+        //     collapsedHeight: 230
+        // });
         let $specialTouristSelect = $holder.find('.search-special-tourist-select');
         let $specialPrice = $holder.find('.special-price');
         let $specialLinks = $holder.find('a.booking-special-apply');

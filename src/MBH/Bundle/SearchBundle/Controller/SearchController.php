@@ -132,8 +132,8 @@ class SearchController extends Controller
      */
     public function clientAction(): Response
     {
-        $begin = new \DateTime('10.09.2018');
-        $end = new \DateTime('17.09.2018');
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight +1 days');
         $adults = 2;
         $children = 1;
         $childrenAges = [3];
@@ -151,8 +151,8 @@ class SearchController extends Controller
     {
         $initSearchConditions = new SearchConditions();
         $initSearchConditions
-            ->setBegin(new \DateTime('midnight 17-09-2018'))
-            ->setEnd(new \DateTime('midnight 24-09-2018' ))
+            ->setBegin(new \DateTime('midnight'))
+            ->setEnd(new \DateTime('midnight +1 day' ))
             ->setAdults(1)
             ->setChildren(0)
             ->setChildrenAges([]);
