@@ -54,7 +54,7 @@ class ClientPayer
     /**
      * @return mixed
      */
-    public function getPassportSerial()
+    public function getPassport_serial()
     {
         return $this->passport_serial;
     }

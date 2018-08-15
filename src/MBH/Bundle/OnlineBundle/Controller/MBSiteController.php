@@ -55,8 +55,7 @@ class MBSiteController extends BaseController
                 }
 
                 $isSuccess = true;
-                if ($clientSite->getUrl() !== $newSiteAddress
-                    || $siteConfig->getIsEnabled() !== $clientSite->getIs_enabled()) {
+                if ($clientSite->getUrl() !== $newSiteAddress) {
                     $clientSite
                         ->setUrl($newSiteAddress)
                         ->setClient($client->getLogin());

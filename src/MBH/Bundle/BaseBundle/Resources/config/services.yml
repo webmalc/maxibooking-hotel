@@ -530,3 +530,7 @@ services:
     mbh.warnings_compiler:
         class: MBH\Bundle\BaseBundle\Service\WarningsCompiler
         arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.periods_compiler']
+
+    mbh.exception_manager:
+        class: MBH\Bundle\BaseBundle\Service\ExceptionManager
+        arguments: ['@exception_notifier', '@kernel', '@security.token_storage']

@@ -571,6 +571,7 @@ class BillingApi
             $requestResult->setErrors(json_decode((string)$response->getBody(), true));
         } else {
             $this->logErrorResponse((string)$response->getBody(), $url, $requestData);
+            $requestResult->setErrors(json_decode((string)$response->getBody(), true));
         }
 
         return $requestResult;
