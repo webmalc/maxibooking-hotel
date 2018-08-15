@@ -929,6 +929,9 @@ report.room_types_table.summary.number_of_empty_rooms: Свободно
 report.room_types_table.summary.number_of_busy_rooms: Занято
 report.room_types_table.summary.number_of_guests: 'Гостей в брони'
 report.room_types_table.summary.number_of_specified_guests: 'Гостей оформлено'
+fixtures.package_source_data.channel_manager.101hotel: '101 Отель'
+fixtures.package_source_data.channel_manager.ostrovok: Островок
+fixtures.package_source_data.channel_manager.vas_hotel_dot_ru: 'ВашОтель.ру'
 fixtures.package_source_data.on_line_reservation: 'Он-лайн бронирование'
 fixtures.package_source_data.manager: Менеджер
 fixtures.package_source_data.regulat_customer: 'Постоянный клиент'

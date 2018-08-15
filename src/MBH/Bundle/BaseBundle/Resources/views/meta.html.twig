@@ -20,7 +20,7 @@
                   text: "{{ currency().text|trans }}"
 
                 },
-                justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }},
+                justLogin: {{ app.session.remove('mbh.justLogin') ? 1 : 0 }},
                 startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
                 searchBeginDate: '{{ searchBeginDate|date('d.m.Y') }}',
                 UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
@@ -95,8 +95,6 @@
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
-
-            {{ app.session.remove('mbh.justLogin') }}
 
             {% javascripts filter='uglifyjs2'
                 'assets/vendor/jquery/dist/jquery.min.js'
