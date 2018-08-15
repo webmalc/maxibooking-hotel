@@ -26,7 +26,6 @@ views.cash.jsonButtons.are_you_sure_confirm_payment: 'Подтвердить п�
 views.cash.jsonButtons.confirm: Подтвердить
 views.cash.jsonButtons.edit_record: 'Редактирование записи'
 views.cash.jsonButtons.delete_record: 'Удаление записи'
-views.cash.layout.cash: Касса
 views.cash.index.cash_balance: 'Остаток по кассе'
 views.cash.index.create: Создать
 views.cash.index.upload_all: 'Выгрузить все'

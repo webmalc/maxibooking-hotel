@@ -1,5 +1,7 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
+{% set management_icon = true %}
+{% set title =  "menu.label.analytics"|trans({}, "MBHBaseBundle")  %}
 {% set small_title = "package.index.delete_reason"|trans({}, "MBHPackageBundle")  %}
 {% set title_url = path('package_delete_reasons') %}
 {% set layout='box' %}

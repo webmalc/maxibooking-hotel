@@ -1,6 +1,5 @@
 {% extends 'MBHPriceBundle:Tariff:layout.html.twig' %}
 
-{% set small_title = "mbhpricebundle.view.tariff.index.small_title"|trans %}
 {% set layout = 'box' %}
 
 {% block content %}
@@ -8,18 +7,21 @@
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'tariff-filter-widget'} %}
         {% block content %}
             {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'mbh_filter_form'}}) }}
-            <div class="form-group">
-                <div class="input">
-                    <label><i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.tariff.index.daty'|trans }} ' data-toggle='tooltip'></i></label>
-                    {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
-                    {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+            <div class="filter-form_group-date">
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.tariff.index.daty'|trans }} ' data-toggle='tooltip'></i>
+                    <div class="filter-form_input">
+                        {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }}
+                        <span class="filter-form_separator"></span>
+                        {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+                    </div>
                 </div>
-                <div class="input">
-                    <label><i class="fa fa-chevron-down " title='{{ 'tariff.filter.status'|trans({}, 'MBHPriceBundle') }}' data-toggle='tooltip'></i></label>
+                <div class="filter-form_input">
+                    <i class="fa fa-chevron-down " title='{{ 'tariff.filter.status'|trans({}, 'MBHPriceBundle') }}' data-toggle='tooltip'></i>
                     {{ form_widget(form.isOnline) }}
                 </div>
-                <div class="input">
-                    <label><i class="fa fa-check" title="{{ 'tariff.filter.state'|trans({}, 'MBHPriceBundle') }}" data-toggle="tooltip"></i></label>
+                <div class="filter-form_input">
+                    <i class="fa fa-check" title="{{ 'tariff.filter.state'|trans({}, 'MBHPriceBundle') }}" data-toggle="tooltip"></i>
                     {{ form_widget(form.isEnabled) }}
                 </div>
                 {{ form_widget(form._token) }}

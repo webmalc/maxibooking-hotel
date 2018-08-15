@@ -9,7 +9,7 @@
             <li class="notifications-menu" id="support-info">
                 <a href="#" id="support-link" class="btn-success">
                     <i class="fa fa-question-circle fa-lg"></i>
-                    {{ 'mbhbasebundle.views.help'|trans}}
+                    <span class="navbar_item-name padding-left_5 hidden-xs">{{ 'mbhbasebundle.views.help'|trans}}</span>
                 </a>
             </li>
             {% include 'MBHBaseBundle::dashboard.html.twig' with {'dashboard_messages': dashboard_messages} %}
@@ -20,9 +20,10 @@
             {#<!-- Cash docs notifications: begin -->#}
             <li class="dropdown messages-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <i class="{{ currency()['icon'] }}"></i> {{ 'mbhbasebundle.views.kass'|trans }}
+                    <i class="{{ currency()['icon'] }}"></i>
+                    <span class="navbar_item-name padding-left_5 hidden-xs">{{ 'mbhbasebundle.views.kass'|trans }}</span>
                     <span class="label label-danger">{{ cash['total']|number_format(2) }}</span>
-                    &nbsp;<i class="fa fa-caret-down"></i>
+                    <i class="fa fa-caret-down padding-left_5"></i>
                 </a>
                 <ul class="dropdown-menu">
                     <li>
@@ -53,8 +54,10 @@
             {% if app.user and app.user.isEnabledWorkShift and currentWorkShift() %}
                 <li class="dropdown notifications-menu" id="work-shift-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                        <i class="fa fa-clock-o"></i>&nbsp;{{ 'mbhbasebundle.view.navbar.change'|trans }} <span class="label label-info">{{ currentWorkShift().getPastHours }} {{ 'mbhbasebundle.view.navbar.ch'|trans }}.</span>
-                        &nbsp;<i class="fa fa-caret-down"></i>
+                        <i class="fa fa-clock-o"></i>
+                        <span class="padding-left_5">{{ 'mbhbasebundle.view.navbar.change'|trans }}</span>
+                        <span class="label label-info padding-left_5">{{ currentWorkShift().getPastHours }} {{ 'mbhbasebundle.view.navbar.ch'|trans }}.</span>
+                        <i class="fa fa-caret-down padding-left_5"></i>
                     </a>
                     <ul class="dropdown-menu">
                         <li class="footer">
@@ -69,9 +72,10 @@
             {% if selected_hotel() and is_granted('ROLE_HOTEL_VIEW') %}
 
                 <li class="dropdown notifications-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                        <i class="fa fa-home"></i>&nbsp;{{ selected_hotel().name }}
-                        &nbsp;<i class="fa fa-caret-down"></i>
+                    <a href="#" class="dropdown-toggle navbar_tad-a_hotel" data-toggle="dropdown" aria-expanded="true">
+                        <i class="fa fa-home"></i>
+                        <span class="navbar_item-name padding-left_5">{{ selected_hotel().getFullTitleOrTitle() }}</span>
+                        <i class="fa fa-caret-down padding-left_5"></i>
                     </a>
                     <ul class="dropdown-menu">
                         <li class="header">{{ 'mbhbasebundle.view.navbar.select_hotel'|trans }}: </li>

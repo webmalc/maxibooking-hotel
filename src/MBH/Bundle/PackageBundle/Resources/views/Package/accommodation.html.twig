@@ -20,197 +20,197 @@
     <input type="hidden" id="package-room-type-name" value="{{ package.roomType.name }}">
 
     <div class="tab-content">
-        {% if package.accommodations|length %}
-            <div class="box box-default box-solid">
-                <div class="box-header with-border"><h3 class="box-title">{{ 'package.accommodation.rooms'|trans }}</h3>
-                    <div class="box-tools pull-right">
-                        <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
-                                id="mbh_bundle_packagebundle_package_accommodations"><i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <table id="accommodations-table"
-                           class="table table-actions table-striped table-hover table-actions table-condensed not-auto-datatable">
-                        <thead>
-                        <tr>
-                            <th class="td-xs"></th>
-                            <th>#</th>
-                            <th>{{ 'package.accommodation.room_type'|trans }}</th>
-                            <th class="td-md">{{ 'package.accommodation.dates'|trans }}</th>
-                            <th class="td-md">{{ 'package.accommodation.housing'|trans }}</th>
-                            <th class="td-sm">{{ 'package.accommodation.floor'|trans }}</th>
-                            <th class="td-sm">{{ 'package.accommodation.status'|trans }}</th>
-                            <th>{{ 'package.accommodation.amenities'|trans }}</th>
-                            <th class="td-sm"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for accommodation in package.accommodations %}
-                            <tr>
-                                <td><i class="fa fa-bed"></i></td>
-                                <td><strong>{{ accommodation.room }}</strong></td>
-                                <td>
-                                    {{ accommodation.room.roomType }}
-                                    {% if accommodation.note %}
-                                        <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top"
-                                           data-html="true" title="{{ accommodation.note|nl2br }}"></i>
-                                    {% endif %}
-                                </td>
-                                <td>{{ accommodation.begin|mbh_format }} - {{ accommodation.end|mbh_format }}</td>
-                                <td>{{ accommodation.room.housing }}</td>
-                                <td>{{ accommodation.room.floor }}</td>
-                                <td>
-                                    {% if accommodation.room.status is iterable and accommodation.room.status is not empty %}
-                                        {% for status in accommodation.room.status %}
-                                            {% if status.code in roomStatusIcons|keys %}
-                                                <i class="fa mbf-{{ roomStatusIcons[status.code] }}"
-                                                   title="{{ status }}" data-toggle="tooltip"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% for facility in accommodation.room.allFacilities %}
-                                        <i style="margin-left: 3px" data-toggle="tooltip"
-                                           data-title="{{ facilities[facility]|trans }}"
-                                           class="fa mbf-{{ facility }}"></i>
-                                    {% endfor %}
-                                </td>
-                                <td class="text-center">
-                                    {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                                        <div class="pull-right">
-                                            <a href="{{ path('package_accommodation_delete', { 'id': accommodation.id }) }}"
-                                               class="btn btn-danger btn-xs delete-link"
-                                               title="{{ 'package.accommodation.deleting_record' |trans }}"
-                                               data-toggle="tooltip">
-                                                <i class="fa fa-trash-o"></i>
-                                            </a>
-                                        </div>
-                                        <div class="pull-right">
-                                            <a data-accommodation-id="{{ accommodation.id }}"
-                                               data-package-id="{{ package.id }}"
-                                               data-roomType-id="{{ accommodation.room.roomType.id }}"
-                                               data-roomType-name="{{ accommodation.room.roomType.name }}"
-                                               class="btn btn-success btn-xs accommodation-edit-link"
-                                               title="{{ 'package.accommodation.edit_record'|trans }}"
-                                               style="margin-right: 5px;"
-                                               data-toggle="tooltip">
-                                                <i class="fa fa-pencil-square-o"></i>
-                                            </a>
-                                        </div>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        {% else %}
-            <div class="bg-gray color-palette alert">
-                <i class="fa fa-exclamation-circle"> </i> {{ 'package.accommodation.placement_not_specified'|trans({}, 'MBHPackageBundle') }}
-            </div>
-        {% endif %}
-
-        {% if emptyIntervalsAccommodation|length and package.deletedAt is empty %}
-
-            {% if optGroupRooms|length %}
+        <div class="tab-pane active" id="home">
+            {% if package.accommodations|length %}
                 <div class="box box-default box-solid">
-                    <div class="box-header with-border"><h3
-                                class="box-title">{{ 'package.accommodation.choose_accommodation_on_dates'|trans }}
-                            &emsp;&emsp;</h3>
-                        <div class="btn-group">
-                            {% for intervalNumber, interval in emptyIntervalsAccommodation %}
-                                {% set btnClass = app.request.attributes.get('begin')|date('Y-m-d') == interval.begin|date('Y-m-d') and app.request.attributes.get('end')|date('Y-m-d') == interval.end|date('Y-m-d') or (not app.request.attributes.get('begin') and intervalNumber == 0 ) ? 'btn-success':'btn-warning' %}
-                                <a href="{{ path('package_accommodation', {'id': package.id, 'begin': interval.begin|date('Y-m-d'), 'end': interval.end|date('Y-m-d') }) }}"
-                                   class="btn {{ btnClass }}">{{ interval.begin|mbh_format }}
-                                    — {{ interval.end|mbh_format }}
-                                </a>
-                            {% endfor %}
-                        </div>
+                    <div class="box-header with-border box-header_when-mobile"><h3 class="box-title">{{ 'package.accommodation.rooms'|trans }}</h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
-                                    id="mbh_bundle_packagebundle_package_accommodation_table"><i
-                                        class="fa fa-minus"></i>
+                                    id="mbh_bundle_packagebundle_package_accommodations"><i class="fa fa-minus"></i>
                             </button>
                         </div>
                     </div>
                     <div class="box-body">
-                        <table id="accommodation-select-table"
-                               class="table table-actions table-striped table-hover table-actions table-condensed">
+                        <table id="accommodations-table"
+                               class="table table-actions table-striped table-hover table-actions table-condensed not-auto-datatable">
                             <thead>
                             <tr>
                                 <th class="td-xs"></th>
                                 <th>#</th>
                                 <th>{{ 'package.accommodation.room_type'|trans }}</th>
+                                <th class="td-md">{{ 'package.accommodation.dates'|trans }}</th>
                                 <th class="td-md">{{ 'package.accommodation.housing'|trans }}</th>
                                 <th class="td-sm">{{ 'package.accommodation.floor'|trans }}</th>
                                 <th class="td-sm">{{ 'package.accommodation.status'|trans }}</th>
                                 <th>{{ 'package.accommodation.amenities'|trans }}</th>
-                                <th class="td-xs"></th>
+                                <th class="td-sm"></th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for roomTypeName, rooms in optGroupRooms %}
-
-                                {% for room in rooms %}
-                                    <tr class="{% if  package.accommodation and room.id == package.accommodation.accommodation.id %}info{% elseif room.status is not empty %}warning{% elseif room.roomType.id == package.roomType.id %}success{% endif %}">
-                                        <td><i class="fa fa-bed"></i></td>
-                                        <td><strong>{{ room }}</strong></td>
-                                        <td>{{ room.roomType }}</td>
-                                        <td>{{ room.housing }}</td>
-                                        <td>{{ room.floor }}</td>
-                                        <td>
-                                            {% if room.status is iterable and room.status is not empty %}
-                                                {% for status in room.status %}
-                                                    {% if status.code in roomStatusIcons|keys %}
-                                                        <i class="fa mbf-{{ roomStatusIcons[status.code] }}"
-                                                           title="{{ status }}" data-toggle="tooltip"></i>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% for facility in room.allFacilities %}
-                                                <i style="margin-left: 3px" data-toggle="tooltip"
-                                                   data-title="{{ facilities[facility]|trans }}"
-                                                   class="fa mbf-{{ facility }}"></i>
+                            {% for accommodation in package.accommodations %}
+                                <tr>
+                                    <td><i class="fa fa-bed"></i></td>
+                                    <td><strong>{{ accommodation.room }}</strong></td>
+                                    <td>
+                                        {{ accommodation.room.roomType }}
+                                        {% if accommodation.note %}
+                                            <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top"
+                                               data-html="true" title="{{ accommodation.note|nl2br }}"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ accommodation.begin|mbh_format }} - {{ accommodation.end|mbh_format }}</td>
+                                    <td>{{ accommodation.room.housing }}</td>
+                                    <td>{{ accommodation.room.floor }}</td>
+                                    <td>
+                                        {% if accommodation.room.status is iterable and accommodation.room.status is not empty %}
+                                            {% for status in accommodation.room.status %}
+                                                {% if status.code in roomStatusIcons|keys %}
+                                                    <i class="fa mbf-{{ roomStatusIcons[status.code] }}"
+                                                       title="{{ status }}" data-toggle="tooltip"></i>
+                                                {% endif %}
                                             {% endfor %}
-                                        </td>
-                                        <td class="text-center">
-                                            <a data-package-id="{{ package.id }}"
-                                               data-room-id="{{ room.id }}"
-                                               data-roomType-id="{{ room.roomType.id }}"
-                                               data-roomType-name="{{ room.roomType.name }}"
-                                               class="btn btn-success btn-xs accommodation-new-link"
-                                               title="{{ 'package.accommodation.place_in_room' |trans }}"
-                                               data-toggle="tooltip">
-                                                <i class="fa fa-check"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for facility in accommodation.room.allFacilities %}
+                                            <i style="margin-left: 3px" data-toggle="tooltip"
+                                               data-title="{{ facilities[facility]|trans }}"
+                                               class="fa mbf-{{ facility }}"></i>
+                                        {% endfor %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                                            <div class="pull-right">
+                                                <a href="{{ path('package_accommodation_delete', { 'id': accommodation.id }) }}"
+                                                   class="btn btn-danger btn-xs delete-link"
+                                                   title="{{ 'package.accommodation.deleting_record' |trans }}"
+                                                   data-toggle="tooltip">
+                                                    <i class="fa fa-trash-o"></i>
+                                                </a>
+                                            </div>
+                                            <div class="pull-right">
+                                                <a data-accommodation-id="{{ accommodation.id }}"
+                                                   data-package-id="{{ package.id }}"
+                                                   data-roomType-id="{{ accommodation.room.roomType.id }}"
+                                                   data-roomType-name="{{ accommodation.room.roomType.name }}"
+                                                   class="btn btn-success btn-xs accommodation-edit-link"
+                                                   title="{{ 'package.accommodation.edit_record'|trans }}"
+                                                   style="margin-right: 5px;"
+                                                   data-toggle="tooltip">
+                                                    <i class="fa fa-pencil-square-o"></i>
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
                             {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
+
             {% else %}
-                <div class="alert alert-warning">
-                    {{ 'package.accommodation.rooms_not_found'|trans }}.
+                <div class="bg-gray color-palette alert">
+                    <i class="fa fa-exclamation-circle"> </i> {{ 'package.accommodation.placement_not_specified'|trans({}, 'MBHPackageBundle') }}
                 </div>
             {% endif %}
-        {% endif %}
 
-        {{ form_start(form, {'action': path('package_accommodation', {'id': package.id}),  'attr': {'class': 'form-horizontal'}}) }}
-        {{ form_widget(form) }}
-        {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_ACCOMMODATION'} %}
-        {{ form_end(form) }}
+            {% if emptyIntervalsAccommodation|length %}
 
-        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs, 'delete_route': 'package_delete' } %}
-    </div>
+                {% if optGroupRooms|length %}
+                    <div class="box box-default box-solid">
+                        <div class="box-header with-border box-header_when-mobile">
+                            <h3 class="box-title">{{ 'package.accommodation.choose_accommodation_on_dates'|trans }}&emsp;&emsp;</h3>
+                            <div class="btn-group">
+                                {% for intervalNumber, interval in emptyIntervalsAccommodation %}
+                                    {% set btnClass = app.request.attributes.get('begin')|date('Y-m-d') == interval.begin|date('Y-m-d') and app.request.attributes.get('end')|date('Y-m-d') == interval.end|date('Y-m-d') or (not app.request.attributes.get('begin') and intervalNumber == 0 ) ? 'btn-success':'btn-warning' %}
+                                    <a href="{{ path('package_accommodation', {'id': package.id, 'begin': interval.begin|date('Y-m-d'), 'end': interval.end|date('Y-m-d') }) }}"
+                                       class="btn {{ btnClass }}">{{ interval.begin|mbh_format }}
+                                        — {{ interval.end|mbh_format }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            <div class="box-tools pull-right">
+                                <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
+                                        id="mbh_bundle_packagebundle_package_accommodation_table"><i
+                                            class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table id="accommodation-select-table"
+                                   class="table table-actions table-striped table-hover table-actions table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="td-xs"></th>
+                                    <th>#</th>
+                                    <th>{{ 'package.accommodation.room_type'|trans }}</th>
+                                    <th class="td-md">{{ 'package.accommodation.housing'|trans }}</th>
+                                    <th class="td-sm">{{ 'package.accommodation.floor'|trans }}</th>
+                                    <th class="td-sm">{{ 'package.accommodation.status'|trans }}</th>
+                                    <th>{{ 'package.accommodation.amenities'|trans }}</th>
+                                    <th class="td-xs"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for roomTypeName, rooms in optGroupRooms %}
+
+                                    {% for room in rooms %}
+                                        <tr class="{% if  package.accommodation and room.id == package.accommodation.accommodation.id %}info{% elseif room.status is not empty %}warning{% elseif room.roomType.id == package.roomType.id %}success{% endif %}">
+                                            <td><i class="fa fa-bed"></i></td>
+                                            <td><strong>{{ room }}</strong></td>
+                                            <td>{{ room.roomType }}</td>
+                                            <td>{{ room.housing }}</td>
+                                            <td>{{ room.floor }}</td>
+                                            <td>
+                                                {% if room.status is iterable and room.status is not empty %}
+                                                    {% for status in room.status %}
+                                                        {% if status.code in roomStatusIcons|keys %}
+                                                            <i class="fa mbf-{{ roomStatusIcons[status.code] }}"
+                                                               title="{{ status }}" data-toggle="tooltip"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% for facility in room.allFacilities %}
+                                                    <i style="margin-left: 3px" data-toggle="tooltip"
+                                                       data-title="{{ facilities[facility]|trans }}"
+                                                       class="fa mbf-{{ facility }}"></i>
+                                                {% endfor %}
+                                            </td>
+                                            <td class="text-center">
+                                                <a data-package-id="{{ package.id }}"
+                                                   data-room-id="{{ room.id }}"
+                                                   data-roomType-id="{{ room.roomType.id }}"
+                                                   data-roomType-name="{{ room.roomType.name }}"
+                                                   class="btn btn-success btn-xs accommodation-new-link"
+                                                   title="{{ 'package.accommodation.place_in_room' |trans }}"
+                                                   data-toggle="tooltip">
+                                                    <i class="fa fa-check"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        {{ 'package.accommodation.rooms_not_found'|trans }}.
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            {{ form_start(form, {'action': path('package_accommodation', {'id': package.id}),  'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_ACCOMMODATION'} %}
+            {{ form_end(form) }}
+
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs, 'delete_route': 'package_delete' } %}
+        </div>
     </div>
 
     <script>

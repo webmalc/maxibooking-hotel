@@ -1,0 +1,15 @@
+{% block scripts %}
+    <script src="{{ asset('assets/vendor/codemirror/lib/codemirror.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/css/css.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/twig/twig.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/xml/xml.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/javascript/javascript.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.js') }}"></script>
+
+    {% javascripts filter='uglifyjs2'
+        '@MBHOnlineBundle/Resources/public/js/common_for_form_and_payment_form/*'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}

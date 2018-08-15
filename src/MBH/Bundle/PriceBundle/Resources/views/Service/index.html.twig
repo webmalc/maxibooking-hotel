@@ -1,6 +1,5 @@
 {% extends 'MBHPriceBundle:Service:layout.html.twig' %}
 
-{% set small_title = "mbhpricebundle.view.service.index.small_title"|trans %}
 {% set layout = "tabs" %}
 
 {% block content %}
@@ -26,7 +25,7 @@
     <!-- Tabs content -->
     <div class="tab-content">
         {% for entity in entities %}
-            <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
+            <div class="tab-pane{% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %} active{% endif %}" id="{{entity.id}}">
 
                 <!-- Tab actions -->
                 <div class="btn-list spacer-bottom text-right">
@@ -89,27 +88,24 @@
                 {% else %}
                     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'mbhpricebundle.view.service.index.no_services_in_this_category'|trans}}. <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}">{{ 'mbhpricebundle.view.service.index.add_service'|trans}}?</a></div>
                 {% endif %}
-
-                <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
-                    <div class="container-fluid">
-                        <ul class="nav navbar-nav">
-                            {% if is_granted('ROLE_SERVICE_EDIT') %}
-                                <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'mbhpricebundle.view.service.index.save_changes'|trans}}</button></li>
-                            {% endif %}
-                            {% if is_granted('ROLE_SERVICE_CATEGORY_NEW') %}
-                                <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> {{ 'mbhpricebundle.view.service.index.add_new_service'|trans}}</button></li>
-                            {% endif %}
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li id='list-export-add-{{ loop.index }}'></li>
-                        </ul>
-                    </div>
-                </div>
             </div>
         {% endfor %}
+        <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    {% if is_granted('ROLE_SERVICE_EDIT') %}
+                        <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'mbhpricebundle.view.service.index.save_changes'|trans}}</button></li>
+                    {% endif %}
+                    {% if is_granted('ROLE_SERVICE_CATEGORY_NEW') %}
+                        <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> {{ 'mbhpricebundle.view.service.index.add_new_service'|trans}}</button></li>
+                    {% endif %}
+                </ul>
+                {#<ul class="nav navbar-nav navbar-right">#}
+                {#<li id='list-export-add-{{ loop.index }}'></li>#}
+                {#</ul>#}
+            </div>
+        </div>
     </div>
-
-
     </form>
 {% endblock %} 
 

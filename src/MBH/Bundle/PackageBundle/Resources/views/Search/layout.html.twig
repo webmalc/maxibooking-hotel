@@ -2,3 +2,12 @@
 
 {% set title = "search.layout.room_search"|trans({}, "MBHPackageBundle") %}
 {% set title_url = path('package_search') %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/search/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
+{% endblock %}

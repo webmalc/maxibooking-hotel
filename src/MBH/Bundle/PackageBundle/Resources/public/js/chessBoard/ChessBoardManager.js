@@ -870,7 +870,7 @@ var ChessBoardManager = /** @class */ (function () {
                                 self.actionManager.callUpdatePackageModal($(this), intervalData_1, changedSide, isDivide);
                             }
                         }
-                    }
+                    },
                 });
             }
         });
@@ -1213,7 +1213,7 @@ var ChessBoardManager = /** @class */ (function () {
                         snap: 'calendarRow',
                         start: function () {
                             isDragged = true;
-                        }
+                        },
                     }).on('mousedown touchstart', function (event) {
                         if (self.isIntervalAvailable(packageData, event)) {
                             relocatablePackage = this;
@@ -1385,19 +1385,21 @@ var ChessBoardManager = /** @class */ (function () {
     };
     ChessBoardManager.prototype.updateChessboardDataWithoutActions = function () {
         var _this = this;
-        var time = 0;
-        $(document).on('click', function () {
-            time = 0;
-        });
-        setInterval(function () {
-            time++;
-            if (time > 30) {
-                ActionManager.showLoadingIndicator();
-                _this.dataManager.updatePackagesData();
-                ActionManager.hideLoadingIndicator();
-                time = 0;
-            }
-        }, 1000);
+        if (!isMobileDevice()) {
+            var time_1 = 0;
+            $(document).on('click', function () {
+                time_1 = 0;
+            });
+            setInterval(function () {
+                time_1++;
+                if (time_1 > 30) {
+                    ActionManager.showLoadingIndicator();
+                    _this.dataManager.updatePackagesData();
+                    ActionManager.hideLoadingIndicator();
+                    time_1 = 0;
+                }
+            }, 1000);
+        }
     };
     ChessBoardManager.getClickEventType = function () {
         return isMobileDevice() ? 'touchstart' : 'click';
@@ -1430,4 +1432,3 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.LATE_CHECKOUT_EARLY_CHECKIN_COLOR = '#65619b';
     return ChessBoardManager;
 }());
-//# sourceMappingURL=ChessBoardManager.js.map

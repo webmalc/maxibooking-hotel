@@ -67,11 +67,14 @@ class ActionManager {
 
         let editBody = $('#package-new-results');
         editBody.html(searchData);
+        // console.log(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
         editBody.find('thead th:nth-child(4)').remove();
         editBody.find('thead th').css('text-align', 'center');
         editBody.find('select').not("s[tourist]").select2();
+
+
 
         let editModal = $('#package-edit-modal');
 
@@ -102,6 +105,16 @@ class ActionManager {
         editModal.on('shown.bs.modal', function () {
             $('.findGuest').mbhGuestSelectPlugin();
         });
+
+        let tableResult = editBody.find('#package-search-special-wrapper');
+        /** TODO сделать без таймаута*/
+        setTimeout(function () {
+            tableResult.readmore({
+                moreLink: '<div class="more-link"><a href="#">'+tableResult.attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
+                lessLink: '<div class="less-link"><a href="#">'+tableResult.attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
+                collapsedHeight: isMobileDevice() ? 0 : 100
+              });
+        },400);
     }
 
     protected static showResultPrices($row) {

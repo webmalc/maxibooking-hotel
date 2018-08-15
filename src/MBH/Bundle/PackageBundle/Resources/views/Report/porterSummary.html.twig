@@ -1,20 +1,20 @@
 <div class="text-center bg-gray color-palette alert package-summary">
     <span class="package-summary-row">
-        <b>{{ 'report.porter_summary.number_of_packages'|trans}}:</b> {{ summary.total }}
+        <b>{{ 'report.porter_summary.number_of_packages'|trans}}:</b><span> {{ summary.total }}</span>
     </span>
     <span class="package-summary-row">
-        <b>{{ 'report.porter_summary.number_of_nights'|trans}}:</b> {{ summary.nights }}
+        <b>{{ 'report.porter_summary.number_of_nights'|trans}}:</b><span> {{ summary.nights }}</span>
     </span>
     <span class="package-summary-row">
-        <b>{{ 'report.porter_summary.number_of_guests'|trans}}:</b> {{ summary.guests }}
+        <b>{{ 'report.porter_summary.number_of_guests'|trans}}:</b><span> {{ summary.guests }}</span>
     </span>
     <span class="package-summary-row">
-        <b>{{ 'report.porter_summary.sum'|trans}}:</b> {{ summary.price|number_format(2) }}
+        <b>{{ 'report.porter_summary.sum'|trans}}:</b><span> {{ summary.price|number_format(2) }}</span>
     </span>
     <span class="package-summary-row">
-        <b>{{ 'report.porter_summary.payed'|trans}}:</b> {{ summary.paid|number_format(2) }}
+        <b>{{ 'report.porter_summary.payed'|trans}}:</b><span> {{ summary.paid|number_format(2) }}</span>
     </span>
     <span class="package-summary-row">
-        <b>{{ 'report.porter_summary.debt'|trans}}:</b> {{ summary.debt|number_format(2) }}
+        <b>{{ 'report.porter_summary.debt'|trans}}:</b><span> {{ summary.debt|number_format(2) }}</span>
     </span>
 </div>

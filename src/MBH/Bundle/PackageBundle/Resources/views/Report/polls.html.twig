@@ -1,6 +1,6 @@
 {% extends "MBHPackageBundle::layout.html.twig" %}
 
-{% set title = 'report.layout.title'|trans({}, 'MBHPackageBundle') %}
+{% set title = 'analytics.layout.report'|trans({}, 'MBHPackageBundle') %}
 {% set small_title = 'report.poll.small_title'|trans({}, 'MBHPackageBundle') %}
 {% set title_url = path('report_polls') %}
 {% set layout = 'box' %}
@@ -9,16 +9,18 @@
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'polls-report-filter-widget'} %}
         <form id="polls-report-filter" action="{{ path('report_polls' ) }}" class="form-inline filter-form" role="form">
-            <div class="input">
-                <i class="fa fa-calendar" title='{{ 'report.polls'|trans}}' data-toggle='tooltip'></i>&nbsp
-                <input type="text" name="begin" id="polls-report-filter-begin" class="datepicker polls-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y')}}">
-            </div>
-            <div class="input">
-                — &nbsp
-                <input type="text" name="end" id="polls-report-filter-end" class="datepicker polls-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
+            <div class="filter-form_group-date">
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title='{{ 'report.polls'|trans}}' data-toggle='tooltip'></i>
+                    <div class="filter-form_input">
+                        <input type="text" name="begin" id="polls-report-filter-begin" class="datepicker polls-report-filter begin-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y')}}">
+                        <span class="filter-form_separator"></span>
+                        <input type="text" name="end" id="polls-report-filter-end" class="datepicker polls-report-filter end-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
+                    </div>
+                </div>
             </div>
 
-            <div class="input">
+            <div class="filter-form_input">
                 <button class="btn btn-primary" type="submit">{{ 'views.report.polls.select_button.title'|trans({}, 'MBHPackageBundle')}}</button>
             </div>
         </form>
