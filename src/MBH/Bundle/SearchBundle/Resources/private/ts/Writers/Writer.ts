@@ -325,10 +325,12 @@ class Writer {
             allowClear: false,
             width: 'element'
         }).on('change.select2', function () {
-            $(this).closest('td').siblings('td').find('span.special-price').html($(this).val());
+            const html: any = $(this).val();
+            $(this).closest('td').siblings('td').find('span.special-price').html(html);
         });
         $.each($specialPrice, function () {
-            $(this).html($(this).closest('td').siblings('td').find('select.search-special-tourist-select').val());
+            const html: any = $(this).closest('td').siblings('td').find('select.search-special-tourist-select').val();
+            $(this).html(html);
         });
         $specialLinks.on('click', function (event) {
             event.preventDefault();
