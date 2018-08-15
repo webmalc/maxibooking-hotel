@@ -15,18 +15,18 @@
                 display: inline-block;
                 margin-left: 5px;
             }
-            @-moz-document url-prefix() {
-                #mbh-form-adults-children-wrapper {
-                    display:ruby-text;
-                    padding-bottom: 5px;
-                }
-                .children-ages {
-                    display: inline-table;
-                }
-            }
-            #mbh-form-adults-children-wrapper div.mbh-form-row {
-                float:none;
-            }
+            /*@-moz-document url-prefix() {*/
+                /*#mbh-form-adults-children-wrapper {*/
+                    /*display:ruby-text;*/
+                    /*padding-bottom: 5px;*/
+                /*}*/
+                /*.children-ages {*/
+                    /*display: inline-table;*/
+                /*}*/
+            /*}*/
+            /*#mbh-form-adults-children-wrapper div.mbh-form-row {*/
+                /*float:none;*/
+            /*}*/
             #mbh-form-wrapper {
                 text-align: center;
             }
@@ -98,7 +98,7 @@
                 <label for="mbh-form-children"> {{ 'views.api.form.children'|trans({}, 'MBHOnlineBundle') }}</label>
                 <input type="number" id="mbh-form-children" class="form-control input-sm" name="children" value="0" min="0">
             </div>
-            <div class="mbh-form-row children-ages">
+            <div class="mbh-form-row form-group children-ages" style="display: none;">
                 <label for="children-age-1"> {{ 'views.api.form.children_ages.label'|trans({}, 'MBHOnlineBundle') }}</label>
                 <select class="children-age-form form-control input-sm" id="children-age-1" name="children-ages[]">
                     {% for childAge in 0..18 %}
@@ -107,11 +107,13 @@
                 </select>
             </div>
         </div>
-        <div id="mbh-form-adults-children-clear"></div>
+        {% if not formConfig.forMbSite %}
+            <div id="mbh-form-adults-children-clear"></div>
+        {% endif %}
     {% endif %}
 
     <div class="mbh-form-row" id="mbh-form-submit-wrapper">
-        <button type="submit" class="btn btn-primary btn-sm" id="mbh-form-submit">{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}</button>
+        <button type="submit" class="btn btn-primary btn-sm" id="mbh-form-submit">{% if not formConfig.forMbSite %}{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}{% endif %}</button>
     </div>
 
     <div id="mbh-logo-link-wrapper">

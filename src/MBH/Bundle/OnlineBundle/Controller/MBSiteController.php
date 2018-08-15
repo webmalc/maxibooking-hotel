@@ -90,7 +90,7 @@ class MBSiteController extends BaseController
     }
 
     /**
-     * @Route("hotel_settings/{id}", name="site_hotel_settings")
+     * @Route("/hotel_settings/{id}", name="site_hotel_settings")
      * @Template()
      * @param Hotel $hotel
      * @return array
