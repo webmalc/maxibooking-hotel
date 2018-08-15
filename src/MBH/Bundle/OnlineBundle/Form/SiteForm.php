@@ -54,7 +54,7 @@ class SiteForm extends AbstractType
         //ФОРМА ОТРИСОВЫВАЕТСЯ В ШАБЛОНЕ ВРУЧНУЮ!
         $builder
             ->add('siteDomain', TextType::class, [
-                'label' => 'Адрес',
+                'label' => 'site_form.web_address.label',
                 'required' => true,
                 'addonText' => SiteManager::SITE_DOMAIN,
                 'preAddonText' => SiteManager::SITE_PROTOCOL

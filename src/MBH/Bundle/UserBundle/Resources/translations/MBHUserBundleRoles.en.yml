@@ -113,6 +113,11 @@ ROLE_ONLINE_FORM_VIEW: 'View web form'
 ROLE_ONLINE_FORM_EDIT: 'Edit web form'
 ROLE_ONLINE_FORM_NEW: 'Add web form'
 ROLE_ONLINE_FORM_DELETE: 'Delete web form'
+ROLE_ONLINE_PAYMENT_FORM: 'Payment form'
+ROLE_ONLINE_PAYMENT_FORM_VIEW: 'View payment form'
+ROLE_ONLINE_PAYMENT_FORM_NEW: 'Add payment form'
+ROLE_ONLINE_PAYMENT_FORM_EDIT: 'Edit payment form'
+ROLE_ONLINE_PAYMENT_FORM_DELETE: 'Delete payment form'
 ROLE_ANALYTICS: Analytics
 ROLE_PACKAGE_SERVICES: 'Reservation services'
 ROLE_PACKAGE_ACCOMMODATION: Accommodation
