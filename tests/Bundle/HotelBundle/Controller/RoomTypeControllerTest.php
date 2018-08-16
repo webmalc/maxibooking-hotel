@@ -471,7 +471,7 @@ class RoomTypeControllerTest extends WebTestCase
             'change fullTitle on default, add title'                =>
                 [
                     [
-                        'forUrl'  => self::ROOM_TYPE_NEW_FULL_TITLE,
+                        'forUrl'  => $test_1,
                         'tabName' => $test_2,
                         'form'    => [
                             self::FORM_NAME_HOTEL_ROOM_TYPE_TYPE . '[fullTitle]' => self::ROOM_TYPE_NEW_FULL_TITLE,
