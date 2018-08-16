@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "es2015",
+    "moduleResolution": "node",
+    "target": "es5",
+    "sourceMap": true,
+    "outDir": "/build/",
+    "strict": true,
+    "lib": ["es2015", "es2015.iterable", "es2016", "dom"],
+    "experimentalDecorators": true,
+    "types": ["node", "jquery"]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

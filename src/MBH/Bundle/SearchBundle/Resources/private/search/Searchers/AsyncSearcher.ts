@@ -1,5 +1,8 @@
-///<reference path="Searcher.ts"/>
-class AsyncSearcher extends Searcher {
+declare let Routing: Routing;
+import {Writer} from "../Writer/Writer";
+import {Searcher} from "./Searcher";
+
+export class AsyncSearcher extends Searcher {
 
     private readonly requestThreshold: number = 25;
 

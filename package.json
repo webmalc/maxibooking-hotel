@@ -1,0 +1,24 @@
+{
+  "devDependencies": {
+    "@symfony/webpack-encore": "^0.20.1",
+    "@types/accounting": "^0.4.1",
+    "@types/bootstrap": "^4.1.2",
+    "@types/bootstrap-switch": "^0.0.31",
+    "@types/jquery": "^3.3.6",
+    "@types/select2": "^4.0.47",
+    "accounting": "^0.4.1",
+    "jquery": "^3.3.1",
+    "ts-loader": "3.5.0",
+    "typescript": "^3.0.1",
+    "vue": "^2.5.17",
+    "vue-class-component": "^6.2.0",
+    "vue-loader": "^15.3.0",
+    "vue-template-compiler": "^2.5.17",
+    "vuejs-loader": "^2.1.0",
+    "webpack-notifier": "^1.6.0"
+  },
+  "dependencies": {
+    "less-loader": "^4.1.0",
+    "moment": "^2.22.2"
+  }
+}

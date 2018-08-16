@@ -1,4 +1,8 @@
-class SyncSearcher extends Searcher {
+declare let Routing: Routing;
+import {Writer} from "../Writer/Writer";
+import {Searcher} from "./Searcher";
+
+export class SyncSearcher extends Searcher {
 
     public constructor(buttonId: string, writer: Writer, dataReceiver: DataReceiverInterface) {
         super(buttonId, writer, dataReceiver);

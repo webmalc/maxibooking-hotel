@@ -10,6 +10,9 @@ scripts/deploy_to_test.sh
 /var/clients/
 /web/az/
 
+/build/
+/web/build/
+
 1C/
 nohup.out
 

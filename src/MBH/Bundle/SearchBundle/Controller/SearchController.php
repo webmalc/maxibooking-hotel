@@ -145,6 +145,7 @@ class SearchController extends Controller
     }
 
     /**
+     * Uses direct from twig
      * @return Response
      */
     public function searcherAction(): Response
@@ -159,6 +160,14 @@ class SearchController extends Controller
         $form = $this->createForm(SearchConditionsType::class, $initSearchConditions);
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $form->createView()]);
+    }
+
+    /**
+     * @Route("/front")
+     */
+    public function newFrontAction(): Response
+    {
+        return $this->render('@MBHSearch/Search/front.html.twig');
     }
 
 }

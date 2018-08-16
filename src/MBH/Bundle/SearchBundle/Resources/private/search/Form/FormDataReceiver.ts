@@ -1,6 +1,4 @@
-///<reference path="../../../../../../../../node_modules/@types/bootstrap-switch/index.d.ts"/>
-
-class FormDataReceiver implements DataReceiverInterface {
+export class FormDataReceiver implements DataReceiverInterface {
     private readonly $form: JQuery;
     private readonly formName: string;
     private $children: JQuery;
@@ -19,6 +17,28 @@ class FormDataReceiver implements DataReceiverInterface {
         this.checkChildrenAges();
     }
 
+    public getSearchConditionsData(): SearchDataType {
+        let data: SearchDataType;
+        data = {
+            begin: String(this.getFormFieldValue('begin')),
+            end: String(this.getFormFieldValue('end')),
+            adults: Number(this.getFormFieldValue('adults')),
+            additionalBegin: Number(this.getFormFieldValue('additionalBegin')),
+            additionalEnd: Number(this.getFormFieldValue('additionalEnd')),
+            tariffs: this.getFormFieldValue('tariffs'),
+            roomTypes: this.getFormFieldValue('roomTypes'),
+            hotels: this.getFormFieldValue('hotels'),
+            children: Number(this.getFormFieldValue('children')),
+            childrenAges: this.getChildrenAges(),
+            order: Number(this.getFormFieldValue('order')),
+            isForceBooking: this.getFormField('isForceBooking').bootstrapSwitch('state'),
+            isSpecialStrict: this.getFormField('isSpecialStrict').bootstrapSwitch('state'),
+        };
+
+        return data;
+    }
+
+
     private bindHandlers(): void {
         this.$children.on('input', (e) => {
             this.checkMaxValue($(e.target));
@@ -29,35 +49,6 @@ class FormDataReceiver implements DataReceiverInterface {
         // this.$addTouristButton.on('click', (e) => {
         //     this.initGuestModal(e);
         // });
-    }
-
-    private initGuestModal(e): void {
-        let guestModal = $('#add-guest-modal'),
-            form = guestModal.find('form'),
-            button = $('#add-guest-modal-submit'),
-            errors = $('#add-guest-modal-errors');
-
-        e.preventDefault();
-        guestModal.modal('show');
-        button.click(function () {
-            errors.hide();
-            $.post(form.prop('action'), form.serialize(), function (data) {
-                if (data.error) {
-                    errors.html(data.text).show();
-                } else {
-                    $('.findGuest').append($("<option/>", {
-                        value: data.id,
-                        text: data.text
-                    })).val(data.id).trigger('change');
-                    form.trigger('reset');
-                    //form.find('select').select2('data', null);
-                    guestModal.modal('hide');
-                    form.find('select').select2('data');
-                    //form.find('input').select2('data', null);
-                    return 1;
-                }
-            });
-        });
     }
 
     private checkMaxValue($childrenField): void {
@@ -99,6 +90,7 @@ class FormDataReceiver implements DataReceiverInterface {
         }
     }
 
+
     private addAges(children: number, ages: number): void {
         for (let index = ages; index < children; index++) {
             let ageHTML = this.agesTemplate.replace(/__name__/g, String(index));
@@ -106,34 +98,12 @@ class FormDataReceiver implements DataReceiverInterface {
         }
     }
 
-
     private getChildrenAgesIndex(): number {
         return this.$childrenAgeHolder.find(':input').length;
     }
 
     private getChildrenCount(): number {
         return Number(this.$children.val());
-    }
-
-    public getSearchConditionsData(): SearchDataType {
-        let data: SearchDataType;
-        data = {
-            begin: String(this.getFormFieldValue('begin')),
-            end: String(this.getFormFieldValue('end')),
-            adults: Number(this.getFormFieldValue('adults')),
-            additionalBegin: Number(this.getFormFieldValue('additionalBegin')),
-            additionalEnd: Number(this.getFormFieldValue('additionalEnd')),
-            tariffs: this.getFormFieldValue('tariffs'),
-            roomTypes: this.getFormFieldValue('roomTypes'),
-            hotels: this.getFormFieldValue('hotels'),
-            children: Number(this.getFormFieldValue('children')),
-            childrenAges: this.getChildrenAges(),
-            order: Number(this.getFormFieldValue('order')),
-            isForceBooking: this.getFormField('isForceBooking').bootstrapSwitch('state'),
-            isSpecialStrict: this.getFormField('isSpecialStrict').bootstrapSwitch('state'),
-        };
-
-        return data;
     }
 
     private getFormField(fieldName: string): JQuery<HTMLElement> {
@@ -147,7 +117,6 @@ class FormDataReceiver implements DataReceiverInterface {
     }
 
 
-
     private getChildrenAges() {
         let data: number[] = [];
         $.each(this.$childrenAgeHolder.find('select'), function () {
@@ -156,5 +125,35 @@ class FormDataReceiver implements DataReceiverInterface {
 
         return data;
     }
+
+    private initGuestModal(e): void {
+        let guestModal = $('#add-guest-modal'),
+            form = guestModal.find('form'),
+            button = $('#add-guest-modal-submit'),
+            errors = $('#add-guest-modal-errors');
+
+        e.preventDefault();
+        guestModal.modal('show');
+        button.click(function () {
+            errors.hide();
+            $.post(form.prop('action'), form.serialize(), function (data) {
+                if (data.error) {
+                    errors.html(data.text).show();
+                } else {
+                    $('.findGuest').append($("<option/>", {
+                        value: data.id,
+                        text: data.text
+                    })).val(data.id).trigger('change');
+                    form.trigger('reset');
+                    //form.find('select').select2('data', null);
+                    guestModal.modal('hide');
+                    form.find('select').select2('data');
+                    //form.find('input').select2('data', null);
+                    return 1;
+                }
+            });
+        });
+    }
+
 
 }

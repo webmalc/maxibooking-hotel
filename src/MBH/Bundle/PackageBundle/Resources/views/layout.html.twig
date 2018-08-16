@@ -12,12 +12,7 @@
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {# New search#}
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/locale/ru.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/accounting@0.4.1/accounting.min.js"></script>
-    <script src="{{ asset('bundles/mbhsearch/js/search.js') }}"></script>
+    <script src="{{ asset('build/search.js') }}"></script>
     {# end new search #}
     {% include '@MBHPackage/Report/graphModal.html.twig' %}
 {% endblock %}

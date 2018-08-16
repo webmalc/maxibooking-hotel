@@ -1,6 +1,8 @@
+import {Writer} from "../Writer/Writer";
+
 declare let Routing: Routing;
 
-abstract class Searcher {
+export abstract class Searcher {
     private button: JQuery;
     private writer: Writer;
     private searchDataReceiver: DataReceiverInterface;
@@ -15,7 +17,7 @@ abstract class Searcher {
     private bindHandlers(): void {
         this.button.on('click', event => {
             event.preventDefault();
-            this.doSpecialSearch();
+            /*this.doSpecialSearch();*/
             this.doSearch();
         })
     }
