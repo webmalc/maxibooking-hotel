@@ -1852,12 +1852,12 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                 throw new \InvalidArgumentException('It\'s required uploader helper and current domain for serialization of the full information about the hotel!');
             }
 
-            if (!is_null($this->latitude)) {
-                $comprehensiveData['latitude'] = $this->latitude;
-            }
-            if (!is_null($this->longitude)) {
-                $comprehensiveData['longitude'] = $this->longitude;
-            }
+//            if (!is_null($this->latitude)) {
+//                $comprehensiveData['latitude'] = $this->latitude;
+//            }
+//            if (!is_null($this->longitude)) {
+//                $comprehensiveData['longitude'] = $this->longitude;
+//            }
             if (!empty($this->street)) {
                 $comprehensiveData['street'] = $this->street;
             }
