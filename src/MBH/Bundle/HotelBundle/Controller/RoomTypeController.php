@@ -209,7 +209,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if ($form->isValid()) {
             if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
                 $this->get('mbh.form_data_handler')
-                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
+                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
             }
 
             $this->dm->persist($entity);
