@@ -16,7 +16,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 {
     const EXPEDIA_MIN_STAY = 1;
     const EXPEDIA_MAX_STAY = 28;
-    const MAX_NUMBER_OF_UPDATES = 3000;
+    const MAX_NUMBER_OF_UPDATES = 5000;
     const AVAILABILITY_AND_RATES_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/AR/2011/06';
     const BOOKING_RETRIEVAL_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BR/2014/01';
     const CONFIRM_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BC/2007/09';
@@ -338,7 +338,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     {
         $differenceInDays = $this->container->get('mbh.helper')->getDifferenceInDaysWithSign($begin, $end) + 1;
 
-        return $numberOfUpdates * $differenceInDays + $differenceInDays;
+        return $numberOfUpdates * $differenceInDays;
     }
 
     /**
