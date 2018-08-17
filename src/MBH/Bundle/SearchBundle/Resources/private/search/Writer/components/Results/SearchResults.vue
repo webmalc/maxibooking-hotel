@@ -12,27 +12,22 @@
             <th class="td-md"></th>
         </tr>
         </thead>
-        <!--<tbody is="RoomType" v-for="(data, key) in rawData" :roomType="data.roomType" :results="data.results"-->
-               <!--:key="key">-->
-        <!--</tbody>-->
+        <tbody is="RoomType" v-for="(data, key) in rawData" :roomType="data.roomType" :results="data.results"
+               :key="key">
+        </tbody>
     </table>
 </template>
 
-<script type="ts">
-    import Vue from "vue";
-    // import RoomType from './RoomType'
+<script lang="ts">
+    import Vue from 'vue';
+    import RoomType from './RoomType'
 
     export default Vue.extend({
-        name: "SearchResults",
+        name: 'SearchResults',
         props: ['rawData'],
-        methods: {
-            aa: function ()   {
-                const a: string = 'string';
-            }
+        components: {
+            RoomType
         }
-        // components: {
-        //     RoomType
-        // }
     })
 </script>
 

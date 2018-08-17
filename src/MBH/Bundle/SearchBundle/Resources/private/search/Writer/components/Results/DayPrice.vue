@@ -7,8 +7,13 @@
     </small>
 </template>
 
-<script type="ts">
-    export default {
+
+
+<script lang="ts">
+
+    import Vue from 'vue';
+
+    export default Vue.extend({
         name: "DayPrice",
         props: ['dayPrices'],
         computed: {
@@ -28,7 +33,7 @@
                 }
             }
         }
-    }
+    });
 </script>
 
 <style scoped>

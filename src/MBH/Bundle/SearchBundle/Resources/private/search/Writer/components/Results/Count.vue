@@ -1,13 +1,15 @@
 <template>
     <td>
-        <select v-model="selected" @change="$emit('quantity', selected)" class="form-control quantity-select input-xxs">
+        <select v-if="count > 0" v-model="selected" @change="$emit('quantity', selected)" class="form-control quantity-select input-xxs">
             <option v-for="value in (1, count)" :value="value">{{ value }}</option>
         </select>
     </td>
 </template>
 
-<script>
-    export default {
+<script lang="ts">
+    import Vue from "vue";
+
+    export default Vue.extend({
         name: "Count",
         props: ['count', 'quantity'],
         mounted: function () {
@@ -18,7 +20,7 @@
                 selected: this.quantity
             }
         }
-    }
+    });
 </script>
 
 <style scoped>

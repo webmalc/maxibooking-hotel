@@ -47,7 +47,7 @@ export abstract class Searcher {
 
     protected onStopSearch(requestResults: any): void {
         console.log(requestResults);
-        let message;
+        let message: any;
         if(requestResults.status === 'error'){
             message = 'error';
         }
@@ -58,7 +58,7 @@ export abstract class Searcher {
         this.writer.showStopSearch(message);
     }
 
-    protected drawResults(data): void {
+    protected drawResults(data: any): void {
         const searchResults: SearchResultType[] = data.results;
         this.writer.drawResults(searchResults);
     }
@@ -66,7 +66,7 @@ export abstract class Searcher {
         return  this.searchDataReceiver.getSearchConditionsData();
     }
 
-    protected drawSpecialResults(data): void {
+    protected drawSpecialResults(data: any): void {
         this.writer.drawSpecialResults(data);
     }
 

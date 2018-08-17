@@ -1,4 +1,3 @@
-
 interface SearchDataType {
     begin: string,
     end: string,

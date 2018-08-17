@@ -7,7 +7,8 @@
 </template>
 
 <script>
-    export default {
+    import Vue from "vue";
+    export default Vue.extend({
         name: "Prices",
         props: ['prices', 'defaultPriceIndex'],
         data: function () {
@@ -15,7 +16,7 @@
                 selected: this.defaultPriceIndex
             }
         }
-    }
+    })
 </script>
 
 <style scoped>

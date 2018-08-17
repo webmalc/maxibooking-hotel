@@ -19,7 +19,7 @@ export class SyncSearcher extends Searcher {
                 dataType: "json",
                 data: JSON.stringify(this.getSearchConditions())
             });
-            const data = await ajax;
+            const data: object = await ajax;
             this.drawResults(data);
             this.onStopSearch({status: 'success', message: data});
         } catch (e) {

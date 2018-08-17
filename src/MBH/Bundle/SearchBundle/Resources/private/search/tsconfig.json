@@ -5,10 +5,10 @@
     "target": "es5",
     "sourceMap": true,
     "outDir": "/build/",
-    "strict": true,
+    "strict": false,
     "lib": ["es2015", "es2015.iterable", "es2016", "dom"],
     "experimentalDecorators": true,
-    "types": ["node", "jquery"]
+    "types": ["node", "jquery", "select2", "bootstrap"]
   },
   "exclude": [
     "node_modules"

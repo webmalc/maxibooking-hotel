@@ -7,11 +7,13 @@
     </td>
 </template>
 
-<script>
-    export default {
+<script lang="ts">
+    import Vue from "vue";
+
+    export default Vue.extend({
         name: "PackageLink",
         props: ['link', 'roomsCount']
-    }
+    });
 </script>
 
 <style scoped>
