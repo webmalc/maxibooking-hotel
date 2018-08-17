@@ -62,6 +62,7 @@ mbh.error = {
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),
     show: function(href, header, text, buttonText, buttonIcon, buttonClass, action, $this, alertType) {
+        alertType = alertType || 'danger';
         $("#entity-delete-button").off('click').on('click', function(e) {
             e.preventDefault();
             if (action) {

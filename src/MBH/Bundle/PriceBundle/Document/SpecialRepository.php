@@ -35,6 +35,13 @@ class SpecialRepository extends DocumentRepository
     {
         $qb = $this->createQueryBuilder();
 
+        if (!$filter->showDeleted()) {
+            $qb->field('deletedAt')->exists(false);
+        } else {
+            $qb->addOr($qb->expr()->field('deletedAt')->exists(false));
+            $qb->addOr($qb->expr()->field('deletedAt')->exists(true));
+        }
+
         if ($filter->getBegin()) {
             $qb->field('end')->gte($filter->getBegin());
         }
@@ -92,6 +99,7 @@ class SpecialRepository extends DocumentRepository
     /**
      * @param SpecialFilter $filter
      * @return CursorInterface
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getFiltered(SpecialFilter $filter): CursorInterface
     {
