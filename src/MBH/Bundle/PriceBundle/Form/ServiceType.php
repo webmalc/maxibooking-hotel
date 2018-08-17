@@ -96,6 +96,19 @@ class ServiceType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'price.form.service_not_use', 'class' => 'spinner price-spinner'],
             ])
+            ->add('innerPrice', TextType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.inner_price.label',
+                'help' => 'mbhpricebundle.form.servicetype.inner_price.help',
+                'group' => 'price.form.public_information',
+                'required' => false,
+                'attr' => ['class' => 'spinner price-spinner', 'placeholder' => 'mbhpricebundle.form.servicetype.inner_price.placeholder']
+            ])
+            ->add('isSubtracted', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.is_subtracted.label',
+                'help' => 'mbhpricebundle.form.servicetype.is_subtracted.help',
+                'group' => 'price.form.public_information',
+                'required' => false
+            ])
             ->add('date', CheckboxType::class, [
                 'label' => 'price.form.date',
                 'group' => 'price.form.setting',

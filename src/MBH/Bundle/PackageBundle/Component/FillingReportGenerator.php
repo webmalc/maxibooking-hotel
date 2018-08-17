@@ -237,23 +237,32 @@ class FillingReportGenerator
 
                     /** @var Package $package */
                     foreach($filteredPackages as $package) {
-                        $packagePrice = 0;
                         $packagePriceWithDiscount = $package->getPackagePriceByDate($date, true);
-                        if(!is_null($packagePriceWithDiscount)) {
-                            $packagePrice = $packagePriceWithDiscount->getPrice();
-                        }
-                        $packageRowData['packagePrice'] += $packagePrice;
+                        $packagePrice = !is_null($packagePriceWithDiscount) ? $packagePriceWithDiscount->getPrice() : 0;
 
                         $servicesPrice = 0;
                         $packageServicesList = isset($packageServicesByPackageIds[$package->getId()])
                             ? $packageServicesByPackageIds[$package->getId()]
                             : [];
+
                         foreach($packageServicesList as $service) {
                             if($date >= $service->getBegin() && $date < $service->getEnd()) {
+                                if (!empty($service->getService()->getInnerPrice())) {
+                                    $serviceDayPrice = $service->calcTotal(true);
+                                    if ($service->getService()->isSubtracted()) {
+                                        $packagePrice -= $serviceDayPrice;
+                                        $servicesPrice += $serviceDayPrice;
+                                    } else {
+                                        $packagePrice += $serviceDayPrice;
+                                        $servicesPrice -= $serviceDayPrice;
+                                    }
+                                }
+
                                 $servicesPrice += $service->calcTotal() / $service->getNights();
                             }
                         }
 
+                        $packageRowData['packagePrice'] += $packagePrice;
                         $packageRowData['servicePrice'] += $servicesPrice;
 
                         $relationPaid = $package->getOrder()->getPrice() ?
@@ -313,7 +322,7 @@ class FillingReportGenerator
         $roomTypeCount = count($tableDataByRoomType);
         foreach($tableDataByRoomType as $roomTypeID => $data) {
             $rows = $data['rows'];
-            $total = $data['totals'];
+            $serviceDayPrice = $data['totals'];
 
             foreach($rows as $date => $row) {
                 if(!isset($totalRows[$date])) {
@@ -365,7 +374,7 @@ class FillingReportGenerator
                     0;
             }
 
-            foreach($total as $key => $rowData) {
+            foreach($serviceDayPrice as $key => $rowData) {
                 if(!isset($totals[$key])) {
                     $totals[$key] = 0;
                 }
