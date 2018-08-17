@@ -322,7 +322,7 @@ class FillingReportGenerator
         $roomTypeCount = count($tableDataByRoomType);
         foreach($tableDataByRoomType as $roomTypeID => $data) {
             $rows = $data['rows'];
-            $serviceDayPrice = $data['totals'];
+            $total = $data['totals'];
 
             foreach($rows as $date => $row) {
                 if(!isset($totalRows[$date])) {
@@ -374,7 +374,7 @@ class FillingReportGenerator
                     0;
             }
 
-            foreach($serviceDayPrice as $key => $rowData) {
+            foreach($total as $key => $rowData) {
                 if(!isset($totals[$key])) {
                     $totals[$key] = 0;
                 }
