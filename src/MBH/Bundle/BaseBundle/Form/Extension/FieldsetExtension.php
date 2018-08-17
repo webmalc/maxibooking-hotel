@@ -26,7 +26,8 @@ class FieldsetExtension extends AbstractTypeExtension
         $resolver
             ->setDefined('hasGroup')
             ->setDefined('group')
-            ->setDefaults(['group' => null, 'hasGroups' => true]);
+            ->setDefined('flow_step')
+            ->setDefaults(['group' => null, 'hasGroups' => true, 'flow_step' => null]);
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)

@@ -7,8 +7,6 @@
     {% form_theme form.logoImage '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
 {% elseif form.defaultImage is defined %}
     {% form_theme form.defaultImage '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
-{% elseif form.plugForHotelFlowImagesField is defined %}
-    {% form_theme form.plugForHotelFlowImagesField '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
 {% endif %}
 
 {% set isLastStep = flow.numberOfSteps == flow.currentStepNumber %}
@@ -36,7 +34,7 @@
             {{ form_widget(form) }}
 
             {% if isImagesStep %}
-                {% include '@MBHHotel/Hotel/image-list.html.twig' with {images: hotel.images, entity: hotel,  withButtons: true} %}
+                {% include '@MBHHotel/Hotel/image-list.html.twig' with {images: hotel.images, entity: hotel,  withButtons: true, redirect_url: path('')} %}
             {% endif %}
 
             <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">

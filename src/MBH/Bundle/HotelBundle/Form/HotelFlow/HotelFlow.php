@@ -7,13 +7,6 @@ use MBH\Bundle\HotelBundle\Service\FormFlow;
 
 class HotelFlow extends FormFlow
 {
-    protected $allowRedirectAfterSubmit = true;
-
-    public function isAddImageButtonClick()
-    {
-        return $this->isButtonClicked('add_image');
-    }
-
     /**
      * @return array
      */

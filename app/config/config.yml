@@ -79,14 +79,14 @@ assetic:
     filters:
         cssrewrite: ~
         uglifycss:
-            bin: /usr/bin/uglifycss
-            node: /usr/bin/node
+            bin: /usr/local/bin/uglifycss
+            node: /usr/local/bin/node
         uglifyjs2:
-            bin: /usr/bin/uglifyjs
-            node: /usr/bin/node
+            bin: /usr/local/bin/uglifyjs
+            node: /usr/local/bin/node
         less:
-            node: /usr/bin/node
-            node_paths: [/usr/lib/node_modules/]
+            node: /usr/local/bin/node
+            node_paths: [/usr/local/lib/node_modules/]
             apply_to: ".less$"
         scssphp:
             formatter: 'Leafo\ScssPhp\Formatter\Compressed'

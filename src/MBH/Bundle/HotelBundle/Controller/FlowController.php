@@ -38,11 +38,12 @@ class FlowController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $multiLangFields = $this->get('mbh.document_fields_manager')
-                ->getPropertiesByAnnotationClass(Hotel::class, Translatable::class);
-            $this->get('mbh.form_data_handler')
-                ->saveTranslationsFromMultipleFieldsForm($form, $request, $multiLangFields);
-            $this->dm->persist($hotel);
+            if (in_array($flow->getCurrentStepNumber(), [1, 2])) {
+                $multiLangFields = $this->get('mbh.document_fields_manager')
+                    ->getPropertiesByAnnotationClass(Hotel::class, Translatable::class);
+                $this->get('mbh.form_data_handler')
+                    ->saveTranslationsFromMultipleFieldsForm($form, $request, $multiLangFields);
+            }
 
             if ($flow->getCurrentStepNumber() === 7) {
                 $this->dm->persist($hotel->getDefaultImage());

@@ -20,6 +20,7 @@ Request::setTrustedProxies(['127.0.0.1', '127.0.1.1', $request->server->get('REM
 
 //Note! Default client comes  here from NGINX config
 $client = $request->server->get(AppKernel::CLIENT_VARIABLE);
+$client = 'maxibooking';
 $dotenv = new Dotenv();
 $dotenv->load(__DIR__.'/../app/config/database.env', __DIR__.'/../app/config/clients/'.$client.'.env');
 

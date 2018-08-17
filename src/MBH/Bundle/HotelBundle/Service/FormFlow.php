@@ -174,6 +174,16 @@ abstract class FormFlow
         return $this->getCurrentStepInfo()['label'];
     }
 
+    public function isStepSkipped()
+    {
+        return false;
+    }
+
+    public function isStepDone()
+    {
+        return true;
+    }
+
     /**
      * @param string $flowId
      * @return FlowConfig|null
