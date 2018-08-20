@@ -33,7 +33,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     {
         $config = $this->hotel->getMyallocatorConfig();
 
-        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'myallocator');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, 'myallocator');
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }

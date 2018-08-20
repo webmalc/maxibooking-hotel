@@ -66,6 +66,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     public function saveAction(Request $request)
     {
         $entity = $this->get('mbh.client_config_manager')->fetchConfig();
+        $isSiteEnabled = $entity->isMBSiteEnabled();
 
         if (!$entity) {
             $entity = new ClientConfig();
@@ -86,8 +87,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                         ['%supportEmail%' => $this->getParameter('support')['email']]));
             }
 
-            $this->get('mbh.site_manager')
-                ->createOrUpdateForHotel($this->hotel, $this->get('mbh.client_manager')->getClient());
+            if ($isSiteEnabled !== $entity->isMBSiteEnabled()) {
+                $this->get('mbh.site_manager')->changeSiteAvailability($entity->isMBSiteEnabled());
+            }
 
             $this->dm->persist($entity);
             $this->dm->flush();

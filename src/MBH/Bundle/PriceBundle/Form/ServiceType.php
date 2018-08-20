@@ -69,7 +69,6 @@ class ServiceType extends AbstractType
             ])
             ->add('recalcCausedByTouristsNumberChange', CheckboxType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.label',
-                'value' => true,
                 'group' => 'price.form.public_information',
                 'required' => false,
                 'help' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.help',

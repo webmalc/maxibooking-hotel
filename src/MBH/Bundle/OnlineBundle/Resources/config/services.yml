@@ -49,3 +49,4 @@ services:
             - '@translator'
             - '@mbh.warnings_compiler'
             - '@mbh.billing.api'
+            - '@mbh.client_manager'

@@ -1,4 +1,4 @@
-/*global window, $, services, document, select2, mbh, Translator */
+/*global window, $, services, document, select2, mbh, Translator, currentService */
 
 var docReadyServices = function() {
     "use strict";
@@ -61,8 +61,10 @@ var docReadyServices = function() {
                     personsInput.val(personsInput.val() || services.package_guests);
                     personsDiv.show();
                     recalcCausedByGuestsNumberChangeDiv.show();
-                    recalcCausedByGuestsNumberChangeInput.bootstrapSwitch('state',
-                        recalcCausedByGuestsNumberChangeInput.bootstrapSwitch('state') || info.isRecalcWithGuests);
+                    var isRecalcWithGuests = typeof currentService !== 'undefined' && currentService.serviceId === serviceInput.val()
+                        ? currentService.isRecalcWithGuests
+                        : info.isRecalcWithGuests;
+                    recalcCausedByGuestsNumberChangeInput.bootstrapSwitch('state', isRecalcWithGuests);
                 }
                 if (info.calcType === 'per_night') {
                     nightsInput.val(nightsInput.val() || services.package_duration);

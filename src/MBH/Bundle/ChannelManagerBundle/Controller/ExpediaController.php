@@ -34,7 +34,7 @@ class ExpediaController extends Controller
     {
         $config = $this->hotel->getExpediaConfig();
 
-        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'expedia');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, 'expedia');
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }

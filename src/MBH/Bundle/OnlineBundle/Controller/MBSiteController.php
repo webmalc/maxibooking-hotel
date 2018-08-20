@@ -55,8 +55,7 @@ class MBSiteController extends BaseController
                 }
 
                 $isSuccess = true;
-                if ($clientSite->getUrl() !== $newSiteAddress
-                    || $siteConfig->getIsEnabled() !== $clientSite->getIs_enabled()) {
+                if ($clientSite->getUrl() !== $newSiteAddress) {
                     $clientSite
                         ->setUrl($newSiteAddress)
                         ->setClient($client->getLogin());
@@ -90,7 +89,7 @@ class MBSiteController extends BaseController
     }
 
     /**
-     * @Route("hotel_settings/{id}", name="site_hotel_settings")
+     * @Route("/hotel_settings/{id}", name="site_hotel_settings")
      * @Template()
      * @param Hotel $hotel
      * @return array

@@ -35,7 +35,7 @@ class HundredOneHotelsController extends Controller
     {
         $config = $this->hotel->getHundredOneHotelsConfig();
 
-        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'hundred_one_hotels');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, 'hundred_one_hotels');
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }

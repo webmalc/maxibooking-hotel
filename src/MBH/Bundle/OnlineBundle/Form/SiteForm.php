@@ -4,13 +4,11 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -20,7 +18,9 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Doctrine\Common\Collections\Collection;
 
 class SiteForm extends AbstractType
 {
@@ -54,7 +54,7 @@ class SiteForm extends AbstractType
         //ФОРМА ОТРИСОВЫВАЕТСЯ В ШАБЛОНЕ ВРУЧНУЮ!
         $builder
             ->add('siteDomain', TextType::class, [
-                'label' => 'Адрес',
+                'label' => 'site_form.web_address.label',
                 'required' => true,
                 'addonText' => SiteManager::SITE_DOMAIN,
                 'preAddonText' => SiteManager::SITE_PROTOCOL
@@ -79,7 +79,8 @@ class SiteForm extends AbstractType
             ])
             ->add('paymentTypes', PaymentTypesType::class, [
                 'mapped' => false,
-                'help' => 'form.formType.reservation_payment_types_with_online_form'
+                'help' => 'form.formType.reservation_payment_types_with_online_form',
+                'constraints' => [new NotBlank()]
             ])
             ->add('colorTheme', ChoiceType::class, [
                 'label' => 'site_config.color_theme.colors.label',
@@ -92,12 +93,12 @@ class SiteForm extends AbstractType
                 'label' => 'site_form.hotels.label',
                 'class' => Hotel::class,
                 'multiple' => true,
-                'required' => false,
+                'required' => true,
                 'help' => 'site_form.hotels.help',
                 'query_builder' => function(HotelRepository $hotelRepository) {
                     return $hotelRepository->getQBWithAvailable();
                 },
-                'constraints' => [new Callback(function (PersistentCollection $data, ExecutionContextInterface $context) {
+                'constraints' => [new Callback(function (Collection $data, ExecutionContextInterface $context) {
                     if ($data->isEmpty()) {
                         $context->addViolation('validator.site_form.hotels_collection_is_empty');
                     }

@@ -112,7 +112,7 @@ form.payer_type.organization.name.label: Название
 form.payer_type.organization.form_of_legal_entity.label: 'Форма юридического лица'
 form.payer_type.organization.legal_address.label: 'Юридический адрес'
 form.payer_type.organization.inn.label: ИНН
-form.payer_type.organization.ogrn.label: ОГРН
+form.payer_type.organization.ogrn.label: ОГРН/ОГРНИП
 form.payer_type.organization.kpp.label: КПП
 form.payer_type.head.group: Руководитель
 form.payer_type.head.position.label: Должность

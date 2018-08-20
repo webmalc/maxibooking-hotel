@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document
@@ -84,6 +85,7 @@ class SiteConfig extends Base
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\NotBlank()
      */
     private $siteDomain;
 
@@ -110,7 +112,7 @@ class SiteConfig extends Base
      * @param string $colorTheme
      * @return SiteConfig
      */
-    public function setColorTheme(string $colorTheme): SiteConfig
+    public function setColorTheme(?string $colorTheme): SiteConfig
     {
         $this->colorTheme = $colorTheme;
 
@@ -167,7 +169,7 @@ class SiteConfig extends Base
      * @param string $contract
      * @return SiteConfig
      */
-    public function setContract(string $contract): SiteConfig
+    public function setContract(?string $contract): SiteConfig
     {
         $this->contract = $contract;
 
@@ -216,7 +218,7 @@ class SiteConfig extends Base
      * @param string $siteDomain
      * @return SiteConfig
      */
-    public function setSiteDomain(string $siteDomain): SiteConfig
+    public function setSiteDomain(?string $siteDomain): SiteConfig
     {
         $this->siteDomain = $siteDomain;
 

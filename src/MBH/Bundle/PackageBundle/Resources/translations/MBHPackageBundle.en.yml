@@ -463,3 +463,7 @@ views.report.polls.select_button.title: Apply
 dynamic_sales.modal.close_button.text: Close
 modal.form.delete.reasons.confirmation: 'Are you sure you want to cancel and delete this reservation?'
 package.edit.package_price: 'Accommodation price'
+package.service.index.filter.housings: Wing
+package.service.total_guests: 'Guests in the resevation total'
+package.service.tourists: 'Guests specified in the reservation'
+package.service.index.filter.room_types: 'Room type'

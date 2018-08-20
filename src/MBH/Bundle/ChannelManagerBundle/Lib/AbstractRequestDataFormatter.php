@@ -125,7 +125,7 @@ abstract class AbstractRequestDataFormatter
                 $tariff = $tariffInfo['doc'];
                 $tariffId = $tariff->getId();
 
-                foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+                foreach (new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+ 1 day')) as $day) {
                     /** @var PriceCache $priceCache */
                     $priceCache = null;
                     /** @var \DateTime $day */
@@ -209,7 +209,7 @@ abstract class AbstractRequestDataFormatter
                 $tariff = $tariffInfo['doc'];
                 $tariffId = $tariff->getId();
 
-                foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+                foreach (new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+ 1 day')) as $day) {
                     /** @var \DateTime $day */
                     $isPriceSet = false;
                     if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
@@ -284,7 +284,7 @@ abstract class AbstractRequestDataFormatter
         );
 
         foreach ($roomTypesSyncData as $roomTypeId => $roomTypeInfo) {
-            foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+            foreach (new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+ 1 day')) as $day) {
                 /** @var \DateTime $day */
                 $roomCache = null;
                 if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {

@@ -273,9 +273,7 @@ class BillingApi
      */
     public function addClientSite(WebSite $clientSite)
     {
-        $url = $this->getBillingUrl(self::SITES_ENDPOINT_SETTINGS['endpoint']);
-
-        return $this->sendPostAndHandleResult($url, $this->serializer->normalize($clientSite));
+        return $this->createBillingEntityBySettings($clientSite, self::SITES_ENDPOINT_SETTINGS);
     }
 
     /**
@@ -567,12 +565,14 @@ class BillingApi
      * @param string $url
      * @return Result
      */
-    private function handleErrorResponse(ResponseInterface $response, Result &$requestResult, string $url, array $requestData = [])
+    private function handleErrorResponse(?ResponseInterface $response, Result &$requestResult, string $url, array $requestData = [])
     {
-        if ($response->getStatusCode() == 400) {
+        if (!is_null($response) && $response->getStatusCode() == 400) {
             $requestResult->setErrors(json_decode((string)$response->getBody(), true));
         } else {
-            $this->logErrorResponse((string)$response->getBody(), $url, $requestData);
+            $errorMessage = !is_null($response) ? (string)$response->getBody() : ['billing is not available'];
+            $this->logErrorResponse($errorMessage, $url, $requestData);
+            $requestResult->setErrors(json_decode($errorMessage, true));
         }
 
         return $requestResult;

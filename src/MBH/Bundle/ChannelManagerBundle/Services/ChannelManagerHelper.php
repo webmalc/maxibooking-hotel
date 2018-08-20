@@ -8,7 +8,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\Room;
 class ChannelManagerHelper
 {
     private $isRoomTypesInit = false;
-    private $roomTypes;
+    private $roomTypes = [];
     private $isTariffsSyncDataInit = false;
     private $tariffsSyncData;
 
