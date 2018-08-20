@@ -9,6 +9,12 @@ namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 /**
  * Class HotelOrganization
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
+ *
+ * @method getBank
+ * @method getBankBik
+ * @method getBankAddress
+ * @method getCorrespondentAccount
+ * @method getCheckingAccount
  */
 class HotelOrganization extends Common implements AdvancedAddressInterface
 {
