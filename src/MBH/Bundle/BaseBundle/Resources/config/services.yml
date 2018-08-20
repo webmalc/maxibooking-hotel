@@ -492,7 +492,11 @@ services:
 
     mbh.multi_lang_translator:
         class: MBH\Bundle\BaseBundle\Service\MultiLangTranslator
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper']
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.helper'
+            - '@property_accessor'
+            - '%locale%'
 
     mbh.menu_builder:
         class: MBH\Bundle\BaseBundle\Menu\Builder
