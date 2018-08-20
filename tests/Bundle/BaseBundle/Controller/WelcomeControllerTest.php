@@ -52,7 +52,7 @@ class WelcomeControllerTest extends WebTestCase
     /**
      * @var string
      */
-    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER = 9;
+    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER_WITHOUT_MB_SITE = 8;
 
     private const FILTER_FOR_COUNT_ITEMS_MENU = '.sidebar-accordion li:not(.dropdown) a';
 
@@ -197,7 +197,7 @@ class WelcomeControllerTest extends WebTestCase
         );
 
         $this->assertEquals(
-            self::ACTUAL_AMOUNT_ITEMS_FOR_MANAGER,
+            self::ACTUAL_AMOUNT_ITEMS_FOR_MANAGER_WITHOUT_MB_SITE,
             $amountManagerMenuItems,
             'Rendering items menu for the manager is different than expected.'
         );
