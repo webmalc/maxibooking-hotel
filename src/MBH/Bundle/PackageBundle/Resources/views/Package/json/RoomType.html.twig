@@ -1,24 +1,5 @@
 {% wrapinline %}
-    <div class='visible-xs text-center'>
-        <div>{{ entity.roomType }}</div>
-        <div>
-            {% if entity.order.payer %}
-                {{ entity.order.payer.shortName }}
-            {% else %}
-                &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
-            {% endif %}
-        </div>
-        <div>
-            <span class='text {% if entity.order.isPaid %}text-success{% elseif entity.order.paid > 0 %}text-warning{% else %}text-danger{% endif %}'>{{ entity.price|number_format(2) }}</span>
-            <small> {{ entity.tariff.name }}</small>
-        </div>
-        <div>
-            {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}
-            <br>
-            <small>{{ entity.nights }} {{ 'nights'|transchoice(entity.nights) }}</small>
-        </div>
-    </div>
-    <div class='hidden-xs'>
+    <div>
         {{ entity.roomType }}
         <br>
         <small>

@@ -1,6 +1,5 @@
 {% extends 'MBHPriceBundle:Overview:layout.html.twig' %}
 
-{% set small_title = 'price.views.overview.index.small_title'|trans({},'MBHPriceBundle') %}
 {% set layout = 'tabs' %}
 
 {% block content %}
@@ -9,14 +8,16 @@
     <div class="tab-pane active" id="home">
         {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
             {% block content %}
-                <form id="filling-table-filter" class="form-inline icon-label-form">
-                    <div class="form-group input">
-                        <label for="total-overview-filter-begin"><i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.filling.daty'|trans }} ' data-toggle='tooltip'></i></label>
-                        <input type="text" name="begin" id="total-overview-filter-begin" class="datepicker total-overview begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
-                    </div>
-                    <div class="form-group input">
-                        <label for="total-overview-filter-end">—</label>
-                        <input type="text" name="end" id="total-overview-filter-end" class="datepicker total-overview-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
+                <form id="filling-table-filter" class="form-inline filter-form icon-label-form">
+                    <div class="filter-form_group-date">
+                        <div class="filter-form_input">
+                            <i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.filling.daty'|trans }} ' data-toggle='tooltip'></i>
+                            <div class="filter-form_input">
+                                <input type="text" name="begin" id="total-overview-filter-begin" class="datepicker total-overview begin-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
+                                <span class="filter-form_separator"></span>
+                                <input type="text" name="end" id="total-overview-filter-end" class="datepicker total-overview-filter end-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
+                            </div>
+                        </div>
                     </div>
                 </form>
             {% endblock content %}

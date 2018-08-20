@@ -1,6 +1,6 @@
 {#todo remove. use embed_filter.html.twig#}
 <div class="box box-default box-solid" {% if id is defined %}id="{{ id }}"{% endif %}>
-    <div class="box-header">
+    <div class="box-header box-header_when-mobile">
         <h3 class="box-title">{{ header|default('form.filter')|trans|raw }}
             {% if smallHeader is defined and smallHeader is not empty %}
                 <small>{{ smallHeader|trans|raw }}</small>

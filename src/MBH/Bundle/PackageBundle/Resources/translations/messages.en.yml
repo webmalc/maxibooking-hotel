@@ -510,7 +510,6 @@ form.order_document_type.file: File
 form.order_document_type.note: Comment
 tourist.json.clients_in_black_list: 'This guest is blacklisted'
 tourist.json.client_not_in_black_list: 'This guest is not on blacklist'
-tourist.index.small_title: 'List of guests'
 tourist.index.foreign_citizens: 'Foreign citizen'
 tourist.index.dates: Dates
 tourist.index.fio: 'Full name'
@@ -984,6 +983,9 @@ mbh.package_bundle.tourist_messenger.guest_not_found: 'Guest not found'
 mbh.package_bundle.tourist_messenger.failed_to_send: 'Email or message guest'
 mbh.package.builder.document_tempates: 'Document templates'
 report.filling.filling_table.number_of_places: 'Number of places'
+fixtures.package_source_data.channel_manager.101hotel: '101 Hotel'
+fixtures.package_source_data.channel_manager.ostrovok: Ostrovok
+fixtures.package_source_data.channel_manager.vas_hotel_dot_ru: 'VasHotel.ru'
 fixtures.package_source_data.on_line_reservation: 'Online booking'
 fixtures.package_source_data.regulat_customer: 'Regular customer'
 fixtures.package_source_data.recomendation_of_friends: 'Friend recomendation'
@@ -1288,7 +1290,6 @@ reservation_report.date: Date
 reservation_report.title: 'Reservations Dynamics'
 reservation_report.total_row: Total
 views.report.reservation_report.report_date.title: Date
-views.report.reservation_report.title: 'Reservations Dynamics'
 views.report.reservation_report.room_types.title: 'Room type'
 reservation_report.number_of_packages_common: 'Number of booked rooms'
 reservation_report.number_of_packages: 'Number of booked rooms as of %date%'

@@ -176,23 +176,7 @@ class OrderSubscriber implements EventSubscriber
                             ;
 
                         } catch (\Exception $e) {
-                            $logger = $this->container->get('logger');
-                            $logger->err($e->getTraceAsString());
-                            try {
-                                $notifier = $this->container->get('exception_notifier');
-                                $message = $notifier::createMessage();
-                                $messageText = "Произошла ошибка у \"".$this->kernel->getClient()
-                                    .". \"\n Сообщение \"".$e->getMessage()
-                                    ."\".\n Стек:".$e->getTraceAsString();
-                                $message
-                                    ->setType('danger')
-                                    ->setText($messageText);
-                                $notifier
-                                    ->setMessage($message)
-                                    ->notify();
-                            } catch (\Exception $exception) {
-                                $logger->err($exception->getTraceAsString());
-                            }
+                            $this->container->get('mbh.exception_manager')->sendExceptionNotification($e);
                         }
                     }
                 }

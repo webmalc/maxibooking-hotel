@@ -6,6 +6,8 @@
 namespace MBH\Bundle\BaseBundle\Task;
 
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
+use MBH\Bundle\BaseBundle\Service\ExceptionManager;
+use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Bridge\Monolog\Logger;
@@ -18,13 +20,20 @@ class CommandRunner implements ConsumerInterface
     use LoggerTrait;
 
     private $kernel;
+    private $exceptionManager;
 
-    public function __construct(Logger $logger, KernelInterface $kernel)
+    public function __construct(Logger $logger, KernelInterface $kernel, ExceptionManager $exceptionManager)
     {
         $this->kernel = $kernel;
         $this->logger = $logger;
+        $this->exceptionManager = $exceptionManager;
     }
 
+    /**
+     * @param AMQPMessage $message
+     * @return mixed|void
+     * @throws \Throwable
+     */
     public function execute(AMQPMessage $message)
     {
         try {
@@ -55,6 +64,7 @@ class CommandRunner implements ConsumerInterface
             $this->logCompete();
         } catch (\Exception $e) {
             $this->logString('ERROR: '.$e);
+            $this->exceptionManager->sendExceptionNotification($e);
         }
     }
 

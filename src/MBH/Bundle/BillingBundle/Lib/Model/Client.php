@@ -255,7 +255,7 @@ class Client
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getDisabled_at(): ?string
     {

@@ -8,6 +8,7 @@ views.api.form.room_type.choices.any: Any
 views.api.form.adults: Adults
 views.api.form.children: Children
 views.api.form.find_room: 'Find room'
+views.api.form.find_room.shot: 'Find'
 views.api.form.online_reservation_system: 'online booking system'
 views.api.getPaymentType.dates: 'Date:'
 views.api.getPaymentType.days_and_nights: 'Days/nights:'
@@ -84,7 +85,7 @@ views.api.getResultsTable.facilities: Amenities
 views.form.index.list: List
 views.form.index.edit: Edit
 views.form.index.new: New
-views.form.layout.online_polls: Ratings
+views.form.layout.online_polls: 'Reviews Settings'
 views.form.layout.invite: 'Visa invitation'
 online_form.notification: 'New reservations from the web form'
 views.api.form.children_ages.label: 'Children age'

@@ -20,12 +20,12 @@
                 <tr>
                     <th class="td-xxs text-center"></th>
                     <th class="td-sm text-center">#</th>
-                    <th class="td-md">{{ 'order.packages.dates'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md hidden-xs">{{ 'order.packages.dates'|trans({}, 'MBHPackageBundle') }}</th>
                     <th >{{ 'order.packages.placement'|trans({}, 'MBHPackageBundle') }}</th>
-                    <th class="td-md">{{ 'order.packages.guests'|trans({}, 'MBHPackageBundle') }}</th>
-                    <th class="td-md">{{ 'order.packages.price'|trans({}, 'MBHPackageBundle') }}</th>
-                    <th class="td-md">{{ 'order.packages.created'|trans({}, 'MBHPackageBundle') }}</th>
-                    <th class="td-sm"></th>
+                    <th class="td-md hidden-xs">{{ 'order.packages.guests'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md hidden-xs">{{ 'order.packages.price'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md hidden-xs">{{ 'order.packages.created'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-sm hidden-xs"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -38,24 +38,45 @@
                         <td class="text-center">
                             <a class='btn btn-sm {% if package.deletedAt %}btn-danger{% else %}btn-default{% endif %}' href='{{ path('package_edit', {'id': package.id}) }}' rel='main' title='{{ 'order.packages.record_edit'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>{{ package.numberWithPrefix }}</a>{% if package.deletedAt %}<br><small><i class='fa fa-trash-o'> </i> {{ 'order.packages.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
                         </td>
-                        <td>
+                        <td class="hidden-xs">
                             {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br><small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                         </td>
                         <td>
+                            <div class='visible-xs text-center'>
+                                <div>{{ package.roomType }}</div>
+                                <div>
+                                    {% if package.order.payer %}
+                                        {{ package.order.payer.shortName }}
+                                    {% else %}
+                                        &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <span class='text {% if package.order.isPaid %}text-success{% elseif package.order.paid > 0 %}text-warning{% else %}text-danger{% endif %}'>{{ package.price|number_format(2) }}</span>
+                                    <small> {{ package.tariff.name }}</small>
+                                </div>
+                                <div>
+                                    {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}
+                                    <br>
+                                    <small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
+                                </div>
+                            </div>
+                            <div class="hidden-xs">
                             {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ 'package.order_packages.not_accommodate'|trans}}&gt;{% endif %}</a></small>
+                            </div>
                         </td>
-                        <td class="text-center">
+                        <td class="text-center hidden-xs">
                             {{ package.adults }} + {{ package.children }}<br>
                             <small>{% for tourist in package.tourists %}{{ tourist.lastNameWithInitials }}{{ loop.last ? '' : ', ' }}{% endfor %}</small>
 
                         </td>
-                        <td class="text-right">
+                        <td class="text-right hidden-xs">
                             <div class='text-right'><span class='{% if package.order.isPaid %}text-success'{% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{{ package.price|number_format(2) }}</span><br><small><i class='fa fa-sliders'> </i> {{ package.tariff.name }}</small></div>
                         </td>
-                        <td>
+                        <td class="hidden-xs">
                             {% if 'now'|date('d.m.Y') == package.createdAt|date('d.m.Y') %}{{ 'package.order_packages.today'|trans}}, {{ package.createdAt|date('H:i') }}{% else %}{{ package.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ package.createdBy }}</small>
                         </td>
-                        <td>
+                        <td class="hidden-xs">
                             <div class='btn-list text-right'>
                                 <a href='{{ path('package_edit', { 'id': package.id }) }}' class='btn btn-success btn-xs' title='{{ 'order.packages.edit_reservation'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                     <i class='fa fa-pencil-square-o'></i>

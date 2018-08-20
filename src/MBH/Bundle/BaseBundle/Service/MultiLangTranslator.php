@@ -5,15 +5,20 @@ namespace MBH\Bundle\BaseBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Gedmo\Translatable\Document\Translation;
 use MBH\Bundle\BaseBundle\Document\Base;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class MultiLangTranslator
 {
     private $dm;
     private $helper;
+    private $propertyAccessor;
+    private $locale;
 
-    public function __construct(DocumentManager $dm, Helper $helper) {
+    public function __construct(DocumentManager $dm, Helper $helper, PropertyAccessor $propertyAccessor, $locale) {
         $this->dm = $dm;
         $this->helper = $helper;
+        $this->propertyAccessor = $propertyAccessor;
+        $this->locale = $locale;
     }
 
     /**
@@ -45,7 +50,10 @@ class MultiLangTranslator
      */
     public function getTranslationsByLanguages(Base $document, string $translatableField, array $languages)
     {
-        $result = [];
+        $result = [
+            $this->locale => $this->propertyAccessor->getValue($document, $translatableField)
+        ];
+
         /** @var Translation[] $translations */
         $translations = $this->dm
             ->getRepository('GedmoTranslatable:Translation')

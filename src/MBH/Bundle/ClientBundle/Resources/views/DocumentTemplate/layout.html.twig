@@ -1,6 +1,9 @@
 {% extends "MBHClientBundle::layout.html.twig" %}
 
-{% set title = 'views.documentTempalte.index'|trans({}, 'MBHClientBundle') %}
+{% set management_icon = true %}
+{% if title is not defined %}
+    {% set title = 'views.documentTempalte.index'|trans({}, 'MBHClientBundle') %}
+{% endif %}
 {% set title_url = path('document_templates') %}
 
 {%  set plugins = [

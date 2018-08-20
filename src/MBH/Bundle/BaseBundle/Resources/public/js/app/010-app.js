@@ -62,6 +62,7 @@ mbh.error = {
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),
     show: function(href, header, text, buttonText, buttonIcon, buttonClass, action, $this, alertType) {
+        alertType = alertType || 'danger';
         $("#entity-delete-button").off('click').on('click', function(e) {
             e.preventDefault();
             if (action) {
@@ -97,21 +98,44 @@ mbh.alert = {
 
 mbh.datatablesOptions = {
     dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-    buttons: [{
-            extend: 'excel',
-            text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
-            className: 'btn btn-default btn-sm',
-            exportOptions: {
-                stripNewlines: false
-            }
+      buttons       : {
+        dom    : {
+          container: {
+            className: 'dt-buttons hidden-xs'
+          }
         },
-        {
-            extend: 'pdf',
-            text: '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
+        buttons: [
+          {
+            extend       : 'excel',
+            text         : '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
+            className    : 'btn btn-default btn-sm',
+            exportOptions: {
+              stripNewlines: false
+            }
+          },
+          {
+            extend   : 'pdf',
+            text     : '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
             className: 'btn btn-default btn-sm'
-        }
-    ]
+          }
+        ]
+      }
 };
+
+if (mbh.datatablesOptions.language === undefined) {
+    mbh.datatablesOptions.language = {};
+}
+if (isMobileDevice()) {
+  mbh.datatablesOptions.pageLength = 10;
+  mbh.datatablesOptions.language.paginate = {
+        "previous": "<",
+        "next"    : ">"
+    }
+} else {
+    mbh.datatablesOptions.pageLength = 50;
+    mbh.datatablesOptions.language.paginate = {};
+}
+
 
 mbh.highchartsOptions = {
     lang: {
@@ -182,10 +206,6 @@ $('#work-shift-lock').on('click', function(e) {
     mbh.alert.show($this.attr('href'), header, text, buttonText, buttonIcon, buttonClass);
 });
 
-function isMobileDevice() {
-    return /Mobi/.test(navigator.userAgent);
-}
-
 function isLowWidthDevice() {
     return document.documentElement.clientWidth < 768;
 }
@@ -210,7 +230,8 @@ var deleteLink = function() {
         $('.datepicker').datepicker({
             language: "ru",
             todayHighlight: true,
-            autoclose: true
+            autoclose: true,
+            disableTouchKeyboard: true
         });
     });
 };
@@ -273,21 +294,20 @@ var deleteLink = function () {
     });
 };*/
 
-
 $(document).ready(function() {
     'use strict';
-    if (isLowWidthDevice()) {
-        var $logoBlock = $('header.main-header > .logo');
-        var logoBlockHeight = parseInt($logoBlock.css('height'), 10);
-        $(window).scroll(function () {
-            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            if (scrollTop > logoBlockHeight) {
-                $logoBlock.hide();
-            } else {
-                $logoBlock.show();
-            }
-        });
-    }
+    // if (isLowWidthDevice()) {
+    //     var $logoBlock = $('header.main-header > .logo');
+    //     var logoBlockHeight = parseInt($logoBlock.css('height'), 10);
+    //     $(window).scroll(function () {
+    //         var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    //         if (scrollTop > logoBlockHeight) {
+    //             $logoBlock.hide();
+    //         } else {
+    //             $logoBlock.show();
+    //         }
+    //     });
+    // }
 
     var workShiftMenu = $('#work-shift-menu');
     if (workShiftMenu.length == 1) {
@@ -347,17 +367,19 @@ $(document).ready(function() {
     closePopovers();
 
     //sidebar
-    (function() {
+    if (!isMobileDevice()) {
+      (function() {
         'use strict';
 
         $('.sidebar-toggle').click(function() {
-            if ($('body').hasClass('sidebar-collapse')) {
-                localStorage.setItem('sidebar-collapse', 'open');
-            } else {
-                localStorage.setItem('sidebar-collapse', 'close');
-            }
+          if ($('body').hasClass('sidebar-collapse')) {
+            localStorage.setItem('sidebar-collapse', 'open');
+          } else {
+            localStorage.setItem('sidebar-collapse', 'close');
+          }
         });
-    }());
+      }());
+    }
 
     //dashboard
     (function() {

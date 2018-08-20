@@ -2,27 +2,24 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener;
 
-use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
+use MBH\Bundle\BaseBundle\Service\ExceptionManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
     /** @var \AppKernel  */
     private $kernel;
-    private $exceptionNotifier;
-    private $tokenStorage;
+    private $exceptionManager;
 
-    public function __construct(KernelInterface $kernel, Notifier $exceptionNotifier, TokenStorage $tokenStorage)
+    public function __construct(KernelInterface $kernel, ExceptionManager $exceptionManager)
     {
         $this->kernel = $kernel;
-        $this->exceptionNotifier = $exceptionNotifier;
-        $this->tokenStorage = $tokenStorage;
+        $this->exceptionManager = $exceptionManager;
     }
 
     /**
@@ -52,23 +49,15 @@ class ExceptionSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param GetResponseForExceptionEvent $event
+     * @throws \Throwable
+     */
     public function notifyException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
-        $user = $this->tokenStorage->getToken();
         if (!$exception instanceof AccessDeniedException && !$exception instanceof NotFoundHttpException && $this->kernel->getEnvironment() === 'prod') {
-            $user = $this->tokenStorage->getToken();
-            $message = $this->exceptionNotifier::createMessage();
-            $messageText = "Произошла ошибка у \"" . $this->kernel->getClient()
-                . '. Пользователь: ' . (!empty($user) ? $user->getUsername() : 'без пользователя')
-                . ". \"\n Сообщение \"" . $exception->getMessage()
-                . "\".\n Стек:" . $exception->getTraceAsString();
-            $message
-                ->setType('danger')
-                ->setText($messageText);
-            $this->exceptionNotifier
-                ->setMessage($message)
-                ->notify();
+            $this->exceptionManager->sendExceptionNotification($exception);
         }
     }
 }

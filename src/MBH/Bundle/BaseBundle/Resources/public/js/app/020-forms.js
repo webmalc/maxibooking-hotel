@@ -370,26 +370,39 @@ var docReadyForms = function () {
     $('.checkbox-mini').bootstrapSwitch(bootstrapSwitchConfig);
 
     //Select2 configuration
-    $('select:not(.plain-html)').addClass('select2').select2({
+    if (isMobileDevice()) {
+        $('select:not(.not-change-if-mobile)').each(function() {
+          var placeholder = $(this).data('placeholder');
+
+          if (placeholder !== undefined) {
+            $(this).find('option:first-child')
+            .prop('disabled', true)
+            .text(placeholder);
+          }
+        });
+    } else {
+      $('select:not(.plain-html)').addClass('select2').select2({
         placeholder: Translator.trans("020-forms.make_choice"),
         allowClear: true,
         width: 'resolve',
         formatSelection: function (item, container) {
-            var optgroup = $(item.element).parent('optgroup').attr('label');
-            if (!optgroup) {
-                return item.text;
-            } else {
-                return optgroup + ': ' + item.text.toLowerCase();
-            }
+          var optgroup = $(item.element).parent('optgroup').attr('label');
+          if (!optgroup) {
+            return item.text;
+          } else {
+            return optgroup + ': ' + item.text.toLowerCase();
+          }
         }
-    });
+      });
+    }
 
     //Datepicker configuration
     $('.datepicker').datepicker({
         language: "ru",
         todayHighlight: true,
         autoclose: true,
-        format: 'dd.mm.yyyy'
+        format: 'dd.mm.yyyy',
+        disableTouchKeyboard: true
     });
 
     //Datepicker configuration
@@ -422,28 +435,30 @@ var docReadyForms = function () {
     }).attr("autocomplete", "off");
 
     //datepicker select
-    (function () {
-        var select = $('select.datepicker-period-select'),
-            begin = $('.begin-datepicker'),
-            end = $('.end-datepicker'),
-            setDates = function () {
-                var period = begin.val() + '-' + end.val();
-                if (!select.val()) {
-                    select.val(period);//.trigger('change');
-                    return;
-                }
-                var dates = select.val().split('-');
-                begin.val(dates[0]);
-                end.val(dates[1]).trigger('change');
-            };
+    if (!isMobileDevice()) {
+        (function () {
+            var select = $('select.datepicker-period-select'),
+                begin = $('.begin-datepicker'),
+                end = $('.end-datepicker'),
+                setDates = function () {
+                    var period = begin.val() + '-' + end.val();
+                    if (!select.val()) {
+                        select.val(period);//.trigger('change');
+                        return;
+                    }
+                    var dates = select.val().split('-');
+                    begin.val(dates[0]);
+                    end.val(dates[1]).trigger('change');
+                };
 
-        if (!select.length || !begin.length || !end.length) {
-            return;
-        }
-        $('.datepicker-period-select').css('width', '130px');
-        select.on('change', setDates);
-        setDates();
-    }());
+            if (!select.length || !begin.length || !end.length) {
+                return;
+            }
+            $('.datepicker-period-select').css('width', '130px');
+            select.on('change', setDates);
+            setDates();
+        }());
+    }
 
     new RangeInputs($('.begin-datepicker'), $('.end-datepicker'));
 
@@ -661,7 +676,7 @@ var docReadyForms = function () {
 var select2TemplateResult = {
     _iconHtml: function (state) {
         if (!state.id) {
-            return state.text;
+            return null;
         }
         var rawIcons = state.element.getAttribute('data-icon'),
             result = '';
@@ -741,7 +756,7 @@ var select2TemplateResult = {
             isEmpty: function () {
                 return $list.find('.btn').length == 0;
             }
-        }
+        };
 
         this.help = {
             inited: false,
@@ -766,7 +781,7 @@ var select2TemplateResult = {
                     that.items.isEmpty() ? this.show() : this.hide();
                 }
             }
-        }
+        };
 
         this.init = function () {
             if (isMultiple) {

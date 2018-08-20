@@ -102,8 +102,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->get('mbh.form_data_handler')
-                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
+
+            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
+                $this->get('mbh.form_data_handler')
+                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
+            }
 
             $this->dm->persist($entity);
             $this->dm->flush();
@@ -204,8 +207,10 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->get('mbh.form_data_handler')
-                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
+            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
+                $this->get('mbh.form_data_handler')
+                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
+            }
 
             $this->dm->persist($entity);
             $this->dm->flush();

@@ -9,6 +9,7 @@ use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
@@ -42,19 +43,22 @@ class SiteManager
     private $translator;
     private $warningsCompiler;
     private $billingApi;
+    private $clientManager;
 
     public function __construct(
         DocumentManager $dm, 
         DocumentFieldsManager $documentFieldsManager, 
         TranslatorInterface $translator,
         WarningsCompiler $warningsCompiler,
-        BillingApi $billingApi
+        BillingApi $billingApi,
+        ClientManager $clientManager
     ) {
         $this->dm = $dm;
         $this->documentFieldsManager = $documentFieldsManager;
         $this->translator = $translator;
         $this->warningsCompiler = $warningsCompiler;
         $this->billingApi = $billingApi;
+        $this->clientManager = $clientManager;
     }
 
     /**
@@ -160,6 +164,7 @@ class SiteManager
     /**
      * @param Hotel $hotel
      * @param Client $client
+     * @param bool $isEnabled
      * @return SiteConfig
      */
     public function createOrUpdateForHotel(Hotel $hotel, Client $client)
@@ -170,19 +175,7 @@ class SiteManager
             $this->dm->persist($config);
             $config->addHotel($hotel);
 
-            $siteDomain = '';
-            if ($this->checkSiteDomain($client->getLogin())) {
-                $siteDomain = $client->getLogin();
-            } elseif ($client->getCity()) {
-                $domainWithCityName = $client->getLogin() . '-' . $this->billingApi->getCityById($client->getCity(), 'en')->getName();
-                if ($this->checkSiteDomain($domainWithCityName)) {
-                    $siteDomain = $domainWithCityName;
-                }
-            }
-
-            if (empty($siteDomain)) {
-                $siteDomain = $client->getLogin() . rand(0, 1000000);
-            }
+            $siteDomain = $this->compileSiteDomain($client);
 
             $config->setSiteDomain($siteDomain);
             $clientSite = (new WebSite())
@@ -191,9 +184,27 @@ class SiteManager
             $this->billingApi->addClientSite($clientSite);
         }
 
-        $this->updateSiteFormConfig($config, $this->fetchFormConfig(), []);
+        $this->updateSiteFormConfig($config, $this->fetchFormConfig());
 
         return $config;
+    }
+
+    /**
+     * @param $isEnabled
+     * @throws \UnexpectedValueException
+     */
+    public function changeSiteAvailability($isEnabled)
+    {
+        $clientSite = $this->clientManager->getClientSite();
+        if (!is_null($clientSite)) {
+            $clientSite->setIs_enabled($isEnabled);
+            $result = $this->billingApi->updateClientSite($clientSite);
+            if (!$result->isSuccessful()) {
+                throw new \UnexpectedValueException(
+                    'Incorrect errors from billing: '.json_encode($result->getErrors())
+                );
+            }
+        }
     }
 
     /**
@@ -246,7 +257,7 @@ class SiteManager
      * @param FormConfig $formConfig
      * @param array $paymentTypes
      */
-    public function updateSiteFormConfig(SiteConfig $config, FormConfig $formConfig, array $paymentTypes)
+    public function updateSiteFormConfig(SiteConfig $config, FormConfig $formConfig, array $paymentTypes = null)
     {
         $siteAddress = $this->compileSiteAddress($config->getSiteDomain());
 
@@ -258,8 +269,11 @@ class SiteManager
         $formConfig
             ->setResultsUrl($siteAddress)
             ->setHotels($config->getHotels()->toArray())
-            ->setRoomTypeChoices($roomTypes)
-            ->setPaymentTypes($paymentTypes);
+            ->setRoomTypeChoices($roomTypes);
+
+        if (!is_null($paymentTypes)) {
+            $formConfig->setPaymentTypes($paymentTypes);
+        }
 
         if (!empty($config->getPersonalDataPolicies())) {
             $formConfig->setPersonalDataPolicies($siteAddress . SiteManager::PERSONAL_DATA_POLICIES_PAGE);
@@ -283,5 +297,31 @@ class SiteManager
     public function compileSiteAddress(string $siteDomain)
     {
         return self::SITE_PROTOCOL . $siteDomain . self::SITE_DOMAIN;
+    }
+
+    /**
+     * @param Client $client
+     * @return null|string
+     */
+    private function compileSiteDomain(Client $client)
+    {
+        $siteDomain = '';
+        if ($this->checkSiteDomain($client->getLogin())) {
+            $siteDomain = $client->getLogin();
+        } elseif ($client->getCity()) {
+            $domainWithCityName = $client->getLogin().'-'.$this->billingApi->getCityById(
+                    $client->getCity(),
+                    'en'
+                )->getName();
+            if ($this->checkSiteDomain($domainWithCityName)) {
+                $siteDomain = $domainWithCityName;
+            }
+        }
+
+        if (empty($siteDomain)) {
+            $siteDomain = $client->getLogin().rand(0, 1000000);
+        }
+
+        return $siteDomain;
     }
 }

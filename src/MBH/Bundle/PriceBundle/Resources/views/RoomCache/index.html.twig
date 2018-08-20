@@ -1,41 +1,44 @@
 {% extends 'MBHPriceBundle:RoomCache:layout.html.twig' %}
 
-{% set small_title = "price.resources.views.roomcache.view"|trans %}
 {% set layout = 'box' %}
 
 {% block content %}
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'room-cache-overview-filter-widget' } %}
         <form id="room-cache-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
-            <div class="input">
-                <i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.roomcache.index.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp
-                <input type="text" id="room-cache-overview-filter-begin" class="datepicker room-cache-overview-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" >
+            <div class="filter-form_input">
+                <i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.roomcache.index.daty'|trans }} ' data-toggle='tooltip'></i>
+                <input type="text" id="room-cache-overview-filter-begin" class="datepicker room-cache-overview-filter begin-datepicker mbh-daterangepicker not-set-date form-control" data-date-format="dd.mm.yyyy" >
             </div>
             <div class="input hidden">
                 - &nbsp
-                <input type="text" id="room-cache-overview-filter-end" class="datepicker room-cache-overview-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" >
+                <input type="text" id="room-cache-overview-filter-end" class="datepicker room-cache-overview-filter end-datepicker mbh-daterangepicker not-set-date form-control" data-date-format="dd.mm.yyyy" >
             </div>
-            <div class="input">
-                <i class="fa fa-bed" title='{{ 'mbhpricebundle.view.roomcache.index.tip.nomera'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.roomcache.index.tip.nomera'|trans }} " id="room-cache-overview-filter-roomType" class="room-cache-overview-filter form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-bed" title='{{ 'mbhpricebundle.view.roomcache.index.tip.nomera'|trans }} ' data-toggle='tooltip'></i>
+                <select multiple data-placeholder="{{ 'mbhpricebundle.view.roomcache.index.tip.nomera'|trans }} " id="room-cache-overview-filter-roomType" class="room-cache-overview-filter form-control">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="input">
-                <i class="fa fa-sliders" title='{{ 'mbhpricebundle.view.roomcache.index.kvoty.po.tarifam'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.roomcache.index.kvoty.po.tarifam'|trans }} " id="room-cache-overview-filter-tariff" class="room-cache-overview-filter form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-sliders" title='{{ 'mbhpricebundle.view.roomcache.index.kvoty.po.tarifam'|trans }} ' data-toggle='tooltip'></i>
+                <select multiple data-placeholder="{{ 'mbhpricebundle.view.roomcache.index.kvoty.po.tarifam'|trans }} " id="room-cache-overview-filter-tariff" class="room-cache-overview-filter form-control">
                     <option></option>
                     {% for tariff in tariffs %}
                         <option value="{{ tariff.id }}" {% if tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length %}selected{% endif %}>{{ tariff.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="input">
+            <div class="filter-form_group-checkbox">
+                <div class="filter-form_input">
                     <i class="fa fa-bar-chart" title='{{ 'price.resources.views.roomcache.graph'|trans }}' data-toggle='tooltip'></i>
-                    &nbsp <input type="checkbox" id="room-cache-overview-filter-graph" class="room-cache-overview-filter" value="1"/>
+                    <input type="checkbox" id="room-cache-overview-filter-graph" class="room-cache-overview-filter" value="1"/>
                 </div>
-            {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'room_cache_overview'} %}
+                {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'room_cache_overview'} %}
+            </div>
         </form>
     </div></div>
 

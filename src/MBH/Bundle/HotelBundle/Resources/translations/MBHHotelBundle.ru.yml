@@ -117,7 +117,7 @@ views.roomType.index.name: Название
 views.roomType.index.housing: Корпус
 views.roomType.index.floor: Этаж
 views.roomType.index.status: Статус
-views.roomType.layout.rooms: Номера
+views.roomType.layout.rooms: 'Номерной фонд'
 views.roomType.layout.create_room_type: 'Создание типа номера'
 views.roomType.newRoom.create_bed_for_room_type: 'Создание койко-места для типа номера'
 views.roomType.newRoom.create_room_for_room_type: 'Создание номера для типа номера'
@@ -135,7 +135,7 @@ views.corpus.street: Улица
 views.corpus.house: Дом
 views.corpus.flat: Квартира
 views.corpus.corpus: Корпус
-views.corpus: Корпус
+views.corpus: Корпуса
 view.create_task_type_categoty: 'Новая категория'
 views.roomTypeCaterory.layout.index: 'Группы номеров'
 views.facility.list.title: Удобства

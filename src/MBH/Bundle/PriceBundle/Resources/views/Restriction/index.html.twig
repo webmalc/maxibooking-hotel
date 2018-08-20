@@ -1,23 +1,22 @@
 {% extends 'MBHPriceBundle:Restriction:layout.html.twig' %}
 
-{% set small_title = 'price.views.restriction.index.small_title'|trans({},'MBHPriceBundle') %}
 {% set layout = 'box' %}
 
 {% block content %}
 
         {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'restriction-overview-filter-widget' } %}
            <form id="restriction-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
-            <div class="input">
-                <i class="fa fa-calendar" title='{{ 'price.views.restriction.index.date'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp
-                <input type="text" id="restriction-overview-filter-begin" class="datepicker restriction-overview-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
+            <div class="filter-form_input">
+                <i class="fa fa-calendar" title='{{ 'price.views.restriction.index.date'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>
+                <input type="text" id="restriction-overview-filter-begin" class="datepicker restriction-overview-filter begin-datepicker mbh-daterangepicker not-set-date form-control" data-date-format="dd.mm.yyyy">
             </div>
             <div class="input hidden">
-                - &nbsp
                 <input type="text" id="restriction-overview-filter-end" class="datepicker restriction-overview-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
             </div>
 
-            <div class="input">
-                <i class="fa fa-bed" title='{{ 'price.views.restriction.index.type'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.restriction.index.tipnomera'|trans }} " id="restriction-overview-filter-roomType" class="restriction-overview-filter form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-bed" title='{{ 'price.views.restriction.index.type'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>
+                <select multiple data-placeholder="{{ 'mbhpricebundle.view.restriction.index.tipnomera'|trans }} " id="restriction-overview-filter-roomType" class="restriction-overview-filter form-control">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
@@ -25,11 +24,12 @@
                 </select>
             </div>
 
-            <div class="input">
-                <i class="fa fa-sliders" title='{{ 'price.views.restriction.index.rate'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.restriction.index.tarif'|trans }} " id="restriction-overview-filter-tariff" class="restriction-overview-filter form-control input-sm">
+            <div class="filter-form_input">
+                <i class="fa fa-sliders" title='{{ 'price.views.restriction.index.rate'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>
+                <select multiple data-placeholder="{{ 'mbhpricebundle.view.restriction.index.tarif'|trans }} " id="restriction-overview-filter-tariff" class="restriction-overview-filter form-control">
                         <option></option>
                         {% for tariff in tariffs %}
-                            <option value="{{ tariff.id }}" {% if (tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length) or (app.request.get('tariffs') is empty and tariff.isDefault) %}selected{% endif %}>{{ tariff.name }}</option>
+                            <option value="{{ tariff.id }}"{% if (tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length) or (app.request.get('tariffs') is empty and tariff.isDefault) %} selected{% endif %}>{{ tariff.name }}</option>
                         {% endfor %}
                 </select>
             </div>

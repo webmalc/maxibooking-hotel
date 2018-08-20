@@ -1,4 +1,5 @@
 views.clientConfig.index.editing: Editing
+views.clientConfig.index.new: Create
 views.clientConfig.layout.parameters: Parameters
 client.tabs.params: Parameters
 client.tabs.payment_system: 'Payment systems'

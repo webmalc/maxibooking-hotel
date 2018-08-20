@@ -20,13 +20,13 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
     use ContainerAwareTrait;
 
     const CHANNEL_MANAGER_SOURCES = [
-        '101 Отель' => HundredOneHotels::CHANNEL_MANAGER_TYPE,
-        'Островок' => 'ostrovok',
+        'fixtures.package_source_data.channel_manager.101hotel' => HundredOneHotels::CHANNEL_MANAGER_TYPE,
+        'fixtures.package_source_data.channel_manager.ostrovok' => 'ostrovok',
         'Oktogo' => 'oktogo',
         'Booking.com' => 'booking',
         'Myallocator.com' => 'myallocator',
         'TripAdvisor.com' => 'tripadvisor',
-        'ВашОтель.ру' => 'vashotel',
+        'fixtures.package_source_data.channel_manager.vas_hotel_dot_ru' => 'vashotel',
     ];
 
     const REGULAR_SOURCES = [
@@ -41,7 +41,13 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
         $locales = $this->container->getParameter('mbh.languages');
         $translationRepository = $manager->getRepository('GedmoTranslatable:Translation');
         $translator = $this->container->get('translator');
-        $sourceTitlesForTranslation = ['online', 'offline', 'regular_customer', 'recommendet_friend'];
+        $sourceTitlesForTranslation = array_filter(
+            array_merge(self::CHANNEL_MANAGER_SOURCES, self::REGULAR_SOURCES),
+            function ($key) {
+                return strpos($key, 'fixtures.package_source_data') === 0;
+            },
+            ARRAY_FILTER_USE_KEY
+            );
 
         foreach ($this->getSource() as $titleId => $value) {
             $title = in_array($value, $sourceTitlesForTranslation)

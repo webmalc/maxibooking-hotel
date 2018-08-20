@@ -1,4 +1,21 @@
 {% extends "MBHPriceBundle::layout.html.twig" %}
 
-{% set title = 'price.views.promotion.layout.small_title'|trans({},'MBHPriceBundle') %}
+{% set small_title = 'price.views.promotion.layout.small_title'|trans({},'MBHPriceBundle') %}
 {% set title_url = path('promotions') %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/promotion/*'%}
+
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{#{% block styles %}#}
+    {#{{ parent() }}#}
+
+    {#{% stylesheets filter='cssrewrite, uglifycss' '@MBHPriceBundle/Resources/public/css/promotion/*'%}#}
+        {#<link rel="stylesheet" href="{{ asset_url }}"/>#}
+    {#{% endstylesheets %}#}
+{#{% endblock %}#}

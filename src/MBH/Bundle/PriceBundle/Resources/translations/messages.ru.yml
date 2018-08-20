@@ -124,6 +124,11 @@ mbhpricebundle.form.tarifftype.promotions.common_info.group_name: 'Общая и
 mbhpricebundle.form.servicetype.nazvaniye: Название
 mbhpricebundle.form.servicetype.vnutrenneyenazvaniye: 'Внутреннее название'
 mbhpricebundle.form.servicetype.tsena: Цена
+mbhpricebundle.form.servicetype.inner_price.label: 'Цена для пересчета'
+mbhpricebundle.form.servicetype.inner_price.placeholder: 'Не используется'
+mbhpricebundle.form.servicetype.is_subtracted.label: 'Вычетается?'
+mbhpricebundle.form.servicetype.is_subtracted.help: 'При внутреннем расчете стоимости проживания, цена вычитается или добавляется?'
+mbhpricebundle.form.servicetype.inner_price.help: 'Цена используется для пересчета стоимости проживания'
 mbhpricebundle.form.servicetype.usluganeispolzuyetsya: 'Услуга не используется'
 mbhpricebundle.form.servicetype.data: 'Дата?'
 mbhpricebundle.form.servicetype.ispolzovatlidatupridobavleniiuslugikbroni: 'Использовать ли дату при добавлении услуги к брони?'
@@ -249,7 +254,7 @@ mbhpricebundle.view.service.index.sokhranitizmeneniya: 'Сохранить из�
 mbhpricebundle.view.service.index.dobavitʹnovuyukategoriyu: 'Добавить новую категорию'
 mbhpricebundle.view.service.newentry.sozdaniyeuslugivkategorii: 'создание услуги в категории'
 mbhpricebundle.view.service.editentry.redaktirovaniyeuslugivkategorii: 'редактирование услуги в категории'
-mbhpricebundle.view.service.layout.uslugi: Услуги
+mbhpricebundle.view.service.layout.uslugi: 'Дополнительные услуги'
 mbhpricebundle.view.service.new.sozdaniyekategoriiuslug: 'создание категории услуг'
 mbhpricebundle.view.service.edit.redaktirovaniyekategoriiuslug: 'редактирование категории услуг'
 mbhpricebundle.view.tariff.editinheritance.redaktirovaniye: редактирование

@@ -444,7 +444,6 @@ tourist.edit_extended.small_title: 'редактирование гостя #'
 tourist.new.small_title: 'создание гостя'
 tourist.edit_document.small_title: 'редактирование гостя #'
 tourist.edit_address.small_title: 'редактирование гостя #'
-tourist.index.small_title: 'Список клиентов'
 tourist.index.foreign_citizens: 'Иностранные граждане'
 tourist.index.dates: Даты
 tourist.index.fio: ФИО
@@ -900,6 +899,7 @@ report.filling.filling.room_types: 'Тип номера'
 report.filling.filling.room_status: 'Статус комнаты'
 report.filling.filling.room_status.without_status: 'Без статуса'
 report.filling.filling.only_enabled: 'Только влюченные?'
+report.filling.filling.recalculate_price_of_accommodation: 'Пересчет стоимости проживания'
 report.polls_view.number_of_order: Заказ
 report.polls_view.hotel: Отель
 report.polls: Даты
@@ -930,6 +930,9 @@ report.room_types_table.summary.number_of_empty_rooms: Свободно
 report.room_types_table.summary.number_of_busy_rooms: Занято
 report.room_types_table.summary.number_of_guests: 'Гостей в брони'
 report.room_types_table.summary.number_of_specified_guests: 'Гостей оформлено'
+fixtures.package_source_data.channel_manager.101hotel: '101 Отель'
+fixtures.package_source_data.channel_manager.ostrovok: Островок
+fixtures.package_source_data.channel_manager.vas_hotel_dot_ru: 'ВашОтель.ру'
 fixtures.package_source_data.on_line_reservation: 'Он-лайн бронирование'
 fixtures.package_source_data.manager: Менеджер
 fixtures.package_source_data.regulat_customer: 'Постоянный клиент'
@@ -1254,7 +1257,6 @@ report.packages_daily_report_compiler.sum_for_packages: 'Приход за бр�
 report.packages_daily_report_compiler.cancellation_for_packages: 'Аннуляция за брони'
 report.packages_daily_report_compiler.return_for_packages: 'Вернули за брони'
 views.report.packages_daily_report.title: 'Денежные средства'
-views.report.reservation_report.title: 'Отчет по бронированию номеров'
 reservation_report.title: 'Бронирование'
 views.report.packages_daily_report.mail_title: 'Отчет по денежным средствам'
 views.report.packages_daily_report.dates_input.title: 'Даты бронирования'

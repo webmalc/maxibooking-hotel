@@ -30,30 +30,32 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
         $start = new \DateTime();
         $certainClient = $input->getOption('client');
 
+        $clientLoginList = $this->getContainer()
+            ->get('mbh.service.client_list_getter')
+            ->getClientsList();
+
+        if ($certainClient) {
+            $clientLoginList = array_intersect($clientLoginList, [$certainClient]);
+        }
+
         $installedClientsResult = $this->getContainer()
             ->get('mbh.billing.api')
             ->getInstalledClients();
 
         if ($installedClientsResult->isSuccessful()) {
             $helper = $this->getContainer()->get('mbh.helper');
-            $clients = array_filter($installedClientsResult->getData(), function (Client $client) use ($helper) {
+            $installedClients = array_filter($installedClientsResult->getData(), function (Client $client) use ($helper) {
                 return $client->getStatus() === Client::CLIENT_ACTIVE_STATUS
                     || ($client->getStatus() === Client::CLIENT_DISABLED_STATUS
                         && !is_null($client->getDisabledAtAsDateTime())
                         && $helper->getDifferenceInDaysWithSign($client->getDisabledAtAsDateTime(), new \DateTime()) < 15);
             });
 
-            $clientLoginList = array_map(function (Client $client) {
+            $installedClientNames = array_map(function (Client $client) {
                 return $client->getLogin();
-            }, $clients);
-        } else {
-            $clientLoginList = $this->getContainer()
-                ->get('mbh.service.client_list_getter')
-                ->getClientsList();
-        }
+            }, $installedClients);
 
-        if ($certainClient) {
-            $clientLoginList = array_intersect($clientLoginList, [$certainClient]);
+            $clientLoginList = array_intersect($clientLoginList, $installedClientNames);
         }
 
         $kernel = $this->getContainer()->get('kernel');
