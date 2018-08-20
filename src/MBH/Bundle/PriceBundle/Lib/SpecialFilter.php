@@ -62,6 +62,28 @@ class SpecialFilter
      */
     private $excludeSpecial;
 
+    /** @var bool  */
+    private $showDeleted = false;
+
+    /**
+     * @return bool
+     */
+    public function showDeleted(): ?bool
+    {
+        return $this->showDeleted;
+    }
+
+    /**
+     * @param bool $showDeleted
+     * @return SpecialFilter
+     */
+    public function setShowDeleted(bool $showDeleted): SpecialFilter
+    {
+        $this->showDeleted = $showDeleted;
+
+        return $this;
+    }
+
     /**
      * @return \DateTime
      */

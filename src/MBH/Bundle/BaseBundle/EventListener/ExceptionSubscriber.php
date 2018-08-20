@@ -18,6 +18,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     public function __construct(KernelInterface $kernel, ExceptionManager $exceptionManager)
     {
+        $this->kernel = $kernel;
         $this->exceptionManager = $exceptionManager;
     }
 
