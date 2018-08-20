@@ -12,4 +12,6 @@ interface AsyncResultStoreInterface
     public function store($result, SearchConditions $conditions):  void;
 
     public function receive(SearchConditions $conditions);
+
+
 }

@@ -161,7 +161,7 @@ class SearchQueryGeneratorTest extends WebTestCase
 
         $this->assertNotEmpty($actual, 'Result is empty!');
         $this->assertCount(1, $actual);
-        $this->assertCount(count($tariffs), $actual[$hotel->getId()]);
+        $this->assertCount(\count($tariffs), $actual[$hotel->getId()]);
     }
 
 

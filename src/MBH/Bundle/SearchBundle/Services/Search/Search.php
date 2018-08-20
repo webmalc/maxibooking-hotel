@@ -133,7 +133,7 @@ class Search
         $conditions->setExpectedResultsCount(\count($searchQueries));
         $this->dm->persist($conditions);
         $this->dm->flush($conditions);
-
+        //** TODO: Create SearchQueryGroup */
         $searchQueriesChunks = array_chunk($searchQueries, $this->getAsyncQueriesChunkNum());
         $conditionsId = $conditions->getId();
         foreach ($searchQueriesChunks as $searchQueriesChunk) {

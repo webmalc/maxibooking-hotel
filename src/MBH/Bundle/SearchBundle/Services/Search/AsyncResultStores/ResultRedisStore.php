@@ -113,6 +113,29 @@ class ResultRedisStore implements AsyncResultStoreInterface
         return $results;
     }
 
+    /**
+     * @param string $hash
+     */
+    public function addFakeReceivedCount(string $hash): void
+    {
+        $receivedCount = $this->cache->get('received' . $hash);
+        $receivedCount ++;
+        $this->cache->set('received' . $hash, $receivedCount);
+    }
 
+    public function increaseAlreadySearchedDay(string $hash): void
+    {
+        $alreadySearched = $this->getAlreadySearchedDay($hash);
+        $this->cache->set('already_received_group_' . $hash, $alreadySearched + 1);
+    }
+
+    /**
+     * @param string $hash
+     * @return int
+     */
+    public function getAlreadySearchedDay(string $hash): int
+    {
+        return (int)$this->cache->get('already_received_group_' . $hash);
+    }
 
 }
