@@ -126,7 +126,7 @@ class PayerType extends AbstractType
             ->add('series', TextType::class, [
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.series.label',
-                'data' => $clientRuPayerData ? $clientRuPayerData->getPassportSerial() : ''
+                'data' => $clientRuPayerData ? $clientRuPayerData->getPassport_serial() : ''
             ])
             ->add('number', TextType::class, [
                 'group' => 'form.payer_type.identification_group',

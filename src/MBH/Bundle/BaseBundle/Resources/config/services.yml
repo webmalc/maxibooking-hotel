@@ -97,7 +97,6 @@ services:
       calls:
         - [attach, ["@mbh.system.messenger"]]
         - [attach, ["@mbh.mailer"]]
-        - [attach, ["@sentry_messenger"]]
       arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.notifier.mailer:
@@ -268,7 +267,7 @@ services:
 
     task_command_runner:
         class:      MBH\Bundle\BaseBundle\Task\CommandRunner
-        arguments:  ["@mbh.task.logger", "@kernel"]
+        arguments:  ["@mbh.task.logger", "@kernel", "@mbh.exception_manager"]
 
     mbh.locale.subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\LocaleSubscriber
@@ -531,3 +530,7 @@ services:
     mbh.warnings_compiler:
         class: MBH\Bundle\BaseBundle\Service\WarningsCompiler
         arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.periods_compiler']
+
+    mbh.exception_manager:
+        class: MBH\Bundle\BaseBundle\Service\ExceptionManager
+        arguments: ['@exception_notifier', '@kernel', '@security.token_storage']

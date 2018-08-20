@@ -19,7 +19,7 @@ interface ChannelManagerConfigInterface
      * @param bool $checkOldPackages
      * @return bool
      */
-    public function isReadyToSync($checkOldPackages = false): bool;
+    public function isReadyToSync($checkOldPackages = true): bool;
 
     /**
      * @return Hotel

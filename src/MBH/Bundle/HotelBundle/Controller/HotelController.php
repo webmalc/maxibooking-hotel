@@ -118,10 +118,6 @@ class HotelController extends Controller
 
         if ($form->isValid()) {
             $this->get('mbh.hotel.hotel_manager')->create($entity);
-            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
-                $this->get('mbh.form_data_handler')
-                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
-            }
             $this->addFlash('success', 'controller.hotelController.record_created_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
