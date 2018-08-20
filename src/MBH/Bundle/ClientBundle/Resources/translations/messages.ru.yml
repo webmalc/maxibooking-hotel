@@ -39,6 +39,7 @@ form.clientPaymentSystemType.successUrl: URl успешной оплаты
 form.clientPaymentSystemType.failUrl: URl неуспешной оплаты
 form.clientPaymentSystemType.successUrlDesc: URl для перенаправления пользователя после успешной оплаты
 form.clientPaymentSystemType.failUrlDesc: URl для перенаправления пользователя после неуспешной оплаты
+form.clientPaymentSystemType.uniteller_is_with_fiscalization.label: 'С фискализацией платежа?'
 form.clientPaymentSystemType.payment_system_group: Платежная система
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
 form.RoomTypeZip.group: Параметры автообновления
