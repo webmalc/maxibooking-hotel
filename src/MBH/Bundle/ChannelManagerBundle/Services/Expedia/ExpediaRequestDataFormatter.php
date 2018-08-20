@@ -158,11 +158,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $numberOfUpdates = 0;
         $requestDataArray = $this->getRoomData($begin, $end, $roomTypes, $config);
         $periodsCompiler = $this->container->get('mbh.periods_compiler');
-        $this->container->get('mbh.channelmanager.logger')->err(json_encode($requestDataArray));
         foreach ($requestDataArray as $roomTypeId => $roomQuotasByDates) {
             $periodsData =
                 $periodsCompiler->getPeriodsByFieldNames($begin, $end, $roomQuotasByDates, ['getLeftRooms'], self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);
-            $this->container->get('mbh.channelmanager.logger')->err(json_encode($periodsData));
             foreach ($periodsData as $periodData) {
                 $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
                 $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
