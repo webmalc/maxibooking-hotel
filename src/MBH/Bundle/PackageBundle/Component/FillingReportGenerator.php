@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Component;
 
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -24,10 +23,17 @@ class FillingReportGenerator
      * @param RoomType[] $roomTypes
      * @param $statusOptions
      * @param $isOnlyEnabledRooms
+     * @param bool $recalculateAccommodationCauseOfServices
      * @return array
      */
-    public function generate(\DateTime $begin, \DateTime $end, array $roomTypes, $statusOptions, $isOnlyEnabledRooms)
-    {
+    public function generate(
+        \DateTime $begin,
+        \DateTime $end,
+        array $roomTypes,
+        $statusOptions,
+        $isOnlyEnabledRooms,
+        $recalculateAccommodationCauseOfServices = false
+    ) {
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $manager = $this->container->get('mbh.hotel.room_type_manager');
 
@@ -247,7 +253,7 @@ class FillingReportGenerator
 
                         foreach($packageServicesList as $service) {
                             if($date >= $service->getBegin() && $date < $service->getEnd()) {
-                                if (!empty($service->getService()->getInnerPrice())) {
+                                if (!empty($service->getService()->getInnerPrice() && $recalculateAccommodationCauseOfServices)) {
                                     $serviceDayPrice = $service->calcTotal(true);
                                     if ($service->getService()->isSubtracted()) {
                                         $packagePrice -= $serviceDayPrice;
