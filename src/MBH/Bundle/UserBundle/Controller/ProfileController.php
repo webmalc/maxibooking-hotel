@@ -154,7 +154,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * @Route("update_tariff_modal", name="update_tariff_modal", options={"expose"=true})
+     * @Route("/update_tariff_modal", name="update_tariff_modal", options={"expose"=true})
      * @Template
      * @param Request $request
      * @return array|Response

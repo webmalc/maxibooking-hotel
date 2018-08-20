@@ -97,7 +97,7 @@ form.payer_type.address_group: Адрес
 form.payer_type.address.label: Адрес
 form.payer_type.city.label: Город
 form.payer_type.state.label: Регион
-form.payer_type.postal_code.label: 'Почтовый код'
+form.payer_type.postal_code.label: 'Почтовый индекс'
 form.payer_type.identification_group: 'Удостоверение личности'
 form.payer_type.document_type.label: 'Тип документа'
 form.payer_type.series.label: Серия
@@ -108,11 +108,12 @@ form.payer_type.issue_by.label: 'Кем выдан'
 form.payer_type.financial_information.label: 'Финансовая информация'
 form.payer_type.inn.label: ИНН
 form.payer_type.organization.group: Организация
+form.payer_type.legal_address.group: 'Юридический адрес'
 form.payer_type.organization.name.label: Название
 form.payer_type.organization.form_of_legal_entity.label: 'Форма юридического лица'
 form.payer_type.organization.legal_address.label: 'Юридический адрес'
 form.payer_type.organization.inn.label: ИНН
-form.payer_type.organization.ogrn.label: ОГРН
+form.payer_type.organization.ogrn.label: "ОГРН (ОГРНИП для ИП)"
 form.payer_type.organization.kpp.label: КПП
 form.payer_type.head.group: Руководитель
 form.payer_type.head.position.label: Должность
