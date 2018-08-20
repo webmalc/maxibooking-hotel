@@ -1,5 +1,8 @@
-///<reference path="Searcher.ts"/>
-class AsyncSearcher extends Searcher {
+declare let Routing: Routing;
+import {Writer} from "../Writer/Writer";
+import {Searcher} from "./Searcher";
+
+export class AsyncSearcher extends Searcher {
 
     private readonly requestThreshold: number = 25;
 
@@ -32,14 +35,9 @@ class AsyncSearcher extends Searcher {
                         data: JSON.stringify([])
                     });
                     let data = await requestResults;
-                    if (requestResults.status === 204) {
-                        throw new Error('End of data');
-                    }
                     this.drawResults(data);
-
                 } catch (err) {
                     error = true;
-                    console.log(err);
                     this.onStopSearch(requestResults);
                 }
                 count++;
@@ -51,6 +49,7 @@ class AsyncSearcher extends Searcher {
             } while (!error && count < this.requestThreshold);
             if (!error) {
                 console.log('Stop async receive by threshold.');
+                this.onStopSearch({status: "error"});
             }
         } catch (e) {
             this.onStopSearch(ajax);

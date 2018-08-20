@@ -1,4 +1,8 @@
-class SyncSearcher extends Searcher {
+declare let Routing: Routing;
+import {Writer} from "../Writer/Writer";
+import {Searcher} from "./Searcher";
+
+export class SyncSearcher extends Searcher {
 
     public constructor(buttonId: string, writer: Writer, dataReceiver: DataReceiverInterface) {
         super(buttonId, writer, dataReceiver);
@@ -15,11 +19,11 @@ class SyncSearcher extends Searcher {
                 dataType: "json",
                 data: JSON.stringify(this.getSearchConditions())
             });
-            const data = await ajax;
+            const data: object = await ajax;
             this.drawResults(data);
-            this.onStopSearch({status: 'success'});
+            this.onStopSearch({status: 'success', message: data});
         } catch (e) {
-            this.onStopSearch(e);
+            this.onStopSearch({status: 'error', message: e});
         }
 
 

@@ -8,7 +8,10 @@ interface SearchDataType {
     additionalEnd?: number,
     roomTypes?: any,
     tariffs?: any,
-    hotels?: any
+    hotels?: any,
+    order?: number,
+    isForceBooking?: boolean,
+    isSpecialStrict?: boolean
 }
 
 interface Routing {
