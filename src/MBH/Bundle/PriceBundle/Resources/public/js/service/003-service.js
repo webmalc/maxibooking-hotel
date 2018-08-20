@@ -2,6 +2,17 @@
 $(document).ready(function () {
     'use strict';
 
+    $('.price-spinner').TouchSpin({
+        min: 0,
+        max: 9007199254740992,
+        //boostat: 50,
+        stepinterval: 50,
+        decimals: 2,
+        step: 0.1,
+        maxboostedstep: 10000000,
+        postfix: '<i class="' + mbh.currency.icon + '"></i>'
+    });
+
     // show/hide dates fields
     (function () {
         var type = $('#mbh_bundle_pricebundle_service_type_calcType');

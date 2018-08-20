@@ -89,6 +89,7 @@ class Service extends Base
 
     /**
      * @var int
+     * @Gedmo\Versioned
      * @ODM\Field(type="float", name="price")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -97,6 +98,24 @@ class Service extends Base
      * )
      */
     protected $price = 0;
+
+    /**
+     * @var float
+     * @Gedmo\Versioned
+     * @ODM\Field(type="float")
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage="mbhpricebundle.document.price_can_not_be_less_than_zero"
+     * )
+     */
+    protected $innerPrice;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isSubtracted = true;
 
     /**
      * @var boolean
@@ -186,6 +205,44 @@ class Service extends Base
      * @Gedmo\Locale
      */
     protected $locale;
+
+    /**
+     * @return mixed
+     */
+    public function getInnerPrice()
+    {
+        return $this->innerPrice;
+    }
+
+    /**
+     * @param mixed $innerPrice
+     * @return Service
+     */
+    public function setInnerPrice($innerPrice)
+    {
+        $this->innerPrice = $innerPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSubtracted(): ?bool
+    {
+        return $this->isSubtracted;
+    }
+
+    /**
+     * @param bool $isSubtracted
+     * @return Service
+     */
+    public function setIsSubtracted(bool $isSubtracted): Service
+    {
+        $this->isSubtracted = $isSubtracted;
+
+        return $this;
+    }
 
     /**
      * @return bool

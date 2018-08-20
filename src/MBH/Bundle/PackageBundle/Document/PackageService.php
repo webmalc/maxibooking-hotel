@@ -362,7 +362,7 @@ class PackageService extends Base
 
     /**
      * @param mixed $total
-     * @return float
+     * @return PackageService
      */
     public function setTotal($total)
     {
@@ -372,15 +372,16 @@ class PackageService extends Base
     }
 
     /**
+     * @param bool $byInnerPrice
      * @return int
      */
-    public function calcTotal()
+    public function calcTotal($byInnerPrice = false)
     {
-        if (!empty($this->getTotalOverwrite())) {
+        if (!empty($this->getTotalOverwrite()) && !$byInnerPrice) {
             return $this->getTotalOverwrite();
         }
 
-        $price = $this->getPrice() * $this->getAmount();
+        $price = ($byInnerPrice ? $this->getService()->getInnerPrice() : $this->getPrice()) * $this->getAmount();
 
         if ($this->getCalcType() == 'per_night') {
             $price *= $this->getNights();
