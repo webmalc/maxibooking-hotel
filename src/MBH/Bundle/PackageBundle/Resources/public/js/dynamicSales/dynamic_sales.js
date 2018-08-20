@@ -56,7 +56,9 @@ $(document).ready(function ($) {
                     success: function (data) {
                         wrapper.html(data);
                         if ($('.dynamic-sales-table').length > 0) {
-                            onTableScroll();
+                            if (!isMobileDevice()) {
+                              onTableScroll();
+                            }
                             updateTables();
                         }
                         pricesProcessing = false;

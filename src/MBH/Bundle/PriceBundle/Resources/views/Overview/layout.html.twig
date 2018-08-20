@@ -1,5 +1,21 @@
 {% extends "MBHPriceBundle::layout.html.twig" %}
 
-{% set title = 'price.views.overview.layout.small_title'|trans({},'MBHPriceBundle') %}
+{% set small_title = 'menu.label.nomandprice.overview'|trans({},'MBHBaseBundle') %}
 {% set title_url = path('room_overview') %}
 
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/overview/*'%}
+
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPriceBundle/Resources/public/css/overview/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}

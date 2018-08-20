@@ -13,6 +13,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\CanPullOldOrdersTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Lib\IsConnectionSettingsReadTrait;
 use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -32,6 +33,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
 
     use ConfigTrait;
     use CanPullOldOrdersTrait;
+    use IsConnectionSettingsReadTrait;
     
     /**
      * Hook timestampable behavior
@@ -148,7 +150,6 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
         $this->rooms = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
         $this->services = new ArrayCollection();
-        $this->setReadinessConfirmed(false);
     }
     
     /**

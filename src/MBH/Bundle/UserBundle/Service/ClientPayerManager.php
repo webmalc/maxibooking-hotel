@@ -62,18 +62,24 @@ class ClientPayerManager
         if ($this->payerFormHandler->isNaturalEntityPayer()) {
             if ($this->payerFormHandler->isRussianPayer()) {
                 $clientPayer = $this->getClientPayer();
-                $this->serializer->denormalize(
+                /** @var ClientPayer $clientPayer */
+                $clientPayer = $this->serializer->denormalize(
                     $payerDataByBillingKeys,
                     ClientPayer::class,
                     null,
                     [AbstractNormalizer::OBJECT_TO_POPULATE => $clientPayer]
                 );
-                $requestResult = $this->billingApi->updateBillingEntity($clientPayer, BillingApi::CLIENT_PAYER_ENDPOINT_SETTINGS, $client);
+                $clientPayer->setClient($client->getLogin());
+
+                $endpointSettings = BillingApi::CLIENT_PAYER_ENDPOINT_SETTINGS;
+                $requestResult = !is_null($clientPayer->getId())
+                    ? $this->billingApi->updateBillingEntity($clientPayer, $endpointSettings, $client)
+                    : $this->billingApi->createBillingEntityBySettings($clientPayer, $endpointSettings);
 
                 $client->setAddress($payerDataByBillingKeys['address']);
                 unset($payerDataByBillingKeys['address']);
             } else {
-                $this->serializer->denormalize(
+                $client = $this->serializer->denormalize(
                     $payerDataByBillingKeys,
                     Client::class,
                     null,
@@ -208,7 +214,8 @@ class ClientPayerManager
     }
 
     /**
-     * @return null|object
+     * @return ClientPayer|null|object
+     * @throws \Exception
      */
     public function getClientPayer()
     {

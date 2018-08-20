@@ -120,6 +120,10 @@ class RandomPackagesGenerator
                         $source = $this->dm
                             ->getRepository('MBHPackageBundle:PackageSource')
                             ->findOneBy(['code' => $sourceId]);
+                        if (is_null($source)) {
+                            continue;
+                        }
+
                         $channelManagerId = $this->helper->getRandomString();
                         $order
                             ->setSource($source)

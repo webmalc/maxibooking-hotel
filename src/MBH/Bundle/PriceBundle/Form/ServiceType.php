@@ -69,7 +69,6 @@ class ServiceType extends AbstractType
             ])
             ->add('recalcCausedByTouristsNumberChange', CheckboxType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.label',
-                'value' => true,
                 'group' => 'price.form.public_information',
                 'required' => false,
                 'help' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.help',
@@ -96,6 +95,19 @@ class ServiceType extends AbstractType
                 'group' => 'price.form.public_information',
                 'required' => false,
                 'attr' => ['placeholder' => 'price.form.service_not_use', 'class' => 'spinner price-spinner'],
+            ])
+            ->add('innerPrice', TextType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.inner_price.label',
+                'help' => 'mbhpricebundle.form.servicetype.inner_price.help',
+                'group' => 'price.form.public_information',
+                'required' => false,
+                'attr' => ['class' => 'spinner price-spinner', 'placeholder' => 'mbhpricebundle.form.servicetype.inner_price.placeholder']
+            ])
+            ->add('isSubtracted', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.is_subtracted.label',
+                'help' => 'mbhpricebundle.form.servicetype.is_subtracted.help',
+                'group' => 'price.form.public_information',
+                'required' => false
             ])
             ->add('date', CheckboxType::class, [
                 'label' => 'price.form.date',

@@ -3,8 +3,6 @@
 namespace MBH\Bundle\BillingBundle\Lib\Model;
 
 
-use MBH\Bundle\BillingBundle\Service\BillingApi;
-
 class ClientPayer
 {
     private $id;
@@ -56,7 +54,7 @@ class ClientPayer
     /**
      * @return mixed
      */
-    public function getPassportSerial()
+    public function getPassport_serial()
     {
         return $this->passport_serial;
     }

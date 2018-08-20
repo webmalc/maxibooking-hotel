@@ -8,33 +8,32 @@
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'cash-filter-form-widget'} %}
         {% block content %}
         <form class="form-inline search-form filter-form remember" id="cash-filter-form" role="form">
-            <div class="input">
-                <i class="fa fa-calendar" title="{{ 'views.cash.index.period'|trans({}, 'MBHCashBundle') }}"
-                   data-toggle='tooltip'></i>
-                &nbsp
-                <input type="text" id="begin" name="begin" class="datepicker begin-datepicker form-control input-sm"
-                       data-date-format="dd.mm.yyyy" value="{{ "-1 week"|date("d.m.Y") }}">
+            <div class="filter-form_group-date">
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title="{{ 'views.cash.index.period'|trans({}, 'MBHCashBundle') }}"
+                       data-toggle='tooltip'></i>
+                    <div class="filter-form_input">
+                        <input type="text" id="begin" name="begin" class="datepicker begin-datepicker form-control"
+                               data-date-format="dd.mm.yyyy" value="{{ "-1 week"|date("d.m.Y") }}">
+                        <span class="filter-form_separator"></span>
+                        <input type="text" id="end" name="end" class="datepicker end-datepicker form-control"
+                               data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
+                    </div>
+                </div>
             </div>
-            <div class="input">
-                — &nbsp
-                <input type="text" id="end" name="end" class="datepicker end-datepicker form-control input-sm"
-                       data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
-            </div>
-
-            <div class="input">
-                <select name="filter" id="filter">
+            <div class="filter-form_input">
+                <select name="filter" id="filter" class="form-control">
                     <option value="paidDate">{{ 'views.cash.index.filter.byPaidDate'|trans({}, 'MBHCashBundle') }}</option>
                     <option value="documentDate">{{ 'views.cash.index.filter.byDocumentDate'|trans({}, 'MBHCashBundle') }}</option>
                     <option value="deletedAt">{{ 'views.cash.index.filter.byDeletedDate'|trans({}, 'MBHCashBundle') }}</option>
                 </select>
             </div>
 
-            <div class="input">
+            <div class="filter-form_input">
                 <i class="fa fa-money" title='{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}'
                    data-toggle='tooltip'></i>
-                &nbsp
-                <select name="methods" id="method"
-                        placeholder="{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}">
+                <select name="methods" id="method" class="form-control"
+                        data-placeholder="{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}">
                     <option></option>
                     {% for type, name in methods %}
                         <option value="{{ type }}">{{ name|trans({}, 'MBHCashBundle') }}</option>
@@ -60,48 +59,48 @@
                     {#{% endfor %}#}
                 {#</select>#}
             {#</div>#}
-            <div class="input">
+            <div class="filter-form_input">
                 <i class="fa fa-user" title='{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}'
                    data-toggle='tooltip'></i>
-                &nbsp;
-                <select class="not-remember" name="user" id="user" placeholder="{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}">
+                <select class="not-remember form-control" name="user" id="user" data-placeholder="{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}">
                     <option></option>
                     {% for user in users %}
                         <option value="{{ user.username }}" {{ app.request.get('user') == user.username ? 'selected' }}>{{ user.fullName(true) }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="input">
+            <div class="filter-form_input">
                 <i class="fa fa-paper-plane" title="{{ 'views.cash.index.type'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"></i>
-                &nbsp;
-                <select id="cash-type" name="type">
+                <select id="cash-type" name="type" class="form-control">
                     <option></option>
                     {% for type in typeList %}
                         <option value="{{ type }}">{{ ('cashDocumentCriteria.type.' ~ type)|trans }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="input">
-                <i class="fa fa-check"
-                   title="{{ 'views.cash.index.show_not_confirmed'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
-                ></i>
-                &nbsp;
-                <input type="checkbox" name="show_no_confirmed" id="show_no_confirmed" value="1">
-
-                &nbsp;
-                <i class="{{ currency().icon }}"
-                   title="{{ 'views.cash.index.show_no_paid'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
-                ></i>
-                &nbsp;
-                <input type="checkbox" name="show_no_paid" id="show_no_paid" value="1">
-
-                &nbsp; <i class="fa fa-trash-o" title="{{ 'views.cash.index.show_deleted'|trans({}, 'MBHCashBundle') }}"
-                          data-toggle="tooltip"></i>&nbsp;
-                <input type="checkbox" name="deleted" id="deleted-checkbox" value="1">
-
-                &nbsp; <i class="fa fa-calendar" title="{{ 'views.cash.index.byDay'|trans({}, 'MBHCashBundle') }}"
-                          data-toggle="tooltip"></i>&nbsp;
-                <input type="checkbox" name="by_day" id="by_day" value="1">
+            <div class="filter-form_group-checkbox">
+                <div class="filter-form_input">
+                    <i class="fa fa-check"
+                       title="{{ 'views.cash.index.show_not_confirmed'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
+                    ></i>
+                    <input type="checkbox" name="show_no_confirmed" id="show_no_confirmed" value="1">
+                </div>
+                <div class="filter-form_input">
+                    <i class="{{ currency().icon }}"
+                       title="{{ 'views.cash.index.show_no_paid'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
+                    ></i>
+                    <input type="checkbox" name="show_no_paid" id="show_no_paid" value="1">
+                </div>
+                <div class="filter-form_input">
+                    <i class="fa fa-trash-o" title="{{ 'views.cash.index.show_deleted'|trans({}, 'MBHCashBundle') }}"
+                       data-toggle="tooltip"></i>
+                    <input type="checkbox" name="deleted" id="deleted-checkbox" value="1">
+                </div>
+                <div class="filter-form_input">
+                    <i class="fa fa-calendar" title="{{ 'views.cash.index.byDay'|trans({}, 'MBHCashBundle') }}"
+                       data-toggle="tooltip"></i>
+                    <input type="checkbox" name="by_day" id="by_day" value="1">
+                </div>
             </div>
         </form>
         {% endblock content %}

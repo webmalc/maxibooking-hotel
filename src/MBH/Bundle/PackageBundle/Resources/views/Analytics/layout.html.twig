@@ -1,4 +1,20 @@
 {% extends "MBHPackageBundle::layout.html.twig" %}
 
-{% set title = 'analytics.layout.report'|trans({}, 'MBHPackageBundle') %}
+{% set title = 'menu.label.financial_analytics'|trans({}, 'MBHBaseBundle') %}
 {% set title_url = path('analytics') %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='?uglifyjs2'
+        '@MBHPackageBundle/Resources/public/js/analytics/*' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/analytics/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}

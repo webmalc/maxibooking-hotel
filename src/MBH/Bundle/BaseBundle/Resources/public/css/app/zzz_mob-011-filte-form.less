@@ -1,0 +1,44 @@
+@media (max-width: 767px){
+  .filter-form {
+
+    input.datepicker {
+      max-width: 100% !important;
+      text-align: center;
+    }
+    .filter-form_group-select-in-service,
+    .filter-form_group-human-input,
+    .filter-form_group-date {
+      width: 100%;
+      .filter-form_input:first-child {
+        margin-bottom: 0;
+      }
+    }
+
+    #package-filter-dates,
+    .select2-container--default,
+    .datepicker-period-select {
+      min-width: unset!important;
+      max-width: unset!important;
+      width: 100% !important;
+    }
+    .filter-form_input {
+      width: 100%;
+      margin-bottom: 3px;
+      > i.fa::before {
+        margin-left: unset;
+      }
+      button {
+        margin-top: 5px;
+      }
+    }
+
+    .filter-form_group-checkbox{
+      margin-top: 3px;
+      width: 100%;
+
+      >.filter-form_input {
+        margin-left: 3px;
+      }
+    }
+  }
+}

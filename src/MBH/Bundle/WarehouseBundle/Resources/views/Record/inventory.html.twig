@@ -1,6 +1,6 @@
 {% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
 
-{% set small_title = 'warehouse.record.inventory'|trans %}
+{% set small_title = 'warehouse.common.title'|trans %}
 {% set layout = "tabs" %}
 
 {% block content %}
@@ -14,12 +14,12 @@
 			{% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'inventory-filter-form-widget' } %}
 
 			{{ form_start(form, {attr: {class: 'form-inline filter-form remember', id: 'inventory-filter-form'}}) }}
-				<div class="input">
+				<div class="filter-form_input">
 					<i class="fa fa-home" title='{{ 'warehouse.record.hotels'|trans }}' data-toggle="tooltip"></i>&nbsp;
 					{{ form_widget(form.hotel) }}
 				</div>
 
-				<div class="input">
+				<div class="filter-form_input">
 					<i class="fa fa-book" title='{{ 'warehouse.record.goods'|trans }}' data-toggle="tooltip"></i>&nbsp;
 					{{ form_widget(form.wareItem) }}
 				</div>

@@ -1,4 +1,7 @@
 {% extends "MBHUserBundle::layout.html.twig" %}
 
-{% set title = 'layout.groups'|trans({}, 'FOSUserBundle')  %}
+{% set management_icon = true %}
+{% if title is not defined %}
+    {% set title = 'layout.groups'|trans({}, 'FOSUserBundle')  %}
+{% endif %}
 {% set title_url = path('group') %}

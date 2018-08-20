@@ -22,13 +22,13 @@
                 </th>
             </tr>
             <tr>
-                <th class="hidden-xs td-xxs"></th>
-                <th class="hidden-xs">{{ "specials.title"|trans }}</th>
-                <th class="hidden-xs td-md">{{ "special.group.dates"|trans }}</th>
-                <th class="hidden-xs td-md">{{ "mbhpricebundle.view.roomcache.index.tipnomera"|trans }}</th>
-                <th class="hidden-xs td-md">{{ "specials.tariff"|trans }}</th>
-                <th class="hidden-xs td-sm">{{ "specials.discount"|trans }}</th>
-                <th class="hidden-xs td-sm text-center">{{ "specials.sold"|trans }}</th>
+                <th class="td-xxs"></th>
+                <th>{{ "specials.title"|trans }}</th>
+                <th class="td-md">{{ "special.group.dates"|trans }}</th>
+                <th class="td-md">{{ "mbhpricebundle.view.roomcache.index.tipnomera"|trans }}</th>
+                <th class="td-md">{{ "specials.tariff"|trans }}</th>
+                <th class="td-sm">{{ "specials.discount"|trans }}</th>
+                <th class="td-sm text-center">{{ "specials.sold"|trans }}</th>
                 <th class="td-sm"></th>
             </tr>
             </thead>
@@ -43,48 +43,15 @@
                         <i class="fa fa-search"></i> {{ selectedSpecial ? 'cancel'|trans : 'special.apply'|trans }}
                     </a>
                 {% endset %}
-                <tr class="{{ selectedSpecial ? 'success' }}">
-                    <td class="text-center"><i class='fa fa-star'></i></td>
-                    <td class="hidden-xs"><a target="_blank" href="{{ path('special_edit', {'id': special.id}) }}">{{ special }}</a></td>
-                    <td class="hidden-xs">{{ special.begin|mbh_format }} - {{ special.end|mbh_format }}</td>
-                    <td class="hidden-xs">
-                        <small>{{ special.roomTypes|join(';<br>')|raw }}</small>
-                    </td>
-                    <td class="hidden-xs">
-                        <small>{{ special.tariffs|join(';<br>')|raw }}</small>
-                    </td>
-                    <td class="hidden-xs">{{ discount }}</td>
-                    <td class="hidden-xs text-center">{{ special.sold }}/{{ special.limit }}</td>
-                    <td>
-                        <div class="hidden-xs">
-                            {{ btn_special }}
-                        </div>
-                        <div class="visible-xs result-tbl-special-for-xs">
-                            <div>
-                                <a target="_blank" href="{{ path('special_edit', {'id': special.id}) }}">{{ special }}</a>
-                                <small>
-                                    {{ discount }}
-                                </small>
-                            </div>
-                            <div>
-                                <small>{{ "specials.sold"|trans }} {{ special.sold }}/{{ special.limit }}</small>
-                            </div>
-                            <div>
-                                <small>
-                                    {{ special.begin|mbh_format }} - {{ special.end|mbh_format }}
-                                </small>
-                            </div>
-                            <div>
-                                <small>{{ special.roomTypes|join(';<br>')|raw }}</small>
-                            </div>
-                            <div>
-                                <small>{{ special.tariffs|join(';<br>')|raw }}</small>
-                            </div>
-                            <div>
-                                {{ btn_special }}
-                            </div>
-                        </div>
-                    </td>
+                <tr{{ selectedSpecial ? 'class="success"' }}>
+                    <td><i class='fa fa-star'></i></td>
+                    <td><a target="_blank" href="{{ path('special_edit', {'id': special.id}) }}">{{ special }}</a></td>
+                    <td>{{ special.begin|mbh_format }} - {{ special.end|mbh_format }}</td>
+                    <td>{% if special.roomTypes is not empty %}<small>{{ special.roomTypes|join(';<br>')|raw }}</small>{% endif %}</td>
+                    <td>{% if special.roomTypes is not empty %}<small>{{ special.tariffs|join(';<br>')|raw }}</small>{% endif %}</td>
+                    <td>{{ discount }}</td>
+                    <td class="text-center">{{ special.sold }}/{{ special.limit }}</td>
+                    <td>{{ btn_special }}</td>
                 </tr>
             {% endfor %}
             </tbody>

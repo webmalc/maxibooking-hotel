@@ -44,8 +44,8 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $serviceTariffs = $this->pullTariffs($config);
             $pricesData = $this->requestDataFormatter->formatPriceRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdatePricesRequest($pricesData);
+            $this->log('begin update prices');
             foreach ($requestInfoArray as $requestInfo) {
-                $this->log('begin update prices');
                 $this->log($requestInfo->getRequestData());
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $isResponseSuccessful = $this->checkResponse($sendResult);

@@ -1,5 +1,7 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
+{% set management_icon = true %}
+{% set title =  "menu.label.analytics"|trans({}, "MBHBaseBundle")  %}
 {% set small_title = "source.index.reservation_source"|trans({}, "MBHPackageBundle") %}
 {% set title_url = path('package_source') %}
 {% set layout='box' %}

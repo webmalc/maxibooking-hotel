@@ -50,7 +50,10 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             return $this->manager->getRooms($this->hotel);
         };
         $roomTypes = $this->get('mbh.helper')->getFilteredResult($this->dm, $getRoomTypeCallback, $isDisableableOn);
-        $emptyPeriodWarnings = $this->get('mbh.warnings_compiler')->getEmptyCacheWarningsAsStrings($this->hotel, 'price');
+        if ($this->clientConfig->isMBSiteEnabled()) {
+            $emptyPeriodWarnings = $this->get('mbh.warnings_compiler')->getEmptyCacheWarningsAsStrings($this->hotel, 'price');
+        }
+
         if (!empty($emptyPeriodWarnings)) {
             $this->addFlash('warning', join('<br>', $emptyPeriodWarnings));
         }

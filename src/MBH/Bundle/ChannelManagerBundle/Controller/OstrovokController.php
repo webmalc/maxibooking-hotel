@@ -33,7 +33,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
     {
         $entity = $this->hotel->getOstrovokConfig();
 
-        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($entity, 'ostrovok');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($entity, 'ostrovok');
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }
@@ -60,6 +60,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
      * @Template("MBHChannelManagerBundle:Ostrovok:index.html.twig")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Throwable
      */
     public function saveAction(Request $request)
     {
@@ -87,6 +88,10 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success', 'controller.ostrovokController.settings_saved_success');
+
+            if (!$entity->isReadyToSync()) {
+                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('Ostrovok', $this->get('mbh.instant_notifier'));
+            }
 
             return $this->redirect($this->generateUrl('ostrovok'));
         }
@@ -162,6 +167,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
     public function tariffAction(Request $request)
     {
         $entity = $this->hotel->getOstrovokConfig();
+        $inGuide = !$entity->isReadyToSync();
 
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -186,12 +192,13 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
+            $this->addFlash('success', 'controller.ostrovokController.settings_saved_success');
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.ostrovokController.settings_saved_success'));
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'ostrovok'])
+                : $this->generateUrl('ostrovok_tariff');
 
-            return $this->redirect($this->generateUrl('ostrovok_tariff'));
+            return $this->redirect($redirectRoute);
         }
 
 

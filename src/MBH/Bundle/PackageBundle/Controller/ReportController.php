@@ -135,6 +135,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $menuItem = $this->get('knp_menu.factory')->createItem('types');
         $menuItem->setChildrenAttribute('id', 'porter-report-tabs');
         $menuItem->setChildrenAttribute('class', 'nav nav-tabs');
+        $menuItem->setChildrenAttribute('role', 'tablist');
 
         $menuItem
             ->addChild('arrivals', [

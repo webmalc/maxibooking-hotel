@@ -18,10 +18,23 @@ form[name="loginForm"] {
   .alignment-for-little-screen {
     display: flex;
     align-items: center;
+
+    @media (max-width: 350px) {
+     div.col-xs-6:first-child {
+        width: 100%;
+      }
+    }
   }
 
   .g-recaptcha {
     display: flex;
     justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .login-box {
+    max-width: 360px;
+    margin-top: 5%;
   }
 }

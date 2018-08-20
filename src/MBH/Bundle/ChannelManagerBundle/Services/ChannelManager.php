@@ -33,6 +33,12 @@ class ChannelManager
         'hundred_one_hotels' => 'HundredOneHotelsConfig'
     ];
 
+    const PULL_OLD_ORDERS_ROUTES = [
+        'booking' => 'booking_all_packages_sync',
+        'hundred_one_hotels' => 'hoh_packages_sync',
+        'expedia' => 'expedia_packages_sync'
+    ];
+
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
@@ -73,7 +79,6 @@ class ChannelManager
         $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->client = $container->getParameter('client');
         $this->producer = $this->container->get('old_sound_rabbit_mq.task_command_runner_producer');
-        $this->services = $this->getServices();
     }
 
     /**
@@ -85,10 +90,11 @@ class ChannelManager
     }
 
     /**
+     * @param bool $isForPullingOldOrders
      * @param array $filter
      * @return array
      */
-    public function getServices(array $filter = null)
+    public function getServices($isForPullingOldOrders = false, array $filter = null)
     {
         if (!$this->checkEnvironment()) {
             return [];
@@ -100,7 +106,7 @@ class ChannelManager
             try {
                 $service = $this->container->get($info['service']);
 
-                if ($service instanceof ServiceInterface && !empty($service->getConfig())) {
+                if ($service instanceof ServiceInterface && !empty($service->getConfig($isForPullingOldOrders))) {
                     if (!empty($filter) && !in_array($key, $filter)) {
                         continue;
                     }
@@ -222,7 +228,7 @@ class ChannelManager
     public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): array
     {
         $results = [];
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             $result = $service['service']->getOverview($begin, $end, $hotel);
             $results[$service['key']] = $result;
             if ($result) {
@@ -244,7 +250,7 @@ class ChannelManager
         }
 
         $result = false;
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             try {
                 $noError = true;
                 if (empty($roomType) && empty($begin) && empty($end) && $command === AbstractChannelManagerService::COMMAND_UPDATE) {
@@ -325,7 +331,7 @@ class ChannelManager
 
     public function pushResponse($serviceTitle, Request $request)
     {
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             if ($serviceTitle && $service['key'] != $serviceTitle) {
                 continue;
             }
@@ -353,7 +359,7 @@ class ChannelManager
             return false;
         }
         $result = false;
-        foreach ($this->services as $service) {
+        foreach ($this->getServices($pullOldStatus === self::OLD_PACKAGES_PULLING_ALL_STATUS) as $service) {
             if ($serviceTitle && $service['key'] != $serviceTitle) {
                 continue;
             }
@@ -417,59 +423,28 @@ class ChannelManager
         return $this->container->getParameter('mbh.channelmanager.services')[$channelManagerName]['title'];
     }
 
-    /**
-     * @param ChannelManagerConfigInterface|null $config
-     * @param string $channelManagerName
-     * @return bool|string
-     */
-    public function checkForReadinessOrGetStepUrl(?ChannelManagerConfigInterface $config, string $channelManagerName)
-    {
-        if (is_null($config) || !$config->isReadyToSync()) {
-            $currentStepRouteName = $this->container->get('mbh.cm_wizard_manager')->getCurrentStepUrl($channelManagerName, $config);
-            if ($currentStepRouteName !== $channelManagerName) {
-                $routeParams = $currentStepRouteName === 'wizard_info' ? ['channelManagerName' => $channelManagerName] : [];
-
-                return $this->container->get('router')->generate($currentStepRouteName, $routeParams);
-            }
-        }
-
-        return true;
-    }
-
 
     /**
      * @param Hotel $hotel
      * @param string $channelManagerName
-     * @return bool
      */
-    public function confirmReadinessOfCM(Hotel $hotel, string $channelManagerName)
+    public function setIsConnectionInstructionRead(Hotel $hotel, string $channelManagerName)
     {
-        $config = $this->getConfigForHotel($hotel, $channelManagerName);
-        $isConfiguredByTechSupport
-            = $this->container->get('mbh.cm_wizard_manager')->isConfiguredByTechSupport($channelManagerName);
-
-        if (is_null($config)) {
-            if ($isConfiguredByTechSupport) {
-                throw new \InvalidArgumentException('Connection request was not sent!');
-            }
-
-            /** @var ChannelManagerConfigInterface $config */
-            $configType = $this->getConfigFullName($channelManagerName);
-            $config = new $configType;
-            $config->setHotel($hotel);
-            $this->dm->persist($config);
+        if (!is_null($this->getConfigForHotel($hotel, $channelManagerName))) {
+            throw new \RuntimeException('There is existing config');
         }
 
-        if ($isConfiguredByTechSupport && empty($config->getHotelId())) {
-            throw new \RuntimeException('Mandatory data is not specified');
-        }
+        /** @var ChannelManagerConfigInterface $config */
+        $configType = $this->getConfigFullName($channelManagerName);
+        $config = new $configType;
+        $config
+            ->setHotel($hotel)
+            ->setIsConnectionSettingsRead(true);
 
-        $config->setReadinessConfirmed(true);
+        $this->dm->persist($config);
 
         $this->dm->flush();
         $this->dm->refresh($hotel);
-
-        return true;
     }
 
 

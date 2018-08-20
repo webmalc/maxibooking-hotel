@@ -1,10 +1,20 @@
-{% extends 'MBHOnlineBundle:PaymentForm:layout.html.twig' %}
+{% extends 'MBHOnlineBundle:PaymentForm:common_for_new_and_edit.html.twig' %}
+
 {% if form.formTemplate is defined %}
     {% form_theme form.formTemplate '@MBHOnline/Form/Template/formTemplate.html.twig' %}
 {% endif %}
-{#{% set small_title = 'views.form.index.edit'|trans({}, 'MBHOnlineBundle') %}#}
 {% set layout = "tabs" %}
 {% set active = 1 %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% include 'MBHOnlineBundle::assetic_for_form_js.html.twig' %}
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+    {% include 'MBHOnlineBundle::assetic_for_form_css.html.twig' %}
+{% endblock %}
 
 {% block content %}
     {% include '@MBHOnline/PaymentForm/tabs.html.twig' %}

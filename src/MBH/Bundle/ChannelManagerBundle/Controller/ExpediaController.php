@@ -34,7 +34,7 @@ class ExpediaController extends Controller
     {
         $config = $this->hotel->getExpediaConfig();
 
-        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'expedia');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, 'expedia');
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }
@@ -58,6 +58,7 @@ class ExpediaController extends Controller
      * @Template("MBHChannelManagerBundle:Expedia:index.html.twig")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Throwable
      */
     public function saveAction(Request $request)
     {
@@ -83,6 +84,10 @@ class ExpediaController extends Controller
                 $this->get('mbh.channelmanager')->updateInBackground();
 
                 $this->addFlash('success', 'controller.expediaController.settings_saved_success');
+                if (!$config->isReadyToSync()) {
+                    $this->get('mbh.messages_store')
+                        ->sendMessageToTechSupportAboutNewConnection('Expedia', $this->get('mbh.instant_notifier'));
+                }
             } else {
                 $this->addFlash('danger', $errorMessage);
             }
@@ -138,9 +143,11 @@ class ExpediaController extends Controller
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
-            $redirectRouteName = $inGuide ? 'expedia_packages_sync' : 'expedia_tariff';
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'expedia'])
+                : $this->generateUrl('expedia_tariff');
 
-            return $this->redirectToRoute($redirectRouteName);
+            return $this->redirect($redirectRoute);
         }
 
         return [

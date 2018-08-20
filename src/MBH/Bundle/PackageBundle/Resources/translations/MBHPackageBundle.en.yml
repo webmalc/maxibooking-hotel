@@ -338,7 +338,6 @@ task.group: Group
 poll.question.rules: 'Hotel accommodation rules availability'
 poll.question.hotel_location: 'Hotel location and transport availability'
 poll.controller.save_success: 'Thank you! Your rating successfully saved!'
-report.porter.small_title: Porter
 report.porter.error: 'Dates selected incorrectly'
 report.porter.arrivals.empty: 'Reservations not found'
 report.porter.live.empty: 'Reservations not found'
@@ -387,11 +386,10 @@ source.index.edit_record: Edit
 source.index.delete_record: Delete
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Impossible to delete the record with reservations. Reservations:'
 views.list.we_were_glad_to_recieve_you: 'We were glad to see you and we hope that your stay in our hotel was pleasant and comfortable.'
-report.poll.small_title: Grades
+report.poll.small_title: 'Guest Reviews'
 views.report.polls.th.hotel: Hotel
 poll.question.category.accommodation: 'Overall comfort'
 report.users.error: 'Reservations not found'
-organizations.breadcrumbs.list: Company
 poll.other.note: Comment
 poll.question.category.hotel: 'our hotel'
 views.list.send: SEND
@@ -400,8 +398,7 @@ views.report.polls.th.order: Order
 mbhpackagebundle.view.report.polls.daty: Dates
 mbh.package.arrivals.study: Education
 mbh.package.arrivals.other: Other
-report.users.small_title: Users
-report.users.roomtype: Rooms
+report.users.small_title: 'Sales Team'
 package.edit.edit_delete_reasons: 'Edit deletion reasons'
 organizations.breadcrumbs.add: 'Add company'
 organizations.breadcrumbs.edit: 'Edit company'
@@ -435,7 +432,6 @@ dynamic.sales.day.number-of-created-packages-for-period: 'Reservations created p
 dynamic.sales.day.number-of-cancelled: 'Reservations cancelled in 24 hours'
 dynamic.sales.day.sales.comparison: Comparisson
 package.dynamic.sale.search: Show
-dynamic.sales.layout.title: Reports
 dynamic.sales.day.periods: Periods
 dynamic.sales.day.summary: Total
 dynamic.sales.day.sales.summ: Sum
@@ -465,3 +461,9 @@ dynamic.sales.day.sum-paid-to-clients-for-period-for-removed: 'Recervations canc
 dynamic.sales.show.title: 'Categories displayed'
 views.report.polls.select_button.title: Apply
 dynamic_sales.modal.close_button.text: Close
+modal.form.delete.reasons.confirmation: 'Are you sure you want to cancel and delete this reservation?'
+package.edit.package_price: 'Accommodation price'
+package.service.index.filter.housings: Wing
+package.service.total_guests: 'Guests in the resevation total'
+package.service.tourists: 'Guests specified in the reservation'
+package.service.index.filter.room_types: 'Room type'

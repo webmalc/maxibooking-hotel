@@ -1,6 +1,6 @@
-<div class="input">
-    &nbsp;<i class="fa fa-clock-o" data-toggle="tooltip" data-placement="top" title="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }} "></i>&nbsp;
-    <select class="datepicker-period-select" data-placeholder="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }} " placeholder="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }} ">
+<div class="filter-form_input">
+    <i class="fa fa-clock-o" data-toggle="tooltip" data-placement="top" title="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }}"></i>
+    <select class="datepicker-period-select form-control" data-placeholder="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }}">
         <option></option>
         <option value="{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}-{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}">
             {{ 'mbhbasebundle.views.partials.yesterday'|trans }}

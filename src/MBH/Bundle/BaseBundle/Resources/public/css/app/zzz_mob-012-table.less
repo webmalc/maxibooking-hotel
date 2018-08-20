@@ -1,0 +1,128 @@
+// таблицы dataTable
+@media (max-width: 767px) {
+
+  .content-wrapper {
+    table {
+      width: 100% !important;
+      &:not(.custom-mobile-style) {
+        tfoot,
+        thead {
+          display: none;
+        }
+
+        tbody {
+          display: flex;
+          flex-direction: column;
+
+          tr {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex-direction: column;
+
+            margin-top: 1px;
+            border: 0.5px solid #e0e0e0;
+
+            &:nth-of-type(odd) {
+              background: #e0e0e0;
+            }
+            &.success {
+              background: #dff0d8;
+            }
+            &.info {
+              background: #d9edf7;
+            }
+            &.warning {
+              background: #fcf8e3;
+            }
+            &.danger {
+              background: #f2dede;
+            }
+
+            td:not(:empty) {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-wrap: wrap;
+              border: unset;
+              div {
+                text-align: center;
+              }
+            }
+            td:empty {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+
+    .dataTables_wrapper {
+      // пагинация
+      div.row>.col-sm-7 {
+        padding-right: unset;
+        padding-left: unset;
+        #tourist-table_ellipsis>a {
+          padding: 6px 5px;
+        }
+      }
+
+      div.row>.col-sm-12 {
+        padding-right: unset;
+        padding-left: unset;
+      }
+
+      /** здесь допушение, что первый див это поиск*/
+      div.row:nth-of-type(1) {
+        display: flex;
+
+        div {
+          &:last-of-type {
+            width: 100%;
+          }
+
+          @media (max-width: 350px) {
+            &.col-sm-6 {
+              padding-left: 3px;
+              padding-right: 3px;
+            }
+          }
+        }
+
+        .dataTables_filter {
+          label {
+            display: flex;
+            align-items: center;
+            input {
+              width: 100%!important;
+            }
+          }
+        }
+        @media (max-width: 560px) {
+          .dataTables_length {
+            label {
+              font-size: 0;
+              select {
+                width: 56px !important;
+              }
+              &:hover {
+                font-size: inherit;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 351px) {
+  /* пагинация страниц на маленьких экранах */
+  .dataTables_wrapper {
+    .col-sm-7 {
+      .pagination > li > a {
+        padding: 6px 10px;
+      }
+    }
+  }
+}

@@ -13,12 +13,12 @@ class RoomCacheRepository extends DocumentRepository
     /**
      * @param int $period
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function findForDashboard(int $period, string $roomTypeKey = 'roomType'): array
     {
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . $period . ' days');
-        $result = [];
         $caches =  $this->createQueryBuilder()
             ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'totalRooms', 'roomTypeCategory.id')
             ->field('date')->gte($begin)->lte($end)
@@ -28,16 +28,37 @@ class RoomCacheRepository extends DocumentRepository
             ->getQuery()
             ->execute()->toArray();
 
-        foreach ($caches as $cache) {
-            $cache['id'] = (string) $cache['_id'];
-            $cache['date'] = $cache['date']->toDateTime();
-            $cache['date']->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-            $cache['hotel'] = (string) $cache['hotel']['$id'];
-            $cache['roomType'] = (string) $cache['roomType']['$id'];
-            $cache['tariff'] = isset($cache['tariff']) ? (string) $cache['tariff']['$id'] : 0;
-            unset($cache['_id']);
-            $result[$cache['hotel']][$cache[$roomTypeKey]][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
+        $result = $this->convertRawCaches($caches);
+
+        return $result;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param null $roomTypeIds
+     * @param null $tariffIds
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getRawByRoomTypesAndTariffs(\DateTime $begin, \DateTime $end, $roomTypeIds = null, $tariffIds = null)
+    {
+        $cachesQb =  $this
+            ->createQueryBuilder()
+            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'totalRooms')
+            ->field('date')->gte($begin)->lte($end)
+            ->sort('date')->sort('hotel.id')->sort('roomType.id')
+            ->hydrate(false);
+
+        if (!is_null($roomTypeIds)) {
+            $cachesQb->field('roomType.id')->in($roomTypeIds);
         }
+
+        if (!is_null($tariffIds)) {
+            $cachesQb->field('tariff.id')->in($roomTypeIds);
+        }
+
+        $result = $this->convertRawCaches($cachesQb->getQuery()->execute());
 
         return $result;
     }
@@ -249,5 +270,26 @@ class RoomCacheRepository extends DocumentRepository
         $qb = $this->fetchQueryBuilder($begin, $end, null, $rawRoomTypeId, false);
 
         return $qb->hydrate(false)->getQuery()->execute()->toArray();
+    }
+
+    /**
+     * @param $caches
+     * @return array
+     */
+    private function convertRawCaches($caches, string $roomTypeKey = 'roomType')
+    {
+        $result = [];
+        foreach ($caches as $cache) {
+            $cache['id'] = (string)$cache['_id'];
+            $cache['date'] = $cache['date']->toDateTime();
+            $cache['date']->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+            $cache['hotel'] = (string)$cache['hotel']['$id'];
+            $cache['roomType'] = (string)$cache['roomType']['$id'];
+            $cache['tariff'] = isset($cache['tariff']) ? (string)$cache['tariff']['$id'] : 0;
+            unset($cache['_id']);
+            $result[$cache['hotel']][$cache[$roomTypeKey]][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
+        }
+
+        return $result;
     }
 }

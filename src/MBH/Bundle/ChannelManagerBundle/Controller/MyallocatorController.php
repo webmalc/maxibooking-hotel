@@ -33,7 +33,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     {
         $config = $this->hotel->getMyallocatorConfig();
 
-        $isReadyResult = $this->get('mbh.channelmanager')->checkForReadinessOrGetStepUrl($config, 'myallocator');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, 'myallocator');
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }
@@ -57,6 +57,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
      * @Template("MBHChannelManagerBundle:Myallocator:index.html.twig")
      * @param Request $request
      * @return Response
+     * @throws \Throwable
      */
     public function saveAction(Request $request)
     {
@@ -93,6 +94,10 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
+
+            if ($config->isReadyToSync()) {
+                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('MyAllocator', $this->get('mbh.instant_notifier'));
+            }
 
             return $this->redirect($this->generateUrl('myallocator'));
         }
@@ -187,6 +192,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getMyallocatorConfig();
+        $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -212,12 +218,13 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
+            $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.myallocatorController.settings_saved_success'));
+            $redirectRoute = $inGuide
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => 'myallocator'])
+                : $this->generateUrl('myallocator_tariff');
 
-            return $this->redirect($this->generateUrl('myallocator_tariff'));
+            return $this->redirect($redirectRoute);
         }
 
         return [

@@ -10,6 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
@@ -533,7 +534,7 @@ class Order extends Base
     /**
      * Get cashDocuments
      *
-     * @return \Doctrine\Common\Collections\Collection $cashDocuments
+     * @return \Doctrine\Common\Collections\Collection|CashDocument[] $cashDocuments
      */
     public function getCashDocuments()
     {

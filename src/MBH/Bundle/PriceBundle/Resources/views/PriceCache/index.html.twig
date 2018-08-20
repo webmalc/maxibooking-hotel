@@ -1,6 +1,5 @@
 {% extends 'MBHPriceBundle:PriceCache:layout.html.twig' %}
 
-{% set small_title = 'price.views.priceCache.index.small_title'|trans({},'MBHPriceBundle') %}
 {% set layout = 'box' %}
 
 {% block content %}
@@ -12,26 +11,24 @@
     </div>
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'price-cache-overview-filter-widget' } %}
     <form id="price-cache-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
-        <div class="input">
+        <div class="filter-form_input">
             <i class="fa fa-calendar" title='{{ 'price.views.priceCache.index.date'|trans({},'MBHPriceBundle') }}'
-               data-toggle='tooltip'></i>&nbsp
+               data-toggle='tooltip'></i>
             <input type="text" id="price-cache-overview-filter-begin"
-                   class="datepicker price-cache-overview-filter begin-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
+                   class="datepicker price-cache-overview-filter begin-datepicker mbh-daterangepicker  not-set-date form-control"
                    data-date-format="dd.mm.yyyy">
         </div>
         <div class="input hidden">
-            - &nbsp
             <input type="text" id="price-cache-overview-filter-end"
                    class="datepicker price-cache-overview-filter end-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
                    data-date-format="dd.mm.yyyy">
         </div>
 
-        <div class="input">
+        <div class="filter-form_input">
             <i class="fa fa-bed" title='{{ 'price.views.priceCache.index.type'|trans({},'MBHPriceBundle') }}'
-               data-toggle='tooltip'></i>&nbsp <select multiple
-                                                       data-placeholder="{{ 'price.views.priceCache.index.type'|trans({},'MBHPriceBundle') }}"
-                                                       id="price-cache-overview-filter-roomType"
-                                                       class="price-cache-overview-filter form-control input-sm">
+               data-toggle='tooltip'></i>
+            <select multiple data-placeholder="{{ 'price.views.priceCache.index.type'|trans({},'MBHPriceBundle') }}"
+                    id="price-cache-overview-filter-roomType" class="price-cache-overview-filter form-control">
                 <option></option>
                 {% for roomType in roomTypes %}
                     <option value="{{ roomType.id }}"
@@ -40,12 +37,11 @@
             </select>
         </div>
 
-        <div class="input">
+        <div class="filter-form_input">
             <i class="fa fa-sliders" title='{{ 'price.views.priceCache.index.rate'|trans({},'MBHPriceBundle') }}'
-               data-toggle='tooltip'></i>&nbsp <select multiple
-                                                       data-placeholder="{{ 'price.views.priceCache.index.rate'|trans({},'MBHPriceBundle') }}"
-                                                       id="price-cache-overview-filter-tariff"
-                                                       class="price-cache-overview-filter form-control input-sm">
+               data-toggle='tooltip'></i>
+            <select multiple data-placeholder="{{ 'price.views.priceCache.index.rate'|trans({},'MBHPriceBundle') }}"
+                    id="price-cache-overview-filter-tariff" class="price-cache-overview-filter form-control">
                 <option></option>
                 {% for tariff in tariffs %}
                     <option value="{{ tariff.id }}"
@@ -54,14 +50,14 @@
             </select>
         </div>
         {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'price_cache_overview'} %}
-        <div class="input">
-            <label for="displayed-prices-date"><i class="fa fa-calendar-check-o" aria-hidden="true" title='{{ 'mbhpricebundle.view.pricecache.filter.displayed_price_caches_date'|trans }}' data-toggle='tooltip'></i>&nbsp;</label>
-            <input type="text" id="displayed-prices-date" name="displayed-prices-date" class="price-cache-overview-filter datepicker form-control input-sm" data-date-format="dd.mm.yyyy" value="">
+        <div class="filter-form_input">
+            <i class="fa fa-calendar-check-o" aria-hidden="true" title='{{ 'mbhpricebundle.view.pricecache.filter.displayed_price_caches_date'|trans }}' data-toggle='tooltip'></i>
+            <input type="text" id="displayed-prices-date" name="displayed-prices-date" class="price-cache-overview-filter datepicker form-control" data-date-format="dd.mm.yyyy" value="">
         </div>
-        <div class="input">
-            <label for="displayed-prices-time"><i class="fa fa-clock-o" aria-hidden="true" title='{{ 'mbhpricebundle.view.pricecache.filter.displayed_price_caches_time'|trans }}' data-toggle='tooltip'></i>&nbsp;</label>
+        <div class="filter-form_input">
+            <i class="fa fa-clock-o" aria-hidden="true" title='{{ 'mbhpricebundle.view.pricecache.filter.displayed_price_caches_time'|trans }}' data-toggle='tooltip'></i>
             <div class="bootstrap-timepicker">
-                <input name="displayed-prices-time" type="text" id="displayed-prices-time" class="form-control input-sm" style="width: 60px;">
+                <input name="displayed-prices-time" type="text" id="displayed-prices-time" class="form-control">
             </div>
         </div>
     </form>
@@ -98,5 +94,4 @@
         {% endif %}
     </form>
 
-{% endblock %} 
-
+{% endblock %}

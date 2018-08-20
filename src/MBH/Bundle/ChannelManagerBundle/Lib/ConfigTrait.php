@@ -2,29 +2,32 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
+
 trait ConfigTrait
 {
     /**
-     * @var bool
      * @ODM\Field(type="bool")
+     * @var bool
      */
-    protected $isReadinessConfirmed;
+    private $isConfirmedWithDataWarnings = false;
 
     /**
      * @return bool
      */
-    public function isReadinessConfirmed(): bool
+    public function isConfirmedWithDataWarnings(): ?bool
     {
-        return $this->isReadinessConfirmed !== false;
+        return $this->isConfirmedWithDataWarnings;
     }
 
     /**
-     * @param bool $isReadinessConfirmed
+     * @param bool $isConfirmedWithDataWarnings
      * @return static
      */
-    public function setReadinessConfirmed(bool $isReadinessConfirmed)
+    public function setIsConfirmedWithDataWarnings(bool $isConfirmedWithDataWarnings)
     {
-        $this->isReadinessConfirmed = $isReadinessConfirmed;
+        $this->isConfirmedWithDataWarnings = $isConfirmedWithDataWarnings;
 
         return $this;
     }
@@ -33,6 +36,7 @@ trait ConfigTrait
     {
         $result = [];
 
+        /** @var Room $room */
         foreach ($this->getRooms() as $room) {
             $result[$room->getRoomId()] = $room->getRoomType();
         }
@@ -44,6 +48,7 @@ trait ConfigTrait
     {
         $result = [];
 
+        /** @var Tariff $tariff */
         foreach ($this->getTariffs() as $tariff) {
             $result[$tariff->getTariffId()] = $tariff->getTariff();
         }
@@ -64,7 +69,10 @@ trait ConfigTrait
      */
     protected function isSettingsFilled()
     {
-        return $this->getIsEnabled() && !$this->getTariffs()->isEmpty() && !$this->getRooms()->isEmpty();
+        return $this->getIsEnabled()
+            && !$this->getTariffs()->isEmpty()
+            && !$this->getRooms()->isEmpty()
+            && $this->isConfirmedWithDataWarnings();
     }
 
     /**

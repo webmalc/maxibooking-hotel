@@ -201,7 +201,7 @@ var ChessBoardManager = /** @class */ (function () {
     };
     ChessBoardManager.prototype.onChangeScaleClick = function () {
         var _this = this;
-        $('.reduce-scale-button, .increase-scale-button').on(this.getClickEventType(), function (event) {
+        $('.reduce-scale-button, .increase-scale-button').on(ChessBoardManager.getClickEventType(), function (event) {
             var sliderValue = $('#ex1').slider('getValue');
             var buttonClassList = event.target.classList;
             var newSliderValue = buttonClassList.contains('increase-scale-button') ? (sliderValue + 1) : (sliderValue - 1);
@@ -319,7 +319,7 @@ var ChessBoardManager = /** @class */ (function () {
             var date = moment($dateField.val(), 'DD.MM.YYYY');
             return isAddition ? date.add(changeDaysFormat, 'days') : date.subtract(changeDaysFormat, 'days');
         };
-        $('.change-days-button').on(this.getClickEventType(), function () {
+        $('.change-days-button').on(ChessBoardManager.getClickEventType(), function () {
             var $rangePicker = $('.daterangepicker-input').data('daterangepicker');
             var $beginDateField = $('#accommodation-report-filter-begin');
             var $endDateField = $('#accommodation-report-filter-end');
@@ -870,7 +870,7 @@ var ChessBoardManager = /** @class */ (function () {
                                 self.actionManager.callUpdatePackageModal($(this), intervalData_1, changedSide, isDivide);
                             }
                         }
-                    }
+                    },
                 });
             }
         });
@@ -1213,7 +1213,7 @@ var ChessBoardManager = /** @class */ (function () {
                         snap: 'calendarRow',
                         start: function () {
                             isDragged = true;
-                        }
+                        },
                     }).on('mousedown touchstart', function (event) {
                         if (self.isIntervalAvailable(packageData, event)) {
                             relocatablePackage = this;
@@ -1385,21 +1385,23 @@ var ChessBoardManager = /** @class */ (function () {
     };
     ChessBoardManager.prototype.updateChessboardDataWithoutActions = function () {
         var _this = this;
-        var time = 0;
-        $(document).on('click', function () {
-            time = 0;
-        });
-        setInterval(function () {
-            time++;
-            if (time > 30) {
-                ActionManager.showLoadingIndicator();
-                _this.dataManager.updatePackagesData();
-                ActionManager.hideLoadingIndicator();
-                time = 0;
-            }
-        }, 1000);
+        if (!isMobileDevice()) {
+            var time_1 = 0;
+            $(document).on('click', function () {
+                time_1 = 0;
+            });
+            setInterval(function () {
+                time_1++;
+                if (time_1 > 30) {
+                    ActionManager.showLoadingIndicator();
+                    _this.dataManager.updatePackagesData();
+                    ActionManager.hideLoadingIndicator();
+                    time_1 = 0;
+                }
+            }, 1000);
+        }
     };
-    ChessBoardManager.prototype.getClickEventType = function () {
+    ChessBoardManager.getClickEventType = function () {
         return isMobileDevice() ? 'touchstart' : 'click';
     };
     ChessBoardManager.prototype.hangOnHideFieldButtonClick = function () {
@@ -1418,7 +1420,7 @@ var ChessBoardManager = /** @class */ (function () {
                 changeVisibilityFunc(element);
             });
         }
-        $hideFieldButtons.on(this.getClickEventType(), function (event) {
+        $hideFieldButtons.on(ChessBoardManager.getClickEventType(), function (event) {
             changeVisibilityFunc(event.target);
             //prevent touch on filter button after element is hidden
             event.preventDefault();
@@ -1430,4 +1432,3 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.LATE_CHECKOUT_EARLY_CHECKIN_COLOR = '#65619b';
     return ChessBoardManager;
 }());
-//# sourceMappingURL=ChessBoardManager.js.map

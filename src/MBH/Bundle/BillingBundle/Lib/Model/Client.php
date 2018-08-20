@@ -256,7 +256,7 @@ class Client
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getDisabled_at(): ?string
     {
@@ -267,7 +267,7 @@ class Client
      * @param string $disabled_at
      * @return Client
      */
-    public function setDisabledAt(string $disabled_at): Client
+    public function setDisabled_at(?string $disabled_at): Client
     {
         $this->disabled_at = $disabled_at;
 

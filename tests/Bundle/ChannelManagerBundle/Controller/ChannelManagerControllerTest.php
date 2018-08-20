@@ -37,48 +37,36 @@ class ChannelManagerControllerTest extends WebTestCase
      */
     public function testWizardInfoAction(string $serviceName, bool $hasForm)
     {
-        $crawler = $this->client->request('GET', '/management/channelmanager/'.$serviceName.'/wizard_info');
+        $crawler = $this->client->request('GET', '/management/channelmanager/' . $serviceName . '/wizard_info');
         $this->assertEquals($this->client->getResponse()->getStatusCode(), 200);
 
         $instructionBlock = $crawler->filter('#channel-manager-instruction');
         $this->assertEquals(1, $instructionBlock->count());
 
         $this->assertEquals(0, $crawler->filter('#connection-request-sent-message')->count());
-        $expectedMessage = $this
-            ->getContainer()
-            ->get('translator')
-            ->trans('cm_connection_instructions.part1.header');
+        $expectedMessage = 'Чтобы получить разрешение от системы бронирования';
         $this->assertContains($expectedMessage, $instructionBlock->text());
 
         $introFormCrawler = $crawler->filter('form[name="mbhchannel_manager_bundle_intro_type"]');
         $this->assertEquals(intval($hasForm), $introFormCrawler->count());
 
         if ($hasForm) {
-            if ($serviceName === 'hundred_one_hotels') {
-                $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
-                $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
-                $hotel->setCityId(12);
-                $hotel->setRegionId(13);
-                $hotel->setCountryTld('ru');
-                $dm->flush();
-            }
-
             $introForm = $introFormCrawler->form(['mbhchannel_manager_bundle_intro_type[hotelId]' => 123]);
             $crawler = $this->client->submit($introForm);
             $this->assertEquals(0, $crawler->filter('form[name="mbhchannel_manager_bundle_intro_type"]')->count());
             $requestSentMessageBlock = $crawler->filter('#connection-request-sent-message');
             $this->assertContains(
-                'Заявка отправлена, ожидайте сообщения тех. поддержки',
+                'Заявка отправлена, ожидайте сообщения технической поддержки',
                 $requestSentMessageBlock->text()
             );
         } else {
-            $confirmButton = $crawler->filter('#confirm-config-button');
-            $this->assertEquals(1, $confirmButton->count());
-            $this->client->click($confirmButton->link());
+            $nextStepButton = $crawler->filter('#next-step');
+            $this->assertEquals(1, $nextStepButton->count());
+            $this->client->click($nextStepButton->link());
             $indexCrawler = $this->client->followRedirect();
 
             $formName = $this->getIndexFormName($serviceName);
-            $this->assertEquals(1, $indexCrawler->filter('form[name="'.$formName.'"]')->count());
+            $this->assertEquals(1, $indexCrawler->filter('form[name="' . $formName . '"]')->count());
         }
     }
 
@@ -86,26 +74,28 @@ class ChannelManagerControllerTest extends WebTestCase
      * @depends      testWizardInfoAction
      * @dataProvider channelManagersProvider
      * @param string $serviceName
-     * @param bool $hasForm
      */
-    public function testIndexAction(string $serviceName, bool $hasForm)
+    public function testIndexAction(string $serviceName)
     {
-        $crawler = $this->client->request('GET', '/management/channelmanager/'.$serviceName.'/');
+        $crawler = $this->client->request('GET', '/management/channelmanager/' . $serviceName . '/');
 
         $this->assertEquals($this->client->getResponse()->getStatusCode(), 200);
 
         $formName = $this->getIndexFormName($serviceName);
         $indexFormCrawler = $crawler
-            ->filter('form[name="'.$formName.'"]');
+            ->filter('form[name="' . $formName . '"]');
         $this->assertEquals(1, $indexFormCrawler->count());
         $indexForm = $indexFormCrawler
             ->form($this->getIndexFormData($serviceName, $formName));
 
         $this->client->submit($indexForm);
-        if ($hasForm) {
-            $crawler = $this->client->followRedirect();
-            $confirmButton = $crawler->filter('#confirm-config-button');
-            $this->client->click($confirmButton->link());
+
+        if ($serviceName === 'myallocator') {
+            $indexCrawler = $this->client->followRedirect();
+            $indexForm = $indexCrawler
+                ->filter('form[name="' . $formName . '"]')
+                ->form([$formName . '[hotelId]' => 'ID1']);
+            $this->client->submit($indexForm);
         }
 
         $this->client->followRedirect();
@@ -113,7 +103,7 @@ class ChannelManagerControllerTest extends WebTestCase
         $roomsCrawler = $this->client->followRedirect();
 
         $this->assertEquals(
-            'http://localhost/management/channelmanager/'.$serviceName.'/'.'room',
+            'http://localhost/management/channelmanager/' . $serviceName . '/' . 'room',
             $roomsCrawler->getUri()
         );
     }
@@ -125,9 +115,9 @@ class ChannelManagerControllerTest extends WebTestCase
      */
     public function testRoomAction(string $serviceName)
     {
-        $crawler = $this->client->request('GET', '/management/channelmanager/'.$serviceName.'/room');
+        $crawler = $this->client->request('GET', '/management/channelmanager/' . $serviceName . '/room');
         $roomsFormName = $this->getRoomsFormName($serviceName);
-        $roomsFormCrawler = $crawler->filter('form[name="'.$roomsFormName.'"]');
+        $roomsFormCrawler = $crawler->filter('form[name="' . $roomsFormName . '"]');
         $roomsSelectsCrawler = $roomsFormCrawler->filter('select');
         $this->assertEquals(2, $roomsSelectsCrawler->count());
 
@@ -157,7 +147,7 @@ class ChannelManagerControllerTest extends WebTestCase
         $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
         $tariffsCrawler = $this->client->followRedirect();
         $this->assertEquals(
-            'http://localhost/management/channelmanager/'.$serviceName.'/'.'tariff',
+            'http://localhost/management/channelmanager/' . $serviceName . '/' . 'tariff',
             $tariffsCrawler->getUri()
         );
     }
@@ -169,9 +159,9 @@ class ChannelManagerControllerTest extends WebTestCase
      */
     public function testTariffAction(string $serviceName)
     {
-        $crawler = $this->client->request('GET', '/management/channelmanager/'.$serviceName.'/tariff');
+        $crawler = $this->client->request('GET', '/management/channelmanager/' . $serviceName . '/tariff');
         $tariffsFormName = 'mbh_bundle_channelmanagerbundle_tariffs_type';
-        $tariffsFormCrawler = $crawler->filter('form[name="'.$tariffsFormName.'"]');
+        $tariffsFormCrawler = $crawler->filter('form[name="' . $tariffsFormName . '"]');
         $tariffsSelectsCrawler = $tariffsFormCrawler->filter('select');
         $this->assertEquals(1, $tariffsSelectsCrawler->count());
 
@@ -185,10 +175,16 @@ class ChannelManagerControllerTest extends WebTestCase
 
         $roomsForm = $tariffsFormCrawler->form(
             [
-                $tariffsFormName.'['.ChannelManagerServiceMock::FIRST_TARIFF_ID.']' => $tariffs[0]->getId(),
+                $tariffsFormName . '[' . ChannelManagerServiceMock::FIRST_TARIFF_ID . ']' => $tariffs[0]->getId(),
             ]
         );
         $this->client->submit($roomsForm);
+
+        $dataWarningsCrawler = $this->client->followRedirect();
+        $this->assertEquals(
+            'http://localhost/management/channelmanager/' . $serviceName . '/' . 'data_warnings',
+            $dataWarningsCrawler->getUri()
+        );
     }
 
     /**
@@ -211,9 +207,9 @@ class ChannelManagerControllerTest extends WebTestCase
 
     private function getRoomFormName(string $roomsFormName, string $id, string $serviceName)
     {
-        return $roomsFormName.'['
-            .($serviceName === 'booking' ? BookingRoomsType::ROOM_TYPE_FIELD_PREFIX : '')
-            .$id.']';
+        return $roomsFormName . '['
+            . ($serviceName === 'booking' ? BookingRoomsType::ROOM_TYPE_FIELD_PREFIX : '')
+            . $id . ']';
     }
 
     private function getRoomsFormName(string $serviceName)
@@ -227,7 +223,7 @@ class ChannelManagerControllerTest extends WebTestCase
             return 'mbhchannel_manager_bundle_channel_manager_config_type';
         }
 
-        return "mbh_bundle_channelmanagerbundle_".$serviceName."_type";
+        return "mbh_bundle_channelmanagerbundle_" . $serviceName . "_type";
     }
 
     /**
@@ -240,29 +236,29 @@ class ChannelManagerControllerTest extends WebTestCase
         switch ($serviceName) {
             case 'hundred_one_hotels':
                 return [
-                    $formName.'[apiKey]' => 1234,
-                    $formName.'[hotelId]' => 125324,
+                    $formName . '[apiKey]' => 1234,
+                    $formName . '[hotelId]' => 125324,
                 ];
             case 'vashotel':
                 return [
-                    $formName.'[password]' => 1234,
-                    $formName.'[hotelId]' => 125324,
+                    $formName . '[password]' => 1234,
+                    $formName . '[hotelId]' => 125324,
                 ];
             case 'myallocator':
                 return [
-                    $formName.'[username]' => 'valera',
-                    $formName.'[password]' => '1234123',
+                    $formName . '[username]' => 'valera',
+                    $formName . '[password]' => '1234123',
                 ];
                 break;
             case 'expedia':
             case 'booking':
             case 'ostrovok':
                 return [
-                    $formName.'[hotelId]' => 125324,
+                    $formName . '[hotelId]' => 125324,
                 ];
 
             default:
-                throw new \InvalidArgumentException('Incorrect service name: '.$serviceName);
+                throw new \InvalidArgumentException('Incorrect service name: ' . $serviceName);
         }
     }
 }

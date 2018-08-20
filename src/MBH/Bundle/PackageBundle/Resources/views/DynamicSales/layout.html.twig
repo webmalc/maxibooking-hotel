@@ -1,6 +1,6 @@
 {% extends "MBHBaseBundle::page.html.twig" %}
 
-{% set title = 'dynamic.sales.layout.title'|trans({}, 'MBHPackageBundle') %}
+{% set title = 'menu.label.financial_analytics'|trans({}, 'MBHBaseBundle') %}
 {% set title_url = path('dynamic_sales') %}
 
 {% block scripts %}
@@ -14,7 +14,7 @@
 {% block styles %}
     {{ parent() }}
 
-    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/dynamic_sales.less'%}
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/dynamicSales/*'%}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
 {% endblock %}

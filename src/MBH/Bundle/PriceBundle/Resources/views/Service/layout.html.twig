@@ -1,4 +1,21 @@
 {% extends "MBHPriceBundle::layout.html.twig" %}
 
-{% set title = "mbhpricebundle.view.service.layout.uslugi"|trans %}
+{% set small_title = "mbhpricebundle.view.service.layout.uslugi"|trans %}
 {% set title_url = path('price_service_category') %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/service/*'%}
+
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPriceBundle/Resources/public/css/service/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}

@@ -1,4 +1,4 @@
-restaurant.common.small_title: List
+restaurant.common.small_title: 'F&B - Ingredients'
 restaurant.common.save: 'Save changes'
 restaurant.category.form.fullTitle.label: Name
 restaurant.category.form.title.help: 'Name within MaxiBooking'
@@ -11,7 +11,7 @@ restaurant.ingredient.form.price.help: 'Enter ingredient price'
 restaurant.ingredient.form.calcType.label: 'Measure unit'
 restaurant.ingredient.form.calcType.help: 'Choose measure unit for the ingredient'
 restaurant.ingredient.form.is_enable.label: Show
-restaurant.dishmenu.small_title: List
+restaurant.dishmenu.small_title: 'F&B - Menu'
 restaurant.dishmenu.category.action.new: 'New dish category'
 restaurant.dishmenu.category.form.fullTitle.placeholder: 'Enter the name'
 restaurant.dishmenu.category.form.title.label: 'Short Name'
@@ -56,7 +56,6 @@ restaurant.dishorder.table.content: Content
 restaurant.dishorder.table.payer: Payer
 restaurant.dishorder.table.time: Date
 restaurant.dishorder.actions.tolist: 'To list'
-restaurant.dishorder.actions.list.small_title: 'Add order'
 restaurant.dishorder.actions.showfreeze.small_title: 'View order'
 restaurant.dishorder.actions.edit: 'Edit order'
 restaurant.dishorder.actions.delete: 'Delete order'
@@ -66,7 +65,7 @@ restaurant.dishorder.form.dishes.label: 'List of dishes'
 restaurant.dishorder.form.order.help: 'Enter reservation or room number'
 restaurant.table.item.helper.inputcountchairs: 'Enter number of adult seats'
 restaurant.table.common.addsuccess: 'Table successfully added'
-restaurant.table.actions.list.small_title: 'List of tables'
+restaurant.table.actions.list.small_title: 'F&B - Seating'
 restaurant.table.form.title.help: 'Name within MaxiBooking'
 restaurant.table.form.title.placeholder: 'Table near a window'
 restaurant.table.form.is_enable.label: Active
@@ -85,7 +84,6 @@ restaurant.table.item.category.table: Table
 restaurant.table.actions.delete: 'Delete chair'
 restaurant.table.item.helper.addtype: 'Select a type'
 restaurant.dishmenu.item.active: availability
-restaurant.dishorder.common.title: orders
 restaurant.dishorder.actions.freezed: 'cash out'
 restaurant.dishorder.form.id.label: 'Order #'
 restaurant.dishorder.form.amount.help: Quantity
