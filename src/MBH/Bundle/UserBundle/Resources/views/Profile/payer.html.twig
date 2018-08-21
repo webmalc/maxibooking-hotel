@@ -7,7 +7,8 @@
 {% block content %}
     {{ parent() }}
     <div class="tab-content">
-        {{ form_start(form, {'action': path('user_payer'),  'attr': {'class': 'form-horizontal', 'id' : 'client-payer-type'}}) }}
+        {{ form_start(form, {'action': path('user_payer'),
+            'attr': {'class': 'form-horizontal', 'id' : 'client-payer-type', 'novalidate': 'novalidate'}}) }}
         {{ form_widget(form) }}
         {% include 'MBHBaseBundle:Actions:new.html.twig' %}
         {{ form_end(form) }}
@@ -31,5 +32,7 @@
             </div>
         </div>
     </div>
+
+    {% include '@MBHBase/modalWithForm.html.twig' with {modalTitle: 'modal_with_form.add_city.title'|trans} %}
 {% endblock %}
 
