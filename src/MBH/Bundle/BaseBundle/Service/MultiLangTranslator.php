@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Gedmo\Translatable\Document\Translation;
+use Gedmo\Translatable\TranslatableListener;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -12,21 +13,29 @@ class MultiLangTranslator
     private $dm;
     private $helper;
     private $propertyAccessor;
-    private $locale;
+    private $translatableListener;
+    private $defaultLocale;
 
-    public function __construct(DocumentManager $dm, Helper $helper, PropertyAccessor $propertyAccessor, $locale) {
+    public function __construct(
+        DocumentManager $dm,
+        Helper $helper,
+        PropertyAccessor $propertyAccessor,
+        TranslatableListener $translatableListener,
+        string $defaultLocale
+    ) {
         $this->dm = $dm;
         $this->helper = $helper;
         $this->propertyAccessor = $propertyAccessor;
-        $this->locale = $locale;
+        $this->translatableListener = $translatableListener;
+        $this->defaultLocale = $defaultLocale;
+        $this->translatableListener->setPersistDefaultLocaleTranslation(true);
     }
 
     /**
      * @param $document
      * @param array $translationsByFields
-     * @param bool $withFlush
      */
-    public function saveByMultiLanguagesFields($document, array $translationsByFields, $withFlush = true)
+    public function saveByMultiLanguagesFields($document, array $translationsByFields)
     {
         $repository = $this->dm->getRepository('GedmoTranslatable:Translation');
 
@@ -36,9 +45,7 @@ class MultiLangTranslator
             }
         }
 
-        if ($withFlush) {
-            $this->dm->flush();
-        }
+        $this->dm->flush();
     }
 
     /**
@@ -51,7 +58,7 @@ class MultiLangTranslator
     public function getTranslationsByLanguages(Base $document, string $translatableField, array $languages)
     {
         $result = [
-            $this->locale => $this->propertyAccessor->getValue($document, $translatableField)
+            $this->translatableListener->getListenerLocale() => $this->propertyAccessor->getValue($document, $translatableField)
         ];
 
         /** @var Translation[] $translations */

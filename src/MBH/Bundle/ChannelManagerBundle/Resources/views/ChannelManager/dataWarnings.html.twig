@@ -118,7 +118,7 @@
                 <li>
                     <a style="background-color: #ebcccc; font-size: 16px; color: red;" class="bold header-line">
                         <small class="label label-danger label-as-badge"><i class="fa fa-exclamation"></i></small>
-                        {{ 'view.data_warnings.attention'|trans({}, 'MBHChannelManagerBundle')}}
+                        {{ 'view.data_warnings.attention'|trans({}, 'MBHChannelManagerBundle') }}
                     </a>
                 </li>
 
@@ -127,7 +127,7 @@
                     <li class="row" style=" margin-bottom: 5px">
                         <div class="col-xs-6 col-md-3 text-right bold" style="color: red;">
                             {{ existsPriceCacheEmptyPeriods ? '1.' : '' }}
-                            {{ 'view.data_warnings.room_caches_not_defined'|trans({}, 'MBHChannelManagerBundle')}}
+                            {{ 'view.data_warnings.room_caches_not_defined'|trans({}, 'MBHChannelManagerBundle') }}
                         </div>
                         <div class="col-xs-6 col-md-9">
                         </div>
@@ -135,23 +135,25 @@
 
                     {% for emptyRoomCachePeriodForRoom in emptyRoomCachePeriods|first %}
                         {% set emptyRoomCachePeriodForRoom = emptyRoomCachePeriodForRoom[0] %}
-                        <li class="row bold" style=" margin-bottom: 5px">
-                            <div class="col-xs-6 col-md-3 text-right">
-                                &mdash; {{ emptyRoomCachePeriodForRoom|first.roomType.name }}:
-                            </div>
-                            <div class="col-xs-6 col-md-9">
-                                <ul style="list-style-type: none; padding-left: 0;">
-                                    {% for emptyRoomCachePeriod in emptyRoomCachePeriodForRoom %}
-                                        <li>
-                                            {{ 'view.data_warnings.from_to_date'|trans({
-                                                '%begin%': '<span style="color: red;">' ~ emptyRoomCachePeriod.begin|date('d.m.Y') ~ '</span>',
-                                                '%end%': '<span style="color: red;">' ~ emptyRoomCachePeriod.end|date('d.m.Y') ~ '</span>'
-                                            }, 'MBHChannelManagerBundle')|raw}}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </li>
+                        {% if emptyRoomCachePeriodForRoom|first %}
+                            <li class="row bold" style=" margin-bottom: 5px">
+                                <div class="col-xs-6 col-md-3 text-right">
+                                    &mdash; {{ (emptyRoomCachePeriodForRoom|first).roomType.name }}:
+                                </div>
+                                <div class="col-xs-6 col-md-9">
+                                    <ul style="list-style-type: none; padding-left: 0;">
+                                        {% for emptyRoomCachePeriod in emptyRoomCachePeriodForRoom %}
+                                            <li>
+                                                {{ 'view.data_warnings.from_to_date'|trans({
+                                                    '%begin%': '<span style="color: red;">' ~ emptyRoomCachePeriod.begin|date('d.m.Y') ~ '</span>',
+                                                    '%end%': '<span style="color: red;">' ~ emptyRoomCachePeriod.end|date('d.m.Y') ~ '</span>'
+                                                }, 'MBHChannelManagerBundle')|raw }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
 
@@ -159,38 +161,40 @@
                     <li class="row" style=" margin-bottom: 5px">
                         <div class="col-xs-6 col-md-3 text-right bold" style="color: red;">
                             {{ existsRoomCacheEmptyPeriods ? '2.' : '' }}
-                            {{ 'view.data_warnings.price_caches_not_defined'|trans({}, 'MBHChannelManagerBundle')}}
+                            {{ 'view.data_warnings.price_caches_not_defined'|trans({}, 'MBHChannelManagerBundle') }}
                         </div>
                         <div class="col-xs-6 col-md-9">
                         </div>
                     </li>
                     {% for emptyPriceCachePeriodsByRooms in emptyPriceCachePeriods|first %}
-                        <li class="row bold" style=" margin-bottom: 5px">
-                            <div class="col-xs-6 col-md-3 text-right">
-                                &mdash; {{ emptyPriceCachePeriodsByRooms|first|first.roomType.name }}:
-                            </div>
-                            <div class="col-xs-6 col-md-9">
-                                <ul style="list-style-type: none; padding-left: 0;">
-                                    {% for emptyPriceCachePeriodsByTariffs in emptyPriceCachePeriodsByRooms %}
-                                        <li class="bold">
-                                            {{ 'view.data_warnings.tariff'|trans({}, 'MBHChannelManagerBundle') }}
-                                            "{{ emptyPriceCachePeriodsByTariffs|first.tariff.name }}":
-                                        </li>
-                                        <ul style="list-style-type: none;">
-                                            {% for emptyPriceCachePeriod in emptyPriceCachePeriodsByTariffs %}
+                        {% if emptyPriceCachePeriodsByRooms|first and emptyPriceCachePeriodsByRooms|first|first %}
+                            <li class="row bold" style=" margin-bottom: 5px">
+                                <div class="col-xs-6 col-md-3 text-right">
+                                    &mdash; {{ emptyPriceCachePeriodsByRooms|first|first.roomType.name }}:
+                                </div>
+                                <div class="col-xs-6 col-md-9">
+                                    <ul style="list-style-type: none; padding-left: 0;">
+                                        {% for emptyPriceCachePeriodsByTariffs in emptyPriceCachePeriodsByRooms %}
+                                            <li class="bold">
+                                                {{ 'view.data_warnings.tariff'|trans({}, 'MBHChannelManagerBundle') }}
+                                                "{{ emptyPriceCachePeriodsByTariffs|first.tariff.name }}":
+                                            </li>
+                                            <ul style="list-style-type: none;">
+                                                {% for emptyPriceCachePeriod in emptyPriceCachePeriodsByTariffs %}
 
-                                                <li>
-                                                    {{ 'view.data_warnings.from_to_date'|trans({
-                                                        '%begin%': '<span style="color: red;">' ~ emptyPriceCachePeriod.begin|date('d.m.Y') ~ '</span>',
-                                                        '%end%': '<span style="color: red;">' ~ emptyPriceCachePeriod.end|date('d.m.Y') ~ '</span>'
-                                                    }, 'MBHChannelManagerBundle')|raw}}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </li>
+                                                    <li>
+                                                        {{ 'view.data_warnings.from_to_date'|trans({
+                                                            '%begin%': '<span style="color: red;">' ~ emptyPriceCachePeriod.begin|date('d.m.Y') ~ '</span>',
+                                                            '%end%': '<span style="color: red;">' ~ emptyPriceCachePeriod.end|date('d.m.Y') ~ '</span>'
+                                                        }, 'MBHChannelManagerBundle')|raw }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                     </ol>
                 {% endif %}
@@ -201,8 +205,10 @@
     {% embed '@MBHBase/Actions/base_list.html.twig' %}
         {% block left %}
             <li>
-                <a id="next-step" data-alert-type="success" data-text="{{ 'view.data_warnings.modal.is_data_checked'|trans({}, 'MBHChannelManagerBundle') }}"
-                   data-button="{{ 'view.data_warnings.modal.yes_button.text'|trans({}, 'MBHChannelManagerBundle') }}" data-button-icon="fa-check-square"
+                <a id="next-step" data-alert-type="success"
+                   data-text="{{ 'view.data_warnings.modal.is_data_checked'|trans({}, 'MBHChannelManagerBundle') }}"
+                   data-button="{{ 'view.data_warnings.modal.yes_button.text'|trans({}, 'MBHChannelManagerBundle') }}"
+                   data-button-icon="fa-check-square"
                    href="{{ path('cm_confirm_with_warnings', {'channelManagerName': channelManagerName}) }}"
                    class="btn btn-success navbar-btn navbar-link-button delete-link">
                     <i class="fa fa-check-square"> </i> {{ 'cm_wizard.buttons.complete.title'|trans }}
