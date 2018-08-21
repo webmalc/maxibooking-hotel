@@ -55,10 +55,10 @@ class SearchQueryGenerator
     {
         $hotelIds = $this->getEntryIds($conditions->getHotels());
         $rawTariffIds = $this->getEntryIds($conditions->getTariffs()->toArray());
-        $tariffs = $this->getTariffs($rawTariffIds, $hotelIds, $conditions->isOnline());
+        $tariffsGroupedByHotelId = $this->getTariffs($rawTariffIds, $hotelIds, $conditions->isOnline());
 
         $rawRoomTypeIds = $this->getEntryIds($conditions->getRoomTypes());
-        $roomTypeIds = $this->getRoomTypeIds($rawRoomTypeIds, $hotelIds);
+        $roomTypeIdsGroupedByHotel = $this->getRoomTypeIds($rawRoomTypeIds, $hotelIds);
 
         $dates =
             $this->addDatesGenerator->generate(
@@ -67,7 +67,7 @@ class SearchQueryGenerator
                 $conditions->getAdditionalBegin(),
                 $conditions->getAdditionalEnd()
             );
-        $tariffRoomTypeCombined = $this->combineTariffWithRoomType($roomTypeIds, $tariffs);
+        $tariffRoomTypeCombined = $this->combineTariffWithRoomType($roomTypeIdsGroupedByHotel, $tariffsGroupedByHotelId);
 
         $queryHelpers = $this->createQueryHelpers($dates, $tariffRoomTypeCombined);
         if (empty($queryHelpers)) {
@@ -205,7 +205,7 @@ class SearchQueryGenerator
         //** TODO: Тут rawTariff передается чтоб забрать из него настройки возрастов в тарифе
         // т.к. у нас появляются merged тарифы, настройки будем брать из них. значит это убирать
         // так же остается вопрос с restrictionTariffId ибо нужно будет брать restrictions взависимости
-        // от того какой тарифф мы получаем потом в mergedPriceCache
+        // от того какой тариф мы получаем потом в mergedPriceCache
         //
         // */
 

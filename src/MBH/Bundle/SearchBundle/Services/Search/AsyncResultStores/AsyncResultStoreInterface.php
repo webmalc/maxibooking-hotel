@@ -13,5 +13,4 @@ interface AsyncResultStoreInterface
 
     public function receive(SearchConditions $conditions);
 
-
 }

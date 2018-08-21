@@ -83,6 +83,12 @@ services:
 
 
 #search
+    mbh_bundle_search.services_search.consumer_search:
+        class: MBH\Bundle\SearchBundle\Services\Search\ConsumerSearch
+        arguments:
+            - '@mbh_search.search_conditions_repository'
+            - '@mbh_search.redis_store'
+            - '@mbh_search.searcher_factory'
 
     mbh_search.searcher_factory:
         class: MBH\Bundle\SearchBundle\Services\Search\SearcherFactory

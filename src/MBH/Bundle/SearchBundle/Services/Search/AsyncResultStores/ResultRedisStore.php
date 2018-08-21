@@ -115,12 +115,12 @@ class ResultRedisStore implements AsyncResultStoreInterface
 
     /**
      * @param string $hash
+     * @param int $number
      */
-    public function addFakeReceivedCount(string $hash): void
+    public function addFakeReceivedCount(string $hash, int $number): void
     {
         $receivedCount = $this->cache->get('received' . $hash);
-        $receivedCount ++;
-        $this->cache->set('received' . $hash, $receivedCount);
+        $this->cache->set('received' . $hash, (int)$receivedCount + $number);
     }
 
     public function increaseAlreadySearchedDay(string $hash): void
