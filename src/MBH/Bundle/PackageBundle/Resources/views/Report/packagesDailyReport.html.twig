@@ -1,6 +1,7 @@
 {% extends 'MBHPackageBundle::layout.html.twig' %}
 
-{% set title = 'views.report.packages_daily_report.title'|trans %}
+{% set title = 'menu.label.financial_analytics'|trans({}, 'MBHBaseBundle') %}
+{% set small_title = 'views.report.packages_daily_report.title'|trans %}
 {% set title_url = path('packages_daily_report') %}
 {% set layout = 'box' %}
 
@@ -8,36 +9,37 @@
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'cash-filter-form-widget'} %}
         {% block content %}
             <form class="form-inline search-form filter-form remember" id="daily-report-filter-form" role="form">
-                <div class="input">
+                <div class="filter-form_input">
                     <i class="fa fa-money" title='{{ 'views.report.packages_daily_report.dates_input.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
+                       data-toggle='tooltip'></i>
                     <input type="text" id="daily-report-filter-begin"
                            class="datepicker daily-report-filter begin-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
                            data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
                 </div>
-                <div class="input hidden">
-                    - &nbsp
+                <div class="filter-form_input hidden">
                     <input type="text" id="daily-report-filter-end"
                            class="datepicker daily-report-filter end-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
                            data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
                 </div>
-                <div class="input">
-                    <i class="fa fa-bed" title='{{ 'views.report.packages_daily_report.calculation_dates.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
-                    <input type="text" id="daily-report-filter-calc-begin"
-                           class="datepicker daily-report-filter form-control input-sm"
-                           data-date-format="dd.mm.yyyy" value="{{ calculationBegin|date('d.m.Y') }}">
-                </div>
-                <div class="input">
-                    - &nbsp
-                    <input type="text" id="daily-report-filter-calc-end"
-                           class="datepicker daily-report-filter form-control input-sm"
-                           data-date-format="dd.mm.yyyy" value="{{ calculationEnd|date('d.m.Y') }}">
-                </div>
+                <div class="filter-form_group-date">
+                    <div class="filter-form_input">
+                        <i class="fa fa-bed" title='{{ 'views.report.packages_daily_report.calculation_dates.title'|trans }}'
+                           data-toggle='tooltip'></i>
+                        <div class="filter-form_input">
+                            <input type="text" id="daily-report-filter-calc-begin"
+                                   class="datepicker daily-report-filter form-control input-sm"
+                                   data-date-format="dd.mm.yyyy" value="{{ calculationBegin|date('d.m.Y') }}">
+                            <span class="filter-form_separator"></span>
+                            <input type="text" id="daily-report-filter-calc-end"
+                                   class="datepicker daily-report-filter form-control input-sm"
+                                   data-date-format="dd.mm.yyyy" value="{{ calculationEnd|date('d.m.Y') }}">
+                        </div>
 
-                <div class="input">
+                    </div>
+                </div>
+                <div class="filter-form_input">
                     <i class="fa fa-home" title='{{ 'views.report.packages_daily_report.hotels.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
+                       data-toggle='tooltip'></i>
                     <select multiple data-placeholder="{{ 'views.report.packages_daily_report.hotels.placeholder'|trans }}"
                             id="daily-report-filter-hotels" class="daily-report-filter form-control input-sm">
                         <option></option>
@@ -47,7 +49,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="input">
+                <div class="filter-form_input">
                     <button type="button" id="daily-report-update-table-button" class="btn btn-primary">{{ 'views.report.packages_daily_report.update_button'|trans }}</button>
                 </div>
             </form>

@@ -65,6 +65,7 @@ class ApiController extends Controller
         return [
             'formId' => $formId,
             'formConfig' => $formConfig,
+            'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig()
         ];
     }
 
@@ -84,6 +85,7 @@ class ApiController extends Controller
         return [
             'formId' => $formId,
             'formConfig' => $formConfig,
+            'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig()
         ];
     }
 
@@ -203,13 +205,11 @@ class ApiController extends Controller
      */
     public function successUrlAction()
     {
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-
-        if (!$config || !$config->getSuccessUrl()) {
+        if (!$this->clientConfig || !$this->clientConfig->getSuccessUrl()) {
             throw $this->createNotFoundException();
         }
 
-        return $this->redirect($config->getSuccessUrl());
+        return $this->redirect($this->clientConfig->getSuccessUrl());
     }
 
     /**
@@ -219,13 +219,11 @@ class ApiController extends Controller
      */
     public function failUrlAction()
     {
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-
-        if (!$config || !$config->getFailUrl()) {
+        if (!$this->clientConfig || !$this->clientConfig->getFailUrl()) {
             throw $this->createNotFoundException();
         }
 
-        return $this->redirect($config->getFailUrl());
+        return $this->redirect($this->clientConfig->getFailUrl());
     }
 
     /**
@@ -241,7 +239,7 @@ class ApiController extends Controller
     {
         /** @var DocumentManager $dm */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->clientConfig;
         $logger = $this->get('mbh.online.logger');
         $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP'.$request->getClientIp(
             ).'. Post data: '.implode(
@@ -447,7 +445,7 @@ class ApiController extends Controller
         $translator = $this->get('translator');
         foreach ($this->getParameter('mbh.hotel')['facilities'] as $facilityVal) {
             foreach ($facilityVal as $key => $val) {
-                $facilityArray[$key] = $translator->trans($val);
+                $facilityArray[$key] = $translator->trans($val['title']);
             }
         }
 
@@ -535,7 +533,7 @@ class ApiController extends Controller
         return [
             'config' => $this->container->getParameter('mbh.online.form'),
             'formConfig' => $formConfig,
-            'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig(),
+            'clientConfig' => $this->clientConfig,
             'request' => $requestJson,
             'paymentSystems' => $this->getParameter('mbh.payment_systems')
         ];
@@ -545,12 +543,16 @@ class ApiController extends Controller
      * Create packages
      * @Route("/results/packages/create", name="online_form_packages_create", options={"expose"=true})
      * @Method("POST")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
     public function createPackagesAction(Request $request)
     {
 //        $this->addAccessControlAllowOriginHeaders();
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $requestJson = json_decode($request->getContent());
 
         //Create packages
@@ -590,9 +592,7 @@ class ApiController extends Controller
         $message .= $translator->trans('controller.apiController.your_order_number').$order->getId().'. ';
         $message .= $packageStr.': '.implode(', ', $packages).'.';
 
-        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-
-        if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystems()) {
+        if ($requestJson->paymentType == 'in_hotel' || !$this->clientConfig || !$this->clientConfig->getPaymentSystems()) {
             $form = false;
         } elseif (in_array($requestJson->paymentType, ['by_receipt_full', 'by_receipt_half', 'by_receipt_first_day'])) {
             $form = $this->container->get('twig')->render('@MBHClient/PaymentSystem/invoice.html.twig', [
@@ -613,7 +613,7 @@ class ApiController extends Controller
                                 'MBHOnlineBundle'
                             ),
                         ],
-                        $clientConfig->getFormData($order->getCashDocuments()[0], $paymentSystem)
+                        $this->clientConfig->getFormData($order->getCashDocuments()[0], $paymentSystem)
                     ),
                 ]
             );

@@ -83,7 +83,7 @@ class ProfileController extends Controller
      * @Security("is_granted('ROLE_PAYMENTS')")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws Exception
+     * @throws \Exception
      */
     public function contactsAction(Request $request)
     {
@@ -188,15 +188,11 @@ class ProfileController extends Controller
      * @Route("/payer", name="user_payer")
      * @param Request $request
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function payerAction(Request $request)
     {
-        $payerCompany = $this->get('mbh.client_payer_manager')->getClientPayerCompany();
-        $form = $this->createForm(PayerType::class, null, [
-            'client' => $this->get('mbh.client_manager')->getClient(),
-            'company' => $payerCompany
-        ]);
+        $form = $this->createForm(PayerType::class);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -278,6 +274,7 @@ class ProfileController extends Controller
      * @Route("/payment_order/{orderId}", name="show_payment_order")
      * @param $orderId
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Exception
      */
     public function showPaymentOrderAction($orderId)
     {
@@ -327,12 +324,12 @@ class ProfileController extends Controller
 
     /**
      * @Route("/client_successful_payment", name="client_successful_payment", options={"expose"=true})
-     * @Template()
+     * @Template("@MBHUser/Profile/paymentResultPage.html.twig")
      * @return array
      */
     public function paymentSuccessfulPageAction()
     {
-        return [];
+        return ['success' => true];
     }
 
     private function addBillingErrorFlash()

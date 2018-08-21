@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Form\NotificationConfigType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ColorsConfig;
@@ -13,9 +12,7 @@ use MBH\Bundle\ClientBundle\Document\Payanyway;
 use MBH\Bundle\ClientBundle\Document\Paypal;
 use MBH\Bundle\ClientBundle\Document\Rbk;
 use MBH\Bundle\ClientBundle\Document\RNKB;
-use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Stripe;
-use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
@@ -24,7 +21,6 @@ use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TinkoffHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
-use MBH\Bundle\ClientBundle\Service\Notice;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -48,7 +44,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function indexAction()
     {
-        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $entity = $this->get('mbh.client_config_manager')->fetchConfig();
         $form = $this->createForm(ClientConfigType::class, $entity);
 
         return [
@@ -66,10 +62,12 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Template("MBHClientBundle:ClientConfig:index.html.twig")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Exception
      */
     public function saveAction(Request $request)
     {
-        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $entity = $this->get('mbh.client_config_manager')->fetchConfig();
+        $isSiteEnabled = $entity->isMBSiteEnabled();
 
         if (!$entity) {
             $entity = new ClientConfig();
@@ -87,9 +85,13 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                 $entity->setTimeZone($previousTimeZone);
                 $this->addFlash('warning',
                     $this->get('translator')->trans('controller.clientConfig.change_time_zone_contact_support',
-                        ['%supportEmail%' => $this->getParameter('support')['email']]))
-                ;
+                        ['%supportEmail%' => $this->getParameter('support')['email']]));
             }
+
+            if ($isSiteEnabled !== $entity->isMBSiteEnabled()) {
+                $this->get('mbh.site_manager')->changeSiteAvailability($entity->isMBSiteEnabled());
+            }
+
             $this->dm->persist($entity);
             $this->dm->flush();
 
@@ -107,7 +109,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
     /**
      * @Route("/payment_systems", name="client_payment_systems", options={"expose"=true})
-     * @Template()
+     * @Template("@MBHClient/ClientConfigPaymentSystem/index.html.twig")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @return array
      */
@@ -164,7 +166,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Route("/payment_system_form/{paymentSystemName}", name="client_payment_system_form")
      * @Method("GET")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
-     * @Template()
+     * @Template("@MBHClient/ClientConfigPaymentSystem/form.html.twig")
      * @return array
      */
     public function paymentSystemFormAction($paymentSystemName = null)
@@ -194,7 +196,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function paymentSystemSaveAction(Request $request)
     {
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $config = $this->get('mbh.client_config_manager')->fetchConfig();
         $paymentSystemName = $request->query->get('paymentSystemName');
 
         $form = $this->createForm(ClientPaymentSystemType::class, $config, [
@@ -303,7 +305,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     public function changeRoomTypeEnableableModeAction($disableMode, $route)
     {
         $disableModeBool = $disableMode == 'true';
-        $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableModeBool);
+        $this->get('mbh.client_config_manager')->changeDisableableMode($disableModeBool);
 
         return $this->redirectToRoute($route);
     }

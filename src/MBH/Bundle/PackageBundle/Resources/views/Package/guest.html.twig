@@ -30,18 +30,18 @@
             {% if package.tourists|length > 0 %}
                 <table class="package-guest-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
                     <thead>
-                    <tr>
-                        <th class="td-xs"></th>
-                        <th>{{ 'package.guest.fio'|trans}}</th>
-                        <th class="td-md">{{ 'package.guest.phone'|trans({}, 'MBHPackageBundle') }}</th>
-                        <th class="td-md">{{ 'package.guest.email'|trans({}, 'MBHPackageBundle') }}</th>
-                        <th class="td-md">{{ 'package.guest.birth_date'|trans({}, 'MBHPackageBundle') }}</th>
-                        <th class="td-sm">{{ 'package.guest.age'|trans({}, 'MBHPackageBundle') }}</th>
-                        <th class="td-sm">{{ 'package.guest.passport'|trans({}, 'MBHPackageBundle') }}</th>
-                        <th class="td-sm">{{ 'package.guest.address'|trans({}, 'MBHPackageBundle') }}</th>
-                        <th class="td-md"></th>
-                    </tr>
-                    </thead>
+                        <tr>
+                            <th class="td-xs"></th>
+                            <th>{{ 'package.guest.fio'|trans}}</th>
+                            <th class="td-md">{{ 'package.guest.phone'|trans({}, 'MBHPackageBundle') }}</th>
+                            <th class="td-md">{{ 'package.guest.email'|trans({}, 'MBHPackageBundle') }}</th>
+                            <th class="td-md">{{ 'package.guest.birth_date'|trans({}, 'MBHPackageBundle') }}</th>
+                            <th class="td-sm">{{ 'package.guest.age'|trans({}, 'MBHPackageBundle') }}</th>
+                            <th class="td-sm">{{ 'package.guest.passport'|trans({}, 'MBHPackageBundle') }}</th>
+                            <th class="td-sm">{{ 'package.guest.address'|trans({}, 'MBHPackageBundle') }}</th>
+                            <th class="td-md"></th>
+                        </tr>
+                        </thead>
                     <tbody>
                     {% for tourist in package.tourists %}
                         <tr>

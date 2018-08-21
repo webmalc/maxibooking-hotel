@@ -1,0 +1,45 @@
+{% extends "MBHOnlineBundle:MBSite:layout.html.twig" %}
+
+{% block content %}
+    {{ parent() }}
+    <div class="tab-content">
+
+    <div class="box box-default box-solid">
+
+        <div class="box-header with-border">
+            <h3 class="box-title">{{ 'form.userType.general_info'|trans }}</h3>
+        </div>
+
+        <div class="box-body">
+            {{ form_start(form, {'action': path('site_settings'), 'attr': {'class': 'form-horizontal'}}) }}
+            {% set groups = {'form.main.group': form.children|keys} %}
+            {{ form_row(form.siteDomain) }}
+            <div class="default-service form-group form-inline">
+                {{ form_label(form.keyWords) }}
+                <div class="col-sm-6">
+                    <ul id="key-words-list">
+                        {% for keyWordNumber, keyWord in form.keyWords %}
+                            <li data-number="{{ keyWordNumber }}">
+                                {{ form_widget(keyWord) }}
+                                &nbsp;<i class="fa fa-times"></i>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a id="add-key-word-button" data-prototype="
+                {{ (form_widget(form.keyWords.vars.prototype))|e }}{{ ' &nbsp;<i class="fa fa-times" class="remove-key-word-button"></i> '|e }}"
+                       class="btn btn-xs btn-success"><i class="fa fa-plus"></i>
+                        {{ 'mbhpricebundle.view.tariff.editservices.dobavit'|trans }}
+                    </a>
+                </div>
+            </div>
+            {#{{ form_row(form.contract) }}#}
+            {{ form_row(form.personalDataPolicies) }}
+            {{ form_row(form.paymentTypes) }}
+            {{ form_row(form.hotels) }}
+            {{ form_row(form.colorTheme) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+            {{ form_widget(form._token) }}
+            {{ form_end(form, {render_rest: false}) }}
+        </div>
+    </div>
+{% endblock %}

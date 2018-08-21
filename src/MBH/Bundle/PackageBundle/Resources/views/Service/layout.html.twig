@@ -2,3 +2,12 @@
 
 {% set title = 'analytics.layout.report'|trans({}, 'MBHPackageBundle') %}
 {% set title_url = path('service_list') %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/service/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
+{% endblock %}

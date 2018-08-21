@@ -109,9 +109,12 @@
 
     <div class="header">
         <div class="title">
-            <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.act'|trans }}
-                № {{ package.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ 'now'|date('d.m.Y') }}
-                .</h2>
+            <h2>
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.act'|trans }} №
+                {{ package.numberWithPrefix }}
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }}
+                {{ 'now'|date('d.m.Y') }}
+            </h2>
         </div>
         {% if hotel and hotel.logoImage %}
             <div class="logo">
@@ -126,17 +129,14 @@
         <table border="0" width="100%">
             <tr>
                 <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
-                <td width="85%"><strong>{{ package.address.name }}</strong></td>
+                <td width="85%">{{ dataExecutor | raw }}</td>
             </tr>
             <tr>
                 <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
-                <td>
-                    <strong>{{ package.order.payer.name|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong>
-                </td>
+                <td>{{ dataCustomer | raw }}</td>
             </tr>
         </table>
 
-        <!-- Services -->
         <!-- Services -->
         <table width="100%" cellpadding="0" cellspacing="0" class="services">
             <thead>

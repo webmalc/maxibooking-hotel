@@ -38,7 +38,7 @@ mailer.online.user.poll.append: 'We will be glad to see you again!'
 mailer.online.user.poll.link: 'Rate the quality of service'
 mailer.base.address: 'Hotel management system'
 mailer.base.estimate_our_service: 'Rate our service'
-mailer.base.generated_mail: 'Mail is generated automatically by the MaxiBooking hotel management system'
+mailer.base.generated_mail: 'This message has been created automatically by MaxiBooking'
 mailer.reportArrival.expectedGuest: 'Expected guests'
 mailer.reportArrival.duty: Debt
 mailer.reportArrival.number: Number
@@ -56,7 +56,7 @@ mailer.order.date: Date
 mailer.order.cost: Price
 mailer.order.booked_numbers: 'Reserved rooms'
 mailer.order.additional_services: 'Additional services'
-mailer.order.title: Title
+mailer.order.title: Name
 mailer.order.name: 'First name'
 mailer.order.amount: Total
 mailer.order.quantity: Quantity
@@ -72,8 +72,8 @@ mailer.order.not_paid: 'Not payed'
 mailer.order.pure_payment: 'Partly paid'
 mailer.order.transfer: Transfer
 mailer.order.guests: Guests
-mailer.order.arrival_time: 'Check in time'
-mailer.order.departure_time: 'Check out time'
+mailer.order.arrival_time: 'Check-in time'
+mailer.order.departure_time: 'Check-out time'
 mailer.order.comments: Note
 mailer.closedTasks.subject: 'Closed tasks'
 mailer.closedTasks.text: 'Closed tasks:'
@@ -83,9 +83,9 @@ mailer.closedTasks.performer: Executor
 mailer.closedTasks.closed: Closed
 mailer.userArrival.greet: 'Hello, {name}!'
 mailer.userArrival.reminder: 'We are reminding you that a room in our hotel has been booked for you for TOMORROW {begin}. Please, contact us in case the arrival time has changed.'
-mailer.userArrival.reminder2: 'Information about amenities in your room, check in terms and additional services in our hotel can be found on our website.'
+mailer.userArrival.reminder2: 'Information about amenities in your room, check-in terms and additional services available at our hotel can be found on our website.'
 mailer.userArrival.about_hotel: 'About hotel'
-mailer.userArrival.numbers_servies: 'Rooms and facilities'
+mailer.userArrival.numbers_servies: 'Rooms & Amenities'
 mailer.userArrival.trip_schema: 'Driving directions'
 mailer.userArrival.contacts: Contacts
 mailer.userArrival.bye: 'We will be glad to see you!'
@@ -101,14 +101,14 @@ mbhbasebundle.view.pdftemplates.organization.ot: from
 mbhbasebundle.view.pdftemplates.individual.ot: from
 mbhbasebundle.view.pdftemplates.individual.schët: Check
 mbhbasebundle.view.pdftemplates.organization.vsegokoplate: 'Total sum'
-mbhbasebundle.view.pdftemplates.organization.vsegonaimenovaniy: 'Total titles'
+mbhbasebundle.view.pdftemplates.organization.vsegonaimenovaniy: 'All Names'
 mbhbasebundle.view.partials.entitydeleteform.udalitʹ: Delete
 mbhbasebundle.view.partials.datepickerperiodselect.vchera: Yesterday
 mbhbasebundle.view.partials.datepickerperiodselect.segodnya: Today
 mbhbasebundle.view.partials.datepickerperiodselect.zavtra: Tomorrow
 mbhbasebundle.view.partials.datepickerperiodselect.nedelya: Week
 mbhbasebundle.view.partials.datepickerperiodselect.mesyats: Month
-mbhbasebundle.view.navbar.kassa: Cashdesk
+mbhbasebundle.view.navbar.kassa: Transactions
 mbhbasebundle.view.navbar.nepodtverzhden: 'Not confirmed'
 mbhbasebundle.view.navbar.voshel: Entered
 controller.baseController.delete_record_success: 'Entry successfully deleted'
@@ -122,7 +122,7 @@ exception.roomType_relation_delete.message.room: 'Unable to delete room type as 
 exception.group_relation_delete.message.taskType: 'Unable to delete user group as it''s being used as a default group for the task type.'
 exception.roomStatus_relation_delete.message.taskType: 'Unable to delete room status as it''s being used in task types (%total%).'
 exception.special_relation_delete.message.package: 'Unable to delete special offer. There are reservations assigned to it (%total%).'
-tariff.main: 'default rate'
+tariff.main: 'Base Rate'
 tariffs: rates
 room: Room
 rooms: Rooms
@@ -130,8 +130,8 @@ form.main.group: 'General information'
 form.filter: Filter
 info: Information
 list: List
-form.facilitiesType.label: Facilities
-form.facilitiesType.placeholder: 'Select facilities'
+form.facilitiesType.label: Amenities
+form.facilitiesType.placeholder: 'Select amenities'
 entry.actions.delete: Delete
 entry.actions.delete.confirmation: 'Are you sure you want to delete «%doc%»?'
 entry.actions.edit: Edit
@@ -140,92 +140,92 @@ form.languageType.label: Language
 languages.en: English
 languages.ru: Russian
 form.quick_links: 'Quick links'
-menu.header.navigation: Navigation
-menu.label.hotel_services: 'Hotel Services'
-menu.label.web_site: 'WEB Site'
+menu.header.navigation: 'Main Menu'
+menu.label.hotel_services: 'Service Functions'
+menu.label.web_site: Website
 menu.label.analytics: Analytics
-menu.label.users_and_roles: 'Users and Roles'
-menu.label.profile: Profile
-menu.label.payment_systems: 'Payment Systems'
-menu.label.broni: Reservations
-menu.label.podbor: Search
-menu.label.portie: Porter
-menu.label.portie.shah: 'Reservation Calendar'
-menu.label.portie.arrdep: 'Check in/Check out'
-menu.label.nomandprice: 'Rooms and rates'
-menu.label.nomandprice.tariff: Rates
+menu.label.users_and_roles: 'User Access'
+menu.label.profile: 'My Account'
+menu.label.payment_systems: 'Payments Platforms'
+menu.label.broni: 'My Reservations'
+menu.label.podbor: 'Create Reservation'
+menu.label.portie: 'Front Office'
+menu.label.portie.shah: Calendar
+menu.label.portie.arrdep: 'Check-in / Check-out'
+menu.label.nomandprice: 'Prices and Offers'
+menu.label.nomandprice.tariff: 'Booking Rates'
 menu.label.nomandprice.overview: Overview
-menu.label.nomandprice.roomsell: 'Room availability'
-menu.label.nomandprice.prices: Pricing
-menu.label.nomandprice.restriction: 'Conditions and restrictions'
-menu.label.nomandprice.services: Services
-menu.label.nomandprice.promotions: Sales
-menu.label.task: Tasks
-menu.label.warehouse: Stock
-menu.label.restaurant: Restaurant
+menu.label.nomandprice.roomsell: 'Rooms for Sale'
+menu.label.nomandprice.prices: Prices
+menu.label.nomandprice.restriction: 'Terms and Conditions'
+menu.label.nomandprice.services: 'Additional Services'
+menu.label.nomandprice.promotions: 'Promotions and Discounts'
+menu.label.task: 'Service Tasks'
+menu.label.warehouse: Stockroom
+menu.label.restaurant: 'F&B'
 menu.label.financial_analytics: 'Financial Analytics'
 menu.label.reports: Reports
 menu.label.reports.services: Services
 menu.label.reports.clients: Guests
-menu.label.reports.organizations: Company
-menu.label.reports.filling: Occupancy
-menu.label.reports.managers: Managers
-menu.label.reports.invite: 'Visa invitation'
-menu.label.reports.analystics: Analytics
-menu.label.reports.polls: Ratings
+menu.label.reports.organizations: Counterparties
+menu.label.reports.filling: 'Daily Occupancy'
+menu.label.reports.managers: 'Sales Team'
+menu.label.reports.invite: 'Visa Invitation'
+menu.label.reports.analystics: 'Visual Charts'
+menu.label.reports.polls: 'Guest Reviews'
 menu.label.reports.work_shift: 'Work shifts'
-menu.settings.label.hotels: Hotels
-menu.settings.label.housing: Wings
+menu.settings.label.hotels: 'My Hotel'
+menu.settings.label.housing: Buildings
 menu.settings.label.room_types: Rooms
 menu.settings.label.restaurant: Restaurant
-menu.settings.label.restaurant.ingredients: 'Restaurant - Ingredients'
-menu.settings.label.restaurant.dishmenu: 'Restaurant menu'
-menu.settings.label.restaurant.tables: 'Restaurant - Tables'
+menu.settings.label.restaurant.ingredients: 'F&B - Ingredients'
+menu.settings.label.restaurant.dishmenu: 'F&B - Menu'
+menu.settings.label.restaurant.tables: 'F&B - Seating'
 menu.configs.config: Settings
-menu.configs.users: Users
-menu.configs.groups: Groups
-menu.configs.sources: Sources
-menu.configs.templates: 'Document templates'
-menu.configs.parameters: Parameters
-menu.configs.tasktype: 'Task types'
-menu.configs.warehouse: Stock
+menu.configs.users: 'Individual Users'
+menu.configs.groups: 'User Groups'
+menu.configs.sources: 'Sales Channels'
+menu.configs.templates: 'Documents & Forms'
+menu.configs.parameters: 'System Settings'
+menu.configs.tasktype: 'Duties and Tasks'
+menu.configs.warehouse: 'Stock Items'
 menu.communication.label: Interactions
 menu.communication.label.advanced: MyAllocator
-menu.communication.label.onlineform: 'Web module'
-menu.communication.label.online_payment_form: 'Payment module'
-menu.communication.label.polls: Ratings
+menu.communication.label.onlineform: 'Booking Engine'
+menu.communication.label.online_payment_form: 'Payments Settings'
+menu.communication.label.polls: 'Reviews Settings'
 menu.communication.label.invite: 'Visa invitation'
-menu.communication.label.hundred_one_hotels: '101 Hotel'
-menu.help.noarrival: 'Reservations with no check in'
-menu.help.nodepart: 'Reservations with no check out'
+menu.communication.label.hundred_one_hotels: 101Hotels
+menu.help.noarrival: 'Reservations that have not yet checked-in'
+menu.help.nodepart: 'Reservations that have not yet checked-out'
 show: Show
 entity.new.title: 'New special offer'
 entity.list.title: List
 form.info.group: 'Main info'
-form.fullTitle: Title
-form.title: 'Internal title'
+form.fullTitle: Name
+form.title: 'Short Name'
 form.description: Description
-form.title.help: 'Title only visible inside MaxiBooking system'
-form.begin: 'Period beginning'
-form.end: 'Period ending'
+form.title.help: 'Name within MaxiBooking'
+form.begin: 'Starting Date'
+form.end: 'End Date'
 form.group.config: Settings
-isEnabled: 'Enabled?'
+isEnabled: 'Active?'
 document.saved: 'Entry successfully saved'
 position: Position
-position.help: 'Position of rate when showing in the list'
+position.help: 'Rate`s sorting position on Booking Rates overview page'
 configuration: Settings
 app.resources.twigBundle.translations.error: Error
-basebundle.menu.tasks: Tasks
-basebundle.menu.terms_and_conditions: 'Conditions and restrictions'
-basebundle.menu.groups: Groups
-basebundle.menu.onlineform: 'Web module'
+basebundle.menu.tasks: 'Duties and Tasks'
+basebundle.menu.terms_and_conditions: 'Terms and Conditions'
+basebundle.menu.groups: 'User Groups'
+basebundle.menu.onlineform: 'Booking Engine'
 mbhbasebundle.view.pdftemplates.organization.vsego_k_oplate: 'Total payment sum:'
 mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc: 'To gain access, please scan this QR code with your cell phone application.'
-mbhbasebundle.views.kass: Cashdesk
+mbhbasebundle.views.kass: Transactions
 mbhbasebundle.views.doc: Document
 mbhbasebundle.views.sum: Sum
 mbhbasebundle.views.not_allow: 'Not confirmed'
-mbhbasebundle.view.navbar.pereyti.v.kassu: 'Proceed to cashdesk'
+mbhbasebundle.view.navbar.pereyti.v.kassu: 'Proceed to Transactions'
 mbhbasebundle.view.navbar.select_hotel: 'Select a hotel'
 mbhbasebundle.view.navbar.spisok.oteley: 'List of hotels'
 mbhbasebundle.view.navbar.input: 'Logged in'
@@ -234,9 +234,9 @@ mbhbasebundle.view.navbar.output: 'Log out'
 show.more: 'Show more'
 exception.ingredient_relation_delete.message.dish: 'Unable to delete a dish as it''s present in some orders. You can always hide it in %hrefTagStart% edit menu.'
 menu.settings.label.header: Settings
-menu.configs.delete_reasons: 'Deletion reasons'
-menu.communication.label.your_hotel: VashHotel
-views.partials.disable_button.show_disabled_room_types: 'Show disabled room types'
+menu.configs.delete_reasons: 'Cancellation Reasons'
+menu.communication.label.your_hotel: Vashotel
+views.partials.disable_button.show_disabled_room_types: 'Include non-active room types'
 views.partials.disable_button.entity_delete_form.remove: Delete
 facilities.parking: Parking
 facilities.fitness: 'Fitness centre'
@@ -274,8 +274,8 @@ facilities.keys: 'Electronic locks'
 facilities.metro: 'The proximity of the underground'
 facilities.disability: 'Access for low-mobility citizens'
 facilities.blind: 'Access for blind citizens'
-facilities.maleroom: 'Men''s room'
-facilities.femaleroom: 'Women''s room'
+facilities.maleroom: 'Male Dormitory Room'
+facilities.femaleroom: 'Female Dormitory Room'
 facilities.ruby: Suite
 facilities.bed: 'Single bed'
 facilities.double-bed: 'Double bed'
@@ -319,8 +319,8 @@ per_piece: unit
 per_grm: gr
 per_l: l
 per_ml: ml
-menu.label.cash: Cashdesk
-basebundle.menu.actions: Sales
+menu.label.cash: Transactions
+basebundle.menu.actions: 'Promotions and Discounts'
 basebundle.menu.windows: Windows
 mbhbasebundle.view.pdftemplates.organization.ed: Unit
 mbhbasebundle.view.pdftemplates.organization.g: gr
@@ -339,8 +339,8 @@ twig.extensiion.hour_abbr: hour
 twig.extensiion.minute_abbr: min
 dashboard.modal.header: Warnings
 dashboard.link: 'Go to error'
-menu.communication.label.yh: VashOtel
-form.image.is_default.label: 'Default?'
+menu.communication.label.yh: Vashotel
+form.image.is_default.label: 'Main Image?'
 form.image.file.label: Image
 form.image.priority.label: Priority
 image.priority: Priority
@@ -357,12 +357,12 @@ mbhbasebundle.views.minimize_menu: 'Collapse menu'
 mbhbasebundle.view.navbar.booking_change: 'Block shift'
 mbhbasebundle.view.pdftemplates.individual.vid.platezha: 'Payment type'
 mbhbasebundle.view.pdftemplates.organization.rukovoditel: Chief
-mbhbasebundle.view.pdftemplates.organization.vsego_naimenovanii: 'Overall titles 1 for'
+mbhbasebundle.view.pdftemplates.organization.vsego_naimenovanii: 'Total entires 1, total sum'
 dashboard.confirm.tooltip: 'Mark as read'
 dashboard.messages.hotel.errors: 'following errors were found'
-form.image.is_default.help: 'If this image is default'
+form.image.is_default.help: 'Would you like to select this Picture as the Main Image?'
 form.image.file.help: 'Upload image'
-form.image.priority.help: 'Priority (optional) -1000 ... 1000'
+form.image.priority.help: 'Priority of display (optional) -1000 ... 1000'
 forms.export_type.fields.help: 'Exported fields names'
 notifier.config.label.cash_confirm: 'Payment of document'
 notifier.config.label.channel_manager_order: 'Channel Manager'
@@ -372,13 +372,13 @@ notifier.config.label.online_order: 'Online reservation'
 mbhbasebundle.view.pdftemplates.organization.yed: Unit
 mbhbasebundle.view.navbar.summa: sum
 mbhbasebundle.view.pdftemplates.organization.bankpoluchatelya: 'Recipient''s bank'
-mbhbasebundle.view.pdftemplates.organization.kpp: 'Registry Number'
+mbhbasebundle.view.pdftemplates.organization.kpp: 'Company number'
 mbhbasebundle.view.mailer.order.nalichnymivotele: 'Paid with cash in hotel'
 mbhbasebundle.view.pdftemplates.organization.poluchatelʹ: Recipient
 mbhbasebundle.view.pdftemplates.individual.korr: 'IBAN/ABA/IFSC/Routing code'
 mbhbasebundle.view.pdftemplates.individual.summa: Sum
 mbhbasebundle.view.pdftemplates.individual.data: Date
-mbhbasebundle.view.pdftemplates.individual.inn: TIN
+mbhbasebundle.view.pdftemplates.individual.inn: 'Tax number'
 mbhbasebundle.view.pdftemplates.organization.itog: Total
 mbhbasebundle.view.pdftemplates.organization.kol: Quantity
 mbhbasebundle.view.pdftemplates.organization.tel: tel.
@@ -387,7 +387,7 @@ mbhbasebundle.view.pdftemplates.individual.bik: 'SWIFT / BIC'
 mbhbasebundle.view.pdftemplates.organization.nds: VAT
 mbhbasebundle.view.pdftemplates.organization.zakaz: Order
 mbhbasebundle.view.pdftemplates.organization.vo: in
-mbhbasebundle.view.pdftemplates.organization.inn: TIN
+mbhbasebundle.view.pdftemplates.organization.inn: 'Tax number'
 mbhbasebundle.view.pdftemplates.organization.tsena: Price
 mbhbasebundle.view.pdftemplates.organization.kol.vo: Quantity
 mbhbasebundle.view.pdftemplates.individual.vsego: Total
@@ -397,10 +397,10 @@ mbhbasebundle.view.pdftemplates.individual.kassir: Cashier
 mbhbasebundle.view.pdftemplates.individual.izveshcheniye: Notification
 mbhbasebundle.view.pdftemplates.individual.vidplatezha: 'Payment type'
 mbhbasebundle.view.pdftemplates.organization.bukhgalter: Accountant
-mbhbasebundle.view.navbar.pereytivkassu: 'Proceed to cashdesk'
+mbhbasebundle.view.navbar.pereytivkassu: 'Proceed to Transactions'
 mbhbasebundle.view.pdftemplates.organization.raboty: services
 mbhbasebundle.view.pdftemplates.organization.nasummu: 'for total sum of'
-mbhbasebundle.view.pdftemplates.individual.kpp: 'Registry Number'
+mbhbasebundle.view.pdftemplates.individual.kpp: 'Company number'
 mbhbasebundle.view.pdftemplates.individual.adresplatelʹshchika: 'payer''s address'
 mbhbasebundle.view.pdftemplates.organization.schetnaoplatu: 'Invoice for payment'
 mbhbasebundle.view.pdftemplates.organization.postavshchik: Provider
@@ -416,8 +416,8 @@ security.two_factor.code: 'Login password'
 mailer.recipient.empty.email: 'Recipient email is empty %guest%'
 exception.relation_delete.message.task: 'Cannot be deleted. This type contains existing tasks (%total%)'
 cancel: Cancel
-portrait: Portrait
-landscape: Landscape
+portrait: Landscape
+landscape: Portrait
 age.full: year|year|years
 children: child|child|children
 days: day|day|days
@@ -431,8 +431,8 @@ mbhbasebundle.view.pdftemplates.organization.usl: cond.
 mailer.reportArrival.number_of_adults: 'Number of adults'
 mailer.reportArrival.number_of_children: 'Number of children'
 mailer.order.total_paid: 'Total Paid'
-mailer.order.arrival: 'Check in'
-mailer.order.departure: 'Check out'
+mailer.order.arrival: Check-in
+mailer.order.departure: Check-out
 debt: Debt
 partially_paid: Partly
 paid: Paid
@@ -450,7 +450,7 @@ children.full: child|child|children
 adults.full: adult|adult|adults
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Entry containing reservations cannot be deleted'
 security.two_factor.invalid_code: 'Invalid password'
-mailer.two_factor.subject: 'MaxiBooking login password'
+mailer.two_factor.subject: 'MaxiBooking login code'
 mailer.order.payment_info: 'Payment details'
 mailer.order.surcharges: 'Additional payment'
 mailer.resetting_mail.reset_pass_button.text: 'Reset password'
@@ -469,31 +469,31 @@ exception.hotel_relation_delete.message.roomTypeCategory: 'This hotel cannot be 
 exception.hotel_relation_delete.message.serviceCategory: 'This hotel cannot be deleted as it contains service categories (%total%).'
 exception.hotel_relation_delete.message.ingredientCategory: 'This hotel cannot be deleted as it contains ingredient categories (%total%).'
 exception.hotel_relation_delete.message.dishMenuCategory: 'This hotel cannot be deleted as it contains dishes categories (%total%).'
-exception.hotel_relation_delete.message.restriction: 'This hotel cannot be deleted as it contains conditions and restrictions (%total%).'
+exception.hotel_relation_delete.message.restriction: 'Information about the hotel cannot be deleted as it contains data on reservations` Terms and conditions'
 exception.hotel_relation_delete.message.record: 'This hotel cannot be deleted as there are records on income and expenses for this hotel (%total%).'
 exception.roomType_relation_delete.message.priceCache: 'This room type cannot be deleted as it contains room prices (%total%).'
 exception.hotel_relation_delete.message.room: 'This hotel cannot be deleted as it contains room (%total%).'
 exception.hotel_relation_delete.message.tariff: 'This hotel cannot be deleted as it contains room rates (%total%).'
-exception.hotel_relation_delete.message.housing: 'This hotel cannot be deleted as it contains wings (%total%).'
+exception.hotel_relation_delete.message.housing: 'The hotel cannot be deleted. To delete the Hotel please first delete the records about its Buildings (%total%).'
 exception.hotel_relation_delete.message.priceCache: 'This hotel cannot be deleted as it contains room prices (%total%).'
 exception.hotel_relation_delete.message.roomCache: 'This hotel cannot be deleted as it contains information about room availability (%total%).'
 exception.hotel_relation_delete.message.dishOrderItem: 'This hotel cannot be deleted as it contains information about orders (%total%).'
 exception.hotel_relation_delete.message.table: 'This hotel cannot be deleted as it contains information about tables (%total%).'
 exception.hotel_relation_delete.message.invoice: 'This hotel cannot be deleted as it contains payment invoices (%total%).'
-exception.city_relation_delete.message.housing: 'City cannot be deleted as there are records on hotel wings for it (%total%).'
+exception.city_relation_delete.message.housing: 'The City cannot be deleted. To delete the City please first delete the records about the Buildings linked to it (%total%).'
 exception.city_relation_delete.message.organization: 'City cannot be deleted as there are records on organizations for it (%total%).'
 exception.room_relation_delete.message.package: 'This room cannot be deleted as there are  associated reservations (%total%).'
 exception.user_relation_delete.message.task: 'This user cannot be deleted as there are tasks assigned to this user (%total%).'
-exception.tariff_relation_delete.message.roomCache: 'This rate cannot be deleted as it is used in currently available rooms (%total%).'
+exception.tariff_relation_delete.message.roomCache: 'This rate cannot be deleted as it is currently being used in Rooms for Sale (%total%).'
 exception.promotion_relation_delete.message.tariff: 'This sale cannot be deleted as it is used as a default sale for a rate'
-exception.wareCategory_relation_delete.message.wareItem: 'This commodity category cannot be deleted as it contains commodities (%total%).'
+exception.wareCategory_relation_delete.message.wareItem: 'Items category cannot be deleted as it contains items (%total%).'
 exception.packageSource_relation_delete.message.order: 'This booking source cannot be deleted as there is associated order (%total%).'
 exception.ingredientCategory_relation_delete.message.ingredient: 'This ingredient category cannot be deleted as it contains ingredients (%total%).'
 exception.tourist_relation_delete.message.cashDocument: 'This guest cannot be deleted as there are associated payment documents (%total%).'
 exception.user_relation_delete.message.workShift: 'This user cannot be deleted as there are he must close the shift (%total%).'
 exception.group_relation_delete.message.user: 'This user group cannot be deleted as it contains users (%total%).'
 exception.tariff_relation_delete.message.priceCache: 'This rate cannot be deleted as it is used in room prices (%total%).'
-exception.tariff_relation_delete.message.restriction: 'This rate cannot be deleted as it is used in conditions and restrictions (%total%).'
+exception.tariff_relation_delete.message.restriction: 'This Rate cannot be deleted as it is used in other rates Terms and Conditions'
 exception.tariff_relation_delete.message.package: 'This rate cannot be deleted as it is used in current reservations (%total%).'
 exception.tariff_relation_delete.message.parentTariff: 'This rate cannot be deleted as it is used as a parent rate for another rate (%total%).'
 exception.serviceCategory_relation_message.service: 'This service category cannot be deleted as it contains services (%total%).'
@@ -513,7 +513,7 @@ basebundle.menu.reports: Reports
 basebundle.menu.number_unsettled_armor: 'Not checked in total'
 bed: bed
 beds: beds
-migration.card: 'Migration card'
+migration.card: 'Arrival-Departure Record Card'
 visa: Visa
 security.not_access: 'No access rights'
 crud.add: Add
@@ -525,27 +525,27 @@ menu.label.reports.windows: Windows
 menu.label.reports.fms: 'For migration service'
 menu.room_type_category: 'Room types'
 save: save
-basebundle.menu.navigation: Navigation
-basebundle.menu.booking: Reservations
-basebundle.menu.picking: Selection
-basebundle.menu.receptionist: Porter
-basebundle.menu.arrival_departure: 'Check in/out'
-basebundle.menu.chess_player: 'Reservation Calendar'
-basebundle.menu.tariffs: Rates
+basebundle.menu.navigation: 'Main Menu'
+basebundle.menu.booking: 'My Reservations'
+basebundle.menu.picking: 'Create Reservation'
+basebundle.menu.receptionist: 'Front Office'
+basebundle.menu.arrival_departure: 'Check-in / Check-out'
+basebundle.menu.chess_player: Calendar
+basebundle.menu.tariffs: 'Booking Rates'
 basebundle.menu.view: Overview
-basebundle.menu.price: Pricing
-basebundle.menu.services: Services
-basebundle.menu.cass: Cashdesk
+basebundle.menu.price: Prices
+basebundle.menu.services: 'Service Functions'
+basebundle.menu.cass: Transactions
 basebundle.menu.clients: Guests
-basebundle.menu.organization: Company
-basebundle.menu.occupancy: Occupancy
+basebundle.menu.organization: Counterparties
+basebundle.menu.occupancy: 'Daily Occupancy'
 basebundle.menu.managers: Managers
 basebundle.menu.analitics: Analytics
 basebundle.menu.assessments: Rates
 basebundle.menu.work_shifts: 'Work shifts'
 basebundle.menu.settings: Settings
-basebundle.menu.hotels: Hotels
-basebundle.menu.shells: Wings
+basebundle.menu.hotels: 'My Hotels'
+basebundle.menu.shells: Buildings
 basebundle.menu.groups_numbers: 'Room types'
 basebundle.menu.restorant: Restaurant
 basebundle.menu.ingredients: Ingredients
@@ -555,7 +555,7 @@ basebundle.menu.users: Users
 basebundle.menu.sources: Sources
 basebundle.menu.parammeters: Parameters
 basebundle.menu.type_of_task: 'Task types'
-basebundle.menu.warehouse: Stock
+basebundle.menu.warehouse: Stockroom
 basebundle.menu.interaction: Interactions
 basebundle.menu.vashotel: VashHotel
 basebundle.menu.estimates: Rates
@@ -564,9 +564,9 @@ exception.region_relation_delete.message.organization: 'This region cannot be de
 exception.service_relation_delete.message.packageService: 'This service cannot be deleted as it is used in reservations (%total%)'
 exception.service_relation_delete.message.tariff: 'This service cannot be deleted as it is used in rates (%total%)'
 exception.vegaState_relation_delete.message.touristBirthplace: 'This country cannot be deleted as there are clients born there (%total%)'
-exception.housing_relation_delete.message.room: 'This wing cannot be deleted as there are associated rooms (%total%).'
+exception.housing_relation_delete.message.room: 'The Building cannot be deleted. To delete the Building please first delete the records about the Rooms linked to it (%total%).'
 exception.ingredient_relation_delete.message.dishIngredient: 'This ingredient cannot be deleted as it is used in dishes (%total%)'
-menu.label.reports.daily_report: Funds
+menu.label.reports.daily_report: 'Cash Flow'
 menu.hotel_new.label: 'Create new hotel'
 entity.edit.title: 'Edit &lt;%title%&gt;'
 basebundle.menu.number_unintelligible_armor: 'Not checked out total'
@@ -574,7 +574,7 @@ basebundle.menu.number_of_rooms: 'Number of rooms'
 basebundle.menu.number_and_price: 'Rooms and rates'
 basebundle.menu.room_in_sales: 'Room availability'
 basebundle.menu.visa_invations: 'Visa invitations'
-basebundle.menu.reasond_of_removal: 'Deletion reasons'
+basebundle.menu.reasond_of_removal: 'Cancellation reason'
 basebundle.menu.templates_of_document: 'Document templates'
 basebundle.menu.additional_channels: 'Additional channels'
 basebundle.menu.visa_invitation: 'Visa invitations'
@@ -586,7 +586,7 @@ form.clientConfigType.notification.label: 'Notifications list for clients'
 notifier.config.label.unpaid: 'Non payment'
 notifier.config.label.task: Tasks
 dashboard.messages.roomType.priceCache: 'Main rates prices are not set for the following periods'
-forms.export_type.main_group: 'Generated document settings'
+forms.export_type.main_group: 'Document`s settings'
 notifier.config.title.cash_confirm: 'Pyment document confirmation notification'
 notifier.config.title.arrival: 'Arrival notification'
 notifier.config.title.feedback: 'Rate inquiry'
@@ -605,30 +605,30 @@ mbhbasebundle.views.mailer.rb: children
 mbh.hotel.themes.ecological: Eco
 mbh.hotel.themes.haute_cuisine: 'Exquisite cuisine'
 mbh.hotel.themes.spa: SPA/Wellness
-currency.rub.text: dollar
+currency.rub.text: RUR
 mbh.package.arrivals.work: Work
 mbh.package.arrivals.service: Official
-mbh.services.calcTypes.day_percent: 'Per service (% from 1 night price)'
-currency.rub.small: cent
+mbh.services.calcTypes.day_percent: 'Per Service as a percentage of the price per night'
+currency.rub.small: kop.
 mbh.package.arrivals.study: Study
-currency.uah.small: cent
+currency.uah.small: kop.
 mbh.cash.operations.out: Expense
-mbh.cash.operations.in: Receipt
+mbh.cash.operations.in: Income
 mbh.task.statuses.closed.title: Closed
 mbh.task.statuses.process.title: 'In progress'
 mbh.task.statuses.open.title: Open
 mbh.package.arrivals.other: Other
 mbh.package.arrivals.residence: Transit
 mbh.package.arrivals.private: Private
-mbh.services.calcTypes.not_applicable: 'Per service'
+mbh.services.calcTypes.not_applicable: 'Per Service'
 mbh.package.arrivals.business: Work
 mbh.package.arrivals.tourism: Tourism
-currency.uah.text: dollar
+currency.uah.text: UAH
 mbh.package.statuses.online.title: Online
 mbh.package.statuses.offline.title: Regular
 mbh.weekdays.fri: Friday
 mbh.weekdays.sat: Saturday
-mbh.services.calcTypes.per_night: 'For a night'
+mbh.services.calcTypes.per_night: 'Per Night'
 mbh.weekdays.thu: Thursday
 mbh.weekdays.wed: Wednesday
 mbh.weekdays.tue: Tuesday
@@ -638,8 +638,8 @@ currency.kzt.small: tiyin
 currency.kzt.text: KZT
 mbh.package.arrivals.humanitarian: Humanitarian
 mbh.mailer.subject.text: 'Messages from MaxiBooking'
-mbh.services.calcTypes.per_stay: 'For the whole stay'
-menu.label.reports.dynamic_sales: 'Sales dynamics'
+mbh.services.calcTypes.per_stay: 'One-time charge per reservation'
+menu.label.reports.dynamic_sales: 'Sales Dynamics'
 mbh.hotel.types.guest_house: 'Guest house'
 mbh.warehouse.operations.in: Receipt
 mbh.organization.types.my: 'My companies'
@@ -647,7 +647,7 @@ mbh.organization.types.contragents: Partners
 mbh.gender.types.unknown: Unspecified
 mbh.gender.types.female: Female
 mbh.gender.types.male: Male
-mbh.cash.operations.fee: Comission
+mbh.cash.operations.fee: Commission
 mbh.hotel.themes.beach: Beach/Shore
 mbh.hotel.themes.ski: Mountains/Skiing
 mbh.hotel.themes.sport: Sport
@@ -663,7 +663,7 @@ mbh.hotel.types.sanatorium: Sanatorium
 mbh.hotel.types.pension: Pension
 mbh.hotel.themes.city: City
 mbh.hotel.types.apartments: Apartments
-mbh.warehouse.operations.out: Expense
+mbh.warehouse.operations.out: Dispatch
 mbh.hotel.themes.nature: Nature/Wildlife
 mbh.hotel.themes.country_holidays: 'Countryside rest'
 mbh.hotel.types.recreation_center: 'Recreation center'
@@ -692,13 +692,13 @@ support_modal.all_articles: 'All articles'
 support_modal.info_base: Guide
 welcome_modal.ok_button: OK
 welcome_modal.welcome5: 'You will be offered an interactive introductory lesson to familiarize yourself with the program. Click the %button% button in the top menu to start.'
-support_modal.articles.chessboard: 'Reservation calendar information'
+support_modal.articles.chessboard: Calendar
 support_modal.articles.booking_sync: 'Set up synchronisation with Booking.com'
 support_modal.articles.hotel_creation: 'Hotel creation'
 support_modal.articles.tariffs: 'Rate creation'
 support_modal.articles.package_info: 'Filling in the information about the reservation'
 support_modal.interactive_halper: 'Interactive help'
-support_modal.header_text: 'Help materials'
+support_modal.header_text: 'Knowledge Base'
 welcome_modal.welcome5_continuation: 'Knowledge base'
 welcome_modal.header_text: 'Welcome to'
 welcome_modal.welcome2: 'To log in, please use the username and password sent in the email. You should save this email, so you can refer to it later.'
@@ -712,3 +712,79 @@ support_modal.sandbox_button.text: Demo-version
 support_modal.phones: Contacts
 welcome_modal.password: password
 welcome_modal.login: login
+languages.de: German
+languages.fr: French
+currency.uzs.small: tiyin
+languages.tr: Turkish
+menu.communication.label.mb_site: Website
+currency.uzs.text: UZS
+languages.gr: Greek
+notifier.config.label.error: Errors
+exception.relation_delete.document_already_deleted: 'Document is already deleted!'
+exception.tariff_relation_delete.message.mergingTariff: 'You can not delete a rate as it is used as a combination rate (%total%).'
+form.facilitiesType.help: 'To change the description of amenities, click here <a target="_blank" href="%href%"> link </a>'
+menu.communication.label.site_settings: 'Website Settings'
+notifier.config.title.error: 'Error notifications'
+menu.label.navigation: 'My Rooms'
+messages_store.channel_manager_connection.mail.text_1: 'An application to connect to the booking system has been received %channelManagerName% from the client <a target="_blank" href="%url%">%clientName%</a>'
+messages_store.channel_manager_connection.mail.subject: '%channelManagerName% - application for connection'
+exception.roomType_relation_delete.message.special: 'Impossible to delete the type of rooms, since it is used in special offers (% total%).'
+exception.tariff_relation_delete.message.special: 'Impossible to delete a rate, since it is used in special offers (% total%).'
+messages_store.channel_manager_connection.mail.text_3: 'Information needed for establishing connection'
+messages_store.channel_manager_confirmation.text_4: 'If you have any questions, please contact our support at: <a href="mailto:%supportEmail%">%supportEmail%</a>!'
+cm_connection_instructions.part1.text1: '<strong>To configure the connection between %channelManagerName% and MaxiBooking, the permission from the booking system must be granted.</ strong>'
+cm_connection_instructions.part1.text2: '<strong>Note</ strong>: Please note that the room quantity and prices will be uploaded from the Maxibooking system.'
+cm_connection_instructions.part2.header: 'Part II. How to send a request'
+messages_store.channel_manager_connection.mail.text_2: 'Please, check if the prices and room quantity have been set in the program for the entire sales period. And that the pricing scheme in the program corresponds to the pricing scheme in the booking system.'
+messages_store.channel_manager_confirmation.mail.subject: 'Connection to Maxibooking system %channelManager% has been confirmed'
+messages_store.channel_manager_confirmation.text_1: 'Dear client'
+messages_store.channel_manager_confirmation.text_2: 'Your application for connection to the %channelManager% booking system has been approved.'
+messages_store.channel_manager_confirmation.text_3: 'Information needed for establishing connection'
+cm_connection_instructions.part1.header: 'Part I. Introduction'
+cm_connection_instructions.part1.text3: 'Make sure you created all room types and specified their number in the program and that it is similar to those specified in the booking system. You also need to specify prices and number of rooms for sale for the entire sales period.'
+cm_connection_instructions.part2.text1: '<strong>To get a confirmation from the booking system you need:</strong>'
+cm_connection_instructions.part2.booking.text5: 'We will receive a message in order to confirm your connection.'
+cm_connection_instructions.part2.booking.text2: '<strong> The 1 step of the connection wizard will open </strong>.<br>Type the name of the program in the search field: <strong>maxibooking</strong> and select <strong>Maxibooking* </strong> from the list.'
+cm_connection_instructions.part2.booking.text3: 'Make sure that you selected <strong>"Full connection (two way)" </strong> in the field below and click <strong> Next</strong>.'
+cm_connection_instructions.part2.booking.text4: '<strong>Step 2 of the wizard will open.</strong><br> Read the agreement and click<strong> "I have read and accept the terms of the agreement"</strong>. Then click <strong>"Accept"</ strong>.'
+cm_connection_instructions.part2.booking.text8: 'Go to the <strong>"MaxiBooking"</ strong> system and complete the connection setup.'
+cm_connection_instructions.part2.booking.text7: 'Confirm that you want to connect to <strong>"MaxiBooking".<br> !!! Please note </strong> that the connection type must be: <strong>"Full connection (two way)"</strong>'
+cm_connection_instructions.part2.booking.note: '<strong>*</strong> if you typed the name of the program, and the system did not offer MaxiBooking, type 549 instead of the name'
+cm_connection_instructions.part2.expedia.text1: 'Log in to your <strong>Expedia</strong> account at <a target="_blank" href="https://www.expediapartnercentral.com">https://www.expediapartnercentral.com</a>'
+cm_connection_instructions.part2.expedia.text2: 'Select<strong> "Rooms and Rates"</strong> on the left side and then go to <strong>"Expedia booking system connection settings"</strong>'
+cm_connection_instructions.part2.booking.text1: 'Go to your account on booking.com at <a target="_blank" href="https://admin.booking.com"> https://admin.booking.com</a>, choose <strong>"Account"</strong> in the upper-right corner of the page and select <strong>Channel manager</strong> in the context menu.'
+cm_connection_instructions.part2.booking.text6: 'When we confirm the connection, you will receive an email and you you will need to go back to the account: <a target="_blank" href="https://admin.booking.com">https://admin.booking.com</a>. On step 4 click <strong>Account</strong> button and selecting <strong>Channel manager</ strong> again.'
+cm_connection_instructions.part2.hundred_one_hotels.text3: 'When the permission is granted, we will notify you and ask you to complete the connection setup in the <strong>MaxiBooking</strong> system.'
+cm_connection_instructions.part2.expedia.text3: 'On the <strong>"Expedia Quick Connect Setup"</strong> page, left-click the <strong>System Provider</ strong> field and select <strong>MaxiBooking</strong> from the list.<br><strong>!!! Make sure that</strong><strong>Rooms and Rates Availability</strong> and <strong> Reservation recovery</strong> has been selected under the <strong>"System Provider"</strong> field (the checkbox is marked)'
+cm_connection_instructions.part2.ostrovok.text4: 'Left-click <strong> "No channel manager"</strong> in the list in the <strong>Activate</strong> field and select <strong>MaxiBooking</strong>'
+cm_connection_instructions.part2.hundred_one_hotels.text2: 'Then enter your hotel''s <strong>ID</strong> at <strong><a target="_blank" href="https://www.101hotels.ru/">101Hotels.ru</a></strong> and click the <strong>"Submit Request"</strong>'
+cm_connection_instructions.part2.vashotel.text1: 'Check the name of your hotel and click <strong>"Submit Request"</strong>. After that your request will be sent to "VashOtel".'
+cm_connection_instructions.part2.vashotel.text2: 'When the permission is granted, we will notify you and ask you to complete the connection setup in the <strong>MaxiBooking</strong> system.'
+cm_connection_instructions.part2.myallocator.text1: 'Log in to your <strong>MyAllocator</strong> account at <a target="_blank" href="https://inbox.myallocator.com/en/">https://inbox.myallocator.com/en/</a>'
+cm_connection_instructions.part2.ostrovok.text1: 'Log in to your <strong>Ostrovok.ru</ strong> account at <a target="_blank" href="https://extranet.ostrovok.ru">https://extranet.ostrovok.ru</a>'
+cm_connection_instructions.part2.expedia.text4: 'Press <strong>"Submit"</strong>'
+cm_connection_instructions.part2.expedia.text5: 'Go to the <strong>"MaxiBooking"</ strong> system and complete the connection setup.'
+cm_connection_instructions.part2.ostrovok.text2: 'Go to the <strong>"Hotel"</strong> tab, then <strong>"General Information"</strong>'
+cm_connection_instructions.part2.ostrovok.text3: 'Find the <strong>Channel manager</strong> at the bottom of the page.'
+cm_connection_instructions.part2.ostrovok.text5: 'Check if the <strong>"E-channel"</strong> icon appeared at the top of the page.'
+cm_connection_instructions.part2.ostrovok.text6: 'Go to the <strong>"MaxiBooking"</ strong> system and complete the connection setup.'
+cm_connection_instructions.part2.hundred_one_hotels.text1: 'Check the name of your hotel and its address'
+cm_connection_instructions.part2.myallocator.text2: 'Select <strong>Manage</strong> in the menu at the top of the page.'
+cm_connection_instructions.part2.myallocator.text3: 'Select <strong>PMS Connections</strong> after that'
+cm_connection_instructions.part2.myallocator.text4: 'On the newly opened page you need to left-click in the <strong>(Connect to a PMS)</strong> field.'
+cm_connection_instructions.part2.myallocator.text9: 'Open <strong>MaxiBooking</strong> and go to <strong>Settings/Channel manager/ MyAllocator</strong>.'
+cm_connection_instructions.part2.myallocator.text5: 'Find <strong>Maxibooking</strong> in the list click on it.'
+cm_connection_instructions.part2.myallocator.text6: 'Them press <strong>ADD</strong>'
+cm_connection_instructions.part2.myallocator.text7: '<strong> Maxibooking</strong> must be displayed in the <strong>Active Connections</strong> field.'
+cm_connection_instructions.part2.myallocator.text8: 'Copy the <strong> Authentication Token</strong>'
+messages_store.channel_manager_confirmation.mail.text: 'The connection to %channelManager% is confirmed'
+messages_store.new_connection.text: 'A user  "%client%"  initiated the configuration of "%channelManager%".'
+messages_store.new_connection.subject: 'Starting the configuration of "%channelManager%"'
+site_manager.empty_room_caches_warning: '%roomTypeName%: No rooms for sale for the periods: %periods%'
+cm_connection_instructions.part2.myallocator.text10: 'Enter login in <strong>"Login"</strong> field which you use in <strong>MyAllocator</strong>'
+cm_connection_instructions.part2.myallocator.text11: 'Enter the code which you copied from the <strong>Authentication Token</strong> in <strong>My Allocator</strong> field to the <strong>"Password"</strong> field.'
+cm_connection_instructions.part2.myallocator.text12: 'Set the switch <strong> Enabled</strong> to <strong>"Yes"</strong> and click <strong>"Save"</ strong> in the bottom of the page.'
+cm_connection_instructions.part3.text2: 'If you have any questions, please, contact our support team: <a href="mailto:%supportEmail%">% supportEmail% </a>.'
+cm_connection_instructions.part3.header: 'Part III. Conclusion'
+cm_connection_instructions.part3.text1: 'More detailed configuration process is described in the knowledge base <a href="%connectionLink%" target="_blank">here</a>.'
+site_manager.empty_price_caches_warning: '%roomTypeName%: No prices for the period %periods% for the rate "%tariffName%"'

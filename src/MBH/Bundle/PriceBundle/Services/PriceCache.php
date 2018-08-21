@@ -2,11 +2,8 @@
 
 namespace MBH\Bundle\PriceBundle\Services;
 
-
-use \MBH\Bundle\PriceBundle\Document\RoomCache as RoomCacheDoc;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 
 /**
  *  PriceCache service
@@ -28,6 +25,7 @@ class PriceCache
      * @var \MBH\Bundle\BaseBundle\Service\Helper
      */
     protected $helper;
+    private $roomManager;
 
     public function __construct(ContainerInterface $container)
     {
@@ -52,6 +50,7 @@ class PriceCache
      * @param null $childPrice
      * @param array $additionalPrices
      * @param array $additionalChildrenPrices
+     * @throws \Exception
      */
     public function update(
         \DateTime $begin,

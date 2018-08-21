@@ -24,7 +24,7 @@
         {% endif %}
         {% for group, items in groups %}
             {% if group != 'no-group' %}
-            <div class="box box-default box-solid" {% if form.vars.nonDisplayGroups is defined and group in form.vars.nonDisplayGroups %} style="display: none;" {% endif %}>
+            <div class="box box-default box-solid box-header_when-mobile" {% if form.vars.nonDisplayGroups is defined and group in form.vars.nonDisplayGroups %} style="display: none;" {% endif %}>
 
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ group|trans }}</h3>
@@ -56,9 +56,14 @@
 
 {% block form_row %}
     {% spaceless %}
-        <div class="form-group {% if errors|length > 0 %} has-error{% endif %}">
+        {% if form.vars['embedded'] is defined and form.vars['embedded'] == true %}
+            {{ form_widget(form) }}
+        {% else %}
+        {% set isMultiLanguageField = form.vars['languages'] is defined %}
+        <div class="form-group {% if errors|length > 0 %} has-error{% endif %} {% if isMultiLanguageField %} multi-languages-field {% endif %}"
+                {% if isMultiLanguageField %}data-language="{{ form.vars['language'] }}"{% endif %}
+                {% if isMultiLanguageField and form.vars['languages']|length != 1 and form.vars['language'] != form.vars['defaultLang'] %}style="display: none;" {% endif %}>
             {{ form_label(form) }}
-
             <div class="col-sm-6">
                 {{ form_widget(form) }}
                 {% if help is not null %}
@@ -71,6 +76,7 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
     {% endspaceless %}
 {% endblock form_row %}
 
@@ -105,7 +111,20 @@
             {% endif %}
             {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' control-label col-sm-2')|trim}) %}
 
-            <label {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain)|raw }}{% if required %}&nbsp;<span class="required-star text-danger">*</span>{% endif %}</label>
+            <label {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain)|raw }}{% if required %}&nbsp;<span class="required-star text-danger">*</span>{% endif %}
+            {% if form.vars['languages'] is defined and form.vars['languages']|length > 1 %}
+                <br>
+                <div style="float: right;">
+                <ul class="nav nav-pills">
+                    {% for language in form.vars['languages'] %}
+                        <li role="presentation" {% if language == form.vars['language'] %}class="active"{% endif %}>
+                            <a style="cursor: pointer;" data-language="{{ language }}" class="multi-language-select-option">{{ language }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                </div>
+            {% endif %}
+            </label>
         {% endif %}
     {% endspaceless %}
 {% endblock form_label %}
@@ -117,10 +136,22 @@
         {% if type != 'file' %}
             {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control input-sm')|trim}) %}
         {% endif %}
-        {% if addon %}<div class="input-group">{% endif %}
+        {% if addon or addonText or preAddonText %}<div class="input-group">{% endif %}
+        {% if preAddonText %}
+            <span class="input-group-addon">
+                {{ preAddonText }}
+            </span>
+        {% endif %}
         <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
-        {% if addon %}
-            <span class="input-group-addon"><i class="{{ addon }}"></i></span>
+        {% if addon or addonText %}
+            <span class="input-group-addon">
+                {% if addon %}
+                    <i class="{{ addon }}"></i>
+                {% endif %}
+                {% if addonText %}
+                    {{ addonText }}
+                {% endif %}
+            </span>
             </div>{% endif %}
 
     {% endspaceless %}

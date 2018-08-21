@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -22,6 +23,21 @@ class ChannelManager
     const OLD_PACKAGES_PULLING_NOT_STATUS = 'not';
     const OLD_PACKAGES_PULLING_PARTLY_STATUS ='partly';
     const OLD_PACKAGES_PULLING_ALL_STATUS = 'all';
+
+    const CONFIGS_BY_CM_NAMES = [
+        'booking' => 'BookingConfig',
+        'ostrovok' => 'OstrovokConfig',
+        'vashotel' => 'VashotelConfig',
+        'myallocator' => 'MyallocatorConfig',
+        'expedia' => 'ExpediaConfig',
+        'hundred_one_hotels' => 'HundredOneHotelsConfig'
+    ];
+
+    const PULL_OLD_ORDERS_ROUTES = [
+        'booking' => 'booking_all_packages_sync',
+        'hundred_one_hotels' => 'hoh_packages_sync',
+        'expedia' => 'expedia_packages_sync'
+    ];
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -63,7 +79,6 @@ class ChannelManager
         $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->client = $container->getParameter('client');
         $this->producer = $this->container->get('old_sound_rabbit_mq.task_command_runner_producer');
-        $this->services = $this->getServices();
     }
 
     /**
@@ -75,10 +90,11 @@ class ChannelManager
     }
 
     /**
+     * @param bool $isForPullingOldOrders
      * @param array $filter
      * @return array
      */
-    public function getServices(array $filter = null)
+    public function getServices($isForPullingOldOrders = false, array $filter = null)
     {
         if (!$this->checkEnvironment()) {
             return [];
@@ -90,7 +106,7 @@ class ChannelManager
             try {
                 $service = $this->container->get($info['service']);
 
-                if ($service instanceof ServiceInterface && !empty($service->getConfig())) {
+                if ($service instanceof ServiceInterface && !empty($service->getConfig($isForPullingOldOrders))) {
                     if (!empty($filter) && !in_array($key, $filter)) {
                         continue;
                     }
@@ -212,7 +228,7 @@ class ChannelManager
     public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): array
     {
         $results = [];
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             $result = $service['service']->getOverview($begin, $end, $hotel);
             $results[$service['key']] = $result;
             if ($result) {
@@ -234,7 +250,7 @@ class ChannelManager
         }
 
         $result = false;
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             try {
                 $noError = true;
                 if (empty($roomType) && empty($begin) && empty($end) && $command === AbstractChannelManagerService::COMMAND_UPDATE) {
@@ -315,7 +331,7 @@ class ChannelManager
 
     public function pushResponse($serviceTitle, Request $request)
     {
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             if ($serviceTitle && $service['key'] != $serviceTitle) {
                 continue;
             }
@@ -343,7 +359,7 @@ class ChannelManager
             return false;
         }
         $result = false;
-        foreach ($this->services as $service) {
+        foreach ($this->getServices($pullOldStatus === self::OLD_PACKAGES_PULLING_ALL_STATUS) as $service) {
             if ($serviceTitle && $service['key'] != $serviceTitle) {
                 continue;
             }
@@ -363,6 +379,94 @@ class ChannelManager
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $channelManagerName
+     * @param bool $throwException
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
+    public function checkForCMExistence(string $channelManagerName, $throwException = false)
+    {
+        $channelManagerNames = array_keys($this->container->getParameter('mbh.channelmanager.services'));
+
+        $isExists = in_array($channelManagerName, $channelManagerNames);
+
+        if (!$isExists && $throwException) {
+            throw new \InvalidArgumentException('Channel manager ' . $channelManagerName . ' does not exists');
+        }
+
+        return $channelManagerName;
+    }
+
+    /**
+     * @param string $channelManagerName
+     * @return AbstractChannelManagerService|object
+     */
+    public function getServiceIdByName(string $channelManagerName)
+    {
+        $this->checkForCMExistence($channelManagerName, true);
+        $serviceName = $this->container->getParameter('mbh.channelmanager.services')[$channelManagerName]['service'];
+
+        return $this->container->get($serviceName);
+    }
+
+    /**
+     * @param string $channelManagerName
+     * @return string
+     */
+    public function getServiceHumanName(string $channelManagerName)
+    {
+        $this->checkForCMExistence($channelManagerName, true);
+
+        return $this->container->getParameter('mbh.channelmanager.services')[$channelManagerName]['title'];
+    }
+
+
+    /**
+     * @param Hotel $hotel
+     * @param string $channelManagerName
+     */
+    public function setIsConnectionInstructionRead(Hotel $hotel, string $channelManagerName)
+    {
+        if (!is_null($this->getConfigForHotel($hotel, $channelManagerName))) {
+            throw new \RuntimeException('There is existing config');
+        }
+
+        /** @var ChannelManagerConfigInterface $config */
+        $configType = $this->getConfigFullName($channelManagerName);
+        $config = new $configType;
+        $config
+            ->setHotel($hotel)
+            ->setIsConnectionSettingsRead(true);
+
+        $this->dm->persist($config);
+
+        $this->dm->flush();
+        $this->dm->refresh($hotel);
+    }
+
+
+    /**
+     * @param string $channelManagerName
+     * @return string
+     */
+    public function getConfigFullName(string $channelManagerName)
+    {
+        return 'MBH\Bundle\ChannelManagerBundle\Document\\' . self::CONFIGS_BY_CM_NAMES[$channelManagerName];
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param string $channelManagerName
+     * @return ChannelManagerConfigInterface|null
+     */
+    public function getConfigForHotel(Hotel $hotel, string $channelManagerName)
+    {
+        $configGetter = 'get' . self::CONFIGS_BY_CM_NAMES[$channelManagerName];
+
+        return $hotel->$configGetter();
     }
 
     /**

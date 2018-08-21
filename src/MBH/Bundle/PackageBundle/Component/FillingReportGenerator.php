@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Component;
 
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -24,10 +23,17 @@ class FillingReportGenerator
      * @param RoomType[] $roomTypes
      * @param $statusOptions
      * @param $isOnlyEnabledRooms
+     * @param bool $recalculateAccommodationCauseOfServices
      * @return array
      */
-    public function generate(\DateTime $begin, \DateTime $end, array $roomTypes, $statusOptions, $isOnlyEnabledRooms)
-    {
+    public function generate(
+        \DateTime $begin,
+        \DateTime $end,
+        array $roomTypes,
+        $statusOptions,
+        $isOnlyEnabledRooms,
+        $recalculateAccommodationCauseOfServices = false
+    ) {
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $manager = $this->container->get('mbh.hotel.room_type_manager');
 
@@ -237,23 +243,32 @@ class FillingReportGenerator
 
                     /** @var Package $package */
                     foreach($filteredPackages as $package) {
-                        $packagePrice = 0;
                         $packagePriceWithDiscount = $package->getPackagePriceByDate($date, true);
-                        if(!is_null($packagePriceWithDiscount)) {
-                            $packagePrice = $packagePriceWithDiscount->getPrice();
-                        }
-                        $packageRowData['packagePrice'] += $packagePrice;
+                        $packagePrice = !is_null($packagePriceWithDiscount) ? $packagePriceWithDiscount->getPrice() : 0;
 
                         $servicesPrice = 0;
                         $packageServicesList = isset($packageServicesByPackageIds[$package->getId()])
                             ? $packageServicesByPackageIds[$package->getId()]
                             : [];
+
                         foreach($packageServicesList as $service) {
                             if($date >= $service->getBegin() && $date < $service->getEnd()) {
+                                if (!empty($service->getService()->getInnerPrice() && $recalculateAccommodationCauseOfServices)) {
+                                    $serviceDayPrice = $service->calcTotal(true);
+                                    if ($service->getService()->isSubtracted()) {
+                                        $packagePrice -= $serviceDayPrice;
+                                        $servicesPrice += $serviceDayPrice;
+                                    } else {
+                                        $packagePrice += $serviceDayPrice;
+                                        $servicesPrice -= $serviceDayPrice;
+                                    }
+                                }
+
                                 $servicesPrice += $service->calcTotal() / $service->getNights();
                             }
                         }
 
+                        $packageRowData['packagePrice'] += $packagePrice;
                         $packageRowData['servicePrice'] += $servicesPrice;
 
                         $relationPaid = $package->getOrder()->getPrice() ?

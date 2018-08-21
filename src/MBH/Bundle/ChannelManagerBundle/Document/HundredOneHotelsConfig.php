@@ -3,12 +3,11 @@
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Lib\CanPullOldOrdersTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -24,6 +23,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterface
 {
     use ConfigTrait;
+    use CanPullOldOrdersTrait;
 
     public function getName()
     {
@@ -71,6 +71,18 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
      * @Assert\NotNull(message="validator.document.hundredOneHotelsConfig.no_api_key_specified")
      */
     protected $apiKey;
+
+    /**
+     * @var array
+     * @ODM\EmbedMany(targetDocument="Tariff")
+     */
+    protected $tariffs;
+
+    public function __construct()
+    {
+        $this->rooms = new ArrayCollection();
+        $this->tariffs = new ArrayCollection();
+    }
 
     /**
      * @return string
@@ -186,18 +198,6 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
         $this->tariffs->removeElement($tariff);
     }
 
-    /**
-     * @var array
-     * @ODM\EmbedMany(targetDocument="Tariff")
-     */
-    protected $tariffs;
-
-    public function __construct()
-    {
-        $this->rooms = new ArrayCollection();
-        $this->tariffs = new ArrayCollection();
-    }
-
     public function getHotelId()
     {
         return $this->hotelId;
@@ -206,6 +206,23 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
     public function setHotelId($hotelId)
     {
         $this->hotelId = $hotelId;
+
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMainSettingsFilled()
+    {
+        return $this->getIsEnabled() && !empty($this->getHotelId()) && $this->getApiKey();
+    }
+
+    /**
+     * @param bool $checkOldPackages
+     * @return bool
+     */
+    public function isReadyToSync($checkOldPackages = false): bool {
+        return $this->isSettingsFilled() && ($checkOldPackages ? $this->isAllPackagesPulled() : true);
     }
 }

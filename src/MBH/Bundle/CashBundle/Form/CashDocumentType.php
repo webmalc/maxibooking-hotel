@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
@@ -31,19 +32,21 @@ class CashDocumentType extends AbstractType
     /** @var  array */
     private $methods;
     private $operations;
+    private $clientConfigManager;
 
-    public function __construct(TranslatorInterface $translator, DocumentManager $dm, array $methods, array $operations)
+    public function __construct(TranslatorInterface $translator, DocumentManager $dm, array $methods, array $operations, ClientConfigManager $clientConfigManager)
     {
         $this->translator = $translator;
         $this->documentManager = $dm;
         $this->methods = $methods;
         $this->operations = $operations;
+        $this->clientConfigManager = $clientConfigManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $payers = [];
-        $clientConfig = $this->documentManager->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->clientConfigManager->fetchConfig();;
         /** @var CashDocument $cashDocument */
         $cashDocument = $builder->getData();
 

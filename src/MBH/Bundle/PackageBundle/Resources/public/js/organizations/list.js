@@ -1,9 +1,12 @@
 (function($){
     var $organizationTable = $('#organizations-table');
     var organizationType = $organizationTable.data('type');
+
+    var langOptions =
+
     $organizationTable.dataTable({
         //paging: false,
-        pageLength: 10,
+        pageLength    : mbh.datatablesOptions.pageLength,
         //iDisplayLength : 2,
         //order: [[4, 'desc']],
         info: true,
@@ -48,8 +51,8 @@
             "sUrl": "",
             "oPaginate": {
                 "sFirst": Translator.trans("list.sFirst"),
-                "sPrevious": Translator.trans("list.sPrevious"),
-                "sNext": Translator.trans("list.sNext"),
+                "sPrevious": isMobileDevice()? mbh.datatablesOptions.language.paginate.previous :Translator.trans("list.sPrevious"),
+                "sNext": isMobileDevice()? mbh.datatablesOptions.language.paginate.next :Translator.trans("list.sNext"),
                 "sLast": Translator.trans("list.sLast")
             },
             "oAria": {

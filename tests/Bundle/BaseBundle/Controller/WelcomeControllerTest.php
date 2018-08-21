@@ -52,7 +52,9 @@ class WelcomeControllerTest extends WebTestCase
     /**
      * @var string
      */
-    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER = 19;
+    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER = 9;
+
+    private const FILTER_FOR_COUNT_ITEMS_MENU = '.sidebar-accordion li:not(.dropdown) a';
 
     public static function setUpBeforeClass()
     {
@@ -175,8 +177,7 @@ class WelcomeControllerTest extends WebTestCase
 
         $crawlerAdmin = $this->getListCrawler(self::URL_PACKAGE_ORGANIZATIONS_LIST);
 
-        $amountAdminMenuItems = $crawlerAdmin->filter('.sidebar-accordion li')->count();
-
+        $amountAdminMenuItems = $crawlerAdmin->filter(self::FILTER_FOR_COUNT_ITEMS_MENU)->count();
 
         $this->client = self::createClient(
             [],
@@ -187,11 +188,19 @@ class WelcomeControllerTest extends WebTestCase
         );
 
         $crawlerManager = $this->client->request('GET', self::URL_PACKAGE_ORGANIZATIONS_LIST);
-        $amountManagerMenuItems = $crawlerManager->filter('.sidebar-accordion li')->count();
+        $amountManagerMenuItems = $crawlerManager->filter(self::FILTER_FOR_COUNT_ITEMS_MENU)->count();
 
-        $this->assertGreaterThan($amountManagerMenuItems, $amountAdminMenuItems);
+        $this->assertGreaterThan(
+            $amountManagerMenuItems,
+            $amountAdminMenuItems,
+            'The number of menu items for the manager is not less than for the admin'
+        );
 
-        $this->assertEquals(self::ACTUAL_AMOUNT_ITEMS_FOR_MANAGER, $amountManagerMenuItems);
+        $this->assertEquals(
+            self::ACTUAL_AMOUNT_ITEMS_FOR_MANAGER,
+            $amountManagerMenuItems,
+            'Rendering items menu for the manager is different than expected.'
+        );
     }
 
     public function testSidebarHotelNotFound()

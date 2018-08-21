@@ -71,7 +71,6 @@ class HotelControllerTest extends CrudWebTestCase
             $result->filter('#messages')->text()
         );
         $this->assertSame($count, $result->filter($this->getListContainer() . 'a[rel="main"]')->count());
-
     }
 
     /**

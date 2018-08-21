@@ -1,0 +1,11 @@
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/codemirror/lib/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.css') }}">
+    <style>
+        .CodeMirror-fullscreen {
+            top: 60px;
+            left: 60px;
+            bottom: 60px;
+        }
+    </style>
+{% endblock %}

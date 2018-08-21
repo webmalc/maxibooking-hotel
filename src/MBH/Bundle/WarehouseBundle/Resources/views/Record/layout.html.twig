@@ -1,4 +1,13 @@
 {% extends "MBHWarehouseBundle::layout.html.twig" %}
 
-{% set title = 'warehouse.common.title'|trans %}
+{% set title = 'menu.label.hotel_services'|trans %}
 {% set title_url = path('warehouse_record') %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2' '@MBHWarehouseBundle/Resources/public/js/record/*'%}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}

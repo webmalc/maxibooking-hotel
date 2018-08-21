@@ -1,0 +1,21 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+
+{% block text %}
+    <p>
+        {{ 'messages_store.channel_manager_connection.mail.text_1'|trans(transParams)|raw }}
+    </p>
+    <p>
+        {{ 'messages_store.channel_manager_connection.mail.text_2'|trans(transParams) }}
+    </p>
+    <h3>{{ 'messages_store.channel_manager_connection.mail.text_3'|trans(transParams)}}</h3>
+    <div style="margin:10px 0">
+        <table align="center" style="width: 420px;">
+            {% for fieldName, value in connectionData %}
+                <tr>
+                    <td style="text-align: left;width: 33.33%">{{ fieldName|trans }}</td>
+                    <td style="text-align: right;width: 33.33%">{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

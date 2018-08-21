@@ -11,10 +11,9 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Lib\IsConnectionSettingsReadTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
-
-
 
 /**
  * @ODM\Document(collection="MyallocatorConfig")
@@ -23,13 +22,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInterface
 {
-
     public function getName()
     {
         return 'myallocator';
     }
 
     use ConfigTrait;
+    use IsConnectionSettingsReadTrait;
     
     /**
      * Hook timestampable behavior
@@ -280,5 +279,13 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
         $this->currencyDefaultRatio = $currencyDefaultRatio;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMainSettingsFilled()
+    {
+        return $this->getIsEnabled() && !empty($this->getToken()) && !empty($this->getHotelId());
     }
 }

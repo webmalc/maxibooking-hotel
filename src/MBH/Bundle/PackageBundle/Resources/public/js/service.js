@@ -1,4 +1,4 @@
-/*global window, $, services, document, select2, mbh, Translator */
+/*global window, $, services, document, select2, mbh, Translator, currentService */
 
 var docReadyServices = function() {
     "use strict";
@@ -13,6 +13,8 @@ var docReadyServices = function() {
             nightsDiv = nightsInput.closest('div.form-group'),
             personsInput = $('#mbh_bundle_packagebundle_package_service_type_persons'),
             personsDiv = personsInput.closest('div.form-group'),
+            recalcCausedByGuestsNumberChangeInput = $('#mbh_bundle_packagebundle_package_service_type_recalcCausedByTouristsNumberChange'),
+            recalcCausedByGuestsNumberChangeDiv = recalcCausedByGuestsNumberChangeInput.closest('div.form-group'),
             dateInput = $('#mbh_bundle_packagebundle_package_service_type_begin'),
             dateDiv = dateInput.closest('div.form-group'),
             endInput = $('#mbh_bundle_packagebundle_package_service_type_end'),
@@ -28,8 +30,8 @@ var docReadyServices = function() {
             departureInput = $('#mbh_bundle_packagebundle_package_service_type_includeDeparture'),
             recalcDiv = $('.toggle-date').closest('div.form-group'),
             form = recalcInput.closest('form[name="mbh_bundle_packagebundle_package_service_type"]'),
-
             hide = function() {
+                recalcCausedByGuestsNumberChangeDiv.hide();
                 nightsDiv.hide();
                 personsDiv.hide();
                 recalcDiv.hide();
@@ -58,6 +60,11 @@ var docReadyServices = function() {
                 if (info.calcType === 'per_night' || info.calcType === 'per_stay') {
                     personsInput.val(personsInput.val() || services.package_guests);
                     personsDiv.show();
+                    recalcCausedByGuestsNumberChangeDiv.show();
+                    var isRecalcWithGuests = typeof currentService !== 'undefined' && currentService.serviceId === serviceInput.val()
+                        ? currentService.isRecalcWithGuests
+                        : info.isRecalcWithGuests;
+                    recalcCausedByGuestsNumberChangeInput.bootstrapSwitch('state', isRecalcWithGuests);
                 }
                 if (info.calcType === 'per_night') {
                     nightsInput.val(nightsInput.val() || services.package_duration);
@@ -157,11 +164,18 @@ var docReadyServices = function() {
                     }
                 });
 
-                serviceSelect.select2('destroy');
-                serviceSelect.select2({
+                if (isMobileDevice()) {
+                  if (serviceSelect.children('option').length === 0) {
+                    serviceSelect[0].innerHTML = '<option disabled selected>Не найдено</option>';
+                  }
+                } else {
+                  serviceSelect.select2('destroy');
+                  serviceSelect.select2({
                     allowClear: true,
                     width: 'element'
-                });
+                  });
+                }
+
                 serviceSelect.prop('disabled', false);
 
             };
@@ -172,15 +186,35 @@ var docReadyServices = function() {
     var $serviceFilterForm = $('#service-filter'),
         $serviceTable = $('#service-table'),
         processing = false;
+
+    var valueDataTable = {service: null, category: null};
+
+    if (isMobileDevice()) {
+      valueDataTable.service = $('#select-service').val();
+      valueDataTable.category = $('#select-category').val();
+    } else {
+      valueDataTable.service = $('#select-service').select2('val');
+      valueDataTable.category = $('#select-category').select2('val');
+    }
+
     $serviceTable.dataTable({
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-        buttons: [
-            {
-                extend: 'excel',
-                text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
+        language   : mbh.datatablesOptions.language,
+        pageLength : mbh.datatablesOptions.pageLength,
+          buttons       : {
+            dom    : {
+              container: {
+                className: 'dt-buttons hidden-xs'
+              }
+            },
+            buttons: [
+              {
+                extend   : 'excel',
+                text     : '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
                 className: 'btn btn-default btn-sm'
-            }
-        ],
+              }
+            ]
+          },
         "processing": true,
         "serverSide": true,
         "searching": false,
@@ -191,8 +225,8 @@ var docReadyServices = function() {
             "method": 'post',
             "data": function(d) {
                 d = $.extend(d, $serviceFilterForm.serializeObject());
-                d.service = $('#select-service').select2('val');
-                d.category = $('#select-category').select2('val');
+                d.service = valueDataTable.service;
+                d.category = valueDataTable.category;
             },
             beforeSend: function() {
                 processing = true;

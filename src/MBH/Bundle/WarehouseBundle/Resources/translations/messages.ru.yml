@@ -1,6 +1,6 @@
 mbhwarehousebundle.form.recordfiltertype.po: по
 warehouse.common.title: Склад
-warehouse.common.subtitle: Список
+warehouse.common.subtitle: 'Номенклатура склада'
 warehouse.common.edit: Редактировать
 warehouse.common.del: Удалить
 warehouse.common.included: Включен
@@ -52,7 +52,6 @@ warehouse.record.goods: Товары
 warehouse.record.in: приход
 warehouse.record.out: расход
 warehouse.record.list: 'Список приходов-расходов'
-warehouse.record.inventory: остатки
 warehouse.record.tabs.list: Записи
 warehouse.record.tabs.inventory: Остатки
 warehouse.record.th.quantity: Кол-во

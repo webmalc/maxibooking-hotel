@@ -1,5 +1,7 @@
 {% extends 'MBHPackageBundle::layout.html.twig' %}
 
+{% set title = 'menu.label.financial_analytics'|trans({}, 'MBHBaseBundle') %}
+{% set title_url = path('sales_channels_report') %}
 {% set small_title = 'sales_channels_report.title'|trans %}
 {% set layout = 'box' %}
 
@@ -7,11 +9,11 @@
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'sales-channels-form-widget'} %}
         {% block content %}
             <form class="form-inline filter-form remember mbh-start-date" id="sales-channels-report-filter-form" role="form">
-                <div class="input">
+                <div class="filter-form_input">
                     <i class="fa fa-calendar" title='{{ 'sales_channels_report.dates.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
+                       data-toggle='tooltip'></i>
                     <input type="text" id="sales-channels-report-filter-begin"
-                           class="datepicker begin-datepicker mbh-daterangepicker  form-control input-sm"
+                           class="datepicker begin-datepicker mbh-daterangepicker form-control input-sm"
                            data-date-format="dd.mm.yyyy">
                 </div>
                 <div class="input hidden">
@@ -20,30 +22,28 @@
                            class="datepicker end-datepicker mbh-daterangepicker form-control input-sm"
                            data-date-format="dd.mm.yyyy">
                 </div>
-                <div class="input">
+                <div class="filter-form_input">
                     <i class="fa fa-sort" title='{{ 'sales_channels_report.sort_by.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
-                    <select id="sales-channels-report-filter-type" class="form-control input-sm" style="width: 150px !important;">
+                       data-toggle='tooltip'></i>
+                    <select id="sales-channels-report-filter-type" class="form-control input-sm">
                         <option value="source">{{ 'sales_channels_report.sort_by.source'|trans}}</option>
                         <option value="status">{{ 'sales_channels_report.sort_by.status'|trans}}</option>
                     </select>
                 </div>
-                <div class="input">
+                <div class="filter-form_input">
                     <i class="fa fa-compass" title='{{ 'sales_channels_report.package_source.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
-                    <select multiple id="sales-channels-report-filter-sources" style="width: 350px"
-                            class="form-control input-sm">
+                       data-toggle='tooltip'></i>
+                    <select multiple id="sales-channels-report-filter-sources" class="form-control input-sm">
                         <option></option>
                         {% for source in sources %}
                             <option value="{{ source.id }}">{{ source.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="input">
+                <div class="filter-form_input">
                     <i class="fa fa-bed" title='{{ 'sales_channels_report.room_type.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
-                    <select multiple
-                            id="sales-channels-report-filter-room-types" class="form-control input-sm">
+                       data-toggle='tooltip'></i>
+                    <select multiple id="sales-channels-report-filter-room-types" class="form-control input-sm">
                         <option></option>
                         {% for hotelId, hotelRoomsData in roomTypesByHotels %}
                             <optgroup label="{{ hotelRoomsData['hotel'].getName() }}">
@@ -55,9 +55,9 @@
                     </select>
                 </div>
 
-                <div class="input">
+                <div class="filter-form_input">
                     <i class="fa fa-home" title='{{ 'views.report.packages_daily_report.hotels.title'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
+                       data-toggle='tooltip'></i>
                     <select multiple
                             data-placeholder="{{ 'views.report.packages_daily_report.hotels.placeholder'|trans }}"
                             id="sales-channels-report-filter-hotels" class="form-control input-sm">
@@ -70,9 +70,8 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="input">
-                    <i class="fa fa-calculator" title='{{ 'sales_channels_report.data_types'|trans }}'
-                       data-toggle='tooltip'></i>&nbsp
+                <div class="filter-form_input">
+                    <i class="fa fa-calculator" title='{{ 'sales_channels_report.data_types'|trans }}' data-toggle='tooltip'></i>
                     <select id="sales-channels-report-filter-data-type" class="form-control input-sm">
                         <option></option>
                         {% for dataType in dataTypes %}
@@ -80,12 +79,12 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="input">
-                    <strong title='{{ 'sales_channels_report.in_percents.title'|trans }}'
-                            data-toggle='tooltip'>%</strong>&nbsp
+                <div class="filter-form_input">
+                    <i class="fa fa-percent" title='{{ 'sales_channels_report.in_percents.title'|trans }}'
+                            data-toggle='tooltip'></i>
                     <input type="checkbox" id="sales-channels-report-filter-is-relative">
                 </div>
-                <div class="input">
+                <div class="filter-form_input">
                     <button type="button" id="sales-channels-report-update-table-button"
                             class="btn btn-primary report-update-button">
                         {{ 'views.report.polls.select_button.title'|trans({}, 'MBHPackageBundle') }}

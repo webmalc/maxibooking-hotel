@@ -1,6 +1,7 @@
 {% extends 'MBHOnlineBundle:Form:layout.html.twig' %}
 
-{% set small_title = 'views.form.index.list'|trans({}, 'MBHOnlineBundle') %}
+{% set title = 'menu.label.web_site'|trans({}, 'MBHBaseBundle') %}
+{% set small_title = 'views.form.layout.online_form'|trans({}, 'MBHOnlineBundle') %}
 {% set layout = "box" %}
 
 {% block content %}
@@ -12,6 +13,9 @@
             <th>{{ 'onlinebundle.resources.views.room_types'|trans }}</th>
             <th>{{ 'onlinebundle.resources.views.guests'|trans }}</th>
             <th>{{ 'onlinebundle.resources.views.on'|trans }}</th>
+            {% if hasEnabledMBSite %}
+                <th>{{ 'onlinebundle.resources.views.form.index.for_site'|trans }}</th>
+            {% endif %}
             <th class="td-sm"></th>
         </tr>
         </thead>
@@ -43,6 +47,15 @@
                         <span class="label label-success">{{ 'onlinebundle.resources.da'|trans }}</span>
                     {% endif %}
                 </td>
+                {% if hasEnabledMBSite %}
+                    <td>
+                        {% if not doc.isForMbSite %}
+                            <span class="label label-danger">{{ 'onlinebundle.resources.net'|trans }}</span>
+                        {% else %}
+                            <span class="label label-success">{{ 'onlinebundle.resources.da'|trans }}</span>
+                        {% endif %}
+                    </td>
+                {% endif %}
                 <td class="table-actions-td text-center">
                     {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': doc, 'route': 'online_form'} %}{% endembed %}
                 </td>

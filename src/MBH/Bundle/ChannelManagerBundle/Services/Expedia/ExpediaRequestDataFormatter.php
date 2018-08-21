@@ -16,7 +16,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 {
     const EXPEDIA_MIN_STAY = 1;
     const EXPEDIA_MAX_STAY = 28;
-    const MAX_NUMBER_OF_UPDATES = 3000;
+    const MAX_NUMBER_OF_UPDATES = 5000;
     const AVAILABILITY_AND_RATES_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/AR/2011/06';
     const BOOKING_RETRIEVAL_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BR/2014/01';
     const CONFIRM_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BC/2007/09';
@@ -62,7 +62,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $roomTypes,
         $serviceTariffs,
         ChannelManagerConfigInterface $config
-    ) {
+    )
+    {
         $pricesRequestData = [];
         $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $xmlElements = [];
@@ -78,14 +79,13 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     continue;
                 }
 
-                $cmHelper = $this->container->get('mbh.channelmanager.helper');
+                $periodsCompiler = $this->container->get('mbh.periods_compiler');
                 $comparePropertyMethods = ['getPrice', 'getIsPersonPrice', 'getAdditionalPrice', 'getAdditionalChildrenPrice', 'getSinglePrice', 'getChildPrice'];
-                $periodsData = $cmHelper->getPeriodsFromDayEntities($begin, $end, $pricesByDates, $comparePropertyMethods, 'Y-m-d');
-
+                $periodsData = $periodsCompiler->getPeriodsByFieldNames($begin, $end, $pricesByDates, $comparePropertyMethods, 'Y-m-d');
                 foreach ($periodsData as $periodData) {
                     $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
                     /** @var PriceCache $priceCache */
-                    $priceCache = $periodData['entity'];
+                    $priceCache = $periodData['data'];
                     $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
                     /** @var \DateTime $periodBegin */
                     $periodBegin = $periodData['begin'];
@@ -119,16 +119,17 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                                 $perOccupancyElement->addAttribute('occupancy', $price['adults']);
                             }
                         }
+                    }
 
-                        if ($numberOfUpdates + count($priceList) >= self::MAX_NUMBER_OF_UPDATES) {
-                            $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
-                                'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
-                            $numberOfUpdates = 0;
-                            $xmlElements = [];
-                        }
+                    $currentNumberOfUpdates = $this->calcNumberOfUpdates($hasPriceList ? count($priceList) + 1 : 1, $periodBegin, $periodEnd);
+                    if ($this->isNumberOfUpdatesExceeded($numberOfUpdates, $currentNumberOfUpdates)) {
+                        $pricesRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
+                            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
+                        $numberOfUpdates = 0;
+                        $xmlElements = [];
                     }
                     $xmlElements[] = $xmlRoomTypeData;
-                    $numberOfUpdates += count($priceList);
+                    $numberOfUpdates += $currentNumberOfUpdates;
                 }
             }
         }
@@ -156,11 +157,10 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $xmlElements = [];
         $numberOfUpdates = 0;
         $requestDataArray = $this->getRoomData($begin, $end, $roomTypes, $config);
-        $cmHelper = $this->container->get('mbh.channelmanager.helper');
-
+        $periodsCompiler = $this->container->get('mbh.periods_compiler');
         foreach ($requestDataArray as $roomTypeId => $roomQuotasByDates) {
             $periodsData =
-                $cmHelper->getPeriodsFromDayEntities($begin, $end, $roomQuotasByDates, ['getLeftRooms'], self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);
+                $periodsCompiler->getPeriodsByFieldNames($begin, $end, $roomQuotasByDates, ['getLeftRooms'], self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);
             foreach ($periodsData as $periodData) {
                 $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
                 $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
@@ -174,7 +174,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 $dateRangeElement->addAttribute('to', $periodEnd->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING));
 
                 /** @var RoomCache $roomCache */
-                $roomCache = $periodData['entity'];
+                $roomCache = $periodData['data'];
                 $roomTypeElement = $xmlRoomTypeData->addChild('RoomType');
                 $roomTypeElement->addAttribute('id', $roomTypeId);
                 $roomTypeElement->addAttribute('closed', $roomCache ? "false" : "true");
@@ -182,14 +182,16 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 $inventoryElement = $roomTypeElement->addChild('Inventory');
                 $inventoryElement->addAttribute('totalInventoryAvailable',
                     $roomCache && $roomCache->getLeftRooms() > 0 ? $roomCache->getLeftRooms() : 0);
-                if (($numberOfUpdates + 1) >= self::MAX_NUMBER_OF_UPDATES) {
+
+                $currentNumberOfUpdates = $this->calcNumberOfUpdates(1, $periodBegin, $periodEnd);
+                if ($this->isNumberOfUpdatesExceeded($numberOfUpdates, $currentNumberOfUpdates)) {
                     $roomsRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
                         'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
                     $xmlElements = [];
                     $numberOfUpdates = 0;
                 }
 
-                $numberOfUpdates++;
+                $numberOfUpdates += $currentNumberOfUpdates;
                 $xmlElements[] = $xmlRoomTypeData;
             }
         }
@@ -248,13 +250,14 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $roomTypes,
         $serviceTariffs,
         ChannelManagerConfigInterface $config
-    ) {
+    )
+    {
         $restrictionRequestData = [];
         $xmlElements = [];
         $numberOfUpdates = 0;
         $comparePropertyMethods = ['getMinStay', 'getMaxStay', 'getClosedOnArrival', 'getClosedOnDeparture', 'getClosed'];
         $requestDataArray = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
-        $cmHelper = $this->container->get('mbh.channelmanager.helper');
+        $periodsCompiler = $this->container->get('mbh.periods_compiler');
         foreach ($requestDataArray as $roomTypeId => $restrictionsByTariffs) {
             foreach ($restrictionsByTariffs as $tariffId => $restrictionsByDates) {
                 $tariffData = $serviceTariffs[$tariffId];
@@ -267,7 +270,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     continue;
                 }
 
-                $periodsData = $cmHelper->getPeriodsFromDayEntities($begin, $end, $restrictionsByDates, $comparePropertyMethods, 'Y-m-d');
+                $periodsData = $periodsCompiler->getPeriodsByFieldNames($begin, $end, $restrictionsByDates, $comparePropertyMethods, 'Y-m-d');
                 foreach ($periodsData as $periodData) {
                     $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
 
@@ -285,32 +288,31 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $ratePlanElement->addAttribute('id', $tariffId);
 
                     /** @var Restriction $restriction */
-                    $restriction = $periodData['entity'];
+                    $restriction = $periodData['data'];
                     $restrictionData = $this->extractRestrictionData($restriction, $serviceTariffs, $tariffId);
                     $ratePlanElement->addAttribute('closed', $restrictionData['isClosed']);
 
                     $restrictionsElement = $ratePlanElement->addChild('Restrictions');
                     if (!$hasDerivationRules || $tariffData['derivationRules']['deriveClosedToArrival'] === false) {
-                        $numberOfUpdates++;
                         $restrictionsElement->addAttribute('closedToArrival', $restrictionData['isClosedToArrival']);
                     }
                     if (!$hasDerivationRules || $tariffData['derivationRules']['deriveClosedToDeparture'] === false) {
-                        $numberOfUpdates++;
                         $restrictionsElement->addAttribute('closedToDeparture', $restrictionData['isClosedToDeparture']);
                     }
                     if (!$hasDerivationRules || $tariffData['derivationRules']['deriveLengthOfStayRestriction'] === false) {
                         $restrictionsElement->addAttribute('minLOS', $restrictionData['minStay']);
                         $restrictionsElement->addAttribute('maxLOS', $restrictionData['maxStay']);
-                        $numberOfUpdates += 2;
                     }
 
-                    $maxNumberOfRestrictionUpdateUnits = 4;
-                    if (($numberOfUpdates + $maxNumberOfRestrictionUpdateUnits) >= self::MAX_NUMBER_OF_UPDATES) {
+                    $currentNumberOfUpdates = $this->calcNumberOfUpdates(2, $periodBegin, $periodEnd);
+                    if ($this->isNumberOfUpdatesExceeded($numberOfUpdates, $currentNumberOfUpdates)) {
                         $restrictionRequestData[] = $this->formatTemplateRequest($xmlElements, $config,
                             'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
                         $numberOfUpdates = 0;
                         $xmlElements = [];
                     }
+
+                    $numberOfUpdates += $currentNumberOfUpdates;
                     $xmlElements[] = $xmlRoomTypeData;
                 }
             }
@@ -322,6 +324,29 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         }
 
         return $restrictionRequestData;
+    }
+
+    /**
+     * @param $numberOfUpdates
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return float|int
+     */
+    private function calcNumberOfUpdates($numberOfUpdates, \DateTime $begin, \DateTime $end)
+    {
+        $differenceInDays = $this->container->get('mbh.helper')->getDifferenceInDaysWithSign($begin, $end) + 1;
+
+        return $numberOfUpdates * $differenceInDays;
+    }
+
+    /**
+     * @param $totalNumberOfUpdates
+     * @param $currentNumberOfUpdate
+     * @return bool
+     */
+    private function isNumberOfUpdatesExceeded($totalNumberOfUpdates, $currentNumberOfUpdate)
+    {
+        return ($totalNumberOfUpdates + $currentNumberOfUpdate) >= self::MAX_NUMBER_OF_UPDATES;
     }
 
     /**

@@ -33,7 +33,7 @@ form.orderTouristType.second_name: 'Middle name'
 form.orderTouristType.placeholder_second_name: Michaels
 form.orderTouristType.min_second_name: 'Middle name is too short'
 form.orderTouristType.max_second_name: 'Middle name is too long'
-form.orderTouristType.birth_date: 'Birth date'
+form.orderTouristType.birth_date: 'Date of Birth'
 form.orderTouristType.add_to_package: 'Add as guest?'
 form.orderTouristType.phone: 'Phone number'
 form.orderTouristType.email: Email
@@ -44,16 +44,16 @@ form.organizationType.comment: Comment
 form.packageGuestType.fio: 'Full name'
 form.packageAccommodationType.room: Room
 form.organizationType.address: Address
-form.packageGuestType.birth_date: 'Birth date'
+form.packageGuestType.birth_date: 'Date of Birth'
 form.packageMainType.promotion: Sale
 form.packageServiceType.amount: Amount
-form.organizationType.name: Title
+form.organizationType.name: Name
 form.packageGuestType.surname: 'Last name'
 form.touristType.name: 'First name'
 form.packageGuestType.second_name: 'Middle name'
-form.touristType.gender: Sex
-form.organizationType.index: 'Zip code'
-form.searchType.check_in: 'Check in/out'
+form.touristType.gender: Gender
+form.organizationType.index: 'Postal code'
+form.searchType.check_in: Check-in/out
 form.packageGuestType.find_guest: 'Find guest'
 form.packageGuestType.placeholder_fio: 'John Smith'
 form.touristType.placeholder_surname: Smith
@@ -68,23 +68,23 @@ form.touristType.second_name: 'Middle name'
 form.touristType.placeholder_second_name: Michaels
 form.packageGuestType.min_second_name: 'Middle name is too short'
 form.packageGuestType.max_second_name: 'Middle name is too long'
-form.touristType.birth_date: 'Birth date'
+form.touristType.birth_date: 'Date of Birth'
 form.organizationType.phone: 'Phone number'
 form.organizationType.email: Email
 form.orderType.source: Source
 form.orderType.comment: Comment
 form.orderType.is_confirmed: 'Confirmed?'
 form.packageAccommodationType.room_or_bed: 'Room or bed'
-form.packageAccommodationType.choose_placement: 'Accommodation information'
+form.packageAccommodationType.choose_placement: Purpose
 form.packageAccommodationType.are_guests_checked_in: 'Checked in?'
 form.packageAccommodationType.are_guests_checked_in_help: 'Have guests already checked in?'
 form.packageAccommodationType.are_guests_checked_out: 'Checked out?'
 form.packageAccommodationType.are_guests_checked_out_help: 'Have guests already checked out?'
 form.packageAccommodationType.help: 'Have guests already checked out?'
-form.packageAccommodationType.check_in_group: 'Check in/out time'
+form.packageAccommodationType.check_in_group: 'Check-in/out time'
 form.packageAccommodationType.can_not_checkout_with_debt: '<div class="text-danger"><i class="fa fa-exclamation-triangle"></i>Order has a debt</div>'
-form.packageAccommodationType.hasEarlyCheckIn: '<div class="text-success"><i class="fa fa-check"></i>Order has an early check in</div>'
-form.packageAccommodationType.hasLateCheckOut: '<div class="text-success"><i class="fa fa-check"></i>Order has a late check out</div>'
+form.packageAccommodationType.hasEarlyCheckIn: '<div class="text-success"><i class="fa fa-check"></i>Order has an Early Check-in</div>'
+form.packageAccommodationType.hasLateCheckOut: '<div class="text-success"><i class="fa fa-check"></i>Order has a Late Check-out</div>'
 form.packageCopyType.reservation: Reservation
 form.packageCopyType.transfer_parameters: 'Transfer options'
 form.packageCopyType.data_transfer_reservation: 'Data will be transferred to this reservation'
@@ -99,9 +99,9 @@ form.packageGuestType.placeholder_second_name: Michaels
 form.packageMainType.price: Price
 form.packageMainType.discount: Discount
 form.packageMainType.isPercentDiscount: Percentage
-form.packageMainType.check_in_time: 'Check in time'
-form.packageMainType.check_out_time: 'Check out time'
-form.packageMainType.arrival_purpose: 'Visit purpose'
+form.packageMainType.check_in_time: 'Check-in time'
+form.packageMainType.check_out_time: 'Check-out time'
+form.packageMainType.arrival_purpose: 'Purpose of the trip'
 form.packageMainType.comment: Comment
 form.packageMainType.special: 'Special offer'
 form.packageServiceType.service: Service
@@ -112,34 +112,34 @@ form.packageServiceType.nights_amount: 'Nights total'
 form.packageServiceType.guests_amount: 'Number of guests'
 form.packageServiceType.comment: Comment
 form.packageServiceType.time: Time
-form.packageSourceType.name: Title
+form.packageSourceType.name: Name
 form.packageSourceType.add_source: 'Add source'
 form.packageSourceType.adds: Advertisement
-form.packageSourceType.inner_name: 'Internal title'
-form.packageSourceType.inner_maxibooking_name: 'Title only visible inside MaxiBooking system'
-form.deleteReasonsType.add_source: 'Add deletion reason'
-form.deleteReasonsType.name: Title
+form.packageSourceType.inner_name: 'Short Name'
+form.packageSourceType.inner_maxibooking_name: 'Name within MaxiBooking'
+form.deleteReasonsType.add_source: 'Add Cancellation reason'
+form.deleteReasonsType.name: Name
 form.deleteReasonsType.default: Default
-form.deleteReasonsType.adds: Refusal
+form.deleteReasonsType.adds: 'Guest cancellation'
 form.searchType.all_rooms: 'All rooms'
 form.searchType.room_type: 'Room type'
 form.searchType.tariff: Rate
 form.searchType.order: 'Order number'
 form.searchType.payer: Payer
-form.searchType.payer_add: 'Add new guest'
-form.searchType.check_in_date_not_filled: 'Check in date is empty'
-form.searchType.check_out_date_not_filled: 'Check out date is empty'
+form.searchType.payer_add: 'Add a new guest'
+form.searchType.check_in_date_not_filled: 'Check-in date is empty'
+form.searchType.check_out_date_not_filled: 'Check-out date is empty'
 form.searchType.adults: Adults
 form.searchType.adults_amount_less_zero: 'Number of adults cannot be less than zero'
 form.searchType.adults_amount_not_filled: 'Number of adults is not specified'
 form.searchType.children: Children
-form.searchType.forceBooking: 'Ignore conditions and restrictions'
+form.searchType.forceBooking: 'Ignore Terms and Conditions'
 form.searchType.children_ages: 'Children age'
 form.searchType.children_amount_less_zero: 'Number of children cannot be less than zero'
 form.searchType.children_amount_not_filled: 'Number of children is not specified'
 form.searchType.range: 'Additional search days'
 form.touristType.general_info: 'General infoormation'
-form.touristType.communication_language: Language
+form.touristType.communication_language: 'Preferred Language'
 form.touristType.sex_male: Male
 form.touristType.sex_female: Female
 form.touristType.sex_unknown: 'Not specified'
@@ -151,7 +151,7 @@ form.touristType.placeholder_document: 'ID # receved on'
 form.touristType.phone: 'Phone number 1'
 form.touristType.mobile_phone: 'Phone number 2'
 form.touristType.placeholder_messenger: 'Skype, Telegram, etc.'
-form.touristType.messenger: Messanger
+form.touristType.messenger: Messenger
 form.touristType.placeholder_phone: 'Phone number'
 form.touristType.email: Email
 form.touristType.placeholder_email: mail@example.com
@@ -159,17 +159,17 @@ form.touristType.note: Note
 controller.analyticsController.package_trips_amount: 'Number of bookings'
 controller.analyticsController.sale_date: 'Purchase date'
 controller.orderController.cash_register_paper_deleted_success: 'Document successfully deleted'
-controller.orderController.add_cash_register_paper: 'Add document'
+controller.orderController.add_cash_register_paper: 'Add Transaction receipt'
 controller.orderController.cash_register_paper_added_success: 'Document successfully added'
 controller.orderController.payer_added_success: 'Payer successfully added'
 controller.orderController.payer_saved_success: 'Payer successfully saved'
 controller.orderController.payer_deleted_success: 'Payer successfully deleted'
 controller.orderController.payer_organization_success: 'Company successfully deleted'
-controller.orderController.record_edited_success: 'Entry successfully edited.'
+controller.orderController.record_edited_success: 'Information successfully updated'
 controller.orderController.record_deleted_success: 'Entry deleted successfully.'
 controller.packageController.placement_not_transfered_room_is_in_use: 'Accommodation could not be changed. This room is already taken.'
 controller.packageController.data_transfer_success: 'Data transfer successful'
-controller.packageController.record_edited_success: 'Entry successfully edited.'
+controller.packageController.record_edited_success: 'Information successfully updated'
 controller.packageController.order_created_success: 'Order successfully added'
 controller.packageController.guest_added_success: 'Guest successfully added'
 controller.packageController.service_adding_error_refresh_and_try_again: 'An error occured when adding a service. Please refresh this page and try again.'
@@ -179,29 +179,29 @@ controller.packageController.placement_saved_success: 'Accommodation successfull
 controller.packageController.placement_deleted_success: 'Accommodation successfully deleted'
 controller.packageController.record_deleted_success: 'Entry deleted successfully'
 controller.sourceController.record_created_success: 'Entry successfully added'
-controller.sourceController.record_edited_success: 'Entry successfully edited.'
+controller.sourceController.record_edited_success: 'Information successfully updated'
 controller.touristController.record_created_success: 'Entry successfully added'
-controller.touristController.record_edited_success: 'Entry successfully edited.'
+controller.touristController.record_edited_success: 'Information successfully updated'
 controller.packageController.record_edited_fail: 'Reservation update error. No available rooms.'
 controller.packageController.record_edited_fail_accommodation: 'Reservation update error. The room is unavailable for reservation.'
 controller.packageController.relocation_dates_error: 'Relocation error. Incorrect relocation date.'
 controller.packageController.relocation_accommodation_error: 'Relocation error. No accommodation.'
 controller.taskTypeController.record_created_success: 'Entry successfully added'
-controller.taskTypeController.record_edited_success: 'Entry successfully edited.'
+controller.taskTypeController.record_edited_success: 'Information successfully updated'
 controller.documentsController.alert_no_documents: 'No document has been uploaded'
-form.organizationType.short_name: 'Short title'
-form.organizationType.director_fio: 'Head name'
-form.organizationType.accountant_fio: 'Accountant name'
+form.organizationType.short_name: 'Short Name'
+form.organizationType.director_fio: Director
+form.organizationType.accountant_fio: Accountant
 form.organizationType.city: City
 form.organizationType.street: Street
-form.organizationType.house: House
-form.organizationType.corpus: Wing
+form.organizationType.house: Office
+form.organizationType.corpus: Building
 form.organizationType.flat: Office
 form.organizationType.bank: 'Bank name'
-form.organizationType.stamp: Stamp
+form.organizationType.stamp: 'Corporate Stamp'
 form.organizationType.created_at: Added
-form.organizationType.default_hotels: 'Default for'
-form.organizationType.default_hotels_help: 'This company is going to be used by defauls for these hotels'
+form.organizationType.default_hotels: 'Connected properties'
+form.organizationType.default_hotels_help: 'Apartments / Hotels for which this company will be selected by default'
 form.organizationType.group.search: 'Find company'
 form.organizationType.group.personal: 'Personal information'
 form.organizationType.group.add: 'Add company'
@@ -223,7 +223,7 @@ form.BirthplaceType.main_region: 'Region (state)'
 form.BirthplaceType.district: District
 csv.type.tariffType: 'Room type'
 csv.form.rest: Debt
-form.AddressObjectDecomposedType.corpus: Wing
+form.AddressObjectDecomposedType.corpus: Building
 csv.form.tariff: Rate
 csv.form.tariffAccomodation: Accommodation
 csv.form.paids: Paid
@@ -236,23 +236,23 @@ form.AddressObjectDecomposedType.city: City
 form.AddressObjectDecomposedType.street: Street
 form.unwelcomeType.comment: Comment
 csv.form.tariffType: 'Room type'
-form.BirthplaceType.settlement: Settlement
+form.BirthplaceType.settlement: Province
 form.DocumentRelation.type: 'ID type'
-form.AddressObjectDecomposedType.zip_code: 'Zip code'
+form.AddressObjectDecomposedType.zip_code: 'Postal code'
 form.AddressObjectDecomposedType.region: 'Region (state)'
 form.AddressObjectDecomposedType.district: District
-form.AddressObjectDecomposedType.settlement: Settlement
+form.AddressObjectDecomposedType.settlement: Province
 form.AddressObjectDecomposedType.urbanarea: District
 form.AddressObjectDecomposedType.house: House
 form.AddressObjectDecomposedType.flat: Apartment
 report.roomType.settle: Accommodate
 report.roomType.statuses.open: Available
 report.roomType.statuses.wait: 'Not checked in'
-report.roomType.statuses.wait_today: 'Check in today'
+report.roomType.statuses.wait_today: 'Check-in today'
 report.roomType.statuses.in_today: 'Checked in today'
-report.roomType.statuses.will_out: 'Check out'
-report.roomType.statuses.out_today: 'Check out today'
-report.roomType.statuses.out_tomorrow: 'Check out tomorrow'
+report.roomType.statuses.will_out: Check-out
+report.roomType.statuses.out_today: 'Check-out today'
+report.roomType.statuses.out_tomorrow: 'Check-out tomorrow'
 report.roomType.statuses.not_out: 'Not checked out'
 form.unwelcomeType.group.common: 'Add to black list'
 form.unwelcomeType.foul: 'Hotel regulations abuse'
@@ -265,22 +265,22 @@ form.unwelcomeType.materialDamage: 'Physical damage'
 form.unwelcomeType.add: 'Add to black list'
 csv.type.package: 'Reservation type'
 csv.form.group: 'CSV file generation parameters'
-csv.form.numberWithPrefix: 'Reservation title'
+csv.form.numberWithPrefix: 'Reservation number'
 csv.form.dateBegin: From
 csv.form.dateEnd: To
 csv.form.guests: Payer
 csv.form.adults: Adults
 csv.form.children: Children
-csv.form.package_price: 'Accommodation cost'
+csv.form.package_price: 'Accommodation revenue'
 csv.form.createdAt: 'Added on'
 csv.form.createdBy: 'Added by'
 csv.form.modal_title: 'Document generation'
 csv.form.modal_close: Close
-csv.form.modal_generate: Generate
+csv.form.modal_generate: Create
 csv.form.countNight: 'Number of nights'
 csv.form.countPersons: 'Number of people'
 report.porter.note: 'Comment:'
-modal.form.delete.reasons.reason: 'Deletion reason'
+modal.form.delete.reasons.reason: 'Cancellation reason'
 modal.form.delete.delete_reason_package: 'Reson for reservation deletion'
 mbhpackagebundle.view.service.index.vse.uslugi: 'All services'
 mbhpackagebundle.view.package.index.daty: Dates
@@ -327,10 +327,10 @@ mbhpackagebundle.form.packagecsvtype.kol.vo.nochey: 'Number of nights'
 mbhpackagebundle.form.packagecsvtype.kol.vo.chelovek: 'Number of people'
 mbhpackagebundle.form.packagemaintype.nomer.broni: 'Reservation number'
 form.packageServiceType.end: 'Ending date'
-form.package_accommodation_type.check_in: 'Check in'
-form.package_accommodation_type.check_out: 'Check out'
-form.package_accommodation_type.check_in.help: 'Accommodation beginning date'
-form.package_accommodation_type.check_out.help: 'Accommodation ending date'
+form.package_accommodation_type.check_in: Check-in
+form.package_accommodation_type.check_out: Check-out
+form.package_accommodation_type.check_in.help: 'Room Check-in date'
+form.package_accommodation_type.check_out.help: 'Room Check-out date'
 form.package_accommodation_type.note: Comment
 package.services.percent_of_price_liveing: '% of accommodation price'
 package.services.first_day_live_in_booking_rooms: 'First night in reserved rooms'
@@ -338,13 +338,13 @@ package.services.fixed_price_for_all_booking_room: 'Fixed price for every reserv
 package.services.breakfast_sweden_table: 'Breakfast Buffet'
 package.services.continental_breakfast: 'Continental breakfast'
 package.services.dinner: Lunch
-report.accommodation.chessBoard: 'Reservation Calendar'
-form.chessBoard.begin.label: 'Check in'
-form.chessBoard.end.label: 'Check out'
+report.accommodation.chessBoard: Calendar
+form.chessBoard.begin.label: Check-in
+form.chessBoard.end.label: Check-out
 form.chessBoard.roomType.label: 'Room type'
 form.chessBoard.adults.label: Adults
 form.chessBoard.children.label: Children
-form.chessBoard.accommodation.label: Room
+form.chessBoard.accommodation.label: 'Room Allocation'
 form.chessBoard.tariff.label: Rate
 form.chessBoard.price.label: Price
 modal.chessBoard.cancel: Cancel
@@ -370,41 +370,41 @@ modal.chessBoard.registered: Registered
 modal.chessBoard.not_specified: 'Not specified'
 modal.chessBoard.roomType: 'Room type'
 modal.chessBoard.accommodation: Accommodation
-modal.chessBoard.without_accommodation: 'Without allocation'
+modal.chessBoard.without_accommodation: 'Reservations awaiting room allocation'
 modal.chessBoard.services: Services
 modal.chessBoard.tariff: Rate
 modal.chessBoard.price: Price
 modal.chessBoard.serices_price: 'Services price'
 modal.chessBoard.payed: Paid
 modal.chessBoard.search_results: 'Reservation options'
-modal.chessBoard.accommodation_info: 'Changeable accommodation details'
+modal.chessBoard.accommodation_info: 'Information on Room allocation change'
 modal.chessBoard.payer_name: Payer
 modal.chessBoard.package_begin_date: 'Reservation start date'
 modal.chessBoard.package_end_date: 'Reservation end date'
-modal.chessBoard.room_name: Room
+modal.chessBoard.room_name: 'Room Allocation'
 modal.chessBoard.room_type_name: 'Room type'
-modal.chessBoard.begin: 'Check in date'
-modal.chessBoard.end: 'Check out date'
+modal.chessBoard.begin: 'Check-in date'
+modal.chessBoard.end: 'Check-out date'
 modal.chessBoard.payer: Payer
 controller.chessboard.package_create.success: 'Reservation created successfully'
 controller.chessboard.package_update.success: 'Reservation updated successfully'
 controller.chessboard.accommodation_update.success: 'Accommodation updated successfully'
 controller.chessboard.accommodation_divide.success: 'Reservation "%packageId%" %payerInfo% from %begin% to %end% will be accommodated in room %roomName%'
 controller.chessboard.accommodation_remove.success: 'Reservation "%packageId%" %payerInfo% from %begin% to %end% can''t be accommodated'
-controller.chessboard.accommodation_divide.error: 'Accommodation split date is incorrect. it can''t be uqual or less than check in date'
+controller.chessboard.accommodation_divide.error: 'Accommodation split date is incorrect. it can''t be equal or less than check-in date'
 controller.chessboard.accommodation_divide.error.empty_date_string: 'Accommodation split date field is empty'
 controller.chessboard.payer: Payer
 chessboard_manager.dates.title: Dates
 chessboard_manager.size_slider.title: Scale
 chessboard_manager.room_type.title: 'Room type'
-chessboard_manager.housing.title: Wing
+chessboard_manager.housing.title: Building
 chessboard_manager.floor.title: Floor
 chessboard_manager.filter.button.text: Apply
-chessboard_manager.without_accommodation.tile.text: 'Without allocation'
+chessboard_manager.without_accommodation.tile.text: 'Reservations awaiting room allocation'
 package.accommodation.rooms: Rooms
 package.accommodation.room_type: 'Room type'
 package.accommodation.dates: Dates
-package.accommodation.housing: Wing
+package.accommodation.housing: Building
 package.accommodation.floor: Floor
 package.accommodation.status: Status
 package.accommodation.amenities: Amenities
@@ -412,31 +412,31 @@ package.accommodation.deleting_record: Delete
 package.accommodation.edit_record: Edit
 package.accommodation.choose_accommodation_on_dates: 'Select accommodation on'
 package.accommodation.place_in_room: 'Accommodate in this room'
-package.accommodation.rooms_not_found: 'Available rooms not found'
+package.accommodation.rooms_not_found: 'No rooms available for allocation had been found'
 package.resources.views.form: Form
-mbhpackagebundle.view.report.stoimost_prozhivania: 'Accommodation cost'
+mbhpackagebundle.view.report.stoimost_prozhivania: 'Accommodation revenue'
 mbhpackagebundle.view.report.roomtypestable.gosti: Guests
 mbhpackagebundle.view.report.roomtypestable.daty: Dates
 mbhpackagebundle.view.report.ostatok_v_prodashe: 'Remain (available)'
 mbhpackagebundle.view.order.touristedit.redaktirovaniye.zapisi: 'Edit entry'
-mbhpackagebundle.view.package.accommodation.korpus: Wing
+mbhpackagebundle.view.package.accommodation.korpus: Building
 mbhpackagebundle.view.package.guest.fio: 'Full name'
-mbhpackagebundle.view.package.service.nazvaniye: Title
+mbhpackagebundle.view.package.service.nazvaniye: Name
 mbhpackagebundle.view.documents.pdftemplates.registration_card.kurenie_v_nashey_gostinice_zapresheno_etc: 'Smoking in our hotel is forbidden. It is only allowed in special smoking zones.'
-mbhpackagebundle.form.packagemaintype.ignorirovat_uslovia_i_ogranichenia_pri_poiske_dostupnogo_nomera: 'Ignore conditions and restrictions while searching for a room?'
+mbhpackagebundle.form.packagemaintype.ignorirovat_uslovia_i_ogranichenia_pri_poiske_dostupnogo_nomera: 'Ignore rates Terms and Conditions during Available Rooms search'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.data: Date
 mbhpackagebundle.view.documents.pdftemplates.registration_card.za_sohranenie_deneg_i_cennih_veshey_ne_sdannih_na_hranenie_etc: 'Hotel administration is not responsible for money and items left unguarded'
-mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd: 'Check out'
+mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd: Check-out
 mbhpackagebundle.view.package.accommodation.tip.nomera: 'Room type'
 mbhpackagebundle.form.packagemaintype.tip.nomera: 'Room type'
 mbhpackagebundle.view.package.index.tip.nomera: 'Room type'
 mbhpackagebundle.view.report.filling.tip.nomera: 'Room type'
 mbhpackagebundle.view.report.roomtypes.tip.nomera: 'Room type'
 mbhpackagebundle.view.documents.pdftemplates.broni: Reservations
-mbhpackagebundle.form.packagemaintype.zayezd: 'Check in'
-mbhpackagebundle.form.packagemaintype.viezd: 'Check out'
-mbhpackagebundle.form.packagemaintype.zaezd_viezd: 'Check in/out'
-mbhpackagebundle.form.packagemaintype.prinuditelnoe_bronirovanie: 'Forced reservation'
+mbhpackagebundle.form.packagemaintype.zayezd: Check-in
+mbhpackagebundle.form.packagemaintype.viezd: Check-out
+mbhpackagebundle.form.packagemaintype.zaezd_viezd: Check-in/out
+mbhpackagebundle.form.packagemaintype.prinuditelnoe_bronirovanie: 'Bypass rates T&Cs?'
 mbhpackagebundle.form.packagemaintype.number: Room
 mbhpackagebundle.form.packagemaintype.virtualnii_nomer: 'Internal number'
 mbhpackagebundle.form.packagemaintype.kurashii: 'Smoking?'
@@ -453,7 +453,7 @@ mbhpackage.views.gostei_oformleno: 'Guests registered'
 mbhpackagebundle.view.documents.pdftemplates.form_1_g.mesto.rozhdeniya: 'Birth place'
 mbhpackagebundle.view.documents.pdftemplates.form: Form
 mbhpackagebundle.view.package.index.tip.broni: 'Reservation type'
-mbhpackagebundle.view.report.roomtypes.korpus: Wing
+mbhpackagebundle.view.report.roomtypes.korpus: Building
 mbhpackagebundle.view.report.roomtypes.etazh: Floor
 mbhpackagebundle.view.report.roomtypes.status.oplaty: 'Payment status'
 mbhpackagebundle.view.tourist.index.daty: Dates
@@ -461,14 +461,14 @@ mbhpackagebundle.view.tourist.index.fio: 'Full name'
 mbhpackagebundle.view.tourist.index.osnovnoy.dokument: 'Main document'
 mbhpackagebundle.view.tourist.index.komnata: Room
 mbhpackagebundle.view.tourist.index.adres: Address
-mbhpackagebundle.view.tourist.index.data.rozhdeniya: 'Birth date'
+mbhpackagebundle.view.tourist.index.data.rozhdeniya: 'Date of Birth'
 mbhpackagebundle.view.report.user.tip.nomera: 'Room type'
 mbhpackagebundle.view.report.windows.tip.nomera: 'Room type'
-form.packageMainType.begin: 'Check in'
-form.packageMainType.begin_end_group: 'Check in/out'
-form.packageMainType.end: 'Check out'
-form.packageMainType.is_force_booking: 'Forced reservation'
-form.packageMainType.is_force_booking.help: 'Ignore conditions and restrictions while searching for a room?'
+form.packageMainType.begin: Check-in
+form.packageMainType.begin_end_group: Check-in/out
+form.packageMainType.end: Check-out
+form.packageMainType.is_force_booking: 'Bypass rates T&Cs?'
+form.packageMainType.is_force_booking.help: 'Ignore rates Terms and Conditions during Available Rooms search'
 form.packageMainType.room_type: 'Room type'
 form.packageMainType.virtual_room: 'Virtual room'
 form.packageMainType.room_group: Room
@@ -483,15 +483,15 @@ form.packageMainType.special_group: 'Special offer'
 form.packageMainType.package_number: 'Reservation number'
 form.packageMainType.is_corrupted: 'Damaged?'
 form.packageMainType.is_corrupted.help: 'Data for this reservation is damaged. Additional information in comments.'
-form.packageServiceType.is_displaced: 'Displaceble?'
-form.packageServiceType.is_displaced.help: 'Displace services dates when changing reservation dates?'
-form.packageServiceType.includeArrival: 'Include check in?'
-form.packageServiceType.includeArrival.help: 'Include check in date?'
-form.packageServiceType.includeDeparture: 'Include check out?'
-form.packageServiceType.includeDeparture.help: 'Include check out date?'
+form.packageServiceType.is_displaced: 'Synchronize dates?'
+form.packageServiceType.is_displaced.help: 'When Reservation dates change, automatically synchronize Service dates with Reservation dates'
+form.packageServiceType.includeArrival: 'Include check-in?'
+form.packageServiceType.includeArrival.help: 'Include check-in date?'
+form.packageServiceType.includeDeparture: 'Include Check-out?'
+form.packageServiceType.includeDeparture.help: 'Include Check-out date?'
 form.packagevirtualroomtype.nomer: Room
 form.packagevirtualroomtype.virt_room.group: 'Virtual number'
-form.searchType.check_out: 'Check out'
+form.searchType.check_out: Check-out
 controller.analyticsController.series_total_name: Total
 controller.packageController.guest_removed_successful: 'Guest successfully deleted'
 controller.package_controller.package_creation_flash: 'Created %packagesCount% out of %requestedPackagesCount% reservations'
@@ -510,7 +510,6 @@ form.order_document_type.file: File
 form.order_document_type.note: Comment
 tourist.json.clients_in_black_list: 'This guest is blacklisted'
 tourist.json.client_not_in_black_list: 'This guest is not on blacklist'
-tourist.index.small_title: 'List of guests'
 tourist.index.foreign_citizens: 'Foreign citizen'
 tourist.index.dates: Dates
 tourist.index.fio: 'Full name'
@@ -518,9 +517,9 @@ tourist.index.main_document: 'Main document'
 tourist.index.visa: Visa
 tourist.index.documents: Documents
 tourist.index.room: Room
-tourist.index.purpose_of_arrival: 'Visit purpose'
+tourist.index.purpose_of_arrival: 'Purpose of the trip'
 tourist.index.address: Address
-tourist.index.date_of_birth: 'Birth date'
+tourist.index.date_of_birth: 'Date of Birth'
 tourist.index.contacts: Contacts
 tourist.edit_unwelcome.added_client_to_black_list: 'You have marked a guest as unwelcome'
 tourist.edit_unwelcome.attention: 'Inclusion of information in the list of undesirable guests should be made only by competent employees, as objectively and impartially as possible. Offensive, disrespectful expressions and any conclusions, recommendations and definitions that can be made only by the judicial authority are prohibited. The disclosure of any personal clients information, as well as the mentioning of facts not  officially confirmed in the form of an act, protocol, video recording or other proper form and / or by competent authorities are also prohbited.'
@@ -534,16 +533,16 @@ tourist.edit_unwelcome.added: Added
 tourist.edit_unwelcome: 'Editing guest'
 tourist.edit.small_title: 'Editing guest #'
 report.room_types.room_type_filter.title: 'Room type'
-report.room_types.housing_filter.title: Wing
+report.room_types.housing_filter.title: Building
 report.room_types.floor_filter.title: Floor
 report.room_types.payment_status_filter.title: 'Payment status'
 report.filling_table_rows.total_number_of_guests: 'Guests total'
-report.filling_table_rows.cost_of_living: 'Accommodation cost'
-report.filling_table_rows.cost_of_services: 'Services cost'
+report.filling_table_rows.cost_of_living: 'Accommodation revenue'
+report.filling_table_rows.cost_of_services: 'Services revenue'
 report.filling_table_rows.received_in_fact_in_percents: 'Received %'
-report.porter.menu.arrival: 'Check in'
-report.porter.menu.departure: 'Check out'
-report.porter.menu.accommodation: 'Living now'
+report.porter.menu.arrival: 'Check-in Today & Tomorrow'
+report.porter.menu.departure: 'Check-out Today & Tomorrow'
+report.porter.menu.accommodation: 'Current Guests'
 report.porter_rows.number_of_adults: adults
 report.porter_rows.number_of_children: children
 report.porter_rows.arrived: 'Checked in'
@@ -560,7 +559,7 @@ report.user.tariff: Rate
 report.fms.download_report: 'Download report'
 report.package_table.number_of_adults: adults
 report.package_table.number_of_children: children
-package.edit.package_created_with_ignoring_conditions: 'Reservation created with ignoring conditions and restrictions.'
+package.edit.package_created_with_ignoring_conditions: 'Reservation has been created ignoring Terms and Conditions'
 package.edit.show_display: show/hide
 package.edit.tariff: Rate
 package.edit.promotions: Sale
@@ -568,7 +567,7 @@ package.json_json.relocation: relocation
 package.json_json.number_of_adults: adults
 package.json_json.number_of_children: children
 package.json_json.issued_guests: registered
-package.accommodation_modal.add_accommodation: 'Add accommodation'
+package.accommodation_modal.add_accommodation: 'Accommodate in this room'
 form.unwelcomeType.levels.no: 'No'
 form.unwelcomeType.levels.minor: Minor
 form.unwelcomeType.levels.low: Low
@@ -582,7 +581,7 @@ report.work_shift_list.guests: Guests
 report.work_shift_table.changed_packages: 'Changed reservations'
 report.work_shift_table.removed_packages: 'Deleted reservations'
 report.user_table.sold_packages: 'Reservations sold'
-report.user_table.cost_of_accommodation: 'Accommodation cost'
+report.user_table.cost_of_accommodation: 'Accommodation revenue'
 report.user_table.all_users: 'All users'
 order_manager.package_service_comment.default_service: 'Default services'
 modal.chessBoard.rooms: Rooms
@@ -590,7 +589,7 @@ modal.chessBoard.number_of_adults: adults
 modal.chessBoard.number_of_children: children
 package.service.price: Price
 package.service.services_price: 'Services price'
-package.service.service_name: Title
+package.service.service_name: Name
 package.guest.fio: 'Full name'
 package.guest.client_in_black_list: 'This guest is blacklisted'
 package.guest.client_not_in_black_list: 'This guest is not on blacklist'
@@ -618,7 +617,7 @@ order.tourist_edit.edit_entry: 'Edit entry'
 documents.index.age: Age
 documents.document_form_modal.document_generation: 'Document generation'
 documents.document_form_modal.close: Close
-documents.document_form_modal.generate: Generate
+documents.document_form_modal.generate: Create
 report.room_types_table.room_status: 'Room status'
 report.room_types_table.guests: Guests
 report.room_types_table.dates: Dates
@@ -652,13 +651,13 @@ report.packages_daily_report_compiler.cash_receipts: 'Cash income'
 mbhpackagebundle.view.report.invite.tip.vizy: 'Visa type'
 mbhpackagebundle.view.report.workshiftlist.ne.zayekhavshikh: 'Not checked in'
 mbhpackagebundle.view.report.fillingtable.itog: Total
-form.AddressObjectDecomposedType.structure.label: Building
+form.AddressObjectDecomposedType.structure.label: Entrance
 mbhpackagebundle.view.report.usertable.itogo: Total
 tourist.migration.type_number: Number
 mbhpackagebundle.view.report.accommodation.nayti: Find
 mbhpackagebundle.view.report.workshiftlist.kassa: Checkdesk
 mbhpackagebundle.view.report.invite.kliyenty: Guests
-mbhpackagebundle.view.report.invite.period: Periods
+mbhpackagebundle.view.report.invite.period: Period
 mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu: 'Default services'
 mbhpackagebundle.services.ordermanager.all_accommodations_removed: 'Accommodations were deleted as room type was changed'
 mbhpackagebundle.services.touristsmessenger.gost.ne.nayden: 'Guest not found'
@@ -675,7 +674,7 @@ mbhpackagebundle.view.report.workshiftlist.prinyato: Accepted
 mbhpackagebundle.view.report.workshiftlist.vydano: 'Given out'
 mbhpackagebundle.view.report.fillingtablerows.nomerov.v.prodazhe: 'Rooms available for sale'
 mbhpackagebundle.view.report.fillingtablerows.nomernoy.fond: 'Number of rooms'
-mbhpackagebundle.view.report.fillingtablerows.zabronirovano.nomerov: 'Rooms booked'
+mbhpackagebundle.view.report.fillingtablerows.zabronirovano.nomerov: 'Reserved rooms'
 mbhpackagebundle.view.tourist.editunwelcome.otsenki: Rates
 tourist.new_country_modal.close: Close
 tourist.new_country_modal.add: Add
@@ -692,10 +691,10 @@ mbhpackagebundle.view.tourist.editunwelcome.grazhdanstvo.gostya: 'Guest sitizens
 mbhpackagebundle.view.tourist.editunwelcome.dobavleno: Added
 tourist.new_country_modal.country_creation: 'Country addition'
 tourist.new_country_modal.country_name: 'Country name'
-mbhpackagebundle.view.tourist.index.migratsionnaya.karta: 'Migration card'
+mbhpackagebundle.view.tourist.index.migratsionnaya.karta: 'Arrival-Departure Record Card'
 controller.documentsController.action_view: View
-form.organizationType.kpp: 'Registry Number'
-package.accommodaton_modal.chessboard_button.text: 'Reservation Calendar'
+form.organizationType.kpp: 'Company number'
+package.accommodaton_modal.chessboard_button.text: Calendar
 controller.packageController.service_edit_success: 'Service edited successfully'
 form.organizationType.type: Type
 controller.documentsController.table_row_tourist: Client
@@ -707,10 +706,10 @@ controller.documentsController.table_row_name: Name
 exportable.tourist.fio: 'Full name'
 controller.analyticsController.proceeds: Profit
 controller.analyticsController.percentage: Percentage
-controller.packageController.accommodation_add.begin_equal_or_later_end_error: 'Accommodation error. Accommodation starting date is less or equal accommodation ending date.'
+controller.packageController.accommodation_add.begin_equal_or_later_end_error: 'Accommodation error. Room Check-in date is equal to or later than Room Check-out  date.'
 controller.documentsController.table_row_type: Type
 controller.documentsController.action_download: Download
-form.organizationType.inn: TIN
+form.organizationType.inn: 'Tax number'
 form.organizationType.bank_bik: 'SWIFT / BIC'
 form.organizationType.bank_address: 'Bank address'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.rasshifrovka.podpisi: 'Signature decoding'
@@ -718,8 +717,8 @@ mbhpackagebundle.view.documents.pdftemplates.registration_card.razresheniye.na.p
 form.packageCopyType.should_we_transfer_placement_to_selected_reservation: 'Do you want to transfer this accommodation to this reservation?'
 package.accommodaton_modal.change_room_type: 'Change room type'
 package.accommodaton_modal.continue_button.text: Continue
-form.package_accommodation_type.is_automatically_changeable.label: 'Changeable?'
-form.package_accommodation_type.is_automatically_changeable.help: 'Does accommodation chage automatically when reservation dates are changed?'
+form.package_accommodation_type.is_automatically_changeable.label: 'Synchronize with Reservation dates?'
+form.package_accommodation_type.is_automatically_changeable.help: 'In case reservation dates change, shall room allocation automatically adjust to the new reservation dates?'
 controller.analyticsController.services_amount: 'Services amount'
 controller.packageController.placement_edited_success: 'Accommodation editied successfully'
 controller.touristController.tourist_was_found_in_unwelcome: 'This guest is blacklisted'
@@ -743,7 +742,7 @@ form.organizationType.group.registration: 'Registration information'
 form.BirthplaceType.country.help: 'If the page is not found add it by pressing + <a class="add-country-button"><i class="fa fa-plus"></i></a>'
 report.accommodation.room_type_filter.title: 'Room type'
 report.filling_table_rows.rooms_at_sale: 'Rooms available for sale'
-report.filling_table_rows.balance_on_sale: 'Remains (on sale)'
+report.filling_table_rows.balance_on_sale: 'Remains (available for sale)'
 tourist.json.issued_date: issued
 tourist.json.to_date: till
 tourist.json.documents: Documents
@@ -755,7 +754,7 @@ form.DocumentRelation.number: Number
 form.DocumentRelation.issued: 'Issue date'
 form.DocumentRelation.expiry: 'Valid until'
 report.accommodation.dates_filter.title: Dates
-report.accommodation.housing_filter.title: Wing
+report.accommodation.housing_filter.title: Building
 report.accommodation.floor_filter.title: Floor
 report.accommodation.find_button.title: Find
 report.filling_table_rows.debt: Debt
@@ -777,21 +776,21 @@ pdf_templates.bill.number_of_elements: units
 tourist.migration.type_series: Series
 tourist.visa.type_type: Type
 tourist.visa.multiplicity_type.label: 'Number of entries'
-tourist.visa.visit_purpose.label: 'Visit purpose'
+tourist.visa.visit_purpose.label: 'Purpose of the trip'
 tourist.visa.entry_goal.label: 'Purpose of entry'
 tourist.visa.fms_kpp_id.label: 'Entry point'
 tourist.visa.type_series: Series
 tourist.visa.type_profession: Occupation
 form.organizationType.group.location: Address
 form.organizationType.group.check_account: 'Account number'
-tourist.json.migration_card: 'Migration card'
+tourist.json.migration_card: 'Arrival-Departure Record Card'
 tourist.json_buttons.edit_button.title: 'Edit entry'
 tourist.json_buttons.remove_button.title: 'Delete entry'
 tourist.edit_visa.small_title: 'Edit guest #'
 tourist.edit_extended.small_title: 'Edit guest #'
 tourist.edit_document.small_title: 'Edit guest #'
 tourist.edit_address.small_title: 'Edit guest #'
-tourist.index.migration_card: 'Migration card'
+tourist.index.migration_card: 'Arrival-Departure Record Card'
 templateDocument.type.confirmation: Confirmation
 templateDocument.type.confirmation_en: Confirmation
 templateDocument.type.registration_card: 'Registration card'
@@ -801,19 +800,19 @@ form.TouristExtendedType.address_object: 'Address code'
 form.DocumentRelation.authority_organ: 'Migration Service Office'
 form.DocumentRelation.authority: 'Issuing authority'
 form.DocumentRelation.authority.help: 'Issuing authority name or code'
-form.DocumentRelation.relation: 'Persons relation to the document'
+form.DocumentRelation.relation: 'Status of the holder'
 form.AddressObjectDecomposedType.address_object.help: 'Address as AOID code'
 security.not_access_create_cash_document: 'You have no right to create a payment document'
-report.filling_table_rows.number_of_rooms: 'Number of rooms'
-report.filling_table_rows.number_of_busy_rooms: 'Rooms booked'
-report.filling_table_rows.balanse_number_of_rooms: 'Remains (number of rooms)'
-report.filling_table_rows.reserved_rooms: 'Rooms booked in %'
-report.filling_table_rows.number_of_rooms_without_payment: 'Unpaid rooms (reservations)'
+report.filling_table_rows.number_of_rooms: 'Total number of rooms'
+report.filling_table_rows.number_of_busy_rooms: 'Reserved rooms'
+report.filling_table_rows.balanse_number_of_rooms: 'Remains (total number of rooms)'
+report.filling_table_rows.reserved_rooms: 'Reserved rooms in %'
+report.filling_table_rows.number_of_rooms_without_payment: 'Reservations that have not yet been paid for'
 report.filling_table_rows.guests_per_room: 'Guests per room'
-report.filling_table_rows.total_cost: 'Total cost'
+report.filling_table_rows.total_cost: 'Total revenue'
 report.filling_table_rows.received_in_fact: 'Actually received'
-report.filling_table_rows.max_proceeds: 'Maximum profit possible'
-report.filling_table_rows.current_cost_of_living_relative: 'Current accommodation cost to maximum possible'
+report.filling_table_rows.max_proceeds: 'Maximum possible revenue from accomodation'
+report.filling_table_rows.current_cost_of_living_relative: 'Current accommodation revenue out of possible maximum in %'
 report.accommodation_table_package.is_departured: 'Checked out'
 report.accommodation_table_package.is_arrived: 'Checked in'
 report.accommodation_table_package.go_to_entry: 'proceed to entry'
@@ -824,7 +823,7 @@ tourist.migration.type_representative: 'Information about legal representatives'
 tourist.migration.type_address: 'Address of the former place of residence'
 tourist.visa.visa_category.label: 'Visa category'
 tourist.visa.special_status.label: 'Member of the state program'
-tourist.visa.fms_kpp_id.help: 'Title or code of the checkpoint'
+tourist.visa.fms_kpp_id.help: 'Name or identification code'
 report.window_package.package_note: Comment
 report.work_shift_list.dates: Dates
 report.work_shift_list.number_of_entered: 'Checked in'
@@ -855,7 +854,7 @@ report.work_shift.users: User
 report.work_shift.status: Status
 report.work_shift.work_shifts: 'Work shifts'
 report.work_shift_list.employee: Employee
-report.work_shift_list.cash: Cashdesk
+report.work_shift_list.cash: Transactions
 report.work_shift_list.status: Status
 report.work_shift_list.in_process: 'In progress'
 report.work_shift_list.cash_income: Accepted
@@ -864,8 +863,8 @@ report.work_shift_list.confirm: Confirm
 report.work_shift_table.yes: 'Yes'
 report.work_shift_table.income: Income
 report.work_shift_table.expenses: Expense
-report.work_shift_table.arrival: 'Check in'
-report.work_shift_table.departure: 'Check out'
+report.work_shift_table.arrival: Check-in
+report.work_shift_table.departure: Check-out
 report.user_table.total: Total
 manager.offline: Offline
 manager.online: Online
@@ -895,7 +894,7 @@ report.work_shift_list.at_end_of_shift: 'At shift ending'
 report.work_shift_list.number_of_not_entered: 'Not checked in'
 report.work_shift_list.number_of_departured: 'Checked out'
 report.work_shift_list.number_of_not_departured: 'Not  checked out'
-report.work_shift_list.electronic_cash_income: 'Electronic payment'
+report.work_shift_list.electronic_cash_income: 'Non cash transactions'
 report.work_shift_list.no_work_shifts_found: 'No work shifts found'
 report.work_shift_list.time: '%hour% hours %minute% min'
 report.work_shift_table.cash_documenst: 'Payment document'
@@ -904,7 +903,7 @@ report.work_shift_table.no_cash_documents_found: 'No payment documents found'
 report.work_shift_table.no_packages_found: 'No reservations found'
 report.work_shift_table.no_work_shifts_found: 'no shifts found'
 report.user_table.sold_services: 'Services sold'
-report.user_table.cost_of_services: 'Services cost'
+report.user_table.cost_of_services: 'Services revenue'
 report.user_table.cost_of_packages: 'Total reservations cost'
 validator.form.image.min.error: 'Exceeded minimum value'
 validator.form.image.max.error: 'Exceeded maximum value'
@@ -913,12 +912,12 @@ controller.chessboard.accommodation_update.not_first_or_last_accommodation_chang
 accommodation_manipulator.error.intersect_with_other_accommodations: 'The accommodation intersects with other reservation accommodations'
 csv.type.createdAt: 'Creation date'
 csv.type.createdBy: 'Created by'
-chessboard.index.housing: Wing
+chessboard.index.housing: Building
 chessboard.index.floor: Floor
 controller.chessboard.can_not_change_room_type_for_package_with_accommodations: 'Reservation type cannot be changed as it has accommodations'
 accommodation_manipulator.error.room_busy: 'Impossible to accommodate as the room "%roomName%" is occupied for these dates.'
 accommodation_manipulator.error.edited_room_busy: 'Impossible to change accommodation as the room "%roomName%" is occupied for these dates.'
-accommodation_manipulator.error.incorrect_acc_to_package_dates: 'Accommodation dates must be between check in and check out dates'
+accommodation_manipulator.error.incorrect_acc_to_package_dates: 'Accommodation dates must be within check-in and check-out dates'
 package.edit_tabs.no: 'No'
 package.order_packages.is_removed: Deleted
 report.filling.filling.room_types: 'Room type'
@@ -929,7 +928,7 @@ package.resources.views.hotel_name_sanatory: '(Name of hotel, sanatorium, rest h
 package.resources.views.grazhdanstvo: Citizenship
 mbhpackagebundle.view.documents.pdftemplates.receipt.raspiska: Note
 package.resources.do_not_spoil_objects_of_everyday_life_and_interior: 'not to spoil equipment and interior'
-accommodation_manipulator.error.accommodation_is_not_moveable: 'Changeable reservation accommodation in the room %roomName% beginning on %beginDate% and ending on %endDate% is non-relocatable'
+accommodation_manipulator.error.accommodation_is_not_moveable: 'Room allocation in the room %roomName% checking-in on %beginDate% and checking-out on %endDate% is not changeable'
 package.csv.box_title: Generation
 package.late_early_check_modal.quantity: Quantity
 package.late_early_check_modal.cancel: Cancel
@@ -951,19 +950,19 @@ package.resources.views.familiya: 'Last name'
 package.resources.views.room: Room
 package.resources.views.name: 'First name'
 package.resources.views.secondname: 'Middle name'
-package.resources.views.birthday: 'Birth date'
-package.resources.views.pol: Sex
+package.resources.views.birthday: 'Date of Birth'
+package.resources.views.pol: Gender
 package.resources.views.oblast: Region
 package.resources.views.raion: District
 package.resources.views.city: City
-package.resources.views.nas_punkt: Settlement
+package.resources.views.nas_punkt: Province
 package.resources.views.seria: Series
 package.resources.views.vidan: 'Issued on'
 package.resources.views.country: Country
 package.resources.views.obl: Region
 package.resources.views.street: Street
 package.resources.views.home: 'House #'
-package.resources.views.kor: Wing
+package.resources.views.kor: Bldg
 package.resources.views.kv: 'Apartment #'
 package.resources.views.pribil: Arrived
 package.resources.views.vibil: Departed
@@ -984,10 +983,13 @@ mbh.package_bundle.tourist_messenger.guest_not_found: 'Guest not found'
 mbh.package_bundle.tourist_messenger.failed_to_send: 'Email or message guest'
 mbh.package.builder.document_tempates: 'Document templates'
 report.filling.filling_table.number_of_places: 'Number of places'
+fixtures.package_source_data.channel_manager.101hotel: '101 Hotel'
+fixtures.package_source_data.channel_manager.ostrovok: Ostrovok
+fixtures.package_source_data.channel_manager.vas_hotel_dot_ru: 'VasHotel.ru'
 fixtures.package_source_data.on_line_reservation: 'Online booking'
 fixtures.package_source_data.regulat_customer: 'Regular customer'
 fixtures.package_source_data.recomendation_of_friends: 'Friend recomendation'
-package.resources.views.adres_region_ltc: 'Address (region, district, city, settlement)'
+package.resources.views.adres_region_ltc: 'Address (Region, District, City, Province)'
 package.resources.views.birthday_place: 'Birth place'
 package.resources.views.document: ID
 package.resources.views.organ_vidaushiy_document: 'Issuing authority'
@@ -1012,15 +1014,15 @@ mbhpackagebundle.views.izmenennie_broni: 'Changed reservations'
 package.resources.views.nenaiden_ni_odin_kassovii_document: 'No payment documents found'
 packages.rewources.kv: apartment
 mbhpackagebundle.view.report.workshifttable.da: 'Yes'
-mbhpackagebundle.views.zaezd: 'Check in'
-mbhpackagebundle.views.viezd: 'Check out'
+mbhpackagebundle.views.zaezd: Check-in
+mbhpackagebundle.views.viezd: Check-out
 mbhpackagebundle.views.et: floor
 mbhpackagebundle.views.da: 'Yes'
 mbhpackagebundle.views.zaekhali: 'Checked in'
 mbhpackagebundle.views.viehali: 'Checked out'
 mbhpackagebundle.views.gosti: Guests
 package.resources.do_not_store_or_use_explosive_or_flammable_objects: 'not to store or use explosive or flammable objects'
-package.resources.for_everything_that_happens_in_the_apartment_i_have_provided_for_the_period_of_residence_i_am_carrying: 'I  bear full responsibility for everything that happens in my apartment for the period of residence. In case of violation of these obligations, I agree to check out early without return of the deposit prepayment with compensation for the material damage.'
+package.resources.for_everything_that_happens_in_the_apartment_i_have_provided_for_the_period_of_residence_i_am_carrying: 'For the period of my stay I bear full responsibility for accommodation and all its valuables, and agree not to cause damage to them and preserve them in proper order. If I breach these obligations I agree that the accommodation provider may at any time terminate my stay at the accommodation with no deposit return, and that I will be liable to pay for any damage caused.'
 package.resources.views.ne_naidena_ni_odna_bron: 'No reservations found'
 mbhpackagebundle.view.report.workshifttable.redaktirovaniye.zapisi: 'Edit entries'
 mbhpackagebundle.views.udalennie_broni: 'Deleted reservations'
@@ -1045,27 +1047,27 @@ mbhpackagebundle.views.imia: 'First name'
 mbhpackagebundle.views.g: city
 mbhpackagebundle.views.ul: street
 mbhpackagebundle.views.d: house
-mbhpackagebundle.views.korp: wing
+mbhpackagebundle.views.korp: bldg
 mbhpackagebundle.views.gostei_v_broni: 'Guests in the reservation'
 mbhpackagebundle.views.prikazom_ministerstava_finansov: 'Order of the Ministry of Finance'
-mbhpackagebundle.views.data_rozhdenia: 'Birth date'
+mbhpackagebundle.views.data_rozhdenia: 'Date of Birth'
 mbhpackagebundle.views.kogda: 'Issued on'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.postoronnie_lica_po_prosbe_prozhivaushih_etc: 'Unauthorized persons, at the request of the residents, with the knowledge of the administration, can stay in the hotel from 9 to 23'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.v_sluchae_porchi_ili_uteri_imushestva_etc: 'If the guest damages the hotel property they agree to compensate'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.tip: Type
-mbhpackagebundle.view.documents.pdftemplates.registration_card.viezd_gostey_ne_pozdnee_etc: 'Check out no later than - 12:00, check-in from 14:00'
+mbhpackagebundle.view.documents.pdftemplates.registration_card.viezd_gostey_ne_pozdnee_etc: 'Check-out no later than - 12:00, Check-in from 14:00'
 mbhpackagebundle.views.seria: series
 mbhpackagebundle.views.komnata: Room
 mbhpackagebundle.views.pribil: Arrived
 mbhpackagebundle.views.data_chasi: 'date, time'
 mbhpackagebundle.views.vibil: Departed
-mbhpackagebundle.views.respublika_krai_oblast_okrug_raion_gorod_pgr_selo: 'region, district, city, settlement, street, house, apartment'
+mbhpackagebundle.views.respublika_krai_oblast_okrug_raion_gorod_pgr_selo: 'Region, District, City, Province, Street, House, Apartment'
 mbhpackagebundle.views.podpis: Signature
 mbhpackagebundle.views.poselena: Accommodated
 mbhpackagebundle.views.gorod_selenie: City
 mbhpackagebundle.views.gostinica: Hotel
 mbhpackagebundle.view.documents.pdftemplates.registration_card.nasha_gostinica_predostavlaet_uslugi_etc: 'Our hotel provides services, the list of which you will find in your room'
-mbhpackagebundle.view.documents.pdftemplates.registration_card.vozvrat_denezhnih_sredstv_proizvodica_etc: 'Refunds are made only if there is a cash receipt confirming payment'
+mbhpackagebundle.view.documents.pdftemplates.registration_card.vozvrat_denezhnih_sredstv_proizvodica_etc: 'Refunds are made only if there is a receipt confirming the payment'
 mbhpackagebundle.view.documents.pdftemplates.act: Act
 mbhpackagebundle.view.documents.pdftemplates.ot: from
 mbhpackagebundle.view.documents.pdftemplates.itogo: Total
@@ -1074,7 +1076,7 @@ mbhpackagebundle.view.documents.pdftemplates.itog: Total
 mbhpackagebundle.view.documents.pdftemplates.schet: Invoice
 mbhpackagebundle.view.documents.pdftemplates.g: city
 mbhpackagebundle.view.documents.pdftemplates.d: house
-mbhpackagebundle.view.documents.pdftemplates.kor: wing
+mbhpackagebundle.view.documents.pdftemplates.kor: bldg
 mbhpackagebundle.view.documents.pdftemplates.kv: apartment
 mbhpackagebundle.view.documents.pdftemplates.form_1_g.vydan: 'Issued by'
 mbhpackagebundle.views.naimenovanie_organa_vnutrennih_del_vidavshego_document: 'Name of the body that issued the document'
@@ -1092,11 +1094,11 @@ mbhpackagebundle.view.documents.pdftemplates.registration_card.familiya: 'Last n
 mbhpackagebundle.view.documents.pdftemplates.registration_card.imya: 'First name'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.otchestvo: 'Middle name'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.grazhdanstvo: Citizenship
-mbhpackagebundle.view.documents.pdftemplates.registration_card.pol: Sex
-mbhpackagebundle.view.documents.pdftemplates.registration_card.data.rozhdeniya: 'Birth date'
+mbhpackagebundle.view.documents.pdftemplates.registration_card.pol: Gender
+mbhpackagebundle.view.documents.pdftemplates.registration_card.data.rozhdeniya: 'Date of Birth'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.mesto.rozhdeniya: 'Birth place'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.strana: Country
-mbhpackagebundle.view.documents.pdftemplates.registration_card.indeks: 'ZIP code'
+mbhpackagebundle.view.documents.pdftemplates.registration_card.indeks: 'Postal code'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.gorod: City
 mbhpackagebundle.view.documents.pdftemplates.registration_card.ulitsa: Street
 mbhpackagebundle.view.documents.pdftemplates.registration_card.tarif: Rate
@@ -1129,7 +1131,7 @@ mbhpackagebundle.view.documents.pdftemplates.zakaza: order
 mbhpackagebundle.view.documents.pdftemplates.do: to
 mbhpackagebundle.view.documents.pdftemplates.fio: 'Full name'
 mbhpackagebundle.view.documents.pdftemplates.primechanie_v_sluchae_nesvoevremennogo_otkaza_etc: 'Note: in case of late refusal of the ordered services, the Hotel has the right to withhold compensation from the prepaid payment.'
-mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc: 'region, district, city, settlement, street, house, apartment'
+mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc: 'Region, District, City, Province, Street, House, Apartment'
 mbhpackagebundle.view.report.fillingtablerows.dolg: Debt
 mbhpackagebundle.view.deletereasons.index.da: 'Yes'
 mbhpackagebundle.view.deletereasons.index.net: 'No'
@@ -1137,7 +1139,7 @@ mbhpackagebundle.view.package.edit.tarif: Rate
 mbhpackagebundle.view.package.edit.aktsiya: Sale
 mbhpackagebundle.view.package.late.early.check.modal.da: 'Yes'
 mbhpackagebundle.view.report.accommodation.daty: Dates
-mbhpackagebundle.view.report.accommodation.korpus: Wing
+mbhpackagebundle.view.report.accommodation.korpus: Building
 mbhpackagebundle.view.report.accommodation.etazh: Floor
 mbhpackagebundle.view.report.filling.daty: Dates
 mbhpackagebundle.view.report.fillingtable.mest: beds
@@ -1158,7 +1160,7 @@ mbhpackagebundle.view.report.workshiftlist.status: Status
 views.report.packages_daily_report.hotels.title: Hotels
 views.report.distribution_report.packages_types.all: All
 distribution_by_days_report.title.sum: Sum
-distribution_by_days_report.title: 'Check in/out'
+distribution_by_days_report.title: 'Days Stats'
 distribution_by_days_report.days_of_week_abbr.mon: Mon
 distribution_by_days_report.days_of_week_abbr.tue: Tue
 distribution_by_days_report.days_of_week_abbr.wed: Wed
@@ -1173,19 +1175,19 @@ mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_registracionnog
 mbhpackagebundle.view.documents.pdftemplates.nachalnik_rukovoditel_organa_registracionnogo_ucheta: 'Head of the registration authority'
 mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document: 'the name of the authority that issued the document'
 mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udostoveraushemu_lichnost: 'The certificate is issued to the ID'
-mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia: 'Full name and birth date'
+mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia: 'Full Name and Date of Birth'
 mbhpackagebundle.view.documents.pdftemplates.o_tom_chto_on_zaregistrirovan_po_mestu_prebivania: 'that he/she is registered at the place of stay at'
-mbhpackagebundle.view.report.ostatok_nomernoy_fond: 'Number of rooms left'
-mbhpackagebundle.view.report.zabronirovano_nomerov: 'Rooms booked'
+mbhpackagebundle.view.report.ostatok_nomernoy_fond: 'Balance (total number of rooms)'
+mbhpackagebundle.view.report.zabronirovano_nomerov: 'Reserved rooms'
 mbhpackagebundle.view.report.nomera_bez_oplaty: 'Unpaid rooms'
 mbhpackagebundle.view.report.gostey_na_odin_nomer: 'Guests per room'
-mbhpackagebundle.view.report.stoimost_uslug: 'Services cost'
+mbhpackagebundle.view.report.stoimost_uslug: 'Services revenue'
 mbhpackagebundle.view.report.obshaya_stoimost: 'Total  cost'
 mbhpackagebundle.view.report.polucheno_fakticheski: 'Actually received'
 mbhpackagebundle.view.report.fillingtablerows.max_vozm_viruchka_za_prozh: 'The maximum possible income for accommodation'
-mbhpackagebundle.view.report.tek_stoim_prozhiv_ot_max_vozm: 'Current accommodation cost from the maximum possible'
+mbhpackagebundle.view.report.tek_stoim_prozhiv_ot_max_vozm: 'Current accommodation revenue out of possible maximum'
 mbhpackagebundle.view.documents.pdftemplates.close: Close
-mbhpackagebundle.view.documents.pdftemplates.generate: Generate
+mbhpackagebundle.view.documents.pdftemplates.generate: Create
 mbhpackagebundle.view.order.organizationedit.redaktirovaniye.zapisi: 'Edited entries'
 mbhpackagebundle.view.package.accomodation.nomera_dly_rezmesheniya_ne_naideny: 'Rooms for accommodation not found'
 mbhpackagebundle.view.package.guest.dobavleno_maksimalnoe_kolichestvo_gostey: '<aximu possible number of guests added'
@@ -1197,7 +1199,7 @@ mbhpackagebundle.view.report.windowpackage.razmeshcheniye: Accommodation
 mbhpackagebundle.view.report.user.polzovatel: User
 mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny: 'No work shifts found'
 mbhpackagebundle.view.report.workshiftlist.rabochaya_smena: 'Working shift'
-mbh.package_bundle.fixtures.delete_reason_data.denial: Refusal
+mbh.package_bundle.fixtures.delete_reason_data.denial: 'Guest cancellation'
 mbh.package_bundle.fixtures.delete_reason_data.error: Error
 mbh.package_bundle.fixtures.delete_reason_data.rebooking: Rebooking
 report.packages_daily_report_compiler.non_cash_receipts: 'Non cash income'
@@ -1210,13 +1212,13 @@ report.packages_daily_report_compiler.sum_for_day: 'Daily reservations cost'
 report.packages_daily_report_compiler.total_sum_for_day: 'Total a day'
 report.packages_daily_report_compiler.sum_for_packages: 'Income for booking'
 report.packages_daily_report_compiler.return_for_packages: 'Returned for bookings'
-views.report.packages_daily_report.title: Funds
-views.report.packages_daily_report.mail_title: 'Funds report'
+views.report.packages_daily_report.title: 'Cash Flow'
+views.report.packages_daily_report.mail_title: 'Cash Flow Report'
 views.report.packages_daily_report.calculation_dates.title: 'Accommodation dates'
 views.report.packages_daily_report.hotels.placeholder: Hotels
 views.report.packages_daily_report.update_button: Apply
-views.report.distribution_report.group_by.by_arrival_date: 'By check in date'
-views.report.distribution_report.group_by.by_departure_date: 'By check out date'
+views.report.distribution_report.group_by.by_arrival_date: 'By check-in date'
+views.report.distribution_report.group_by.by_departure_date: 'By Check-out date'
 views.report.distribution_report.packages_types.actual: Relevant
 views.report.distribution_report.packages_types.deleted: Deleted
 views.report.distribution_report.creation_date.title: 'Creation date'
@@ -1227,9 +1229,9 @@ distribution_by_days_report.days_of_week_abbr.fri: Fri
 distribution_by_days_report.days_of_week_abbr.sat: Sat
 distribution_by_days_report.days_of_week_abbr.sun: Sun
 distribution_by_days_report.total_row: Total
-mbh.analytics.types.sales_packages: 'Dynamics of sales by number of reservations'
-mbh.analytics.types.sales_cash: 'Dynamics of sales by reservations cost'
-mbh.analytics.types.sales_cash_documents: 'Dynamics of sales by money received'
+mbh.analytics.types.sales_packages: 'Sales Dynamics: Reservations received'
+mbh.analytics.types.sales_cash: 'Sales Dynamics: Reservations value'
+mbh.analytics.types.sales_cash_documents: 'Sales Dynamics: Payments received'
 mbh.analytics.types.sales_sources: 'Sales source'
 mbh.analytics.types.hotel_occupancy: 'Hotel occupancy rate'
 mbh.analytics.types.sales_services: 'Dynamics of services sales'
@@ -1242,9 +1244,9 @@ mbhpackagebundle.view.package.orderpackages.ne.razmeshcheno: 'Without allocation
 mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa: Questionnaire
 mbhpackagebundle.view.documents.pdftemplates.fms_form_5.blok.mashinochitayemykh.dannykh: 'Machine read information block'
 mbhpackagebundle.view.documents.pdftemplates.confirmation.vydan: issued
-mbhpackagebundle.view.documents.pdftemplates.form_1_g.indeks.poseleniya: 'Zip Code'
+mbhpackagebundle.view.documents.pdftemplates.form_1_g.indeks.poseleniya: 'Postal code'
 mbhpackagebundle.view.documents.pdftemplates.evidence.data.vydachi: 'issue date'
-mbhpackagebundle.view.documents.pdftemplates.confirmation.data.rozhdeniya: 'birth date'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.data.rozhdeniya: 'Date of Birth'
 mbhpackagebundle.view.documents.pdftemplates.confirmation.adres: address
 mbhpackagebundle.view.documents.pdftemplates.confirmation.tip.dokumenta: 'document type'
 mbhpackagebundle.view.documents.pdftemplates.confirmation.seriya: series
@@ -1254,7 +1256,7 @@ mbhpackagebundle.view.documents.pdftemplates.registration_card.registratsionnaya
 mbhpackagebundle.view.documents.pdftemplates.registration_card.firma: Company
 mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan: 'Issued by'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.pribytiye: Arrival
-form.organizationType.okpo_code: 'SIC code'
+form.organizationType.okpo_code: 'Tax number'
 templateDocument.type.form: 'Tax payer form'
 tourist.index.button.export_to_kontur.text: 'Migration Service report'
 csv.type.tariff: Rate
@@ -1266,7 +1268,7 @@ mbhpackagebundle.views.obratnaya_storona: 'Tax payer form back side'
 mbhpackagebundle.view.documents.pdftemplates.PP: Here
 report.filling_table_rows.reserved_rooms_from_room_fund: 'Room occupancy'
 report.filling.filling.room_status: 'Room status'
-report.filling.filling.only_enabled: 'Enabled only?'
+report.filling.filling.only_enabled: 'Active only?'
 package.document_type.tourist_age: age
 form.AddressObjectDecomposedType.region_id.help: 'If you can''t find the region, click %plusButtonHtml% to add it'
 form.organization_type.city.help: 'If you can''t find the city, click %plusButtonHtml% to add it'
@@ -1285,10 +1287,9 @@ sales_channels_report.room_type.title: 'Room type'
 sales_channels_report.sort_by.source: 'By source'
 sales_channels_report.dates.title: Dates
 reservation_report.date: Date
-reservation_report.title: Reservation
+reservation_report.title: 'Reservations Dynamics'
 reservation_report.total_row: Total
 views.report.reservation_report.report_date.title: Date
-views.report.reservation_report.title: 'Rooms reservation Report'
 views.report.reservation_report.room_types.title: 'Room type'
 reservation_report.number_of_packages_common: 'Number of booked rooms'
 reservation_report.number_of_packages: 'Number of booked rooms as of %date%'
@@ -1305,3 +1306,11 @@ sales_channels_report.data_types.sum: 'Cost of reservations'
 sales_channels_report.data_types.man-day: Person/days
 sales_channels_report.in_percents.title: 'In percents?'
 sales_channels_report_compiler.without_source: 'No source'
+csv.form.price: Cost
+csv.form.package_services_price: 'Services price'
+csv.form.note: Comment
+chessboard_manager.change_dates_button.add: '+ %numberOfDays% days'
+chessboard_manager.change_dates_button.subtract: '- %numberOfDays% days'
+chessboard.index.number_of_rooms_select.all_rooms: 'All rooms'
+chessboard.index.number_of_rooms_select.rooms: '%numberOfRooms% rooms'
+report.filling.filling.room_status.without_status: 'No status'

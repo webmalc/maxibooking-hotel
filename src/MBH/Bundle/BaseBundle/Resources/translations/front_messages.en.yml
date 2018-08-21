@@ -8,22 +8,22 @@ action_manager.modal.remove_confirmation.title: 'Confirm deletion'
 action_manager.modal.remove_confirmation.text: 'Are you sure you want to delete this reservation?'
 action_manager.modal.package_blocked.title: 'Reservation is blocked for changes'
 action_manager.modal.package_blocked.text: 'To unlock this reservation, please, proceed to reservation editing mode'
-action_manager.modal.package_begin_date_abroad.title: 'Reservation check in date is outside of selected period'
+action_manager.modal.package_begin_date_abroad.title: 'Reservation check-in date is outside of the selected period'
 action_manager.modal.package_begin_date_abroad.text: 'To change this reservation, please, change observed starting date'
-action_manager.modal.package_end_date_abroad.title: 'Reservation check out date is outside of selected period'
+action_manager.modal.package_end_date_abroad.title: 'Reservation check-out date is outside of the selected period'
 action_manager.modal.package_end_date_abroad.text: 'To change this reservation, please, change observed ending date'
-action_manager.modal.package_begin_and_end_date_abroad.title: 'Reservation check in and check out dates are outside of selected period'
+action_manager.modal.package_begin_and_end_date_abroad.title: 'Reservation check-in and check-out dates are outside of the selected period'
 action_manager.modal.package_begin_and_end_date_abroad.text: 'To change this reservation, please, change observed beginning and ending dates'
 action_manager.modal.package_to_large.title: 'Reservation can''t fit on the screen'
 action_manager.modal.package_to_large.text: 'To change this reservation, please use edit mode'
 action_manager.message.unexpected_error: 'Unexpected error'
-aciton_manager.modal.change_package_begin_and_end.confirmation: 'Are you sure you want to change check in and check out dates for this reservation'
+aciton_manager.modal.change_package_begin_and_end.confirmation: 'Are you sure you want to change check-in and check-out dates for this reservation'
 action_manager.modal.have_not_rights: 'You don''t have a permission to edit reservations'
-action_manager.modal.need_changepackage_begin_and_end: 'To perform this action check in or check out date must be changed'
-aciton_manager.modal.change_package_begin.confirmation: 'Are you sure you want to change a check in date'
-action_manager.modal.need_changepackage_begin.title: 'To perform this action check in date must be changed'
-aciton_manager.modal.change_package_end.confirmation: 'Are you sure you want to change check out date'
-action_manager.modal.need_changepackage_end.title: 'To perform this action check out date must be changed'
+action_manager.modal.need_changepackage_begin_and_end: 'To perform this action either check-in date or check-out date has to be changed'
+aciton_manager.modal.change_package_begin.confirmation: 'Are you sure you want to change a check-in date'
+action_manager.modal.need_changepackage_begin.title: 'To perform this action check-in date has to be change'
+aciton_manager.modal.change_package_end.confirmation: 'Are you sure you want to change check-out date'
+action_manager.modal.need_changepackage_end.title: 'To perform this action check-out date has to be changed'
 action_manager.modal.book_button.title: 'Reserve a room. Total rooms: %roomsCount%'
 action_manager.modal.disabled_book_button.title: 'To create a reservation, please add the payer.'
 action_manager.update_modal.without_accommodation: 'Without allocation'
@@ -119,13 +119,13 @@ polls_user_script.many_thanks: 'Thank you!'
 late_early_date_checker.guests_arrived_earlier: 'Guests have arrived earlier than expected.'
 late_early_date_checker.guests_departured_earlier: 'Guests have departed later than expected.'
 late_early_date_checker.guests_check_in_earlier: 'Guests have arrived earlier and departed later than expected.'
-search.upon_arrival: 'On check in'
+search.upon_arrival: 'Upon arrival'
 020_user.bad: Bad
 020_user.normal: Average
 020_user.good: Good
 020_user.excellent: Great
 020_user.super: Perfect
-020_user.make_a_choice: 'Select one'
+020_user.make_a_choice: Select
 003-task.chose_all: 'Select all'
 003-task.clear: Clear
 003-task.take_to_work: Take
@@ -135,20 +135,20 @@ online.online-calendar.close: Close
 online.online-calendar.prev_abbr: Prev
 online.online-calendar.next_abbr: Next
 online.online-calendar.today: Today
-online.online-calendar.sun_abbr: Sun
-online.online-calendar.mon_abbr: Mon
-online.online-calendar.tue_abbr: Tue
-online.online-calendar.wed_abbr: Wed
-online.online-calendar.thu_abbr: Thu
-online.online-calendar.fri_abbr: Fri
-online.online-calendar.sat_abbr: Sat
-online.online-calendar.sun_abbr_min: Sun
-online.online-calendar.mon_abbr_min: Mon
-online.online-calendar.tue_abbr_min: Tue
-online.online-calendar.wed_abbr_min: Wed
-online.online-calendar.thu_abbr_min: Thu
-online.online-calendar.fri_abbr_min: Fri
-online.online-calendar.sat_abbr_min: Sat
+online.online-calendar.sun_abbr: SUN
+online.online-calendar.mon_abbr: MON
+online.online-calendar.tue_abbr: TUE
+online.online-calendar.wed_abbr: WED
+online.online-calendar.thu_abbr: THU
+online.online-calendar.fri_abbr: FRI
+online.online-calendar.sat_abbr: SAT
+online.online-calendar.sun_abbr_min: SUN
+online.online-calendar.mon_abbr_min: MON
+online.online-calendar.tue_abbr_min: TUE
+online.online-calendar.wed_abbr_min: WED
+online.online-calendar.thu_abbr_min: THU
+online.online-calendar.fri_abbr_min: FRI
+online.online-calendar.sat_abbr_min: SAT
 cash.not_confirmed: 'Not confirmed'
 010-app.error_occured: 'Request error. Please try again.'
 010-app.shift_lock: 'Lock shift'
@@ -160,34 +160,34 @@ cash.not_confirmed: 'Not confirmed'
 020-forms.chose_all: 'Select all'
 020-forms.yes: 'Yes'
 020-forms.no: 'No'
-020-forms.make_choice: 'Select one'
+020-forms.make_choice: Select
 020-forms.select_city: 'Select city'
 020-forms.select_package: 'Select reservation'
 020-forms.select_guest: 'Select guest'
-004-roomCache.days_will_be_removed: 'Days will be deleted'
+004-roomCache.days_will_be_removed: 'Days will be displayed in the “Rooms for Sale Overview” page as blank'
 005-priceCache.price_will_be_removed: 'Price will be deleted'
 008-special.hide_packages: 'Hide reservations'
 008-special.show_packages: 'Show reservations'
 060-restriction.price_will_be_removed: 'Price will be deleted'
-004-calculate-orderprice.make_a_choice: 'Select one'
+004-calculate-orderprice.make_a_choice: Select
 001-add_dish_item.first_add_dishes: 'First add dishes to %hrefTagStart% in a corrsponding menu'
 views.task.index.before: Before
-tourist.inn: TIN
+tourist.inn: 'Tax number'
 app.bootstrap_switch_config.yes: 'Yes'
 app.bootstrap_switch_config.no: 'No'
-020-forms.inn: TIN
+020-forms.inn: 'Tax number'
 tourist.new_country.error.field_is_empty: 'Country field is not filled'
-accommodation.modal_title.add_accommodation: 'Add accommodation'
-accommodation.modal_title.change_accommodation: 'Delete accommodation'
+accommodation.modal_title.add_accommodation: 'Accommodate in this room'
+accommodation.modal_title.change_accommodation: 'Edit Room allocation'
 dynamic_sales.option_data_type.comparative_graph_name.relative: 'Comparison of relative values in the category "% optionName%"'
 dynamic_sales.option_data_type.comparative_graph_name.absolute: 'Comparison of absolute values in the category "% optionName%"'
-package_bundle.accommodations.warning_before_setting_accoommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Reservation calendar</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
-package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation: 'You are trying to accommodate guests in a different type of room - "%accommodationRoomTypeName%", while the guest booked a room of "%packageRoomType%" type.This can lead to incorrect free rooms counting in the program and errors when creating new reservations. <br> To avoid mistakes: <br> 1. Try to optimize the guest accommodation through <a target="_blank" href="%chessboard_route%">Chessboard</a> for this room type(%packageRoomType%) <br>2. Check the placement of other reservations in the <a target="_blank" href="%packages_route%">Reservations</a> section by checking the booking type and room type for the selected dates. <br>3. Change the room type of a reservation (note that change in the cost of reservation is possible). <br>If you are sure that accommodation in this room type will not lead to errors, continue the operation by clicking the Continue button.'
+package_bundle.accommodations.warning_before_setting_accoommodation: 'Warning! <br><br>You are about to allocate a room that does not match the room type per reservation. <br>Selected room type "%accommodationRoomTypeName%". <br>Room type per reservation "%packageRoomType%". <br>This allocation can result in incorrect available rooms data and lead to errors in new reservations. <br><br>To allocate a room that matches the room type per reservation please: <br><br>1. Optimize room allocation for this room type (%packageRoomType%) through <a target="_blank" href="%chessboard_route%">Calendar</a>. <br>2. Check that other rooms have been allocated correctly by cross checking room types per reservations with allocated room types on selected dates in <a target="_blank" href="%packages_route%">My Reservations</a> section. <br>3. Change the room type in the reservation. Note: Room type change in the reservation may affect its price. <br>If you are confident that this allocation does not lead to errors, you may proceed with this allocation by clicking on “Continue” button.'
+package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation: 'Warning! <br><br>You are about to allocate a room that does not match the room type per reservation. <br>Selected room type "%accommodationRoomTypeName%". <br>Room type per reservation "%packageRoomType%". <br>This allocation can result in incorrect available rooms data and lead to errors in new reservations. <br><br>To allocate a room that matches the room type per reservation please: <br><br>1. Optimize room allocation for this room type (%packageRoomType%) through <a target="_blank" href="%chessboard_route%">Calendar</a>. <br>2. Check that other rooms have been allocated correctly by cross checking room types per reservations with allocated room types on selected dates in <a target="_blank" href="%packages_route%">My Reservations</a> section. <br>3. Create a new reservation for the new room type and change the Check-out date of the existing reservation accordingly to correctly reflect guests transfer from their original room and room type to the new one. <br>If you are confident that this allocation does not lead to errors, you may proceed with this allocation by clicking on “Continue” button.'
 chessboard_manager.package_tooltip.package_number: Number
 chessboard_manager.package_tooltip.payer: Payer
 chessboard_manager.package_tooltip.price: Price
-chessboard_manager.package_tooltip.package_begin: 'Check in date'
-chessboard_manager.package_tooltip.package_end: 'Check out date'
+chessboard_manager.package_tooltip.package_begin: 'Check-in date'
+chessboard_manager.package_tooltip.package_end: 'Check-out date'
 chessboard_manager.package_tooltip.is_checkin: 'Checked in'
 chessboard_manager.package_tooltip.is_checkout: 'Checked out'
 020-forms.on_moderation: 'being moderated'
@@ -226,3 +226,5 @@ guides.first_guide_name: 'How to initiate sales?'
 guides.roomCaches: 'How to set up rooms for sale?'
 guides.priceCaches: 'How to set up prices?'
 guides.search: 'How to book a room?'
+package.remove_package: 'Delete reservation "%title%"?'
+package.remove_order: 'Delete order "%title%"?'

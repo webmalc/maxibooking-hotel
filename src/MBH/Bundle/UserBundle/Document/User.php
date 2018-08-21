@@ -654,10 +654,13 @@ class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
 
     /**
      * @param string $locale
+     * @return User
      */
     public function setLocale(string $locale)
     {
         $this->locale = $locale;
+
+        return $this;
     }
 
     public function getShortName()

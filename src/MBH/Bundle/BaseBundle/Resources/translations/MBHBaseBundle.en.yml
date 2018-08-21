@@ -22,3 +22,4 @@ views.partials.entityInfo.date: Date
 views.partials.entityInfo.user: User
 views.partials.entityInfo.changes: Changes
 app.resources.twigBundle.translations.occured.error: 'An error accured'
+views.actions.confirm: Confirm

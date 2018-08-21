@@ -1,0 +1,79 @@
+{% extends "MBHChannelManagerBundle::layout.html.twig" %}
+
+{% set layout = 'tabs' %}
+{% set title = channelManagerHumanName %}
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle') %}
+{% set title_url = path(channelManagerName) %}
+{% if config is not defined %}
+    {% set config = null %}
+{% endif %}
+
+{% set isConnectionRequestSent = config and config.hotelId and config.id %}
+{% if config is not defined %}
+    {% set config = null %}
+{% endif %}
+
+{% set hasUnfilledData = messages is defined and messages['errors'] is defined and messages['errors'] is not empty %}
+
+{% block content %}
+    {% if messages is defined %}
+        {% for messageType, messages in messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ messageType == 'info' ? 'success' : 'danger' }}">
+                    <p>
+                        {{ message }}
+                    </p>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 0, 'base': channelManagerName} %}
+
+    <div class="tab-content">
+        <div id="channel-manager-instruction" class="well">
+            {% include '@MBHChannelManager/ChannelManager/cmConnectionInstructions.html.twig' with {channelManager: channelManagerName} %}
+        </div>
+
+        <div class="tab-pane active" id="home">
+            {% if hasForm %}
+                {% if config and config.hotelId and config.id %}
+                    <div class="alert alert-warning alert-dismissable" id="connection-request-sent-message"
+                         style="font-weight: 600;">
+                        {{ 'views.channnelmanager.wizard_info.request_sent'|trans({}, 'MBHChannelManagerBundle') }}
+                    </div>
+                {% else %}
+                    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+                    {{ form_widget(form) }}
+                    <div class="navbar">
+                        <div class="container-fluid">
+                            <ul class="nav navbar-nav">
+                                <li>
+                                    <button type="submit" name="save"
+                                            class="btn btn-success navbar-btn" {{ hasUnfilledData ? 'disabled' }}>
+                                        <i class="fa fa-check-square-o"> </i> {{ 'views.channnelmanager.wizard_info.send_request'|trans({}, 'MBHChannelManagerBundle') }}
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+                {% endif %}
+            {% endif %}
+
+            {% embed '@MBHBase/Actions/base_list.html.twig' %}
+                {% block left %}
+                    {% if not is_cm_configured_by_tech_support(channelManagerName) and (config is empty or not config.isConnectionSettingsRead()) %}
+                        <li>
+                            <a id="next-step"
+                               href="{{ path('read_connection_instruction', {'channelManagerName': channelManagerName}) }}"
+                               class="btn btn-primary navbar-btn navbar-link-button">
+                                {{ 'cm_wizard.buttons.next_step.title'|trans }} <i class="fa fa-arrow-right"> </i>
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}

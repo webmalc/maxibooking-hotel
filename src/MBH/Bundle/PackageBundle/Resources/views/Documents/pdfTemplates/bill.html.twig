@@ -86,7 +86,12 @@
 
     <div class="header">
         <div class="title">
-            <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.schet'|trans }} № {{ package.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ 'now'|date('d.m.Y H:i') }}.</h2>
+            <h2>
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.schet'|trans }} №
+                {{ package.numberWithPrefix }}
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }}
+                {{ 'now'|date('d.m.Y H:i') }}
+            </h2>
         </div>
         {% if hotel and hotel.logoImage %}
             <div class="logo">
@@ -101,19 +106,11 @@
         <table border="0" width="100%">
             <tr>
                 <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
-                <td width="85%">
-                    <strong>{{ package.address.name }}</strong>
-                    {{ "package.pdf.address"|trans({}, "MBHPackageBundle") }}: {% if package.address and package.address.countryTld and package.address.cityId and package.address.street %}
-                    {{ get_country(package.address.countryTld).name }}, {% if package.address.regionId %}{{ get_region(package.address.regionId).name }},{% endif %} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}. {{ get_city(package.address.cityId).name }}{% if package.address.settlement is defined %}, {{ package.address.settlement }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.street }},
-                    {% if package.address.house %} {{ "package.pdf.short_home_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.house }}{% endif %}{% if package.address.corpus %}, {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.corpus }}{% endif %}{% if package.address.flat %}, {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-                    {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if package.address.inn is defined %}{{ package.address.inn }}{% else %}________________________{% endif %}
-                </td>
+                <td width="85%">{{ dataExecutor | raw }}</td>
             </tr>
             <tr>
                 <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
-                <td>
-                    <strong>{{ package.order.payer.name|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong>
-                </td>
+                <td>{{ dataCustomer | raw }}</td>
             </tr>
         </table>
 

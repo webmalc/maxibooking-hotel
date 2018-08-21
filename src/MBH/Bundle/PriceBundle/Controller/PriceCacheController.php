@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\EmptyCachePeriod;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
@@ -40,14 +41,22 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @Method("GET")
      * @Security("is_granted('ROLE_PRICE_CACHE_VIEW')")
      * @Template()
+     * @throws \Exception
      */
     public function indexAction()
     {
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $getRoomTypeCallback = function () {
             return $this->manager->getRooms($this->hotel);
         };
         $roomTypes = $this->get('mbh.helper')->getFilteredResult($this->dm, $getRoomTypeCallback, $isDisableableOn);
+        if ($this->clientConfig->isMBSiteEnabled()) {
+            $emptyPeriodWarnings = $this->get('mbh.warnings_compiler')->getEmptyCacheWarningsAsStrings($this->hotel, 'price');
+        }
+
+        if (!empty($emptyPeriodWarnings)) {
+            $this->addFlash('warning', join('<br>', $emptyPeriodWarnings));
+        }
 
         return [
             'roomTypes' => $roomTypes,
@@ -63,6 +72,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @Method("GET")
      * @Security("is_granted('ROLE_PRICE_CACHE_VIEW')")
      * @Template()
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function tableAction(Request $request)
     {
@@ -91,7 +101,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             'hotel' => $this->hotel
         ];
 
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $isDisableableOn = $this->clientConfig->isDisableableOn();
         $inputRoomTypeIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
         $roomTypesCallback = function () use ($inputRoomTypeIds) {
             return $this->manager->getRooms($this->hotel, $inputRoomTypeIds);

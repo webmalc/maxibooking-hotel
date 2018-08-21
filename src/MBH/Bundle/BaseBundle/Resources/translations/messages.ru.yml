@@ -293,6 +293,7 @@ list: Список
 migration.card: 'Миграционная карта'
 visa: Виза
 form.facilitiesType.label: Удобства
+form.facilitiesType.help: 'Для изменения описания удобств перейдите по <a target="_blank" href="%href%">ссылке</a>'
 form.facilitiesType.placeholder: 'Выберите удобства'
 entry.actions.delete: 'Удалить запись'
 entry.actions.delete.confirmation: 'Вы действительно хотите удалить запись «%doc%»?'
@@ -301,6 +302,10 @@ entry.actions.copy: 'Копировать запись'
 form.languageType.label: Язык
 languages.en: Английский
 languages.ru: Русский
+languages.de: Немецкий
+languages.fr: Французкий
+languages.gr: Греческий
+languages.tr: Турецкий
 security.not_access: 'Нет прав доступа'
 crud.add: Добавить
 crud.create: Создать
@@ -380,6 +385,8 @@ menu.communication.label.your_hotel: ВашОтель
 menu.communication.label.onlineform: 'Онлайн модуль'
 menu.communication.label.online_payment_form: 'Платежный модуль'
 menu.communication.label.polls: 'Настройка отзывов'
+menu.communication.label.site_settings: 'Настройки сайта'
+menu.communication.label.mb_site: Сайт
 menu.communication.label.invite: 'Визовое приглашение'
 menu.communication.label.hundred_one_hotels: '101 Отель'
 menu.hotel_new.label: 'Создать новый отель'
@@ -723,5 +730,64 @@ support_modal.articles.booking_sync: 'Настройка синхронизац�
 support_modal.articles.chessboard: 'Информация в шахматке'
 support_modal.sandbox_button.text: 'Демо-версия'
 
-
 modal.close_button: Закрыть
+
+messages_store.channel_manager_connection.mail.subject: '%channelManagerName% - заявка на подключение'
+messages_store.channel_manager_connection.mail.text_1: 'Поступила заявка на подключение к системе бронирования %channelManagerName% от клиента <a target="_blank" href="%url%">%clientName%</a>'
+messages_store.channel_manager_connection.mail.text_2: 'Проверьте, что в программе установлены цены и количество номеров на весь период продаж. А также, что схема ценообразования в программе соответствует схеме цен в системе бронирования.'
+messages_store.channel_manager_connection.mail.text_3: 'Данные для подключения'
+messages_store.channel_manager_confirmation.mail.text: 'Подключение к %channelManager% подтверждено'
+messages_store.channel_manager_confirmation.mail.subject: 'Максибукинг - подключение системы %channelManager% согласовано'
+messages_store.channel_manager_confirmation.text_1: 'Уважаемый клиент'
+messages_store.channel_manager_confirmation.text_2: 'Ваша заявка на подключение к системе бронирования %channelManager% одобрена.'
+messages_store.channel_manager_confirmation.text_3: 'Данные для подключения'
+messages_store.channel_manager_confirmation.text_4: 'Если у Вас возникли вопросы, обратитесь, пожалуйста, в службу поддержки <br>по адресу:<a href="mailto:%supportEmail%">%supportEmail%</a>!'
+messages_store.new_connection.text: 'Клиент "%client%" начал настройку канала "%channelManager%".'
+messages_store.new_connection.subject: 'Начало настройки канала "%channelManager%"'
+
+cm_connection_instructions.part1.text1: '<strong>Для настройки взаимодействия %channelManagerName% и программы Максибукинг нужно  получить разрешение от системы бронирования.</strong>'
+cm_connection_instructions.part1.text2: '<strong>Примечание</strong>: Обратите внимание, что количество продаваемых номеров и цены на них будут выгружаться из системы “Максибукинг”.'
+cm_connection_instructions.part1.text3: 'Проверьте, что в программе созданы все типы номеров и тарифов, аналогичные созданным в системе бронирования. И установлены цены и количество номеров на весь период продаж.'
+
+cm_connection_instructions.part2.text1: '<strong>Чтобы получить разрешение от системы бронирования:</strong>'
+cm_connection_instructions.part2.booking.text1: 'Зайдите в свой личный кабинет booking.com по адресу: <a target="_blank" href="https://admin.booking.com">https://admin.booking.com</a>, нажмите на кнопку <strong>«Аккаунт»</strong> в правом верхнем углу страницы и в появившемся меню выберите пункт <strong>Channel manager</strong>.'
+cm_connection_instructions.part2.booking.text2: '<strong>Откроется 1 шаг мастера подключения</strong>.<br> Наберите в поле поиска провайдера название программы: <strong>maxibooking</strong> и в появившемся списке выберите <strong>Maxibooking *</strong>'
+cm_connection_instructions.part2.booking.text3: 'Проверьте, что в поле чуть ниже выбран тип подключения: <strong>«Полное подключение(two way)»</strong> и нажмите кнопку <strong>“Далее”</strong>.'
+cm_connection_instructions.part2.booking.text4: '<strong>Откроется 2 шаг мастера подключения.</strong><br> Прочитайте соглашение и поставьте галочку <strong>«Я прочел и принимаю условия соглашения»</strong>. Затем нажмите кнопку <strong>«Принять»</strong>.'
+cm_connection_instructions.part2.booking.text5: 'Нам будет отправлено письмо для согласования подключения.'
+cm_connection_instructions.part2.booking.text6: 'После того как мы подтвердим подключение, Вы получите письмо на электронную почту и Вам нужно снова зайти по адресу: <a target="_blank" href="https://admin.booking.com">https://admin.booking.com</a> и перейти на 4 шаг мастера подключения, нажав на кнопку <strong>“Аккаунт”</strong> и выбрав пункт <strong>Channel manager</strong>.'
+cm_connection_instructions.part2.booking.text7: 'Подтвердите, что Вы хотите подключить <strong>«Максибукинг».<br> !!! Обратите внимание</strong>, чтобы в поле типа подключения был выбран вариант: <strong>«Полное подключение(two way)»</strong>'
+cm_connection_instructions.part2.booking.text8: 'Перейдите в <strong>«Максибукинг»</strong> и завершите настройку подключения.'
+cm_connection_instructions.part2.booking.note: '<strong>*</strong> если вы набрали название программы, а система не предложила для выбора Maxibooking, наберите вместо названия в поле поиска номер 549'
+cm_connection_instructions.part2.expedia.text1: 'Зайдите в свой личный кабинет <strong>Expedia</strong> по адресу: <a target="_blank" href="https://www.expediapartnercentral.com">https://www.expediapartnercentral.com</a>'
+cm_connection_instructions.part2.expedia.text2: 'Выберите слева в меню пункт <strong>“Номера и тарифы”</strong> , а затем в появившемся меню <strong>“Настройки соединения систем бронирования Expedia”</strong>'
+cm_connection_instructions.part2.expedia.text3: 'На открывшейся странице <strong>“Настройка Expedia QuickConnect”</strong> щелкните левой кнопкой мыши в поле <strong>“Поставщик системы”</strong> и в появившемся списке найдите и выберите <strong>Maxibooking</strong>. <br><strong>!!! Проверьте</strong>, что под полем <strong>“Поставщик системы”</strong> выбраны возможности взаимодействия <strong>“Наличие номеров и тарифов”</strong> и <strong>“Восстановление бронирования”</strong>(в соответствующих квадратиках стоят крестики).'
+cm_connection_instructions.part2.expedia.text4: 'Нажмите кнопку <strong>“Отправить”</strong>'
+cm_connection_instructions.part2.expedia.text5: 'После этого перейдите в <strong>«Максибукинг»</strong> и завершите настройку подключения.'
+cm_connection_instructions.part2.ostrovok.text1: 'Зайдите в свой личный кабинет <strong>Ostrovok.ru</strong> по адресу: <a target="_blank" href="https://extranet.ostrovok.ru">https://extranet.ostrovok.ru</a>'
+cm_connection_instructions.part2.ostrovok.text2: 'Перейдите во вкладку <strong>«Отель»</strong>, а затем в <strong>«Общая информация»</strong>'
+cm_connection_instructions.part2.ostrovok.text3: 'Внизу страницы найдите блок <strong>Channel manager</strong>'
+cm_connection_instructions.part2.ostrovok.text4: 'В поле <strong>Activate</strong> щелкните левой кнопкой мыши по надписи <strong>“No channel manager”</strong> в появившемся списке выберите <strong>Maxibooking</strong>'
+cm_connection_instructions.part2.ostrovok.text5: 'Проверьте, что в верхней части страницы появился значок  <strong>«E-channel»</strong>'
+cm_connection_instructions.part2.ostrovok.text6: 'После этого перейдите в <strong>«Максибукинг»</strong> и завершите настройку подключения.'
+cm_connection_instructions.part2.hundred_one_hotels.text1: 'Проверьте название вашего отеля и его адрес'
+cm_connection_instructions.part2.hundred_one_hotels.text2: 'Затем введите <strong>ID вашего отеля</strong> на <strong><a target="_blank" href="https://www.101hotels.ru/">101Hotels.ru</a></strong> и нажмите кнопку <strong>“Отправить заявку”</strong>'
+cm_connection_instructions.part2.hundred_one_hotels.text3: 'Когда разрешение будет предоставлено, мы сообщим Вам и нужно будет завершить настройку подключения в системе <strong>«Максибукинг»</strong>.'
+cm_connection_instructions.part2.vashotel.text1: 'Проверьте название вашего отеля и нажмите кнопку <strong>“Отправить заявку”</strong>. После этого Ваша заявка будет направлена в “ВашОтель”.'
+cm_connection_instructions.part2.vashotel.text2: 'Когда разрешение будет предоставлено, мы сообщим Вам и нужно будет завершить настройку подключения в системе <strong>«Максибукинг»</strong>.'
+cm_connection_instructions.part2.myallocator.text1: 'Зайдите в свой личный кабинет <strong>MyAllocator</strong> по адресу: <a target="_blank" href="https://inbox.myallocator.com/en/">https://inbox.myallocator.com/en/</a>'
+cm_connection_instructions.part2.myallocator.text2: 'В верхнем меню страницы нажмите на пункт <strong>Manage</strong>'
+cm_connection_instructions.part2.myallocator.text3: 'В появившемся меню выберите <strong>PMS Connections</strong>'
+cm_connection_instructions.part2.myallocator.text4: 'После этого откроется страница, на которой нужно щелкнуть левой кнопкой мыши в поле с надписью <strong>(Connect to a PMS)</strong>.'
+cm_connection_instructions.part2.myallocator.text5: 'В открывшемся списке найдите <strong>Maxibooking</strong> и щелкните по этому названию левой кнопкой мыши.'
+cm_connection_instructions.part2.myallocator.text6: 'Затем нажмите кнопку <strong>ADD</strong>'
+cm_connection_instructions.part2.myallocator.text7: 'В списке <strong>Active Connections</strong> появится название <strong>Maxibooking</strong>'
+cm_connection_instructions.part2.myallocator.text8: 'Выделите строку символов в столбце <strong>Authentication Token</strong>, удерживая нажатой правую кнопку мыши. Затем отпустите ее(при этом вся строка символов должна быть выделена)  и щелкните по выделенному набору символов правой кнопкой мыши и в появившемся меню выберите <strong>Копировать</strong>'
+cm_connection_instructions.part2.myallocator.text9: 'Откройте программу <strong>«Максибукинг»</strong> и перейдите в раздел <strong>Настройки - Channel manager - MyAllocator</strong>.'
+cm_connection_instructions.part2.myallocator.text10: 'Введите в поле <strong>«Логин»</strong> логин, под которым Вы зарегистрированы в системе <strong>MyAllocator</strong>'
+cm_connection_instructions.part2.myallocator.text11: 'Введите в поле <strong>«Пароль»</strong> набор символов, который скопировали из столбца <strong>Authentication Token</strong> в системе <strong>MyAllocator</strong>'
+cm_connection_instructions.part2.myallocator.text12: 'Переведите переключатель <strong>«Включен»</strong> в положение <strong>«Да»</strong> и нажмите кнопку <strong>«Сохранить»</strong> внизу страницы.'
+cm_connection_instructions.part3.text1: 'Более подробно процесс настройки описан в базе знаний <a href="%connectionLink%" target="_blank">по адресу</a>.'
+cm_connection_instructions.part3.text2: 'Если у Вас возникли вопросы обратитесь, пожалуйста, в службу поддержки по адресу: <a href="mailto:%supportEmail%">%supportEmail%</a>.'
+site_manager.empty_room_caches_warning: '%roomTypeName%: Не выставлены номера в продаже на периоды: %periods%'
+site_manager.empty_price_caches_warning: '%roomTypeName%: Для тарифа "%tariffName%" не выставлены цены на периоды: %periods%'

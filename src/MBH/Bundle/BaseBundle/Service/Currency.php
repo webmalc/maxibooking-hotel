@@ -101,10 +101,7 @@ class Currency
         $currency = $this->get($code, $date);
 
         /** @var ClientConfig $clientConfig */
-        $clientConfig = $this->container
-            ->get('doctrine.odm.mongodb.document_manager')
-            ->getRepository('MBHClientBundle:ClientConfig')
-            ->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
 
         return round(($amount / $currency->getRatio()) * $clientConfig->getCurrencyRatioFix(), 2);
     }
@@ -115,10 +112,7 @@ class Currency
     public function info()
     {
         /** @var ClientConfig $clientConfig */
-        $clientConfig = $this->container
-            ->get('doctrine.odm.mongodb.document_manager')
-            ->getRepository('MBHClientBundle:ClientConfig')
-            ->fetchConfig();
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
 
         return $this->container->getParameter('mbh.currency.data')[$clientConfig->getCurrency()];
     }

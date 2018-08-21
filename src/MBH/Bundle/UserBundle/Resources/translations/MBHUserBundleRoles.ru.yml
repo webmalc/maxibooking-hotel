@@ -22,6 +22,7 @@ ROLE_HOTEL_VIEW: 'Просмотр отелей'
 ROLE_HOTEL_NEW: 'Создание отелей'
 ROLE_HOTEL_EDIT: 'Редактирование отелей'
 ROLE_HOTEL_DELETE: 'Удаление отелей'
+ROLE_UPDATE_FACILITIES: 'Изменение удобств'
 ROLE_GROUP: Группы
 ROLE_GROUP_VIEW: 'Просмотр групп'
 ROLE_GROUP_NEW: 'Создание групп'
@@ -120,6 +121,11 @@ ROLE_ONLINE_FORM_VIEW: 'Просмотр онлайн форм'
 ROLE_ONLINE_FORM_EDIT: 'Редактирование онлайн форм'
 ROLE_ONLINE_FORM_NEW: 'Создание онлайн форм'
 ROLE_ONLINE_FORM_DELETE: 'Удаление онлайн форм'
+ROLE_ONLINE_PAYMENT_FORM: 'Платежная онлайн форма'
+ROLE_ONLINE_PAYMENT_FORM_VIEW: 'Просмотр платежной онлайн форм'
+ROLE_ONLINE_PAYMENT_FORM_NEW: 'Создание платежной онлайн форм'
+ROLE_ONLINE_PAYMENT_FORM_EDIT: 'Редактирование платежной онлайн форм'
+ROLE_ONLINE_PAYMENT_FORM_DELETE: 'Удаление платежной онлайн форм'
 ROLE_POLLS: Голосования
 ROLE_REPORTS: Отчеты
 ROLE_ANALYTICS: Аналитика

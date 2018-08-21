@@ -4,7 +4,7 @@
 {% if error is defined and error is not empty  %}
     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
 {% else %}
-    <table id="restriction-overview-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+    <table id="restriction-overview-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid custom-mobile-style">
         <tbody>
 
         {% for tariff in tariffs %}
@@ -63,7 +63,7 @@
                             {% set inputValue = restriction is null ? null : attribute(restriction, categoryId) %}
                             {#<!-- END: set inputName & value  -->#}
 
-                            <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
+                            <td class="content{% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
                                 <span class="input">
                                 {% if categoryId == 'closedOnArrival' or categoryId == 'closedOnDeparture' or categoryId == 'closed' %}
                                     <input name="{{ inputName }}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ inputValue ? 'checked' : '' }} value="1">

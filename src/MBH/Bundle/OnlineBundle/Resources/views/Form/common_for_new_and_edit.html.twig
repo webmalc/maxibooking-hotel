@@ -1,0 +1,16 @@
+{% extends 'MBHOnlineBundle:Form:layout.html.twig' %}
+
+{% set title = 'views.form.layout.online_form'|trans({}, 'MBHOnlineBundle') %}
+{% if small_title is not defined %}
+    {% set small_title = 'views.form.index.edit'|trans({}, 'MBHOnlineBundle') %}
+{% endif %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2'
+        '@MBHOnlineBundle/Resources/public/js/form/*'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}

@@ -1,16 +1,17 @@
 views.clientConfig.index.editing: Editing
+views.clientConfig.index.new: Create
 views.clientConfig.layout.parameters: Parameters
 client.tabs.params: Parameters
 client.tabs.payment_system: 'Payment systems'
 views.documentTempalte.index: 'Document templates'
 views.documentTempalte.new: 'New document template'
 views.documentTempalte.edit: Edit
-documentTempalte.title: Title
-documentTempalte.enabled: Enabled
+documentTempalte.title: Name
+documentTempalte.enabled: Active
 client.viwes.clientConfig.paymentSystem.urlNotification: 'Notification URL'
 client.viwes.clientConfig.paymentSystem.urlSuccesPayment: 'Payment successful URL'
 client.viwes.clientConfig.paymentSystem.urlFailedPayment: 'Payment unsuccessful URL'
-client.views.clientConfig.index.name: Title
+client.views.clientConfig.index.name: Name
 client.views.clientConfig.index.hotel: Hotel
 client.views.clientConfig.index.allhotel: 'All hotels'
 client.views.clientConfig.index.organization: Company
@@ -19,16 +20,16 @@ client.views.payment_systems.urls_change_button: Change
 client.views.payment_systems.urls.save_changes: Save
 client.views.payment_systems.urls.cancel: Cancel
 client.views.payment_systems.urls.title: Links
-client.views.payment_systems.disable_text: 'Ary you sure you want to disable this payment system?'
+client.views.payment_systems.disable_text: 'Are you sure you want to deactivate this payment system?'
 client.views.payment_systems.small_title: List
 client.views.payment_systems.name: Name
-client.views.payment_systems.disable: Disable
+client.views.payment_systems.disable: Deactivate
 client.tabs.notification: 'Notifications settings'
 client.views.payment_systems.url_not_specfied: 'Not specified'
 client.views.payment_systems.edit: Edit
-client.views.payment_systems.disable_button_text: Disable
-client.views.clientConfig.tabs.color_settings: Colors
+client.views.payment_systems.disable_button_text: Deactivate
+client.views.clientConfig.tabs.color_settings: Colours
 client.views.clientConfig.reset_confirmation.button-text: Reset
-client.views.clientConfig.reset_confirmation.text: 'Color settings will be reset to default'
-client.views.clientConfig.color_settings.small_title: 'Color settings'
+client.views.clientConfig.reset_confirmation.text: 'Colour settings will be reset to default'
+client.views.clientConfig.color_settings.small_title: 'Colour settings'
 client.views.clientConfig.color_settings.reset_settings.button: 'Reset Settings'

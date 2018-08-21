@@ -1,19 +1,25 @@
 {% extends "MBHRestaurantBundle:DishOrder:layout.html.twig" %}
-{% set small_title = 'restaurant.dishorder.actions.list.small_title'|trans %}
+{% set small_title = 'menu.label.restaurant'|trans %}
 {% set layout = "box" %}
 
 {% block content %}
     {% embed '@MBHBase/Partials/embed_filter.html.twig' with {'id': 'dishorder-table-filter-widget'} %}
         {% block content %}
             {% if form is defined %}
-                {{ form_start(form) }}
+                {{ form_start(form,{attr:{'class':'filter-form'}}) }}
 
                 {% if form.begin is defined %}
-                    <div class="form-group">
-                        <label><i class="fa fa-calendar" title='{{ 'dish_order.index.dates_filter'|trans }}' data-toggle='tooltip'></i></label>
-                        {{ form_widget(form.begin) }} —
-                        {{ form_widget(form.end) }}
+                    <div class="filter-form_group-date">
+                        <div class="filter-form_input">
+                            <i class="fa fa-calendar" title='{{ 'dish_order.index.dates_filter'|trans }}' data-toggle='tooltip'></i>
+                            <div class="filter-form_input">
+                                {{ form_widget(form.begin) }}
+                                <span class="filter-form_separator"></span>
+                                {{ form_widget(form.end) }}
+                            </div>
+                        </div>
                     </div>
+
                 {% endif %}
                 {% if form.money_begin is defined %}
                     <div class="form-group">
@@ -22,11 +28,11 @@
                         {{ form_widget(form.money_end) }}
                     </div>
                 {% endif %}
-                <div class="form-group">
-                    <label><i class="fa fa-money" title="{{ 'dish_order.index.paid'|trans }}" data-toggle="tooltip"></i></label>
-                    &nbsp;{{ form_widget(form.is_freezed) }}
-                    {{ form_widget(form._token) }}
+                <div class="filter-form_input">
+                    <i class="fa fa-money" title="{{ 'dish_order.index.paid'|trans }}" data-toggle="tooltip"></i>
+                    {{ form_widget(form.is_freezed) }}
                 </div>
+                {{ form_widget(form._token) }}
                 {{ form_end(form, {render_rest: false}) }}
             {% endif %}
         {% endblock %}

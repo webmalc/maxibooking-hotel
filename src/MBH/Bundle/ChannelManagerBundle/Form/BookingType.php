@@ -3,47 +3,28 @@
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use MBH\Bundle\BaseBundle\Service\Currency;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
-class BookingType extends AbstractType
+class BookingType extends ChannelManagerConfigType
 {
     /**
      * @var Currency
      */
     protected $currency;
 
-    public function __construct(Currency $currency)
+    public function __construct(Currency $currency, TranslatorInterface $translator)
     {
+        parent::__construct($translator);
         $this->currency = $currency;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        parent::buildForm($builder, $options);
         $builder
-            ->add(
-                'isEnabled',
-                CheckboxType::class,
-                [
-                    'label' => 'form.bookingType.is_included',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.bookingType.should_we_use_in_channel_manager'
-                ]
-            )
-            ->add(
-                'hotelId',
-                TextType::class,
-                [
-                    'label' => 'form.bookingType.hotel_id',
-                    'required' => true,
-                    'attr' => ['placeholder' => 'hotel id'],
-                    'help' => 'form.bookingType.hotel_id_in_booking_com'
-                ]
-            )
             ->add(
                 'currency',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
@@ -73,11 +54,10 @@ class BookingType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(
-            array(
-                'data_class' => 'MBH\Bundle\ChannelManagerBundle\Document\BookingConfig',
-            )
-        );
+        $resolver->setDefaults([
+            'data_class' => 'MBH\Bundle\ChannelManagerBundle\Document\BookingConfig',
+            'channelManagerName' => 'Booking.com'
+        ]);
     }
 
     public function getBlockPrefix()

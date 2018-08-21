@@ -1,4 +1,4 @@
-warehouse.common.subtitle: List
+warehouse.common.subtitle: 'Stock Items'
 warehouse.common.savechanges: 'Save changes'
 warehouse.common.info: 'General information'
 warehouse.common.settings: Settings
@@ -6,13 +6,13 @@ warehouse.rec.del: Delete
 warehouse.record.th.price: Price
 warehouse.cat.new: 'New category'
 warehouse.cat.newSuccess: 'Category successfully added'
-warehouse.items.maxiTitle: 'Title only visible inside MaxiBooking system'
+warehouse.items.maxiTitle: 'Name within MaxiBooking'
 warehouse.items.saveSuccess: 'Changes successfully saved'
-warehouse.items.newSuccess: 'Commodity successfully added'
-warehouse.items.delSuccess: 'Commodity successfully deleted'
+warehouse.items.newSuccess: 'Stock item successfully added'
+warehouse.items.delSuccess: 'Stock item successfully deleted'
 warehouse.record.newSuccess: 'Entry successfully added'
-warehouse.record.editSuccess: 'Entry successfully edited.'
-warehouse.record.list: 'List of income and expenditure'
+warehouse.record.editSuccess: 'Information successfully updated'
+warehouse.record.list: 'Stockroom records'
 mbhwarehousebundle.form.recordfiltertype.po: to
 warehouse.controller.invoicecontroller.consignment_saved: 'Document saved'
 warehouse.resources.form.recordfiltertype.with: from
@@ -23,57 +23,56 @@ warehouse.record.recordDate: Date
 warehouse.record.edit: 'Record edit'
 warehouse.record.hotel: Hotel
 warehouse.record.generalInfo: 'General information'
-warehouse.record.title: Title
+warehouse.record.title: Name
 warehouse.record.hotels: Hotels
 warehouse.record.in: Receipt
-warehouse.record.out: Expense
-warehouse.record.inventory: Remaining
+warehouse.record.out: Dispatch
 warehouse.record.tabs.list: Records
-warehouse.record.tabs.inventory: Remaining
+warehouse.record.tabs.inventory: Balance
 warehouse.record.new: 'New record'
-warehouse.record.goods: Commodities
+warehouse.record.goods: 'Stock items'
 warehouse.items.price: 'Price per unit'
 warehouse.record.th.quantity: Quantity
-warehouse.fixtures.mongodb.warehousedata.food: Food
+warehouse.fixtures.mongodb.warehousedata.food: 'Food items'
 warehouse.fixtures.mongodb.warehousedata.household_chemical: 'Household chemicals'
 warehouse.field.unit: 'Measure unit'
 warehouse.resources.view.date: Date
 warehouse.eventlistener.warehousesubscriber.can_not_delete_product_category: 'Category containing items cannot be deleted'
-warehouse.resources.view.error_the_number_can_not_be_zero: 'Error. The quantity must be above 0!'
-warehouse.common.title: Stock
+warehouse.resources.view.error_the_number_can_not_be_zero: 'Error. Quantity must be above 0!'
+warehouse.common.title: Stockroom
 warehouse.common.edit: Edit
 warehouse.common.del: Delete
-warehouse.common.included: Enabled
+warehouse.common.included: Active
 warehouse.field.unitPlaceholder: 'units, liters, etc.'
 warehouse.cat.title: Category
-warehouse.items.title: Commodity
-warehouse.items.add: 'Add commodity'
-warehouse.items.placeholder: 'Household chemicals'
+warehouse.items.title: 'Stock item'
+warehouse.items.add: 'Add Stock item'
+warehouse.items.placeholder: 'Main items'
 warehouse.items.placeholderShort: Soap
 warehouse.resources.view.record.dates: Dates
-warehouse.resources.view.invoice.add: 'Add invoice'
+warehouse.resources.view.invoice.add: Add
 warehouse.resources.view.operation: 'Operation type'
 warehouse.resources.view.nubmer: Number
 warehouse.resources.view.organization: Company
 warehouse.resources.view.hotel: Hotel
 warehouse.field.price: Price
-warehouse.items.staple: 'General goods'
-warehouse.fixtures.mongodb.warehousedata.underwear: Bedclothes
-warehouse.controller.invoicecontroller.new_consignment_note_has_been_created_successfully: 'New consignment was successfully created'
+warehouse.items.staple: 'Main items'
+warehouse.fixtures.mongodb.warehousedata.underwear: Textile
+warehouse.controller.invoicecontroller.new_consignment_note_has_been_created_successfully: 'New invoice successfully created'
 warehouse.resources.view.inwoice.edit_consignment: 'Edit invoice'
 warehouse.resources.view.invoice.new.add: 'Add new invoice'
-warehouse.resources.view.creation_of_new_commodity_waybill: 'Create new document'
+warehouse.resources.view.creation_of_new_commodity_waybill: 'Create new invoice'
 warehouse.resources.view.lists: 'List of invoices'
 warehouse.rec.edit: 'Edit entry'
 warehouse.cat.edit: 'Edit category'
-warehouse.cat.newcattitle: 'Add new category'
-warehouse.cat.del: 'Edit commodity category'
-warehouse.cat.nogoods: 'This category doesn''t contain any commodities'
+warehouse.cat.newcattitle: 'New category'
+warehouse.cat.del: 'Delete category'
+warehouse.cat.nogoods: 'This category doesn''t contain any items'
 warehouse.cat.addnew: 'Add new category'
 warehouse.cat.editSuccess: 'Category successfully edited'
-warehouse.items.edit: 'Edit commodity in the category'
-warehouse.items.edit1: 'Edit commodity category'
-warehouse.items.new: 'Commodity creation'
-warehouse.items.new1: 'Add commodity in the category'
-warehouse.items.notused: 'Commodity is not used'
-warehouse.items.editSuccess: 'Commodity successfully edited'
+warehouse.items.edit: 'Edit item within the category'
+warehouse.items.edit1: 'Edit items category'
+warehouse.items.new: 'Create item in the category'
+warehouse.items.new1: 'Add item to the category'
+warehouse.items.notused: 'Item is not used'
+warehouse.items.editSuccess: 'Item successfully edited'
