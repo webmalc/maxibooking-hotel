@@ -271,7 +271,7 @@ services:
 
     mbh.locale.subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\LocaleSubscriber
-        arguments: ['%kernel.default_locale%',  '@translator', '%mbh.languages%']
+        arguments: ['%kernel.default_locale%',  '@translator', '%mbh.languages%', '@stof_doctrine_extensions.listener.translatable']
         tags:
           - { name: kernel.event_subscriber }
 

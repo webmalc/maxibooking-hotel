@@ -32,8 +32,11 @@ class MultiLangTranslator
 
         foreach ($translationsByFields as $fieldName => $translationsByLanguages) {
             foreach ($translationsByLanguages as $language => $translation) {
-                $repository->translate($document, $fieldName, $language, $translation);
+                $document->setLocale($language);
+                $this->propertyAccessor->setValue($document, $fieldName, $translation);
+                $this->dm->flush();
             }
+
         }
 
         if ($withFlush) {
