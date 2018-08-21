@@ -140,7 +140,12 @@ class NewRbkInvoiceCreate
     {
         $invoice = InvoiceRequest::create($this->dm, $this->config, $this->package, $this->getCashDocument());
 
-        return json_encode($invoice, JSON_UNESCAPED_UNICODE);
+        $result = json_encode($invoice, JSON_UNESCAPED_UNICODE);
+
+        $log = $this->container->get('mbh.new_rbk_create_invoice.logger');
+        $log->info($result);
+
+        return $result;
     }
 
     /**
