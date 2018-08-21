@@ -12,7 +12,7 @@
             {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'hotel' } %}
         {{ form_end(form) }}
 
-        {% include '@MBHHotel/Hotel/image-list.html.twig' with {withButtons: true} %}
+        {% include '@MBHHotel/Hotel/image-list.html.twig' with {showMakeMainButton: true, showDeleteButton: true} %}
     </div>
 
 {% endblock %}

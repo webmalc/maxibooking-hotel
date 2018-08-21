@@ -34,7 +34,9 @@
             {{ form_widget(form) }}
 
             {% if isImagesStep %}
-                {% include '@MBHHotel/Hotel/image-list.html.twig' with {images: hotel.images, entity: hotel,  withButtons: true, redirect_url: path('')} %}
+                {% include '@MBHHotel/Hotel/image-list.html.twig' with {
+                    images: hotel.images, entity: hotel, showMakeMainButton: false, showDeleteButton: true, redirect_url: path('hotel_flow')
+                } %}
             {% endif %}
 
             <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
@@ -71,4 +73,5 @@
     </div>
 
     {% include '@MBHHotel/Hotel/coordinates-modal.html.twig' with {entity: hotel} %}
+    {% include '@MBHBase/modalWithForm.html.twig' with {modalTitle: 'modal_with_form.add_city.title'|trans} %}
 {% endblock %}

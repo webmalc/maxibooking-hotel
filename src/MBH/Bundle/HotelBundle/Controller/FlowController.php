@@ -49,7 +49,7 @@ class FlowController extends BaseController
                 $this->dm->persist($hotel->getDefaultImage());
             }
 
-            if ($flow->getCurrentStepNumber() === 8) {
+            if ($flow->getCurrentStepNumber() === 8 && !$flow->isBackButtonClicked()) {
                 $savedImage = $form->getData();
                 $hotel->addImage($savedImage);
                 $this->dm->persist($savedImage);
@@ -57,7 +57,7 @@ class FlowController extends BaseController
 
             $this->dm->flush();
 
-            if ($flow->isButtonClicked('next') || $flow->isButtonClicked('back')) {
+            if ($flow->isNextButtonClicked() || $flow->isBackButtonClicked()) {
                 $flow->nextStep();
             }
 

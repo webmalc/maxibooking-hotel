@@ -1,9 +1,5 @@
 {%- if flow.getStepLabels() is not empty -%}
-    <div  style="position:relative;">
-        {% for lineNumber in 1..flow.numberOfSteps %}
-            <div class="line-between-flow-tabs {{ loop.index > flow.currentStepNumber ? 'line-to-not-passed' }}">&nbsp;</div>
-        {% endfor %}
-
+    <div id="tabs-container" style="position:relative;">
         <ul class="nav nav-tabs" id="flow-step-tabs">
             {% for stepLabel in flow.getStepLabels() %}
 

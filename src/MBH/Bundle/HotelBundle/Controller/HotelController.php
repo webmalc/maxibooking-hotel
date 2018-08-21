@@ -5,7 +5,6 @@ namespace MBH\Bundle\HotelBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
@@ -410,11 +409,12 @@ class HotelController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_HOTEL_DELETE')")
      * @param Hotel $hotel
-     * @ParamConverter("image", options={"id" = "imageId"})
      * @param Image $image
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @ParamConverter("image", options={"id" = "imageId"})
      */
-    public function imageDelete(Hotel $hotel, Image $image)
+    public function imageDelete(Hotel $hotel, Image $image, Request $request)
     {
         if (!$hotel || !$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
             throw $this->createNotFoundException();
@@ -424,7 +424,10 @@ class HotelController extends Controller
 
         $this->addFlash('success', 'controller.hotelController.success_delete_photo');
 
-        return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
+        $redirectUrl = $request->get('redirect_url')
+            ?? $this->generateUrl('hotel_images', ['id' => $hotel->getId()]);
+
+        return $this->redirect($redirectUrl);
     }
 
     /**

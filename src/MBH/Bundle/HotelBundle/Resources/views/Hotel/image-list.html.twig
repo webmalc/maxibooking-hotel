@@ -6,23 +6,33 @@
                 <img src="{{ vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_100x100') }}"
                      class="img-thumbnail"/>
             </a>
-            {% if withButtons %}
+
+            {% if showMakeMainButton or showDeleteButton %}
                 <div style="text-align: center;margin-top: 5px;">
-                    {% if not image.isDefault %}
-                        <a href="{{ path('hotel_image_make_main', {'id': entity.id, 'imageId' : image.getId}) }}"
-                           class="btn btn-success btn-xs" data-toggle="tooltip"
-                           data-original-title="{{ 'hotel_images.set_image_main'|trans }}">
-                            <i class="fa fa-check"></i>
-                        </a>
-                    {% else %}
-                        <span class="btn btn-info btn-xs disabled"><i class="fa fa-check"
-                                                                      title="{{ 'hotel_images.main_image'|trans }}"></i></span>
+                    {% if showMakeMainButton %}
+                        {% if not image.isDefault %}
+                            <a href="{{ path('hotel_image_make_main', {'id': entity.id, 'imageId' : image.getId}) }}"
+                               class="btn btn-success btn-xs" data-toggle="tooltip"
+                               data-original-title="{{ 'hotel_images.set_image_main'|trans }}">
+                                <i class="fa fa-check"></i>
+                            </a>
+                        {% else %}
+                            <span class="btn btn-info btn-xs disabled">
+                            <i class="fa fa-check" title="{{ 'hotel_images.main_image'|trans }}"></i></span>
+                        {% endif %}
                     {% endif %}
-                    <a href="{{ path('hotel_image_delete', {'id': entity.id, 'imageId' : image.getId}) }}"
-                       class="btn btn-danger btn-xs delete-link" data-toggle="tooltip"
-                       style="margin-left: 5px;"
-                       data-original-title="{{ 'hotel_images.remove_image'|trans }}"><i class="fa fa-trash-o"></i>
-                    </a>
+
+                    {% if showDeleteButton %}
+                        {% set deleteHrefParams = {'id': entity.id, 'imageId' : image.getId} %}
+                        {% if redirect_url is defined %}
+                            {% set deleteHrefParams = deleteHrefParams|merge({"redirect_url" : redirect_url}) %}
+                        {% endif %}
+                        <a href="{{ path('hotel_image_delete', deleteHrefParams) }}"
+                           class="btn btn-danger btn-xs delete-link" data-toggle="tooltip"
+                           style="margin-left: 5px;"
+                           data-original-title="{{ 'hotel_images.remove_image'|trans }}"><i class="fa fa-trash-o"></i>
+                        </a>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
