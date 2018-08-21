@@ -232,6 +232,7 @@ package.new.reservation_error: 'Ошибка бронирования'
 package.new.reservation_error_try_again: 'При бронировании произошла ошибка. Попробуйте еще раз.'
 package.pdf.executor: 'Исполнитель:'
 package.pdf.address: Адрес
+package.pdf.address_hotel: 'Адрес (отеля)'
 package.pdf.short_city_extend: г
 package.pdf.short_home_extend: д
 package.pdf.short_housing_extend: кор
@@ -258,6 +259,11 @@ package.pdf.night: ночь
 package.pdf.conditions: 'Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.'
 package.pdf.executor_caps: ИСПОЛНИТЕЛЬ
 package.pdf.customer_caps: ЗАКАЗЧИК
+package.pdf.bank.name: Банк
+package.pdf.bank.bik: БИК
+package.pdf.bank.correspondent_account: 'к/с'
+package.pdf.bank.checking_account: 'р/с'
+package.pdf.bank.address: в
 package.service.edit_reservation: 'редактирование брони '
 package.service.paid: оплачена
 package.service.not_paid: 'Не оплачено'
