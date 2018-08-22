@@ -496,6 +496,7 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@mbh.helper'
             - '@property_accessor'
+            - '@stof_doctrine_extensions.listener.translatable'
             - '%locale%'
 
     mbh.menu_builder:

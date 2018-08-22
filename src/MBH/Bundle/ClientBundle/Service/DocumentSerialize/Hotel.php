@@ -16,7 +16,7 @@ use MBH\Bundle\PackageBundle\Lib\AddressInterface;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-class Hotel extends Common implements AddressInterface
+class Hotel extends Common implements AdvancedAddressInterface
 {
     use TraitAddress;
 
