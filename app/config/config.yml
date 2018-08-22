@@ -160,7 +160,7 @@ doctrine_mongodb:
 # StofDoctrineExtensionsBundle Configuration
 stof_doctrine_extensions:
     # see /src/MBH/Bundle/BaseBundle/Resources/config/doctrine_extensions.yml
-    default_locale: ru
+    default_locale: '%locale%'
     translation_fallback: true
     mongodb:
         default:

@@ -6,13 +6,17 @@
 
 namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
-use MBH\Bundle\PackageBundle\Lib\AddressInterface;
-
 /**
  * Class HotelOrganization
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
+ *
+ * @method getBank
+ * @method getBankBik
+ * @method getBankAddress
+ * @method getCorrespondentAccount
+ * @method getCheckingAccount
  */
-class HotelOrganization extends Common implements AddressInterface
+class HotelOrganization extends Common implements AdvancedAddressInterface
 {
     use TraitAddress;
 
